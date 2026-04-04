@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Image Smash</title>
+</head>
+<body>
+    <h1>Image Smash - Ad Generator</h1>
+    
+    <h2>1. Upload Image</h2>
+    <input type="file" id="image-input" accept="image/*">
+    <img id="preview" style="max-width: 300px; display: none;">
+    
+    <h2>2. Add Text</h2>
+    <input type="text" id="text-input" placeholder="Your ad text" style="width: 300px; height: 40px; padding: 10px; border: 1px solid black;">
+    
+    <h2>3. Generate</h2>
+    <button onclick="generate()" style="padding: 10px 20px;">Generate Ad</button>
+    
+    <div id="result"></div>
+    
+    <script>
+        document.getElementById('image-input').onchange = function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('preview').src = e.target.result;
+                    document.getElementById('preview').style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
+        };
+        
+        function generate() {
+            const text = document.getElementById('text-input').value;
+            document.getElementById('result').innerHTML = 'Text entered: ' + text;
+        }
+    </script>
+</body>
+</html>

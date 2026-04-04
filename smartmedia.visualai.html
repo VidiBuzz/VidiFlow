@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The New AI Standard: Understanding Next-Gen Visual AI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kumbh+Sans:wght@700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Modern Glass Tech -->
+    <!-- Application Structure Plan: A thematic single-page application with a sticky top navigation for easy exploration. The structure is designed to guide the user from a high-level introduction to a side-by-side comparison of the two technologies, followed by visual diagrams of their processes, an interactive data-driven comparison, a visualization of the real-world costs, and finally, future outlook and recommendations. This non-linear, thematic structure is chosen over the report's linear format to enhance user engagement and allow for direct, interactive comparison of concepts, making complex information more digestible and accessible. -->
+    <!-- Visualization & Content Choices: 
+        - Report Info: Core concepts of Alt Text vs. Vector Embeds -> Goal: Compare -> Viz/Presentation: Interactive side-by-side cards with JS-powered tabs -> Interaction: Click buttons to update content in both panes simultaneously -> Justification: Allows for direct, one-to-one comparison of specific criteria (e.g., 'Mechanism', 'Purpose').
+        - Report Info: Alt Text Discovery Process (Mermaid Diagram) -> Goal: Organize/Inform -> Viz/Presentation: Custom HTML/CSS/Tailwind diagram -> Interaction: Clicking on a step highlights it and displays detailed information -> Justification: Transforms a static diagram into an active learning tool, demystifying the process.
+        - Report Info: Table 1 (Comparative Analysis) -> Goal: Compare -> Viz/Presentation: Chart.js Bar Chart -> Interaction: Hover tooltips provide detailed descriptions -> Justification: More visually engaging and quicker to scan for high-level differences than a dense table.
+        - Report Info: Table 2 (Cost Data) -> Goal: Inform/Impact -> Viz/Presentation: Chart.js Bar Chart (Logarithmic Scale) -> Interaction: Hover tooltips show precise costs -> Justification: Effectively visualizes the vast scale differences in costs, creating a memorable impact that a table cannot.
+        - Library/Method: Vanilla JS for all interactions, Chart.js for all charts.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f0f4f8; /* A light, cool gray */
+            color: #334155; /* Slate 700 */
+        }
+        .title-font {
+            font-family: 'Kumbh Sans', sans-serif;
+        }
+        .nav-link {
+            transition: color 0.3s ease, transform 0.3s ease;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: #4f46e5; /* Indigo 600 */
+            transform: translateY(-2px);
+        }
+        .section-title {
+            color: #1e293b; /* Slate 800 */
+        }
+        .card {
+            background: rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 1.5rem;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 4px 10px -2px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px -8px rgba(0, 0, 0, 0.15), 0 8px 16px -4px rgba(0, 0, 0, 0.1);
+        }
+        .btn {
+            background: linear-gradient(135deg, #4f46e5, #8b5cf6); /* Indigo to Violet */
+            color: white;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4);
+        }
+        .btn-secondary {
+            background: #cbd5e1; /* Slate 300 */
+            color: #334155; /* Slate 700 */
+            box-shadow: none;
+        }
+        .btn-secondary.active {
+            background: linear-gradient(135deg, #4f46e5, #8b5cf6);
+            color: white;
+            box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4);
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(79, 70, 229, 0.6);
+        }
+        .diagram-node {
+            border: 2px solid #94a3b8; /* Slate 400 */
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(8px);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        .diagram-node.active {
+            border-color: #4f46e5;
+            background: rgba(79, 70, 229, 0.1);
+            color: #334155;
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(79, 70, 229, 0.5);
+        }
+        .diagram-arrow {
+            position: absolute;
+            background-color: #64748b; /* Slate 500 */
+            z-index: -1;
+        }
+        .diagram-arrow.horizontal { height: 2px; }
+        .diagram-arrow.vertical { width: 2px; }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 400px;
+            max-height: 50vh;
+        }
+        @media (max-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Header & Navigation -->
+    <header id="header" class="bg-white/80 backdrop-blur-md sticky top-0 z-50 shadow-lg">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <h1 class="text-xl md:text-2xl font-bold text-gray-800 title-font">The New AI Standard: Visual AI</h1>
+            <div class="hidden md:flex space-x-8 font-medium">
+                <a href="#intro" class="nav-link pb-1">Comparison</a>
+                <a href="#process" class="nav-link pb-1">Process</a>
+                <a href="#showdown" class="nav-link pb-1">Showdown</a>
+                <a href="#costs" class="nav-link pb-1">Costs</a>
+                <a href="#future" class="nav-link pb-1">Future</a>
+            </div>
+            <div class="md:hidden">
+                <select id="mobile-nav" class="bg-gray-200 border border-gray-300 text-gray-700 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5">
+                    <option value="#intro">Comparison</option>
+                    <option value="#process">Process</option>
+                    <option value="#showdown">Showdown</option>
+                    <option value="#costs">Costs</option>
+                    <option value="#future">Future</option>
+                </select>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container mx-auto px-6 py-12">
+
+        <!-- Section 1: The Two Technologies -->
+        <section id="intro" class="mb-24 text-center">
+            <h2 class="text-4xl md:text-5xl font-bold section-title mb-4 title-font">The Paradigm Shift: From Keywords to Concepts</h2>
+            <p class="max-w-3xl mx-auto text-lg text-gray-600 mb-8">
+                The way AI understands visual content, including **images and video**, is evolving. We're moving from simple, human-written descriptions to a deep, conceptual understanding powered by mathematics. This interactive report explores the two dominant technologies: traditional Alt Text and modern Vector Embeddings.
+            </p>
+            <div class="grid md:grid-cols-2 gap-8 max-w-6xl mx-auto mt-12">
+                <!-- Alt Text Card -->
+                <div class="card p-8 text-left">
+                    <h3 class="text-2xl font-bold text-gray-800 mb-3">The Traditional Way: Alt Text</h3>
+                    <p class="text-gray-600 mb-6">A human-provided, keyword-based system. It's the bedrock of web accessibility and basic SEO, providing a direct text description of an image.</p>
+                    <div id="alt-text-content" class="text-gray-700 min-h-[120px]"></div>
+                </div>
+                <!-- Vector Embeddings Card -->
+                <div class="card p-8 text-left">
+                    <h3 class="text-2xl font-bold text-gray-800 mb-3">The Modern Way: Vector Embeddings</h3>
+                    <p class="text-gray-600 mb-6">A machine-native, concept-based system. It translates images and text into numerical representations, enabling a nuanced, contextual understanding.</p>
+                    <div id="vector-embed-content" class="text-gray-700 min-h-[120px]"></div>
+                </div>
+            </div>
+            <div id="comparison-controls" class="mt-8 flex justify-center flex-wrap gap-3">
+                <button data-topic="purpose" class="btn btn-secondary px-6 py-2 rounded-full text-sm font-medium">Primary Purpose</button>
+                <button data-topic="mechanism" class="btn btn-secondary px-6 py-2 rounded-full text-sm font-medium">Mechanism</button>
+                <button data-topic="value" class="btn btn-secondary px-6 py-2 rounded-full text-sm font-medium">Core Value</button>
+                <button data-topic="limitations" class="btn btn-secondary px-6 py-2 rounded-full text-sm font-medium">Limitations</button>
+            </div>
+        </section>
+        
+        <!-- Section 2: How It Works -->
+        <section id="process" class="mb-24">
+            <h2 class="text-4xl font-bold section-title text-center mb-4 title-font">How It Works: A Visual Flow</h2>
+            <h3 class="text-2xl font-bold text-gray-800 mb-6 text-center">Smart Video x Smart Images = Online Dominance</h3>
+            <p class="max-w-3xl mx-auto text-lg text-gray-600 text-center mb-12">
+                These two technologies follow vastly different paths to understand an image. Click on the steps in each diagram to learn more about the data pipeline, from a simple HTML tag to a complex high-dimensional vector space.
+            </p>
+            <div class="grid lg:grid-cols-2 gap-12">
+                <!-- Alt Text Process Diagram -->
+                <div class="card p-8">
+                    <h3 class="text-2xl font-bold text-gray-800 mb-6 text-center">Alt Text Discovery Process</h3>
+                    <div class="flex flex-col items-center space-y-4 relative">
+                        <div id="node-crawler" class="diagram-node w-48 p-3 text-center rounded-lg">1. Web Crawler</div>
+                        <div class="diagram-arrow vertical h-4 top-1/2 left-1/2 -translate-x-1/2" style="top: 48px;"></div>
+                        <div id="node-html" class="diagram-node w-48 p-3 text-center rounded-lg">2. Parses HTML</div>
+                        <div class="diagram-arrow vertical h-4 top-1/2 left-1/2 -translate-x-1/2" style="top: 120px;"></div>
+                        <div id="node-alt" class="diagram-node w-48 p-3 text-center rounded-lg">3. Extracts Alt Text</div>
+                        <div class="diagram-arrow vertical h-4 top-1/2 left-1/2 -translate-x-1/2" style="top: 192px;"></div>
+                        <div class="flex space-x-4">
+                            <div id="node-index" class="diagram-node w-36 p-3 text-center rounded-lg">4a. Search Index</div>
+                            <div id="node-corpus" class="diagram-node w-36 p-3 text-center rounded-lg">4b. LLM Corpus</div>
+                        </div>
+                        <div class="diagram-arrow horizontal w-20 top-1/2 left-1/2 -translate-x-1/2" style="top: 228px;"></div>
+                    </div>
+                    <div id="alt-text-diagram-info" class="mt-8 p-4 bg-gray-100 rounded-lg min-h-[100px] text-gray-700">
+                        Click a step above to see details.
+                    </div>
+                </div>
+                <!-- Vectorization Process Diagram -->
+                <div class="card p-8">
+                    <h3 class="text-2xl font-bold text-gray-800 mb-6 text-center">Vectorization Process</h3>
+                    <div class="flex flex-col items-center space-y-4">
+                        <div id="node-image" class="diagram-node w-48 p-3 text-center rounded-lg">1. Input Image</div>
+                        <div class="diagram-arrow vertical h-4 top-1/2 left-1/2 -translate-x-1/2" style="top: 48px;"></div>
+                        <div id="node-model" class="diagram-node w-48 p-3 text-center rounded-lg">2. AI Model (VLM)</div>
+                        <div class="diagram-arrow vertical h-4 top-1/2 left-1/2 -translate-x-1/2" style="top: 120px;"></div>
+                        <div id="node-vector" class="diagram-node w-48 p-3 text-center rounded-lg">3. Numerical Vector</div>
+                        <div class="diagram-arrow vertical h-4 top-1/2 left-1/2 -translate-x-1/2" style="top: 192px;"></div>
+                        <div id="node-space" class="diagram-node w-48 p-3 text-center rounded-lg">4. Vector Space</div>
+                    </div>
+                    <div id="vector-diagram-info" class="mt-8 p-4 bg-gray-100 rounded-lg min-h-[100px] text-gray-700">
+                        Click a step above to see details.
+                    </div>
+                </div>
+            </div>
+            <!-- New section on Vector Databases -->
+            <div class="mt-16 card p-8 text-left">
+                <h3 class="text-2xl font-bold text-gray-800 mb-3 text-center">The Next Step: The Vector Database</h3>
+                <p class="text-gray-600 mb-6">
+                    Once a vector is created, it's not just a floating point of data; it's an asset that needs to be stored and queried efficiently. This is where a **vector database** comes in. A vector database is a specialized, high-performance database designed to store, manage, and search **vector embeddings**. Unlike traditional databases that are optimized for keyword or relational data, a vector database is built to handle the unique challenge of finding "nearest neighbors" in a high-dimensional space.
+                </p>
+                <p class="text-gray-600">
+                    The process of creating and storing these embeddings is the key to the new generation of vectorized media assets. By converting every image, video, and audio file into a vector, we create a machine-readable library of all digital content. A vector database then acts as a powerful index, allowing an AI to instantly find and retrieve any content that is semantically related to a given query, regardless of the format. This enables the kind of rapid, contextual search and discovery that would be impossible with traditional keyword-based systems.
+                </p>
+            </div>
+        </section>
+
+        <!-- Section 3: The Showdown -->
+        <section id="showdown" class="mb-24">
+            <h2 class="text-4xl font-bold section-title text-center mb-4 title-font">The Showdown: Keyword vs. Semantic</h2>
+            <p class="max-w-3xl mx-auto text-lg text-gray-600 text-center mb-12">
+                How do these technologies stack up in practice? This chart compares them across key criteria. Hover over the bars to see how each performs. The data reveals a clear trend: the most effective systems use a hybrid approach, combining the strengths of both.
+            </p>
+            <div class="card p-8">
+                <div class="chart-container">
+                    <canvas id="comparisonChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 4: Costs & Challenges -->
+        <section id="costs" class="mb-24">
+            <h2 class="text-4xl font-bold section-title text-center mb-4 title-font">The Real World: Costs & Challenges</h2>
+            <p class="max-w-3xl mx-auto text-lg text-gray-600 text-center mb-12">
+                While powerful, vector search comes at a steep price. The chart below visualizes the potential costs for a large-scale system, from initial setup to real-time updates. These significant financial and technical hurdles are a major barrier to widespread adoption.
+            </p>
+            <div class="card p-8">
+                 <div class="chart-container">
+                    <canvas id="costChart"></canvas>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Section 5: The Future -->
+        <section id="future" class="mb-12">
+            <h2 class="text-4xl font-bold section-title text-center mb-4 title-font">The Future & Recommendations</h2>
+            <p class="max-w-3xl mx-auto text-lg text-gray-600 text-center mb-12">
+                The path forward is not about replacing one technology with another, but about smart integration and strategic planning.
+            </p>
+            <div class="grid md:grid-cols-2 gap-8 max-w-6xl mx-auto">
+                <div class="card p-8">
+                    <h3 class="text-2xl font-bold text-gray-800 mb-3">The Future: Vision-Language Models</h3>
+                    <p class="text-600">The future belongs to advanced Vision-Language Models (VLMs) that can interpret and generate content across text and visual data, **including both images and video**, seamlessly. However, their progress is hampered by a significant challenge: the scarcity of high-quality, context-rich visual training data. Unlike text, detailed visual knowledge is rarely written down, creating a bottleneck for AI development.</p>
+                </div>
+                <div class="card p-8">
+                    <h3 class="text-2xl font-bold text-gray-800 mb-3">Strategic Recommendations</h3>
+                    <p class="text-gray-600">For any organization, the best strategy is a hybrid one. Continue to prioritize high-quality, human-written alt text for accessibility and SEO. For advanced search and recommendation features, explore a hybrid search architecture that combines the precision of keyword search with the contextual power of vector search. At the enterprise level, the conversation is now shifting from building these complex systems in-house to adopting managed **vector database services**. This approach dramatically lowers the technical and financial hurdles, allowing more companies to tap into the power of semantic search without managing the underlying infrastructure.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-slate-900 text-white">
+        <div class="container mx-auto px-6 py-4 text-center text-gray-400">
+            <p>Interactive Report generated from source analysis.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // Data from the report
+            const comparisonData = {
+                purpose: {
+                    altText: '<strong>Accessibility & SEO:</strong> Provides a text alternative for screen readers and a signal for search engine crawlers.',
+                    vectorEmbed: '<strong>Semantic Understanding:</strong> Enables contextual search, recommendations, and deeper meaning analysis.'
+                },
+                mechanism: {
+                    altText: '<strong>Keyword Matching:</strong> Matches exact words and phrases from a static text index.',
+                    vectorEmbed: '<strong>Vector Proximity:</strong> Measures the geometric distance between numerical vectors in a high-dimensional space.'
+                },
+                value: {
+                    altText: '<strong>Precision:</strong> Highly reliable for specific, structured queries like product codes or exact names.',
+                    vectorEmbed: '<strong>Context & Intent:</strong> Understands user intent, synonyms, and ambiguity, bridging "vocabulary gaps".'
+                },
+                limitations: {
+                    altText: '<strong>Lacks Nuance:</strong> Cannot understand context or conceptual relationships. Relies entirely on human input.',
+                    vectorEmbed: '<strong>High Cost & Complexity:</strong> Computationally expensive to generate, store, and search at scale.'
+                }
+            };
+
+            const altTextDiagramData = {
+                'node-crawler': '<strong>1. Web Crawler:</strong> Automated programs like Googlebot request and download the content of a webpage.',
+                'node-html': '<strong>2. Parses HTML:</strong> The crawler analyzes the page\'s HTML code to understand its structure and content.',
+                'node-alt': '<strong>3. Extracts Alt Text:</strong> It specifically identifies `<img>` tags and extracts the text from their `alt` attributes.',
+                'node-index': '<strong>4a. Search Index:</strong> The alt text is stored in a massive database, associating the image with specific keywords for services like Google Images.',
+                'node-corpus': '<strong>4b. LLM Corpus:</strong> The image and its alt text are added to vast datasets used to train Vision-Language Models (VLMs).'
+            };
+
+            const vectorDiagramData = {
+                'node-image': '<strong>1. Input Image:</strong> The process begins with a source image (or text, or audio).',
+                'node-model': '<strong>2. AI Model (VLM):</strong> The image is fed into a specialized Vision-Language Model (e.g., a CNN or Transformer).',
+                'node-vector': '<strong>3. Numerical Vector:</strong> The model outputs a high-dimensional vector—an array of numbers that represents the image\'s semantic meaning.',
+                'node-space': '<strong>4. Vector Space:</strong> This vector is placed in a conceptual space where similar images/concepts are located close to each other.'
+            };
+            
+            // Section 1: Interactive Comparison
+            const comparisonControls = document.getElementById('comparison-controls');
+            const altTextContent = document.getElementById('alt-text-content');
+            const vectorEmbedContent = document.getElementById('vector-embed-content');
+
+            function updateComparisonContent(topic) {
+                altTextContent.innerHTML = comparisonData[topic].altText;
+                vectorEmbedContent.innerHTML = comparisonData[topic].vectorEmbed;
+                
+                comparisonControls.querySelectorAll('button').forEach(btn => {
+                    btn.classList.remove('active', 'btn');
+                    btn.classList.add('btn-secondary');
+                    if (btn.dataset.topic === topic) {
+                        btn.classList.add('active', 'btn');
+                        btn.classList.remove('btn-secondary');
+                    }
+                });
+            }
+
+            comparisonControls.addEventListener('click', (e) => {
+                if (e.target.tagName === 'BUTTON') {
+                    updateComparisonContent(e.target.dataset.topic);
+                }
+            });
+
+            // Set initial state
+            updateComparisonContent('purpose');
+
+            // Section 2: Interactive Diagrams
+            function setupDiagram(containerId, data, infoDisplayId) {
+                const container = document.querySelector(containerId);
+                const infoDisplay = document.getElementById(infoDisplayId);
+                let activeNode = null;
+
+                container.addEventListener('click', (e) => {
+                    const node = e.target.closest('.diagram-node');
+                    if (!node) return;
+
+                    if (activeNode) {
+                        activeNode.classList.remove('active');
+                    }
+                    
+                    node.classList.add('active');
+                    activeNode = node;
+                    infoDisplay.innerHTML = data[node.id];
+                });
+            }
+
+            setupDiagram('.card:has(#alt-text-diagram-info)', altTextDiagramData, 'alt-text-diagram-info');
+            setupDiagram('.card:has(#vector-diagram-info)', vectorDiagramData, 'vector-diagram-info');
+
+
+            // Section 3: Comparison Chart
+            const ctxComparison = document.getElementById('comparisonChart').getContext('2d');
+            const comparisonChartData = {
+                labels: ['Primary Purpose', 'Mechanism', 'Data Type', 'Core Value', 'Limitations'],
+                datasets: [
+                    {
+                        label: 'Alt Text (Keyword Search)',
+                        data: [3, 2, 1, 4, 5], 
+                        backgroundColor: 'rgba(79, 70, 229, 0.6)', /* Indigo 600 */
+                        borderColor: 'rgba(67, 56, 202, 1)', /* Indigo 700 */
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Vector Embeddings (Semantic Search)',
+                        data: [5, 5, 5, 5, 2],
+                        backgroundColor: 'rgba(31, 41, 55, 0.6)', /* Slate 800 */
+                        borderColor: 'rgba(17, 24, 39, 1)', /* Slate 900 */
+                        borderWidth: 1
+                    }
+                ]
+            };
+            const comparisonTooltips = {
+                'Primary Purpose': {
+                    'Alt Text (Keyword Search)': 'Accessibility and basic SEO.',
+                    'Vector Embeddings (Semantic Search)': 'Semantic understanding and contextual search.'
+                },
+                'Mechanism': {
+                    'Alt Text (Keyword Search)': 'Matches exact keywords in a static index.',
+                    'Vector Embeddings (Semantic Search)': 'Measures proximity of vectors in high-dimensional space.'
+                },
+                'Data Type': {
+                    'Alt Text (Keyword Search)': 'Simple textual string data.',
+                    'Vector Embeddings (Semantic Search)': 'Multimodal numerical data (vectors).'
+                },
+                'Core Value': {
+                    'Alt Text (Keyword Search)': 'Reliable for precise, structured queries.',
+                    'Vector Embeddings (Semantic Search)': 'Understands ambiguity, intent, and context.'
+                },
+                'Limitations': {
+                    'Alt Text (Keyword Search)': 'Lacks conceptual understanding; human-dependent.',
+                    'Vector Embeddings (Semantic Search)': 'High computational cost and complexity.'
+                }
+            };
+            new Chart(ctxComparison, {
+                type: 'bar',
+                data: comparisonChartData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    scales: {
+                        x: {
+                            display: false,
+                            beginAtZero: true
+                        },
+                        y: {
+                            ticks: {
+                                font: {
+                                    size: 14
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    const criterion = context.label;
+                                    label += comparisonTooltips[criterion][context.dataset.label];
+                                    return label.match(/.{1,50}/g); // Wrap text
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Section 4: Cost Chart
+            const ctxCost = document.getElementById('costChart').getContext('2d');
+            new Chart(ctxCost, {
+                type: 'bar',
+                data: {
+                    labels: ['Initial Embedding (3B Images)', 'Monthly Updates', 'Serving Static Dataset', 'Serving Real-Time Updates'],
+                    datasets: [{
+                        label: 'Potential Cost (USD)',
+                        data: [300000, 2912, 98778, 9000000],
+                        backgroundColor: [
+                            'rgba(239, 68, 68, 0.6)',
+                            'rgba(245, 158, 11, 0.6)',
+                            'rgba(234, 179, 8, 0.6)',
+                            'rgba(185, 28, 28, 0.6)'
+                        ],
+                        borderColor: [
+                            'rgba(220, 38, 38, 1)',
+                            'rgba(217, 119, 6, 1)',
+                            'rgba(202, 138, 4, 1)',
+                            'rgba(153, 27, 27, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            type: 'logarithmic',
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value, index, values) {
+                                    return '$' + value.toLocaleString();
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        title: {
+                            display: true,
+                            text: 'Cost of Large-Scale Vector Search (Logarithmic Scale)'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed.y !== null) {
+                                        label += new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(context.parsed.y);
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Smooth scrolling and active nav link highlighting
+            const navLinks = document.querySelectorAll('.nav-link');
+            const sections = document.querySelectorAll('section');
+            const mobileNav = document.getElementById('mobile-nav');
+            window.addEventListener('scroll', () => {
+                let current = '';
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    if (pageYOffset >= sectionTop - 80) {
+                        current = section.getAttribute('id');
+                    }
+                });
+
+                navLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href').includes(current)) {
+                        link.classList.add('active');
+                    }
+                });
+                if (current) {
+                    mobileNav.value = `#${current}`;
+                }
+            });
+            
+            mobileNav.addEventListener('change', (e) => {
+                window.location.href = e.target.value;
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VidiSmart | Private In-House AI Certification</title>
+
+    <!-- Core Engine: Tailwind, Three.js, GSAP -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;400;700;800&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            --gold: #D4AF37;
+            --ai-blue: #00f2ff;
+            --deep-black: #050505;
+            --glass: rgba(255, 255, 255, 0.03);
+            --neon-purple: #9d00ff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            cursor: crosshair;
+        }
+
+        body {
+            background-color: var(--deep-black);
+            color: #ffffff;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        #canvas-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            z-index: -1;
+        }
+
+        /* Glassmorphism & High-End Effects */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 24px;
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #fff 0%, var(--gold) 50%, var(--ai-blue) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Image Generation Styles */
+        .ai-image-container {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16/9;
+            background: #111;
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .ai-image-loading {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 10;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(212, 175, 55, 0.1);
+            border-top: 3px solid var(--gold);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Animated SVG Button */
+        .svg-button {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px 45px;
+            color: white;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-decoration: none;
+            overflow: hidden;
+            background: transparent;
+            transition: 0.3s;
+        }
+
+        .svg-button svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            fill: none;
+        }
+
+        .svg-button rect {
+            width: 100%;
+            height: 100%;
+            stroke: var(--gold);
+            stroke-width: 4;
+            stroke-dasharray: 450, 0;
+            transition: all 0.6s cubic-bezier(0.19, 1, 0.22, 1);
+        }
+
+        .svg-button:hover rect {
+            stroke-dasharray: 100, 400;
+            stroke-dashoffset: 250;
+            stroke: var(--ai-blue);
+        }
+
+        .svg-button:hover {
+            color: var(--ai-blue);
+            transform: scale(1.05);
+        }
+
+        /* Scroller */
+        ::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #000;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--gold);
+        }
+
+        .on-prem-tag {
+            background: linear-gradient(90deg, #D4AF37, #F1D37E);
+            color: black;
+            padding: 2px 10px;
+            border-radius: 4px;
+            font-size: 0.6rem;
+            font-weight: 900;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="canvas-container"></div>
+
+    <!-- Navigation -->
+    <nav
+        class="fixed top-0 w-full z-[100] px-8 py-6 flex justify-between items-center bg-black/50 backdrop-blur-xl border-b border-white/5">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-white/5 rounded-lg border border-white/10 flex items-center justify-center">
+                <div class="w-6 h-6 border-2 border-[#D4AF37] rotate-45"></div>
+            </div>
+            <span class="text-2xl font-black tracking-tighter">VIDI<span class="text-[#D4AF37]">SMART</span></span>
+        </div>
+        <div class="hidden lg:flex gap-12 text-[0.65rem] font-black uppercase tracking-[0.25em] text-gray-500">
+            <a href="#privacy" class="hover:text-white transition">Privacy First</a>
+            <a href="#partners" class="hover:text-white transition">Who It's For</a>
+            <a href="#onprem" class="hover:text-white transition">On-Prem Stack</a>
+        </div>
+        <a href="#signup" class="svg-button h-12 w-48 text-[0.6rem]">
+            <svg>
+                <rect x="0" y="0"></rect>
+            </svg>
+            CLAIM TERRITORY
+        </a>
+    </nav>
+
+    <!-- HERO: PRIVACY FIRST -->
+    <section class="relative min-h-screen flex flex-col justify-center items-center px-6 pt-32 text-center">
+        <div class="z-10 max-w-6xl">
+            <div class="inline-flex items-center gap-3 glass-panel px-4 py-2 mb-8 reveal-hero">
+                <span class="w-2 h-2 rounded-full bg-green-500 animate-ping"></span>
+                <span class="text-[0.65rem] font-black uppercase tracking-widest text-[#D4AF37]">2026 Leadership:
+                    Private Intelligence</span>
+            </div>
+            <h1 class="text-6xl md:text-[10rem] font-black leading-[0.85] mb-8 reveal-hero">
+                <span class="on-prem-tag uppercase">In-House</span> <br>
+                BUILD YOUR OWN <br> <span class="gradient-text">PRIVATE AI STACK</span>
+            </h1>
+            <p class="text-xl md:text-3xl text-gray-400 max-w-4xl mx-auto mb-12 font-light reveal-hero leading-relaxed">
+                Public models like Claude and Gemini are useful, but for true **Intellectual Property**, you need an
+                **On-Premise Private AI Stack**. Stop feeding the cloud and start owning your intelligence.
+            </p>
+
+            <!-- AI GENERATED IMAGE 1: ON-PREM CORE -->
+            <div class="max-w-4xl mx-auto reveal-hero mb-20">
+                <div class="ai-image-container" id="hero-img-container shadow-[0_0_50px_rgba(212,175,55,0.2)]">
+                    <img id="hero-img" referrerpolicy="no-referrer" src="https://cdn.vidi.news/private_ai_core_hero.png" class="w-full h-full object-cover"
+                        alt="Private AI Core">
+                </div>
+            </div>
+
+            <div class="flex flex-col md:flex-row gap-6 justify-center reveal-hero">
+                <a href="#onprem" class="svg-button w-72">
+                    <svg>
+                        <rect x="0" y="0"></rect>
+                    </svg>
+                    TECH TO SMART STACK
+                </a>
+                <a href="#signup"
+                    class="px-12 py-5 rounded-sm border border-white/20 hover:bg-white/5 transition font-black text-sm uppercase tracking-widest">
+                    SECURE IN-HOUSE ACCESS
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- THE PARTNERS SECTION: WHO IS THIS FOR? -->
+    <section id="partners" class="py-40 px-6 relative z-10">
+        <div class="max-w-7xl mx-auto">
+            <div class="grid lg:grid-cols-2 gap-20 mb-32 items-center">
+                <div class="reveal-left">
+                    <h2 class="text-5xl md:text-7xl font-black mb-8 leading-tight uppercase">
+                        The End of <br> <span class="text-[#D4AF37]">Legacy Agencies</span>
+                    </h2>
+                    <p class="text-gray-400 text-lg mb-12 leading-relaxed">
+                        The "SaaSpocolypse" is here. If you are an agency or consultant still relying on fragmented SaaS
+                        tools, you are obsolete.
+                        We enable professional advisors to build **proprietary knowledge graphs** for their clients.
+                    </p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div class="glass-panel p-8 border-l-4 border-[#D4AF37]">
+                            <h4 class="font-black text-sm uppercase mb-2">Web Agencies</h4>
+                            <p class="text-xs text-gray-500">Transform from content creators to **Agentic Architects**
+                                building VidiCity visual discovery systems.</p>
+                        </div>
+                        <div class="glass-panel p-8 border-l-4 border-[#00f2ff]">
+                            <h4 class="font-black text-sm uppercase mb-2">Law Firms</h4>
+                            <p class="text-xs text-gray-500">Implement **Tensor Truth** on private servers for secure,
+                                zero-cloud litigation intelligence.</p>
+                        </div>
+                        <div class="glass-panel p-8 border-l-4 border-[#9d00ff]">
+                            <h4 class="font-black text-sm uppercase mb-2">Accountants</h4>
+                            <p class="text-xs text-gray-500">Upgrade to **Business Advisors** using AI to manage Liquid
+                                SLAs and real-time KPI orchestration.</p>
+                        </div>
+                        <div class="glass-panel p-8 border-l-4 border-white">
+                            <h4 class="font-black text-sm uppercase mb-2">Strategic Consultants</h4>
+                            <p class="text-xs text-gray-500">Provide high-ticket on-premise implementations for the top
+                                1% of enterprises.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI GENERATED IMAGE 2: SMART STACK ARCHITECTURE -->
+                <div class="reveal-right">
+                    <div class="ai-image-container" id="stack-img-container shadow-[0_0_50px_rgba(0,242,255,0.2)]">
+                        <img id="stack-img" referrerpolicy="no-referrer" src="https://cdn.vidi.news/smart_stack_architecture_no_text.png"
+                            class="w-full h-full object-cover" alt="Smart Stack">
+                    </div>
+                    <div class="mt-8 p-8 glass-panel border-[#D4AF37]/30">
+                        <h3 class="text-2xl font-black mb-4">TECH STACK TO <span class="text-[#D4AF37]">SMART
+                                STACK</span></h3>
+                        <p class="text-sm text-gray-400">
+                            Legacy tech stacks cannot be "enhanced." They must be replaced with **Micro Services, Vector
+                            Search, and Knowledge Graphs**.
+                            We teach you how to think, not what to think.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ON-PREM vs READY TO USE -->
+    <section id="onprem" class="py-40 px-6 bg-[#080808]">
+        <div class="max-w-5xl mx-auto text-center">
+            <h2 class="text-6xl md:text-8xl font-black mb-12 tracking-tighter">PRIVACY <span
+                    class="text-[#D4AF37]">ANYONE?</span></h2>
+            <p class="text-xl text-gray-400 mb-20 max-w-3xl mx-auto">
+                In 2026, the question is simple: **Who owns your data?** Public AI is a lease on someone else's
+                intelligence. VidiSmart is about building your own defensible moat.
+            </p>
+
+            <div class="grid md:grid-cols-2 gap-12">
+                <div class="glass-panel p-12 text-left border-red-900/20">
+                    <div class="text-red-500 text-xs font-black uppercase mb-4">The Legacy Risk</div>
+                    <h3 class="text-3xl font-black mb-6 uppercase">Cloud Inference</h3>
+                    <ul class="space-y-4 text-sm text-gray-500">
+                        <li>✘ Your proprietary data trains their models.</li>
+                        <li>✘ Constant subscription "SaaSpocolypse."</li>
+                        <li>✘ Next-word inference is not reasoning.</li>
+                        <li>✘ Zero control over model drift.</li>
+                    </ul>
+                </div>
+                <div class="glass-panel p-12 text-left border-[#D4AF37]/40 shadow-2xl shadow-[#D4AF37]/5">
+                    <div class="text-[#D4AF37] text-xs font-black uppercase mb-4">The VidiSmart Solution</div>
+                    <h3 class="text-3xl font-black mb-6 uppercase">In-House Private AI</h3>
+                    <ul class="space-y-4 text-sm text-white">
+                        <li>✔ **Tensor Truth:** Private Vector Knowledge Graphs.</li>
+                        <li>✔ **On-Prem Scaling:** Your own hardware moats.</li>
+                        <li>✔ **Agentic Intelligence:** True reasoning & decisions.</li>
+                        <li>✔ **Privacy First:** Data stays inside your firewall.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SIGNUP / SCHEDULING -->
+    <section id="signup" class="py-40 px-6 relative overflow-hidden">
+        <!-- SVG BACKGROUND DECORATION -->
+        <svg class="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none" viewBox="0 0 100 100">
+            <circle cx="50" cy="50" r="40" stroke="var(--gold)" stroke-width="0.1" fill="none" />
+            <path d="M10,50 Q50,90 90,50" stroke="var(--ai-blue)" stroke-width="0.1" fill="none" />
+        </svg>
+
+        <div
+            class="max-w-5xl mx-auto glass-panel p-1 px-1 flex flex-col md:flex-row overflow-hidden border-[#D4AF37]/20">
+            <div class="p-16 flex-1 flex flex-col justify-center">
+                <h2 class="text-5xl font-black mb-6 leading-none">JOIN THE <br> <span
+                        class="text-[#D4AF37]">PREMIERE</span> AGENTS</h2>
+                <p class="text-gray-400 mb-10 leading-relaxed">
+                    We are only certifying **3 Premiere Agents** for each major city on the VidiCity list.
+                    Lock your territory now and start deploying Private AI Stacks for the top 1% of firms.
+                </p>
+                <div class="flex items-center gap-6">
+                    <div class="w-16 h-16 rounded-full border border-white/10 flex items-center justify-center">
+                        <span class="text-2xl">🏆</span>
+                    </div>
+                    <div>
+                        <div class="text-[0.6rem] font-black uppercase text-gray-500 tracking-widest">Next Certification
+                            Group</div>
+                        <div class="text-lg font-bold">FEBRUARY 2026 - LIVE</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-16 bg-black/50 backdrop-blur-3xl flex-1 border-l border-white/5">
+                <form id="lead-form" class="space-y-6">
+                    <div>
+                        <label class="block text-[0.6rem] font-black uppercase text-gray-500 mb-2">Agency/Firm
+                            Name</label>
+                        <input type="text"
+                            class="w-full bg-white/5 border border-white/10 p-4 rounded-lg focus:border-[#D4AF37] outline-none text-sm transition"
+                            placeholder="e.g. Sterling Cooper AI" required>
+                    </div>
+                    <div>
+                        <label class="block text-[0.6rem] font-black uppercase text-gray-500 mb-2">Professional
+                            Focus</label>
+                        <select
+                            class="w-full bg-white/5 border border-white/10 p-4 rounded-lg focus:border-[#D4AF37] outline-none text-sm transition appearance-none cursor-pointer">
+                            <option value="agency">Web/Creative Agency</option>
+                            <option value="law">Law Firm / Legal Tech</option>
+                            <option value="accountant">Accounting / Business Advisor</option>
+                            <option value="consultant">Strategic Consultant</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-[0.6rem] font-black uppercase text-gray-500 mb-2">Target
+                            Territory</label>
+                        <input type="text"
+                            class="w-full bg-white/5 border border-white/10 p-4 rounded-lg focus:border-[#D4AF37] outline-none text-sm transition"
+                            placeholder="e.g. Miami, FL" required>
+                    </div>
+                    <button type="submit" class="svg-button w-full h-16 text-sm">
+                        <svg>
+                            <rect x="0" y="0"></rect>
+                        </svg>
+                        RESERVE TERRITORY
+                    </button>
+                </form>
+                <div id="success" class="hidden text-center py-10">
+                    <h3 class="text-3xl font-black text-[#00f2ff] mb-4 uppercase">Lock Request Sent</h3>
+                    <p class="text-gray-400 text-sm">Our onboarding agents will contact you for territory validation
+                        within 4 hours.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-20 border-t border-white/5 px-12 text-center md:text-left">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center opacity-40">
+            <div class="mb-8 md:mb-0">
+                <div class="text-xl font-black">VIDISMART <span class="text-xs font-normal">© 2026</span></div>
+                <p class="text-[0.6rem] uppercase tracking-widest mt-2 font-black">Accelerating at the Speed of AI</p>
+            </div>
+            <div class="text-[0.6rem] uppercase tracking-[0.4em] font-black">
+                Privacy First • On-Prem • Tensor Truth • Agentic Orchestration
+            </div>
+        </div>
+    </footer>
+
+    <script>
+
+        // --- THREE.JS: THE TENSOR MAP ---
+        let scene, camera, renderer, particles;
+        function initThree() {
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 2000);
+            camera.position.z = 1000;
+
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+            const geometry = new THREE.BufferGeometry();
+            const posArray = new Float32Array(3000 * 3);
+            for (let i = 0; i < 3000 * 3; i++) posArray[i] = (Math.random() - 0.5) * 3000;
+            geometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+
+            const material = new THREE.PointsMaterial({
+                size: 2,
+                color: 0xD4AF37,
+                transparent: true, opacity: 0.3,
+                blending: THREE.AdditiveBlending
+            });
+
+            particles = new THREE.Points(geometry, material);
+            scene.add(particles);
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            particles.rotation.y += 0.0005;
+            renderer.render(scene, camera);
+        }
+
+        // --- GSAP REVEALS ---
+        gsap.registerPlugin(ScrollTrigger);
+        function initGSAP() {
+            gsap.from(".reveal-hero", { y: 60, opacity: 0, duration: 1.5, stagger: 0.2, ease: "power4.out" });
+            gsap.from(".reveal-left", { scrollTrigger: "#partners", x: -100, opacity: 0, duration: 1.2 });
+            gsap.from(".reveal-right", { scrollTrigger: "#partners", x: 100, opacity: 0, duration: 1.2 });
+        }
+
+        // --- INIT ALL ---
+        window.onload = () => {
+            initThree();
+            animate();
+            initGSAP();
+        };
+
+        // Form Logic
+        document.getElementById('lead-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            document.getElementById('lead-form').style.display = 'none';
+            document.getElementById('success').classList.remove('hidden');
+        });
+    </script>
+</body>
+
+</html>

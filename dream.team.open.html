@@ -1,0 +1,1439 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DreamMaker: Full Stack Ai FREE</title>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+    <!-- Google Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700&family=Space+Grotesk:wght@500;700&family=Kumbh+Sans:wght@400;500;700&display=swap"
+        rel="stylesheet">
+
+    <!-- 
+    Vidismart Ultimate Report
+    - Rewritten to pure CSS (No Tailwind)
+    - Video Source: Your_AI_Coding_Dream_Team.mp4
+    -->
+    <style>
+        :root {
+            --primary: #6366f1;
+            /* Indigo */
+            --primary-dark: #4f46e5;
+            --primary-light: #e0e7ff;
+            --slate-900: #0f172a;
+            --slate-800: #1e293b;
+            --slate-700: #334155;
+            --slate-600: #475569;
+            --slate-500: #64748b;
+            --slate-400: #94a3b8;
+            --slate-300: #cbd5e1;
+            --slate-200: #e2e8f0;
+            --slate-100: #f1f5f9;
+            --slate-50: #f8fafc;
+            --white: #ffffff;
+
+            --glass-bg: rgba(255, 255, 255, 0.85);
+            --glass-border: rgba(255, 255, 255, 0.4);
+
+            --font-brand: 'Space Grotesk', sans-serif;
+            --font-body: 'Outfit', sans-serif;
+            --font-kumbh: 'Kumbh Sans', sans-serif;
+        }
+
+        /* --- RESET & BASE --- */
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: var(--font-body);
+            color: var(--slate-800);
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5 {
+            margin: 0;
+        }
+
+        p {
+            margin: 0;
+        }
+
+        button {
+            font-family: inherit;
+            border: none;
+            background: none;
+            cursor: pointer;
+            padding: 0;
+        }
+
+        /* --- ANIMATED BACKGROUND --- */
+        .aurora-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            background: linear-gradient(125deg,
+                    #ff9a9e 0%,
+                    #fecfef 25%,
+                    #a18cd1 50%,
+                    #fbc2eb 75%,
+                    #8fd3f4 100%);
+            background-size: 400% 400%;
+            animation: auroraGradient 12s ease infinite;
+        }
+
+        @keyframes auroraGradient {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        /* --- UTILITIES --- */
+        .container {
+            max-width: 80rem;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .flex {
+            display: flex;
+        }
+
+        .flex-col {
+            flex-direction: column;
+        }
+
+        .items-center {
+            align-items: center;
+        }
+
+        .justify-between {
+            justify-content: space-between;
+        }
+
+        .justify-center {
+            justify-content: center;
+        }
+
+        .gap-2 {
+            gap: 0.5rem;
+        }
+
+        .gap-3 {
+            gap: 0.75rem;
+        }
+
+        .gap-4 {
+            gap: 1rem;
+        }
+
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.05);
+        }
+
+        .brand-font {
+            font-family: var(--font-brand);
+        }
+
+        /* --- HEADER --- */
+        .site-header {
+            position: sticky;
+            top: 0;
+            z-index: 40;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .header-content {
+            height: 4rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo-box {
+            width: 2rem;
+            height: 2rem;
+            background-color: var(--primary);
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-family: var(--font-brand);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transform: rotate(3deg);
+        }
+
+        .brand-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--slate-800);
+            letter-spacing: -0.025em;
+            font-family: var(--font-kumbh);
+        }
+
+        .nav-menu {
+            display: none;
+            gap: 2rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--slate-600);
+        }
+
+        .nav-menu button:hover {
+            color: var(--primary);
+            transition: color 0.2s;
+        }
+
+        @media (min-width: 768px) {
+            .nav-menu {
+                display: flex;
+            }
+        }
+
+        .badge-header {
+            display: none;
+            font-size: 0.75rem;
+            font-weight: bold;
+            background-color: var(--primary-light);
+            color: #4338ca;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            border: 1px solid #c7d2fe;
+        }
+
+        @media (min-width: 640px) {
+            .badge-header {
+                display: block;
+            }
+        }
+
+        /* --- HERO --- */
+        .hero-section {
+            padding: 3rem 1rem;
+            text-align: center;
+        }
+
+        @media (min-width: 768px) {
+            .hero-section {
+                padding: 4rem 1rem;
+            }
+        }
+
+        .hero-h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--slate-900);
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
+        }
+
+        @media (min-width: 768px) {
+            .hero-h1 {
+                font-size: 3.75rem;
+            }
+        }
+
+        .gradient-text {
+            background: linear-gradient(to right, var(--primary), #9333ea);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            color: var(--primary);
+            /* fallback */
+        }
+
+        .hero-desc {
+            font-size: 1.125rem;
+            color: var(--slate-700);
+            margin-bottom: 2rem;
+            max-width: 42rem;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.6;
+        }
+
+        /* --- VIDEO PLAYER --- */
+        .video-container {
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            margin-left: auto;
+            margin-right: auto;
+            width: 100%;
+            max-width: 48rem;
+            /* 3xl */
+            aspect-ratio: 16/9;
+            background-color: rgba(0, 0, 0, 0.9);
+            border-radius: 1rem;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            position: relative;
+        }
+
+        .video-element {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* --- DASHBOARD CONTROLS --- */
+        .toggle-wrapper {
+            position: relative;
+            display: inline-flex;
+            width: 16rem;
+            background: white;
+            border-radius: 9999px;
+            border: 1px solid var(--slate-200);
+            padding: 0.25rem;
+            box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.05);
+            margin-bottom: 1rem;
+        }
+
+        .toggle-btn {
+            width: 50%;
+            border-radius: 9999px;
+            padding: 0.5rem 0;
+            font-size: 0.75rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            transition: all 0.3s;
+        }
+
+        .toggle-btn.active {
+            background-color: var(--primary);
+            color: white;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        }
+
+        .toggle-btn.inactive {
+            color: var(--slate-500);
+        }
+
+        .toggle-btn.inactive:hover {
+            color: var(--slate-800);
+        }
+
+        .dashboard-buttons {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.75rem;
+        }
+
+        @media (min-width: 768px) {
+            .dashboard-buttons {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .dashboard-buttons {
+                grid-template-columns: repeat(6, 1fr);
+            }
+        }
+
+        .nav-btn {
+            padding: 1rem;
+            border-radius: 0.75rem;
+            border: 1px solid transparent;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: all 0.2s;
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-2px);
+            background: white;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-btn.active-tab {
+            background: var(--slate-900);
+            color: white;
+            border-color: var(--slate-900);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .nav-btn.inactive-tab {
+            background: rgba(255, 255, 255, 0.5);
+            color: var(--slate-600);
+            border-color: rgba(255, 255, 255, 0.6);
+        }
+
+        .nav-btn-icon {
+            font-size: 1.5rem;
+        }
+
+        .nav-btn-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* --- DASHBOARD DISPLAY --- */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        @media (min-width: 1024px) {
+            .dashboard-grid {
+                grid-template-columns: 7fr 5fr;
+            }
+        }
+
+        .detail-card {
+            padding: 2rem;
+            border-radius: 1rem;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+
+        .detail-card-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background-color: var(--primary);
+        }
+
+        .detail-badge {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            font-size: 0.625rem;
+            font-weight: bold;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .badge-featured {
+            background: var(--primary);
+            color: white;
+        }
+
+        .badge-market {
+            background: var(--slate-700);
+            color: white;
+        }
+
+        .model-cat-title {
+            font-size: 0.875rem;
+            font-weight: bold;
+            color: var(--primary);
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+        }
+
+        .model-name {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--slate-900);
+            margin-bottom: 1rem;
+        }
+
+        @media (min-width: 768px) {
+            .model-name {
+                font-size: 2.25rem;
+            }
+        }
+
+        .model-desc {
+            font-size: 1.125rem;
+            color: var(--slate-600);
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-box {
+            background: rgba(255, 255, 255, 0.5);
+            padding: 1rem;
+            border-radius: 0.75rem;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+        }
+
+        .stat-label {
+            display: block;
+            color: var(--slate-400);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            font-weight: bold;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-value {
+            font-size: 1.125rem;
+            font-weight: bold;
+            color: var(--slate-800);
+            font-family: var(--font-brand);
+        }
+
+        .cta-btn {
+            background-color: var(--primary);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: bold;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .cta-btn:hover {
+            background-color: var(--primary-dark);
+            transform: scale(1.05);
+        }
+
+        /* --- CHART --- */
+        .chart-box {
+            padding: 1.5rem;
+            border-radius: 1rem;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chart-wrapper {
+            position: relative;
+            width: 100%;
+            height: 350px;
+            max-height: 400px;
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* --- GRIDS --- */
+        .section-featured {
+            background-color: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(12px);
+            padding: 4rem 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.4);
+        }
+
+        .section-market {
+            background-color: rgba(248, 250, 252, 0.5);
+            backdrop-filter: blur(12px);
+            padding: 4rem 1rem;
+            border-top: 1px solid var(--slate-200);
+        }
+
+        .section-header {
+            margin-bottom: 2.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        @media (min-width: 768px) {
+            .section-header {
+                flex-direction: row;
+                align-items: flex-end;
+                justify-content: space-between;
+            }
+        }
+
+        .section-badge {
+            background: var(--slate-600);
+            color: white;
+            font-size: 0.625rem;
+            font-weight: bold;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            margin-right: 0.5rem;
+        }
+
+        .section-badge.blue {
+            background: var(--primary);
+        }
+
+        .section-h2 {
+            font-size: 1.875rem;
+            font-weight: bold;
+            color: var(--slate-900);
+        }
+
+        .market-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+
+        @media (min-width: 768px) {
+            .market-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .market-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .market-grid.extended {
+            @media (min-width: 1024px) {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        .market-card {
+            background: white;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid var(--slate-200);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .market-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .market-card.theme-indigo {
+            border-color: #eef2ff;
+            box-shadow: 0 4px 6px -1px rgba(224, 231, 255, 0.5);
+        }
+
+        .market-card h4 {
+            font-size: 1.125rem;
+            font-weight: bold;
+            margin-bottom: 0.25rem;
+        }
+
+        .card-provider {
+            font-size: 0.75rem;
+            font-weight: bold;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+
+        .text-indigo {
+            color: var(--primary);
+        }
+
+        .text-slate {
+            color: var(--slate-600);
+        }
+
+        .card-desc {
+            font-size: 0.875rem;
+            color: var(--slate-600);
+            margin: 0.75rem 0 1rem 0;
+            flex-grow: 1;
+            line-height: 1.5;
+        }
+
+        .card-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .card-tag {
+            font-size: 0.75rem;
+            background: var(--slate-100);
+            color: var(--slate-600);
+            padding: 0.125rem 0.5rem;
+            border-radius: 0.25rem;
+            text-transform: capitalize;
+        }
+
+        .card-footer {
+            border-top: 1px solid var(--slate-100);
+            padding-top: 0.75rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: auto;
+        }
+
+        .license-text {
+            font-size: 0.75rem;
+            font-family: monospace;
+            color: var(--slate-400);
+        }
+
+        /* Filter Buttons */
+        .filter-btn {
+            font-size: 0.75rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 0.25rem 0.75rem;
+            background: white;
+            border: 1px solid var(--slate-300);
+            border-radius: 0.25rem;
+            transition: background 0.2s;
+        }
+
+        .filter-btn:hover {
+            background: var(--slate-100);
+        }
+
+        /* Footer */
+        .site-footer {
+            background: white;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 3rem 1rem;
+            text-align: center;
+            margin-top: 3rem;
+        }
+
+        .vidi-brand {
+            color: #001f3f;
+        }
+
+        /* Dark Navy */
+        .smart-brand {
+            color: #005b96;
+        }
+
+        /* Royal with extra green */
+
+        /* Loading */
+        #app-loading {
+            position: fixed;
+            inset: 0;
+            background: white;
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--slate-200);
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Background -->
+    <div class="aurora-bg"></div>
+
+    <!-- Loading Screen -->
+    <div id="app-loading">
+        <div class="spinner mb-4"></div>
+        <h2 class="brand-font" style="font-size: 1.5rem; font-weight: bold; font-family: var(--font-kumbh);"><span
+                class="vidi-brand">Vidi</span><span class="smart-brand">Smart</span></h2>
+        <p style="color: var(--slate-500); font-size: 0.875rem; margin-top: 0.5rem;">Loading Ultimate Report...</p>
+    </div>
+
+    <!-- Header -->
+    <header class="site-header glass-card">
+        <div class="container header-content">
+            <div class="flex items-center gap-3">
+                <div class="logo-box" style="font-family: var(--font-kumbh); background: #001f3f; color: #005b96;">VS
+                </div>
+                <h1 class="brand-title"><span class="vidi-brand">Vidi</span><span class="smart-brand">Smart</span></h1>
+            </div>
+            <nav class="nav-menu">
+                <button onclick="scrollToSection('hero')">Video Report</button>
+                <button onclick="scrollToSection('dashboard')">Interactive Data</button>
+                <button onclick="scrollToSection('featured')">Original 6</button>
+                <button onclick="scrollToSection('extended')">Market Leaders</button>
+            </nav>
+            <a href="https://vidismart.com" class="badge-header" style="text-decoration: none;">Ultimate Report</a>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main style="flex-grow: 1;">
+
+        <!-- Hero Section -->
+        <section id="hero" class="hero-section">
+            <div class="container">
+                <h2 class="hero-h1 brand-font">
+                    DreamMaker:<br>
+                    <span class="gradient-text">Full Stack Ai FREE</span>
+                </h2>
+                <p class="hero-desc">
+                    Featuring the <strong>Original 6</strong> from our video report, plus a comprehensive comparison
+                    against the industry's market leaders.
+                </p>
+
+                <!-- VIDEO PLAYER CONTAINER -->
+                <div class="video-container">
+                    <video controls class="video-element">
+                        <!-- Auto-linked to your file -->
+                        <source src="Your_AI_Coding_Dream_Team.mp4" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
+                <!-- End Video Player -->
+
+            </div>
+        </section>
+
+        <!-- Interactive Dashboard -->
+        <section id="dashboard" class="container dashboard-section" style="padding-bottom: 3rem;">
+
+            <!-- Dashboard Controls -->
+            <div style="margin-bottom: 2.5rem;">
+                <div class="flex flex-col items-center justify-center gap-4">
+                    <h3 class="brand-font"
+                        style="font-size: 1.125rem; font-weight: bold; text-transform: uppercase; letter-spacing: 0.1em; color: var(--slate-800);">
+                        Select Dataset</h3>
+
+                    <!-- Toggle Switch -->
+                    <div class="toggle-wrapper">
+                        <button onclick="setDataset('originals')" id="btn-originals" class="toggle-btn active">
+                            Original 6
+                        </button>
+                        <button onclick="setDataset('market')" id="btn-market" class="toggle-btn inactive">
+                            Market Leaders
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Category Buttons (Dynamic) -->
+                <div class="dashboard-buttons" id="task-buttons">
+                    <!-- Injected via JS -->
+                </div>
+            </div>
+
+            <div class="dashboard-grid">
+
+                <!-- Left Column: Top Pick & Details -->
+                <div class="detail-column">
+                    <!-- Top Pick Card -->
+                    <div class="detail-card glass-card">
+                        <!-- Accent Line -->
+                        <div class="detail-card-bar"></div>
+                        <div class="detail-badge badge-featured" id="dataset-badge">Report Featured</div>
+
+                        <h4 class="model-cat-title" id="selected-category-title">Loading...</h4>
+
+                        <div class="flex flex-col flex-md-row justify-between gap-4 mb-4">
+                            <h2 class="model-name brand-font" id="model-name">Loading...</h2>
+                        </div>
+
+                        <p class="model-desc" id="model-description">
+                            Select a category above to see the model details.
+                        </p>
+
+                        <!-- Quick Stats Grid -->
+                        <div class="stats-grid">
+                            <div class="stat-box">
+                                <span class="stat-label">Key Strength</span>
+                                <span class="stat-value" id="model-strength">-</span>
+                            </div>
+                            <div class="stat-box">
+                                <span class="stat-label">Specs</span>
+                                <span class="stat-value" id="model-specs">-</span>
+                            </div>
+                            <div class="stat-box">
+                                <span class="stat-label">License</span>
+                                <span class="stat-value" id="model-license">-</span>
+                            </div>
+                            <div class="stat-box">
+                                <span class="stat-label">Provider</span>
+                                <span class="stat-value" id="model-provider">-</span>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-3">
+                            <a id="model-link" href="https://vidismart.com" target="_blank" rel="noopener noreferrer"
+                                class="cta-btn" style="text-decoration: none;">
+                                View Specs <span style="opacity: 0.75;">↗</span>
+                            </a>
+                            <span style="font-size: 0.75rem; color: var(--slate-400);">*Availability subject to
+                                provider</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column: Visualization -->
+                <div class="chart-column">
+                    <div class="chart-box glass-card">
+                        <div style="margin-bottom: 1.5rem; text-align: center;">
+                            <h3 class="brand-font"
+                                style="font-size: 1.125rem; font-weight: bold; color: var(--slate-900);">Performance
+                                Radar</h3>
+                            <p style="font-size: 0.875rem; color: var(--slate-500);">Relative Capability Score (0-100)
+                            </p>
+                        </div>
+
+                        <!-- Chart Wrapper -->
+                        <div class="chart-wrapper">
+                            <canvas id="comparisonChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 1: The Original 6 -->
+        <section id="featured" class="section-featured">
+            <div class="container">
+                <div class="section-header">
+                    <div>
+                        <div class="flex items-center gap-2" style="margin-bottom: 0.5rem;">
+                            <span class="section-badge blue">PART 1</span>
+                            <h2 class="section-h2 brand-font">The Original 6</h2>
+                        </div>
+                        <p style="color: var(--slate-600);">The core models featured in the video report.</p>
+                    </div>
+                </div>
+
+                <!-- Grid -->
+                <div class="market-grid" id="originals-grid">
+                    <!-- Cards injected by JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2: Extended Market -->
+        <section id="extended" class="section-market">
+            <div class="container">
+                <div class="section-header">
+                    <div>
+                        <div class="flex items-center gap-2" style="margin-bottom: 0.5rem;">
+                            <span class="section-badge">PART 2</span>
+                            <h2 class="section-h2 brand-font">Extended Market Ecosystem</h2>
+                        </div>
+                        <p style="color: var(--slate-600);">Compare the originals against the rest of the open source
+                            giants.</p>
+                    </div>
+                    <!-- Filter for Extended -->
+                    <div class="flex gap-2">
+                        <button onclick="filterExtended('all')" class="filter-btn">All</button>
+                        <button onclick="filterExtended('coding')" class="filter-btn">Coding</button>
+                        <button onclick="filterExtended('image')" class="filter-btn">Image</button>
+                    </div>
+                </div>
+
+                <!-- Grid -->
+                <div class="market-grid extended" id="market-grid">
+                    <!-- Cards injected by JS -->
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer glass-card">
+        <div class="container">
+            <div class="flex items-center justify-center gap-2 mb-4" style="margin-bottom: 1rem;">
+                <div
+                    style="width: 1.5rem; height: 1.5rem; background: #001f3f; border-radius: 4px; color: #005b96; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.75rem; font-family: var(--font-kumbh);">
+                    VS</div>
+                <span style="font-weight: bold; font-family: var(--font-kumbh); font-size: 1.25rem;"><span
+                        class="vidi-brand">Vidi</span><span class="smart-brand">Smart</span></span>
+            </div>
+            <p style="font-size: 0.875rem; color: var(--slate-500); max-width: 28rem; margin: 0 auto 1.5rem auto;">
+                The comprehensive guide to open models. Combining the "Original 6" report with broader market data.
+            </p>
+            <div style="font-size: 0.75rem; color: var(--slate-400);">
+                &copy; 2026 <span class="vidi-brand">Vidi</span><span class="smart-brand">Smart</span> Ultimate Report.
+            </div>
+        </div>
+    </footer>
+
+    <!-- Logic -->
+    <script>
+        // --- DATASET 1: THE ORIGINAL 6 ---
+        const originalModels = {
+            'opencode_zen': {
+                id: 'opencode_zen',
+                name: 'OpenCode Zen',
+                provider: 'OpenCode Fdn',
+                url: 'https://vidismart.com/AI_Models_2026.html#gpt-oss-120b',
+                strength: 'Pure Python/Rust',
+                specs: 'MoE Arch',
+                license: 'Apache 2.0',
+                desc: 'The "Zen" model. Optimized specifically for clean, maintainable code generation, eliminating boilerplate.',
+                tags: ['coding'],
+                stats: [98, 90, 85, 60, 80]
+            },
+            'big_pickle': {
+                id: 'big_pickle',
+                name: 'Big Pickle',
+                provider: 'PickleAI',
+                url: 'https://vidismart.com/AI_Models_2026.html#hermes-3-405b',
+                strength: 'Creative Writing',
+                specs: 'Dense 70B',
+                license: 'Community',
+                desc: 'A massive community favorite. Renowned for its flavor in creative writing, refusing to be sterile.',
+                tags: ['creative'],
+                stats: [75, 80, 95, 90, 70]
+            },
+            'glm_47': {
+                id: 'glm_47',
+                name: 'GLM-4.7',
+                provider: 'Zhipu AI',
+                url: 'https://vidismart.com/AI_Models_2026.html#glm-4.5-air',
+                strength: 'Multilingual RAG',
+                specs: 'Transformer++',
+                license: 'Open Weights',
+                desc: 'Excels at processing massive amounts of text for news and current events.',
+                tags: ['news'],
+                stats: [88, 85, 90, 75, 92]
+            },
+            'gpt_5_nano': {
+                id: 'gpt_5_nano',
+                name: 'GPT-5 Nano',
+                provider: 'OpenAI (Leaked)',
+                url: 'https://vidismart.com/AI_Models_2026.html#gemma-3-27b',
+                strength: 'Edge Intelligence',
+                specs: 'Nano-Transformer',
+                license: 'Research',
+                desc: 'Brings near-GPT-4 level reasoning to devices as small as a smartphone, entirely offline.',
+                tags: ['local'],
+                stats: [85, 98, 70, 60, 75]
+            },
+            'grok_code_fast': {
+                id: 'grok_code_fast',
+                name: 'Grok Code Fast 1',
+                provider: 'xAI',
+                url: 'https://vidismart.com/AI_Models_2026.html#qwen3-coder-480b',
+                strength: 'Real-time Dev',
+                specs: 'Sparse Attn',
+                license: 'Apache 2.0',
+                desc: 'Built for speed. Designed to autocomplete code in your IDE with near-zero latency.',
+                tags: ['coding', 'speed'],
+                stats: [92, 100, 80, 50, 85]
+            },
+            'minimax_m21': {
+                id: 'minimax_m21',
+                name: 'MiniMax M2.1',
+                provider: 'MiniMax',
+                url: 'https://vidismart.com/AI_Models_2026.html#deepseek-v3',
+                strength: 'Agentic Flow',
+                specs: 'Hybrid Arch',
+                license: 'Open Access',
+                desc: 'A powerhouse for agents. Tuned for function calling and multi-step complex tasks.',
+                tags: ['agent'],
+                stats: [90, 85, 85, 70, 98]
+            }
+        };
+
+        const originalCategories = {
+            coding: { id: 'coding', label: 'Zen Coding', icon: '💻', modelKey: 'opencode_zen' },
+            creative: { id: 'creative', label: 'Storytelling', icon: '🥒', modelKey: 'big_pickle' },
+            rag: { id: 'rag', label: 'News / RAG', icon: '🌐', modelKey: 'glm_47' },
+            local: { id: 'local', label: 'Mobile Edge', icon: '📱', modelKey: 'gpt_5_nano' },
+            speed: { id: 'speed', label: 'Fast Code', icon: '⚡', modelKey: 'grok_code_fast' },
+            agent: { id: 'agent', label: 'Agents', icon: '🤖', modelKey: 'minimax_m21' }
+        };
+
+        // --- DATASET 2: MARKET LEADERS ---
+        const marketModels = {
+            'llama3': {
+                id: 'llama3',
+                name: 'Llama 3.1 70B',
+                provider: 'Meta',
+                url: 'https://llama.meta.com',
+                strength: 'General Purpose',
+                specs: '70B Params',
+                license: 'Llama Comm.',
+                desc: 'The industry standard for open weights. unmatched reasoning.',
+                tags: ['writing', 'agent'],
+                stats: [95, 85, 90, 80, 92]
+            },
+            'deepseek': {
+                id: 'deepseek',
+                name: 'DeepSeek V2',
+                provider: 'DeepSeek',
+                url: 'https://deepseek.com',
+                strength: 'Complex Code',
+                specs: '236B MoE',
+                license: 'DeepSeek',
+                desc: 'The coding king of the previous generation.',
+                tags: ['coding'],
+                stats: [90, 70, 98, 0, 85]
+            },
+            'flux': {
+                id: 'flux',
+                name: 'Flux.1 Schnell',
+                provider: 'Black Forest',
+                url: 'https://blackforestlabs.ai',
+                strength: 'Image Gen',
+                specs: '12B Params',
+                license: 'Apache 2.0',
+                desc: 'Photorealistic image generation at speed.',
+                tags: ['image'],
+                stats: [0, 95, 0, 98, 0]
+            },
+            'mistral': {
+                id: 'mistral',
+                name: 'Mistral Large 2',
+                provider: 'Mistral AI',
+                url: 'https://mistral.ai',
+                strength: 'Reasoning',
+                specs: '123B Params',
+                license: 'Research',
+                desc: 'European excellence in logic and multilingual tasks.',
+                tags: ['writing', 'news'],
+                stats: [94, 75, 88, 0, 90]
+            },
+            'gemma': {
+                id: 'gemma',
+                name: 'Gemma 2 27B',
+                provider: 'Google',
+                url: 'https://ai.google.dev/gemma',
+                strength: 'Logic',
+                specs: '27B Params',
+                license: 'Gemma',
+                desc: 'Punches above its weight class.',
+                tags: ['writing', 'local'],
+                stats: [88, 90, 80, 0, 75]
+            },
+            'sdxl': {
+                id: 'sdxl',
+                name: 'SDXL',
+                provider: 'Stability',
+                url: 'https://stability.ai',
+                strength: 'Custom Art',
+                specs: '6.6B Params',
+                license: 'OpenRAIL',
+                desc: 'The classic for fine-tuning.',
+                tags: ['image'],
+                stats: [0, 85, 0, 90, 0]
+            },
+            'qwen': {
+                id: 'qwen',
+                name: 'Qwen 2.5 72B',
+                provider: 'Alibaba',
+                url: 'https://github.com/QwenLM/Qwen',
+                strength: 'Math/Code',
+                specs: '72B Params',
+                license: 'Apache 2.0',
+                desc: 'Excellent math and coding capabilities.',
+                tags: ['coding'],
+                stats: [92, 85, 94, 0, 88]
+            }
+        };
+
+        const marketCategories = {
+            writing: { id: 'writing', label: 'Writing', icon: '✍️', modelKey: 'llama3' },
+            coding: { id: 'coding', label: 'Coding', icon: '💻', modelKey: 'deepseek' },
+            image: { id: 'image', label: 'Images', icon: '🎨', modelKey: 'flux' },
+            agent: { id: 'agent', label: 'Agents', icon: '🤖', modelKey: 'mistral' },
+            local: { id: 'local', label: 'Local', icon: '⚡', modelKey: 'gemma' }
+        };
+
+        // --- State ---
+        let activeDataset = 'originals'; // 'originals' or 'market'
+        let currentCategoryKey = 'coding';
+        let radarChart = null;
+
+        // --- Core Functions ---
+
+        function setDataset(type) {
+            activeDataset = type;
+
+            // Toggle UI Buttons
+            const btnOrig = document.getElementById('btn-originals');
+            const btnMark = document.getElementById('btn-market');
+
+            if (type === 'originals') {
+                btnOrig.className = "toggle-btn active";
+                btnMark.className = "toggle-btn inactive";
+                currentCategoryKey = 'coding'; // Reset default
+            } else {
+                btnMark.className = "toggle-btn active";
+                btnOrig.className = "toggle-btn inactive";
+                currentCategoryKey = 'writing'; // Reset default
+            }
+
+            renderDashboardNav();
+            updateDashboard(currentCategoryKey);
+        }
+
+        function renderDashboardNav() {
+            const container = document.getElementById('task-buttons');
+            container.innerHTML = '';
+
+            const cats = activeDataset === 'originals' ? originalCategories : marketCategories;
+
+            Object.values(cats).forEach(cat => {
+                const btn = document.createElement('button');
+                const isActive = cat.id === currentCategoryKey;
+                btn.className = `nav-btn ${isActive ? 'active-tab' : 'inactive-tab'}`;
+                btn.innerHTML = `<span class="nav-btn-icon">${cat.icon}</span><span class="nav-btn-label">${cat.label}</span>`;
+                btn.onclick = () => updateDashboard(cat.id);
+                container.appendChild(btn);
+            });
+        }
+
+        function updateDashboard(catId) {
+            currentCategoryKey = catId;
+            renderDashboardNav(); // refresh active state
+
+            const cats = activeDataset === 'originals' ? originalCategories : marketCategories;
+            const data = activeDataset === 'originals' ? originalModels : marketModels;
+
+            const category = cats[catId];
+            const model = data[category.modelKey];
+
+            // Badge Update
+            const badge = document.getElementById('dataset-badge');
+            if (activeDataset === 'originals') {
+                badge.textContent = "Report Featured";
+                badge.className = "detail-badge badge-featured";
+            } else {
+                badge.textContent = "Market Leader";
+                badge.className = "detail-badge badge-market";
+            }
+
+            // Text Updates
+            document.getElementById('selected-category-title').textContent = category.label;
+            document.getElementById('model-name').textContent = model.name;
+            document.getElementById('model-description').textContent = model.desc;
+            document.getElementById('model-strength').textContent = model.strength;
+            document.getElementById('model-specs').textContent = model.specs;
+            document.getElementById('model-license').textContent = model.license;
+            document.getElementById('model-provider').textContent = model.provider;
+            document.getElementById('model-link').href = model.url || 'https://vidismart.com';
+
+            updateChart(model);
+        }
+
+        function updateChart(model) {
+            const ctx = document.getElementById('comparisonChart');
+            if (!ctx) return;
+
+            const labels = ['Coding', 'Speed', 'Reasoning', 'Creativity', 'Tools'];
+
+            // Color Logic
+            let mainColor, mainBorder;
+            if (activeDataset === 'originals') {
+                mainColor = 'rgba(99, 102, 241, 0.6)'; // Indigo
+                mainBorder = '#6366f1';
+            } else {
+                mainColor = 'rgba(71, 85, 105, 0.6)'; // Slate
+                mainBorder = '#334155';
+            }
+
+            // Fake Avg Data for comparison
+            const avgStats = [80, 80, 80, 80, 80];
+
+            const data = {
+                labels: labels,
+                datasets: [
+                    {
+                        label: model.name,
+                        data: model.stats,
+                        fill: true,
+                        backgroundColor: mainColor,
+                        borderColor: mainBorder,
+                        pointBackgroundColor: mainBorder,
+                        pointBorderColor: '#fff',
+                        borderWidth: 2
+                    },
+                    {
+                        label: 'Avg',
+                        data: avgStats,
+                        fill: true,
+                        backgroundColor: 'transparent',
+                        borderColor: 'rgba(148, 163, 184, 0.5)',
+                        pointBackgroundColor: 'transparent',
+                        pointBorderColor: 'transparent',
+                        borderDash: [5, 5],
+                        borderWidth: 1
+                    }
+                ]
+            };
+
+            if (radarChart) {
+                radarChart.data = data;
+                radarChart.update();
+            } else {
+                radarChart = new Chart(ctx, {
+                    type: 'radar',
+                    data: data,
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        elements: { line: { borderWidth: 2 } },
+                        scales: {
+                            r: {
+                                angleLines: { color: 'rgba(0,0,0,0.1)' },
+                                grid: { color: 'rgba(0,0,0,0.1)' },
+                                suggestedMin: 0,
+                                suggestedMax: 100,
+                                ticks: { display: false },
+                                pointLabels: { font: { size: 11, family: 'Outfit' }, color: '#475569' }
+                            }
+                        },
+                        plugins: {
+                            legend: { position: 'bottom', labels: { font: { family: 'Outfit', size: 12 }, boxWidth: 10, usePointStyle: true, color: '#1e293b' } }
+                        }
+                    }
+                });
+            }
+        }
+
+        // --- Library Rendering ---
+        function renderOriginals() {
+            const grid = document.getElementById('originals-grid');
+            if (!grid) return;
+            Object.values(originalModels).forEach(model => {
+                grid.appendChild(createCard(model, 'indigo'));
+            });
+        }
+
+        function renderMarket() {
+            const grid = document.getElementById('market-grid');
+            if (!grid) return;
+            grid.innerHTML = ''; // Clear for filter
+            Object.values(marketModels).forEach(model => {
+                grid.appendChild(createCard(model, 'slate'));
+            });
+        }
+
+        function createCard(model, colorTheme) {
+            const card = document.createElement('div');
+
+            // Pure CSS Class Logic
+            card.classList.add('market-card');
+            card.classList.add(colorTheme === 'indigo' ? 'theme-indigo' : 'theme-slate');
+            card.dataset.tags = model.tags.join(',');
+
+            // Dynamic text colors handled via specific class assignments or helpers
+            const providerClass = colorTheme === 'indigo' ? 'text-indigo' : 'text-slate';
+
+            card.innerHTML = `
+                <a href="${model.url}" target="_blank" rel="noopener noreferrer" style="text-decoration: none; color: inherit; display: flex; flex-direction: column; height: 100%;">
+                    <div class="flex justify-between items-start" style="margin-bottom: 0.75rem;">
+                        <div>
+                            <h4 class="brand-font">${model.name}</h4>
+                            <span class="card-provider ${providerClass}">${model.provider}</span>
+                        </div>
+                    </div>
+                    <p class="card-desc">${model.desc}</p>
+                    <div class="card-tags">
+                        ${model.tags.map(tag => `<span class="card-tag">${tag}</span>`).join('')}
+                    </div>
+                    <div class="card-footer">
+                        <span class="license-text">${model.license}</span>
+                        <span class="smart-brand" style="font-weight: bold; font-size: 0.875rem;">View &rarr;</span>
+                    </div>
+                </a>
+            `;
+            return card;
+        }
+
+        function filterExtended(tag) {
+            const grid = document.getElementById('market-grid');
+            const cards = grid.querySelectorAll('.market-card');
+            cards.forEach(card => {
+                const tags = card.dataset.tags.split(',');
+                if (tag === 'all' || tags.includes(tag)) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        function scrollToSection(id) {
+            const el = document.getElementById(id);
+            if (el) el.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // --- Init ---
+        window.onload = () => {
+            setDataset('originals'); // Default to Originals
+            renderOriginals();
+            renderMarket();
+
+            // Fade out loader
+            const loader = document.getElementById('app-loading');
+            if (loader) {
+                setTimeout(() => {
+                    loader.style.opacity = '0';
+                    setTimeout(() => loader.style.display = 'none', 500);
+                }, 600);
+            }
+        };
+    </script>
+</body>
+
+</html>

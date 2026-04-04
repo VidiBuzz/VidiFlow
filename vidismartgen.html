@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vidi.NEWS | SmartGen 3.0 Modules</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* Updated Font Import: Added Kumbh Sans */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Kumbh+Sans:wght@300;400;600;700;800;900&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F5F5F2;
+            color: #1F2937;
+        }
+
+        @import url('https://fonts.googleapis.com/css2?family=Kumbh+Sans:wght@300;400;700;900&family=Inter:wght@300;400;500;600&family=Outfit:wght@400;700&display=swap');
+
+        :root {
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at top right, #1e1b4b, #0f172a, #000000);
+            min-height: 100vh;
+            color: #f3f4f6;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5 {
+            font-family: 'Kumbh Sans', sans-serif;
+        }
+
+        /* Glassmorphism Utilities */
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--glass-shadow);
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .glass-card:hover {
+            transform: translateY(-5px) scale(1.02);
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 20px rgba(249, 115, 22, 0.1);
+        }
+
+        /* Animations */
+        @keyframes float {
+            0% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+
+            100% {
+                transform: translateY(0px);
+            }
+        }
+
+        .animate-float {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes glow {
+
+            0%,
+            100% {
+                box-shadow: 0 0 5px rgba(249, 115, 22, 0.2);
+            }
+
+            50% {
+                box-shadow: 0 0 20px rgba(249, 115, 22, 0.6);
+            }
+        }
+
+        .animate-glow {
+            animation: glow 3s infinite;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #374151;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #ea580c;
+        }
+
+        /* Utility Classes */
+        .nav-item.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            border-left: 4px solid #EA580C;
+            /* Orange Accent */
+        }
+
+        .animate-fade-in {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* 3D Arrow Connector */
+        .connector-arrow {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            z-index: 20;
+            position: absolute;
+        }
+
+        @media (min-width: 1024px) {
+            .connector-arrow {
+                top: 50%;
+                left: -20px;
+                transform: translateY(-50%);
+            }
+        }
+
+        @media (max-width: 1023px) {
+            .connector-arrow {
+                top: -20px;
+                left: 50%;
+                transform: translateX(-50%) rotate(90deg);
+            }
+        }
+    </style>
+    <!-- Three.js & Globe.gl -->
+    <script src="https://unpkg.com/three"></script>
+    <script src="https://unpkg.com/globe.gl"></script>
+</head>
+
+<body class="selection:bg-orange-500 selection:text-white">
+
+    <!-- Background Decoration -->
+    <div class="fixed top-0 left-0 w-full h-full overflow-hidden pointer-events-none -z-10">
+        <div
+            class="absolute top-[-10%] right-[-5%] w-[500px] h-[500px] bg-purple-600 rounded-full mix-blend-multiply filter blur-[128px] opacity-20 animate-float">
+        </div>
+        <div class="absolute bottom-[-10%] left-[-10%] w-[600px] h-[600px] bg-orange-600 rounded-full mix-blend-multiply filter blur-[128px] opacity-20 animate-float"
+            style="animation-delay: 2s"></div>
+    </div>
+
+    <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar Navigation -->
+        <aside class="w-64 glass-panel flex flex-col z-20 m-4 rounded-2xl border border-gray-700/30">
+            <div class="p-6 border-b border-gray-700/50">
+                <!-- Updated Logo Typography -->
+                <h1 class="text-3xl font-black text-white tracking-tighter"
+                    style="font-family: 'Kumbh Sans', sans-serif; text-shadow: 0 4px 20px rgba(0,0,0,0.5);">
+                    <i class="fas fa-brain text-orange-500 mr-2 animate-pulse"></i>Vidi.<span
+                        class="font-light">NEWS</span>
+                    <span
+                        class="font-bold text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-purple-400 block mt-1 tracking-wide uppercase shadow-none"
+                        style="font-family: 'Outfit', sans-serif; font-size: 14pt; letter-spacing: 0.05em;">SmartGen
+                        3.0</span>
+                </h1>
+            </div>
+            <nav class="flex-1 overflow-y-auto py-4 px-2 space-y-1">
+
+                <div class="px-4 text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 font-mono">SmartGen 3.0
+                </div>
+
+                <a onclick="switchView('crm')" id="nav-crm"
+                    class="nav-item group flex items-center px-4 py-3 text-sm font-medium rounded-xl cursor-pointer transition-all duration-200 text-gray-300 hover:bg-white/10 hover:text-white glass-card mt-2 active">
+                    <div
+                        class="mr-3 p-1.5 rounded-lg bg-gray-800 text-blue-500 group-hover:bg-blue-500 group-hover:text-white transition-colors shadow-lg">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    VidiCRM
+                </a>
+                <a onclick="switchView('cx')" id="nav-cx"
+                    class="nav-item group flex items-center px-4 py-3 text-sm font-medium rounded-xl cursor-pointer transition-all duration-200 text-gray-300 hover:bg-white/10 hover:text-white glass-card mt-2">
+                    <div
+                        class="mr-3 p-1.5 rounded-lg bg-gray-800 text-yellow-500 group-hover:bg-yellow-500 group-hover:text-white transition-colors shadow-lg">
+                        <i class="fas fa-headset"></i>
+                    </div>
+                    VidiSmart CX
+                </a>
+                <a onclick="switchView('vidiflow')" id="nav-vidiflow"
+                    class="nav-item group flex items-center px-4 py-3 text-sm font-medium rounded-xl cursor-pointer transition-all duration-200 text-gray-300 hover:bg-white/10 hover:text-white glass-card mt-2">
+                    <div
+                        class="mr-3 p-1.5 rounded-lg bg-gray-800 text-indigo-500 group-hover:bg-indigo-500 group-hover:text-white transition-colors shadow-lg">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    VidiFlow
+                </a>
+                <a onclick="switchView('vidishop')" id="nav-vidishop"
+                    class="nav-item group flex items-center px-4 py-3 text-sm font-medium rounded-xl cursor-pointer transition-all duration-200 text-gray-300 hover:bg-white/10 hover:text-white glass-card mt-2">
+                    <div
+                        class="mr-3 p-1.5 rounded-lg bg-gray-800 text-green-500 group-hover:bg-green-500 group-hover:text-white transition-colors shadow-lg">
+                        <i class="fas fa-shopping-cart"></i>
+                    </div>
+                    VidiShop
+                </a>
+
+                <div class="my-4 border-t border-gray-700/50 mx-4"></div>
+                <a href="vidi.news.platform.html"
+                    class="nav-item group flex items-center px-4 py-3 text-sm font-medium rounded-xl cursor-pointer transition-all duration-200 text-gray-400 hover:bg-white/10 hover:text-white glass-card mt-2">
+                    <div
+                        class="mr-3 p-1.5 rounded-lg bg-gray-800 text-gray-500 group-hover:text-white transition-colors shadow-lg">
+                        <i class="fas fa-arrow-left"></i>
+                    </div>
+                    Back to Main Platform
+                </a>
+            </nav>
+            <div class="p-4 border-t border-gray-700/50">
+                <button onclick="toggleMobileNav()"
+                    class="w-full py-2 px-4 glass-card text-gray-400 hover:text-white rounded-lg text-sm transition-colors text-center">
+                    <i class="fas fa-bars mr-2"></i> Mobile Menu
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main
+            class="flex-1 overflow-y-auto relative z-10 m-4 rounded-2xl border border-gray-700/30 glass-panel shadow-2xl">
+            <div class="max-w-7xl mx-auto px-8 py-8">
+                <!-- Mobile Header -->
+                <div
+                    class="md:hidden glass-panel p-4 border-b border-gray-200 flex justify-between items-center sticky top-0 z-20">
+                    <div class="flex items-center gap-2">
+                        <span class="font-black text-xl text-gray-100" style="font-family: 'Kumbh Sans', sans-serif;">
+                            <i class="fas fa-brain text-orange-500 mr-1"></i>Vidi.<span class="font-light">NEWS</span>
+                        </span>
+                        <span class="text-gray-500">|</span>
+                        <span class="font-black text-lg text-gray-100" style="font-family: 'Kumbh Sans', sans-serif;">
+                            <i class="fas fa-city text-purple-500 mr-1"></i>Vidi.<span class="font-light">CITY</span>
+                        </span>
+                    </div>
+                    <span class="text-xs text-orange-400 font-bold uppercase">SmartGen</span>
+                    <button onclick="toggleMobileNav()" class="text-gray-300"><i class="fas fa-bars"></i></button>
+                </div>
+
+                <!-- Mobile Nav Menu (Hidden by default) -->
+                <div id="mobile-nav"
+                    class="hidden md:hidden absolute top-14 left-0 w-full glass-panel border-b border-gray-200 z-20 shadow-lg">
+                    <button onclick="switchView('crm'); toggleMobileNav()"
+                        class="block w-full text-left px-4 py-3 hover:bg-white/10">VidiCRM</button>
+                    <button onclick="switchView('cx'); toggleMobileNav()"
+                        class="block w-full text-left px-4 py-3 hover:bg-white/10">VidiSmart CX</button>
+                    <button onclick="switchView('vidiflow'); toggleMobileNav()"
+                        class="block w-full text-left px-4 py-3 hover:bg-white/10">VidiFlow</button>
+                    <button onclick="switchView('vidishop'); toggleMobileNav()"
+                        class="block w-full text-left px-4 py-3 hover:bg-white/10">VidiShop</button>
+                </div>
+
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+                    <!-- SECTION: VIDI CRM -->
+                    <section id="view-crm" class="space-y-6 animate-fade-in">
+                        <div class="glass-panel rounded-xl shadow-sm p-6 border border-gray-100">
+                            <h2 class="text-2xl font-bold text-white mb-2">VidiCRM: Client & Campaign Management</h2>
+                            <p class="text-gray-300">The central nervous system for managing clients, leads, and "Smart
+                                Channel"
+                                campaigns.</p>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="glass-panel p-6 rounded-xl border border-gray-100">
+                                <h4 class="font-bold mb-4 flex items-center text-blue-600"><i
+                                        class="fas fa-users mr-2"></i>
+                                    Client
+                                    Management</h4>
+                                <ul class="space-y-3 text-sm text-gray-300">
+                                    <li><i class="fas fa-check text-green-500 mr-2"></i> <strong>Unified
+                                            Profile:</strong>
+                                        360-degree view of client interactions.</li>
+                                    <li><i class="fas fa-check text-green-500 mr-2"></i> <strong>Smart
+                                            Segmentation:</strong> AI
+                                        auto-groups clients by behavior.</li>
+                                    <li><i class="fas fa-check text-green-500 mr-2"></i> <strong>Directus Auth:</strong>
+                                        Secure,
+                                        role-based access for all users.</li>
+                                </ul>
+
+                                <!-- CLIENT LIFECYCLE VISUALIZATION -->
+                                <div
+                                    class="mt-8 bg-gray-900 rounded-xl p-4 border border-gray-700 relative overflow-hidden">
+                                    <h3 class="text-white font-bold mb-4"><i
+                                            class="fas fa-user-circle text-blue-500 mr-2"></i>Client Lifecycle Pipeline
+                                    </h3>
+
+                                    <!-- Lifecycle Stages -->
+                                    <div class="flex items-center justify-between gap-2">
+                                        <div class="flex-1 text-center group cursor-pointer">
+                                            <div class="w-12 h-12 mx-auto rounded-full bg-gradient-to-br from-blue-600 to-blue-400 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform shadow-lg">
+                                                <i class="fas fa-user-plus text-white"></i>
+                                            </div>
+                                            <span class="text-xs text-gray-400 block">Lead</span>
+                                            <span class="text-xs text-blue-400 font-bold">2,847</span>
+                                        </div>
+                                        <i class="fas fa-chevron-right text-gray-600"></i>
+                                        <div class="flex-1 text-center group cursor-pointer">
+                                            <div class="w-12 h-12 mx-auto rounded-full bg-gradient-to-br from-yellow-600 to-yellow-400 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform shadow-lg">
+                                                <i class="fas fa-handshake text-white"></i>
+                                            </div>
+                                            <span class="text-xs text-gray-400 block">Prospect</span>
+                                            <span class="text-xs text-yellow-400 font-bold">1,423</span>
+                                        </div>
+                                        <i class="fas fa-chevron-right text-gray-600"></i>
+                                        <div class="flex-1 text-center group cursor-pointer">
+                                            <div class="w-12 h-12 mx-auto rounded-full bg-gradient-to-br from-green-600 to-green-400 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform shadow-lg animate-pulse">
+                                                <i class="fas fa-star text-white"></i>
+                                            </div>
+                                            <span class="text-xs text-gray-400 block">Customer</span>
+                                            <span class="text-xs text-green-400 font-bold">892</span>
+                                        </div>
+                                        <i class="fas fa-chevron-right text-gray-600"></i>
+                                        <div class="flex-1 text-center group cursor-pointer">
+                                            <div class="w-12 h-12 mx-auto rounded-full bg-gradient-to-br from-purple-600 to-purple-400 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform shadow-lg">
+                                                <i class="fas fa-crown text-white"></i>
+                                            </div>
+                                            <span class="text-xs text-gray-400 block">Advocate</span>
+                                            <span class="text-xs text-purple-400 font-bold">156</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="mt-4 pt-3 border-t border-gray-700 flex justify-between text-xs text-gray-500">
+                                        <span><i class="fas fa-chart-line text-green-500 mr-1"></i> 31% conversion rate</span>
+                                        <span><i class="fas fa-clock text-blue-500 mr-1"></i> Avg 14 days to convert</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="glass-panel p-6 rounded-xl border border-gray-100">
+                                <h4 class="font-bold mb-4 flex items-center text-orange-600"><i
+                                        class="fas fa-bullhorn mr-2"></i>
+                                    SmartChannel Manager</h4>
+                                <ul class="space-y-3 text-sm text-gray-300">
+                                    <li><i class="fas fa-check text-green-500 mr-2"></i> <strong>Campaign
+                                            Builder:</strong>
+                                        Define
+                                        "30+ Facets" used for targeting.</li>
+                                    <li><i class="fas fa-check text-green-500 mr-2"></i> <strong>Multi-Channel
+                                            Push:</strong>
+                                        Deploy
+                                        to WordPress, Astro, & Socials.</li>
+                                    <li><i class="fas fa-check text-green-500 mr-2"></i> <strong>Performance
+                                            Tracking:</strong>
+                                        Real-time ROI analysis.</li>
+                                </ul>
+
+                                <!-- MULTI-CHANNEL CAMPAIGN ANALYTICS -->
+                                <div class="mt-8 bg-gray-900 rounded-xl p-4 border border-gray-700">
+                                    <h3 class="text-white font-bold mb-4"><i
+                                            class="fas fa-chart-bar text-orange-500 mr-2"></i>Active Campaign Channels
+                                    </h3>
+
+                                    <!-- Channel Performance Bars -->
+                                    <div class="space-y-3">
+                                        <div class="group cursor-pointer">
+                                            <div class="flex justify-between text-xs mb-1">
+                                                <span class="text-gray-400"><i class="fab fa-wordpress text-blue-400 mr-2"></i>WordPress</span>
+                                                <span class="text-blue-400 font-bold">12.4K views</span>
+                                            </div>
+                                            <div class="h-2 bg-gray-700 rounded-full overflow-hidden">
+                                                <div class="h-full bg-gradient-to-r from-blue-600 to-blue-400 rounded-full group-hover:animate-pulse" style="width: 85%"></div>
+                                            </div>
+                                        </div>
+                                        <div class="group cursor-pointer">
+                                            <div class="flex justify-between text-xs mb-1">
+                                                <span class="text-gray-400"><i class="fab fa-youtube text-red-500 mr-2"></i>YouTube</span>
+                                                <span class="text-red-400 font-bold">8.7K views</span>
+                                            </div>
+                                            <div class="h-2 bg-gray-700 rounded-full overflow-hidden">
+                                                <div class="h-full bg-gradient-to-r from-red-600 to-red-400 rounded-full group-hover:animate-pulse" style="width: 65%"></div>
+                                            </div>
+                                        </div>
+                                        <div class="group cursor-pointer">
+                                            <div class="flex justify-between text-xs mb-1">
+                                                <span class="text-gray-400"><i class="fab fa-instagram text-pink-500 mr-2"></i>Instagram</span>
+                                                <span class="text-pink-400 font-bold">6.2K views</span>
+                                            </div>
+                                            <div class="h-2 bg-gray-700 rounded-full overflow-hidden">
+                                                <div class="h-full bg-gradient-to-r from-pink-600 to-purple-400 rounded-full group-hover:animate-pulse" style="width: 48%"></div>
+                                            </div>
+                                        </div>
+                                        <div class="group cursor-pointer">
+                                            <div class="flex justify-between text-xs mb-1">
+                                                <span class="text-gray-400"><i class="fas fa-rocket text-orange-500 mr-2"></i>Astro Sites</span>
+                                                <span class="text-orange-400 font-bold">4.1K views</span>
+                                            </div>
+                                            <div class="h-2 bg-gray-700 rounded-full overflow-hidden">
+                                                <div class="h-full bg-gradient-to-r from-orange-600 to-orange-400 rounded-full group-hover:animate-pulse" style="width: 32%"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="mt-4 pt-3 border-t border-gray-700 flex justify-between text-xs text-gray-500">
+                                        <span><i class="fas fa-sync text-green-500 mr-1 animate-spin"></i> Live sync active</span>
+                                        <span class="text-green-400"><i class="fas fa-arrow-up mr-1"></i>+23% this week</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- SECTION: VIDISMART CX -->
+                    <section id="view-cx" class="hidden space-y-6 animate-fade-in">
+                        <div class="glass-panel rounded-xl shadow-sm p-6 border border-gray-100">
+                            <h2 class="text-2xl font-bold text-white mb-2">VidiSmart CX: Analytics & Agent Force</h2>
+                            <p class="text-gray-300">Deep insights powered by AI agents that actively optimize customer
+                                experience.
+                            </p>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div class="bg-purple-50 p-6 rounded-xl border border-purple-100 text-center">
+                                <i class="fas fa-robot text-4xl text-purple-600 mb-4"></i>
+                                <h4 class="font-bold text-purple-900">Agent Force</h4>
+                                <p class="text-xs text-purple-700 mt-2">Autonomous agents that engage leads and optimize
+                                    content
+                                    24/7.</p>
+                            </div>
+                            <div class="bg-blue-50 p-6 rounded-xl border border-blue-100 text-center">
+                                <i class="fas fa-chart-pie text-4xl text-blue-600 mb-4"></i>
+                                <h4 class="font-bold text-blue-900">Predictive CX</h4>
+                                <p class="text-xs text-blue-700 mt-2">Forecasting churn and satisfaction trends using
+                                    Qwen 3
+                                    MoE.
+                                </p>
+                            </div>
+                            <div class="bg-green-50 p-6 rounded-xl border border-green-100 text-center">
+                                <i class="fas fa-stopwatch text-4xl text-green-600 mb-4"></i>
+                                <h4 class="font-bold text-green-900">Real-time Ops</h4>
+                                <p class="text-xs text-green-700 mt-2">Live dashboard of system health and campaign
+                                    pulses.
+                                </p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- SECTION: VIDIFLOW -->
+                    <section id="view-vidiflow" class="hidden space-y-6 animate-fade-in">
+                        <div class="glass-panel rounded-xl shadow-sm p-6 border border-gray-100">
+                            <h2 class="text-2xl font-bold text-white mb-2">VidiFlow: Knowledge & Execution</h2>
+                            <p class="text-gray-300">Our in-house AI-enabled fork of <strong>AppFlowy</strong>. The
+                                brain on
+                                your
+                                desktop & mobile.</p>
+                        </div>
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <div class="glass-panel p-6 rounded-xl border border-gray-100">
+                                <h4 class="font-bold mb-4">Core Capabilities</h4>
+                                <ul class="space-y-3 text-sm text-gray-300">
+                                    <li><i class="fas fa-mobile-alt text-blue-500 mr-2"></i> <strong>Mobile
+                                            Apps:</strong>
+                                        Full
+                                        iOS
+                                        & Android syncing.</li>
+                                    <li><i class="fas fa-brain text-purple-500 mr-2"></i> <strong>Local Knowledge
+                                            Base:</strong>
+                                        Secure interactions with local LLMs.</li>
+                                    <li><i class="fas fa-sticky-note text-yellow-500 mr-2"></i> <strong>Smart
+                                            Notes:</strong> AI
+                                        auto-tags and links your thoughts.</li>
+                                </ul>
+
+                                <!-- KNOWLEDGE SYNC VISUALIZATION -->
+                                <div class="mt-8 bg-gray-900 rounded-xl p-4 border border-gray-700">
+                                    <h3 class="text-white font-bold mb-4"><i
+                                            class="fas fa-project-diagram text-purple-500 mr-2"></i>Knowledge Graph Sync
+                                    </h3>
+
+                                    <!-- Sync Status Cards -->
+                                    <div class="grid grid-cols-2 gap-3">
+                                        <div class="bg-gray-800/50 p-3 rounded-lg border border-gray-700 group hover:border-green-500/50 transition-colors cursor-pointer">
+                                            <div class="flex items-center gap-2 mb-2">
+                                                <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+                                                <span class="text-xs text-gray-400">Local LLM</span>
+                                            </div>
+                                            <div class="text-lg font-bold text-white">Llama 3.2</div>
+                                            <div class="text-xs text-green-400"><i class="fas fa-check-circle mr-1"></i>Active</div>
+                                        </div>
+                                        <div class="bg-gray-800/50 p-3 rounded-lg border border-gray-700 group hover:border-blue-500/50 transition-colors cursor-pointer">
+                                            <div class="flex items-center gap-2 mb-2">
+                                                <div class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></div>
+                                                <span class="text-xs text-gray-400">Vector DB</span>
+                                            </div>
+                                            <div class="text-lg font-bold text-white">Qdrant</div>
+                                            <div class="text-xs text-blue-400">24.8K vectors</div>
+                                        </div>
+                                        <div class="bg-gray-800/50 p-3 rounded-lg border border-gray-700 group hover:border-orange-500/50 transition-colors cursor-pointer">
+                                            <div class="flex items-center gap-2 mb-2">
+                                                <div class="w-2 h-2 rounded-full bg-orange-500 animate-pulse"></div>
+                                                <span class="text-xs text-gray-400">Cloud Sync</span>
+                                            </div>
+                                            <div class="text-lg font-bold text-white">Directus</div>
+                                            <div class="text-xs text-orange-400"><i class="fas fa-sync-alt mr-1 animate-spin"></i>Syncing</div>
+                                        </div>
+                                        <div class="bg-gray-800/50 p-3 rounded-lg border border-gray-700 group hover:border-purple-500/50 transition-colors cursor-pointer">
+                                            <div class="flex items-center gap-2 mb-2">
+                                                <div class="w-2 h-2 rounded-full bg-purple-500 animate-pulse"></div>
+                                                <span class="text-xs text-gray-400">Notes</span>
+                                            </div>
+                                            <div class="text-lg font-bold text-white">1,247</div>
+                                            <div class="text-xs text-purple-400">Auto-tagged</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="mt-4 pt-3 border-t border-gray-700 text-xs text-gray-500">
+                                        <i class="fas fa-shield-alt text-green-500 mr-1"></i> All data encrypted • Local-first architecture
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bg-gray-800 text-white p-6 rounded-xl shadow-lg">
+                                <h4 class="font-bold mb-2 text-green-400">Technical Edge</h4>
+                                <p class="text-sm text-gray-400 mb-4">VidiFlow is not just a notes app. It is the
+                                    <strong>Local
+                                        Controller</strong> for the entire VidiSmart system.
+                                </p>
+                                <div class="code-block bg-black p-3 rounded text-xs font-mono text-green-300">
+                                    > Integrating Local RTX 4090<br>
+                                    > Syncing with Cloud Directus...<br>
+                                    > Status: CONNECTED
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- SECTION: VIDISHOP -->
+                    <section id="view-vidishop" class="hidden space-y-6 animate-fade-in">
+                        <div class="glass-panel rounded-xl shadow-sm p-6 border border-gray-100">
+                            <h2 class="text-2xl font-bold text-white mb-2">VidiShop: Contextual Commerce</h2>
+                            <p class="text-gray-300">Turn every video into a storefront. Use
+                                <strong>VidiCommerce</strong>
+                                to
+                                connect
+                                content to transactions.</p>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="glass-panel p-6 rounded-xl border border-gray-100">
+                                <h4 class="font-bold mb-4 text-green-500"><i class="fas fa-shopping-bag mr-2"></i>
+                                    Instant
+                                    Cart
+                                </h4>
+                                <p class="text-sm text-gray-300 mb-4">
+                                    AI analyzes your video content for products and instantly creates a shopping cart
+                                    overlay.
+                                </p>
+                                <div class="bg-black/40 p-3 rounded-lg border border-green-500/30 text-center">
+                                    <span class="text-xs text-green-400 font-mono">DETECTED: "Sony A7IV Camera"
+                                        (99%)</span>
+                                    <button
+                                        class="mt-2 text-xs bg-green-600 hover:bg-green-500 text-white px-3 py-1 rounded transition">Add
+                                        to Cart</button>
+                                </div>
+                            </div>
+                            <div class="glass-panel p-6 rounded-xl border border-gray-100">
+                                <h4 class="font-bold mb-4 text-green-500"><i class="fas fa-link mr-2"></i> Affiliate
+                                    Swarm
+                                </h4>
+                                <p class="text-sm text-gray-300">
+                                    Automatically inject high-yield affiliate links from Amazon, Shopify, and niche
+                                    networks
+                                    based
+                                    on viewer demographics.
+                                </p>
+                            </div>
+                        </div>
+                    </section>
+
+                </div>
+        </main>
+
+        <script>
+            // --- State Management ---
+            const state = {
+                currentView: 'crm'
+            };
+
+            // --- View Switching Logic ---
+            function switchView(viewName) {
+                // Update State
+                state.currentView = viewName;
+
+                // Update Nav UI
+                document.querySelectorAll('.nav-item').forEach(el => {
+                    el.classList.remove('active', 'bg-white/5', 'text-gray-100', 'border-l-4', 'border-orange-600');
+                    el.classList.add('text-gray-300');
+                });
+                const activeBtn = document.getElementById(`nav-${viewName}`);
+                if (activeBtn) {
+                    activeBtn.classList.add('active', 'text-gray-100');
+                }
+
+                // Hide all sections
+                ['crm', 'cx', 'vidiflow', 'vidishop'].forEach(v => {
+                    const el = document.getElementById(`view-${v}`);
+                    if (el) el.classList.add('hidden');
+                });
+
+                // Show selected section
+                const activeSection = document.getElementById(`view-${viewName}`);
+                if (activeSection) activeSection.classList.remove('hidden');
+            }
+
+            function toggleMobileNav() {
+                const nav = document.getElementById('mobile-nav');
+                nav.classList.toggle('hidden');
+            }
+        </script>
+</body>
+
+</html>

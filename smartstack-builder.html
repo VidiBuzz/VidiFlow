@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VidiSmart SmartStack Builder | AI-Powered Tech Stack Assembly</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/reactflow@11/dist/umd/index.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reactflow@11/dist/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/react@18/umd/react.production.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Kumbh+Sans:wght@300;400;500;600;700;800;900&display=swap');
+
+        :root {
+            --bg-dark: #020617;
+            --bg-secondary: #0f172a;
+            --accent: #38bdf8;
+            --accent-green: #10b981;
+            --accent-purple: #a855f7;
+        }
+
+        body {
+            background: linear-gradient(135deg, #020617 0%, #0f172a 100%);
+            color: #f1f5f9;
+            font-family: 'Kumbh Sans', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .glass {
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .glow {
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.3);
+        }
+
+        .tech-card {
+            transition: all 0.3s ease;
+            cursor: grab;
+        }
+
+        .tech-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(56, 189, 248, 0.4);
+        }
+
+        .tech-card:active {
+            cursor: grabbing;
+        }
+
+        .category-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            background: rgba(56, 189, 248, 0.1);
+            color: var(--accent);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+        }
+
+        #flowchart-canvas {
+            height: 600px;
+            background: #0a0f1a;
+            border-radius: 1rem;
+            border: 2px solid rgba(56, 189, 248, 0.2);
+        }
+
+        .use-case-card {
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .use-case-card:hover {
+            background: rgba(56, 189, 248, 0.1);
+            border-color: var(--accent);
+        }
+
+        .use-case-card.active {
+            background: rgba(56, 189, 248, 0.2);
+            border-color: var(--accent);
+            border-width: 2px;
+        }
+
+        .pulse-animation {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .ai-thinking {
+            background: linear-gradient(90deg, #a855f7, #ec4899, #f59e0b, #10b981);
+            background-size: 400% 400%;
+            animation: gradient 3s ease infinite;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .stat-box {
+            background: linear-gradient(135deg, rgba(56, 189, 248, 0.1) 0%, rgba(168, 85, 247, 0.1) 100%);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Header -->
+    <header class="glass sticky top-0 z-50 border-b border-slate-800">
+        <div class="container mx-auto px-6 py-4 flex items-center justify-between">
+            <div class="flex items-center gap-4">
+                <img referrerpolicy="no-referrer" src="https://cdn.vidi.news/images/VidiSmart5.png" alt="VidiSmart" class="h-10">
+                <div>
+                    <h1 class="text-2xl font-bold">SmartStack Builder</h1>
+                    <p class="text-xs text-slate-400">AI-Powered Enterprise Tech Stack Assembly</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-4">
+                <div class="stat-box rounded-lg px-4 py-2 text-center">
+                    <div class="text-2xl font-bold text-sky-400" id="tech-count">500+</div>
+                    <div class="text-xs text-slate-400">Technologies</div>
+                </div>
+                <div class="stat-box rounded-lg px-4 py-2 text-center">
+                    <div class="text-2xl font-bold text-emerald-400" id="stack-count">0</div>
+                    <div class="text-xs text-slate-400">Solutions</div>
+                </div>
+                <button id="generate-stack-btn" class="bg-gradient-to-r from-sky-500 to-purple-500 hover:from-sky-400 hover:to-purple-400 text-white px-6 py-2 rounded-full font-bold text-sm uppercase tracking-wider transition-all glow">
+                    <i class="fas fa-magic mr-2"></i>Generate Stack
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="container mx-auto px-6 py-8">
+        <div class="grid grid-cols-12 gap-6">
+
+            <!-- Left Sidebar - Use Cases -->
+            <aside class="col-span-3">
+                <div class="glass rounded-2xl p-6 sticky top-24">
+                    <div class="flex items-center gap-2 mb-6">
+                        <i class="fas fa-lightbulb text-yellow-400 text-xl"></i>
+                        <h2 class="text-lg font-bold">Use Cases</h2>
+                    </div>
+                    <div id="use-cases-list" class="space-y-3 max-h-[calc(100vh-200px)] overflow-y-auto">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Main Content - Flowchart -->
+            <main class="col-span-6">
+                <div class="glass rounded-2xl p-6 mb-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center gap-3">
+                            <i class="fas fa-project-diagram text-sky-400 text-2xl"></i>
+                            <h2 class="text-xl font-bold">Stack Architecture</h2>
+                        </div>
+                        <div class="flex gap-2">
+                            <button id="clear-canvas-btn" class="glass px-4 py-2 rounded-lg text-sm hover:bg-red-500/10 border border-red-500/30 text-red-400">
+                                <i class="fas fa-trash mr-2"></i>Clear
+                            </button>
+                            <button id="export-stack-btn" class="glass px-4 py-2 rounded-lg text-sm hover:bg-emerald-500/10 border border-emerald-500/30 text-emerald-400">
+                                <i class="fas fa-download mr-2"></i>Export
+                            </button>
+                        </div>
+                    </div>
+                    <div id="flowchart-canvas"></div>
+                </div>
+
+                <!-- AI Analysis Panel -->
+                <div class="glass rounded-2xl p-6">
+                    <div class="flex items-center gap-3 mb-4">
+                        <i class="fas fa-brain text-purple-400 text-xl"></i>
+                        <h3 class="text-lg font-bold">AI Analysis</h3>
+                        <div id="ai-status" class="ml-auto text-xs px-3 py-1 rounded-full bg-slate-800 text-slate-400">
+                            Ready
+                        </div>
+                    </div>
+                    <div id="ai-analysis-content" class="text-sm text-slate-300 space-y-2">
+                        <p class="text-slate-400">Select a use case and generate a stack to see AI recommendations.</p>
+                    </div>
+                </div>
+            </main>
+
+            <!-- Right Sidebar - Technology Library -->
+            <aside class="col-span-3">
+                <div class="glass rounded-2xl p-6 sticky top-24">
+                    <div class="flex items-center gap-2 mb-6">
+                        <i class="fas fa-cube text-sky-400 text-xl"></i>
+                        <h2 class="text-lg font-bold">Tech Library</h2>
+                    </div>
+
+                    <!-- Search -->
+                    <div class="mb-4">
+                        <div class="relative">
+                            <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-sm"></i>
+                            <input type="text" id="tech-search" placeholder="Search technologies..." class="w-full bg-slate-900 border border-slate-700 rounded-lg py-2 pl-10 pr-4 text-sm focus:outline-none focus:border-sky-500">
+                        </div>
+                    </div>
+
+                    <!-- Category Filter -->
+                    <div class="mb-4">
+                        <select id="category-filter" class="w-full bg-slate-900 border border-slate-700 rounded-lg py-2 px-4 text-sm focus:outline-none focus:border-sky-500">
+                            <option value="">All Categories</option>
+                        </select>
+                    </div>
+
+                    <!-- Technology Cards -->
+                    <div id="tech-library" class="space-y-2 max-h-[calc(100vh-380px)] overflow-y-auto">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </div>
+
+    <script>
+        // =====================================================
+        // SUPABASE INITIALIZATION
+        // =====================================================
+        const SUPABASE_URL = 'https://jeasmwbberfgztkxfjwr.supabase.co';
+        const SUPABASE_ANON_KEY = 'sbp_229e5b28acf95c33a6a6d611683962149eb327bd';
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // =====================================================
+        // STATE MANAGEMENT
+        // =====================================================
+        let currentUseCase = null;
+        let currentStack = {
+            technologies: [],
+            nodes: [],
+            edges: []
+        };
+        let allTechnologies = [];
+        let allCategories = [];
+        let allUseCases = [];
+
+        // =====================================================
+        // DATA LOADING
+        // =====================================================
+        async function loadInitialData() {
+            try {
+                // Load categories
+                const { data: categories, error: catError } = await supabase
+                    .from('categories')
+                    .select('*')
+                    .order('display_order');
+
+                if (catError) throw catError;
+                allCategories = categories || [];
+                populateCategoryFilter();
+
+                // Load use cases
+                const { data: useCases, error: ucError } = await supabase
+                    .from('use_cases')
+                    .select('*')
+                    .order('complexity_level');
+
+                if (ucError) throw ucError;
+                allUseCases = useCases || [];
+                populateUseCases();
+
+                // Load technologies
+                const { data: technologies, error: techError } = await supabase
+                    .from('technologies')
+                    .select('*')
+                    .order('name');
+
+                if (techError) throw techError;
+                allTechnologies = technologies || [];
+                populateTechLibrary(allTechnologies);
+
+                // Update counts
+                document.getElementById('tech-count').textContent = allTechnologies.length;
+
+            } catch (error) {
+                console.error('Error loading data:', error);
+                showNotification('Failed to load data. Using fallback.', 'error');
+                loadFallbackData();
+            }
+        }
+
+        // =====================================================
+        // FALLBACK DATA (if Supabase not populated)
+        // =====================================================
+        function loadFallbackData() {
+            allUseCases = [
+                {
+                    id: '1',
+                    name: 'AI Video Processing Pipeline',
+                    slug: 'ai-video-pipeline',
+                    description: 'Process and analyze video content with AI vision models',
+                    complexity_level: 'complex',
+                    estimated_setup_time_hours: 80,
+                    min_budget_usd: 500,
+                    max_budget_usd: 5000
+                },
+                {
+                    id: '2',
+                    name: 'E-commerce Platform',
+                    slug: 'ecommerce-platform',
+                    description: 'Full-featured online store with payments',
+                    complexity_level: 'complex',
+                    estimated_setup_time_hours: 120,
+                    min_budget_usd: 300,
+                    max_budget_usd: 3000
+                },
+                {
+                    id: '3',
+                    name: 'AI Chatbot & Support',
+                    slug: 'ai-chatbot-support',
+                    description: 'Customer support with AI chatbot',
+                    complexity_level: 'moderate',
+                    estimated_setup_time_hours: 60,
+                    min_budget_usd: 200,
+                    max_budget_usd: 2000
+                }
+            ];
+            populateUseCases();
+        }
+
+        // =====================================================
+        // UI POPULATION
+        // =====================================================
+        function populateUseCases() {
+            const container = document.getElementById('use-cases-list');
+            container.innerHTML = allUseCases.map(useCase => `
+                <div class="use-case-card glass rounded-lg p-4 border border-slate-700" data-id="${useCase.id}">
+                    <h4 class="font-bold text-sm mb-2">${useCase.name}</h4>
+                    <p class="text-xs text-slate-400 mb-3">${useCase.description}</p>
+                    <div class="flex items-center justify-between text-xs">
+                        <span class="category-badge">${useCase.complexity_level}</span>
+                        <span class="text-slate-500">${useCase.estimated_setup_time_hours}h</span>
+                    </div>
+                </div>
+            `).join('');
+
+            // Add click handlers
+            document.querySelectorAll('.use-case-card').forEach(card => {
+                card.addEventListener('click', () => selectUseCase(card.dataset.id));
+            });
+        }
+
+        function populateCategoryFilter() {
+            const select = document.getElementById('category-filter');
+            select.innerHTML = '<option value="">All Categories</option>' +
+                allCategories.map(cat => `<option value="${cat.slug}">${cat.name}</option>`).join('');
+        }
+
+        function populateTechLibrary(technologies) {
+            const container = document.getElementById('tech-library');
+            container.innerHTML = technologies.map(tech => `
+                <div class="tech-card glass rounded-lg p-3 border border-slate-700" draggable="true" data-id="${tech.id}" data-name="${tech.name}">
+                    <div class="flex items-center gap-2 mb-2">
+                        <div class="w-6 h-6 bg-white rounded flex items-center justify-center">
+                            <img src="https://www.google.com/s2/favicons?sz=64&domain=${tech.website_url}" class="max-w-full max-h-full" onerror="this.src='https://cdn-icons-png.flaticon.com/512/2103/2103633.png'">
+                        </div>
+                        <span class="font-semibold text-xs">${tech.name}</span>
+                    </div>
+                    <p class="text-xs text-slate-400">${tech.category}</p>
+                </div>
+            `).join('');
+
+            // Add drag handlers
+            document.querySelectorAll('.tech-card').forEach(card => {
+                card.addEventListener('dragstart', handleDragStart);
+            });
+        }
+
+        // =====================================================
+        // USE CASE SELECTION
+        // =====================================================
+        function selectUseCase(useCaseId) {
+            currentUseCase = allUseCases.find(uc => uc.id === useCaseId);
+
+            // Update UI
+            document.querySelectorAll('.use-case-card').forEach(card => {
+                card.classList.toggle('active', card.dataset.id === useCaseId);
+            });
+
+            updateAIStatus('Use case selected: ' + currentUseCase.name);
+        }
+
+        // =====================================================
+        // AI STACK GENERATION
+        // =====================================================
+        document.getElementById('generate-stack-btn').addEventListener('click', async () => {
+            if (!currentUseCase) {
+                showNotification('Please select a use case first', 'warning');
+                return;
+            }
+
+            updateAIStatus('Generating stack...', 'loading');
+
+            try {
+                // Call AI recommendation function
+                const { data, error } = await supabase.rpc('recommend_stack_for_use_case', {
+                    p_use_case_slug: currentUseCase.slug,
+                    p_max_budget: currentUseCase.max_budget_usd
+                });
+
+                if (error) throw error;
+
+                if (data && data.length > 0) {
+                    loadStackFromDatabase(data[0].stack_id);
+                } else {
+                    // Generate new stack using AI
+                    generateStackWithAI();
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                generateStackWithAI(); // Fallback to AI generation
+            }
+        });
+
+        async function generateStackWithAI() {
+            // Simulate AI thinking
+            const thinkingSteps = [
+                'Analyzing use case requirements...',
+                'Selecting optimal technologies...',
+                'Checking compatibility matrix...',
+                'Calculating cost estimates...',
+                'Building architecture diagram...'
+            ];
+
+            for (let step of thinkingSteps) {
+                updateAIStatus(step, 'loading');
+                await sleep(800);
+            }
+
+            // Build a sample stack (replace with actual AI logic)
+            const recommendedTechs = getRecommendedTechnologies(currentUseCase);
+            buildFlowchartFromTechnologies(recommendedTechs);
+
+            updateAIStatus('Stack generated successfully!', 'success');
+            showAIAnalysis(recommendedTechs);
+        }
+
+        function getRecommendedTechnologies(useCase) {
+            // Simplified recommendation logic
+            // In production, this would call GPT-4/Claude for intelligent recommendations
+
+            const baseStack = {
+                'ai-video-pipeline': ['YOLO v11', 'FastAPI', 'PostgreSQL', 'Redis', 'AWS'],
+                'ecommerce-platform': ['Next.js 16', 'Stripe', 'PostgreSQL', 'Vercel', 'Clerk'],
+                'ai-chatbot-support': ['GPT-4', 'LangChain', 'Pinecone', 'FastAPI', 'Railway']
+            };
+
+            const techNames = baseStack[useCase.slug] || ['Next.js 16', 'FastAPI', 'PostgreSQL'];
+            return allTechnologies.filter(t => techNames.includes(t.name));
+        }
+
+        // =====================================================
+        // FLOWCHART VISUALIZATION
+        // =====================================================
+        function buildFlowchartFromTechnologies(technologies) {
+            const canvas = document.getElementById('flowchart-canvas');
+            canvas.innerHTML = `
+                <div class="flex flex-col items-center justify-center h-full gap-8 p-8">
+                    ${technologies.map((tech, i) => `
+                        <div class="flex items-center gap-4">
+                            ${i > 0 ? '<i class="fas fa-arrow-down text-sky-400 text-2xl"></i>' : ''}
+                            <div class="tech-node glass rounded-xl p-4 border-2 border-sky-500/50 min-w-[200px]">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 bg-white rounded-lg flex items-center justify-center">
+                                        <img src="https://www.google.com/s2/favicons?sz=64&domain=${tech.website_url}" class="max-w-full max-h-full">
+                                    </div>
+                                    <div>
+                                        <div class="font-bold">${tech.name}</div>
+                                        <div class="text-xs text-slate-400">${tech.category}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        // =====================================================
+        // AI ANALYSIS DISPLAY
+        // =====================================================
+        function showAIAnalysis(technologies) {
+            const totalCost = technologies.reduce((sum, t) => sum + (Math.random() * 100), 0);
+            const setupTime = currentUseCase.estimated_setup_time_hours;
+
+            const content = document.getElementById('ai-analysis-content');
+            content.innerHTML = `
+                <div class="space-y-4">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="stat-box rounded-lg p-3">
+                            <div class="text-xs text-slate-400 mb-1">Est. Monthly Cost</div>
+                            <div class="text-xl font-bold text-emerald-400">$${totalCost.toFixed(0)}</div>
+                        </div>
+                        <div class="stat-box rounded-lg p-3">
+                            <div class="text-xs text-slate-400 mb-1">Setup Time</div>
+                            <div class="text-xl font-bold text-sky-400">${setupTime}h</div>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-sm mb-2">Recommendations:</h4>
+                        <ul class="text-xs space-y-2 text-slate-300">
+                            <li><i class="fas fa-check-circle text-emerald-400 mr-2"></i>All technologies are compatible</li>
+                            <li><i class="fas fa-check-circle text-emerald-400 mr-2"></i>Stack optimized for ${currentUseCase.complexity_level} complexity</li>
+                            <li><i class="fas fa-check-circle text-emerald-400 mr-2"></i>Budget within range ($${currentUseCase.min_budget_usd}-$${currentUseCase.max_budget_usd})</li>
+                        </ul>
+                    </div>
+                </div>
+            `;
+        }
+
+        // =====================================================
+        // UTILITY FUNCTIONS
+        // =====================================================
+        function updateAIStatus(message, type = 'info') {
+            const status = document.getElementById('ai-status');
+            status.textContent = message;
+            status.className = 'ml-auto text-xs px-3 py-1 rounded-full';
+
+            switch(type) {
+                case 'loading':
+                    status.classList.add('bg-purple-500/20', 'text-purple-400', 'pulse-animation');
+                    break;
+                case 'success':
+                    status.classList.add('bg-emerald-500/20', 'text-emerald-400');
+                    break;
+                case 'error':
+                    status.classList.add('bg-red-500/20', 'text-red-400');
+                    break;
+                default:
+                    status.classList.add('bg-slate-800', 'text-slate-400');
+            }
+        }
+
+        function showNotification(message, type = 'info') {
+            // Simple notification (could be replaced with toast library)
+            alert(message);
+        }
+
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        function handleDragStart(e) {
+            e.dataTransfer.effectAllowed = 'copy';
+            e.dataTransfer.setData('text/plain', e.target.dataset.id);
+        }
+
+        // =====================================================
+        // EVENT LISTENERS
+        // =====================================================
+        document.getElementById('tech-search').addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase();
+            const filtered = allTechnologies.filter(t =>
+                t.name.toLowerCase().includes(query) ||
+                t.category.toLowerCase().includes(query)
+            );
+            populateTechLibrary(filtered);
+        });
+
+        document.getElementById('category-filter').addEventListener('change', (e) => {
+            const category = e.target.value;
+            const filtered = category ?
+                allTechnologies.filter(t => t.category === category) :
+                allTechnologies;
+            populateTechLibrary(filtered);
+        });
+
+        document.getElementById('clear-canvas-btn').addEventListener('click', () => {
+            document.getElementById('flowchart-canvas').innerHTML = '';
+            currentStack = { technologies: [], nodes: [], edges: [] };
+        });
+
+        document.getElementById('export-stack-btn').addEventListener('click', () => {
+            const exportData = {
+                use_case: currentUseCase,
+                stack: currentStack,
+                timestamp: new Date().toISOString()
+            };
+
+            const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `smartstack-${currentUseCase?.slug || 'export'}-${Date.now()}.json`;
+            a.click();
+        });
+
+        // =====================================================
+        // INITIALIZATION
+        // =====================================================
+        window.addEventListener('DOMContentLoaded', () => {
+            loadInitialData();
+        });
+    </script>
+</body>
+</html>

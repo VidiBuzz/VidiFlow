@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Photography 101 Quiz</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* General Body and Layout Styling */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f1f5f9; /* slate-100 */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 1rem; /* p-4 */
+        }
+
+        /* Main Quiz Container */
+        #quiz-container {
+            background-color: white;
+            width: 100%;
+            max-width: 42rem; /* max-w-2xl */
+            margin: auto;
+            border-radius: 0.75rem; /* rounded-xl */
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1); /* shadow-lg */
+            padding: 2rem; /* p-8 */
+            transition: all 0.3s ease-in-out;
+        }
+
+        /* Utility Classes */
+        .hidden {
+            display: none;
+        }
+        .text-center {
+            text-align: center;
+        }
+
+        /* Typography */
+        h1 {
+            font-size: 1.875rem; /* text-3xl */
+            font-weight: 700; /* font-bold */
+            color: #1e293b; /* slate-800 */
+            margin-bottom: 0.5rem; /* mb-2 */
+        }
+        h2 {
+            font-size: 1.5rem; /* text-2xl */
+            font-weight: 700; /* font-bold */
+            color: #1e293b; /* slate-800 */
+            margin-top: 0.5rem; /* mt-2 */
+        }
+        p {
+            color: #475569; /* slate-600 */
+        }
+        #quiz-start p {
+             margin-bottom: 1.5rem; /* mb-6 */
+        }
+        #progress-text {
+            font-size: 0.875rem; /* text-sm */
+            color: #64748b; /* slate-500 */
+            font-weight: 500; /* font-medium */
+        }
+        #score-text {
+            font-size: 3rem; /* text-5xl */
+            font-weight: 800; /* font-extrabold */
+            color: #2563eb; /* blue-600 */
+            margin-bottom: 2rem; /* mb-8 */
+        }
+
+        /* Buttons */
+        button {
+            width: 100%;
+            color: white;
+            font-weight: 700; /* font-bold */
+            padding: 0.75rem 1.5rem; /* py-3 px-6 */
+            border-radius: 0.5rem; /* rounded-lg */
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:focus {
+            outline: 2px solid transparent;
+            outline-offset: 2px;
+            box-shadow: 0 0 0 2px #3b82f680; /* focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 */
+        }
+        #start-btn, #next-btn {
+            background-color: #2563eb; /* bg-blue-600 */
+        }
+        #start-btn:hover, #next-btn:hover {
+            background-color: #1d4ed8; /* hover:bg-blue-700 */
+        }
+        #restart-btn {
+            background-color: #334155; /* bg-slate-700 */
+        }
+        #restart-btn:hover {
+            background-color: #1e293b; /* hover:bg-slate-800 */
+        }
+
+        /* Answer Options */
+        #answer-options {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem; /* gap-4 */
+            margin-bottom: 1.5rem; /* mb-6 */
+        }
+        .quiz-option {
+            width: 100%;
+            text-align: left;
+            padding: 1rem; /* p-4 */
+            border: 2px solid #e2e8f0; /* default border */
+            border-radius: 0.5rem; /* rounded-lg */
+            transition: background-color 0.2s;
+            background-color: white;
+            color: #1e293b; /* slate-800 */
+        }
+        .quiz-option:hover {
+            background-color: #f1f5f9; /* hover:bg-slate-100 */
+        }
+        .quiz-option.correct {
+            background-color: #22c55e; /* green-500 */
+            border-color: #16a34a; /* green-600 */
+            color: white;
+        }
+        .quiz-option.incorrect {
+            background-color: #ef4444; /* red-500 */
+            border-color: #dc2626; /* red-600 */
+            color: white;
+        }
+        .quiz-option:disabled {
+            cursor: not-allowed;
+            opacity: 0.8;
+        }
+
+        /* Feedback and Image Containers */
+        #feedback-container {
+            padding: 1rem; /* p-4 */
+            border-radius: 0.5rem; /* rounded-lg */
+            min-height: 80px;
+        }
+        #hint-text {
+            font-size: 0.875rem; /* text-sm */
+            color: #475569; /* slate-600 */
+            font-weight: 500; /* font-medium */
+            margin-bottom: 0.5rem; /* mb-2 */
+        }
+        #rationale-text {
+            color: #334155; /* slate-700 */
+            font-weight: 600; /* font-semibold */
+        }
+        .bg-green-100 { background-color: #dcfce7; }
+        .bg-red-100 { background-color: #fee2e2; }
+        #question-image-container {
+            margin-bottom: 1rem; /* mb-4 */
+        }
+        #question-image {
+            width: 100%;
+            height: auto;
+            max-height: 16rem; /* max-h-64 */
+            object-fit: contain;
+            border-radius: 0.5rem; /* rounded-lg */
+            margin: 0 auto;
+        }
+        #next-btn {
+            margin-top: 1.5rem; /* mt-6 */
+        }
+
+    </style>
+</head>
+<body>
+
+    <div id="quiz-container">
+        
+        <div id="quiz-start" class="text-center">
+            <h1>Photography 101 Quiz</h1>
+            <p>Test your knowledge of camera fundamentals.</p>
+            <button id="start-btn">Start Quiz</button>
+        </div>
+
+        <div id="quiz-main" class="hidden">
+            <div id="question-image-container" class="hidden">
+                <img id="question-image" src="" alt="Quiz question visual aid">
+            </div>
+            <div style="margin-bottom: 1.5rem;">
+                <p id="progress-text">Question 1 of 10</p>
+                <h2 id="question-text">Question text goes here...</h2>
+            </div>
+
+            <div id="answer-options">
+                <!-- Answer options will be dynamically inserted here -->
+            </div>
+
+            <div id="feedback-container" class="hidden">
+                 <p id="hint-text"></p>
+                 <p id="rationale-text"></p>
+            </div>
+
+            <button id="next-btn" class="hidden">Next Question</button>
+        </div>
+
+        <div id="quiz-end" class="hidden text-center">
+            <h1>Quiz Complete!</h1>
+            <p style="font-size: 1.125rem; margin-bottom: 1rem;">Your final score is:</p>
+            <p id="score-text">0/10</p>
+            <button id="restart-btn">Restart Quiz</button>
+        </div>
+    </div>
+
+    <script>
+        // --- QUIZ DATA ---
+        // This JSON object contains all the questions, options, and rationales for the quiz.
+        // I've added an 'imageUrl' property to questions that have a relevant image.
+        const quizData = {
+            "questions": [
+                {
+                    "question": "You are taking a portrait and want to create a beautifully blurred background (bokeh) to make your subject stand out. Which of the following settings would be most effective?",
+                    "imageUrl": "http://googleusercontent.com/file_content/4",
+                    "answerOptions": [
+                        { "text": "Set the aperture to f/1.8", "isCorrect": true, "rationale": "A low f-number corresponds to a wide aperture, which creates a shallow depth of field, effectively blurring the background." },
+                        { "text": "Set the aperture to f/16", "isCorrect": false, "rationale": "A high f-number corresponds to a narrow aperture, which creates a deep depth of field, keeping both the subject and background sharp." },
+                        { "text": "Set the shutter speed to 1/1000s", "isCorrect": false, "rationale": "Shutter speed controls motion and the duration of light exposure, but it does not directly influence the depth of field or background blur." },
+                        { "text": "Set the ISO to 3200", "isCorrect": false, "rationale": "ISO adjusts the sensor's sensitivity to light, affecting brightness and image noise, not the depth of field." }
+                    ],
+                    "hint": "Think about which of the three main settings in the exposure triangle controls the depth of field."
+                },
+                {
+                    "question": "You are at a daytime sporting event and want to capture a sharp, frozen-in-time image of a fast-moving athlete. Which setting is most crucial to set correctly for this purpose?",
+                    "imageUrl": "http://googleusercontent.com/file_content/3",
+                    "answerOptions": [
+                        { "text": "A fast shutter speed (e.g., 1/2000s)", "isCorrect": true, "rationale": "A fast shutter speed opens and closes the shutter very quickly, effectively freezing motion and preventing blur in fast-moving subjects." },
+                        { "text": "A slow shutter speed (e.g., 1/30s)", "isCorrect": false, "rationale": "A slow shutter speed would keep the sensor exposed for a longer duration, resulting in significant motion blur for a fast-moving subject." },
+                        { "text": "A wide aperture (e.g., f/2.8)", "isCorrect": false, "rationale": "While aperture affects how much light enters and the depth of field, it is the shutter speed that directly controls how motion is captured." },
+                        { "text": "Automatic White Balance (AWB)", "isCorrect": false, "rationale": "White balance affects the color cast of the image but has no impact on capturing motion." }
+                    ],
+                    "hint": "Consider the artistic function of shutter speed. How does it relate to capturing action?"
+                },
+                {
+                    "question": "Based on the image and histogram provided, what can you conclude about the exposure of the top photo?",
+                    "imageUrl": "http://googleusercontent.com/file_content/2",
+                    "answerOptions": [
+                        { "text": "The image is underexposed, and shadow details are lost.", "isCorrect": true, "rationale": "The histogram for the top image shows peaks clustered on the far left, indicating clipped shadows and an underexposed photo." },
+                        { "text": "The image is overexposed, and highlight details are 'blown out'.", "isCorrect": false, "rationale": "An overexposed image would show peaks clustered on the far right side of the histogram, which is seen in the bottom example." },
+                        { "text": "The image has high contrast with both deep shadows and bright highlights.", "isCorrect": false, "rationale": "A high-contrast scene would typically result in a U-shaped histogram, with peaks at both the left and right ends." },
+                        { "text": "The image is perfectly exposed with a balanced range of tones.", "isCorrect": false, "rationale": "A well-balanced exposure, like the middle example, would show a histogram with tones spread across the graph." }
+                    ],
+                    "hint": "The histogram's horizontal axis goes from dark tones on the left to bright tones on the right."
+                },
+                {
+                    "question": "According to the course philosophy, what is the most important element for creating professional-quality images?",
+                    "answerOptions": [
+                        { "text": "A full-frame camera body", "isCorrect": false, "rationale": "The course emphasizes that while advanced gear offers benefits, it is not the primary factor in creating great images." },
+                        { "text": "An expensive prime lens", "isCorrect": false, "rationale": "The gear-agnostic approach of the course suggests that even basic kit lenses can produce professional results in skilled hands." },
+                        { "text": "The photographer's skill and creative eye", "isCorrect": true, "rationale": "The core philosophy is that understanding light, composition, and manual controls is more crucial than the equipment used." },
+                        { "text": "Advanced post-processing software", "isCorrect": false, "rationale": "While post-processing is an important part of the art, the course prioritizes capturing a great image in-camera through fundamental skills." }
+                    ],
+                    "hint": "Think about the 'gear agnostic' approach mentioned in the study guide."
+                },
+                {
+                    "question": "If you increase your camera's ISO from 200 to 800, how has the exposure changed?",
+                    "answerOptions": [
+                        { "text": "The exposure has decreased by two stops of light.", "isCorrect": false, "rationale": "Increasing the ISO number makes the sensor more sensitive to light, which results in a brighter, not darker, exposure." },
+                        { "text": "The exposure has increased by one stop of light.", "isCorrect": false, "rationale": "Going from ISO 200 to 400 is one stop. Going from 400 to 800 is another stop. This represents a two-stop change." },
+                        { "text": "The exposure has increased by two stops of light.", "isCorrect": true, "rationale": "Each doubling of the ISO number (200 to 400, then 400 to 800) represents a full stop, making the sensor four times more sensitive to light in total." },
+                        { "text": "The exposure has not changed, only the potential for noise.", "isCorrect": false, "rationale": "While increasing ISO does introduce more noise, it fundamentally changes the exposure by increasing the sensor's sensitivity to light." }
+                    ],
+                    "hint": "Remember that each doubling of the ISO value is equivalent to one full 'stop' of light."
+                },
+                {
+                    "question": "What is the primary mechanical difference between a DSLR and a mirrorless camera?",
+                    "answerOptions": [
+                        { "text": "DSLRs use electronic viewfinders, while mirrorless cameras use optical viewfinders.", "isCorrect": false, "rationale": "This is the opposite of how they function; mirrorless cameras use EVFs, and DSLRs use optical viewfinders that rely on a mirror." },
+                        { "text": "DSLRs lack a mirror system, allowing light to go directly to the sensor.", "isCorrect": false, "rationale": "This describes the mechanism of a mirrorless camera. A DSLR's core design is based on its mirror system." },
+                        { "text": "Mirrorless cameras use a mirror and pentaprism to direct light to the viewfinder.", "isCorrect": false, "rationale": "The mirror and pentaprism are the key components of a DSLR's optical viewfinder system, which mirrorless cameras do not have." },
+                        { "text": "Mirrorless cameras lack the reflex mirror and prism system found in DSLRs.", "isCorrect": true, "rationale": "The absence of the mirror box is the defining characteristic of a mirrorless camera, allowing for a more compact body and an electronic viewfinder." }
+                    ],
+                    "hint": "The name 'Digital Single-Lens Reflex' (DSLR) contains a clue about its internal mechanics."
+                },
+                {
+                    "question": "Looking at the example image, which panel represents a 'cool' white balance, often seen in shaded outdoor environments?",
+                    "imageUrl": "http://googleusercontent.com/file_content/1",
+                    "answerOptions": [
+                        { "text": "The left panel with the blueish tint.", "isCorrect": true, "rationale": "A 'cool' color temperature has a higher Kelvin value and results in a blueish cast, which is used to either correct for warm light or create a specific mood." },
+                        { "text": "The middle panel with the orange tint.", "isCorrect": false, "rationale": "The orange tint represents a 'warm' white balance, which has a low Kelvin temperature, typical of indoor lighting." },
+                        { "text": "The right panel with the neutral tones.", "isCorrect": false, "rationale": "The right panel shows a correctly balanced image where whites appear white and skin tones look natural." },
+                        { "text": "None of the panels show a cool white balance.", "isCorrect": false, "rationale": "The left panel is a clear example of a cool white balance, characterized by its distinct blue cast." }
+                    ],
+                    "hint": "On the color temperature scale, 'cool' colors are represented by shades of blue."
+                },
+                {
+                    "question": "Which file format provides the most flexibility for making significant adjustments to exposure and white balance in post-processing?",
+                    "answerOptions": [
+                        { "text": "JPEG, because it is processed in-camera for optimal results.", "isCorrect": false, "rationale": "The in-camera processing of a JPEG file compresses the data and 'bakes in' settings, which limits post-processing flexibility." },
+                        { "text": "RAW, because it contains all the unprocessed data from the sensor.", "isCorrect": true, "rationale": "A RAW file is like a digital negative, preserving the maximum amount of image data, which allows for greater latitude in editing." },
+                        { "text": "Both RAW and JPEG offer the same amount of flexibility.", "isCorrect": false, "rationale": "There is a significant difference in the amount of data retained between these two file formats, directly impacting editing potential." },
+                        { "text": "SOOC, because it represents the original image without any changes.", "isCorrect": false, "rationale": "SOOC (Straight Out Of Camera) describes an unedited image, which could be either RAW or JPEG, but it is not a file format itself." }
+                    ],
+                    "hint": "Think about which file type is considered the 'digital negative'."
+                },
+                {
+                    "question": "You have your aperture set to f/8. You decide you need less light, so you change the aperture to f/11. To keep the overall exposure the same, what is a valid compensation according to the diagram?",
+                    "imageUrl": "http://googleusercontent.com/file_content/5",
+                    "answerOptions": [
+                        { "text": "Change the shutter speed from 1/250s to 1/500s.", "isCorrect": false, "rationale": "Changing the aperture from f/8 to f/11 reduced the light by one stop. Speeding up the shutter would reduce the light even further." },
+                        { "text": "Change the ISO from 400 to 200.", "isCorrect": false, "rationale": "Decreasing the ISO makes the sensor less sensitive, which would further darken the image instead of compensating for the smaller aperture." },
+                        { "text": "Change the shutter speed from 1/250s to 1/125s.", "isCorrect": true, "rationale": "Since the aperture was made smaller (letting in half the light), slowing the shutter speed to be twice as long (1/125s is double 1/250s) correctly adds one stop of light back." },
+                        { "text": "No change is needed; the exposure will remain the same.", "isCorrect": false, "rationale": "Any change to one component of the exposure triangle will alter the overall exposure unless compensated for." }
+                    ],
+                    "hint": "You reduced the amount of light by one stop with the aperture. How can you add one stop of light back using either shutter speed or ISO?"
+                },
+                {
+                    "question": "What is the primary artistic effect controlled by shutter speed?",
+                    "answerOptions": [
+                        { "text": "The amount of background blur (bokeh).", "isCorrect": false, "rationale": "Background blur is a function of the aperture setting and its effect on the depth of field." },
+                        { "text": "The depiction of motion (freezing or blurring).", "isCorrect": true, "rationale": "The duration the shutter is open directly impacts whether a moving object appears sharp and frozen or artistically blurred." },
+                        { "text": "The level of grain or digital noise in the image.", "isCorrect": false, "rationale": "Image noise is primarily a byproduct of the ISO setting, especially at higher sensitivities." },
+                        { "text": "The color accuracy and temperature of the light.", "isCorrect": false, "rationale": "Color is controlled by the white balance setting, not the shutter speed." }
+                    ],
+                    "hint": "Think about what happens to a moving car in a photo when you use a very long exposure time versus a very short one."
+                }
+            ]
+        };
+
+        // --- DOM ELEMENTS ---
+        // Getting references to all the HTML elements we'll need to interact with.
+        const quizStartEl = document.getElementById('quiz-start');
+        const quizMainEl = document.getElementById('quiz-main');
+        const quizEndEl = document.getElementById('quiz-end');
+        
+        const startBtn = document.getElementById('start-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const restartBtn = document.getElementById('restart-btn');
+        
+        const questionImageContainerEl = document.getElementById('question-image-container');
+        const questionImageEl = document.getElementById('question-image');
+        const progressTextEl = document.getElementById('progress-text');
+        const questionTextEl = document.getElementById('question-text');
+        const answerOptionsEl = document.getElementById('answer-options');
+        const feedbackContainerEl = document.getElementById('feedback-container');
+        const hintTextEl = document.getElementById('hint-text');
+        const rationaleTextEl = document.getElementById('rationale-text');
+        const scoreTextEl = document.getElementById('score-text');
+
+        // --- STATE VARIABLES ---
+        // Variables to keep track of the quiz's current state.
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let questions = [];
+
+        // --- FUNCTIONS ---
+
+        /**
+         * Shuffles the questions and the answer options for each question.
+         */
+        function shuffleQuizData() {
+            // Shuffle the order of questions
+            questions = [...quizData.questions].sort(() => Math.random() - 0.5);
+            // Shuffle the order of answers for each question
+            questions.forEach(q => {
+                q.answerOptions.sort(() => Math.random() - 0.5);
+            });
+        }
+        
+        /**
+         * Starts the quiz, hiding the start screen and showing the first question.
+         */
+        function startQuiz() {
+            shuffleQuizData();
+            currentQuestionIndex = 0;
+            score = 0;
+            quizStartEl.classList.add('hidden');
+            quizEndEl.classList.add('hidden');
+            quizMainEl.classList.remove('hidden');
+            nextBtn.classList.add('hidden');
+            feedbackContainerEl.classList.add('hidden');
+            showQuestion();
+        }
+
+        /**
+         * Displays the current question and its answer options.
+         */
+        function showQuestion() {
+            resetState();
+            const question = questions[currentQuestionIndex];
+
+            // Handle the image display
+            if (question.imageUrl) {
+                questionImageEl.src = question.imageUrl;
+                questionImageContainerEl.classList.remove('hidden');
+            } else {
+                questionImageContainerEl.classList.add('hidden');
+            }
+
+            questionTextEl.textContent = question.question;
+            progressTextEl.textContent = `Question ${currentQuestionIndex + 1} of ${questions.length}`;
+            hintTextEl.textContent = `Hint: ${question.hint}`;
+            
+            question.answerOptions.forEach(option => {
+                const button = document.createElement('button');
+                button.textContent = option.text;
+                button.classList.add('quiz-option');
+                button.dataset.correct = option.isCorrect;
+                button.dataset.rationale = option.rationale;
+                button.addEventListener('click', selectAnswer);
+                answerOptionsEl.appendChild(button);
+            });
+        }
+
+        /**
+         * Resets the state of the answer buttons and feedback for the next question.
+         */
+        function resetState() {
+            nextBtn.classList.add('hidden');
+            feedbackContainerEl.classList.add('hidden');
+            questionImageContainerEl.classList.add('hidden'); // Hide image container by default
+            rationaleTextEl.textContent = '';
+            hintTextEl.style.display = 'block'; // Show hint by default
+            while(answerOptionsEl.firstChild) {
+                answerOptionsEl.removeChild(answerOptionsEl.firstChild);
+            }
+        }
+
+        /**
+         * Handles the logic when a user clicks an answer.
+         * @param {Event} e The click event from the answer button.
+         */
+        function selectAnswer(e) {
+            const selectedBtn = e.target;
+            const isCorrect = selectedBtn.dataset.correct === 'true';
+            
+            if (isCorrect) {
+                score++;
+                selectedBtn.classList.add('correct');
+                feedbackContainerEl.classList.remove('bg-red-100');
+                feedbackContainerEl.classList.add('bg-green-100');
+            } else {
+                selectedBtn.classList.add('incorrect');
+                feedbackContainerEl.classList.remove('bg-green-100');
+                feedbackContainerEl.classList.add('bg-red-100');
+            }
+
+            // Show rationale and hide hint
+            rationaleTextEl.textContent = selectedBtn.dataset.rationale;
+            hintTextEl.style.display = 'none';
+            feedbackContainerEl.classList.remove('hidden');
+
+            // Disable all buttons and highlight the correct answer if the user was wrong
+            Array.from(answerOptionsEl.children).forEach(button => {
+                if (button.dataset.correct === 'true' && !isCorrect) {
+                    button.classList.add('correct');
+                }
+                button.disabled = true;
+            });
+
+            nextBtn.classList.remove('hidden');
+        }
+
+        /**
+         * Moves to the next question or ends the quiz if there are no more questions.
+         */
+        function handleNextButton() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < questions.length) {
+                showQuestion();
+            } else {
+                showScore();
+            }
+        }
+        
+        /**
+         * Displays the final score screen.
+         */
+        function showScore() {
+            quizMainEl.classList.add('hidden');
+            quizEndEl.classList.remove('hidden');
+            scoreTextEl.textContent = `${score}/${questions.length}`;
+        }
+
+        // --- EVENT LISTENERS ---
+        // Setting up the initial event listeners for the buttons.
+        startBtn.addEventListener('click', startQuiz);
+        nextBtn.addEventListener('click', handleNextButton);
+        restartBtn.addEventListener('click', startQuiz);
+
+    </script>
+</body>
+</html>

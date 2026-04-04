@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VidiSmart Master Index - Complete Navigation</title>
+    <link href="https://fonts.googleapis.com/css2?family=Kumbh+Sans:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="vidi-nav-component.css">
+    <script src="vidi-nav-component.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Kumbh Sans', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #e2e8f0;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding-bottom: 2rem;
+            border-bottom: 2px solid rgba(94, 234, 212, 0.2);
+        }
+
+        h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #5deb5a 0%, #5eead4 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #94a3b8;
+            font-weight: 400;
+        }
+
+        .search-box {
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        #searchInput {
+            width: 100%;
+            max-width: 600px;
+            padding: 1rem 1.5rem;
+            font-size: 1rem;
+            font-family: 'Kumbh Sans', sans-serif;
+            background: rgba(30, 41, 59, 0.8);
+            border: 2px solid rgba(94, 234, 212, 0.3);
+            border-radius: 12px;
+            color: #e2e8f0;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        #searchInput:focus {
+            border-color: #5eead4;
+            box-shadow: 0 0 20px rgba(94, 234, 212, 0.3);
+        }
+
+        #searchInput::placeholder {
+            color: #64748b;
+        }
+
+        .stats {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background: rgba(94, 234, 212, 0.1);
+            border-radius: 12px;
+            border: 1px solid rgba(94, 234, 212, 0.2);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .stat-item {
+            padding: 1rem;
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 8px;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #5deb5a;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #94a3b8;
+            margin-top: 0.25rem;
+        }
+
+        .category-section {
+            margin-bottom: 3rem;
+            background: rgba(30, 41, 59, 0.5);
+            border-radius: 16px;
+            padding: 2rem;
+            border: 1px solid rgba(94, 234, 212, 0.2);
+        }
+
+        .category-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(94, 234, 212, 0.2);
+        }
+
+        .category-icon {
+            font-size: 2rem;
+        }
+
+        .category-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #5eead4;
+        }
+
+        .category-count {
+            margin-left: auto;
+            background: rgba(93, 235, 90, 0.2);
+            color: #5deb5a;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .links-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1rem;
+        }
+
+        .link-card {
+            background: rgba(15, 23, 42, 0.8);
+            padding: 1.25rem;
+            border-radius: 12px;
+            border: 1px solid rgba(94, 234, 212, 0.2);
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        .link-card:hover {
+            transform: translateY(-4px);
+            border-color: #5eead4;
+            box-shadow: 0 8px 24px rgba(94, 234, 212, 0.2);
+        }
+
+        .link-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #e2e8f0;
+            margin-bottom: 0.5rem;
+        }
+
+        .link-desc {
+            font-size: 0.9rem;
+            color: #94a3b8;
+            line-height: 1.5;
+        }
+
+        .badge {
+            display: inline-block;
+            font-size: 0.7rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            margin-left: 0.5rem;
+        }
+
+        .badge-live {
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+        }
+
+        .badge-new {
+            background: rgba(59, 130, 246, 0.2);
+            color: #3b82f6;
+        }
+
+        .highlight {
+            background: linear-gradient(135deg, rgba(93, 235, 90, 0.2) 0%, rgba(94, 234, 212, 0.2) 100%);
+            border: 2px solid #5deb5a !important;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 3rem;
+            color: #94a3b8;
+            font-size: 1.2rem;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            .links-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .category-section {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation injected by vidi-nav-component.js -->
+    <div class="container">
+        <header>
+            <h1>🎯 VidiSmart Master Index</h1>
+            <p class="subtitle">Complete Navigation Hub for All VidiSmart Applications & Tools</p>
+        </header>
+
+        <div class="stats">
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-number">53</div>
+                    <div class="stat-label">HTML Applications</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">400+</div>
+                    <div class="stat-label">Technologies Documented</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">6</div>
+                    <div class="stat-label">Main Categories</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">20</div>
+                    <div class="stat-label">Tech Stack Sections</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="🔍 Search applications, tools, or categories...">
+        </div>
+
+        <!-- AI & Tech Content -->
+        <div class="category-section" data-category="ai-tech">
+            <div class="category-header">
+                <span class="category-icon">🤖</span>
+                <h2 class="category-title">AI & Tech Content</h2>
+                <span class="category-count">12 files</span>
+            </div>
+            <div class="links-grid">
+                <a href="Ai Team Project Collab.html" class="link-card">
+                    <div class="link-title">AI Team Project Collab <span class="badge badge-live">LIVE</span></div>
+                    <div class="link-desc">Collaborative AI team project tools</div>
+                </a>
+                <a href="Ai.Experts_Deploying_RAG_&_VRAG.html" class="link-card">
+                    <div class="link-title">AI Experts: RAG & VRAG <span class="badge badge-live">LIVE</span></div>
+                    <div class="link-desc">Retrieval Augmented Generation and Visual RAG deployment</div>
+                </a>
+                <a href="Ai_SmartStack_1.0.html" class="link-card">
+                    <div class="link-title">AI SmartStack 1.0 <span class="badge badge-live">LIVE</span></div>
+                    <div class="link-desc">Comprehensive AI technology stack planning</div>
+                </a>
+                <a href="OmniSearch-1.html" class="link-card">
+                    <div class="link-title">OmniSearch <span class="badge badge-live">LIVE</span></div>
+                    <div class="link-desc">Universal AI-powered search interface</div>
+                </a>
+                <a href="smartgen.html" class="link-card">
+                    <div class="link-title">SmartGen <span class="badge badge-live">LIVE</span></div>
+                    <div class="link-desc">AI content generation platform</div>
+                </a>
+                <a href="smartgen.flow.html" class="link-card">
+                    <div class="link-title">SmartGen Flow</div>
+                    <div class="link-desc">AI workflow generation system</div>
+                </a>
+                <a href="smartgen.vlm.html" class="link-card">
+                    <div class="link-title">SmartGen VLM</div>
+                    <div class="link-desc">Visual Language Model integration</div>
+                </a>
+                <a href="smartgen.vlm2.html" class="link-card">
+                    <div class="link-title">SmartGen VLM 2</div>
+                    <div class="link-desc">Enhanced Visual Language Model features</div>
+                </a>
+                <a href="smartgenvlm3.html" class="link-card">
+                    <div class="link-title">SmartGen VLM 3</div>
+                    <div class="link-desc">Latest Visual Language Model implementation</div>
+                </a>
+                <a href="techstack1.html" class="link-card">
+                    <div class="link-title">TechStack 1 <span class="badge badge-live">LIVE</span></div>
+                    <div class="link-desc">Technology stack reference guide</div>
+                </a>
+                <a href="tech-guide.html" class="link-card">
+                    <div class="link-title">Tech Guide</div>
+                    <div class="link-desc">Comprehensive technology guide</div>
+                </a>
+                <a href="xai.html" class="link-card">
+                    <div class="link-title">xAI <span class="badge badge-live">LIVE</span></div>
+                    <div class="link-desc">Explainable AI platform</div>
+                </a>
+            </div>
+        </div>
+
+        <!-- VidiSmart Core -->
+        <div class="category-section" data-category="core">
+            <div class="category-header">
+                <span class="category-icon">⚡</span>
+                <h2 class="category-title">VidiSmart Core</h2>
+                <span class="category-count">15 files</span>
+            </div>
+            <div class="links-grid">
+                <a href="index.html" class="link-card highlight">
+                    <div class="link-title">🏠 Main Application <span class="badge badge-live">LIVE</span></div>
+                    <div class="link-desc">VidiSmart primary interface and tech stack planner</div>
+                </a>
+                <a href="menu.html" class="link-card highlight">
+                    <div class="link-title">📋 Navigation Hub <span class="badge badge-live">LIVE</span></div>
+                    <div class="link-desc">Central index for all VidiSmart files with search</div>
+                </a>
+                <a href="vidismart.masterlist.html" class="link-card highlight">
+                    <div class="link-title">📚 Master Tech Stack (400+) <span class="badge badge-live">LIVE</span><span
+                            class="badge badge-new">NEW</span></div>
+                    <div class="link-desc">Comprehensive 2026 tech stack across 20 sections with live URLs</div>
+                </a>
+                <a href="vidismart-2.html" class="link-card">
+                    <div class="link-title">VidiSmart Interactive Guide <span class="badge badge-live">LIVE</span><span
+                            class="badge badge-new">FEATURED</span></div>
+                    <div class="link-desc">Interactive guide for VidiSmart platform</div>
+                </a>
+                <a href="VidiSmart-1.html" class="link-card">
+                    <div class="link-title">VidiSmart v1 <span class="badge badge-live">LIVE</span></div>
+                    <div class="link-desc">Original VidiSmart interface</div>
+                </a>
+                <a href="VidiSmart.VisualVectorKnowledgeGraph.html" class="link-card">
+                    <div class="link-title">Visual Vector Knowledge Graph <span class="badge badge-live">LIVE</span>
+                    </div>
+                    <div class="link-desc">Knowledge graph visualization</div>
+                </a>
+                <a href="vidismart-visual-vector-knowledge-graph.html" class="link-card">
+                    <div class="link-title">VVKG (Alt Version) <span class="badge badge-live">LIVE</span></div>
+                    <div class="link-desc">Alternative visual vector knowledge graph</div>
+                </a>
+                <a href="VidiSmart.VVTruth.html" class="link-card">
+                    <div class="link-title">VV Truth</div>
+                    <div class="link-desc">Visual Vector Truth verification</div>
+                </a>
+                <a href="VidiSmart.VisualVectorSearch.html" class="link-card">
+                    <div class="link-title">Visual Vector Search</div>
+                    <div class="link-desc">Visual search capabilities</div>
+                </a>
+                <a href="visualvector.unified.html" class="link-card">
+                    <div class="link-title">🔍 Visual Vector Smart Search</div>
+                    <div class="link-desc">Multimodal AI search with 5 modes: Lexical, Vector, Tensors, Graph, Geo</div>
+                </a>
+                <a href="visualvector2.html" class="link-card">
+                    <div class="link-title">Visual Vector 2</div>
+                    <div class="link-desc">Enhanced visual vector search</div>
+                </a>
+                <a href="vidismartgen.html" class="link-card">
+                    <div class="link-title">VidiSmart Gen <span class="badge badge-live">LIVE</span></div>
+                    <div class="link-desc">VidiSmart generation tools</div>
+                </a>
+                <a href="vidismart.directory.html" class="link-card">
+                    <div class="link-title">VidiSmart Directory</div>
+                    <div class="link-desc">Directory of VidiSmart resources</div>
+                </a>
+                <a href="vidismart.flowmap.html" class="link-card">
+                    <div class="link-title">VidiSmart FlowMap</div>
+                    <div class="link-desc">Visual workflow mapping</div>
+                </a>
+                <a href="vidismart.vvlogic.html" class="link-card">
+                    <div class="link-title">VidiSmart VV Logic</div>
+                    <div class="link-desc">Visual Vector logic engine</div>
+                </a>
+            </div>
+        </div>
+
+        <!-- Media & Video -->
+        <div class="category-section" data-category="media">
+            <div class="category-header">
+                <span class="category-icon">🎥</span>
+                <h2 class="category-title">Media & Video</h2>
+                <span class="category-count">8 files</span>
+            </div>
+            <div class="links-grid">
+                <a href="video-platforms.html" class="link-card">
+                    <div class="link-title">Video Platforms Guide <span class="badge badge-live">LIVE</span></div>
+                    <div class="link-desc">Comparison of video hosting platforms</div>
+                </a>
+                <a href="smartmedia.visualai.html" class="link-card">
+                    <div class="link-title">SmartMedia Visual AI <span class="badge badge-live">LIVE</span></div>
+                    <div class="link-desc">Visual AI media processing</div>
+                </a>
+                <a href="smart.video2.html" class="link-card">
+                    <div class="link-title">🎬 Visual AI Content Platform</div>
+                    <div class="link-desc">9 companies: Lightricks, Oasis, HoloCine, Bria AI, InVideo, PhotoRoom</div>
+                </a>
+                <a href="vectorveo.html" class="link-card">
+                    <div class="link-title">VectorVeo <span class="badge badge-live">LIVE</span></div>
+                    <div class="link-desc">Vector-based video generation</div>
+                </a>
+                <a href="vidi.news.platform.html" class="link-card">
+                    <div class="link-title">Vidi.News Platform <span class="badge badge-live">LIVE</span><span
+                            class="badge badge-new">NEW</span></div>
+                    <div class="link-desc">News aggregation platform</div>
+                </a>
+                <a href="vidismart.2026stream.html" class="link-card">
+                    <div class="link-title">VidiSmart 2026 Stream</div>
+                    <div class="link-desc">Live streaming platform</div>
+                </a>
+                <a href="vidismart.streamstack.html" class="link-card">
+                    <div class="link-title">VidiSmart StreamStack</div>
+                    <div class="link-desc">Streaming technology stack</div>
+                </a>
+                <a href="vidismart.newsaggregator.presentation.html" class="link-card">
+                    <div class="link-title">News Aggregator Presentation</div>
+                    <div class="link-desc">News aggregation presentation</div>
+                </a>
+                <a href="viditwin2.html" class="link-card highlight">
+                    <div class="link-title">👥 Digital Twin Strategy <span class="badge badge-live">LIVE</span><span
+                            class="badge badge-new">NEW</span></div>
+                    <div class="link-desc">Conversational AI avatar implementation roadmap</div>
+                </a>
+            </div>
+        </div>
+
+        <!-- Platforms & Directories -->
+        <div class="category-section" data-category="platforms">
+            <div class="category-header">
+                <span class="category-icon">🔗</span>
+                <h2 class="category-title">Platforms & Directories</h2>
+                <span class="category-count">4 files</span>
+            </div>
+            <div class="links-grid">
+                <a href="broker.html" class="link-card">
+                    <div class="link-title">Broker <span class="badge badge-live">LIVE</span></div>
+                    <div class="link-desc">Broker platform interface</div>
+                </a>
+                <a href="brokerdirectory.html" class="link-card">
+                    <div class="link-title">Broker Directory <span class="badge badge-live">LIVE</span></div>
+                    <div class="link-desc">Directory of brokers</div>
+                </a>
+                <a href="collaboration-platforms.html" class="link-card">
+                    <div class="link-title">Collaboration Platforms <span class="badge badge-live">LIVE</span></div>
+                    <div class="link-desc">Comparison of collaboration tools</div>
+                </a>
+                <a href="vidicrm.smartchannel.html" class="link-card">
+                    <div class="link-title">VidiCRM SmartChannel</div>
+                    <div class="link-desc">VidiCRM-powered smart channel</div>
+                </a>
+            </div>
+        </div>
+
+        <!-- Finance & Health -->
+        <div class="category-section" data-category="finance">
+            <div class="category-header">
+                <span class="category-icon">💰</span>
+                <h2 class="category-title">Finance & Health</h2>
+                <span class="category-count">7 files</span>
+            </div>
+            <div class="links-grid">
+                <a href="smart.accounting.html" class="link-card">
+                    <div class="link-title">💼 Smart Accounting Stack</div>
+                    <div class="link-desc">22 companies: Square, Wave, Directus, Gusto, OnPay</div>
+                </a>
+                <a href="smart.accounting2.html" class="link-card">
+                    <div class="link-title">Smart Accounting 2</div>
+                    <div class="link-desc">Enhanced accounting stack</div>
+                </a>
+                <a href="joe.accting.html" class="link-card">
+                    <div class="link-title">Joe Accounting</div>
+                    <div class="link-desc">Joe Nenoff accounting solution</div>
+                </a>
+                <a href="truefi.html" class="link-card">
+                    <div class="link-title">TrueFi <span class="badge badge-live">LIVE</span></div>
+                    <div class="link-desc">TrueFi financial platform</div>
+                </a>
+                <a href="truefi.index.html" class="link-card">
+                    <div class="link-title">TrueFi Index <span class="badge badge-live">LIVE</span></div>
+                    <div class="link-desc">TrueFi index page</div>
+                </a>
+                <a href="truefi2.html" class="link-card">
+                    <div class="link-title">TrueFi 2 <span class="badge badge-live">LIVE</span></div>
+                    <div class="link-desc">TrueFi version 2</div>
+                </a>
+                <a href="keto.html" class="link-card">
+                    <div class="link-title">Keto <span class="badge badge-live">LIVE</span></div>
+                    <div class="link-desc">Keto health tracking</div>
+                </a>
+            </div>
+        </div>
+
+        <!-- Tools & Utilities -->
+        <div class="category-section" data-category="tools">
+            <div class="category-header">
+                <span class="category-icon">🛠️</span>
+                <h2 class="category-title">Tools & Utilities</h2>
+                <span class="category-count">18 files</span>
+            </div>
+            <div class="links-grid">
+                <a href="gemini.dash.html" class="link-card highlight">
+                    <div class="link-title">🎨 Gemini Command Center</div>
+                    <div class="link-desc">Orchestrating the Gemini Ecosystem & Labs FX Suite</div>
+                </a>
+                <a href="imagesmash.html" class="link-card">
+                    <div class="link-title">📸 Original Ad Mockup Studio <span class="badge badge-live">LIVE</span>
+                    </div>
+                    <div class="link-desc">10 ad formats powered by Gemini</div>
+                </a>
+                <a href="imagesmash-v2.html" class="link-card">
+                    <div class="link-title">🎨 Dual-Mode Ad Generator</div>
+                    <div class="link-desc">Free (HuggingFace/Pollinations) vs Paid (Gemini) with 4 ad formats</div>
+                </a>
+                <a href="imagesmash-simple.html" class="link-card">
+                    <div class="link-title">ImageSmash Simple <span class="badge badge-live">LIVE</span></div>
+                    <div class="link-desc">Simplified ad mockup generator</div>
+                </a>
+                <a href="ImageSmash.html" class="link-card">
+                    <div class="link-title">🖼️ ImageSmash</div>
+                    <div class="link-desc">AI-powered image generation tool</div>
+                </a>
+                <a href="cx/index.html" class="link-card">
+                    <div class="link-title">🚀 SmartChannel CX</div>
+                    <div class="link-desc">Astro site with 6 AI tools: SmartGen, Video Enhancer, Background Remover
+                    </div>
+                </a>
+                <a href="SmartChannelCXv1.html" class="link-card">
+                    <div class="link-title">SmartChannel CX v1</div>
+                    <div class="link-desc">SmartChannel CX version 1</div>
+                </a>
+                <a href="PMax.Google.Vidi.SmartChannel1.html" class="link-card">
+                    <div class="link-title">PMax Google Channel <span class="badge badge-live">LIVE</span></div>
+                    <div class="link-desc">Google Performance Max integration</div>
+                </a>
+                <a href="seoschemadata.html" class="link-card">
+                    <div class="link-title">SEO Schema Data <span class="badge badge-live">LIVE</span></div>
+                    <div class="link-desc">SEO schema markup generator</div>
+                </a>
+                <a href="moderntechguidelines.html" class="link-card">
+                    <div class="link-title">Modern Tech Guidelines <span class="badge badge-live">LIVE</span></div>
+                    <div class="link-desc">Technology best practices guide</div>
+                </a>
+                <a href="indexall.html" class="link-card">
+                    <div class="link-title">Index All <span class="badge badge-live">LIVE</span></div>
+                    <div class="link-desc">Complete index of all files</div>
+                </a>
+                <a href="WP.CustomUserProfiles.Perplexity.html" class="link-card">
+                    <div class="link-title">WP Custom User Profiles</div>
+                    <div class="link-desc">WordPress custom user profile system</div>
+                </a>
+                <a href="smart.stack.2026.html" class="link-card">
+                    <div class="link-title">Smart Stack 2026</div>
+                    <div class="link-desc">2026 technology stack planner</div>
+                </a>
+                <a href="smartstack.html" class="link-card">
+                    <div class="link-title">SmartStack</div>
+                    <div class="link-desc">Technology stack builder</div>
+                </a>
+                <a href="vidismart.agentforce.presentation.html" class="link-card">
+                    <div class="link-title">AgentForce Presentation</div>
+                    <div class="link-desc">AI agent force presentation</div>
+                </a>
+                <a href="vidismart.smartsearch.presentation.html" class="link-card">
+                    <div class="link-title">SmartSearch Presentation</div>
+                    <div class="link-desc">Smart search capabilities</div>
+                </a>
+                <a href="test-input.html" class="link-card">
+                    <div class="link-title">Test Input</div>
+                    <div class="link-desc">Input testing interface</div>
+                </a>
+                <a href="datafarmers2026.html" class="link-card">
+                    <div class="link-title">DataFarmers 2026</div>
+                    <div class="link-desc">Data farming platform</div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const searchInput = document.getElementById('searchInput');
+        const linkCards = document.querySelectorAll('.link-card');
+        const categorySections = document.querySelectorAll('.category-section');
+
+        searchInput.addEventListener('input', function (e) {
+            const searchTerm = e.target.value.toLowerCase();
+
+            let hasResults = false;
+
+            categorySections.forEach(section => {
+                const cards = section.querySelectorAll('.link-card');
+                let sectionHasResults = false;
+
+                cards.forEach(card => {
+                    const title = card.querySelector('.link-title').textContent.toLowerCase();
+                    const desc = card.querySelector('.link-desc').textContent.toLowerCase();
+                    const matches = title.includes(searchTerm) || desc.includes(searchTerm);
+
+                    if (matches) {
+                        card.style.display = 'block';
+                        sectionHasResults = true;
+                        hasResults = true;
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+
+                section.style.display = sectionHasResults ? 'block' : 'none';
+            });
+
+            // Show/hide no results message
+            const existingNoResults = document.querySelector('.no-results');
+            if (existingNoResults) {
+                existingNoResults.remove();
+            }
+
+            if (!hasResults && searchTerm) {
+                const noResults = document.createElement('div');
+                noResults.className = 'no-results';
+                noResults.textContent = `No results found for "${searchTerm}"`;
+                document.querySelector('.container').appendChild(noResults);
+            }
+        });
+    </script>
+</body>
+
+</html>

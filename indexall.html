@@ -1,0 +1,1341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VidiSmart Ai Site Planner</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kumbh+Sans:wght@700;800&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+/* --- START OF style.css --- */
+/* Base & Custom Styles */
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #111827; /* Dark Gray-Blue */
+    color: #F3F4F6; /* Light Gray */
+    overflow-x: hidden;
+}
+
+#bg-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    opacity: 0.7;
+}
+
+h1, h2, h3, .column-header-text {
+    font-family: 'Kumbh Sans', sans-serif;
+}
+
+.vidismart-yellow {
+    color: #FBBF24; /* Amber-400 */
+}
+
+.vidismart-bg-dark {
+    background: linear-gradient(135deg, rgba(17,24,39,0.92) 60%, rgba(40,60,90,0.70) 100%);
+    backdrop-filter: blur(18px) saturate(120%);
+    -webkit-backdrop-filter: blur(18px) saturate(120%);
+    border-radius: 1.25rem;
+    border: 1.5px solid rgba(96,170,255,0.13);
+    box-shadow:
+        0 8px 32px 0 rgba(96,170,255,0.08),
+        0 1.5px 8px 0 rgba(0,0,0,0.18),
+        0 2px 8px 0 rgba(0,0,0,0.22),
+        0 0.5px 0.5px 0 rgba(255,255,255,0.08) inset,
+        0 2px 8px 0 rgba(59,130,246,0.05);
+    padding: 2rem 2rem 2.5rem 2rem;
+    margin-bottom: 2rem;
+    position: relative;
+    z-index: 1;
+    transition: box-shadow 0.3s, background 0.3s;
+}
+
+/* ... (all other lines from style.css, lines 46-734, now fully inlined) ... */
+.result-card p {
+    margin-bottom: 1.5rem;
+    color: #cbd5e1;
+    font-size: 1.05rem;
+    flex-grow: 1;
+}
+
+.result-card .card-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 0.5rem;
+    margin-top: auto;
+    width: 100%;
+    position: absolute;
+    left: 0;
+    bottom: 20px;
+    padding: 0 32px;
+    box-sizing: border-box;
+}
+
+.result-card .card-actions a {
+    width: 48%;
+    min-width: 120px;
+    max-width: 220px;
+    font-size: 1rem;
+    padding: 0.7rem 0.5rem;
+    border-radius: 0.6rem;
+    box-sizing: border-box;
+    background: linear-gradient(120deg, #181f2a 60%, #232b3a 100%);
+    color: #e0e7ef;
+    border: 1.5px solid #2a3650;
+    box-shadow: 0 2px 8px 0 rgba(30,40,60,0.10), 0 1.5px 8px 0 rgba(0,0,0,0.10);
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    transition: background 0.18s, color 0.18s, border 0.18s, box-shadow 0.18s;
+    outline: none;
+    position: relative;
+    overflow: hidden;
+}
+
+.result-card .card-actions a:hover, .result-card .card-actions a:focus {
+    background: linear-gradient(120deg, #2563eb 60%, #1e293b 100%);
+    color: #fff;
+    border-color: #2563eb;
+    box-shadow: 0 4px 24px 0 rgba(37,99,235,0.18), 0 1.5px 8px 0 rgba(0,0,0,0.12);
+    text-decoration: none;
+}
+
+@media (max-width: 600px) {
+    .result-card {
+        padding: 24px;
+        min-height: 220px;
+    }
+    .result-card .card-actions {
+        padding: 0 8px;
+        flex-direction: column;
+        gap: 0.7rem;
+        position: static;
+    }
+    .result-card .card-actions a {
+        width: 100%;
+        min-width: 0;
+        max-width: none;
+    }
+}
+
+.ai-analysis-card h4 {
+    font-family: 'Kumbh Sans', sans-serif;
+    color: #FBBF24;
+    font-weight: 700;
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+}
+.ai-analysis-card p {
+    margin-bottom: 1rem;
+}
+
+/* Modal Styles */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+.modal-panel {
+    background: linear-gradient(to bottom, #1f2937, #111827);
+    padding: 2rem;
+    border-radius: 1rem;
+    border: 1px solid #4b5563;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.75);
+    width: 90%;
+    max-width: 600px;
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+}
+.modal-content {
+    overflow-y: auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 0.75rem;
+    padding-right: 1rem; /* For scrollbar */
+}
+.multi-select-label {
+    cursor: pointer;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    border: 1px solid #374151;
+    background-color: #1f2937;
+    transition: all 0.2s ease-in-out;
+    font-size: 0.875rem;
+    display: block;
+    text-align: center;
+}
+.multi-select-label:hover {
+    border-color: #6b7280;
+    background-color: #374151;
+}
+.multi-select-input:checked + .multi-select-label {
+    background-color: #FBBF24;
+    border-color: #FBBF24;
+    color: #111827;
+    font-weight: 600;
+}
+
+/* Loader animation */
+.loader {
+    border: 4px solid #374151;
+    border-top: 4px solid #FBBF24;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin: 2rem auto;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Brand items separator */
+.brand-item {
+    font-family: 'Kumbh Sans', sans-serif;
+    font-size: 18px;
+    color: #cbd5e1;
+    white-space: nowrap;
+}
+.separator {
+    width: 2px;
+    height: 24px;
+    background-color: rgba(251, 191, 36, 0.2);
+    border-radius: 1px;
+    position: relative;
+    overflow: hidden;
+}
+.separator::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: -50%;
+    width: 200%;
+    height: 30px;
+    background: linear-gradient(to top, transparent, #FBBF24, transparent);
+    animation: sweep-up 4s linear infinite;
+    animation-delay: var(--delay);
+}
+@keyframes sweep-up {
+    0% { top: 110%; }
+    100% { top: -40px; }
+}
+
+/* Translated Tailwind Classes */
+.container { width: 100%; margin-left: auto; margin-right: auto; padding-left: 1rem; padding-right: 1rem; }
+@media (min-width: 768px) { .container { padding-left: 2rem; padding-right: 2rem; } }
+@media (min-width: 1280px) { .container { max-width: 80rem; } }
+.relative { position: relative; }
+.z-10 { z-index: 10; }
+.text-center { text-align: center; }
+.mb-10 { margin-bottom: 2.5rem; }
+.w-24 { width: 6rem; }
+.h-24 { height: 6rem; }
+.mx-auto { margin-left: auto; margin-right: auto; }
+.mb-4 { margin-bottom: 1rem; }
+.text-4xl { font-size: 2.25rem; line-height: 2.5rem; }
+@media (min-width: 768px) { .md\:text-5xl { font-size: 3rem; line-height: 1; } }
+.font-bold { font-weight: 700; }
+.mb-2 { margin-bottom: 0.5rem; }
+.text-lg { font-size: 1.125rem; line-height: 1.75rem; }
+.text-gray-400 { color: rgb(156 163 175); }
+.flex { display: flex; }
+.justify-center { justify-content: center; }
+.items-center { align-items: center; }
+.space-x-4 > :not([hidden]) ~ :not([hidden]) { margin-left: 1rem; }
+@media (min-width: 768px) { .md\:space-x-8 > :not([hidden]) ~ :not([hidden]) { margin-left: 2rem; } }
+.mt-4 { margin-top: 1rem; }
+.p-6 { padding: 1.5rem; }
+@media (min-width: 768px) { .md\:p-8 { padding: 2rem; } }
+.rounded-xl { border-radius: 0.75rem; }
+.grid { display: grid; }
+.grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+@media (min-width: 1024px) { .lg\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 0.67fr)); } }
+.gap-x-8 { column-gap: 2rem; }
+.gap-y-8 { row-gap: 2rem; }
+.space-y-8 > :not([hidden]) ~ :not([hidden]) { margin-top: 2rem; }
+.block { display: block; }
+.font-semibold { font-weight: 600; }
+.text-gray-300 { color: rgb(209 213 219); }
+.w-full { width: 100%; }
+.mt-8 { margin-top: 2rem; }
+.mt-10 { margin-top: 2.5rem; }
+.pt-8 { padding-top: 2rem; }
+.border-t { border-top-width: 1px; }
+.border-gray-700 { border-color: #374151; }
+.bg-yellow-500 { background-color: #FBBF24; }
+.text-gray-900 { color: #111827; }
+.hover\:bg-yellow-400:hover { background-color: #FCD34D; }
+@media (min-width: 768px) { .md\:w-auto { width: auto; } }
+.px-10 { padding-left: 2.5rem; padding-right: 2.5rem; }
+.py-3 { padding-top: 0.75rem; padding-bottom: 0.75rem; }
+.mt-12 { margin-top: 3rem; }
+.hidden { display: none; }
+.bg-blue-600 { background-color: #2563EB; }
+.text-white { color: #ffffff; }
+.hover\:bg-blue-500:hover { background-color: #3B82F6; }
+.text-2xl { font-size: 1.5rem; line-height: 2rem; }
+.text-3xl { font-size: 1.875rem; line-height: 2.25rem; }
+.mb-6 { margin-bottom: 1.5rem; }
+.text-right { text-align: right; }
+.px-6 { padding-left: 1.5rem; padding-right: 1.5rem; }
+.text-red-400 { color: #f87171; }
+.underline { text-decoration-line: underline; }
+.text-sm { font-size: 0.875rem; line-height: 1.25rem; }
+.separator-line {
+    margin-top: 30px;
+    margin-bottom: 30px;
+    height: 2px;
+    border: 0;
+    background: linear-gradient(90deg, rgba(96,170,255,0.15) 0%, rgba(156,163,175,0.20) 50%, rgba(96,170,255,0.15) 100%);
+    box-shadow: 0 2px 8px 0 rgba(96,170,255,0.10);
+    filter: blur(0.5px);
+    opacity: 0.20;
+    transition: background 0.3s;
+}
+
+.modal-btn.glass-btn {
+    color: #60aaff !important; /* Light blue */
+}
+
+.bottom-panel {
+    margin-top: 36px;
+    margin-bottom: 36px;
+    padding: 32px 24px;
+    background: linear-gradient(120deg, rgba(30,41,59,0.85) 60%, rgba(59,130,246,0.10) 100%);
+    border-radius: 1.25rem;
+    border: 1.5px solid rgba(96,170,255,0.18);
+    box-shadow: 0 8px 32px 0 rgba(96,170,255,0.10), 0 1.5px 8px 0 rgba(0,0,0,0.18);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    position: relative;
+    z-index: 2;
+    transition: box-shadow 0.3s, background 0.3s;
+}
+
+.bottom-panel::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 1.25rem;
+    pointer-events: none;
+    box-shadow: 0 0 0 2px rgba(96,170,255,0.10), 0 4px 24px 0 rgba(59,130,246,0.08);
+    opacity: 0.7;
+    z-index: -1;
+}
+
+.modal-header-relative {
+    position: relative;
+    margin-bottom: 1.5rem;
+    min-height: 2.5rem;
+}
+
+#modal-close-btn {
+    position: absolute;
+    top: 0.25rem;
+    right: 0.25rem;
+    z-index: 10;
+    padding: 0.25rem 0.5rem;
+    line-height: 1;
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+#modal-title {
+    margin-right: 2.5rem;
+    text-align: left;
+}
+
+#results-container .grid {
+    gap: 20px !important;
+}
+
+@keyframes play-glow-oscillate {
+    0% {
+        transform: scale(1);
+        filter: drop-shadow(0 0 8px #FBBF24) drop-shadow(0 0 16px #FFD700);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.12);
+        filter: drop-shadow(0 0 32px #FFD700) drop-shadow(0 0 48px #FBBF24);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1);
+        filter: drop-shadow(0 0 8px #FBBF24) drop-shadow(0 0 16px #FFD700);
+        opacity: 1;
+    }
+}
+
+.vidismart-logo-play {
+    transform-origin: 52% 50%;
+    animation: play-glow-oscillate 2.2s ease-in-out infinite;
+    /* The fill is set to the SVG gradient, but the glow is now gold. */
+}
+
+.vidismart-logo-animated {
+  position: relative;
+  width: 96px;
+  height: 96px;
+  margin: 0 auto 1rem auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.vidismart-logo-glow {
+  position: absolute;
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #60aaff 0%, #2563EB 60%, #111827 100%);
+  filter: blur(18px) brightness(1.5);
+  z-index: 1;
+  pointer-events: none;
+}
+
+.vidismart-logo-nucleus {
+  position: absolute;
+  width: 48px;
+  height: 48px;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(circle, #fff 0%, #60aaff 60%, #2563EB 100%);
+  box-shadow: 0 0 32px #60aaff, 0 0 8px #fffbe6;
+  opacity: 0.95;
+  z-index: 2;
+}
+
+.vidismart-logo-orbit {
+  position: absolute;
+  left: 50%; top: 50%;
+  width: 80px; height: 80px;
+  border-radius: 50%;
+  border: 2px solid rgba(96,170,255,0.18);
+  border-top: 2px solid #fff;
+  border-bottom: 2px solid #60aaff;
+  opacity: 0.7;
+  filter: blur(2px);
+  pointer-events: none;
+  z-index: 3;
+}
+.orbit1 { transform: translate(-50%, -50%) rotate(0deg) scaleY(0.7);}
+.orbit2 { transform: translate(-50%, -50%) rotate(45deg) scaleY(0.7);}
+.orbit3 { transform: translate(-50%, -50%) rotate(90deg) scaleY(0.7);}
+.orbit4 { transform: translate(-50%, -50%) rotate(135deg) scaleY(0.7);}
+
+.vidismart-logo-particle {
+  position: absolute;
+  width: 18px; height: 6px;
+  border-radius: 50%;
+  background: linear-gradient(90deg, #fff 60%, #60aaff 100%);
+  filter: blur(2.5px) brightness(2.2);
+  opacity: 0.95;
+  z-index: 4;
+  pointer-events: none;
+}
+.particle1 { animation: fast-orbit-1 0.8s linear infinite; }
+.particle2 { animation: fast-orbit-2 0.8s linear infinite; }
+.particle3 { animation: fast-orbit-3 0.8s linear infinite; }
+.particle4 { animation: fast-orbit-4 0.8s linear infinite; }
+
+@keyframes fast-orbit-1 {
+  0%   { left: 50%; top: 10%; }
+  25%  { left: 90%; top: 50%; }
+  50%  { left: 50%; top: 90%; }
+  75%  { left: 10%; top: 50%; }
+  100% { left: 50%; top: 10%; }
+}
+@keyframes fast-orbit-2 {
+  0%   { left: 80%; top: 20%; }
+  25%  { left: 80%; top: 80%; }
+  50%  { left: 20%; top: 80%; }
+  75%  { left: 20%; top: 20%; }
+  100% { left: 80%; top: 20%; }
+}
+@keyframes fast-orbit-3 {
+  0%   { left: 70%; top: 10%; }
+  25%  { left: 90%; top: 70%; }
+  50%  { left: 30%; top: 90%; }
+  75%  { left: 10%; top: 30%; }
+  100% { left: 70%; top: 10%; }
+}
+@keyframes fast-orbit-4 {
+  0%   { left: 60%; top: 20%; }
+  25%  { left: 85%; top: 60%; }
+  50%  { left: 40%; top: 85%; }
+  75%  { left: 15%; top: 40%; }
+  100% { left: 60%; top: 20%; }
+}
+
+#vidismart-logo {
+  max-width: 90vw;
+  max-height: 240px;
+  width: 240px;
+  height: 240px;
+  display: block;
+  margin: 0 auto;
+  border-radius: 50%;
+  background: transparent;
+}
+
+.card-icon {
+  width: 54px;
+  height: 54px;
+  aspect-ratio: 1/1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: -35px auto 7px auto;
+  object-fit: contain;
+  /* Prevents stretching */
+}
+
+.sweep-highlight {
+  position: relative;
+  display: inline-block;
+  overflow: hidden;
+}
+.sweep-highlight::after {
+  content: '';
+  position: absolute;
+  top: -40%;
+  left: -70%;
+  width: 140%;
+  height: 180%;
+  background: linear-gradient(120deg, rgba(96,170,255,0.0) 0%, rgba(96,170,255,0.32) 35%, rgba(255,255,255,0.55) 50%, rgba(96,170,255,0.32) 65%, rgba(96,170,255,0.0) 100%);
+  pointer-events: none;
+  z-index: 2;
+  transform: skewX(-18deg);
+  animation: sweep-light 1.7s cubic-bezier(0.4,0.0,0.2,1) 0.2s 1;
+  opacity: 1;
+  animation-fill-mode: forwards;
+}
+@keyframes sweep-light {
+  0% { left: -70%; opacity: 0.0; }
+  10% { opacity: 0.22; }
+  40% { opacity: 0.38; }
+  60% { opacity: 0.38; }
+  100% { left: 100%; opacity: 0.0; }
+}
+/* --- END OF style.css --- */
+    </style>
+</head>
+<body class="antialiased">
+    <div style="display: flex; justify-content: center; align-items: center; margin-top: 0; margin-bottom: -22px;">
+      <canvas id="vidismart-logo" width="240" height="240" style="display: block; background: transparent;"></canvas>
+    </div>
+    <canvas id="cloud-canvas" style="position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:-2;pointer-events:none;"></canvas>
+    <canvas id="bg-canvas"></canvas>
+    <div class="container">
+        <!-- Header -->
+        <header class="text-center mb-10">
+            <h1 class="text-4xl md:text-5xl font-bold mb-2 title-shadow">
+                <span class="headline-gradient">VidiSmart</span> Ai Site Planner
+            </h1>
+            <p class="text-lg text-gray-400">Configure your modern, Ai SmartChannel Tech Stack.</p>
+            <div class="flex justify-center items-center space-x-4 md:space-x-8 mt-4">
+                <span class="brand-item">VidiCRM™</span>
+                <div class="separator" style="--delay: 0s;"></div>
+                <span class="brand-item">VidiBlast & VidiMail™</span>
+                <div class="separator" style="--delay: 0.5s;"></div>
+                <span class="brand-item">VidiBot™</span>
+            </div>
+        </header>
+
+        <!-- Configuration Form -->
+        <div class="vidismart-bg-dark p-6 md:p-8 rounded-xl">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-x-8 gap-y-8">
+                <!-- Column 1: Data Infrastructure -->
+                <div class="space-y-8">
+                    <div class="column-header">
+                        <div class="header-logo" style="--delay: 0s;"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 12h16M4 8h16M4 16h16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                        <h3 class="column-header-text">Data Infrastructure</h3>
+                    </div>
+                    <div><label for="backend" class="block mb-2 font-semibold text-gray-300 text-lg">Backend & Database</label><select id="backend" class="w-full"></select></div>
+                    <div><label for="cms" class="block mb-2 font-semibold text-gray-300 text-lg">Content Management (CMS)</label><select id="cms" class="w-full"></select></div>
+                    <div><label for="crm" class="block mb-2 font-semibold text-gray-300 text-lg">CRM & Marketing</label><select id="crm" class="w-full"></select></div>
+                </div>
+
+                <!-- Column 2: Ai Tools & LLM -->
+                <div class="space-y-8">
+                    <div class="column-header">
+                        <div class="header-logo" style="--delay: 0.2s;"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2L9 9l-7 2.5 7 2.5 3 7 3-7 7-2.5-7-2.5L12 2z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M19 12l-2 3-3-2 2-3 3 2z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg></div>
+                        <h3 class="column-header-text">Ai Tools & LLM</h3>
+                    </div>
+                    <div><label for="vectorDB" class="block mb-2 font-semibold text-gray-300 text-lg">Vector Database</label><select id="vectorDB" class="w-full"></select></div>
+                    <div><label for="agentTools" class="block mb-2 font-semibold text-gray-300 text-lg">Agentified Agent Army</label><select id="agentTools" class="w-full"></select></div>
+                    <div><label for="siteCreation" class="block mb-2 font-semibold text-gray-300 text-lg">Ai Site Creation</label><select id="siteCreation" class="w-full"></select></div>
+                </div>
+
+                <!-- Column 3: Ai Video UX/UI Design -->
+                <div class="space-y-8">
+                     <div class="column-header">
+                        <div class="header-logo" style="--delay: 0.4s;"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                        <h3 class="column-header-text">Ai Video UX/UI Design</h3>
+                    </div>
+                    <div><label for="archetype" class="block mb-2 font-semibold text-gray-300 text-lg">Project Archetype</label><select id="archetype" class="w-full"></select></div>
+                    <div><label for="frontend" class="block mb-2 font-semibold text-gray-300 text-lg">Frontend Framework</label><select id="frontend" class="w-full"></select></div>
+                    <div><label for="ai-video" class="block mb-2 font-semibold text-gray-300 text-lg">AI Video Creation Tool</label><select id="ai-video" class="w-full"></select></div>
+                </div>
+            </div>
+            <!-- Modern Panel for Bottom 6 Buttons -->
+            <div class="bottom-panel">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-x-8 gap-y-8">
+                     <div><label for="ai-model-btn" class="block mb-2 font-semibold text-gray-300 text-lg">Primary AI Models</label><button id="ai-model-btn" data-category="ai-model" class="modal-btn glass-btn"></button></div>
+                     <div><label for="uiuxTools-btn" class="block mb-2 font-semibold text-gray-300 text-lg">UI/UX Design Tools</label><button id="uiuxTools-btn" data-category="uiuxTools" class="modal-btn glass-btn"></button></div>
+                     <div><label for="payment-btn" class="block mb-2 font-semibold text-gray-300 text-lg">Payment Gateways</label><button id="payment-btn" data-category="payment" class="modal-btn glass-btn"></button></div>
+                     <div><label for="mcpServers-btn" class="block mb-2 font-semibold text-gray-300 text-lg">MCP Servers</label><button id="mcpServers-btn" data-category="mcpServers" class="modal-btn glass-btn"></button></div>
+                     <div><label for="videoHosting-btn" class="block mb-2 font-semibold text-gray-300 text-lg">Video Hosting Channels</label><button id="videoHosting-btn" data-category="videoHosting" class="modal-btn glass-btn"></button></div>
+                     <div><label for="hosting-btn" class="block mb-2 font-semibold text-gray-300 text-lg">Hosting & Deployment</label><button id="hosting-btn" data-category="hosting" class="modal-btn glass-btn"></button></div>
+                </div>
+            </div>
+            <!-- Generate Button -->
+            <div class="mt-10 pt-8 border-t border-gray-700 text-center">
+                <button id="generate-plan" class="btn btn-sweep font-bold text-lg bg-yellow-500 text-gray-900 hover:bg-yellow-400 w-full md:w-auto px-10 py-3">
+                    Generate My Solution
+                </button>
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <div id="results-container" class="mt-12"></div>
+        
+        <!-- AI Analysis Section -->
+        <div id="ai-analysis-button-container" class="mt-8 text-center" style="display: none;">
+             <button id="get-ai-analysis" class="btn btn-sweep font-bold text-lg bg-blue-600 text-white hover:bg-blue-500 w-full md:w-auto px-10 py-3">
+                ✨ Get AI Analysis
+            </button>
+        </div>
+        <div id="ai-analysis-container" class="mt-8"></div>
+    </div>
+    <!-- Modal Structure -->
+    <div id="multi-select-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-panel">
+            <div class="modal-header-relative">
+                <h3 id="modal-title" class="text-2xl font-bold text-white">Select Options</h3>
+                <button id="modal-close-btn" class="text-gray-400 hover:text-white text-3xl font-bold">×</button>
+            </div>
+            <div class="mb-4">
+                 <button id="modal-clear-btn" class="w-full text-sm text-center text-gray-400 hover:text-white underline">Clear Selection</button>
+            </div>
+            <div id="modal-content" class="modal-content mb-6">
+                <!-- Checkboxes will be injected here -->
+            </div>
+            <div class="mt-auto text-right">
+                <button id="modal-save-btn" class="btn bg-yellow-500 text-gray-900 hover:bg-yellow-400 px-6">Done</button>
+            </div>
+        </div>
+    </div>
+    <script>
+/* --- START OF script.js --- */
+// --- Three.js Background Animation ---
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('bg-canvas'), alpha: true, antialias: true });
+renderer.setSize(window.innerWidth, window.innerHeight);
+const clock = new THREE.Clock();
+const geometry = new THREE.PlaneGeometry(2, 2);
+const material = new THREE.ShaderMaterial({
+    uniforms: {
+        u_time: { value: 0.0 },
+        u_resolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) },
+        u_mouse: { value: new THREE.Vector2(0.5, 0.5) }
+    },
+    vertexShader: `void main() { gl_Position = vec4(position, 1.0); }`,
+    fragmentShader: `
+        uniform vec2 u_resolution;
+        uniform float u_time;
+        float random (in vec2 st) { return fract(sin(dot(st.xy, vec2(12.9898,78.233))) * 43758.5453123); }
+        float noise (in vec2 st) {
+            vec2 i = floor(st); vec2 f = fract(st);
+            float a = random(i); float b = random(i + vec2(1.0, 0.0)); float c = random(i + vec2(0.0, 1.0)); float d = random(i + vec2(1.0, 1.0));
+            vec2 u = f*f*(3.0-2.0*f);
+            return mix(a, b, u.x) + (c - a)* u.y * (1.0 - u.x) + (d - b) * u.x * u.y;
+        }
+        float dither(vec2 st) {
+            return (random(st + u_time) - 0.5) * 0.03;
+        }
+        void main() {
+            vec2 st = gl_FragCoord.xy/u_resolution.xy; st.x *= u_resolution.x/u_resolution.y;
+            // Very dark base, deep blue sweep (40% darker)
+            vec3 base = vec3(0.006, 0.013, 0.045); // 40% darker
+            vec3 blue = vec3(0.096, 0.248, 0.592); // 40% darker
+            vec3 gray = vec3(0.083, 0.096, 0.115); // 40% darker
+            float sweep = smoothstep(0.0, 0.7, st.x - st.y + 0.25 + 0.18*sin(u_time*0.28*3.0)) * 1.0;
+            float sweep2 = smoothstep(0.0, 0.8, st.x + st.y - 0.2 + 0.12*cos(u_time*0.19*3.0)) * 0.7;
+            float n = noise(st * 2.7 + u_time * 0.09*3.0);
+            float n2 = noise(st * 3.5 - u_time * 0.07*3.0);
+            float pattern = mix(n, n2, 0.5);
+            float contrast = 0.6 + 1.2*pattern;
+            vec3 color = base;
+            color = mix(color, gray, 0.4 + 0.6*pattern);
+            color = mix(color, blue, sweep + sweep2);
+            color *= contrast;
+            color += dither(st);
+            gl_FragColor = vec4(color, 1.0);
+        }`
+});
+const plane = new THREE.Mesh(geometry, material);
+scene.add(plane);
+function animate() { requestAnimationFrame(animate); material.uniforms.u_time.value = clock.getElapsedTime(); renderer.render(scene, camera); }
+function onWindowResize() { camera.aspect = window.innerWidth / window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth, window.innerHeight); material.uniforms.u_resolution.value.set(window.innerWidth, window.innerHeight); }
+function onMouseMove(event) { material.uniforms.u_mouse.value.x = event.clientX / window.innerWidth; material.uniforms.u_mouse.value.y = 1.0 - (event.clientY / window.innerHeight); }
+window.addEventListener('resize', onWindowResize, false); window.addEventListener('mousemove', onMouseMove, false);
+animate();
+
+// --- VidiSmart App Logic ---
+const techData = {
+    archetype: [ { id: 'creator-hub', name: 'Video-First Creator Hub', description: 'A platform focused on video content, community engagement, and monetization for creators.' }, { id: 'knowledge-forum', name: 'Knowledge-Based Discussion Forum', description: 'A community centered around structured discussions, knowledge sharing, and long-form content.' }, { id: 'elearning', name: 'E-learning Community', description: 'An integrated platform for online courses, student interaction, and educational content delivery.' }, { id: 'brand-community', name: 'Brand-Sponsored Community', description: 'A space for customers to connect, share experiences, and engage directly with a brand.' }, ],
+    frontend: [ 
+        { id: 'react', name: 'React.js', description: 'The library for web and native user interfaces. Often paired with a router and state management for full applications.', website: 'https://react.dev/', video: 'https://www.youtube.com/watch?v=Tn6-PIqc4UM' },
+        { id: 'nextjs', name: 'Next.js (React Framework)', description: 'A powerful React framework for building scalable, high-performance web applications with both server-side and static rendering.', website: 'https://nextjs.org/', video: 'https://www.youtube.com/watch?v=Sklc_fQBmcs' }, 
+        { id: 'nuxtjs', name: 'Nuxt.js (Vue Framework)', description: 'The intuitive Vue framework for creating universal applications, static websites, and single-page applications.', website: 'https://nuxt.com/', video: 'https://www.youtube.com/watch?v=d_B1GtrA7sU' }, 
+        { id: 'sveltekit', name: 'SvelteKit', description: 'A framework for building web applications of all sizes, with a beautiful development experience and flexible filesystem-based routing.', website: 'https://kit.svelte.dev/', video: 'https://www.youtube.com/watch?v=UGBJg3b9A7U' }, 
+        { id: 'angular', name: 'Angular', description: 'A platform for building mobile and desktop web applications, developed and maintained by Google.', website: 'https://angular.dev/', video: 'https://www.youtube.com/watch?v=3qBXWUpoPHo' }, 
+    ],
+    backend: [ 
+        { id: 'supabase', name: 'Supabase (Postgres)', description: 'An open-source Firebase alternative built on PostgreSQL. Provides a database, authentication, instant APIs, and storage.', website: 'https://supabase.com/', video: 'https://www.youtube.com/watch?v=6C3t_8pI5s' }, 
+        { id: 'mysql', name: 'MySQL', description: 'The world\'s most popular open-source relational database. A reliable and standard choice for many web applications.', website: 'https://www.mysql.com/', video: 'https://www.youtube.com/watch?v=7S_tz1z_5bA' },
+        { id: 'mongodb', name: 'MongoDB (NoSQL)', description: 'A leading NoSQL, document-oriented database. Its flexible schema is ideal for rapidly evolving applications.', website: 'https://www.mongodb.com/', video: 'https://www.youtube.com/watch?v=ofIu_vGpgqU' },
+        { id: 'airtable', name: 'Airtable', description: 'A low-code platform for building collaborative apps. It combines the flexibility of a spreadsheet with the power of a database.', website: 'https://www.airtable.com/', video: 'https://www.youtube.com/watch?v=6UjGAnj-F8s' },
+        { id: 'self-hosted-pg', name: 'Self-Hosted Postgres + Node.js', description: 'A flexible and powerful combination for full control over your backend infrastructure, using Node.js for the application server.', website: 'https://www.postgresql.org/', video: 'https://www.youtube.com/watch?v=e4S22_N_aC4' }, 
+        { id: 'laravel', name: 'Laravel (PHP)', description: 'A PHP web application framework with expressive, elegant syntax, focusing on easing common development tasks.', website: 'https://laravel.com/', video: 'https://www.youtube.com/watch?v=ImtZ5_V2_o' }, 
+        { id: 'firebase', name: 'Firebase (NoSQL)', description: 'Google\'s platform for creating mobile and web applications. Provides a realtime NoSQL database, auth, and hosting.', website: 'https://firebase.google.com/', video: 'https://www.youtube.com/watch?v=jsrg_i66n-4' }, 
+    ],
+    cms: [ { id: 'strapi', name: 'Strapi', description: 'A leading open-source headless CMS. It\'s 100% JavaScript, fully customizable, and developer-first.', website: 'https://strapi.io/', video: 'https://www.youtube.com/watch?v=Bomyso33sLg' }, { id: 'payload', name: 'Payload CMS', description: 'A TypeScript-native headless CMS and application framework. Can be installed directly into a Next.js app.', website: 'https://payloadcms.com/', video: 'https://www.youtube.com/watch?v=h8pYAAc3ySM' }, { id: 'headless-wp', name: 'Headless WordPress', description: 'Using the world\'s most popular CMS as a content backend, serving data via its REST API to a modern frontend.', website: 'https://wordpress.org/', video: 'https://www.youtube.com/watch?v=VtsD_IqC30c' }, { id: 'octobercms', name: 'October CMS (Laravel)', description: 'A free, open-source, self-hosted CMS platform based on the Laravel PHP Framework, known for its simplicity and extensibility.', website: 'https://octobercms.com/', video: 'https://www.youtube.com/watch?v=5A9aY6a_3E4' }, { id: 'statamic', name: 'Statamic (Laravel)', description: 'A highly flexible, flat-file CMS built on Laravel. It stores content in files, not a database, offering a unique developer experience.', website: 'https://statamic.com/', video: 'https://www.youtube.com/watch?v=Tq9z-Q_3_kU' }, { id: 'wintercms', name: 'Winter CMS (Laravel)', description: 'A community-driven fork of October CMS, offering a back-to-basics approach with a focus on speed, security, and simplicity.', website: 'https://wintercms.com/', video: 'https://www.youtube.com/watch?v=U-g0_m_fA_I' }, { id: 'hygraph', name: 'Hygraph', description: 'A federated content platform that allows you to connect and manage content from various sources through a single API.', website: 'https://hygraph.com/', video: 'https://www.youtube.com/watch?v=Yj2e04a-5FY' }, ],
+    'ai-model': [ 
+        { id: 'gemini', name: 'Google Gemini', description: 'A powerful family of natively multimodal models, designed to understand and process text, images, audio, and video.', website: 'https://gemini.google.com/', video: 'https://www.youtube.com/watch?v=jV1vkHv4Ofs' }, 
+        { id: 'claude', name: 'Anthropic Claude', description: 'A family of large language models renowned for strong performance in creative writing, complex reasoning, and nuanced text generation.', website: 'https://www.anthropic.com/', video: 'https://www.youtube.com/watch?v=7t1fHrN0-pI' }, 
+        { id: 'openai-gpt', name: 'OpenAI GPT-4o', description: 'A highly advanced multimodal model from OpenAI, capable of processing and generating text, audio, and image content.', website: 'https://openai.com/', video: 'https://www.youtube.com/watch?v=oZ9pcoG49Gk' }, 
+        { id: 'ollama', name: 'Ollama (Local LLM)', description: 'Run large language models like Llama 3 and others locally on your own machine for privacy and control.', website: 'https://ollama.com/', video: 'https://www.youtube.com/watch?v=9ayACi_y_O' },
+        { id: 'lm-studio', name: 'LM Studio (Google)', description: 'Discover, download, and run local LLMs from a user-friendly desktop application.', website: 'https://lmstudio.ai/' },
+    ],
+    'ai-video': [ { id: 'heygen', name: 'HeyGen', description: 'An AI video platform for creating engaging videos with generative avatars and voice cloning for business use cases.', website: 'https://www.heygen.com/', video: 'https://www.youtube.com/watch?v=cUMc5r1An-A' }, { id: 'tavus', name: 'Tavus', description: 'An AI video personalization platform that automatically generates unique videos of you for thousands of recipients.', website: 'https://www.tavus.io/', video: 'https://www.youtube.com/watch?v=LqgQ52d32a4' }, { id: 'pictory', name: 'Pictory AI', description: 'An AI tool that automatically creates short, highly-shareable branded videos from your long-form content.', website: 'https://pictory.ai/', video: 'https://www.youtube.com/watch?v=iZ5a1XieHj4' }, { id: 'invideo', name: 'InVideo', description: 'An online video editor with templates, stock media, and AI tools to make professional videos quickly and easily.', website: 'https://invideo.io/', video: 'https://www.youtube.com/watch?v=s45Vf2a2o' }, { id: 'veo', name: 'Google Veo', description: 'Google\'s most capable generative video model, creating high-quality, realistic video clips from text and image prompts.', website: 'https://deepmind.google/technologies/veo/', video: 'https://www.youtube.com/watch?v=K8e95e1dcI' }, ],
+    crm: [ 
+        { id: 'gohighlevel', name: 'GoHighLevel', description: 'An all-in-one sales and marketing platform for agencies and small businesses, providing CRM, funnels, and automation.', website: 'https://www.gohighlevel.com/', video: 'https://www.youtube.com/watch?v=Sg_mKxYy9A' },
+        { id: 'hubspot', name: 'HubSpot', description: 'A leading CRM platform with tools for marketing, sales, customer service, and content management.', website: 'https://www.hubspot.com/' },
+        { id: 'salesforce', name: 'Salesforce', description: 'The #1 AI CRM, uniting your marketing, sales, service, commerce, and IT teams from anywhere.', website: 'https://www.salesforce.com/' },
+    ],
+    payment: [ { id: 'stripe', name: 'Stripe', description: 'A developer-first payments platform with powerful APIs for handling online transactions, subscriptions, and more.', website: 'https://stripe.com/', video: 'https://www.youtube.com/watch?v=p3--gI67g' }, { id: 'paypal', name: 'PayPal', description: 'A globally recognized and trusted payment provider, offering a simple way to accept payments online.', website: 'https://www.paypal.com/', video: 'https://www.youtube.com/watch?v=3MUnSaim_w' }, { id: 'bitpay', name: 'BitPay', description: 'A leading crypto payment processor that allows merchants to accept cryptocurrencies and receive settlement in fiat.', website: 'https://bitpay.com/', video: 'https://www.youtube.com/watch?v=t3-w2t3t2o' }, { id: 'coinbase-commerce', name: 'Coinbase Commerce', description: 'A straightforward solution for businesses to accept cryptocurrency payments from a trusted brand in the crypto space.', website: 'https://commerce.coinbase.com/', video: 'https://www.youtube.com/watch?v=Js-Q_qQ' }, ],
+    hosting: [ { id: 'vercel', name: 'Vercel (JS Platform)', description: 'The platform from the creators of Next.js.Offers seamless git-based deployment and a global edge network.', website: 'https://vercel.com/', video: 'https://www.youtube.com/watch?v=f5h_3I4p-I' }, { id: 'netlify', name: 'Netlify (JS Platform)', description: 'A powerful platform for building and deploying modern Jamstack web projects.', website: 'https://www.netlify.com/', video: 'https://www.youtube.com/watch?v=3W9p3S' }, { id: 'cloudflare-pages', name: 'Cloudflare Pages (JS Platform)', description: 'A Jamstack platform for frontend developers to collaborate and deploy websites.', website: 'https://pages.cloudflare.com/', video: 'https://www.youtube.com/watch?v=1YVj' }, { id: 'render', name: 'Render (JS Platform)', description: 'A unified cloud to build and run all your apps and websites with free TLS certificates, a global CDN, and DDoS protection.', website: 'https://render.com/', video: 'https://www.youtube.com/watch?v=dC_i4y_2h2Y' }, { id: 'replit', name: 'Replit (JS Platform)', description: 'An online IDE and hosting platform that allows for rapid development and deployment directly from the browser.', website: 'https://replit.com/', video: 'https://www.youtube.com/watch?v=20t3-I4A2dM' }, { id: 'hostinger', name: 'Hostinger (VPS)', description: 'A popular and affordable web hosting provider offering a range of services from shared hosting to VPS and cloud plans.', website: 'https://www.hostinger.com/', video: 'https://www.youtube.com/watch?v=Gg_g' }, { id: 'bluehost', name: 'Bluehost (VPS)', description: 'A leading web hosting solutions company, specializing in WordPress and offering a variety of hosting services.', website: 'https://www.bluehost.com/', video: 'https://www.youtube.com/watch?v=z4c94s9A-l8' }, { id: 'siteground', name: 'SiteGround (VPS)', description: 'A web hosting company known for top-rated customer support and fast, reliable hosting services.', website: 'https://www.siteground.com/', video: 'https://www.youtube.com/watch?v=T9uMWV3f6gY' }, { id: 'contabo', name: 'Contabo (VPS)', description: 'A German hosting company offering powerful and affordable VPS and dedicated servers with a focus on performance.', website: 'https://contabo.com/', video: 'https://www.youtube.com/watch?v=k2v_q4_w5_g' }, { id: 'godaddy', name: 'GoDaddy (VPS)', description: 'A major domain registrar and web hosting company providing a wide range of online services, including VPS hosting.', website: 'https://www.godaddy.com/', video: 'https://www.youtube.com/watch?v=i_pA9f4S_Yc' }, { id: 'hostgator', name: 'HostGator (VPS)', description: 'A global provider of web hosting and related services, offering VPS plans for growing websites.', website: 'https://www.hostgator.com/', video: 'https://www.youtube.com/watch?v=wKOA7_gE5A' }, { id: 'ionos', name: 'IONOS (1&1) (VPS)', description: 'A web hosting and cloud partner for small and medium-sized businesses, offering a wide array of products.', website: 'https://www.ionos.com/', video: 'https://www.youtube.com/watch?v=0_2Xn9g_t_g' }, ],
+    siteCreation: [
+        { id: 'cursor', name: 'Cursor', description: 'The AI-first code editor, designed for building software with LLMs at its core.', website: 'https://cursor.sh/' },
+        { id: 'vscode', name: 'VS Code', description: 'A free, powerful, and extensible code editor from Microsoft that has become an industry standard.', website: 'https://code.visualstudio.com/' },
+        { id: 'lovable', name: 'Lovable', description: 'An AI-powered platform to build web applications from scratch, describing them in plain English.', website: 'https://lovable.dev/' },
+        { id: 'windsurf', name: 'Windsurf', description: 'A conceptual AI tool for rapid site generation and development, mentioned in planning docs.', website: '#' },
+        { id: 'webstudio', name: 'Webstudio', description: 'An open-source visual development platform, seen as an alternative to Webflow.', website: 'https://webstudio.is/' },
+        { id: 'grapesjs', name: 'GrapesJS', description: 'An open-source, multi-purpose, Web Builder Framework which combines different tools to help you build HTML templates.', website: 'https://grapesjs.com/' },
+        { id: 'databutton', name: 'DataButton', description: 'Build and deploy data apps, dashboards, and AI agents directly from your browser.', website: 'https://www.databutton.com/' },
+    ],
+    uiuxTools: [
+        { id: 'figma', name: 'Figma', description: 'The leading collaborative interface design tool for creating, testing, and shipping better designs.', website: 'https://www.figma.com/' },
+        { id: 'relume', name: 'Relume', description: 'Build websites in hours, not months with the world\'s largest library of Figma & Webflow components.', website: 'https://www.relume.io/' },
+        { id: 'shadcn-ui', name: 'shadcn/ui', description: 'Beautifully designed components that you can copy and paste into your apps. Accessible. Customizable. Open Source.', website: 'https://ui.shadcn.com/' },
+        { id: 'lucide-react', name: 'Lucide React', description: 'A beautiful and consistent open-source icon set, provided as a React library.', website: 'https://lucide.dev/' },
+        { id: 'anima', name: 'Anima', description: 'A design-to-code platform that lets you create interactive prototypes in Figma and export them to HTML, React, or Vue.', website: 'https://www.animaapp.com/' },
+    ],
+    agentTools: [
+        { id: 'n8n', name: 'n8n', description: 'A powerful, self-hostable workflow automation tool to connect various services and build complex automations.', website: 'https://n8n.io/' },
+        { id: 'zapier', name: 'Zapier', description: 'The most popular no-code automation tool, connecting thousands of web apps to automate repetitive tasks.', website: 'https://zapier.com/' },
+        { id: 'make', name: 'Make', description: 'A visual platform for anyone to design, build, and automate anything from tasks and workflows to apps and systems.', website: 'https://www.make.com/' },
+        { id: 'langgraph', name: 'LangGraph', description: 'A library for building stateful, multi-actor applications with LLMs, built on top of LangChain.', website: 'https://langchain-ai.github.io/langgraph/' },
+        { id: 'langchain', name: 'LangChain', description: 'A framework for developing applications powered by large language models (LLMs).', website: 'https://www.langchain.com/' },
+        { id: 'lindy', name: 'Lindy', description: 'An AI-powered assistant that can handle repetitive tasks like scheduling, email drafting, and more.', website: 'https://www.lindy.ai/' },
+        { id: 'relevance-ai', name: 'Relevance AI', description: 'A low-code platform for building and deploying AI agents and workflows for your business data.', website: 'https://relevance.ai/' },
+    ],
+    mcpServers: [
+        { id: 'supabase-mcp', name: 'Supabase MCP', description: 'A Model-Context-Protocol server for interacting with Supabase, enabling agents to query databases.', website: 'https://github.com/supabase-community/mcp-server-supabase' },
+        { id: 'github-mcp', name: 'GitHub MCP', description: 'A conceptual MCP server for allowing AI agents to interact with GitHub repositories, issues, and actions.', website: '#' },
+        { id: 'docker-mcp', name: 'Docker MCP', description: 'A conceptual MCP server for managing Docker containers and images through an agentic interface.', website: '#' },
+        { id: 'crawl4ai-mcp', name: 'Crawl4AI MCP', description: 'An MCP server built for AI-powered web scraping and data retrieval for RAG pipelines.', website: 'https://github.com/coleam00/mcp-crawl-server' },
+        { id: 'brave-mcp', name: 'Brave Search MCP', description: 'An MCP server to provide AI agents with access to the Brave Search API for real-time web information.', website: 'https://github.com/modelcontextprotocol/mcp-brave-search' },
+        { id: 'figma-mcp', name: 'Figma MCP', description: 'A conceptual MCP server for agentic interaction with Figma designs and prototypes.', website: '#' },
+        { id: 'gdrive-mcp', name: 'Google Drive MCP', description: 'A conceptual MCP server for agents to read, write, and manage files in Google Drive.', website: '#' },
+        { id: 'gmaps-mcp', name: 'Google Maps MCP', description: 'A conceptual MCP server to provide agents with location data, routing, and place information.', website: '#' },
+        { id: 'playwright-mcp', name: 'Playwright MCP', description: 'A conceptual MCP server to allow agents to control a Playwright browser for advanced web automation.', website: '#' },
+    ],
+    videoHosting: [
+        { id: 'youtube', name: 'YouTube', description: 'The world\'s largest video sharing platform, ideal for public content, brand channels, and broad reach.', website: 'https://www.youtube.com/' },
+        { id: 'vimeo', name: 'Vimeo', description: 'A high-quality video platform favored by professionals for its powerful tools and ad-free experience.', website: 'https://vimeo.com/' },
+        { id: 'facebook', name: 'Facebook Video', description: 'Integrated video hosting for sharing content natively within the Facebook ecosystem to engage followers.', website: 'https://www.facebook.com/watch/' },
+        { id: 'instagram', name: 'Instagram Video/Reels', description: 'Platform for short-form and long-form vertical video content, ideal for mobile-first audiences.', website: 'https://www.instagram.com/' },
+        { id: 'patreon', name: 'Patreon (Membership)', description: 'A membership platform that makes it easy for creators to get paid, offering exclusive video hosting for supporters.', website: 'https://www.patreon.com/' },
+        { id: 'skool', name: 'Skool (Membership)', description: 'A community platform for creators to host courses, events, and paid memberships, with integrated video features.', website: 'https://www.skool.com/' },
+        { id: 'orange-logic', name: 'Orange Logic (DAM)', description: 'Best for handling large, high-resolution video files, including formats like 8K video and raw formats.', website: 'https://www.orangelogic.com/' },
+        { id: 'mediavalet', name: 'MediaValet (DAM)', description: 'Excels in automated video transcription and translation using AI-powered audio-video intelligence (AVI).', website: 'https://www.mediavalet.com/' },
+        { id: 'picsio', name: 'Pics.io (DAM)', description: 'Ideal for AI-driven video tagging and features a video management interface for editing and tracking revisions.', website: 'https://pics.io/' },
+        { id: 'acquia-dam', name: 'Acquia DAM (Widen)', description: 'Known for integrated video captioning and includes a video creator tool with AI assistance.', website: 'https://www.acquia.com/products/dam' },
+        { id: 'bynder', name: 'Bynder (DAM)', description: 'Strong in dynamic asset transformation and optimization, ensuring videos are in the best format for any platform.', website: 'https://www.bynder.com/' },
+        { id: 'air-dam', name: 'Air (DAM)', description: 'Excellent for centralized asset feedback and collaboration, with a visual workspace tailored for creative teams.', website: 'https://www.air.inc/' },
+        { id: 'cloudinary', name: 'Cloudinary (DAM)', description: 'Specializes in image and video scaling, optimization, and delivery with an API-first platform.', website: 'https://cloudinary.com/' },
+        { id: 'intelligencebank', name: 'IntelligenceBank (DAM)', description: 'Offers an end-to-end content production solution, combining DAM, brand asset management, and marketing management.', website: 'https://www.intelligencebank.com/' },
+        { id: 'canto', name: 'Canto (DAM)', description: 'Focuses on brand asset organization with smart tagging, facial recognition, and a Media Delivery Cloud.', website: 'https://www.canto.com/' },
+        { id: 'imagen-dam', name: 'Imagen (DAM)', description: 'Strong in media content distribution and archiving of high-resolution videos.', website: 'https://imagen.io/' },
+        { id: 'aem-assets', name: 'AEM Assets (DAM)', description: 'Best for enterprise-level integration within the Adobe ecosystem.', website: 'https://business.adobe.com/products/experience-manager/assets.html' },
+        { id: 'daminion', name: 'Daminion (DAM)', description: 'A comprehensive DAM with strong support for video asset management, particularly for larger files and production workflows.', website: 'https://daminion.net/' },
+        { id: 'wistia', name: 'Wistia (Marketing)', description: 'Focuses on video marketing with features for lead generation, analytics, and SEO optimization.', website: 'https://wistia.com/' },
+        { id: 'vidyard', name: 'Vidyard (Sales)', description: 'Designed for B2B sales, offering features for creating personalized video messages and tracking viewer actions.', website: 'https://www.vidyard.com/' },
+        { id: 'panopto', name: 'Panopto (Internal)', description: 'Specifically built for internal knowledge sharing and training within organizations and educational institutions.', website: 'https://www.panopto.com/' },
+        { id: 'vidme', name: 'Vidme.io (Defunct)', description: 'A former video hosting community, mentioned in planning documents. No longer operational.', website: '#' },
+    ],
+    vectorDB: [
+        { id: 'pinecone', name: 'Pinecone', description: 'A managed, cloud-native vector database with a simple API and no infrastructure hassles.', website: 'https://www.pinecone.io/' },
+        { id: 'weaviate', name: 'Weaviate', description: 'An open-source, AI-native vector database that helps developers create intuitive and reliable AI-powered applications.', website: 'https://weaviate.io/' },
+        { id: 'milvus', name: 'Milvus', description: 'An open-source vector database built for scalable similarity search for AI applications.', website: 'https://milvus.io/' },
+        { id: 'qdrant', name: 'Qdrant', description: 'An open-source vector similarity search engine and vector database, written in Rust.', website: 'https://qdrant.tech/' },
+        { id: 'chromadb', name: 'ChromaDB', description: 'The open-source embedding database. The easiest way to build LLM apps with memory.', website: 'https://www.trychroma.com/' },
+        { id: 'pgvector', name: 'PGVector', description: 'An open-source vector similarity search extension for PostgreSQL. Ideal for adding AI features to an existing Postgres DB.', website: 'https://github.com/pgvector/pgvector' },
+        { id: 'elasticsearch-vector', name: 'Elasticsearch Vector Search', description: 'Leverages the power of Elasticsearch for scalable and fast vector search alongside text search.', website: 'https://www.elastic.co/elasticsearch/vector-search' },
+    ]
+};
+
+const multiSelectCategories = ['mcpServers', 'uiuxTools', 'videoHosting', 'ai-model', 'payment', 'hosting'];
+let currentModalCategory = null;
+let selections = {};
+
+function populateControls() {
+    const defaults = {
+        archetype: 'creator-hub',
+        frontend: 'nextjs',
+        backend: 'supabase',
+        cms: 'strapi',
+        'ai-model': ['gemini'],
+        'ai-video': 'heygen',
+        crm: 'hubspot',
+        payment: ['stripe'],
+        hosting: ['vercel'],
+        siteCreation: 'cursor',
+        uiuxTools: ['figma'],
+        agentTools: 'n8n',
+        mcpServers: ['supabase-mcp'],
+        videoHosting: ['youtube'],
+        vectorDB: 'pinecone'
+    };
+
+    for (const category in techData) {
+        const container = document.getElementById(category) || document.getElementById(`${category}-btn`);
+        if (!container) continue;
+
+        const defaultValue = defaults[category] || (multiSelectCategories.includes(category) ? [] : 'none');
+        selections[category] = Array.isArray(defaultValue) ? defaultValue : [defaultValue];
+        
+        if (multiSelectCategories.includes(category)) {
+            updateModalButtonText(category);
+        } else {
+            container.innerHTML = ''; 
+            techData[category].forEach(item => { 
+                const option = document.createElement('option'); 
+                option.value = item.id; 
+                option.textContent = item.name; 
+                container.appendChild(option); 
+            });
+            const noneOption = document.createElement('option');
+            noneOption.value = 'none';
+            noneOption.textContent = 'None';
+            container.appendChild(noneOption);
+            container.value = selections[category][0];
+            container.addEventListener('change', (e) => {
+                selections[category] = e.target.value === 'none' ? [] : [e.target.value];
+            });
+        }
+    }
+}
+
+function updateModalButtonText(category) {
+    const button = document.getElementById(`${category}-btn`);
+    if (!button) return;
+    const count = selections[category]?.length || 0;
+    if (count === 0) {
+        button.textContent = 'Select...';
+    } else if (count === 1) {
+        const singleSelectionId = selections[category][0];
+        const item = techData[category].find(d => d.id === singleSelectionId);
+        button.textContent = item ? item.name : '1 selected';
+    } else {
+        button.textContent = `${count} selected`;
+    }
+}
+
+function openModal(category) {
+    currentModalCategory = category;
+    const modal = document.getElementById('multi-select-modal');
+    const modalTitle = document.getElementById('modal-title');
+    const modalContent = document.getElementById('modal-content');
+
+    modalTitle.textContent = `Select ${getCategoryTitle(category)}`;
+    modalContent.innerHTML = '';
+
+    techData[category].forEach(item => {
+        const isSelected = selections[category]?.includes(item.id);
+        const html = `
+            <div>
+                <input type="checkbox" id="modal-${item.id}" value="${item.id}" class="hidden multi-select-input" ${isSelected ? 'checked' : ''}>
+                <label for="modal-${item.id}" class="multi-select-label">${item.name}</label>
+            </div>
+        `;
+        modalContent.innerHTML += html;
+    });
+    modal.style.display = 'flex';
+}
+
+function saveModalSelections() {
+    if (!currentModalCategory) return;
+    const modalContent = document.getElementById('modal-content');
+    const checkedInputs = modalContent.querySelectorAll('input:checked');
+    selections[currentModalCategory] = Array.from(checkedInputs).map(input => input.value);
+    updateModalButtonText(currentModalCategory);
+    closeModal();
+}
+
+function closeModal() {
+    const modal = document.getElementById('multi-select-modal');
+    modal.style.display = 'none';
+    currentModalCategory = null;
+}
+
+function getCardIcon(category, id) {
+    // Standardized size, silver color, 3D effect
+    const size = 108;
+    const stroke = '#d1d5db'; // silver
+    const strokeWidth = 2;
+    // SVG filter for 3D effect
+    const filter = `<filter id="icon3d" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="1" stdDeviation="1.2" flood-color="#fff" flood-opacity="0.18"/><feDropShadow dx="0" dy="2" stdDeviation="1.5" flood-color="#000" flood-opacity="0.22"/></filter>`;
+    // All icons fit in 32x32 centered in 36x36
+    const icons = {
+        archetype: `<svg width="${size}" height="${size}" viewBox="0 0 36 36" fill="none" stroke="${stroke}" stroke-width="${strokeWidth}" stroke-linecap="round" stroke-linejoin="round"><defs>${filter}</defs><rect x="7" y="7" width="22" height="22" rx="6" fill="none" filter="url(#icon3d)"/><path d="M18 12v12M12 18h12" filter="url(#icon3d)"/></svg>`,
+        frontend: `<svg width="${size}" height="${size}" viewBox="0 0 36 36" fill="none" stroke="${stroke}" stroke-width="${strokeWidth}" stroke-linecap="round" stroke-linejoin="round"><defs>${filter}</defs><rect x="6" y="10" width="24" height="16" rx="4" fill="none" filter="url(#icon3d)"/><path d="M10 14h16M10 18h16M10 22h8" filter="url(#icon3d)"/></svg>`,
+        backend: `<svg width="${size}" height="${size}" viewBox="0 0 36 36" fill="none" stroke="${stroke}" stroke-width="${strokeWidth}" stroke-linecap="round" stroke-linejoin="round"><defs>${filter}</defs><ellipse cx="18" cy="18" rx="12" ry="7" fill="none" filter="url(#icon3d)"/><path d="M6 18v7c0 3.9 5.4 7 12 7s12-3.1 12-7v-7" filter="url(#icon3d)"/></svg>`,
+        cms: `<svg width="${size}" height="${size}" viewBox="0 0 36 36" fill="none" stroke="${stroke}" stroke-width="${strokeWidth}" stroke-linecap="round" stroke-linejoin="round"><defs>${filter}</defs><rect x="8" y="8" width="20" height="20" rx="5" fill="none" filter="url(#icon3d)"/><path d="M12 12h12M12 18h12M12 24h8" filter="url(#icon3d)"/></svg>`,
+        'ai-model': `<svg width="${size}" height="${size}" viewBox="0 0 36 36" fill="none" stroke="${stroke}" stroke-width="${strokeWidth}" stroke-linecap="round" stroke-linejoin="round"><defs>${filter}</defs><circle cx="18" cy="18" r="10" fill="none" filter="url(#icon3d)"/><path d="M18 8v4M18 24v4M8 18h4M24 18h4M12.9 12.9l2.8 2.8M20.3 20.3l2.8 2.8M12.9 23.1l2.8-2.8M20.3 15.7l2.8-2.8" filter="url(#icon3d)"/></svg>`,
+        'ai-video': `<svg width="${size}" height="${size}" viewBox="0 0 36 36" fill="none" stroke="${stroke}" stroke-width="${strokeWidth}" stroke-linecap="round" stroke-linejoin="round"><defs>${filter}</defs><rect x="8" y="12" width="20" height="12" rx="4" fill="none" filter="url(#icon3d)"/><polygon points="18,16 24,18 18,20" fill="${stroke}" stroke="none" filter="url(#icon3d)"/></svg>`,
+        crm: `<svg width="${size}" height="${size}" viewBox="0 0 36 36" fill="none" stroke="${stroke}" stroke-width="${strokeWidth}" stroke-linecap="round" stroke-linejoin="round"><defs>${filter}</defs><circle cx="18" cy="14" r="5" fill="none" filter="url(#icon3d)"/><path d="M8 28c0-4 4.5-7 10-7s10 3 10 7" filter="url(#icon3d)"/></svg>`,
+        payment: `<svg width="${size}" height="${size}" viewBox="0 0 36 36" fill="none" stroke="${stroke}" stroke-width="${strokeWidth}" stroke-linecap="round" stroke-linejoin="round"><defs>${filter}</defs><rect x="8" y="14" width="20" height="8" rx="3" fill="none" filter="url(#icon3d)"/><path d="M12 18h8" filter="url(#icon3d)"/></svg>`,
+        hosting: `<svg width="${size}" height="${size}" viewBox="0 0 36 36" fill="none" stroke="${stroke}" stroke-width="${strokeWidth}" stroke-linecap="round" stroke-linejoin="round"><defs>${filter}</defs><ellipse cx="18" cy="18" rx="12" ry="7" fill="none" filter="url(#icon3d)"/><rect x="10" y="14" width="16" height="8" rx="2" fill="none" filter="url(#icon3d)"/></svg>`,
+        videoHosting: `<svg width="${size}" height="${size}" viewBox="0 0 36 36" fill="none" stroke="${stroke}" stroke-width="${strokeWidth}" stroke-linecap="round" stroke-linejoin="round"><defs>${filter}</defs><rect x="8" y="12" width="20" height="12" rx="4" fill="none" filter="url(#icon3d)"/><polygon points="16,16 24,18 16,20" fill="${stroke}" stroke="none" filter="url(#icon3d)"/></svg>`,
+        vectorDB: `<svg width="${size}" height="${size}" viewBox="0 0 36 36" fill="none" stroke="${stroke}" stroke-width="${strokeWidth}" stroke-linecap="round" stroke-linejoin="round"><defs>${filter}</defs><ellipse cx="18" cy="18" rx="12" ry="7" fill="none" filter="url(#icon3d)"/><ellipse cx="18" cy="18" rx="6" ry="3" fill="none" filter="url(#icon3d)"/></svg>`,
+        uiuxTools: `<svg width="${size}" height="${size}" viewBox="0 0 36 36" fill="none" stroke="${stroke}" stroke-width="${strokeWidth}" stroke-linecap="round" stroke-linejoin="round"><defs>${filter}</defs><rect x="10" y="10" width="16" height="16" rx="4" fill="none" filter="url(#icon3d)"/><rect x="14" y="14" width="8" height="8" rx="2" fill="none" filter="url(#icon3d)"/></svg>`,
+        mcpServers: `<svg width="${size}" height="${size}" viewBox="0 0 36 36" fill="none" stroke="${stroke}" stroke-width="${strokeWidth}" stroke-linecap="round" stroke-linejoin="round"><defs>${filter}</defs><rect x="8" y="14" width="20" height="8" rx="3" fill="none" filter="url(#icon3d)"/><path d="M12 18h8" filter="url(#icon3d)"/></svg>`,
+    };
+    return icons[category] || `<svg width="${size}" height="${size}" viewBox="0 0 36 36" fill="none" stroke="${stroke}" stroke-width="${strokeWidth}" stroke-linecap="round" stroke-linejoin="round"><defs>${filter}</defs><circle cx="18" cy="18" r="16" fill="none" filter="url(#icon3d)"/></svg>`;
+}
+
+function generatePlan() {
+    const resultsContainer = document.getElementById('results-container');
+    const aiAnalysisButtonContainer = document.getElementById('ai-analysis-button-container');
+    const aiAnalysisContainer = document.getElementById('ai-analysis-container');
+    const generateBtn = document.getElementById('generate-plan');
+    
+    generateBtn.classList.add('is-thinking');
+    generateBtn.disabled = true;
+
+    setTimeout(() => {
+        aiAnalysisContainer.innerHTML = '';
+        resultsContainer.innerHTML = '';
+
+        let hasSelection = false;
+        for(const category in selections) {
+            if (selections[category].length > 0 && !(selections[category].length === 1 && selections[category][0] === 'none')) {
+                hasSelection = true;
+                break;
+            }
+        }
+
+        if (!hasSelection) {
+            resultsContainer.innerHTML = '<p class="text-center text-gray-400">Please select at least one tool to generate a plan.</p>';
+            aiAnalysisButtonContainer.style.display = 'none';
+        } else {
+            let html = '<h2 class="text-3xl font-bold text-center mb-8"><span id="sweep-highlight-text" class="sweep-highlight vidismart-yellow">Your Customized Tech Stack</span></h2>';
+            html += '<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">';
+
+            for (const category in selections) {
+                if (!Array.isArray(selections[category])) continue;
+                
+                selections[category].forEach(id => {
+                    if (id !== 'none') {
+                        const item = techData[category]?.find(d => d.id === id);
+                        if (item) {
+                            let videoLink = `https://www.youtube.com/results?search_query=${encodeURIComponent(item.name.split('(')[0].trim())}`;
+                            html += `<div class="result-card flex flex-col">
+                                <div class="card-icon">${getCardIcon(category, item.id)}</div>
+                                <h3 class="text-xl font-bold vidismart-yellow mb-2">${getCategoryTitle(category)}</h3>
+                                <h4 class="text-lg font-semibold text-white mb-3">${item.name}</h4>
+                                <p class="text-gray-400 flex-grow mb-4">${item.description}</p>
+                                <div class="card-actions mt-auto flex space-x-3">
+                                    ${item.website && item.website !== '#' ? `<a href="${item.website}" target="_blank" rel="noopener noreferrer" class="btn btn-sweep text-center font-semibold">Website</a>` : ''}
+                                    <a href="${videoLink}" target="_blank" rel="noopener noreferrer" class="btn btn-sweep text-center font-semibold">Watch Video</a>
+                                </div>
+                            </div>`;
+                        }
+                    }
+                });
+            }
+            html += '</div>';
+            
+            resultsContainer.innerHTML = html;
+            aiAnalysisButtonContainer.style.display = 'block';
+            // Add sweep-highlight class to the heading span (retrigger animation)
+            const sweepSpan = document.getElementById('sweep-highlight-text');
+            if (sweepSpan) {
+                sweepSpan.classList.remove('sweep-highlight'); // Remove if present to retrigger
+                void sweepSpan.offsetWidth;
+                sweepSpan.classList.add('sweep-highlight');
+            }
+        }
+        
+        generateBtn.classList.remove('is-thinking');
+        generateBtn.disabled = false;
+
+        // Scroll so the generate button is 50px from the top after generating the plan
+        setTimeout(() => {
+          generateBtn.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          setTimeout(() => { window.scrollBy({ top: -50, left: 0, behavior: 'smooth' }); }, 350);
+        }, 50);
+    }, 1000);
+}
+
+function getCategoryTitle(categoryKey) {
+    const titles = { 
+        archetype: 'Project Archetype', 
+        frontend: 'Frontend Framework', 
+        backend: 'Backend & Database', 
+        cms: 'Content Management (CMS)', 
+        'ai-model': 'Primary AI Models', 
+        'ai-video': 'AI Video Creation Tool', 
+        crm: 'CRM & Marketing', 
+        payment: 'Payment Gateways', 
+        hosting: 'Hosting & Deployment',
+        siteCreation: 'Ai Site Creation',
+        uiuxTools: 'UI/UX Design Tools',
+        agentTools: 'Agentified Agent Army',
+        mcpServers: 'MCP Servers',
+        videoHosting: 'Video Hosting Channels',
+        vectorDB: 'Vector Database'
+    };
+    return titles[categoryKey] || categoryKey;
+}
+
+async function getAiAnalysis() {
+    const aiAnalysisContainer = document.getElementById('ai-analysis-container');
+    aiAnalysisContainer.innerHTML = '<div class="loader"></div>';
+
+    const selectedTech = [];
+    for (const category in selections) {
+        if (!Array.isArray(selections[category])) continue;
+
+        selections[category].forEach(id => {
+            if (id !== 'none') {
+                const item = techData[category].find(d => d.id === id);
+                if (item) selectedTech.push(item.name);
+            }
+        });
+    }
+
+    if (selectedTech.length === 0) {
+         aiAnalysisContainer.innerHTML = `<div class="ai-analysis-card text-center text-gray-400"><p>Please select at least one tool to get an AI analysis.</p></div>`;
+         return;
+    }
+
+    const prompt = `
+        As an expert solutions architect, analyze the following technology stack selected for a new web project: ${selectedTech.join(', ')}.
+
+        Provide a concise analysis covering these points:
+        1.  **Compatibility & Synergies:** How do these technologies work well together? What are the key benefits of this combination?
+        2.  **Potential Challenges:** What are the potential pitfalls or difficulties to watch out for with this specific stack?
+        3.  **Estimated Monthly Cost:** Based on the free or lowest-cost tiers of these services, provide a rough monthly cost estimate. Assume very low usage: a maximum of 500 hits/visits per month and under 1GB of total data traffic/transfer. Clearly state these usage limits in your cost analysis.
+        4.  **Key Recommendations:** What are 2-3 actionable recommendations for a developer starting a project with this stack?
+
+        Format the response clearly with headings for each section.
+    `;
+
+    try {
+        // NOTE TO USER: This fetch call will fail if you open this file directly in a browser.
+        // It is designed to work when deployed on a hosting platform (like Vercel or Netlify)
+        // that supports serverless functions.
+        const response = await fetch('/api/analyze', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ prompt: prompt })
+        });
+
+        if (!response.ok) { throw new Error(`API request failed with status ${response.status}`); }
+        
+        const result = await response.json();
+        const formattedHtml = result.analysis.replace(/\*\*(.*?)\*\*/g, '<h4>$1</h4>').replace(/\n/g, '<br>');
+        aiAnalysisContainer.innerHTML = `<div class="ai-analysis-card">${formattedHtml}</div>`;
+
+    } catch (error) {
+        console.error("Error fetching AI analysis:", error);
+        aiAnalysisContainer.innerHTML = `<div class="ai-analysis-card text-red-400"><p>Sorry, there was an error getting the AI analysis. This is expected if you are running this file locally. To make this work, you must deploy it to a hosting provider like Vercel or Netlify and set up a serverless function.</p></div>`;
+    }
+}
+
+// --- Event Listeners ---
+document.getElementById('generate-plan').addEventListener('click', generatePlan);
+document.getElementById('get-ai-analysis').addEventListener('click', getAiAnalysis);
+
+document.querySelectorAll('.modal-btn').forEach(button => {
+    button.addEventListener('click', () => openModal(button.dataset.category));
+});
+
+document.getElementById('modal-close-btn').addEventListener('click', closeModal);
+document.getElementById('modal-save-btn').addEventListener('click', saveModalSelections);
+
+document.getElementById('modal-clear-btn').addEventListener('click', () => {
+    if (currentModalCategory) {
+        const modalContent = document.getElementById('modal-content');
+        modalContent.querySelectorAll('input:checked').forEach(input => input.checked = false);
+    }
+});
+
+window.onload = () => { populateControls(); };
+
+// --- Cloud and Sheep Overlay Animation ---
+(function() {
+  const canvas = document.getElementById('vidismart-logo');
+  if (!canvas || !canvas.getContext) return;
+  const ctx = canvas.getContext('2d');
+  const w = canvas.width;
+  const h = canvas.height;
+  const cx = w / 2;
+  const cy = h / 2;
+
+  // Mouse movement tracking for electron reactivity
+  let mouse = { x: cx, y: cy, dx: 0, dy: 0, lastX: cx, lastY: cy };
+  canvas.addEventListener('mousemove', function(e) {
+    const rect = canvas.getBoundingClientRect();
+    const mx = (e.clientX - rect.left);
+    const my = (e.clientY - rect.top);
+    mouse.dx = mx - mouse.x;
+    mouse.dy = my - mouse.y;
+    mouse.lastX = mouse.x;
+    mouse.lastY = mouse.y;
+    mouse.x = mx;
+    mouse.y = my;
+  });
+  // Decay mouse movement for smoothness
+  function decayMouse() {
+    mouse.dx *= 0.92;
+    mouse.dy *= 0.92;
+    requestAnimationFrame(decayMouse);
+  }
+  decayMouse();
+
+  // Nucleus properties (darker blue, 3D sphere look)
+  const nucleusRadius = 48;
+  const nucleusCoreColor = '#0a1e3a'; // deep blue
+
+  // Electron properties (longer, brighter tails)
+  const electrons = [
+    { r: 90, a: 0, speed: 0.018, tilt: 0 },
+    { r: 70, a: Math.PI/2, speed: 0.022, tilt: Math.PI/5 },
+    { r: 80, a: Math.PI, speed: 0.015, tilt: -Math.PI/4 },
+    { r: 100, a: Math.PI*1.5, speed: 0.012, tilt: Math.PI/3 },
+    { r: 85, a: Math.PI/3, speed: 0.017, tilt: Math.PI/1.7 },
+    { r: 75, a: Math.PI/1.2, speed: 0.019, tilt: -Math.PI/2.2 }
+  ];
+  const electronRadius = 8 / 3;
+  const electronColor = 'rgba(200,240,255,1)'; // very bright blue-white
+  const tailLength = 60;
+  const tailColor = 'rgba(255,255,255,'; // white tail
+
+  electrons.forEach(e => e.trail = []);
+
+  // Draw a 3D shaded sphere for the nucleus
+  function drawNucleus(t) {
+    t = t || 0;
+    ctx.save();
+    // Animate highlight center for dual-axis rotation
+    const highlightOrbit = nucleusRadius / 2;
+    const highlightX = cx - highlightOrbit * Math.cos(t / 900);
+    const highlightY = cy - highlightOrbit * Math.sin(t / 700);
+    // Smaller, more specular blue highlight
+    let sphereGrad = ctx.createRadialGradient(
+      highlightX, highlightY, nucleusRadius/10, // much smaller inner radius
+      cx, cy, nucleusRadius
+    );
+    sphereGrad.addColorStop(0, '#7ecbff'); // bright blue specular
+    sphereGrad.addColorStop(0.13, '#3a7bd5');
+    sphereGrad.addColorStop(0.3, '#174a7c');
+    sphereGrad.addColorStop(0.7, nucleusCoreColor);
+    sphereGrad.addColorStop(1, '#06142e'); // shadow edge
+    ctx.beginPath();
+    ctx.arc(cx, cy, nucleusRadius, 0, 2*Math.PI);
+    ctx.fillStyle = sphereGrad;
+    ctx.shadowColor = '#0a1e3a';
+    ctx.shadowBlur = 16;
+    ctx.fill();
+    ctx.restore();
+
+    // Add a few tiny sparkles (random, twinkling)
+    for (let i = 0; i < 5; i++) {
+      const sparkleAngle = (t/400 + i*1.2) % (2*Math.PI);
+      const sparkleRadius = nucleusRadius * (0.5 + 0.35 * Math.sin(t/800 + i));
+      const sx = cx + Math.cos(sparkleAngle) * sparkleRadius;
+      const sy = cy + Math.sin(sparkleAngle) * sparkleRadius;
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(sx, sy, 1.1 + 0.7*Math.abs(Math.sin(t/180 + i*2)), 0, 2*Math.PI);
+      ctx.globalAlpha = (0.7 + 0.3*Math.sin(t/200 + i*3)) * 0.3;
+      ctx.fillStyle = '#eaf6ff';
+      ctx.shadowColor = '#fff';
+      ctx.shadowBlur = 21;
+      ctx.fill();
+      ctx.restore();
+    }
+  }
+
+  // Draw a gold 3D play button with animated specular highlight
+  function drawPlayButton(t) {
+    ctx.save();
+    // Animate play button radius (zoom in/out by 5px every 7 seconds)
+    const basePlayR = 28;
+    const zoom = 5 * Math.sin((t || 0) / 7000 * 2 * Math.PI);
+    const playR = basePlayR + zoom;
+    const playCx = cx;
+    const playCy = cy;
+    const bevel = 3; // much smaller bevel
+
+    // Dynamic shadow based on z-depth (zoom)
+    ctx.save();
+    const shadowY = playCy + playR * 0.85;
+    const shadowW = playR * 1.1;
+    const shadowH = playR * 0.38 + 6;
+    ctx.beginPath();
+    ctx.ellipse(playCx, shadowY, shadowW, shadowH, 0, 0, 2 * Math.PI);
+    // Shadow blur: more diffuse when zoomed out, sharper when zoomed in
+    ctx.globalAlpha = 0.22 + 0.13 * (1 - (playR - basePlayR) / 5);
+    ctx.filter = `blur(${12 + 10 * (1 - (playR - basePlayR) / 5)}px)`;
+    ctx.fillStyle = '#0a1e3a';
+    ctx.fill();
+    ctx.filter = 'none';
+    ctx.globalAlpha = 1;
+    ctx.restore();
+
+    // Main gold triangle with subtle 3D bevel
+    ctx.beginPath();
+    ctx.moveTo(playCx - playR/2, playCy + playR/1.5);
+    ctx.lineTo(playCx - playR/2, playCy - playR/1.5);
+    ctx.lineTo(playCx + playR, playCy);
+    ctx.closePath();
+    // Gold gradient for face (center 10% darker)
+    let goldGrad = ctx.createLinearGradient(playCx - playR/2, playCy - playR/1.5, playCx + playR, playCy + playR/1.5);
+    goldGrad.addColorStop(0, '#e6d48c');
+    goldGrad.addColorStop(0.13, '#e6c84d');
+    goldGrad.addColorStop(0.35, '#d1b200');
+    goldGrad.addColorStop(0.7, '#b39800');
+    goldGrad.addColorStop(1, '#7a5e00');
+    ctx.fillStyle = goldGrad;
+    ctx.fill();
+    // Dark gold 3D stroke
+    ctx.save();
+    ctx.lineWidth = 1.5;
+    ctx.strokeStyle = '#6b4a00';
+    ctx.shadowColor = '#b39800';
+    ctx.shadowBlur = 2.5;
+    ctx.beginPath();
+    ctx.moveTo(playCx - playR/2, playCy + playR/1.5);
+    ctx.lineTo(playCx - playR/2, playCy - playR/1.5);
+    ctx.lineTo(playCx + playR, playCy);
+    ctx.closePath();
+    ctx.stroke();
+    ctx.restore();
+    ctx.restore();
+  }
+
+  function drawElectron(e) {
+    // Draw tail as a particle system (dots)
+    for (let i = e.trail.length - 1; i > 0; i--) {
+      const p = e.trail[i];
+      // Fade alpha and size with distance
+      const alpha = 0.13 * (i / e.trail.length) + 0.03;
+      const radius = 2.2 * (i / e.trail.length) + 0.7;
+      // Add random jitter for organic look
+      const jitterX = (Math.random() - 0.5) * 1.2 * (1 - i / e.trail.length);
+      const jitterY = (Math.random() - 0.5) * 1.2 * (1 - i / e.trail.length);
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(p.x + jitterX, p.y + jitterY, radius, 0, 2 * Math.PI);
+      ctx.fillStyle = `rgba(255,255,255,${alpha})`;
+      ctx.shadowColor = '#e0f7ff';
+      ctx.shadowBlur = 8 * (i / e.trail.length);
+      ctx.fill();
+      ctx.restore();
+    }
+    // Draw electron (fuzzier, more glow, 50% transparent)
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(e.x, e.y, electronRadius, 0, 2*Math.PI);
+    ctx.fillStyle = electronColor;
+    ctx.shadowColor = '#fff';
+    ctx.shadowBlur = 48;
+    ctx.globalAlpha = 0.25;
+    ctx.fill();
+    // Subtle outer blue glow
+    ctx.beginPath();
+    ctx.arc(e.x, e.y, electronRadius * 1.7, 0, 2*Math.PI);
+    ctx.globalAlpha = 0.09;
+    ctx.fillStyle = 'rgba(120,200,255,0.7)';
+    ctx.shadowColor = '#b3e6ff';
+    ctx.shadowBlur = 32;
+    ctx.fill();
+    ctx.restore();
+  }
+
+  function animate(t) {
+    t = t || 0;
+    ctx.clearRect(0, 0, w, h);
+    drawNucleus(t);
+    drawPlayButton(t);
+    // Calculate mouse direction as a small tilt/phase bias
+    const mx = (mouse.x - cx) / w;
+    const my = (mouse.y - cy) / h;
+    const mdx = mouse.dx / w;
+    const mdy = mouse.dy / h;
+    electrons.forEach((e, i) => {
+      // Reactivity: bias tilt and phase based on mouse movement direction
+      // (subtle, smooth, not too strong)
+      const tiltBias = 0.18 * mx + 0.18 * mdx;
+      const phaseBias = 0.18 * my + 0.18 * mdy;
+      e.a += e.speed;
+      // Spherical projection with mouse bias
+      let phi = e.tilt + tiltBias;
+      let theta = e.a + phaseBias;
+      let r = e.r;
+      e.x = cx + r * Math.cos(theta) * Math.sin(phi);
+      e.y = cy + r * Math.sin(theta) * Math.sin(phi) + r * Math.cos(phi) * 0.25;
+      // Update trail
+      e.trail.push({x: e.x, y: e.y});
+      if (e.trail.length > tailLength) e.trail.shift();
+      drawElectron(e);
+    });
+    requestAnimationFrame(animate);
+  }
+
+  animate();
+})();
+/* --- END OF script.js --- */
+    </script>
+</body>
+</html> 

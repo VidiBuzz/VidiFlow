@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VidiSmart Omni Search - Connectors Master List</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kumbh+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Kumbh Sans', sans-serif;
+            background-color: #0B1A33;
+            background-image: linear-gradient(to bottom, #112244, #0B1A33);
+            color: #E0E0E0;
+            min-height: 100vh;
+            font-weight: 700;
+        }
+        .nav-link {
+            transition: color 0.3s, border-color 0.3s;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-link.active, .nav-link:hover {
+            color: #F97316;
+            border-bottom-color: #F97316;
+        }
+        .card {
+            background-color: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            border-radius: 1rem;
+            transition: all 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.45);
+            border-color: rgba(249, 115, 22, 0.3);
+        }
+        .connector-card {
+            background-color: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 0.75rem;
+            padding: 1rem;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+        }
+        .connector-card:hover {
+            background-color: rgba(249, 115, 22, 0.15);
+            border-color: #F97316;
+            transform: translateX(5px);
+        }
+        .connector-card img {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            object-fit: contain;
+            background: rgba(255,255,255,0.9);
+            padding: 4px;
+        }
+        .connector-card .name {
+            font-weight: 600;
+            color: #fff;
+            font-size: 0.95rem;
+        }
+        .category-header {
+            background: linear-gradient(90deg, rgba(249,115,22,0.3) 0%, transparent 100%);
+            border-left: 4px solid #F97316;
+            padding: 0.75rem 1rem;
+            margin-bottom: 1rem;
+            border-radius: 0 0.5rem 0.5rem 0;
+        }
+        .section-bg-light {
+            background-color: #112244;
+        }
+        .search-input {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 0.75rem;
+            padding: 1rem 1.5rem;
+            color: #fff;
+            width: 100%;
+            font-size: 1.1rem;
+        }
+        .search-input:focus {
+            outline: none;
+            border-color: #F97316;
+            box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.2);
+        }
+        .search-input::placeholder {
+            color: #6b7280;
+        }
+        .category-badge {
+            font-size: 0.7rem;
+            padding: 0.2rem 0.6rem;
+            border-radius: 9999px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .badge-ai { background: rgba(168, 85, 247, 0.2); color: #a855f7; }
+        .badge-ent { background: rgba(59, 130, 246, 0.2); color: #3b82f6; }
+        .badge-data { background: rgba(34, 197, 94, 0.2); color: #22c55e; }
+        .badge-web { background: rgba(249, 115, 22, 0.2); color: #F97316; }
+        .badge-prod { background: rgba(236, 72, 153, 0.2); color: #ec4899; }
+        .filter-btn {
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            border: 1px solid rgba(255,255,255,0.2);
+            background: transparent;
+            color: #9ca3af;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .filter-btn:hover, .filter-btn.active {
+            background: rgba(249, 115, 22, 0.2);
+            border-color: #F97316;
+            color: #F97316;
+        }
+        .hidden { display: none !important; }
+        p, .font-normal { font-weight: 400; }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Header & Navigation -->
+    <header class="bg-slate-900/70 backdrop-blur-md sticky top-0 z-50 shadow-lg">
+        <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center">
+                    <a href="menu.html" class="flex-shrink-0">
+                        <h1 class="text-2xl font-extrabold text-white">
+                            <span class="text-orange-500">Vidi</span>Smart
+                        </h1>
+                    </a>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="menu.html" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-300">Home</a>
+                        <a href="#ai-llm" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-300">AI/LLM</a>
+                        <a href="#enterprise" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-300">Enterprise</a>
+                        <a href="#data" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-300">Data/DB</a>
+                        <a href="#web" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-300">Web/Research</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="py-12 sm:py-16">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <h1 class="text-4xl sm:text-5xl font-extrabold text-white tracking-tight">
+                    Omni Search <span class="text-orange-500">Connectors</span>
+                </h1>
+                <p class="mt-4 max-w-2xl mx-auto text-lg text-gray-400 font-normal">
+                    Master list of ~85+ named connectors plus generic API connectors for universal data access
+                </p>
+                <div class="mt-8 max-w-xl mx-auto">
+                    <input type="text" id="searchInput" class="search-input" placeholder="Ai Smart Search, What is your intent?" onkeyup="filterConnectors()">
+                </div>
+                <div class="mt-6 flex flex-wrap justify-center gap-2">
+                    <button class="filter-btn active" data-filter="all" onclick="setFilter('all')">All (85+)</button>
+                    <button class="filter-btn" data-filter="ai" onclick="setFilter('ai')">AI/LLM (16)</button>
+                    <button class="filter-btn" data-filter="ent" onclick="setFilter('ent')">Enterprise (24)</button>
+                    <button class="filter-btn" data-filter="data" onclick="setFilter('data')">Data/DB (18)</button>
+                    <button class="filter-btn" data-filter="web" onclick="setFilter('web')">Web/Research (12)</button>
+                    <button class="filter-btn" data-filter="prod" onclick="setFilter('prod')">Productivity (2)</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- AI / LLM Section -->
+        <section id="ai-llm" class="py-10 section-bg-light" data-category="ai">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="category-header">
+                    <h2 class="text-2xl font-extrabold text-white flex items-center gap-3">
+                        <span class="category-badge badge-ai">AI/LLM</span>
+                        Artificial Intelligence & Large Language Models
+                    </h2>
+                    <p class="text-gray-400 text-sm font-normal mt-1">Connect to leading AI platforms and models</p>
+                </div>
+                <div class="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3" id="ai-grid">
+                    <a href="https://snowflake.com" target="_blank" class="connector-card" data-name="snowflake ai">
+                        <img src="https://logo.clearbit.com/snowflake.com" alt="Snowflake" onerror="this.src='https://via.placeholder.com/32/F97316/fff?text=S'">
+                        <span class="name">Snowflake AI</span>
+                    </a>
+                    <a href="https://deepmind.google" target="_blank" class="connector-card" data-name="gemini google">
+                        <img src="https://logo.clearbit.com/deepmind.google" alt="Gemini" onerror="this.src='https://via.placeholder.com/32/F97316/fff?text=G'">
+                        <span class="name">Gemini</span>
+                    </a>
+                    <a href="https://anthropic.com" target="_blank" class="connector-card" data-name="anthropic claude">
+                        <img src="https://logo.clearbit.com/anthropic.com" alt="Anthropic" onerror="this.src='https://via.placeholder.com/32/F97316/fff?text=A'">
+                        <span class="name">Anthropic</span>
+                    </a>
+                    <a href="https://openai.com" target="_blank" class="connector-card" data-name="chatgpt openai gpt">
+                        <img src="https://logo.clearbit.com/openai.com" alt="OpenAI" onerror="this.src='https://via.placeholder.com/32/F97316/fff?text=O'">
+                        <span class="name">ChatGPT (OpenAI)</span>
+                    </a>
+                    <a href="https://huggingface.co" target="_blank" class="connector-card" data-name="huggingface transformers">
+                        <img src="https://logo.clearbit.com/huggingface.co" alt="HuggingFace" onerror="this.src='https://via.placeholder.com/32/F97316/fff?text=H'">
+                        <span class="name">HuggingFace</span>
+                    </a>
+                    <a href="https://aws.amazon.com/bedrock" target="_blank" class="connector-card" data-name="aws bedrock amazon">
+                        <img src="https://logo.clearbit.com/aws.amazon.com" alt="AWS Bedrock" onerror="this.src='https://via.placeholder.com/32/F97316/fff?text=A'">
+                        <span class="name">AWS Bedrock</span>
+                    </a>
+                    <a href="https://cloud.google.com/vertex-ai" target="_blank" class="connector-card" data-name="vertex ai google cloud">
+                        <img src="https://logo.clearbit.com/cloud.google.com" alt="Vertex AI" onerror="this.src='https://via.placeholder.com/32/F97316/fff?text=V'">
+                        <span class="name">Vertex AI</span>
+                    </a>
+                    <a href="https://azure.microsoft.com" target="_blank" class="connector-card" data-name="azure openai microsoft">
+                        <img src="https://logo.clearbit.com/azure.microsoft.com" alt="Azure OpenAI" onerror="this.src='https://via.placeholder.com/32/F97316/fff?text=A'">
+                        <span class="name">Azure OpenAI</span>
+                    </a>
+                    <a href="https://x.ai" target="_blank" class="connector-card" data-name="grok xai elon">
+                        <img src="https://logo.clearbit.com/x.ai" alt="Grok" onerror="this.src='https://via.placeholder.com/32/F97316/fff?text=X'">
+                        <span class="name">Grok</span>
+                    </a>
+                    <a href="https://mistral.ai" target="_blank" class="connector-card" data-name="mistral">
+                        <img src="https://logo.clearbit.com/mistral.ai" alt="Mistral" onerror="this.src='https://via.placeholder.com/32/F97316/fff?text=M'">
+                        <span class="name">Mistral</span>
+                    </a>
+                    <a href="https://ollama.com" target="_blank" class="connector-card" data-name="ollama local">
+                        <img src="https://logo.clearbit.com/ollama.com" alt="Ollama" onerror="this.src='https://via.placeholder.com/32/F97316/fff?text=O'">
+                        <span class="name">Ollama</span>
+                    </a>
+                    <a href="https://cohere.com" target="_blank" class="connector-card" data-name="cohere">
+                        <img src="https://logo.clearbit.com/cohere.com" alt="Cohere" onerror="this.src='https://via.placeholder.com/32/F97316/fff?text=C'">
+                        <span class="name">Cohere</span>
+                    </a>
+                    <a href="https://perplexity.ai" target="_blank" class="connector-card" data-name="perplexity search">
+                        <img src="https://logo.clearbit.com/perplexity.ai" alt="Perplexity" onerror="this.src='https://via.placeholder.com/32/F97316/fff?text=P'">
+                        <span class="name">Perplexity AI</span>
+                    </a>
+                    <a href="https://openrouter.ai" target="_blank" class="connector-card" data-name="openrouter">
+                        <img src="https://logo.clearbit.com/openrouter.ai" alt="OpenRouter" onerror="this.src='https://via.placeholder.com/32/F97316/fff?text=O'">
+                        <span class="name">OpenRouter</span>
+                    </a>
+                    <a href="https://voyageai.com" target="_blank" class="connector-card" data-name="voyage embeddings">
+                        <img src="https://logo.clearbit.com/voyageai.com" alt="Voyage AI" onerror="this.src='https://via.placeholder.com/32/F97316/fff?text=V'">
+                        <span class="name">Voyage AI</span>
+                    </a>
+                    <a href="https://deepseek.com" target="_blank" class="connector-card" data-name="deepseek">
+                        <img src="https://logo.clearbit.com/deepseek.com" alt="DeepSeek" onerror="this.src='https://via.placeholder.com/32/F97316/fff?text=D'">
+                        <span class="name">DeepSeek</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Enterprise Apps Section -->
+        <section id="enterprise" class="py-10" data-category="ent">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="category-header">
+                    <h2 class="text-2xl font-extrabold text-white flex items-center gap-3">
+                        <span class="category-badge badge-ent">Enterprise</span>
+                        Enterprise Applications
+                    </h2>
+                    <p class="text-gray-400 text-sm font-normal mt-1">Connect to business productivity and collaboration tools</p>
+                </div>
+                <div class="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3" id="ent-grid">
+                    <a href="https://microsoft.com" target="_blank" class="connector-card" data-name="microsoft 365 office">
+                        <img src="https://logo.clearbit.com/microsoft.com" alt="Microsoft 365" onerror="this.src='https://via.placeholder.com/32/3b82f6/fff?text=M'">
+                        <span class="name">Microsoft 365</span>
+                    </a>
+                    <a href="https://microsoft.com/teams" target="_blank" class="connector-card" data-name="microsoft teams chat">
+                        <img src="https://logo.clearbit.com/microsoft.com" alt="Teams" onerror="this.src='https://via.placeholder.com/32/3b82f6/fff?text=T'">
+                        <span class="name">Microsoft Teams</span>
+                    </a>
+                    <a href="https://microsoft.com/outlook" target="_blank" class="connector-card" data-name="outlook email">
+                        <img src="https://logo.clearbit.com/microsoft.com" alt="Outlook" onerror="this.src='https://via.placeholder.com/32/3b82f6/fff?text=O'">
+                        <span class="name">Outlook</span>
+                    </a>
+                    <a href="https://microsoft.com/onedrive" target="_blank" class="connector-card" data-name="onedrive storage">
+                        <img src="https://logo.clearbit.com/microsoft.com" alt="OneDrive" onerror="this.src='https://via.placeholder.com/32/3b82f6/fff?text=O'">
+                        <span class="name">OneDrive</span>
+                    </a>
+                    <a href="https://microsoft.com/sharepoint" target="_blank" class="connector-card" data-name="sharepoint documents">
+                        <img src="https://logo.clearbit.com/microsoft.com" alt="SharePoint" onerror="this.src='https://via.placeholder.com/32/3b82f6/fff?text=S'">
+                        <span class="name">SharePoint</span>
+                    </a>
+                    <a href="https://salesforce.com" target="_blank" class="connector-card" data-name="salesforce crm">
+                        <img src="https://logo.clearbit.com/salesforce.com" alt="Salesforce" onerror="this.src='https://via.placeholder.com/32/3b82f6/fff?text=S'">
+                        <span class="name">Salesforce</span>
+                    </a>
+                    <a href="https://hubspot.com" target="_blank" class="connector-card" data-name="hubspot crm marketing">
+                        <img src="https://logo.clearbit.com/hubspot.com" alt="HubSpot" onerror="this.src='https://via.placeholder.com/32/3b82f6/fff?text=H'">
+                        <span class="name">HubSpot</span>
+                    </a>
+                    <a href="https://slack.com" target="_blank" class="connector-card" data-name="slack messaging">
+                        <img src="https://logo.clearbit.com/slack.com" alt="Slack" onerror="this.src='https://via.placeholder.com/32/3b82f6/fff?text=S'">
+                        <span class="name">Slack</span>
+                    </a>
+                    <a href="https://atlassian.com" target="_blank" class="connector-card" data-name="jira project management">
+                        <img src="https://logo.clearbit.com/atlassian.com" alt="Jira" onerror="this.src='https://via.placeholder.com/32/3b82f6/fff?text=J'">
+                        <span class="name">Jira</span>
+                    </a>
+                    <a href="https://atlassian.com" target="_blank" class="connector-card" data-name="confluence wiki docs">
+                        <img src="https://logo.clearbit.com/atlassian.com" alt="Confluence" onerror="this.src='https://via.placeholder.com/32/3b82f6/fff?text=C'">
+                        <span class="name">Confluence</span>
+                    </a>
+                    <a href="https://trello.com" target="_blank" class="connector-card" data-name="trello kanban boards">
+                        <img src="https://logo.clearbit.com/trello.com" alt="Trello" onerror="this.src='https://via.placeholder.com/32/3b82f6/fff?text=T'">
+                        <span class="name">Trello</span>
+                    </a>
+                    <a href="https://asana.com" target="_blank" class="connector-card" data-name="asana tasks projects">
+                        <img src="https://logo.clearbit.com/asana.com" alt="Asana" onerror="this.src='https://via.placeholder.com/32/3b82f6/fff?text=A'">
+                        <span class="name">Asana</span>
+                    </a>
+                    <a href="https://servicenow.com" target="_blank" class="connector-card" data-name="servicenow itsm">
+                        <img src="https://logo.clearbit.com/servicenow.com" alt="ServiceNow" onerror="this.src='https://via.placeholder.com/32/3b82f6/fff?text=S'">
+                        <span class="name">ServiceNow</span>
+                    </a>
+                    <a href="https://box.com" target="_blank" class="connector-card" data-name="box storage files">
+                        <img src="https://logo.clearbit.com/box.com" alt="Box" onerror="this.src='https://via.placeholder.com/32/3b82f6/fff?text=B'">
+                        <span class="name">Box</span>
+                    </a>
+                    <a href="https://dropbox.com" target="_blank" class="connector-card" data-name="dropbox storage">
+                        <img src="https://logo.clearbit.com/dropbox.com" alt="Dropbox" onerror="this.src='https://via.placeholder.com/32/3b82f6/fff?text=D'">
+                        <span class="name">Dropbox</span>
+                    </a>
+                    <a href="https://github.com" target="_blank" class="connector-card" data-name="github code repos">
+                        <img src="https://logo.clearbit.com/github.com" alt="GitHub" onerror="this.src='https://via.placeholder.com/32/3b82f6/fff?text=G'">
+                        <span class="name">GitHub</span>
+                    </a>
+                    <a href="https://bitbucket.org" target="_blank" class="connector-card" data-name="bitbucket code repos">
+                        <img src="https://logo.clearbit.com/bitbucket.org" alt="BitBucket" onerror="this.src='https://via.placeholder.com/32/3b82f6/fff?text=B'">
+                        <span class="name">BitBucket</span>
+                    </a>
+                    <a href="https://discord.com" target="_blank" class="connector-card" data-name="discord chat community">
+                        <img src="https://logo.clearbit.com/discord.com" alt="Discord" onerror="this.src='https://via.placeholder.com/32/3b82f6/fff?text=D'">
+                        <span class="name">Discord</span>
+                    </a>
+                    <a href="https://miro.com" target="_blank" class="connector-card" data-name="miro whiteboard">
+                        <img src="https://logo.clearbit.com/miro.com" alt="Miro" onerror="this.src='https://via.placeholder.com/32/3b82f6/fff?text=M'">
+                        <span class="name">Miro</span>
+                    </a>
+                    <a href="https://jetbrains.com/youtrack" target="_blank" class="connector-card" data-name="youtrack issues">
+                        <img src="https://logo.clearbit.com/jetbrains.com" alt="YouTrack" onerror="this.src='https://via.placeholder.com/32/3b82f6/fff?text=Y'">
+                        <span class="name">YouTrack</span>
+                    </a>
+                    <a href="https://collibra.com" target="_blank" class="connector-card" data-name="collibra data governance">
+                        <img src="https://logo.clearbit.com/collibra.com" alt="Collibra" onerror="this.src='https://via.placeholder.com/32/3b82f6/fff?text=C'">
+                        <span class="name">Collibra</span>
+                    </a>
+                    <a href="https://m-files.com" target="_blank" class="connector-card" data-name="m-files documents">
+                        <img src="https://logo.clearbit.com/m-files.com" alt="M-Files" onerror="this.src='https://via.placeholder.com/32/3b82f6/fff?text=M'">
+                        <span class="name">M-Files</span>
+                    </a>
+                    <a href="https://yammer.com" target="_blank" class="connector-card" data-name="yammer viva engage">
+                        <img src="https://logo.clearbit.com/yammer.com" alt="Yammer" onerror="this.src='https://via.placeholder.com/32/3b82f6/fff?text=Y'">
+                        <span class="name">Yammer (Viva Engage)</span>
+                    </a>
+                    <a href="https://notion.so" target="_blank" class="connector-card" data-name="notion wiki docs">
+                        <img src="https://logo.clearbit.com/notion.so" alt="Notion" onerror="this.src='https://via.placeholder.com/32/3b82f6/fff?text=N'">
+                        <span class="name">Notion</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Data / DB Section -->
+        <section id="data" class="py-10 section-bg-light" data-category="data">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="category-header">
+                    <h2 class="text-2xl font-extrabold text-white flex items-center gap-3">
+                        <span class="category-badge badge-data">Data/DB</span>
+                        Databases & Data Platforms
+                    </h2>
+                    <p class="text-gray-400 text-sm font-normal mt-1">Connect to databases, vector stores, and search platforms</p>
+                </div>
+                <div class="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3" id="data-grid">
+                    <a href="https://postgresql.org" target="_blank" class="connector-card" data-name="postgresql postgres sql">
+                        <img src="https://logo.clearbit.com/postgresql.org" alt="PostgreSQL" onerror="this.src='https://via.placeholder.com/32/22c55e/fff?text=P'">
+                        <span class="name">PostgreSQL</span>
+                    </a>
+                    <a href="https://mongodb.com" target="_blank" class="connector-card" data-name="mongodb nosql">
+                        <img src="https://logo.clearbit.com/mongodb.com" alt="MongoDB" onerror="this.src='https://via.placeholder.com/32/22c55e/fff?text=M'">
+                        <span class="name">MongoDB</span>
+                    </a>
+                    <a href="https://elastic.co" target="_blank" class="connector-card" data-name="elasticsearch search">
+                        <img src="https://logo.clearbit.com/elastic.co" alt="Elasticsearch" onerror="this.src='https://via.placeholder.com/32/22c55e/fff?text=E'">
+                        <span class="name">Elasticsearch</span>
+                    </a>
+                    <a href="https://solr.apache.org" target="_blank" class="connector-card" data-name="apache solr search">
+                        <img src="https://logo.clearbit.com/apache.org" alt="Solr" onerror="this.src='https://via.placeholder.com/32/22c55e/fff?text=S'">
+                        <span class="name">Apache Solr</span>
+                    </a>
+                    <a href="https://opensearch.org" target="_blank" class="connector-card" data-name="opensearch">
+                        <img src="https://logo.clearbit.com/opensearch.org" alt="OpenSearch" onerror="this.src='https://via.placeholder.com/32/22c55e/fff?text=O'">
+                        <span class="name">OpenSearch</span>
+                    </a>
+                    <a href="https://cloud.google.com/bigquery" target="_blank" class="connector-card" data-name="bigquery google analytics">
+                        <img src="https://logo.clearbit.com/cloud.google.com" alt="BigQuery" onerror="this.src='https://via.placeholder.com/32/22c55e/fff?text=B'">
+                        <span class="name">Google BigQuery</span>
+                    </a>
+                    <a href="https://sqlite.org" target="_blank" class="connector-card" data-name="sqlite local database">
+                        <img src="https://logo.clearbit.com/sqlite.org" alt="SQLite" onerror="this.src='https://via.placeholder.com/32/22c55e/fff?text=S'">
+                        <span class="name">SQLite</span>
+                    </a>
+                    <a href="https://oracle.com" target="_blank" class="connector-card" data-name="oracle database">
+                        <img src="https://logo.clearbit.com/oracle.com" alt="Oracle" onerror="this.src='https://via.placeholder.com/32/22c55e/fff?text=O'">
+                        <span class="name">Oracle Database</span>
+                    </a>
+                    <a href="https://pinecone.io" target="_blank" class="connector-card" data-name="pinecone vector embeddings">
+                        <img src="https://logo.clearbit.com/pinecone.io" alt="Pinecone" onerror="this.src='https://via.placeholder.com/32/22c55e/fff?text=P'">
+                        <span class="name">Pinecone</span>
+                    </a>
+                    <a href="https://qdrant.tech" target="_blank" class="connector-card" data-name="qdrant vector">
+                        <img src="https://logo.clearbit.com/qdrant.tech" alt="Qdrant" onerror="this.src='https://via.placeholder.com/32/22c55e/fff?text=Q'">
+                        <span class="name">Qdrant</span>
+                    </a>
+                    <a href="https://vespa.ai" target="_blank" class="connector-card" data-name="vespa search">
+                        <img src="https://logo.clearbit.com/vespa.ai" alt="Vespa" onerror="this.src='https://via.placeholder.com/32/22c55e/fff?text=V'">
+                        <span class="name">Vespa</span>
+                    </a>
+                    <a href="https://algolia.com" target="_blank" class="connector-card" data-name="algolia search">
+                        <img src="https://logo.clearbit.com/algolia.com" alt="Algolia" onerror="this.src='https://via.placeholder.com/32/22c55e/fff?text=A'">
+                        <span class="name">Algolia</span>
+                    </a>
+                    <a href="https://coveo.com" target="_blank" class="connector-card" data-name="coveo enterprise search">
+                        <img src="https://logo.clearbit.com/coveo.com" alt="Coveo" onerror="this.src='https://via.placeholder.com/32/22c55e/fff?text=C'">
+                        <span class="name">Coveo</span>
+                    </a>
+                    <a href="https://thoughtspot.com" target="_blank" class="connector-card" data-name="thoughtspot analytics">
+                        <img src="https://logo.clearbit.com/thoughtspot.com" alt="ThoughtSpot" onerror="this.src='https://via.placeholder.com/32/22c55e/fff?text=T'">
+                        <span class="name">ThoughtSpot</span>
+                    </a>
+                    <a href="https://sinequa.com" target="_blank" class="connector-card" data-name="sinequa enterprise search">
+                        <img src="https://logo.clearbit.com/sinequa.com" alt="Sinequa" onerror="this.src='https://via.placeholder.com/32/22c55e/fff?text=S'">
+                        <span class="name">Sinequa</span>
+                    </a>
+                    <a href="https://imanage.com" target="_blank" class="connector-card" data-name="imanage legal documents">
+                        <img src="https://logo.clearbit.com/imanage.com" alt="iManage" onerror="this.src='https://via.placeholder.com/32/22c55e/fff?text=I'">
+                        <span class="name">iManage</span>
+                    </a>
+                    <a href="https://fess.codelibs.org" target="_blank" class="connector-card" data-name="fess search">
+                        <img src="https://via.placeholder.com/32/22c55e/fff?text=F" alt="FESS">
+                        <span class="name">FESS</span>
+                    </a>
+                    <a href="https://aws.amazon.com/kendra" target="_blank" class="connector-card" data-name="aws kendra enterprise search">
+                        <img src="https://logo.clearbit.com/aws.amazon.com" alt="AWS Kendra" onerror="this.src='https://via.placeholder.com/32/22c55e/fff?text=K'">
+                        <span class="name">AWS Kendra</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Web / Research Section -->
+        <section id="web" class="py-10" data-category="web">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="category-header">
+                    <h2 class="text-2xl font-extrabold text-white flex items-center gap-3">
+                        <span class="category-badge badge-web">Web/Research</span>
+                        Web Search & Research
+                    </h2>
+                    <p class="text-gray-400 text-sm font-normal mt-1">Connect to web search engines and research databases</p>
+                </div>
+                <div class="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3" id="web-grid">
+                    <a href="https://programmablesearchengine.google.com" target="_blank" class="connector-card" data-name="google search pse">
+                        <img src="https://logo.clearbit.com/google.com" alt="Google PSE" onerror="this.src='https://via.placeholder.com/32/F97316/fff?text=G'">
+                        <span class="name">Google PSE</span>
+                    </a>
+                    <a href="https://news.google.com" target="_blank" class="connector-card" data-name="google news">
+                        <img src="https://logo.clearbit.com/google.com" alt="Google News" onerror="this.src='https://via.placeholder.com/32/F97316/fff?text=N'">
+                        <span class="name">Google News</span>
+                    </a>
+                    <a href="https://arxiv.org" target="_blank" class="connector-card" data-name="arxiv papers research">
+                        <img src="https://logo.clearbit.com/arxiv.org" alt="Arxiv" onerror="this.src='https://via.placeholder.com/32/F97316/fff?text=A'">
+                        <span class="name">Arxiv.org</span>
+                    </a>
+                    <a href="https://europepmc.org" target="_blank" class="connector-card" data-name="europepmc medical research">
+                        <img src="https://logo.clearbit.com/europepmc.org" alt="Europe PMC" onerror="this.src='https://via.placeholder.com/32/F97316/fff?text=E'">
+                        <span class="name">European PMC</span>
+                    </a>
+                    <a href="https://crunchbase.com" target="_blank" class="connector-card" data-name="crunchbase startups companies">
+                        <img src="https://logo.clearbit.com/crunchbase.com" alt="Crunchbase" onerror="this.src='https://via.placeholder.com/32/F97316/fff?text=C'">
+                        <span class="name">Crunchbase</span>
+                    </a>
+                    <a href="https://newsdata.io" target="_blank" class="connector-card" data-name="newsdata news api">
+                        <img src="https://logo.clearbit.com/newsdata.io" alt="Newsdata" onerror="this.src='https://via.placeholder.com/32/F97316/fff?text=N'">
+                        <span class="name">Newsdata.io</span>
+                    </a>
+                    <a href="https://archive.org" target="_blank" class="connector-card" data-name="internet archive wayback">
+                        <img src="https://logo.clearbit.com/archive.org" alt="Internet Archive" onerror="this.src='https://via.placeholder.com/32/F97316/fff?text=A'">
+                        <span class="name">Internet Archive</span>
+                    </a>
+                    <a href="https://opensanctions.org" target="_blank" class="connector-card" data-name="sanctions compliance">
+                        <img src="https://logo.clearbit.com/opensanctions.org" alt="OpenSanctions" onerror="this.src='https://via.placeholder.com/32/F97316/fff?text=O'">
+                        <span class="name">Open Sanctions</span>
+                    </a>
+                    <a href="https://littlesis.org" target="_blank" class="connector-card" data-name="littlesis connections">
+                        <img src="https://logo.clearbit.com/littlesis.org" alt="LittleSis" onerror="this.src='https://via.placeholder.com/32/F97316/fff?text=L'">
+                        <span class="name">LittleSis</span>
+                    </a>
+                    <a href="https://blockchain.com" target="_blank" class="connector-card" data-name="blockchain crypto">
+                        <img src="https://logo.clearbit.com/blockchain.com" alt="Blockchain" onerror="this.src='https://via.placeholder.com/32/F97316/fff?text=B'">
+                        <span class="name">Blockchain.com</span>
+                    </a>
+                    <a href="https://northernlight.com" target="_blank" class="connector-card" data-name="northern light research">
+                        <img src="https://logo.clearbit.com/northernlight.com" alt="Northern Light" onerror="this.src='https://via.placeholder.com/32/F97316/fff?text=N'">
+                        <span class="name">Northern Light</span>
+                    </a>
+                    <a href="https://news.ycombinator.com" target="_blank" class="connector-card" data-name="hacker news ycombinator">
+                        <img src="https://logo.clearbit.com/ycombinator.com" alt="Hacker News" onerror="this.src='https://via.placeholder.com/32/F97316/fff?text=Y'">
+                        <span class="name">Hacker News</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Productivity Section -->
+        <section id="productivity" class="py-10 section-bg-light" data-category="prod">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="category-header">
+                    <h2 class="text-2xl font-extrabold text-white flex items-center gap-3">
+                        <span class="category-badge badge-prod">Productivity</span>
+                        Automation & Productivity
+                    </h2>
+                    <p class="text-gray-400 text-sm font-normal mt-1">Connect to workflow automation and productivity tools</p>
+                </div>
+                <div class="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3" id="prod-grid">
+                    <a href="https://powerautomate.microsoft.com" target="_blank" class="connector-card" data-name="power automate workflow">
+                        <img src="https://logo.clearbit.com/microsoft.com" alt="Power Automate" onerror="this.src='https://via.placeholder.com/32/ec4899/fff?text=P'">
+                        <span class="name">Power Automate</span>
+                    </a>
+                    <a href="https://adaptivecards.io" target="_blank" class="connector-card" data-name="adaptive cards microsoft">
+                        <img src="https://logo.clearbit.com/microsoft.com" alt="Adaptive Cards" onerror="this.src='https://via.placeholder.com/32/ec4899/fff?text=A'">
+                        <span class="name">MS Adaptive Cards</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Generic API Note -->
+        <section class="py-10">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="card p-8 text-center">
+                    <h3 class="text-xl font-bold text-white mb-4">Generic API Connectors</h3>
+                    <p class="text-gray-400 font-normal max-w-2xl mx-auto">
+                        In addition to the named connectors above, Omni Search includes <span class="text-orange-400 font-semibold">HTTP GET</span>, <span class="text-orange-400 font-semibold">HTTP POST</span>, and <span class="text-orange-400 font-semibold">GraphQL</span> generic connectors that can be configured to connect to virtually any REST API not listed above.
+                    </p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-slate-900 mt-10">
+        <div class="container mx-auto py-8 px-4 sm:px-6 lg:px-8 text-center text-gray-400">
+            <p class="font-normal">&copy; 2025 VidiSmart. Omni Search Connectors</p>
+            <p class="text-sm text-gray-500 mt-2 font-normal">Total Named Connectors: ~85+ (plus generic API connectors)</p>
+        </div>
+    </footer>
+
+    <script>
+        let currentFilter = 'all';
+
+        function filterConnectors() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const cards = document.querySelectorAll('.connector-card');
+
+            cards.forEach(card => {
+                const name = card.getAttribute('data-name') || '';
+                const text = card.textContent.toLowerCase();
+                const matchesSearch = name.includes(searchTerm) || text.includes(searchTerm);
+
+                if (matchesSearch) {
+                    card.classList.remove('hidden');
+                } else {
+                    card.classList.add('hidden');
+                }
+            });
+        }
+
+        function setFilter(filter) {
+            currentFilter = filter;
+
+            // Update button states
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.getAttribute('data-filter') === filter) {
+                    btn.classList.add('active');
+                }
+            });
+
+            // Show/hide sections
+            const sections = document.querySelectorAll('section[data-category]');
+            sections.forEach(section => {
+                const category = section.getAttribute('data-category');
+                if (filter === 'all' || category === filter) {
+                    section.classList.remove('hidden');
+                } else {
+                    section.classList.add('hidden');
+                }
+            });
+        }
+
+        // Smooth scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+
+        // Active nav highlighting
+        const navLinks = document.querySelectorAll('.nav-link');
+        const sections = document.querySelectorAll('main section[id]');
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    navLinks.forEach(link => {
+                        link.classList.remove('active');
+                        if (link.getAttribute('href').substring(1) === entry.target.id) {
+                            link.classList.add('active');
+                        }
+                    });
+                }
+            });
+        }, { threshold: 0.3 });
+
+        sections.forEach(section => observer.observe(section));
+    </script>
+</body>
+</html>

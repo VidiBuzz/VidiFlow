@@ -1,0 +1,62 @@
+{
+  "project": "BrandSwap - NotebookLM Logo Replacement",
+  "date": "2026-03-01",
+  "status": "Ready for Testing",
+  "files_modified": [
+    {
+      "path": "rebrand_notebooklm.py",
+      "description": "Main script with all fixes"
+    },
+    {
+      "path": "vidiflow/frontend/scripts/brandswap-processor.py",
+      "description": "Copy in vidiflow (needs same updates)"
+    }
+  ],
+  "documentation": [
+    "BRANDSWAP_CHANGES.md"
+  ],
+  "changes": {
+    "search_region": {
+      "x_start": 0.65,
+      "y_start": 0.88,
+      "width": 0.35,
+      "height": 0.12,
+      "description": "Expanded search area for better logo detection"
+    },
+    "overlay_padding": {
+      "left": 10,
+      "right": 20,
+      "top": 8,
+      "bottom": 8,
+      "description": "Ensures full logo coverage"
+    },
+    "video_settings": {
+      "logo_width_percent": 0.18,
+      "end_tag_duration_seconds": 5,
+      "description": "Overlay appears only in last 5 seconds of videos"
+    }
+  },
+  "commands": {
+    "dry_run": ".venv/bin/python rebrand_notebooklm.py --dry-run",
+    "test_folder": ".venv/bin/python rebrand_notebooklm.py --input \"images/TEST_FOLDER\" --output \"images/test_output\"",
+    "process_all": ".venv/bin/python rebrand_notebooklm.py"
+  },
+  "paths": {
+    "input_directory": "/mnt/m/code/vidismart/images",
+    "output_directory": "/mnt/m/code/vidismart/images/rebranded",
+    "template": "/mnt/m/+Proj/VidiSmart/NotebookLM.jpg"
+  },
+  "supported_formats": {
+    "images": [".jpg", ".jpeg", ".png", ".webp", ".bmp"],
+    "videos": [".mp4", ".mov", ".avi"]
+  },
+  "cli_options": {
+    "input": {"short": "-i", "default": "images/", "description": "Input directory"},
+    "output": {"short": "-o", "default": "images/rebranded/", "description": "Output directory"},
+    "template": {"short": "-t", "default": "NotebookLM.jpg", "description": "Template image"},
+    "threshold": {"type": "float", "default": 0.55, "description": "Detection threshold"},
+    "text": {"default": "VidiSmart™", "description": "Overlay text"},
+    "dry_run": {"short": "-d", "action": "store_true", "description": "Preview only"},
+    "json": {"action": "store_true", "description": "Output JSON format"}
+  }
+}

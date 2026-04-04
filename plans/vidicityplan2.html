@@ -1,0 +1,2434 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VidiCity Agent Orchestration Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Kumbh+Sans:wght@400;700;900&family=Outfit:wght@300;400;600;800&display=swap"
+        rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <style>
+        :root {
+            --primary: #3b82f6;
+            --primary-glow: rgba(59, 130, 246, 0.4);
+            --secondary: #8b5cf6;
+            --accent: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #070912;
+            --darkER: #020308;
+            --card-bg: rgba(30, 41, 59, 0.5);
+            --panel-bg: rgba(15, 23, 42, 0.8);
+            --text: #f8fafc;
+            --text-muted: #94a3b8;
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --glow: 0 0 20px var(--primary-glow);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: var(--dark);
+            background-image:
+                radial-gradient(circle at 20% 20%, rgba(59, 130, 246, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.05) 0%, transparent 40%);
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* 3D Panel Effect */
+        .glass-panel {
+            background: var(--panel-bg);
+            -webkit-backdrop-filter: blur(12px);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 1.5rem;
+            box-shadow:
+                0 4px 6px -1px rgba(0, 0, 0, 0.1),
+                0 2px 4px -1px rgba(0, 0, 0, 0.06),
+                inset 0 1px 1px rgba(255, 255, 255, 0.05);
+            position: relative;
+            transform-style: preserve-3d;
+            perspective: 1000px;
+        }
+
+        .hero {
+            padding: 6rem 2rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            background: radial-gradient(circle at center, #1e3a8a 0%, var(--dark) 100%);
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 100px;
+            background: linear-gradient(to top, var(--dark), transparent);
+        }
+
+        .hero h1 {
+            font-family: 'Kumbh Sans', sans-serif;
+            font-size: 4.5rem;
+            font-weight: 900;
+            margin-bottom: 1rem;
+            background: linear-gradient(to right, #60a5fa, #a78bfa, #34d399);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 15px rgba(59, 130, 246, 0.3));
+            letter-spacing: -0.04em;
+        }
+
+        .logo-text {
+            font-family: 'Kumbh Sans', sans-serif;
+            font-weight: 900;
+            letter-spacing: -0.02em;
+        }
+
+        .logo-vidismart {
+            color: var(--primary);
+        }
+
+        .hero p {
+            font-size: 1.5rem;
+            color: var(--text-muted);
+            max-width: 900px;
+            margin: 0 auto;
+            font-weight: 300;
+        }
+
+        .container {
+            max-width: 1440px;
+            margin: 0 auto;
+            padding: 0 2rem 4rem;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .card {
+            background: var(--card-bg);
+            -webkit-backdrop-filter: blur(8px);
+            backdrop-filter: blur(8px);
+            border-radius: 1.25rem;
+            padding: 2rem;
+            border: 1px solid var(--glass-border);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, transparent, var(--primary), transparent);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-10px) rotateX(2deg) rotateY(1deg);
+            border-color: rgba(59, 130, 246, 0.3);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .card:hover::before {
+            opacity: 1;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+        }
+
+        .card h3 {
+            font-size: 1.35rem;
+            font-weight: 700;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.35rem 0.85rem;
+            border-radius: 8px;
+            font-size: 0.7rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-left: auto;
+        }
+
+        .badge-critical {
+            background: rgba(239, 68, 68, 0.2);
+            color: #f87171;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .badge-high {
+            background: rgba(245, 158, 11, 0.2);
+            color: #fbbf24;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        .badge-medium {
+            background: rgba(59, 130, 246, 0.2);
+            color: #60a5fa;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+
+        .badge-low {
+            background: rgba(148, 163, 184, 0.2);
+            color: #cbd5e1;
+            border: 1px solid rgba(148, 163, 184, 0.3);
+        }
+
+        .mermaid-container {
+            background: var(--panel-bg);
+            border-radius: 1.5rem;
+            padding: 2.5rem;
+            margin: 2rem 0;
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            overflow: visible;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+            filter: drop-shadow(0 0 10px rgba(59, 130, 246, 0.1));
+        }
+
+        /* 3D Dashboard Stats */
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin: 0 0 3rem;
+        }
+
+        .stat-item {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 1.25rem;
+            text-align: center;
+            border: 1px solid var(--glass-border);
+            transition: transform 0.3s;
+        }
+
+        .stat-item:hover {
+            transform: scale(1.05);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(to bottom, #fff, #94a3b8);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            font-weight: 500;
+            margin-top: 0.5rem;
+        }
+
+        .phase-section {
+            background: var(--panel-bg);
+            border-radius: 2rem;
+            padding: 2.5rem;
+            margin-bottom: 3rem;
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+        }
+
+        .phase-header {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .phase-number {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: white;
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
+        }
+
+        .phase-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            letter-spacing: -0.01em;
+        }
+
+        .task-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 1rem;
+            list-style: none;
+        }
+
+        .task-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 1.25rem;
+            border-radius: 1rem;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .task-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.1);
+            transform: translateX(5px);
+        }
+
+        .task-item.critical {
+            border-left: 4px solid var(--danger);
+        }
+
+        .task-item.high {
+            border-left: 4px solid var(--warning);
+        }
+
+        .task-item.medium {
+            border-left: 4px solid var(--primary);
+        }
+
+        .task-item.low {
+            border-left: 4px solid var(--text-muted);
+        }
+
+        .task-checkbox {
+            width: 22px;
+            height: 22px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .task-checkbox:hover {
+            border-color: var(--primary);
+            box-shadow: 0 0 10px var(--primary-glow);
+        }
+
+        .task-agent {
+            font-size: 0.7rem;
+            padding: 0.25rem 0.6rem;
+            border-radius: 6px;
+            background: rgba(59, 130, 246, 0.15);
+            color: #60a5fa;
+            font-weight: 700;
+            margin-left: auto;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+
+        .critical-path-box {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(139, 92, 246, 0.05) 100%);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 2rem;
+            padding: 3rem;
+            margin: 4rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .critical-path-box::before {
+            content: 'CRITICAL PATH';
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            font-size: 6rem;
+            font-weight: 900;
+            opacity: 0.03;
+            pointer-events: none;
+        }
+
+        .critical-path-box h3 {
+            font-size: 2rem;
+            color: #f87171;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .gantt-container {
+            background: var(--darkER);
+            border-radius: 1.5rem;
+            padding: 2.5rem;
+            border: 1px solid var(--glass-border);
+            overflow-x: auto;
+            margin: 2rem 0;
+            box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.5);
+        }
+
+        @media (max-width: 1024px) {
+            .task-list {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .container {
+                padding: 0 1rem 2rem;
+            }
+
+            .phase-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .phase-meta {
+                margin-left: 0;
+                margin-top: 1rem;
+            }
+        }
+
+        /* 3D Scroll Animations Styling */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease-out;
+        }
+
+        /* Visual Enhancements */
+        .glow-text {
+            text-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
+        }
+
+        .summary-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .summary-list li {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="hero">
+        <h1>🤖 VidiCity Agent Orchestration</h1>
+        <p>Multi-Agent Workflow Design & Critical Path Analysis for 75-Task Implementation</p>
+    </div>
+
+    <div class="container">
+        <!-- Stats Overview -->
+        <div class="stats-bar">
+            <div class="stat-item">
+                <div class="stat-value">75</div>
+                <div class="stat-label">Total Tasks</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">12</div>
+                <div class="stat-label">Weeks Timeline</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">8</div>
+                <div class="stat-label">AI Agents</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">6</div>
+                <div class="stat-label">Critical Path Items</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">23</div>
+                <div class="stat-label">Dependencies</div>
+            </div>
+        </div>
+
+        <!-- Agent Overview -->
+        <h2 style="margin: 2rem 0 1rem; font-size: 1.75rem;">🎭 Specialized AI Agents</h2>
+        <div class="grid">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon" style="background: rgba(59, 130, 246, 0.2);">🔐</div>
+                    <h3>AuthAgent</h3>
+                    <span class="badge badge-critical">CRITICAL</span>
+                </div>
+                <p><strong>Responsibility:</strong> Keycloak SSO, authentication flows, token management</p>
+                <p style="margin-top: 0.5rem; color: var(--text-muted);"><strong>Tasks:</strong> #1-4, #10, #13-14, #19,
+                    #56</p>
+                <p style="margin-top: 0.5rem; color: var(--warning);"><strong>⚠️ Blocker for:</strong> All user-facing
+                    features</p>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon" style="background: rgba(139, 92, 246, 0.2);">🗄️</div>
+                    <h3>DataAgent</h3>
+                    <span class="badge badge-critical">CRITICAL</span>
+                </div>
+                <p><strong>Responsibility:</strong> Database setup, schemas, migrations, data pipelines</p>
+                <p style="margin-top: 0.5rem; color: var(--text-muted);"><strong>Tasks:</strong> #5-7, #11, #32-33,
+                    #38-40, #42, #71</p>
+                <p style="margin-top: 0.5rem; color: var(--warning);"><strong>⚠️ Blocker for:</strong> All data storage
+                    features</p>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon" style="background: rgba(16, 185, 129, 0.2);">📹</div>
+                    <h3>VideoAgent</h3>
+                    <span class="badge badge-high">HIGH</span>
+                </div>
+                <p><strong>Responsibility:</strong> Video upload, processing, encoding, streaming</p>
+                <p style="margin-top: 0.5rem; color: var(--text-muted);"><strong>Tasks:</strong> #8, #20-25, #38-39,
+                    #46, #60, #73</p>
+                <p style="margin-top: 0.5rem; color: var(--warning);"><strong>⚠️ Blocker for:</strong> Video reviews,
+                    landing pages</p>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon" style="background: rgba(245, 158, 11, 0.2);">🎨</div>
+                    <h3>UIAgent</h3>
+                    <span class="badge badge-high">HIGH</span>
+                </div>
+                <p><strong>Responsibility:</strong> Frontend components, pages, styling, interactions</p>
+                <p style="margin-top: 0.5rem; color: var(--text-muted);"><strong>Tasks:</strong> #15-18, #34-37, #44-45,
+                    #50-55, #57, #63</p>
+                <p style="margin-top: 0.5rem; color: var(--warning);"><strong>⚠️ Blocker for:</strong> User experience
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon" style="background: rgba(236, 72, 153, 0.2);">⭐</div>
+                    <h3>ReviewAgent</h3>
+                    <span class="badge badge-medium">MEDIUM</span>
+                </div>
+                <p><strong>Responsibility:</strong> Video reviews system, moderation, responses</p>
+                <p style="margin-top: 0.5rem; color: var(--text-muted);"><strong>Tasks:</strong> #26-31, #67</p>
+                <p style="margin-top: 0.5rem; color: var(--accent);"><strong>✅ Parallel with:</strong> Core video
+                    platform</p>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon" style="background: rgba(6, 182, 212, 0.2);">🧠</div>
+                    <h3>AIAgent</h3>
+                    <span class="badge badge-high">HIGH</span>
+                </div>
+                <p><strong>Responsibility:</strong> Embeddings, search, recommendations, moderation</p>
+                <p style="margin-top: 0.5rem; color: var(--text-muted);"><strong>Tasks:</strong> #32-33, #38-43, #48,
+                    #59, #72, #75</p>
+                <p style="margin-top: 0.5rem; color: var(--accent);"><strong>✅ Parallel with:</strong> Can work after
+                    data setup</p>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon" style="background: rgba(168, 85, 247, 0.2);">🌆</div>
+                    <h3>CityAgent</h3>
+                    <span class="badge badge-medium">MEDIUM</span>
+                </div>
+                <p><strong>Responsibility:</strong> City pages, geospatial features, local content</p>
+                <p style="margin-top: 0.5rem; color: var(--text-muted);"><strong>Tasks:</strong> #44-49, #74</p>
+                <p style="margin-top: 0.5rem; color: var(--accent);"><strong>✅ Parallel with:</strong> Reviews, 3D viz
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon" style="background: rgba(239, 68, 68, 0.2);">🚀</div>
+                    <h3>DevOpsAgent</h3>
+                    <span class="badge badge-high">HIGH</span>
+                </div>
+                <p><strong>Responsibility:</strong> Deployment, monitoring, security, infrastructure</p>
+                <p style="margin-top: 0.5rem; color: var(--text-muted);"><strong>Tasks:</strong> #9, #64-66, #61-62,
+                    #68-70</p>
+                <p style="margin-top: 0.5rem; color: var(--warning);"><strong>⚠️ Blocker for:</strong> Production launch
+                </p>
+            </div>
+        </div>
+
+        <!-- Master Orchestrator Diagram -->
+        <h2 style="margin: 1.5rem 0 1rem; font-size: 1.75rem;">🎛️ Master Orchestrator Flow</h2>
+        <div class="mermaid-container">
+            <div class="mermaid">
+                flowchart TB
+                subgraph Master["Master Orchestrator"]
+                M1[Task Queue Manager]
+                M2[Dependency Resolver]
+                M3[Agent Dispatcher]
+                M4[Progress Monitor]
+                M5[Conflict Handler]
+                end
+
+                subgraph Phase1["Phase 1: Foundation"]
+                A1[AuthAgent]
+                A2[DataAgent]
+                A3[DevOpsAgent]
+                end
+
+                subgraph Phase2["Phase 2: Core Platform"]
+                A4[VideoAgent]
+                A5[UIAgent]
+                end
+
+                subgraph Phase3["Phase 3: Advanced Features"]
+                A6[ReviewAgent]
+                A7[CityAgent]
+                A8[AIAgent]
+                end
+
+                M1 --> M2
+                M2 --> M3
+                M3 --> A1
+                M3 --> A2
+                M3 --> A3
+
+                A1 --> M4
+                A2 --> M4
+                A3 --> M4
+
+                M4 -->|Phase 1 Complete| M1
+                M1 -->|Dispatch Phase 2| M3
+                M3 --> A4
+                M3 --> A5
+
+                A4 --> M4
+                A5 --> M4
+
+                M4 -->|Phase 2 Complete| M1
+                M1 -->|Dispatch Phase 3| M3
+                M3 --> A6
+                M3 --> A7
+                M3 --> A8
+
+                A6 --> M4
+                A7 --> M4
+                A8 --> M4
+
+                M5 -->|Retry/Reprioritize| M3
+
+                style Master fill:#1e3a8a,stroke:#3b82f6,stroke-width:3px,color:#fff
+                style Phase1 fill:#065f46,stroke:#10b981,stroke-width:2px,color:#fff
+                style Phase2 fill:#7c2d12,stroke:#f97316,stroke-width:2px,color:#fff
+                style Phase3 fill:#581c87,stroke:#a855f7,stroke-width:2px,color:#fff
+            </div>
+        </div>
+
+        <!-- Critical Path -->
+        <div class="critical-path-box">
+            <h3>🔴 Critical Path (Must Complete On Time)</h3>
+            <p style="margin-bottom: 1rem;">These tasks are on the critical path - any delay here delays the entire
+                project launch:</p>
+
+            <div class="mermaid">
+                flowchart LR
+                A["Week 1-2:<br />Keycloak SSO<br />AuthAgent"] --> B["Week 2:<br />PostgreSQL + Vidi
+                AI<br />DataAgent"]
+                B --> C["Week 3:<br />Video Pipeline<br />VideoAgent"]
+                C --> D["Week 4:<br />Landing Pages<br />UIAgent"]
+                D --> E["Week 5-6:<br />Vector Search<br />AIAgent"]
+                E --> F["Week 8:<br />Integration<br />All Agents"]
+                F --> G["Week 10:<br />Security Audit<br />DevOpsAgent"]
+                G --> H["Week 12:<br />Production Launch<br />All Agents"]
+
+                style A fill:#ef4444,stroke:#fff,stroke-width:2px,color:#fff
+                style B fill:#ef4444,stroke:#fff,stroke-width:2px,color:#fff
+                style C fill:#ef4444,stroke:#fff,stroke-width:2px,color:#fff
+                style D fill:#ef4444,stroke:#fff,stroke-width:2px,color:#fff
+                style E fill:#f97316,stroke:#fff,stroke-width:2px,color:#fff
+                style F fill:#f97316,stroke:#fff,stroke-width:2px,color:#fff
+                style G fill:#f97316,stroke:#fff,stroke-width:2px,color:#fff
+                style H fill:#10b981,stroke:#fff,stroke-width:2px,color:#fff
+            </div>
+
+            <div class="risk-matrix">
+                <div class="risk-item">
+                    <h4>⚠️ Risk: Keycloak Complexity</h4>
+                    <p>If SSO takes >2 weeks, shift UIAgent to work on static components</p>
+                </div>
+                <div class="risk-item">
+                    <h4>⚠️ Risk: Video Processing Delays</h4>
+                    <p>If encoding is slow, use Cloudflare Stream as fallback</p>
+                </div>
+                <div class="risk-item">
+                    <h4>⚠️ Risk: AI API Limits</h4>
+                    <p>If rate limited, queue embeddings for off-peak hours</p>
+                </div>
+                <div class="risk-item">
+                    <h4>⚠️ Risk: Vector Search Accuracy</h4>
+                    <p>If poor results, fall back to text search temporarily</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dependency Graph -->
+        <h2 style="margin: 1.5rem 0 1rem; font-size: 1.75rem;">🔗 Task Dependency Graph</h2>
+        <div class="mermaid-container">
+            <div class="mermaid">
+                flowchart TB
+                subgraph Foundation["Phase 1: Foundation"]
+                T1[1. Keycloak Deploy]
+                T2[2. Realms Config]
+                T3[5. Vidi AI Setup]
+                T4[6. Neo4j Setup]
+                T5[7. PostgreSQL]
+                T6[8. R2 Storage]
+                T7[9. FastAPI Base]
+                end
+
+                subgraph Core["Phase 2: Core"]
+                T8[13. Keycloak Attrs]
+                T9[14. Registration]
+                T10[20. Video Pipeline]
+                T11[21. Encoding]
+                T12[50. Next.js]
+                T13[57. API Connect]
+                end
+
+                subgraph Features["Phase 3: Features"]
+                T14[26. Review System]
+                T15[32. CLIP Embeds]
+                T16[34. 3D Viz]
+                T17[44. City Pages]
+                end
+
+                T1 --> T2 --> T8 --> T9
+                T1 --> T7
+                T3 --> T7
+                T4 --> T7
+                T5 --> T7
+
+                T7 --> T12
+                T6 --> T10
+                T10 --> T11
+                T11 --> T13
+                T12 --> T13
+
+                T13 --> T14
+                T13 --> T15
+                T13 --> T16
+                T13 --> T17
+
+                T7 -.->|Blocks| T13
+                T11 -.->|Blocks| T14
+
+                style Foundation fill:#064e3b,stroke:#10b981,color:#fff
+                style Core fill:#7c2d12,stroke:#f97316,color:#fff
+                style Features fill:#312e81,stroke:#6366f1,color:#fff
+                style T1 fill:#ef4444,stroke:#fff
+                style T7 fill:#ef4444,stroke:#fff
+                style T11 fill:#ef4444,stroke:#fff
+                style T13 fill:#ef4444,stroke:#fff
+            </div>
+        </div>
+
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-color" style="background: #ef4444;"></div>
+                <span>Critical Path</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #f97316;"></div>
+                <span>High Priority</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #3b82f6;"></div>
+                <span>Medium Priority</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #10b981;"></div>
+                <span>Low Priority / Parallel</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #6b7280;"></div>
+                <span>Dashed = Blocking Dependency</span>
+            </div>
+        </div>
+
+        <!-- Parallel Execution Map -->
+        <h2 style="margin: 1.5rem 0 1rem; font-size: 1.75rem;">⚡ Parallel Execution Opportunities</h2>
+        <div class="gantt-container">
+            <div class="mermaid">
+                gantt
+                dateFormat YYYY-MM-DD
+                title VidiCity 12-Week Timeline
+                axisFormat %b %d
+
+                section Phase 1
+                Keycloak SSO :crit, p1a, 2024-02-01, 14d
+                Database Setup :crit, p1b, 2024-02-01, 10d
+                Storage Setup :p1c, 2024-02-01, 5d
+                FastAPI Base :crit, p1d, after p1a, 7d
+
+                section Phase 2
+                Video Pipeline :crit, p2a, after p1c, 10d
+                Frontend Setup :p2b, after p1d, 7d
+                Profile System :p2c, after p1a, 10d
+                Landing Pages :crit, p2d, after p2b, 10d
+
+                section Phase 3
+                Reviews :p3a, after p2a, 14d
+                Vector Search :crit, p3b, after p2d, 14d
+                3D Viz :p3c, after p3b, 10d
+                City Pages :p3d, after p2d, 10d
+
+                section Phase 4
+                System Integration :crit, p4a, after p3b, 10d
+                Load Testing :crit, p4b, after p4a, 5d
+                Security Audit :crit, p4c, after p4a, 5d
+
+                section Phase 5
+                Production Deploy :crit, p5a, after p4c, 3d
+            </div>
+        </div>
+
+        <!-- Phase Breakdown -->
+        <h2 style="margin: 1.5rem 0 1rem; font-size: 1.75rem;">📋 Phase-by-Phase Breakdown</h2>
+
+        <div class="phase-section">
+            <div class="phase-header">
+                <div class="phase-number">1</div>
+                <div>
+                    <div class="phase-title">Foundation & Infrastructure</div>
+                    <div style="color: var(--text-muted);">Weeks 1-2 • 11 Tasks • AuthAgent, DataAgent, DevOpsAgent
+                    </div>
+                </div>
+                <div class="phase-meta">
+                    <div class="badge badge-critical">CRITICAL</div>
+                    <div style="font-size: 0.875rem; color: var(--text-muted);">Blocks everything</div>
+                </div>
+            </div>
+            <ul class="task-list">
+                <li class="task-item critical">
+                    <div class="task-checkbox"></div><span>Deploy Keycloak instance</span><span
+                        class="task-agent">AuthAgent</span>
+                </li>
+                <li class="task-item critical">
+                    <div class="task-checkbox"></div><span>Configure Keycloak realms</span><span
+                        class="task-agent">AuthAgent</span>
+                </li>
+                <li class="task-item critical">
+                    <div class="task-checkbox"></div><span>Set up identity providers</span><span
+                        class="task-agent">AuthAgent</span>
+                </li>
+                <li class="task-item critical">
+                    <div class="task-checkbox"></div><span>Implement Keycloak + Next.js</span><span
+                        class="task-agent">AuthAgent</span>
+                </li>
+                <li class="task-item critical">
+                    <div class="task-checkbox"></div><span>Set up Vidi AI (Vector + Graph RAG)</span><span
+                        class="task-agent">DataAgent</span>
+                </li>
+                <li class="task-item high">
+                    <div class="task-checkbox"></div><span>Set up Neo4j AuraDB</span><span
+                        class="task-agent">DataAgent</span>
+                </li>
+                <li class="task-item critical">
+                    <div class="task-checkbox"></div><span>Configure PostgreSQL</span><span
+                        class="task-agent">DataAgent</span>
+                </li>
+                <li class="task-item critical">
+                    <div class="task-checkbox"></div><span>Set up Cloudflare R2</span><span
+                        class="task-agent">DevOpsAgent</span>
+                </li>
+                <li class="task-item critical">
+                    <div class="task-checkbox"></div><span>Create FastAPI backend</span><span
+                        class="task-agent">DevOpsAgent</span>
+                </li>
+                <li class="task-item high">
+                    <div class="task-checkbox"></div><span>Keycloak token validation</span><span
+                        class="task-agent">AuthAgent</span>
+                </li>
+                <li class="task-item medium">
+                    <div class="task-checkbox"></div><span>Configure ai-proxy.php</span><span
+                        class="task-agent">DevOpsAgent</span>
+                </li>
+            </ul>
+        </div>
+
+        <div class="phase-section">
+            <div class="phase-header">
+                <div class="phase-number" style="background: var(--warning);">2</div>
+                <div>
+                    <div class="phase-title">User System & Video Platform</div>
+                    <div style="color: var(--text-muted);">Weeks 3-4 • 16 Tasks • AuthAgent, VideoAgent, UIAgent</div>
+                </div>
+                <div class="phase-meta">
+                    <div class="badge badge-high">HIGH</div>
+                    <div style="font-size: 0.875rem; color: var(--text-muted);">Depends on Phase 1</div>
+                </div>
+            </div>
+            <ul class="task-list">
+                <li class="task-item high">
+                    <div class="task-checkbox"></div><span>Tiered profile system design</span><span
+                        class="task-agent">UIAgent</span>
+                </li>
+                <li class="task-item high">
+                    <div class="task-checkbox"></div><span>Keycloak custom attributes</span><span
+                        class="task-agent">AuthAgent</span>
+                </li>
+                <li class="task-item high">
+                    <div class="task-checkbox"></div><span>Keycloak registration flow</span><span
+                        class="task-agent">AuthAgent</span>
+                </li>
+                <li class="task-item medium">
+                    <div class="task-checkbox"></div><span>Profile page UI</span><span class="task-agent">UIAgent</span>
+                </li>
+                <li class="task-item medium">
+                    <div class="task-checkbox"></div><span>User dashboard</span><span class="task-agent">UIAgent</span>
+                </li>
+                <li class="task-item low">
+                    <div class="task-checkbox"></div><span>Profile customization</span><span
+                        class="task-agent">UIAgent</span>
+                </li>
+                <li class="task-item low">
+                    <div class="task-checkbox"></div><span>Social features</span><span class="task-agent">UIAgent</span>
+                </li>
+                <li class="task-item low">
+                    <div class="task-checkbox"></div><span>Account linking</span><span
+                        class="task-agent">AuthAgent</span>
+                </li>
+                <li class="task-item critical">
+                    <div class="task-checkbox"></div><span>Video landing page template</span><span
+                        class="task-agent">UIAgent</span>
+                </li>
+                <li class="task-item critical">
+                    <div class="task-checkbox"></div><span>Video upload pipeline</span><span
+                        class="task-agent">VideoAgent</span>
+                </li>
+                <li class="task-item critical">
+                    <div class="task-checkbox"></div><span>Video encoding (HLS/WebM)</span><span
+                        class="task-agent">VideoAgent</span>
+                </li>
+                <li class="task-item high">
+                    <div class="task-checkbox"></div><span>Video player implementation</span><span
+                        class="task-agent">VideoAgent</span>
+                </li>
+                <li class="task-item medium">
+                    <div class="task-checkbox"></div><span>Company profile builder</span><span
+                        class="task-agent">UIAgent</span>
+                </li>
+                <li class="task-item medium">
+                    <div class="task-checkbox"></div><span>CTA modules</span><span class="task-agent">UIAgent</span>
+                </li>
+                <li class="task-item low">
+                    <div class="task-checkbox"></div><span>Embeddable widget</span><span
+                        class="task-agent">UIAgent</span>
+                </li>
+                <li class="task-item high">
+                    <div class="task-checkbox"></div><span>Next.js app setup</span><span
+                        class="task-agent">UIAgent</span>
+                </li>
+            </ul>
+        </div>
+
+        <div class="phase-section">
+            <div class="phase-header">
+                <div class="phase-number" style="background: var(--secondary);">3</div>
+                <div>
+                    <div class="phase-title">Reviews, AI & Advanced Features</div>
+                    <div style="color: var(--text-muted);">Weeks 5-8 • 32 Tasks • All Agents in Parallel</div>
+                </div>
+                <div class="phase-meta">
+                    <div class="badge badge-medium">MEDIUM</div>
+                    <div style="font-size: 0.875rem; color: var(--text-muted);">Parallel execution</div>
+                </div>
+            </div>
+            <p style="margin-bottom: 1rem; color: var(--accent);">✅ This phase has maximum parallelization - all 8
+                agents work simultaneously</p>
+            <ul class="task-list">
+                <li class="task-item medium">
+                    <div class="task-checkbox"></div><span>Review system design</span><span
+                        class="task-agent">ReviewAgent</span>
+                </li>
+                <li class="task-item medium">
+                    <div class="task-checkbox"></div><span>Review recording (webcam)</span><span
+                        class="task-agent">ReviewAgent</span>
+                </li>
+                <li class="task-item medium">
+                    <div class="task-checkbox"></div><span>Review moderation pipeline</span><span
+                        class="task-agent">ReviewAgent</span>
+                </li>
+                <li class="task-item medium">
+                    <div class="task-checkbox"></div><span>Review display components</span><span
+                        class="task-agent">ReviewAgent</span>
+                </li>
+                <li class="task-item medium">
+                    <div class="task-checkbox"></div><span>Review response system</span><span
+                        class="task-agent">ReviewAgent</span>
+                </li>
+                <li class="task-item medium">
+                    <div class="task-checkbox"></div><span>Review analytics</span><span
+                        class="task-agent">ReviewAgent</span>
+                </li>
+                <li class="task-item high">
+                    <div class="task-checkbox"></div><span>Visual Factor Omni Search Setup</span><span
+                        class="task-agent">AIAgent</span>
+                </li>
+                <li class="task-item high">
+                    <div class="task-checkbox"></div><span>Multimodal Video Processing</span><span
+                        class="task-agent">AIAgent</span>
+                </li>
+                <li class="task-item high">
+                    <div class="task-checkbox"></div><span>3D vector visualization</span><span
+                        class="task-agent">AIAgent</span>
+                </li>
+                <li class="task-item high">
+                    <div class="task-checkbox"></div><span>Visual search UI</span><span
+                        class="task-agent">AIAgent</span>
+                </li>
+                <li class="task-item medium">
+                    <div class="task-checkbox"></div><span>Geospatial filtering</span><span
+                        class="task-agent">CityAgent</span>
+                </li>
+                <li class="task-item medium">
+                    <div class="task-checkbox"></div><span>Geospatial + Lexical Fusion</span><span
+                        class="task-agent">AIAgent</span>
+                </li>
+                <li class="task-item medium">
+                    <div class="task-checkbox"></div><span>AI thumbnail generation</span><span
+                        class="task-agent">AIAgent</span>
+                </li>
+                <li class="task-item medium">
+                    <div class="task-checkbox"></div><span>Video transcription</span><span
+                        class="task-agent">AIAgent</span>
+                </li>
+                <li class="task-item medium">
+                    <div class="task-checkbox"></div><span>Smart Tags system</span><span
+                        class="task-agent">AIAgent</span>
+                </li>
+                <li class="task-item medium">
+                    <div class="task-checkbox"></div><span>AI recommendations</span><span
+                        class="task-agent">AIAgent</span>
+                </li>
+                <li class="task-item high">
+                    <div class="task-checkbox"></div><span>AI moderation (video+reviews)</span><span
+                        class="task-agent">AIAgent</span>
+                </li>
+                <li class="task-item low">
+                    <div class="task-checkbox"></div><span>AI profile assistant</span><span
+                        class="task-agent">AIAgent</span>
+                </li>
+                <li class="task-item medium">
+                    <div class="task-checkbox"></div><span>City landing pages</span><span
+                        class="task-agent">CityAgent</span>
+                </li>
+                <li class="task-item medium">
+                    <div class="task-checkbox"></div><span>City content feeds</span><span
+                        class="task-agent">CityAgent</span>
+                </li>
+                <li class="task-item medium">
+                    <div class="task-checkbox"></div><span>City switcher UI</span><span
+                        class="task-agent">CityAgent</span>
+                </li>
+                <li class="task-item low">
+                    <div class="task-checkbox"></div><span>City analytics dashboard</span><span
+                        class="task-agent">CityAgent</span>
+                </li>
+                <li class="task-item low">
+                    <div class="task-checkbox"></div><span>Trending algorithms</span><span
+                        class="task-agent">CityAgent</span>
+                </li>
+                <li class="task-item low">
+                    <div class="task-checkbox"></div><span>City categories</span><span
+                        class="task-agent">CityAgent</span>
+                </li>
+                <li class="task-item medium">
+                    <div class="task-checkbox"></div><span>Design system (Tailwind)</span><span
+                        class="task-agent">UIAgent</span>
+                </li>
+                <li class="task-item high">
+                    <div class="task-checkbox"></div><span>3D hero section</span><span class="task-agent">UIAgent</span>
+                </li>
+                <li class="task-item high">
+                    <div class="task-checkbox"></div><span>Search interface</span><span
+                        class="task-agent">UIAgent</span>
+                </li>
+                <li class="task-item medium">
+                    <div class="task-checkbox"></div><span>Real-time notifications</span><span
+                        class="task-agent">UIAgent</span>
+                </li>
+                <li class="task-item low">
+                    <div class="task-checkbox"></div><span>PWA support</span><span class="task-agent">UIAgent</span>
+                </li>
+                <li class="task-item high">
+                    <div class="task-checkbox"></div><span>Session management</span><span
+                        class="task-agent">AuthAgent</span>
+                </li>
+                <li class="task-item high">
+                    <div class="task-checkbox"></div><span>Frontend-Backend connection</span><span
+                        class="task-agent">DevOpsAgent</span>
+                </li>
+                <li class="task-item medium">
+                    <div class="task-checkbox"></div><span>VidiSmart integration</span><span
+                        class="task-agent">DevOpsAgent</span>
+                </li>
+            </ul>
+        </div>
+
+        <div class="phase-section">
+            <div class="phase-header">
+                <div class="phase-number" style="background: var(--danger);">4-5</div>
+                <div>
+                    <div class="phase-title">Testing, Security & Launch</div>
+                    <div style="color: var(--text-muted);">Weeks 9-12 • 16 Tasks • All Agents</div>
+                </div>
+                <div class="phase-meta">
+                    <div class="badge badge-critical">CRITICAL</div>
+                    <div style="font-size: 0.875rem; color: var(--text-muted);">Final phase</div>
+                </div>
+            </div>
+            <ul class="task-list">
+                <li class="task-item high">
+                    <div class="task-checkbox"></div><span>Vector search testing</span><span
+                        class="task-agent">AIAgent</span>
+                </li>
+                <li class="task-item high">
+                    <div class="task-checkbox"></div><span>Video streaming load test</span><span
+                        class="task-agent">VideoAgent</span>
+                </li>
+                <li class="task-item critical">
+                    <div class="task-checkbox"></div><span>Keycloak load test</span><span
+                        class="task-agent">AuthAgent</span>
+                </li>
+                <li class="task-item critical">
+                    <div class="task-checkbox"></div><span>Security audit</span><span
+                        class="task-agent">DevOpsAgent</span>
+                </li>
+                <li class="task-item medium">
+                    <div class="task-checkbox"></div><span>SEO optimization</span><span
+                        class="task-agent">UIAgent</span>
+                </li>
+                <li class="task-item critical">
+                    <div class="task-checkbox"></div><span>Production deployment</span><span
+                        class="task-agent">DevOpsAgent</span>
+                </li>
+                <li class="task-item high">
+                    <div class="task-checkbox"></div><span>Monitoring setup</span><span
+                        class="task-agent">DevOpsAgent</span>
+                </li>
+                <li class="task-item medium">
+                    <div class="task-checkbox"></div><span>Admin dashboard</span><span
+                        class="task-agent">DevOpsAgent</span>
+                </li>
+                <li class="task-item medium">
+                    <div class="task-checkbox"></div><span>Review moderation dashboard</span><span
+                        class="task-agent">ReviewAgent</span>
+                </li>
+                <li class="task-item low">
+                    <div class="task-checkbox"></div><span>Documentation</span><span
+                        class="task-agent">DevOpsAgent</span>
+                </li>
+                <li class="task-item medium">
+                    <div class="task-checkbox"></div><span>Creator onboarding flow</span><span
+                        class="task-agent">UIAgent</span>
+                </li>
+                <li class="task-item low">
+                    <div class="task-checkbox"></div><span>Stripe setup</span><span
+                        class="task-agent">DevOpsAgent</span>
+                </li>
+                <li class="task-item medium">
+                    <div class="task-checkbox"></div><span>Vector DB monitoring</span><span
+                        class="task-agent">DataAgent</span>
+                </li>
+                <li class="task-item medium">
+                    <div class="task-checkbox"></div><span>User feedback collection</span><span
+                        class="task-agent">UIAgent</span>
+                </li>
+                <li class="task-item medium">
+                    <div class="task-checkbox"></div><span>Encoding cost optimization</span><span
+                        class="task-agent">VideoAgent</span>
+                </li>
+                <li class="task-item low">
+                    <div class="task-checkbox"></div><span>City expansion planning</span><span
+                        class="task-agent">CityAgent</span>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Contingency Plans -->
+        <h2 style="margin: 1.5rem 0 1rem; font-size: 1.75rem;">🛡️ Contingency Plans</h2>
+        <div class="grid">
+            <div class="card" style="border-left: 4px solid var(--danger);">
+                <h3>If Keycloak SSO is Delayed (>2 weeks)</h3>
+                <p><strong>Fallback:</strong> Implement temporary Supabase Auth for development</p>
+                <p style="margin-top: 0.5rem; color: var(--accent);"><strong>Parallel Work:</strong> UIAgent continues
+                    with static mock auth</p>
+                <p style="margin-top: 0.5rem;"><strong>Recovery:</strong> Swap auth providers at Week 4</p>
+            </div>
+            <div class="card" style="border-left: 4px solid var(--warning);">
+                <h3>If Video Processing is Slow</h3>
+                <p><strong>Fallback:</strong> Use Cloudflare Stream or Mux for encoding</p>
+                <p style="margin-top: 0.5rem; color: var(--accent);"><strong>Parallel Work:</strong> Focus on review
+                    system while encoding optimizes</p>
+                <p style="margin-top: 0.5rem;"><strong>Recovery:</strong> Move to self-hosted FFmpeg after launch</p>
+            </div>
+            <div class="card" style="border-left: 4px solid var(--primary);">
+                <h3>If AI API Rate Limited</h3>
+                <p><strong>Fallback:</strong> Queue embeddings for off-peak batch processing</p>
+                <p style="margin-top: 0.5rem; color: var(--accent);"><strong>Parallel Work:</strong> Use simplified
+                    text-only search temporarily</p>
+                <p style="margin-top: 0.5rem;"><strong>Recovery:</strong> Scale to paid API tiers or local embeddings
+                </p>
+            </div>
+            <div class="card" style="border-left: 4px solid var(--secondary);">
+                <h3>If Team Member Unavailable</h3>
+                <p><strong>Fallback:</strong> Cross-trained agents can cover critical tasks</p>
+                <p style="margin-top: 0.5rem; color: var(--accent);"><strong>Parallel Work:</strong> Defer non-critical
+                    features to Phase 2</p>
+                <p style="margin-top: 0.5rem;"><strong>Recovery:</strong> Use VidiSmart existing components as temp
+                    solutions</p>
+            </div>
+        </div>
+
+        <h2
+            style="font-family: 'Kumbh Sans', sans-serif; font-size: 2.25rem; margin: 3rem 0 1.5rem; text-align: center;">
+            🧠 Master Orchestrator Logic</h2>
+        <div class="mermaid-container glass-panel">
+            <div class="mermaid">
+                flowchart TD
+                Start([Start]) --> Init[Initialize All Agents]
+                Init --> Load[Load Task Dependencies]
+                Load --> Critical{Critical Path Tasks First?}
+
+                Critical -->|Yes| Dispatch[Dispatch to Agent Queue]
+                Critical -->|No| Queue[Add to Backlog]
+
+                Dispatch --> Work[Agent Works on Task]
+                Work --> Complete{Task Complete?}
+
+                Complete -->|Success| Update[Update Progress]
+                Complete -->|Failed| Retry{"Retry < 3?"}
+                Retry -->|Yes| Work
+                Retry -->|No| Escalate[Escalate to Human]
+
+                Update --> Check{Phase Complete?}
+                Check -->|No| Critical
+                Check -->|Yes| NextPhase{More Phases?}
+
+                NextPhase -->|Yes| Critical
+                NextPhase -->|No| Deploy[Production Deploy]
+
+                Queue --> Daily{Daily Review}
+                Daily -->|Priority Changed| Critical
+                Daily -->|Still Low| Queue
+
+                Escalate --> Manual[Manual Intervention]
+                Manual --> Complete
+
+                Deploy --> End([End])
+
+                style Start fill:#10b981,stroke:#fff
+                style End fill:#ef4444,stroke:#fff
+                style Critical fill:#f59e0b,stroke:#fff
+                style Dispatch fill:#3b82f6,stroke:#fff
+            </div>
+        </div>
+
+        <!-- Summary Board -->
+        <div class="phase-section glass-panel reveal" style="margin-top: 4rem; border-top: 4px solid var(--primary);">
+            <h2 class="glow-text"
+                style="font-family: 'Kumbh Sans', sans-serif; font-size: 2.5rem; margin-bottom: 2rem; text-align: center;">
+                📊 Project Execution Summary</h2>
+            <div class="grid" style="margin: 0;">
+                <div class="card glass-panel">
+                    <h4 class="logo-text" style="color: var(--primary); margin-bottom: 1rem;">Core Architecture</h4>
+                    <ul class="summary-list">
+                        <li>🔹 8 Specialized AI Agents</li>
+                        <li>🔹 1 Master Orchestrator</li>
+                        <li>🔹 5 Implementation Phases</li>
+                        <li>🔹 75 Tasks with Dependencies</li>
+                    </ul>
+                </div>
+                <div class="card glass-panel">
+                    <h4 class="logo-text" style="color: var(--danger); margin-bottom: 1rem;">Critical Milestones</h4>
+                    <ul class="summary-list">
+                        <li>🔴 Keycloak SSO (Week 1-2)</li>
+                        <li>🔴 Database Setup (Week 2)</li>
+                        <li>🔴 Video Pipeline (Week 3)</li>
+                        <li>🔴 Vector Search (Week 5-6)</li>
+                        <li>🔴 Production Launch (Week 12)</li>
+                    </ul>
+                </div>
+                <div class="card glass-panel">
+                    <h4 class="logo-text" style="color: var(--accent); margin-bottom: 1rem;">Parallel Streams</h4>
+                    <ul class="summary-list">
+                        <li>⚡ Reviews (ReviewAgent)</li>
+                        <li>⚡ City Pages (CityAgent)</li>
+                        <li>⚡ 3D Visualization (UIAgent)</li>
+                        <li>⚡ AI Features (AIAgent)</li>
+                    </ul>
+                </div>
+                <div class="card glass-panel">
+                    <h4 class="logo-text" style="color: var(--warning); margin-bottom: 1rem;">Risk Fallbacks</h4>
+                    <ul class="summary-list">
+                        <li>🛡️ Fallback auth providers</li>
+                        <li>🛡️ Cloud encoding backup</li>
+                        <li>🛡️ Simplified search fallback</li>
+                        <li>🛡️ Cross-trained agents</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Technical Specifications Section -->
+        <h2 style="margin: 3rem 0 1.5rem; font-size: 2.25rem; font-family: 'Kumbh Sans', sans-serif;">🔧 Technical Specifications</h2>
+        
+        <!-- Tech Stack Overview -->
+        <div class="phase-section">
+            <div class="phase-header">
+                <div class="phase-number" style="background: linear-gradient(135deg, #6366f1, #8b5cf6);">📋</div>
+                <div>
+                    <div class="phase-title">Technology Stack Overview</div>
+                    <div style="color: var(--text-muted);">Core technologies, versions, and dependencies</div>
+                </div>
+            </div>
+            <div class="grid" style="margin-top: 1.5rem;">
+                <div class="card" style="border-left: 4px solid #3b82f6;">
+                    <h4 style="color: #3b82f6; margin-bottom: 1rem;">🖥️ Frontend</h4>
+                    <ul class="summary-list">
+                        <li><strong>Next.js 14</strong> - App Router, Server Components</li>
+                        <li><strong>React 18</strong> - Concurrent features, Suspense</li>
+                        <li><strong>TypeScript 5.3</strong> - Strict mode enabled</li>
+                        <li><strong>Tailwind CSS 3.4</strong> - Custom design system</li>
+                        <li><strong>shadcn/ui</strong> - Component library base</li>
+                        <li><strong>Framer Motion</strong> - Animations</li>
+                        <li><strong>Three.js / React Three Fiber</strong> - 3D visualizations</li>
+                        <li><strong>TanStack Query v5</strong> - Data fetching</li>
+                        <li><strong>Zustand</strong> - State management</li>
+                    </ul>
+                </div>
+                <div class="card" style="border-left: 4px solid #10b981;">
+                    <h4 style="color: #10b981; margin-bottom: 1rem;">⚙️ Backend</h4>
+                    <ul class="summary-list">
+                        <li><strong>FastAPI 0.109</strong> - Python async framework</li>
+                        <li><strong>Python 3.11</strong> - Type hints, performance</li>
+                        <li><strong>PostgreSQL 16</strong> - Primary database</li>
+                        <li><strong>Neo4j 5.15</strong> - Graph database (AuraDB)</li>
+                        <li><strong>Redis 7.2</strong> - Caching, sessions</li>
+                        <li><strong>Celery 5.3</strong> - Background tasks</li>
+                        <li><strong>Keycloak 23</strong> - IAM, SSO</li>
+                        <li><strong>Cloudflare R2</strong> - Object storage</li>
+                        <li><strong>Pydantic v2</strong> - Data validation</li>
+                    </ul>
+                </div>
+                <div class="card" style="border-left: 4px solid #8b5cf6;">
+                    <h4 style="color: #8b5cf6; margin-bottom: 1rem;">🤖 AI/ML Stack</h4>
+                    <ul class="summary-list">
+                        <li><strong>Vidi AI Platform</strong> - Vector + Graph RAG</li>
+                        <li><strong>OpenAI GPT-4</strong> - Content generation</li>
+                        <li><strong>CLIP (OpenAI)</strong> - Visual embeddings</li>
+                        <li><strong>Whisper API</strong> - Audio transcription</li>
+                        <li><strong>Pinecone/Weaviate</strong> - Vector database</li>
+                        <li><strong>FFmpeg 6.0</strong> - Video processing</li>
+                        <li><strong>HLS/DASH</strong> - Streaming protocols</li>
+                        <li><strong>ONNX Runtime</strong> - Model inference</li>
+                        <li><strong>Hugging Face</strong> - Model hosting</li>
+                    </ul>
+                </div>
+                <div class="card" style="border-left: 4px solid #f59e0b;">
+                    <h4 style="color: #f59e0b; margin-bottom: 1rem;">🚀 DevOps & Infrastructure</h4>
+                    <ul class="summary-list">
+                        <li><strong>Docker 24</strong> + <strong>Kubernetes 1.29</strong></li>
+                        <li><strong>GitHub Actions</strong> - CI/CD pipelines</li>
+                        <li><strong>AWS EKS / GKE</strong> - Kubernetes hosting</li>
+                        <li><strong>Cloudflare</strong> - CDN, WAF, DNS</li>
+                        <li><strong>Datadog</strong> - Monitoring, APM</li>
+                        <li><strong>Vercel</strong> - Next.js hosting</li>
+                        <li><strong>GitOps (ArgoCD)</strong> - Deployment</li>
+                        <li><strong>Terraform 1.7</strong> - IaC</li>
+                        <li><strong>Helm 3</strong> - K8s package management</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Phase 1 Technical Details -->
+        <div class="phase-section">
+            <div class="phase-header">
+                <div class="phase-number">1</div>
+                <div>
+                    <div class="phase-title">Phase 1: Foundation - Technical Deep Dive</div>
+                    <div style="color: var(--text-muted);">Weeks 1-2 • Infrastructure Architecture & Setup</div>
+                </div>
+            </div>
+            
+            <div style="background: rgba(30, 41, 59, 0.5); padding: 1.5rem; border-radius: 1rem; margin: 1.5rem 0;">
+                <h4 style="color: var(--primary); margin-bottom: 1rem;">🔐 Keycloak SSO Implementation</h4>
+                <div class="grid" style="gap: 1rem;">
+                    <div>
+                        <h5 style="margin-bottom: 0.5rem;">Architecture:</h5>
+                        <ul style="list-style: none; font-size: 0.9rem; color: var(--text-muted);">
+                            <li>• <strong>Deployment:</strong> Keycloak 23 on Kubernetes with 3 replicas</li>
+                            <li>• <strong>Database:</strong> PostgreSQL 16 (external, HA)</li>
+                            <li>• <strong>Cache:</strong> Redis cluster for sessions</li>
+                            <li>• <strong>Ingress:</strong> Cloudflare Load Balancer</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h5 style="margin-bottom: 0.5rem;">Configuration:</h5>
+                        <ul style="list-style: none; font-size: 0.9rem; color: var(--text-muted);">
+                            <li>• <strong>Realms:</strong> vidicity-production, vidicity-staging</li>
+                            <li>• <strong>Clients:</strong> nextjs-app, fastapi-backend, mobile-app</li>
+                            <li>• <strong>IdPs:</strong> Google, Apple, Email/Password</li>
+                            <li>• <strong>Flows:</strong> Standard + Custom registration</li>
+                        </ul>
+                    </div>
+                </div>
+                <div style="margin-top: 1rem; padding: 1rem; background: rgba(0,0,0,0.3); border-radius: 0.5rem; font-family: monospace; font-size: 0.85rem;">
+                    <div style="color: var(--accent);"># Keycloak Helm Values</div>
+                    <div style="color: var(--text-muted);">auth:</div>
+                    <div style="color: var(--text-muted); margin-left: 1rem;">adminUser: admin</div>
+                    <div style="color: var(--text-muted); margin-left: 1rem;">existingSecret: keycloak-admin-secret</div>
+                    <div style="color: var(--text-muted);">replicaCount: 3</div>
+                    <div style="color: var(--text-muted);">resources:</div>
+                    <div style="color: var(--text-muted); margin-left: 1rem;">requests: {cpu: 1000m, memory: 2Gi}</div>
+                    <div style="color: var(--text-muted); margin-left: 1rem;">limits: {cpu: 2000m, memory: 4Gi}</div>
+                </div>
+            </div>
+
+            <div style="background: rgba(30, 41, 59, 0.5); padding: 1.5rem; border-radius: 1rem; margin: 1.5rem 0;">
+                <h4 style="color: var(--primary); margin-bottom: 1rem;">🗄️ Database Architecture</h4>
+                <div class="grid" style="gap: 1rem;">
+                    <div>
+                        <h5 style="margin-bottom: 0.5rem;">PostgreSQL (Primary):</h5>
+                        <ul style="list-style: none; font-size: 0.9rem; color: var(--text-muted);">
+                            <li>• <strong>Provider:</strong> AWS RDS / Google Cloud SQL</li>
+                            <li>• <strong>Instance:</strong> db.r6g.xlarge (4 vCPU, 32GB RAM)</li>
+                            <li>• <strong>Storage:</strong> 500GB SSD with autoscaling</li>
+                            <li>• <strong>HA:</strong> Multi-AZ deployment</li>
+                            <li>• <strong>Backup:</strong> Daily snapshots + PITR</li>
+                            <li>• <strong>Extensions:</strong> PostGIS, pgvector, uuid-ossp</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h5 style="margin-bottom: 0.5rem;">Neo4j AuraDB (Graph):</h5>
+                        <ul style="list-style: none; font-size: 0.9rem; color: var(--text-muted);">
+                            <li>• <strong>Plan:</strong> Professional</li>
+                            <li>• <strong>Memory:</strong> 8GB RAM</li>
+                            <li>• <strong>Storage:</strong> 32GB</li>
+                            <li>• <strong>Version:</strong> 5.15</li>
+                            <li>• <strong>Use Case:</strong> User relationships, content graph</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div style="background: rgba(30, 41, 59, 0.5); padding: 1.5rem; border-radius: 1rem; margin: 1.5rem 0;">
+                <h4 style="color: var(--primary); margin-bottom: 1rem;">⚡ FastAPI Backend Foundation</h4>
+                <div style="margin-top: 1rem; padding: 1rem; background: rgba(0,0,0,0.3); border-radius: 0.5rem; font-family: monospace; font-size: 0.85rem;">
+                    <div style="color: var(--accent);"># Project Structure</div>
+                    <div style="color: var(--text-muted);">vidicity-api/</div>
+                    <div style="color: var(--text-muted); margin-left: 1rem;">├── app/</div>
+                    <div style="color: var(--text-muted); margin-left: 2rem;">├── api/ # API routes</div>
+                    <div style="color: var(--text-muted); margin-left: 3rem;">├── v1/ # Version 1 endpoints</div>
+                    <div style="color: var(--text-muted); margin-left: 2rem;">├── core/ # Config, security</div>
+                    <div style="color: var(--text-muted); margin-left: 2rem;">├── models/ # SQLAlchemy models</div>
+                    <div style="color: var(--text-muted); margin-left: 2rem;">├── schemas/ # Pydantic schemas</div>
+                    <div style="color: var(--text-muted); margin-left: 2rem;">├── services/ # Business logic</div>
+                    <div style="color: var(--text-muted); margin-left: 2rem;">├── db/ # Database connection</div>
+                    <div style="color: var(--text-muted); margin-left: 2rem;">└── tasks/ # Celery tasks</div>
+                    <div style="color: var(--text-muted); margin-left: 1rem;">├── tests/</div>
+                    <div style="color: var(--text-muted); margin-left: 1rem;">├── alembic/ # Migrations</div>
+                    <div style="color: var(--text-muted); margin-left: 1rem;">└── docker/</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Phase 2 Technical Details -->
+        <div class="phase-section">
+            <div class="phase-header">
+                <div class="phase-number" style="background: var(--warning);">2</div>
+                <div>
+                    <div class="phase-title">Phase 2: Core Platform - Technical Deep Dive</div>
+                    <div style="color: var(--text-muted);">Weeks 3-4 • Video Pipeline & User System</div>
+                </div>
+            </div>
+
+            <div style="background: rgba(30, 41, 59, 0.5); padding: 1.5rem; border-radius: 1rem; margin: 1.5rem 0;">
+                <h4 style="color: var(--primary); margin-bottom: 1rem;">🎥 Video Processing Pipeline</h4>
+                <div class="mermaid" style="margin: 1rem 0;">
+                    flowchart LR
+                        A[Upload] --> B[Validation]
+                        B --> C[Storage]
+                        C --> D[Encoding]
+                        D --> E[Thumbnails]
+                        D --> F[Transcription]
+                        E --> G[CDN Distribution]
+                        F --> H[Search Indexing]
+                        
+                        style A fill:#3b82f6,stroke:#fff,color:#fff
+                        style D fill:#f59e0b,stroke:#fff,color:#fff
+                        style G fill:#10b981,stroke:#fff,color:#fff
+                </div>
+                <div class="grid" style="gap: 1rem; margin-top: 1rem;">
+                    <div>
+                        <h5 style="margin-bottom: 0.5rem;">Upload Flow:</h5>
+                        <ul style="list-style: none; font-size: 0.9rem; color: var(--text-muted);">
+                            <li>• <strong>Presigned URLs:</strong> Direct to R2 (100MB chunks)</li>
+                            <li>• <strong>Validation:</strong> Format, size, virus scan</li>
+                            <li>• <strong>Formats:</strong> MP4, MOV, WebM, AVI</li>
+                            <li>• <strong>Max Size:</strong> 10GB per video</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h5 style="margin-bottom: 0.5rem;">Encoding Pipeline:</h5>
+                        <ul style="list-style: none; font-size: 0.9rem; color: var(--text-muted);">
+                            <li>• <strong>Resolution:</strong> 360p, 720p, 1080p, 4K</li>
+                            <li>• <strong>Codecs:</strong> H.264, H.265, VP9, AV1</li>
+                            <li>• <strong>Protocol:</strong> HLS with adaptive bitrate</li>
+                            <li>• <strong>Processing:</strong> FFmpeg + GPU acceleration</li>
+                        </ul>
+                    </div>
+                </div>
+                <div style="margin-top: 1rem; padding: 1rem; background: rgba(0,0,0,0.3); border-radius: 0.5rem; font-family: monospace; font-size: 0.85rem;">
+                    <div style="color: var(--accent);"># FFmpeg Encoding Command</div>
+                    <div style="color: var(--text-muted);">ffmpeg -i input.mp4 \</div>
+                    <div style="color: var(--text-muted); margin-left: 1rem;">-vf "scale=1920:1080:force_original_aspect_ratio=decrease" \</div>
+                    <div style="color: var(--text-muted); margin-left: 1rem;">-c:v libx264 -preset fast -crf 23 \</div>
+                    <div style="color: var(--text-muted); margin-left: 1rem;">-c:a aac -b:a 128k \</div>
+                    <div style="color: var(--text-muted); margin-left: 1rem;">-f hls -hls_time 6 -hls_list_size 0 \</div>
+                    <div style="color: var(--text-muted); margin-left: 1rem;">output_1080p.m3u8</div>
+                </div>
+            </div>
+
+            <div style="background: rgba(30, 41, 59, 0.5); padding: 1.5rem; border-radius: 1rem; margin: 1.5rem 0;">
+                <h4 style="color: var(--primary); margin-bottom: 1rem;">👤 User Profile System</h4>
+                <div style="margin-top: 1rem; padding: 1rem; background: rgba(0,0,0,0.3); border-radius: 0.5rem; font-family: monospace; font-size: 0.85rem;">
+                    <div style="color: var(--accent);"># Keycloak User Attributes Schema</div>
+                    <div style="color: var(--text-muted);">{</div>
+                    <div style="color: var(--text-muted); margin-left: 1rem;">"tier": "creator|business|enterprise",</div>
+                    <div style="color: var(--text-muted); margin-left: 1rem;">"profile_completed": "boolean",</div>
+                    <div style="color: var(--text-muted); margin-left: 1rem;">"company_name": "string",</div>
+                    <div style="color: var(--text-muted); margin-left: 1rem;">"industry": "string",</div>
+                    <div style="color: var(--text-muted); margin-left: 1rem;">"city_id": "uuid",</div>
+                    <div style="color: var(--text-muted); margin-left: 1rem;">"verified": "boolean",</div>
+                    <div style="color: var(--text-muted); margin-left: 1rem;">"subscription_status": "active|trial|expired"</div>
+                    <div style="color: var(--text-muted);">}</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- API Specifications -->
+        <h2 style="margin: 3rem 0 1.5rem; font-size: 2.25rem; font-family: 'Kumbh Sans', sans-serif;">🔌 API Specifications</h2>
+        
+        <div class="phase-section">
+            <div class="phase-header">
+                <div class="phase-number" style="background: linear-gradient(135deg, #f59e0b, #ef4444);">API</div>
+                <div>
+                    <div class="phase-title">Core API Endpoints</div>
+                    <div style="color: var(--text-muted);">RESTful API v1.0 - Authentication, Videos, Users</div>
+                </div>
+            </div>
+
+            <div style="background: rgba(30, 41, 59, 0.5); padding: 1.5rem; border-radius: 1rem; margin: 1.5rem 0;">
+                <h4 style="color: var(--primary); margin-bottom: 1rem;">🔐 Authentication Endpoints</h4>
+                <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
+                    <thead>
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+                            <th style="text-align: left; padding: 0.75rem; color: var(--text-muted);">Method</th>
+                            <th style="text-align: left; padding: 0.75rem; color: var(--text-muted);">Endpoint</th>
+                            <th style="text-align: left; padding: 0.75rem; color: var(--text-muted);">Description</th>
+                            <th style="text-align: left; padding: 0.75rem; color: var(--text-muted);">Auth</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                            <td style="padding: 0.75rem; color: #10b981;">POST</td>
+                            <td style="padding: 0.75rem; font-family: monospace;">/api/v1/auth/login</td>
+                            <td style="padding: 0.75rem;">User login via Keycloak</td>
+                            <td style="padding: 0.75rem;">Public</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                            <td style="padding: 0.75rem; color: #10b981;">POST</td>
+                            <td style="padding: 0.75rem; font-family: monospace;">/api/v1/auth/refresh</td>
+                            <td style="padding: 0.75rem;">Refresh access token</td>
+                            <td style="padding: 0.75rem;">Public</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                            <td style="padding: 0.75rem; color: #3b82f6;">GET</td>
+                            <td style="padding: 0.75rem; font-family: monospace;">/api/v1/auth/me</td>
+                            <td style="padding: 0.75rem;">Get current user</td>
+                            <td style="padding: 0.75rem;">Bearer</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 0.75rem; color: #ef4444;">POST</td>
+                            <td style="padding: 0.75rem; font-family: monospace;">/api/v1/auth/logout</td>
+                            <td style="padding: 0.75rem;">Logout user</td>
+                            <td style="padding: 0.75rem;">Bearer</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div style="background: rgba(30, 41, 59, 0.5); padding: 1.5rem; border-radius: 1rem; margin: 1.5rem 0;">
+                <h4 style="color: var(--primary); margin-bottom: 1rem;">🎥 Video Endpoints</h4>
+                <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
+                    <thead>
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+                            <th style="text-align: left; padding: 0.75rem; color: var(--text-muted);">Method</th>
+                            <th style="text-align: left; padding: 0.75rem; color: var(--text-muted);">Endpoint</th>
+                            <th style="text-align: left; padding: 0.75rem; color: var(--text-muted);">Description</th>
+                            <th style="text-align: left; padding: 0.75rem; color: var(--text-muted);">Rate Limit</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                            <td style="padding: 0.75rem; color: #10b981;">POST</td>
+                            <td style="padding: 0.75rem; font-family: monospace;">/api/v1/videos/upload-url</td>
+                            <td style="padding: 0.75rem;">Get presigned upload URL</td>
+                            <td style="padding: 0.75rem;">10/min</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                            <td style="padding: 0.75rem; color: #3b82f6;">GET</td>
+                            <td style="padding: 0.75rem; font-family: monospace;">/api/v1/videos</td>
+                            <td style="padding: 0.75rem;">List videos (paginated)</td>
+                            <td style="padding: 0.75rem;">100/min</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                            <td style="padding: 0.75rem; color: #3b82f6;">GET</td>
+                            <td style="padding: 0.75rem; font-family: monospace;">/api/v1/videos/{id}</td>
+                            <td style="padding: 0.75rem;">Get video details</td>
+                            <td style="padding: 0.75rem;">100/min</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                            <td style="padding: 0.75rem; color: #f59e0b;">PATCH</td>
+                            <td style="padding: 0.75rem; font-family: monospace;">/api/v1/videos/{id}</td>
+                            <td style="padding: 0.75rem;">Update video metadata</td>
+                            <td style="padding: 0.75rem;">30/min</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 0.75rem; color: #ef4444;">DELETE</td>
+                            <td style="padding: 0.75rem; font-family: monospace;">/api/v1/videos/{id}</td>
+                            <td style="padding: 0.75rem;">Delete video</td>
+                            <td style="padding: 0.75rem;">10/min</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div style="background: rgba(30, 41, 59, 0.5); padding: 1.5rem; border-radius: 1rem; margin: 1.5rem 0;">
+                <h4 style="color: var(--primary); margin-bottom: 1rem;">🔍 Search & AI Endpoints</h4>
+                <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
+                    <thead>
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+                            <th style="text-align: left; padding: 0.75rem; color: var(--text-muted);">Method</th>
+                            <th style="text-align: left; padding: 0.75rem; color: var(--text-muted);">Endpoint</th>
+                            <th style="text-align: left; padding: 0.75rem; color: var(--text-muted);">Description</th>
+                            <th style="text-align: left; padding: 0.75rem; color: var(--text-muted);">Latency</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                            <td style="padding: 0.75rem; color: #3b82f6;">GET</td>
+                            <td style="padding: 0.75rem; font-family: monospace;">/api/v1/search</td>
+                            <td style="padding: 0.75rem;">Text-based search</td>
+                            <td style="padding: 0.75rem;">&lt;200ms</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                            <td style="padding: 0.75rem; color: #10b981;">POST</td>
+                            <td style="padding: 0.75rem; font-family: monospace;">/api/v1/search/visual</td>
+                            <td style="padding: 0.75rem;">Visual similarity search</td>
+                            <td style="padding: 0.75rem;">&lt;500ms</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                            <td style="padding: 0.75rem; color: #10b981;">POST</td>
+                            <td style="padding: 0.75rem; font-family: monospace;">/api/v1/search/multimodal</td>
+                            <td style="padding: 0.75rem;">Text + Visual combined</td>
+                            <td style="padding: 0.75rem;">&lt;800ms</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 0.75rem; color: #3b82f6;">GET</td>
+                            <td style="padding: 0.75rem; font-family: monospace;">/api/v1/recommendations</td>
+                            <td style="padding: 0.75rem;">AI-powered recommendations</td>
+                            <td style="padding: 0.75rem;">&lt;300ms</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Database Schema -->
+        <h2 style="margin: 3rem 0 1.5rem; font-size: 2.25rem; font-family: 'Kumbh Sans', sans-serif;">🗄️ Database Schema</h2>
+        
+        <div class="phase-section">
+            <div class="phase-header">
+                <div class="phase-number" style="background: linear-gradient(135deg, #10b981, #059669);">DB</div>
+                <div>
+                    <div class="phase-title">Core Data Models</div>
+                    <div style="color: var(--text-muted);">PostgreSQL Tables & Relationships</div>
+                </div>
+            </div>
+
+            <div style="background: rgba(30, 41, 59, 0.5); padding: 1.5rem; border-radius: 1rem; margin: 1.5rem 0; overflow-x: auto;">
+                <h4 style="color: var(--primary); margin-bottom: 1rem;">Users & Profiles</h4>
+                <pre style="margin: 0; font-family: monospace; font-size: 0.8rem; color: var(--text-muted);"><code>CREATE TABLE users (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    keycloak_id VARCHAR(36) UNIQUE NOT NULL,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    username VARCHAR(50) UNIQUE NOT NULL,
+    tier user_tier DEFAULT 'creator',
+    profile_completed BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE TABLE profiles (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+    display_name VARCHAR(100),
+    bio TEXT,
+    avatar_url VARCHAR(500),
+    company_name VARCHAR(200),
+    industry VARCHAR(100),
+    city_id UUID REFERENCES cities(id),
+    website VARCHAR(500),
+    social_links JSONB DEFAULT '{}',
+    metadata JSONB DEFAULT '{}'
+);
+
+CREATE INDEX idx_users_keycloak ON users(keycloak_id);
+CREATE INDEX idx_profiles_city ON profiles(city_id);</code></pre>
+            </div>
+
+            <div style="background: rgba(30, 41, 59, 0.5); padding: 1.5rem; border-radius: 1rem; margin: 1.5rem 0; overflow-x: auto;">
+                <h4 style="color: var(--primary); margin-bottom: 1rem;">Videos & Media</h4>
+                <pre style="margin: 0; font-family: monospace; font-size: 0.8rem; color: var(--text-muted);"><code>CREATE TABLE videos (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+    title VARCHAR(255) NOT NULL,
+    description TEXT,
+    status video_status DEFAULT 'processing',
+    visibility visibility_type DEFAULT 'public',
+    
+    -- Storage
+    original_url VARCHAR(500),
+    storage_bucket VARCHAR(100),
+    storage_path VARCHAR(500),
+    
+    -- Video Metadata
+    duration INTEGER, -- seconds
+    resolution VARCHAR(20), -- 1080p, 4K, etc.
+    format VARCHAR(10), -- mp4, webm, etc.
+    file_size BIGINT, -- bytes
+    
+    -- Processing
+    encoding_status JSONB DEFAULT '{}',
+    transcribed BOOLEAN DEFAULT FALSE,
+    transcription TEXT,
+    
+    -- Engagement
+    view_count INTEGER DEFAULT 0,
+    like_count INTEGER DEFAULT 0,
+    review_count INTEGER DEFAULT 0,
+    
+    -- AI Features
+    embedding vector(512), -- CLIP embedding
+    smart_tags TEXT[],
+    ai_thumbnail_url VARCHAR(500),
+    
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    published_at TIMESTAMP WITH TIME ZONE
+);
+
+CREATE TABLE video_variants (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    video_id UUID REFERENCES videos(id) ON DELETE CASCADE,
+    resolution VARCHAR(20) NOT NULL,
+    codec VARCHAR(20) NOT NULL,
+    url VARCHAR(500) NOT NULL,
+    file_size BIGINT,
+    bitrate INTEGER
+);
+
+CREATE INDEX idx_videos_user ON videos(user_id);
+CREATE INDEX idx_videos_status ON videos(status);
+CREATE INDEX idx_videos_embedding ON videos USING ivfflat (embedding vector_cosine_ops);</code></pre>
+            </div>
+
+            <div style="background: rgba(30, 41, 59, 0.5); padding: 1.5rem; border-radius: 1rem; margin: 1.5rem 0; overflow-x: auto;">
+                <h4 style="color: var(--primary); margin-bottom: 1rem;">Reviews & Ratings</h4>
+                <pre style="margin: 0; font-family: monospace; font-size: 0.8rem; color: var(--text-muted);"><code>CREATE TABLE reviews (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    video_id UUID REFERENCES videos(id) ON DELETE CASCADE,
+    reviewer_id UUID REFERENCES users(id) ON DELETE SET NULL,
+    
+    -- Review Content
+    rating INTEGER CHECK (rating >= 1 AND rating <= 5),
+    title VARCHAR(255),
+    content TEXT,
+    
+    -- Video Review (optional)
+    video_url VARCHAR(500),
+    video_duration INTEGER,
+    
+    -- Moderation
+    status review_status DEFAULT 'pending',
+    moderation_reason VARCHAR(255),
+    moderated_at TIMESTAMP WITH TIME ZONE,
+    moderated_by UUID REFERENCES users(id),
+    
+    -- AI Analysis
+    sentiment_score FLOAT, -- -1 to 1
+    toxicity_score FLOAT, -- 0 to 1
+    
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE INDEX idx_reviews_video ON reviews(video_id);
+CREATE INDEX idx_reviews_status ON reviews(status);</code></pre>
+            </div>
+
+            <div style="background: rgba(30, 41, 59, 0.5); padding: 1.5rem; border-radius: 1rem; margin: 1.5rem 0; overflow-x: auto;">
+                <h4 style="color: var(--primary); margin-bottom: 1rem;">Cities & Geospatial</h4>
+                <pre style="margin: 0; font-family: monospace; font-size: 0.8rem; color: var(--text-muted);"><code>CREATE TABLE cities (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name VARCHAR(100) NOT NULL,
+    slug VARCHAR(100) UNIQUE NOT NULL,
+    state_province VARCHAR(100),
+    country VARCHAR(100) NOT NULL,
+    country_code CHAR(2),
+    
+    -- Location
+    coordinates GEOGRAPHY(POINT, 4326),
+    timezone VARCHAR(50),
+    
+    -- SEO & Content
+    description TEXT,
+    meta_title VARCHAR(255),
+    meta_description TEXT(500),
+    
+    -- Stats
+    video_count INTEGER DEFAULT 0,
+    business_count INTEGER DEFAULT 0,
+    
+    -- Settings
+    is_active BOOLEAN DEFAULT TRUE,
+    featured BOOLEAN DEFAULT FALSE,
+    
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE INDEX idx_cities_slug ON cities(slug);
+CREATE INDEX idx_cities_coordinates ON cities USING GIST(coordinates);
+CREATE INDEX idx_cities_featured ON cities(featured) WHERE featured = TRUE;</code></pre>
+            </div>
+        </div>
+
+        <!-- Directus CMS Backbone Architecture -->
+        <h2 style="margin: 3rem 0 1.5rem; font-size: 2.25rem; font-family: 'Kumbh Sans', sans-serif;">🎯 Directus CMS Backbone</h2>
+        
+        <div class="phase-section">
+            <div class="phase-header">
+                <div class="phase-number" style="background: linear-gradient(135deg, #5865F2, #8b5cf6);">🏗️</div>
+                <div>
+                    <div class="phase-title">Directus as Central Hub</div>
+                    <div style="color: var(--text-muted);">Headless CMS powering all content, users, and business logic</div>
+                </div>
+            </div>
+            
+            <div class="grid" style="margin-top: 1.5rem;">
+                <div class="card" style="border-left: 4px solid #5865F2;">
+                    <h4 style="color: #5865F2; margin-bottom: 1rem;">📦 Core Collections</h4>
+                    <ul class="summary-list">
+                        <li><strong>businesses</strong> - 20,000+ PB Business Group members</li>
+                        <li><strong>business_profiles</strong> - Video landing pages</li>
+                        <li><strong>videos</strong> - All video content metadata</li>
+                        <li><strong>categories</strong> - 180 business categories</li>
+                        <li><strong>cities</strong> - 33,000 cities (launch: 2-3)</li>
+                        <li><strong>news_articles</strong> - Smart Video News blog</li>
+                        <li><strong>events</strong> - Monthly PB Business Group meetings</li>
+                        <li><strong>reviews</strong> - Video reviews & ratings</li>
+                    </ul>
+                </div>
+                <div class="card" style="border-left: 4px solid #8b5cf6;">
+                    <h4 style="color: #8b5cf6; margin-bottom: 1rem;">⚡ Directus Features Used</h4>
+                    <ul class="summary-list">
+                        <li><strong>Roles & Permissions</strong> - Admin, Business Owner, Reviewer</li>
+                        <li><strong>Custom Flows</strong> - Business onboarding automation</li>
+                        <li><strong>Webhooks</strong> - Sync to Vidi AI search index</li>
+                        <li><strong>Extensions</strong> - Custom business profile templates</li>
+                        <li><strong>Media Library</strong> - Video thumbnails, logos</li>
+                        <li><strong>Translations</strong> - Multi-city localization</li>
+                        <li><strong>Insights</strong> - Business analytics dashboards</li>
+                    </ul>
+                </div>
+                <div class="card" style="border-left: 4px solid #f59e0b;">
+                    <h4 style="color: #f59e0b; margin-bottom: 1rem;">🔌 Integrations</h4>
+                    <ul class="summary-list">
+                        <li><strong>Next.js Frontend</strong> - GraphQL queries</li>
+                        <li><strong>Vidi AI Search</strong> - Webhook indexing</li>
+                        <li><strong>Keycloak</strong> - SSO user sync</li>
+                        <li><strong>Video Pipeline</strong> - Asset management</li>
+                        <li><strong>VidiSmart</strong> - Tech stack advisor</li>
+                        <li><strong>Stripe</strong> - Subscription management</li>
+                        <li><strong>SendGrid</strong> - Email notifications</li>
+                    </ul>
+                </div>
+                <div class="card" style="border-left: 4px solid #10b981;">
+                    <h4 style="color: #10b981; margin-bottom: 1rem;">🚀 Deployment</h4>
+                    <ul class="summary-list">
+                        <li><strong>Self-Hosted</strong> - Docker on Kubernetes</li>
+                        <li><strong>Database</strong> - Shared PostgreSQL 16</li>
+                        <li><strong>Storage</strong> - Cloudflare R2 (S3)</li>
+                        <li><strong>Cache</strong> - Redis for sessions</li>
+                        <li><strong>CDN</strong> - Cloudflare edge caching</li>
+                        <li><strong>Backup</strong> - Automated daily snapshots</li>
+                        <li><strong>Monitoring</strong> - Datadog APM</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div style="background: rgba(30, 41, 59, 0.5); padding: 1.5rem; border-radius: 1rem; margin: 1.5rem 0;">
+                <h4 style="color: var(--primary); margin-bottom: 1rem;">🏢 Directus Schema: Businesses Collection</h4>
+                <div style="margin-top: 1rem; padding: 1rem; background: rgba(0,0,0,0.3); border-radius: 0.5rem; font-family: monospace; font-size: 0.85rem; overflow-x: auto;">
+                    <div style="color: var(--accent);">// Collection: businesses (PB Business Group + New Signups)</div>
+                    <div style="color: var(--text-muted);">{</div>
+                    <div style="color: var(--text-muted); margin-left: 1rem;">id: uuid (primary key)</div>
+                    <div style="color: var(--text-muted); margin-left: 1rem;">name: string (required)</div>
+                    <div style="color: var(--text-muted); margin-left: 1rem;">slug: string (unique, URL-friendly)</div>
+                    <div style="color: var(--text-muted); margin-left: 1rem;">email: string (from PB database)</div>
+                    <div style="color: var(--text-muted); margin-left: 1rem;">phone: string</div>
+                    <div style="color: var(--text-muted); margin-left: 1rem;">website: string</div>
+                    <div style="color: var(--text-muted); margin-left: 1rem;">category: many-to-one (categories)</div>
+                    <div style="color: var(--text-muted); margin-left: 1rem;">subcategories: many-to-many</div>
+                    <div style="color: var(--text-muted); margin-left: 1rem;">city: many-to-one (cities)</div>
+                    <div style="color: var(--text-muted); margin-left: 1rem;">address: string</div>
+                    <div style="color: var(--text-muted); margin-left: 1rem;">coordinates: point (lat/lng)</div>
+                    <div style="color: var(--text-muted); margin-left: 1rem;">description: text</div>
+                    <div style="color: var(--text-muted); margin-left: 1rem;">logo: image (R2 storage)</div>
+                    <div style="color: var(--text-muted); margin-left: 1rem;">cover_image: image</div>
+                    <div style="color: var(--text-muted); margin-left: 1rem;">video_bios: one-to-many (videos)</div>
+                    <div style="color: var(--text-muted); margin-left: 1rem;">is_pb_business_group: boolean</div>
+                    <div style="color: var(--text-muted); margin-left: 1rem;">pb_member_since: date</div>
+                    <div style="color: var(--text-muted); margin-left: 1rem;">tier: enum [free, pro, enterprise]</div>
+                    <div style="color: var(--text-muted); margin-left: 1rem;">status: enum [draft, pending, active, suspended]</div>
+                    <div style="color: var(--text-muted); margin-left: 1rem;">claimed: boolean</div>
+                    <div style="color: var(--text-muted); margin-left: 1rem;">claimed_by: user (many-to-one)</div>
+                    <div style="color: var(--text-muted); margin-left: 1rem;">social_links: json</div>
+                    <div style="color: var(--text-muted); margin-left: 1rem;">hours_of_operation: json</div>
+                    <div style="color: var(--text-muted); margin-left: 1rem;">seo_meta: json</div>
+                    <div style="color: var(--text-muted); margin-left: 1rem;">created_at: timestamp</div>
+                    <div style="color: var(--text-muted); margin-left: 1rem;">updated_at: timestamp</div>
+                    <div style="color: var(--text-muted);">}</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Vidi AI Search Engine -->
+        <h2 style="margin: 3rem 0 1.5rem; font-size: 2.25rem; font-family: 'Kumbh Sans', sans-serif;">🧠 Vidi AI Search Platform</h2>
+        
+        <div class="phase-section">
+            <div class="phase-header">
+                <div class="phase-number" style="background: linear-gradient(135deg, #10b981, #059669);">🔍</div>
+                <div>
+                    <div class="phase-title">Visual Vector Omni Search</div>
+                    <div style="color: var(--text-muted);">Custom Vidi AI (Vespa.ai fork) powering intelligent discovery</div>
+                </div>
+            </div>
+
+            <div class="grid" style="margin-top: 1.5rem;">
+                <div class="card" style="border-left: 4px solid #10b981;">
+                    <h4 style="color: #10b981; margin-bottom: 1rem;">🎯 Search Capabilities</h4>
+                    <ul class="summary-list">
+                        <li><strong>Visual Search</strong> - Find similar businesses by image</li>
+                        <li><strong>Semantic Search</strong> - Natural language queries</li>
+                        <li><strong>Multimodal</strong> - Text + Visual combined</li>
+                        <li><strong>Geospatial</strong> - Location-aware results</li>
+                        <li><strong>Vector Similarity</strong> - CLIP embeddings</li>
+                        <li><strong>Hybrid Ranking</strong> - BM25 + Vector fusion</li>
+                    </ul>
+                </div>
+                <div class="card" style="border-left: 4px solid #3b82f6;">
+                    <h4 style="color: #3b82f6; margin-bottom: 1rem;">⚙️ Technical Stack</h4>
+                    <ul class="summary-list">
+                        <li><strong>Vespa.ai Core</strong> - Custom fork (Vidi AI)</li>
+                        <li><strong>Embedding Model</strong> - CLIP ViT-L/14</li>
+                        <li><strong>Vector DB</strong> - HNSW indexing</li>
+                        <li><strong>Document Store</strong> - Proprietary format</li>
+                        <li><strong>Query Language</strong> - YQL (Vespa Query)</li>
+                        <li><strong>Scaling</strong> - Horizontal sharding</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div style="background: rgba(30, 41, 59, 0.5); padding: 1.5rem; border-radius: 1rem; margin: 1.5rem 0;">
+                <h4 style="color: var(--primary); margin-bottom: 1rem;">🔄 Data Flow: Directus → Vidi AI</h4>
+                <div class="mermaid" style="margin: 1rem 0;">
+                    flowchart LR
+                        A[Directus CMS] -->|Webhook| B[Indexing Service]
+                        B --> C[CLIP Embedding]
+                        B --> D[Text Processing]
+                        C --> E[Vidi AI Index]
+                        D --> E
+                        F[User Search] -->|Query| G[Vidi AI API]
+                        G -->|Results| H[Next.js Frontend]
+                        E --> G
+                        
+                        style A fill:#5865F2,stroke:#fff,color:#fff
+                        style E fill:#10b981,stroke:#fff,color:#fff
+                        style G fill:#3b82f6,stroke:#fff,color:#fff
+                </div>
+                <div style="margin-top: 1rem; padding: 1rem; background: rgba(0,0,0,0.3); border-radius: 0.5rem; font-family: monospace; font-size: 0.85rem;">
+                    <div style="color: var(--accent);"># Directus Flow: Auto-Index to Vidi AI</div>
+                    <div style="color: var(--text-muted); margin-top: 0.5rem;">Trigger: items.create, items.update (businesses, videos)</div>
+                    <div style="color: var(--text-muted);">Action: POST to /api/vidi-ai/index</div>
+                    <div style="color: var(--text-muted);">Payload: { id, name, description, category, city, media_urls }</div>
+                </div>
+            </div>
+
+            <div style="background: rgba(30, 41, 59, 0.5); padding: 1.5rem; border-radius: 1rem; margin: 1.5rem 0;">
+                <h4 style="color: var(--primary); margin-bottom: 1rem;">📊 Vidi AI Configuration</h4>
+                <div class="grid" style="gap: 1.5rem;">
+                    <div>
+                        <h5 style="margin-bottom: 0.5rem; color: var(--accent);">Index Schema</h5>
+                        <pre style="margin: 0; font-family: monospace; font-size: 0.75rem; color: var(--text-muted); background: rgba(0,0,0,0.2); padding: 0.75rem; border-radius: 0.5rem;"><code>schema business {
+  document business {
+    field id type string {}
+    field name type string {
+      indexing: index | summary
+    }
+    field description type string {
+      indexing: index | summary
+    }
+    field embedding type tensor&lt;float&gt;(x[512]) {
+      indexing: attribute | index
+      attribute {
+        distance-metric: angular
+      }
+    }
+    field category type string {
+      indexing: attribute | summary
+    }
+    field city type string {
+      indexing: attribute | summary
+    }
+    field coordinates type position {}
+    field created_at type long {}
+  }
+  
+  rank-profile semantic {
+    inputs {
+      query(embedding) tensor&lt;float&gt;(x[512])
+    }
+    first-phase {
+      expression: closeness(field, embedding)
+    }
+  }
+}</code></pre>
+                    </div>
+                    <div>
+                        <h5 style="margin-bottom: 0.5rem; color: var(--accent);">Search Query Example</h5>
+                        <pre style="margin: 0; font-family: monospace; font-size: 0.75rem; color: var(--text-muted); background: rgba(0,0,0,0.2); padding: 0.75rem; border-radius: 0.5rem;"><code>{
+  "yql": "select * from business 
+          where userQuery() 
+          or ({targetHits:100}
+          nearestNeighbor(embedding,q_emb))
+          limit 20",
+  "query": "family restaurant palm beach",
+  "ranking.profile": "hybrid",
+  "input.query(q_emb)": 
+    "embed(@query)",
+  "hits": 20,
+  "ranking.features": {
+    "closeness": 0.7,
+    "bm25": 0.3
+  }
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Palm Beach Business Group Integration -->
+        <h2 style="margin: 3rem 0 1.5rem; font-size: 2.25rem; font-family: 'Kumbh Sans', sans-serif;">🌴 Palm Beach Business Group</h2>
+        
+        <div class="phase-section">
+            <div class="phase-header">
+                <div class="phase-number" style="background: linear-gradient(135deg, #f59e0b, #ef4444);">PB</div>
+                <div>
+                    <div class="phase-title">25-Year Legacy Integration</div>
+                    <div style="color: var(--text-muted);">20,000 businesses • Monthly meetings • AI-powered growth</div>
+                </div>
+            </div>
+
+            <div class="grid" style="margin-top: 1.5rem;">
+                <div class="card" style="border-left: 4px solid #f59e0b;">
+                    <h4 style="color: #f59e0b; margin-bottom: 1rem;">👥 Member Base</h4>
+                    <ul class="summary-list">
+                        <li><strong>20,000</strong> business contacts</li>
+                        <li><strong>25 years</strong> of networking</li>
+                        <li><strong>Monthly</strong> in-person meetings</li>
+                        <li><strong>Palm Beach County</strong> focused</li>
+                        <li><strong>Names + Emails</strong> in database</li>
+                        <li><strong>Goal:</strong> Video landing pages for all</li>
+                    </ul>
+                </div>
+                <div class="card" style="border-left: 4px solid #ef4444;">
+                    <h4 style="color: #ef4444; margin-bottom: 1rem;">🎯 Mission Support</h4>
+                    <ul class="summary-list">
+                        <li><strong>Capital Raising</strong> - Connect with investors</li>
+                        <li><strong>AI Tools</strong> - Latest tech adoption</li>
+                        <li><strong>Restructuring</strong> - Business optimization</li>
+                        <li><strong>Marketing</strong> - Video strategy help</li>
+                        <li><strong>Networking</strong> - Monthly events</li>
+                        <li><strong>VidiSmart</strong> - Tech stack guidance</li>
+                    </ul>
+                </div>
+                <div class="card" style="border-left: 4px solid #10b981;">
+                    <h4 style="color: #10b981; margin-bottom: 1rem;">🚀 Instant Onboarding</h4>
+                    <ul class="summary-list">
+                        <li><strong>Bulk Import</strong> - CSV → Directus</li>
+                        <li><strong>Auto-Profiles</strong> - Pre-populated pages</li>
+                        <li><strong>Claim Flow</strong> - Email verification</li>
+                        <li><strong>Video Upload</strong> - 1-click bio creation</li>
+                        <li><strong>SEO Ready</strong> - Indexed immediately</li>
+                        <li><strong>Searchable</strong> - Vidi AI indexed</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div style="background: rgba(30, 41, 59, 0.5); padding: 1.5rem; border-radius: 1rem; margin: 1.5rem 0;">
+                <h4 style="color: var(--primary); margin-bottom: 1rem;">📧 Bulk Import Process</h4>
+                <div class="mermaid" style="margin: 1rem 0;">
+                    flowchart LR
+                        A[CSV Export] -->|20,000 records| B[Data Cleanup]
+                        B --> C[Directus Import]
+                        C --> D[Auto-Generate Profiles]
+                        D --> E[Email Invitations]
+                        E --> F[Claim Profile]
+                        F --> G[Add Video Bio]
+                        G --> H[Vidi AI Indexed]
+                        
+                        style A fill:#f59e0b,stroke:#fff,color:#fff
+                        style D fill:#5865F2,stroke:#fff,color:#fff
+                        style G fill:#10b981,stroke:#fff,color:#fff
+                </div>
+                <div style="margin-top: 1rem; padding: 1rem; background: rgba(0,0,0,0.3); border-radius: 0.5rem; font-family: monospace; font-size: 0.85rem;">
+                    <div style="color: var(--accent);"># Python Import Script</div>
+                    <div style="color: var(--text-muted); margin-top: 0.5rem;">import pandas as pd</div>
+                    <div style="color: var(--text-muted);">from directus_sdk import DirectusClient</div>
+                    <div style="color: var(--text-muted);"></div>
+                    <div style="color: var(--text-muted);">df = pd.read_csv('pb_business_group.csv')</div>
+                    <div style="color: var(--text-muted);">client = DirectusClient(url, token)</div>
+                    <div style="color: var(--text-muted);"></div>
+                    <div style="color: var(--text-muted);">for _, row in df.iterrows():</div>
+                    <div style="color: var(--text-muted); margin-left: 1rem;">client.items('businesses').create({</div>
+                    <div style="color: var(--text-muted); margin-left: 2rem;">'name': row['company'],</div>
+                    <div style="color: var(--text-muted); margin-left: 2rem;">'email': row['email'],</div>
+                    <div style="color: var(--text-muted); margin-left: 2rem;">'city': 'palm-beach',</div>
+                    <div style="color: var(--text-muted); margin-left: 2rem;">'is_pb_business_group': True,</div>
+                    <div style="color: var(--text-muted); margin-left: 2rem;">'status': 'pending',</div>
+                    <div style="color: var(--text-muted); margin-left: 2rem;">'tier': 'free'</div>
+                    <div style="color: var(--text-muted); margin-left: 1rem;">})</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2-3 City Launch Strategy -->
+        <h2 style="margin: 3rem 0 1.5rem; font-size: 2.25rem; font-family: 'Kumbh Sans', sans-serif;">🚀 Launch Strategy: 3 Cities</h2>
+        
+        <div class="phase-section">
+            <div class="phase-header">
+                <div class="phase-number" style="background: linear-gradient(135deg, #3b82f6, #8b5cf6);">🌍</div>
+                <div>
+                    <div class="phase-title">Phased City Rollout</div>
+                    <div style="color: var(--text-muted);">Palm Beach → Miami → Orlando (Q1 2026)</div>
+                </div>
+            </div>
+
+            <div class="grid" style="margin-top: 1.5rem;">
+                <div class="card" style="border-left: 4px solid #f59e0b; background: rgba(245, 158, 11, 0.1);">
+                    <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
+                        <span style="font-size: 1.5rem;">🏖️</span>
+                        <h4 style="color: #f59e0b; margin: 0;">Phase 1: Palm Beach</h4>
+                    </div>
+                    <div style="font-size: 0.8rem; color: var(--accent); margin-bottom: 0.5rem;">✅ LAUNCH READY</div>
+                    <ul class="summary-list">
+                        <li><strong>20,000</strong> PB Business Group members</li>
+                        <li><strong>Home base</strong> - 25 year legacy</li>
+                        <li><strong>Monthly meetings</strong> - Built-in activation</li>
+                        <li><strong>Test market</strong> - Refine features</li>
+                        <li><strong>Target:</strong> Week 4-6 of build</li>
+                    </ul>
+                </div>
+                <div class="card" style="border-left: 4px solid #3b82f6;">
+                    <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
+                        <span style="font-size: 1.5rem;">🌴</span>
+                        <h4 style="color: #3b82f6; margin: 0;">Phase 2: Miami</h4>
+                    </div>
+                    <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.5rem;">⏳ MONTH 2</div>
+                    <ul class="summary-list">
+                        <li><strong>Huge market</strong> - 470K+ businesses</li>
+                        <li><strong>Diverse industries</strong> - Tourism, finance</li>
+                        <li><strong>Tech hub</strong> - Early adopters</li>
+                        <li><strong>Expansion test</strong> - New city playbook</li>
+                        <li><strong>Target:</strong> Week 8-10</li>
+                    </ul>
+                </div>
+                <div class="card" style="border-left: 4px solid #8b5cf6;">
+                    <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
+                        <span style="font-size: 1.5rem;">🎢</span>
+                        <h4 style="color: #8b5cf6; margin: 0;">Phase 3: Orlando</h4>
+                    </div>
+                    <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.5rem;">⏳ MONTH 3</div>
+                    <ul class="summary-list">
+                        <li><strong>Tourism capital</strong> - Hospitality focus</li>
+                        <li><strong>Convention city</strong> - B2B opportunities</li>
+                        <li><strong>Video-friendly</strong> - Experience economy</li>
+                        <li><strong>Scale validation</strong> - System stress test</li>
+                        <li><strong>Target:</strong> Week 12+</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div style="background: rgba(30, 41, 59, 0.5); padding: 1.5rem; border-radius: 1rem; margin: 1.5rem 0;">
+                <h4 style="color: var(--primary); margin-bottom: 1rem;">📈 Launch Timeline</h4>
+                <div class="mermaid" style="margin: 1rem 0;">
+                    gantt
+                        title VidiCity 3-City Launch Timeline
+                        dateFormat 2026-02-01
+                        axisFormat %b %d
+                        
+                        section Foundation
+                        Directus Setup :done, setup, 2026-02-01, 7d
+                        Vidi AI Deploy :done, vidi, 2026-02-01, 14d
+                        PB Import :active, import, after setup, 7d
+                        
+                        section Palm Beach
+                        Beta Launch :crit, pb_launch, after import, 7d
+                        Member Activation :pb_active, after pb_launch, 14d
+                        Monthly Meeting :milestone, pb_meet, after pb_active, 1d
+                        
+                        section Miami
+                        City Onboarding :miami_onboard, after pb_launch, 7d
+                        Beta Launch :crit, miami_launch, after miami_onboard, 7d
+                        Growth Phase :miami_grow, after miami_launch, 14d
+                        
+                        section Orlando
+                        City Onboarding :orlando_onboard, after miami_launch, 7d
+                        Beta Launch :crit, orlando_launch, after orlando_onboard, 7d
+                </div>
+            </div>
+        </div>
+
+        <!-- VidiSmart Integration -->
+        <h2 style="margin: 3rem 0 1.5rem; font-size: 2.25rem; font-family: 'Kumbh Sans', sans-serif;">🧩 VidiSmart Integration</h2>
+        
+        <div class="phase-section">
+            <div class="phase-header">
+                <div class="phase-number" style="background: linear-gradient(135deg, #10b981, #3b82f6);">🔗</div>
+                <div>
+                    <div class="phase-title">Smart Stack Strategy Connection</div>
+                    <div style="color: var(--text-muted);">Connecting businesses with coaches & tech advisors</div>
+                </div>
+            </div>
+
+            <div class="grid" style="margin-top: 1.5rem;">
+                <div class="card" style="border-left: 4px solid #10b981;">
+                    <h4 style="color: #10b981; margin-bottom: 1rem;">🎯 For Businesses</h4>
+                    <ul class="summary-list">
+                        <li><strong>Tech Stack Quiz</strong> - Embedded on profile</li>
+                        <li><strong>AI Recommendations</strong> - Personalized tools</li>
+                        <li><strong>Coach Matching</strong> - Find strategy help</li>
+                        <li><strong>Implementation</strong> - Step-by-step guides</li>
+                        <li><strong>ROI Tracking</strong> - Measure results</li>
+                    </ul>
+                </div>
+                <div class="card" style="border-left: 4px solid #3b82f6;">
+                    <h4 style="color: #3b82f6; margin-bottom: 1rem;">👨‍💼 For Coaches</h4>
+                    <ul class="summary-list">
+                        <li><strong>Lead Generation</strong> - Qualified prospects</li>
+                        <li><strong>Profile Pages</strong> - Showcase expertise</li>
+                        <li><strong>Assessment Tools</strong> - Client diagnostics</li>
+                        <li><strong>Booking Integration</strong> - Calendly/Stripe</li>
+                        <li><strong>Analytics</strong> - Track engagement</li>
+                    </ul>
+                </div>
+                <div class="card" style="border-left: 4px solid #8b5cf6;">
+                    <h4 style="color: #8b5cf6; margin-bottom: 1rem;">⚙️ Integration Points</h4>
+                    <ul class="summary-list">
+                        <li><strong>Shared Auth</strong> - Keycloak SSO</li>
+                        <li><strong>User Bridge</strong> - Cross-platform profiles</li>
+                        <li><strong>Widget Embed</strong> - VidiSmart on VidiCity</li>
+                        <li><strong>API Sync</strong> - Real-time data</li>
+                        <li><strong>Unified Billing</strong> - Single subscription</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div style="background: rgba(30, 41, 59, 0.5); padding: 1.5rem; border-radius: 1rem; margin: 1.5rem 0;">
+                <h4 style="color: var(--primary); margin-bottom: 1rem;">🔗 VidiSmart Widget on Business Profile</h4>
+                <div style="margin-top: 1rem; padding: 1rem; background: rgba(0,0,0,0.3); border-radius: 0.5rem; font-family: monospace; font-size: 0.85rem;">
+                    <div style="color: var(--accent);">// Embed VidiSmart Assessment Widget</div>
+                    <div style="color: var(--text-muted); margin-top: 0.5rem;">&lt;VidiSmartWidget</div>
+                    <div style="color: var(--text-muted); margin-left: 1rem;">businessId={business.id}</div>
+                    <div style="color: var(--text-muted); margin-left: 1rem;">industry={business.category}</div>
+                    <div style="color: var(--text-muted); margin-left: 1rem;">size="medium"</div>
+                    <div style="color: var(--text-muted); margin-left: 1rem;">theme="vidicity"</div>
+                    <div style="color: var(--text-muted); margin-left: 1rem;">onComplete={handleAssessmentComplete}</div>
+                    <div style="color: var(--text-muted);">/&gt;</div>
+                </div>
+            </div>
+        </div>
+
+        <footer
+            style="text-align: center; padding: 2rem; color: var(--text-muted); border-top: 1px solid rgba(255,255,255,0.1); margin-top: 2rem;">
+            <p>VidiCity Agent Orchestration Dashboard • Generated February 2026</p>
+            <p style="margin-top: 0.5rem; font-size: 0.875rem;">75 Tasks • 12 Weeks • 8 Agents • Directus Backbone • Vidi AI Search • 20,000 PB Businesses</p>
+        </footer>
+    </div>
+
+    <script>
+        gsap.registerPlugin(ScrollTrigger);
+
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'dark',
+            themeVariables: {
+                primaryColor: '#3b82f6',
+                primaryTextColor: '#fff',
+                primaryBorderColor: '#60a5fa',
+                lineColor: '#64748b',
+                secondaryColor: '#1e293b',
+                tertiaryColor: '#334155',
+                fontFamily: 'Outfit, system-ui, sans-serif'
+            },
+            flowchart: {
+                curve: 'basis',
+                padding: 20
+            },
+            gantt: {
+                titleTopMargin: 25,
+                barHeight: 24,
+                barGap: 6,
+                topPadding: 60,
+                leftPadding: 150,
+                gridLineStartPadding: 50,
+                fontSize: 12,
+                numberSectionStyles: 5,
+                axisFormat: '%b %d',
+                sectionFontSize: 14,
+                displayMode: 'compact',
+                useWidth: 1400
+            }
+        });
+
+        // 3D Reveal Animations
+        document.querySelectorAll('.card, .phase-section, .mermaid-container, .critical-path-box').forEach((el) => {
+            gsap.from(el, {
+                scrollTrigger: {
+                    trigger: el,
+                    start: "top 90%",
+                    toggleActions: "play none none none"
+                },
+                y: 50,
+                opacity: 0,
+                duration: 1,
+                ease: "power3.out"
+            });
+        });
+
+        // Animate task items (keeping opacity visible)
+        gsap.from('.task-item', {
+            x: -10,
+            opacity: 1,
+            duration: 0.3,
+            stagger: 0.02
+        });
+
+        // Interactive task checkboxes
+        document.querySelectorAll('.task-checkbox').forEach(checkbox => {
+            checkbox.addEventListener('click', function () {
+                const isChecked = this.style.background === 'var(--accent)';
+                this.style.background = isChecked ? '' : 'var(--accent)';
+                this.style.borderColor = isChecked ? 'rgba(255, 255, 255, 0.2)' : 'var(--accent)';
+
+                const taskItem = this.closest('.task-item');
+                if (taskItem) {
+                    taskItem.style.opacity = isChecked ? '1' : '0.6';
+                    taskItem.style.textDecoration = isChecked ? 'none' : 'line-through';
+                }
+            });
+        });
+
+        // Stat counter animation
+        document.querySelectorAll('.stat-value').forEach((el) => {
+            const target = parseInt(el.innerText);
+            gsap.from(el, {
+                textContent: 0,
+                duration: 2,
+                snap: { textContent: 1 },
+                scrollTrigger: {
+                    trigger: el,
+                    start: "top 95%"
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

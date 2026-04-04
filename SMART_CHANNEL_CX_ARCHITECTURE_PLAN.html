@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Channel CX - Video Editing Platform Architecture Plan</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --secondary: #8b5cf6;
+            --accent: #ec4899;
+            --dark: #0f172a;
+            --darker: #020617;
+            --light: #f8fafc;
+            --gray: #334155;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --info: #3b82f6;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, var(--darker) 0%, var(--dark) 100%);
+            color: var(--light);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        header {
+            text-align: center;
+            padding: 4rem 0;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
+            border-radius: 24px;
+            margin-bottom: 3rem;
+            border: 1px solid rgba(99, 102, 241, 0.2);
+        }
+        
+        h1 {
+            font-size: 3.5rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+        }
+        
+        .subtitle {
+            font-size: 1.25rem;
+            color: #94a3b8;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .badge-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+        
+        .badge {
+            background: rgba(99, 102, 241, 0.2);
+            border: 1px solid var(--primary);
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+        
+        nav {
+            position: sticky;
+            top: 0;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem;
+            border-bottom: 1px solid rgba(99, 102, 241, 0.2);
+            z-index: 100;
+            margin-bottom: 3rem;
+            border-radius: 12px;
+        }
+        
+        nav ul {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: center;
+            list-style: none;
+        }
+        
+        nav a {
+            color: var(--light);
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        
+        nav a:hover {
+            background: var(--primary);
+        }
+        
+        section {
+            margin-bottom: 4rem;
+            padding: 3rem;
+            background: rgba(30, 41, 59, 0.5);
+            border-radius: 24px;
+            border: 1px solid rgba(99, 102, 241, 0.1);
+        }
+        
+        h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        h3 {
+            font-size: 1.75rem;
+            margin: 2rem 0 1rem;
+            color: var(--secondary);
+        }
+        
+        h4 {
+            font-size: 1.25rem;
+            margin: 1.5rem 0 0.75rem;
+            color: var(--accent);
+        }
+        
+        p {
+            margin-bottom: 1rem;
+            color: #cbd5e1;
+        }
+        
+        .mermaid {
+            background: rgba(15, 23, 42, 0.8);
+            padding: 2rem;
+            border-radius: 16px;
+            margin: 2rem 0;
+            overflow-x: auto;
+        }
+        
+        .agent-card {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 16px;
+            padding: 2rem;
+            margin: 1.5rem 0;
+            transition: transform 0.3s ease;
+        }
+        
+        .agent-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .agent-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .agent-icon {
+            font-size: 2.5rem;
+        }
+        
+        .tech-stack-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        
+        .tech-card {
+            background: rgba(30, 41, 59, 0.8);
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 1px solid rgba(99, 102, 241, 0.2);
+        }
+        
+        .tech-card h4 {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 0;
+        }
+        
+        ul, ol {
+            margin-left: 2rem;
+            margin-bottom: 1rem;
+        }
+        
+        li {
+            margin-bottom: 0.5rem;
+            color: #cbd5e1;
+        }
+        
+        code {
+            background: rgba(99, 102, 241, 0.2);
+            padding: 0.25rem 0.5rem;
+            border-radius: 6px;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.9rem;
+        }
+        
+        .highlight-box {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%);
+            border-left: 4px solid var(--success);
+            padding: 1.5rem;
+            border-radius: 0 12px 12px 0;
+            margin: 1.5rem 0;
+        }
+        
+        .warning-box {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(239, 68, 68, 0.1) 100%);
+            border-left: 4px solid var(--warning);
+            padding: 1.5rem;
+            border-radius: 0 12px 12px 0;
+            margin: 1.5rem 0;
+        }
+        
+        .integration-flow {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+        
+        .flow-step {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: rgba(30, 41, 59, 0.8);
+            border-radius: 12px;
+            border: 1px solid rgba(99, 102, 241, 0.2);
+        }
+        
+        .flow-step-number {
+            background: var(--primary);
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 2rem 0;
+            background: rgba(30, 41, 59, 0.5);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(99, 102, 241, 0.2);
+        }
+        
+        th {
+            background: rgba(99, 102, 241, 0.2);
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        tr:hover {
+            background: rgba(99, 102, 241, 0.05);
+        }
+        
+        footer {
+            text-align: center;
+            padding: 3rem;
+            background: rgba(30, 41, 59, 0.5);
+            border-radius: 24px;
+            margin-top: 4rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Smart Channel CX</h1>
+            <p class="subtitle">AI-Powered Video Editing Platform Architecture Plan<br>
+            Multi-Agent System Design for Frame.io-Style Collaboration</p>
+            <div class="badge-container">
+                <span class="badge">React/Next.js</span>
+                <span class="badge">Remotion</span>
+                <span class="badge">Cloudflare R2</span>
+                <span class="badge">ComfyUI</span>
+                <span class="badge">Gemini API</span>
+                <span class="badge">Rust/Astro</span>
+                <span class="badge">ONNX</span>
+                <span class="badge">Graph RAG</span>
+            </div>
+        </header>
+
+        <nav>
+            <ul>
+                <li><a href="#executive-summary">Executive Summary</a></li>
+                <li><a href="#system-overview">System Overview</a></li>
+                <li><a href="#multi-agent">Multi-Agent Architecture</a></li>
+                <li><a href="#tech-stack">Tech Stack</a></li>
+                <li><a href="#integrations">System Integrations</a></li>
+                <li><a href="#workflows">AI Workflows</a></li>
+                <li><a href="#roadmap">Implementation Roadmap</a></li>
+            </ul>
+        </nav>
+
+        <section id="executive-summary">
+            <h2>01. Executive Summary</h2>
+            
+            <div class="highlight-box">
+                <strong>Mission:</strong> Build Smart Channel CX, a browser-based video editing platform with Frame.io-style collaboration, powered by AI/ML pipelines and integrated with the existing Vidi ecosystem (VidiFlow, VidiShop, VidiCity, Visual Vector Omni Search).
+            </div>
+
+            <h3>Project Vision</h3>
+            <p>Smart Channel CX represents the convergence of professional video editing, AI-powered content generation, and intelligent search capabilities. The platform enables users to edit MP4 files directly in the browser while leveraging a powerful media pool stored in Cloudflare R2, with real-time collaboration features inspired by Frame.io.</p>
+
+            <h3>Key Capabilities</h3>
+            <ul>
+                <li><strong>Browser-Based Video Editing:</strong> Full MP4 editing (trim, cut, split, transitions, text overlays, audio mixing, filters) powered by Remotion</li>
+                <li><strong>AI-Powered Effects:</strong> Integration with ComfyUI and Stable Diffusion for generative video effects</li>
+                <li><strong>Smart Graphics Generation:</strong> Gemini API integration for automated graphics and thumbnail creation</li>
+                <li><strong>Visual Vector Omni Search:</strong> BM25 + Vector + Graph RAG + Geospatial search for content discovery</li>
+                <li><strong>Frame.io-Style Collaboration:</strong> Time-stamped comments, version control, review workflows</li>
+                <li><strong>Multi-Brand Support:</strong> VidiShop integration for personalized shopping experiences</li>
+                <li><strong>Local News Portal:</strong> VidiCity geospatial video news platform integration</li>
+                <li><strong>Knowledge Base:</strong> AppFlowy (VidiFlow) integration for faceted content creation</li>
+            </ul>
+
+            <h3>Target Users</h3>
+            <ul>
+                <li>Content creators and video editors</li>
+                <li>Marketing teams managing video campaigns</li>
+                <li>Local news organizations (VidiCity)</li>
+                <li>E-commerce businesses (VidiShop)</li>
+                <li>Agencies requiring client collaboration</li>
+            </ul>
+        </section>
+
+        <section id="system-overview">
+            <h2>02. System Architecture Overview</h2>
+            
+            <h3>High-Level Architecture</h3>
+            <div class="mermaid">
+flowchart TB
+    subgraph "Client Layer"
+        WEB[Next.js 14 App Router]
+        EDITOR[Remotion Video Editor]
+        PLAYER[React Player Component]
+    end
+    
+    subgraph "Edge Layer - Cloudflare"
+        CDN[Cloudflare CDN]
+        WORKERS[Cloudflare Workers]
+        R2[Cloudflare R2 Storage]
+        KV[Cloudflare KV]
+        D1[Cloudflare D1 Database]
+    end
+    
+    subgraph "AI/ML Services"
+        COMFY[ComfyUI Server]
+        GEMINI[Google Gemini API]
+        ONNX[ONNX Runtime]
+        STABLE[Stable Diffusion]
+    end
+    
+    subgraph "Search & Analytics"
+        VOS[Visual Vector Omni Search]
+        BM25[BM25 Keyword Engine]
+        VECTOR[Vector Database]
+        GRAPH[Graph RAG Neo4j]
+        GEO[Geospatial Search]
+    end
+    
+    subgraph "Backend Services"
+        API[Rust/Astro API Gateway]
+        RENDER[Remotion Render Service]
+        COLLAB[Collaboration Service]
+        NOTIF[Notification Service]
+    end
+    
+    subgraph "External Integrations"
+        APPFLOWY[AppFlowy/VidiFlow]
+        SHOPIFY[VidiShop/Shopify]
+        AUTH[Clerk Auth]
+        STRIPE[Stripe Payments]
+    end
+    
+    WEB --> CDN
+    WEB --> WORKERS
+    EDITOR --> R2
+    PLAYER --> R2
+    
+    WORKERS --> API
+    WORKERS --> VOS
+    
+    API --> COMFY
+    API --> GEMINI
+    API --> ONNX
+    API --> RENDER
+    API --> COLLAB
+    API --> D1
+    API --> R2
+    
+    VOS --> BM25
+    VOS --> VECTOR
+    VOS --> GRAPH
+    VOS --> GEO
+    
+    COMFY --> STABLE
+    RENDER --> R2
+    
+    API --> APPFLOWY
+    API --> SHOPIFY
+    API --> AUTH
+    API --> STRIPE
+            </div>
+
+            <h3>Key Architectural Decisions</h3>
+            <table>
+                <tr>
+                    <th>Decision</th>
+                    <th>Choice</th>
+                    <th>Rationale</th>
+                </tr>
+                <tr>
+                    <td>Video Engine</td>
+                    <td>Remotion + FFmpeg.wasm</td>
+                    <td>React-based, programmable, browser-first</td>
+                </tr>
+                <tr>
+                    <td>Storage</td>
+                    <td>Cloudflare R2</td>
+                    <td>S3-compatible, zero egress fees, edge-cached</td>
+                </tr>
+                <tr>
+                    <td>Compute</td>
+                    <td>Cloudflare Workers + Rust</td>
+                    <td>Edge-deployed, low latency, WASM support</td>
+                </tr>
+                <tr>
+                    <td>AI/ML</td>
+                    <td>ComfyUI + ONNX</td>
+                    <td>Modular pipelines, local/remote inference</td>
+                </tr>
+                <tr>
+                    <td>Search</td>
+                    <td>Hybrid Vector + BM25 + Graph</td>
+                    <td>Best of all search paradigms</td>
+                </tr>
+            </table>
+        </section>
+
+        <section id="multi-agent">
+            <h2>03. Multi-Agent Architecture</h2>
+            
+            <div class="mermaid">
+flowchart LR
+    subgraph "Agent Orchestrator"
+        ORCH[Central Orchestrator<br/>Rust-based Message Queue]
+    end
+    
+    subgraph "Core Agents"
+        A1[Media Ingestion Agent]
+        A2[Edit Assistant Agent]
+        A3[Graphics Gen Agent]
+        A4[Collaboration Agent]
+        A5[Search Index Agent]
+        A6[Quality Control Agent]
+        A7[Export Render Agent]
+    end
+    
+    subgraph "AI Tooling"
+        T1[ComfyUI]
+        T2[Gemini API]
+        T3[ONNX Models]
+        T4[Vector DB]
+        T5[Neo4j Graph]
+    end
+    
+    ORCH --> A1
+    ORCH --> A2
+    ORCH --> A3
+    ORCH --> A4
+    ORCH --> A5
+    ORCH --> A6
+    ORCH --> A7
+    
+    A1 --> T3
+    A2 --> T2
+    A3 --> T1
+    A3 --> T2
+    A4 --> T4
+    A5 --> T4
+    A5 --> T5
+    A6 --> T3
+    A7 --> T1
+            </div>
+
+            <h3>7 Specialized Agents</h3>
+            
+            <div class="agent-card">
+                <div class="agent-header">
+                    <span class="agent-icon">📥</span>
+                    <div>
+                        <h4>Agent 01: Media Ingestion Agent</h4>
+                        <code>media-ingestion-agent</code>
+                    </div>
+                </div>
+                <p>Handles MP4 uploads to Cloudflare R2, extracts metadata, generates variants, creates thumbnails, triggers transcription</p>
+                <p><strong>Tools:</strong> FFmpeg.wasm, Whisper API, R2 SDK</p>
+            </div>
+
+            <div class="agent-card">
+                <div class="agent-header">
+                    <span class="agent-icon">✂️</span>
+                    <div>
+                        <h4>Agent 02: Edit Assistant Agent</h4>
+                        <code>edit-assistant-agent</code>
+                    </div>
+                </div>
+                <p>Processes edit operations, builds EDLs, optimizes render pipelines, suggests edit points via scene detection</p>
+                <p><strong>Tools:</strong> Remotion Player, Scene Detection ONNX Model</p>
+            </div>
+
+            <div class="agent-card">
+                <div class="agent-header">
+                    <span class="agent-icon">🎨</span>
+                    <div>
+                        <h4>Agent 03: Graphics Generation Agent</h4>
+                        <code>graphics-gen-agent</code>
+                    </div>
+                </div>
+                <p>Generates AI graphics from prompts, creates lower thirds, thumbnails, style transfer via ComfyUI</p>
+                <p><strong>Tools:</strong> Gemini API, ComfyUI API, Stable Diffusion</p>
+            </div>
+
+            <div class="agent-card">
+                <div class="agent-header">
+                    <span class="agent-icon">💬</span>
+                    <div>
+                        <h4>Agent 04: Collaboration Agent</h4>
+                        <code>collaboration-agent</code>
+                    </div>
+                </div>
+                <p>Manages Frame.io-style comments, real-time sessions, version control, notifications, share links</p>
+                <p><strong>Tools:</strong> WebSockets, Cloudflare D1, Notification Service</p>
+            </div>
+
+            <div class="agent-card">
+                <div class="agent-header">
+                    <span class="agent-icon">🔍</span>
+                    <div>
+                        <h4>Agent 05: Search Index Agent</h4>
+                        <code>search-index-agent</code>
+                    </div>
+                </div>
+                <p>Extracts visual embeddings, indexes transcription, builds knowledge graphs, geospatial tagging</p>
+                <p><strong>Tools:</strong> CLIP Model, Neo4j, Pinecone/Weaviate, PostGIS</p>
+            </div>
+
+            <div class="agent-card">
+                <div class="agent-header">
+                    <span class="agent-icon">✅</span>
+                    <div>
+                        <h4>Agent 06: Quality Control Agent</h4>
+                        <code>quality-control-agent</code>
+                    </div>
+                </div>
+                <p>Validates exports, checks A/V sync, verifies color space, detects copyright issues, ensures accessibility</p>
+                <p><strong>Tools:</strong> FFmpeg validation, Audio fingerprinting ONNX models</p>
+            </div>
+
+            <div class="agent-card">
+                <div class="agent-header">
+                    <span class="agent-icon">🎬</span>
+                    <div>
+                        <h4>Agent 07: Export Render Agent</h4>
+                        <code>export-render-agent</code>
+                    </div>
+                </div>
+                <p>Queues render jobs, distributes across workers, applies compositing, generates multiple formats</p>
+                <p><strong>Tools:</strong> Remotion Lambda, FFmpeg, R2 SDK</p>
+            </div>
+        </section>
+
+        <section id="tech-stack">
+            <h2>04. Technology Stack</h2>
+            
+            <h3>Frontend Layer</h3>
+            <div class="tech-stack-grid">
+                <div class="tech-card">
+                    <h4>⚛️ Next.js 14 (App Router)</h4>
+                    <p>React framework with server components, streaming SSR, and edge runtime support</p>
+                </div>
+                <div class="tech-card">
+                    <h4>🎬 Remotion</h4>
+                    <p>Programmable video editing in React. Core engine for timeline, preview, and rendering</p>
+                </div>
+                <div class="tech-card">
+                    <h4>🎨 TailwindCSS + Framer Motion</h4>
+                    <p>Utility-first styling and animations for Frame.io-inspired dark theme</p>
+                </div>
+                <div class="tech-card">
+                    <h4>📹 FFmpeg.wasm</h4>
+                    <p>Browser-based video processing for client-side operations</p>
+                </div>
+            </div>
+
+            <h3>Edge & Serverless Layer</h3>
+            <div class="tech-stack-grid">
+                <div class="tech-card">
+                    <h4>☁️ Cloudflare Workers</h4>
+                    <p>Edge compute for API routing, auth, and WebSocket handling</p>
+                </div>
+                <div class="tech-card">
+                    <h4>🦀 Rust + Astro</h4>
+                    <p>High-performance API gateway. WASM-compatible for ONNX models</p>
+                </div>
+                <div class="tech-card">
+                    <h4>🗄️ Cloudflare D1</h4>
+                    <p>SQLite-based edge database for projects and collaboration state</p>
+                </div>
+                <div class="tech-card">
+                    <h4>⚡ Cloudflare KV</h4>
+                    <p>Key-value store for session data and real-time collaboration</p>
+                </div>
+            </div>
+
+            <h3>Storage & CDN</h3>
+            <div class="tech-stack-grid">
+                <div class="tech-card">
+                    <h4>📦 Cloudflare R2</h4>
+                    <p>S3-compatible object storage. Zero egress fees for media delivery</p>
+                </div>
+                <div class="tech-card">
+                    <h4>🌐 Cloudflare CDN</h4>
+                    <p>Global content delivery for video segments and assets</p>
+                </div>
+                <div class="tech-card">
+                    <h4>🔄 TUS Protocol</h4>
+                    <p>Resumable upload protocol for large video files</p>
+                </div>
+            </div>
+
+            <h3>AI/ML Services</h3>
+            <div class="tech-stack-grid">
+                <div class="tech-card">
+                    <h4>🧠 ComfyUI</h4>
+                    <p>Node-based Stable Diffusion interface for AI video effects and graphics</p>
+                </div>
+                <div class="tech-card">
+                    <h4>🔮 Google Gemini API</h4>
+                    <p>Multimodal AI for graphics generation and content analysis</p>
+                </div>
+                <div class="tech-card">
+                    <h4>⚙️ ONNX Runtime</h4>
+                    <p>Cross-platform ML inference for scene detection and quality analysis</p>
+                </div>
+                <div class="tech-card">
+                    <h4>🎯 CLIP/BLIP Models</h4>
+                    <p>Vision-language models for content understanding and indexing</p>
+                </div>
+            </div>
+
+            <h3>Search & Analytics</h3>
+            <div class="tech-stack-grid">
+                <div class="tech-card">
+                    <h4>🔍 Meilisearch/Typesense</h4>
+                    <p>BM25 keyword search with typo tolerance and faceting</p>
+                </div>
+                <div class="tech-card">
+                    <h4>🧮 Pinecone/Weaviate</h4>
+                    <p>Vector database for semantic similarity search</p>
+                </div>
+                <div class="tech-card">
+                    <h4>🕸️ Neo4j</h4>
+                    <p>Graph database for RAG and recommendation engines</p>
+                </div>
+                <div class="tech-card">
+                    <h4>🗺️ PostGIS</h4>
+                    <p>Geospatial extension for VidiCity location-based search</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="integrations">
+            <h2>05. System Integrations</h2>
+            
+            <h3>Visual Vector Omni Search Integration</h3>
+            <div class="mermaid">
+flowchart TB
+    subgraph "Omni Search Layer"
+        QUERY[Query Router]
+        FUSION[Result Fusion Engine]
+    end
+    
+    subgraph "Search Engines"
+        BM25[BM25 Text Search<br/>Meilisearch]
+        VECT[Vector Search<br/>Pinecone]
+        GRAPH[Graph RAG<br/>Neo4j]
+        GEO[Geospatial<br/>PostGIS]
+    end
+    
+    subgraph "Content Sources"
+        VIDEO[Video Library<br/>R2 Storage]
+        APPF[AppFlowy Docs<br/>VidiFlow]
+        SHOP[VidiShop Products]
+        CITY[VidiCity News<br/>Geotagged]
+    end
+    
+    VIDEO --> BM25
+    VIDEO --> VECT
+    VIDEO --> GRAPH
+    VIDEO --> GEO
+    
+    APPF --> BM25
+    APPF --> GRAPH
+    
+    SHOP --> BM25
+    SHOP --> VECT
+    SHOP --> GRAPH
+    
+    CITY --> GEO
+    CITY --> BM25
+    
+    QUERY --> BM25
+    QUERY --> VECT
+    QUERY --> GRAPH
+    QUERY --> GEO
+    
+    BM25 --> FUSION
+    VECT --> FUSION
+    GRAPH --> FUSION
+    GEO --> FUSION
+            </div>
+
+            <h3>Frame.io-Style Collaboration Features</h3>
+            <table>
+                <tr>
+                    <th>Feature</th>
+                    <th>Description</th>
+                    <th>Tech Implementation</th>
+                </tr>
+                <tr>
+                    <td>Time-Stamped Comments</td>
+                    <td>Pin comments to specific frames in the video</td>
+                    <td>WebSockets + D1</td>
+                </tr>
+                <tr>
+                    <td>Version Control</td>
+                    <td>Branching, merging, and version history</td>
+                    <td>Git-like structure in D1</td>
+                </tr>
+                <tr>
+                    <td>Share Links</td>
+                    <td>Public/private links with expiration</td>
+                    <td>JWT tokens + R2</td>
+                </tr>
+                <tr>
+                    <td>Review Workflows</td>
+                    <td>Approval chains, status tracking</td>
+                    <td>State machine + Notifications</td>
+                </tr>
+                <tr>
+                    <td>Live Cursor Sync</td>
+                    <td>See where collaborators are working</td>
+                    <td>WebSockets + Presence</td>
+                </tr>
+            </table>
+        </section>
+
+        <section id="workflows">
+            <h2>06. AI Workflows & Tooling</h2>
+            
+            <h3>Gemini + ComfyUI + Stable Diffusion Pipeline</h3>
+            <div class="mermaid">
+flowchart TB
+    subgraph "Input"
+        PROMPT[Text Prompt<br/>or Video Frame]
+        STYLE[Style Reference<br/>Brand Guidelines]
+    end
+    
+    subgraph "Gemini API Layer"
+        ANALYZE[Content Analysis]
+        ENHANCE[Prompt Enhancement]
+        LAYOUT[Layout Suggestion]
+    end
+    
+    subgraph "ComfyUI Pipeline"
+        LOAD[Load Models]
+        PREP[Prep Image/Video]
+        GENERATE[Generate Output]
+        UPSCALE[Upscale/Refine]
+    end
+    
+    subgraph "Output"
+        GRAPHICS[Graphics Asset]
+        OVERLAY[Video Overlay]
+        THUMB[Thumbnail Variant]
+    end
+    
+    PROMPT --> ANALYZE
+    STYLE --> ENHANCE
+    
+    ANALYZE --> ENHANCE
+    ENHANCE --> LAYOUT
+    
+    LAYOUT --> LOAD
+    LOAD --> PREP
+    PREP --> GENERATE
+    GENERATE --> UPSCALE
+    
+    UPSCALE --> GRAPHICS
+    UPSCALE --> OVERLAY
+    UPSCALE --> THUMB
+            </div>
+
+            <h3>ComfyUI Deployment Options</h3>
+            <div class="highlight-box">
+                <ul>
+                    <li><strong>Option A - Self-Hosted:</strong> Run ComfyUI on GPU instances (RunPod, Vast.ai)</li>
+                    <li><strong>Option B - Serverless:</strong> Use ComfyUI API via Fal.ai or Replicate</li>
+                    <li><strong>Option C - Hybrid:</strong> Lightweight inference at edge, heavy generation in cloud</li>
+                </ul>
+            </div>
+
+            <h3>Image Capabilities Summary</h3>
+            <div class="warning-box">
+                <strong>✅ What I Can Do:</strong> Analyze images you provide - UI screenshots, designs, video frames, thumbnails, wireframes<br><br>
+                <strong>❌ What I Cannot Do:</strong> Generate new images directly<br><br>
+                <strong>✅ ComfyUI Control:</strong> YES - ComfyUI has a REST API for programmatic control
+            </div>
+        </section>
+
+        <section id="roadmap">
+            <h2>07. Implementation Roadmap</h2>
+            
+            <h3>Phase 1: Foundation (Weeks 1-4)</h3>
+            <ul>
+                <li>Initialize Next.js 14 project with Remotion</li>
+                <li>Configure Cloudflare R2 and Workers</li>
+                <li>Build Remotion-based timeline and player</li>
+                <li>Upload pipeline with TUS protocol</li>
+            </ul>
+
+            <h3>Phase 2: Editing Features (Weeks 5-8)</h3>
+            <ul>
+                <li>Advanced editing (split, merge, transitions)</li>
+                <li>Text overlays and audio tracks</li>
+                <li>Export pipeline and render queue</li>
+                <li>Project save/load with auto-save</li>
+            </ul>
+
+            <h3>Phase 3: AI Integration (Weeks 9-12)</h3>
+            <ul>
+                <li>Deploy ComfyUI server</li>
+                <li>Integrate Gemini API</li>
+                <li>AI effects pipeline and style transfer</li>
+                <li>Graphics generation workflows</li>
+            </ul>
+
+            <h3>Phase 4: Search & Integrations (Weeks 13-16)</h3>
+            <ul>
+                <li>Omni Search implementation</li>
+                <li>AppFlowy (VidiFlow) integration</li>
+                <li>VidiShop product tagging</li>
+                <li>Vector and graph indexing</li>
+            </ul>
+
+            <h3>Phase 5: Collaboration & Polish (Weeks 17-20)</h3>
+            <ul>
+                <li>Frame.io-style collaboration features</li>
+                <li>VidiCity geospatial integration</li>
+                <li>Performance optimization</li>
+                <li>Production deployment</li>
+            </ul>
+        </section>
+
+        <footer>
+            <h3>Ready to Build Smart Channel CX</h3>
+            <p>This architecture plan provides the foundation for a world-class video editing platform.</p>
+            <p style="margin-top: 2rem; color: #64748b;">
+                <strong>Next Steps:</strong> Share UI screenshots or Frame.io references for analysis, then begin multi-agent implementation.<br>
+                File location: <code>SMART_CHANNEL_CX_ARCHITECTURE_PLAN.html</code> (ready to deploy!)
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'dark',
+            themeVariables: {
+                primaryColor: '#6366f1',
+                primaryTextColor: '#f8fafc',
+                primaryBorderColor: '#8b5cf6',
+                lineColor: '#64748b',
+                secondaryColor: '#1e293b',
+                tertiaryColor: '#0f172a'
+            }
+        });
+    </script>
+</body>
+</html>

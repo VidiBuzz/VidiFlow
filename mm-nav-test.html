@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MM-Nav Component Test</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="vidi-nav-component.css">
+    <script src="vidi-nav-component.js"></script>
+    <link rel="stylesheet" href="mm-nav-component.css">
+    <script src="mm-nav-component.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #050511;
+            color: #e2e8f0;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        
+        .content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 100px 20px;
+        }
+        
+        .page {
+            background: rgba(15, 17, 26, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 40px;
+            margin-bottom: 30px;
+        }
+        
+        .page.hidden {
+            display: none;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            background: linear-gradient(90deg, #38bdf8, #5eead4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .instructions {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 30px 0;
+        }
+        
+        .instructions h3 {
+            color: #34d399;
+            margin-top: 0;
+        }
+        
+        .code-block {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 6px;
+            padding: 15px;
+            font-family: monospace;
+            font-size: 14px;
+            overflow-x: auto;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="content">
+        <div class="instructions">
+            <h3>MM-Nav Component Usage</h3>
+            <p>This page demonstrates how to use the MM-Nav component on any page. The component is loaded via:</p>
+            <div class="code-block">
+                &lt;link rel="stylesheet" href="mm-nav-component.css"&gt;<br>
+                &lt;script src="mm-nav-component.js"&gt;&lt;/script&gt;
+            </div>
+            <p>Then initialize it with configuration:</p>
+            <div class="code-block">
+                document.addEventListener('DOMContentLoaded', function() {<br>
+                &nbsp;&nbsp;const mmNav = MMNav({<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;brandLabel: "Twin Context",<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;menuItems: [<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{ id: "home", label: "Home", url: "#home" },<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{ id: "about", label: "About", url: "#about" },<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{ id: "contact", label: "Contact", url: "#contact" }<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;],<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;onNavigate: function(pageId) {<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Handle page navigation<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;showPage(pageId);<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;}<br>
+                &nbsp;&nbsp;});<br>
+                });
+            </div>
+        </div>
+        
+        <div id="page-home" class="page">
+            <h1>Home Page</h1>
+            <p>This is the home page. The MM-Nav component is now reusable across multiple pages.</p>
+            <p>Key features:</p>
+            <ul>
+                <li>Responsive design</li>
+                <li>URL hash navigation (#home, #about, etc.)</li>
+                <li>Browser back/forward support</li>
+                <li>Customizable menu items</li>
+                <li>Active state highlighting</li>
+                <li>Hover effects</li>
+            </ul>
+        </div>
+        
+        <div id="page-about" class="page hidden">
+            <h1>About Page</h1>
+            <p>The MM-Nav component can be configured with different menu items, labels, and URLs.</p>
+            <p>It injects CSS and HTML automatically, and provides an API for programmatic control.</p>
+        </div>
+        
+        <div id="page-contact" class="page hidden">
+            <h1>Contact Page</h1>
+            <p>Navigation between pages is handled via hash URLs (#contact, etc.).</p>
+            <p>The component calls your onNavigate callback when a menu item is clicked.</p>
+        </div>
+    </div>
+    
+    <script>
+        // Simple page switching function
+        function showPage(pageId) {
+            // Hide all pages
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.add('hidden');
+            });
+            
+            // Show target page
+            const targetPage = document.getElementById('page-' + pageId);
+            if (targetPage) {
+                targetPage.classList.remove('hidden');
+            }
+        }
+        
+        // Initialize MM-Nav component
+        document.addEventListener('DOMContentLoaded', function() {
+            const mmNav = MMNav({
+                brandLabel: "Twin Context",
+                menuItems: [
+                    { id: "home", label: "Home", url: "#home" },
+                    { id: "about", label: "About", url: "#about" },
+                    { id: "contact", label: "Contact", url: "#contact" }
+                ],
+                badgeText: "MM-NAV COMPONENT",
+                deployButtonText: "Learn More",
+                topOffset: 70,
+                spacerHeight: 126,
+                onNavigate: function(pageId) {
+                    showPage(pageId);
+                }
+            });
+            
+            // Initialize with current hash or default to home
+            const currentHash = window.location.hash.slice(1) || 'home';
+            showPage(currentHash);
+        });
+    </script>
+</body>
+</html>

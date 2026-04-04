@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SmartGen Media | Sign In</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Kumbh+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Kumbh Sans', sans-serif; background: #050505; color: #f1f5f9; }
+    .glass { background: rgba(30,41,59,0.5); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.1); }
+    .orb { position: fixed; border-radius: 50%; filter: blur(120px); pointer-events: none; z-index: 0; }
+    input:-webkit-autofill { -webkit-box-shadow: 0 0 0 30px #0f172a inset !important; -webkit-text-fill-color: #f1f5f9 !important; }
+  </style>
+</head>
+<body class="min-h-screen flex items-center justify-center relative overflow-hidden">
+
+  <div class="orb w-[600px] h-[600px] bg-blue-700 opacity-10 -top-60 -left-40"></div>
+  <div class="orb w-[500px] h-[500px] bg-violet-700 opacity-10 -bottom-40 -right-40"></div>
+
+  <div class="relative z-10 w-full max-w-md px-4">
+
+    <!-- Logo -->
+    <div class="flex items-center justify-center gap-3 mb-10">
+      <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center font-black italic text-white text-lg shadow-lg shadow-blue-900/40">V</div>
+      <span class="text-2xl font-black tracking-tighter">SMARTGEN MEDIA</span>
+    </div>
+
+    <!-- Card -->
+    <div class="glass rounded-2xl overflow-hidden">
+      <!-- Tabs -->
+      <div class="flex border-b border-white/10">
+        <button id="tab-signin" onclick="switchTab('signin')"
+          class="flex-1 py-4 text-sm font-bold text-blue-400 border-b-2 border-blue-500 transition-all">
+          Sign In
+        </button>
+        <button id="tab-signup" onclick="switchTab('signup')"
+          class="flex-1 py-4 text-sm font-bold text-slate-500 border-b-2 border-transparent transition-all hover:text-white">
+          Create Account
+        </button>
+      </div>
+
+      <div class="p-8 space-y-5">
+
+        <!-- Error / Success alerts -->
+        <div id="alert-error" class="hidden bg-red-500/10 border border-red-500/30 text-red-400 text-sm rounded-xl px-4 py-3"></div>
+        <div id="alert-success" class="hidden bg-green-500/10 border border-green-500/30 text-green-400 text-sm rounded-xl px-4 py-3"></div>
+
+        <!-- Sign In Form -->
+        <form id="form-signin" onsubmit="handleSignIn(event)" class="space-y-4">
+          <div>
+            <label class="block text-xs font-bold text-slate-400 mb-2">Email</label>
+            <input type="email" id="signin-email" required placeholder="you@example.com"
+              class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 transition-all">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-400 mb-2">Password</label>
+            <input type="password" id="signin-password" required placeholder="••••••••"
+              class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 transition-all">
+          </div>
+          <button type="submit" id="btn-signin"
+            class="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-500 font-bold text-sm transition-all flex items-center justify-center gap-2">
+            Sign In →
+          </button>
+        </form>
+
+        <!-- Sign Up Form -->
+        <form id="form-signup" onsubmit="handleSignUp(event)" class="space-y-4 hidden">
+          <div>
+            <label class="block text-xs font-bold text-slate-400 mb-2">Display Name</label>
+            <input type="text" id="signup-name" placeholder="Your name"
+              class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 transition-all">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-400 mb-2">Email</label>
+            <input type="email" id="signup-email" required placeholder="you@example.com"
+              class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 transition-all">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-400 mb-2">Password</label>
+            <input type="password" id="signup-password" required placeholder="Min 6 characters"
+              class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 transition-all">
+          </div>
+          <button type="submit" id="btn-signup"
+            class="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-500 font-bold text-sm transition-all">
+            Create Account →
+          </button>
+        </form>
+
+        <!-- Divider -->
+        <div class="flex items-center gap-3 text-slate-600 text-xs">
+          <div class="flex-1 border-t border-white/10"></div>
+          OR
+          <div class="flex-1 border-t border-white/10"></div>
+        </div>
+
+        <!-- Magic Link -->
+        <form onsubmit="handleMagicLink(event)" class="space-y-3">
+          <input type="email" id="magic-email" placeholder="Magic link — enter email"
+            class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-violet-500 transition-all">
+          <button type="submit"
+            class="w-full py-3 rounded-xl bg-violet-600/20 hover:bg-violet-600/30 border border-violet-500/30 text-violet-400 font-bold text-sm transition-all">
+            Send Magic Link
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <p class="text-center text-xs text-slate-600 mt-6">SmartGen Media Agent Panel · VidiSmart</p>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <script>
+    const SUPABASE_URL = 'https://jeasmwbberfgztkxfjwr.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImplYXNtd2JiZXJmZ3p0a3hmandyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA4MzI0MTUsImV4cCI6MjA4NjQwODQxNX0.MT52N92dX57NL-iJNCq109A1BziKDehAI_-H0xMRY5M';
+    const BACKEND = 'http://localhost:3007';
+
+    const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // Redirect if already logged in
+    sb.auth.getSession().then(({ data: { session } }) => {
+      if (session) redirect(session);
+    });
+
+    function switchTab(tab) {
+      const isSignin = tab === 'signin';
+      document.getElementById('form-signin').classList.toggle('hidden', !isSignin);
+      document.getElementById('form-signup').classList.toggle('hidden', isSignin);
+      document.getElementById('tab-signin').className = `flex-1 py-4 text-sm font-bold transition-all border-b-2 ${isSignin ? 'text-blue-400 border-blue-500' : 'text-slate-500 border-transparent hover:text-white'}`;
+      document.getElementById('tab-signup').className = `flex-1 py-4 text-sm font-bold transition-all border-b-2 ${!isSignin ? 'text-blue-400 border-blue-500' : 'text-slate-500 border-transparent hover:text-white'}`;
+      clearAlerts();
+    }
+
+    function showError(msg) {
+      const el = document.getElementById('alert-error');
+      el.textContent = msg;
+      el.classList.remove('hidden');
+      document.getElementById('alert-success').classList.add('hidden');
+    }
+
+    function showSuccess(msg) {
+      const el = document.getElementById('alert-success');
+      el.textContent = msg;
+      el.classList.remove('hidden');
+      document.getElementById('alert-error').classList.add('hidden');
+    }
+
+    function clearAlerts() {
+      document.getElementById('alert-error').classList.add('hidden');
+      document.getElementById('alert-success').classList.add('hidden');
+    }
+
+    function setLoading(btnId, loading) {
+      const btn = document.getElementById(btnId);
+      btn.disabled = loading;
+      btn.textContent = loading ? 'Please wait...' : (btnId === 'btn-signin' ? 'Sign In →' : 'Create Account →');
+    }
+
+    async function redirect(session) {
+      // Store session
+      sessionStorage.setItem('sb_token', session.access_token);
+      sessionStorage.setItem('sb_refresh', session.refresh_token);
+      sessionStorage.setItem('sb_user', JSON.stringify({
+        id: session.user.id,
+        email: session.user.email,
+      }));
+
+      // Log the session to backend
+      try {
+        await fetch(`${BACKEND}/api/sessions`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${session.access_token}`
+          },
+          body: JSON.stringify({ user_agent: navigator.userAgent })
+        });
+      } catch (e) { /* non-critical */ }
+
+      window.location.href = 'vidismart.deck.agent.html';
+    }
+
+    async function handleSignIn(e) {
+      e.preventDefault();
+      clearAlerts();
+      setLoading('btn-signin', true);
+
+      const email = document.getElementById('signin-email').value;
+      const password = document.getElementById('signin-password').value;
+
+      const { data, error } = await sb.auth.signInWithPassword({ email, password });
+
+      setLoading('btn-signin', false);
+      if (error) return showError(error.message);
+      await redirect(data.session);
+    }
+
+    async function handleSignUp(e) {
+      e.preventDefault();
+      clearAlerts();
+      setLoading('btn-signup', true);
+
+      const email = document.getElementById('signup-email').value;
+      const password = document.getElementById('signup-password').value;
+      const name = document.getElementById('signup-name').value;
+
+      const { data, error } = await sb.auth.signUp({
+        email, password,
+        options: { data: { display_name: name } }
+      });
+
+      setLoading('btn-signup', false);
+      if (error) return showError(error.message);
+
+      if (data.session) {
+        await redirect(data.session);
+      } else {
+        showSuccess('Check your email to confirm your account, then sign in.');
+      }
+    }
+
+    async function handleMagicLink(e) {
+      e.preventDefault();
+      clearAlerts();
+      const email = document.getElementById('magic-email').value;
+      if (!email) return showError('Enter your email first');
+
+      const { error } = await sb.auth.signInWithOtp({
+        email,
+        options: { emailRedirectTo: window.location.origin + '/vidismart.deck.agent.html' }
+      });
+
+      if (error) return showError(error.message);
+      showSuccess('Magic link sent! Check your email.');
+    }
+  </script>
+</body>
+</html>

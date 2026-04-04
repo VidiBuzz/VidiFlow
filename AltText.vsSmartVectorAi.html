@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Alt Text vs Smart Vector AI — mv-live</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-..." crossorigin="anonymous">
+  <meta name="description" content="Alt text vs vector embeddings: how alt text and vector databases work together for accessibility and semantic search." />
+  <style>
+    body { padding-top: 2rem; padding-bottom: 2rem; }
+    pre code { white-space: pre-wrap; }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <header class="mb-4">
+      <h1 class="h2">Alt Text vs Smart Vector AI</h1>
+      <p class="text-muted mb-0">How alt text and vector embeddings complement each other for modern media workflows.</p>
+      <hr />
+    </header>
+
+    <section class="mb-4">
+      <h2 class="h4">Is the Media File (JPEG/PNG) Changed?</h2>
+      <p><strong>No. Absolutely not.</strong> The original <code>JPEG</code>, <code>PNG</code>, or <code>MP4</code> file is completely unchanged. It is not embedded, modified, or altered in any way. The <code>dog.jpg</code> file on your server before you create a vector is the exact same <code>dog.jpg</code> file after.</p>
+
+      <p>Think of it like this:</p>
+      <ul>
+        <li><strong>Your Image/Video is the Painting:</strong> the original, untouched piece of art.</li>
+        <li><strong>The Vector Embedding is the Curator's Plaque:</strong> a separate piece of metadata that describes the painting in detail (e.g., "Sfumato technique", "subject's enigmatic expression").</li>
+      </ul>
+
+      <p>The vector embedding is a list of numbers that the AI model generated <em>about</em> your image — it lives in the database, not inside the media file.</p>
+    </section>
+
+    <section class="mb-4">
+      <h2 class="h4">If Not in the File, How Does It Work?</h2>
+      <p>The vector exists entirely within your <strong>database</strong>. Vector generation and a vector database are both required for a practical system.</p>
+
+      <ol>
+        <li><strong>You have a file:</strong> e.g. <code>/wp-content/uploads/golden-retriever.jpg</code>.</li>
+        <li><strong>The AI model analyzes it:</strong> the model extracts concepts like "dog", "golden retriever", "happy".</li>
+        <li><strong>The model outputs a vector:</strong> an array of numbers (e.g., <code>[0.12, -0.45, 0.88, ...]</code>).</li>
+        <li><strong>You store it in the database:</strong> link the vector with the file path or media ID for fast similarity search.</li>
+      </ol>
+
+      <div class="table-responsive">
+        <table class="table table-sm table-striped">
+          <thead>
+            <tr>
+              <th>media_id</th>
+              <th>file_path</th>
+              <th>embedding_vector</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>123</td>
+              <td><code>/wp-content/uploads/golden-retriever.jpg</code></td>
+              <td><code>[0.12, -0.45, 0.88, ...]</code></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="mb-4">
+      <h2 class="h4">Do You Need the Database First?</h2>
+      <p><strong>Yes.</strong> Generating vectors without a place to store them leaves them as orphans — useful only if stored and linked to media.</p>
+
+      <ul>
+        <li>Without the database, you cannot store vectors.</li>
+        <li>Without the database, you cannot link a vector back to the source image.</li>
+        <li>Without the database, you cannot do fast similarity searches that make vectors valuable.</li>
+      </ul>
+
+n      <p>Recommended operational plan:</p>
+      <ol>
+        <li>Set up PostgreSQL with the <code>pgvector</code> extension.</li>
+        <li>Design the table structure.</li>
+        <li>Process images and store both alt text and vector embeddings.</li>
+      </ol>
+    </section>
+
+    <section class="mb-4">
+      <h2 class="h4">Alt Text vs Vectors — Why Do Both?</h2>
+      <p>Alt text and vectors serve different audiences and use-cases and are both valuable.</p>
+
+      <table class="table table-sm">
+        <thead>
+          <tr>
+            <th>Feature</th>
+            <th>Alt Text</th>
+            <th>Vector Embedding</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Primary Goal</strong></td>
+            <td>Accessibility & direct SEO</td>
+            <td>Conceptual search & AI understanding</td>
+          </tr>
+          <tr>
+            <td><strong>Audience</strong></td>
+            <td>Humans & search engine crawlers</td>
+            <td>Your application and vector DB</td>
+          </tr>
+          <tr>
+            <td><strong>Format</strong></td>
+            <td>Human-readable text</td>
+            <td>Machine-readable array</td>
+          </tr>
+          <tr>
+            <td><strong>Where it lives</strong></td>
+            <td><code>&lt;img alt="..."&gt;</code></td>
+            <td>Database column (e.g., <code>vector</code>)</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="mb-4">
+      <h2 class="h4">Modernization Strategy for Large Libraries</h2>
+      <p>For processing 50,000 images, use a single pipeline that produces both alt text and vectors from a single model call:</p>
+      <ol>
+        <li>Single pipeline, dual output (alt text + vector).</li>
+        <li>Store alt text in HTML and vectors in the DB.</li>
+        <li>Benefit: improved accessibility and new AI-driven features like semantic search and recommendations.</li>
+      </ol>
+    </section>
+
+    <footer class="mt-5 text-muted small">
+      <p class="mb-0">Updated content transferred to a Bootstrap 5–styled page. If you'd like different styling (Pico, Tailwind, etc.), tell me which framework and I'll adapt it.</p>
+    </footer>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-..." crossorigin="anonymous"></script>
+</body>
+</html>

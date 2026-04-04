@@ -1,0 +1,26 @@
+services:
+  smartgen-backend:
+    build: .
+    container_name: smartgen-backend
+    restart: always
+    ports:
+      - "3007:3007"
+    environment:
+      PORT: 3007
+      NODE_ENV: production
+      SUPABASE_URL: ${SUPABASE_URL}
+      SUPABASE_ANON_KEY: ${SUPABASE_ANON_KEY}
+      SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_SERVICE_ROLE_KEY}
+      ALLOWED_ORIGIN: ${ALLOWED_ORIGIN}
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
+      STABILITY_API_KEY: ${STABILITY_API_KEY}
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      SEEDANCE_API_KEY: ${SEEDANCE_API_KEY}
+      HUGGINGFACE_API_KEY: ${HUGGINGFACE_API_KEY}
+    env_file:
+      - .env
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3007/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3

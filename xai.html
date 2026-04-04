@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Report: xAI Potential IPO Analysis</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="xai.js"></script>
+    <!-- Chosen Palette: Cool Neutral & Tech -->
+    <!-- Application Structure Plan: A multi-section, single-page application with a fixed side navigation. This dashboard-like structure allows users to explore non-linearly, focusing on specific aspects of the analysis (Opportunity, Competition, Risks, Toolkit). This is superior to a long-scrolling page as it segments complex information into digestible, task-oriented views (e.g., 'compare competitors' or 'analyze risks'), enhancing usability and understanding of the core tension between xAI's potential and its profound risks. -->
+    <!-- Visualization & Content Choices:
+        - Report Info: xAI funding rounds/valuation -> Goal: Show explosive growth -> Viz: Line Chart (Chart.js) -> Interaction: Hover tooltips for details -> Justification: Clearly visualizes the valuation trajectory which is central to the hype narrative.
+        - Report Info: Competitor financials/investment -> Goal: Compare market position -> Viz: Dynamic Horizontal Bar Chart (Chart.js) -> Interaction: Dropdown to switch metrics (Revenue, Valuation, Investment) -> Justification: Provides direct, interactive comparison against key rivals, making the scale of the "AI arms race" tangible.
+        - Report Info: Newsmax IPO price action -> Goal: Provide a cautionary tale -> Viz: Line Chart (Chart.js) -> Interaction: Annotations on key dates, hover for price -> Justification: Visually demonstrates the 'bubble and collapse' pattern, serving as a powerful, data-driven warning.
+        - Report Info: xAI vs. Newsmax P/S multiples -> Goal: Highlight valuation disconnect -> Viz: Interactive HTML/JS component -> Interaction: Slider to switch between companies -> Justification: Directly engages the user in the core comparative argument of the report.
+        - Report Info: Strategic Synergy (X + xAI) -> Goal: Explain competitive advantage -> Viz: HTML/CSS Diagram -> Interaction: Static visual -> Justification: Clearly illustrates a core strategic concept without needing complex graphics libraries.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Kumbh+Sans:wght@400;500;600;700&family=Lato:wght@400;700&display=swap');
+
+        :root {
+            --bg-color: #f0f2f5;
+            --sidebar-bg: #ffffff;
+            --card-bg: #ffffff;
+            --text-color: #212529;
+            --text-muted: #6c757d;
+            --border-color: #dee2e6;
+            --accent-color: #0d6efd;
+            --accent-color-light: #cfe2ff;
+            --accent-color-hover: #0b5ed7;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgba(0 0 0 / 0.1);
+            --border-radius: 0.75rem;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            line-height: 1.6;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            background-color: var(--sidebar-bg);
+            border-right: 1px solid var(--border-color);
+            width: 100%;
+        }
+        
+        .sidebar-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .sidebar-header h1 {
+            font-family: 'Kumbh Sans', sans-serif;
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .sidebar-header p {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            margin: 0;
+        }
+
+        .main-nav {
+            padding: 0.5rem;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 0.8rem 1rem;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            border-radius: 0.5rem;
+            transition: all 0.2s ease-in-out;
+            margin: 0.25rem 0;
+            font-weight: 500;
+            background: linear-gradient(145deg, #ffffff, #f8f9fa);
+            border: 1px solid #e9ecef;
+            box-shadow: 2px 2px 4px rgba(0,0,0,0.1), inset -1px -1px 2px rgba(0,0,0,0.05);
+        }
+        
+        .nav-link span {
+            margin-right: 0.75rem;
+        }
+
+        .nav-link:hover {
+            background: linear-gradient(145deg, #f1f3f5, #e9ecef);
+            color: var(--text-color);
+            transform: translateY(-1px);
+            box-shadow: 3px 3px 6px rgba(0,0,0,0.15), inset -1px -1px 2px rgba(0,0,0,0.05);
+        }
+
+        .nav-link.active {
+            background: linear-gradient(145deg, #1e63d3, #0d6efd);
+            color: white;
+            font-weight: 600;
+            box-shadow: inset 2px 2px 4px rgba(0,0,0,0.2), 2px 2px 8px rgba(13,110,253,0.3);
+            transform: translateY(1px);
+        }
+
+        main {
+            flex: 1;
+            padding: 2rem;
+        }
+        
+        .main-header {
+            background: linear-gradient(145deg, #495057, #212529);
+            color: #ffffff;
+            padding: 2.5rem;
+            border-radius: var(--border-radius);
+            margin-bottom: 2rem;
+            text-align: center;
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .main-header .header-icon {
+            font-size: 3rem;
+            line-height: 1;
+            animation: pulse 2.5s infinite ease-in-out;
+        }
+        
+        .main-header h2 {
+            font-family: 'Kumbh Sans', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin: 1rem 0 0.5rem 0;
+            letter-spacing: -1px;
+        }
+        
+        .main-header p {
+            font-size: 1.1rem;
+            color: #ced4da;
+            max-width: 800px;
+            margin: 0 auto;
+            opacity: 0.9;
+        }
+        
+        .media-controls {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 1rem;
+            width: 100%;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            gap: 1rem;
+        }
+        
+        .doc-link {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            background-color: #0d6efd;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: 500;
+            transition: background-color 0.2s;
+            box-shadow: 2px 2px 6px rgba(0,0,0,0.2), inset -1px -1px 2px rgba(255,255,255,0.1) !important;
+        }
+        
+        .doc-link:hover {
+            background-color: #0b5ed7;
+            transform: translateY(-1px);
+            box-shadow: 3px 3px 8px rgba(0,0,0,0.3), inset -1px -1px 2px rgba(255,255,255,0.1) !important;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+                text-shadow: 0 0 5px rgba(255, 255, 255, 0.2);
+            }
+            50% {
+                transform: scale(1.05);
+                text-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
+            }
+        }
+
+        .content-section {
+            display: none;
+        }
+
+        .content-section.active {
+            display: block;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .grid {
+            display: grid;
+            gap: 1.5rem;
+            grid-template-columns: 1fr;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-md);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            background: linear-gradient(145deg, #ffffff, #f8f9fa);
+            border: 1px solid var(--border-color);
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .chart-container {
+            height: 300px;
+            margin-top: 1rem;
+            position: relative;
+        }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .profile-tab {
+            padding: 0.75rem 1.25rem;
+            background: linear-gradient(145deg, #ffffff, #f8f9fa);
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            flex: 1;
+            margin: 0 0.25rem;
+            box-shadow: 2px 2px 4px rgba(0,0,0,0.1), inset -1px -1px 2px rgba(0,0,0,0.05);
+        }
+
+        .profile-tab:hover {
+            background: linear-gradient(145deg, #f1f3f5, #e9ecef);
+            color: var(--text-color);
+            transform: translateY(-1px);
+            box-shadow: 3px 3px 6px rgba(0,0,0,0.15), inset -1px -1px 2px rgba(0,0,0,0.05);
+        }
+
+        .active-tab {
+            background: linear-gradient(145deg, #1e63d3, #0d6efd);
+            color: white;
+            font-weight: 600;
+            box-shadow: inset 2px 2px 4px rgba(0,0,0,0.2), 2px 2px 8px rgba(13,110,253,0.3);
+            transform: translateY(1px);
+        }
+
+        /* Custom styling for range input */
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #0d6efd;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            border: 2px solid white;
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #0d6efd;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            border: 2px solid white;
+        }
+        
+        /* Specific styling for the P/S comparison slider */
+        #ps-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #fff;
+            border: 2px solid #6f42c1;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            transition: all 0.2s ease;
+        }
+        
+        #ps-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.1);
+        }
+        
+        /* Slider thumb styling for Firefox */
+        #ps-slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #fff;
+            border: 2px solid #6f42c1;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            transition: all 0.2s ease;
+        }
+        
+        #ps-slider::-moz-range-thumb:hover {
+            transform: scale(1.1);
+        }
+        
+        /* Slider track styling */
+        #ps-slider::-webkit-slider-runnable-track {
+            height: 8px;
+            border-radius: 4px;
+        }
+        
+        #ps-slider::-moz-range-track {
+            height: 8px;
+            border-radius: 4px;
+        }
+
+        /* Add style for h4 elements */
+        h4 {
+            font-family: 'Lato', sans-serif;
+            font-weight: 700;
+        }
+        
+        .card h3 {
+            font-family: 'Lato', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            margin: 0 0 0.25rem 0;
+        }
+        .card .stat {
+            font-size: 2.25rem;
+            font-weight: 700;
+            color: var(--accent-color);
+            margin: 0;
+        }
+        
+        .card .sub-stat {
+            font-size: 0.75rem;
+            color: #adb5bd;
+            margin: 0;
+        }
+        
+        .card .card-title {
+            font-family: 'Lato', sans-serif;
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+        
+        .card .card-subtitle {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+        }
+        
+        .form-select {
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            border: 1px solid var(--border-color);
+            background: linear-gradient(145deg, #ffffff, #f8f9fa);
+            box-shadow: 2px 2px 4px rgba(0,0,0,0.1), inset -1px -1px 2px rgba(0,0,0,0.05);
+            transition: all 0.2s ease;
+        }
+        
+        .form-select:focus {
+            outline: none;
+            box-shadow: 3px 3px 6px rgba(0,0,0,0.15), inset -1px -1px 2px rgba(0,0,0,0.05), 0 0 0 3px rgba(13,110,253,0.1);
+        }
+
+        @media (min-width: 1024px) {
+            .grid-cols-4 { grid-template-columns: repeat(4, 1fr); }
+            .grid-cols-2 { grid-template-columns: repeat(2, 1fr); }
+            .grid-cols-3 { grid-template-columns: repeat(3, 1fr); }
+            .comparison-grid { grid-template-columns: repeat(3, 1fr); }
+            .container { flex-direction: row; }
+            .sidebar { width: 280px; height: 100vh; position: sticky; top: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h1>xAI IPO Analysis</h1>
+                <p>Interactive Report</p>
+            </div>
+            <nav id="main-nav" class="main-nav">
+                <a href="#opportunity" data-section="opportunity" class="nav-link">
+                    <span>🚀</span> The Opportunity
+                </a>
+                <a href="#competition" data-section="competition" class="nav-link">
+                    <span>⚔️</span> Competitive Battlefield
+                </a>
+                <a href="#use-cases" data-section="use-cases" class="nav-link">
+                    <span>💡</span> Use Cases & Edge
+                </a>
+                <a href="#risks" data-section="risks" class="nav-link">
+                    <span>⚠️</span> Red Flags & Risks
+                </a>
+                <a href="#toolkit" data-section="toolkit" class="nav-link">
+                    <span>🛠️</span> Investor Toolkit
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main>
+            <div class="main-header">
+                <div id="header-icon" class="header-icon">🧠</div>
+                <h2 id="main-header-title"></h2>
+                <p id="main-header-subtitle"></p>
+                <div class="media-controls">
+                    <a href="https://docs.google.com/document/d/1uPbFT_uzaWOziKhBwSyIrf_q1CaApjWEB81MbJBSB2M/edit?usp=sharing" class="doc-link" target="_blank">Link to Document</a>
+                </div>
+            </div>
+            
+            <!-- Section 1: The Opportunity -->
+            <section id="opportunity" class="content-section">
+                <div class="grid grid-cols-4">
+                    <div class="card">
+                        <h3>Proposed Valuation</h3>
+                        <p class="stat">$200B</p>
+                        <p class="sub-stat">In latest funding talks</p>
+                    </div>
+                    <div class="card">
+                        <h3>Total Funding Raised</h3>
+                        <p class="stat">$22B+</p>
+                         <p class="sub-stat">As of June 2025</p>
+                    </div>
+                    <div class="card">
+                        <h3>Projected 2025 Revenue</h3>
+                        <p class="stat">$1B</p>
+                         <p class="sub-stat">Internal bank projections</p>
+                    </div>
+                    <div class="card">
+                        <h3>Planned GPU Cluster</h3>
+                        <p class="stat">1 Million</p>
+                         <p class="sub-stat">H100 GPUs by 2026</p>
+                    </div>
+                </div>
+                <div class="card" style="margin-top: 2rem;">
+                    <h3 class="card-title">Explosive Valuation Growth</h3>
+                    <p class="card-subtitle">xAI's valuation has grown 8x in just over a year, from $25B to $200B. Hover over points for details.</p>
+                    <div class="chart-container">
+                        <canvas id="valuationChart"></canvas>
+                    </div>
+                </div>
+                <div class="card" style="margin-top: 2rem;">
+                    <h3 class="card-title">The X + xAI Synergy</h3>
+                    <p class="card-subtitle">xAI has a unique advantage: direct integration with X (Twitter), providing both training data and distribution.</p>
+                    <div class="comparison-grid">
+                        <div style="text-align: center; padding: 1rem;">
+                            <div style="font-size: 3rem; margin-bottom: 0.5rem;">🔄</div>
+                            <h4 style="margin: 0 0 0.5rem 0;">Training Data</h4>
+                            <p style="font-size: 0.9rem; color: var(--text-muted);">X provides xAI with real-time, diverse data for model training and fine-tuning.</p>
+                        </div>
+                        <div style="text-align: center; padding: 1rem;">
+                            <div style="font-size: 3rem; margin-bottom: 0.5rem;">📱</div>
+                            <h4 style="margin: 0 0 0.5rem 0;">Distribution</h4>
+                            <p style="font-size: 0.9rem; color: var(--text-muted);">X gives Grok immediate access to 550M+ monthly active users.</p>
+                        </div>
+                        <div style="text-align: center; padding: 1rem;">
+                            <div style="font-size: 3rem; margin-bottom: 0.5rem;">💰</div>
+                            <h4 style="margin: 0 0 0.5rem 0;">Monetization</h4>
+                            <p style="font-size: 0.9rem; color: var(--text-muted);">X Premium subscribers get Grok access, creating an immediate revenue stream.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Section 2: Competition -->
+            <section id="competition" class="content-section">
+                <div class="card">
+                    <h3 class="card-title">AI Arms Race: xAI vs. Competitors</h3>
+                    <p class="card-subtitle">Select a metric to compare xAI against its major competitors.</p>
+                    <select id="competitorMetric" class="form-select" style="margin-bottom: 1rem;">
+                        <option value="revenue">Annual Revenue ($B)</option>
+                        <option value="valuation">Market Valuation ($B)</option>
+                        <option value="investment">AI Investment ($B)</option>
+                    </select>
+                    <div class="chart-container">
+                        <canvas id="competitorChart"></canvas>
+                    </div>
+                </div>
+                <div class="card" style="margin-top: 2rem;">
+                    <h3 class="card-title">Compute Advantage: The GPU Race</h3>
+                    <p class="card-subtitle">xAI is aggressively expanding its compute capacity to compete with established players.</p>
+                    <div class="comparison-grid">
+                        <div class="card" style="margin: 0; text-align: center;">
+                            <h4 style="font-size: 1rem; font-weight: 700; margin: 0 0 0.5rem 0;">OpenAI</h4>
+                            <p style="font-size: 2rem; font-weight: 800; margin: 0;">~25,000</p>
+                            <p style="font-size: 0.8rem; color: var(--text-muted);">H100 GPUs (est.)</p>
+                        </div>
+                        <div class="card" style="margin: 0; text-align: center;">
+                            <h4 style="font-size: 1rem; font-weight: 700; margin: 0 0 0.5rem 0;">xAI</h4>
+                            <p style="font-size: 2rem; font-weight: 800; margin: 0;">~20,000</p>
+                            <p style="font-size: 0.8rem; color: var(--text-muted);">H100 GPUs (current)</p>
+                        </div>
+                        <div class="card" style="margin: 0; text-align: center;">
+                            <h4 style="font-size: 1rem; font-weight: 700; margin: 0 0 0.5rem 0;">Anthropic</h4>
+                            <p style="font-size: 2rem; font-weight: 800; margin: 0;">~15,000</p>
+                            <p style="font-size: 0.8rem; color: var(--text-muted);">H100 GPUs (est.)</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Section 3: Use Cases -->
+            <section id="use-cases" class="content-section">
+                <div class="grid grid-cols-3">
+                    <div class="card">
+                        <h3 class="card-title">🔍 Real-Time Analysis</h3>
+                        <p class="card-subtitle" style="margin-bottom: 0;">Grok-4 can analyze breaking news and social media trends in real-time, providing insights that other models cannot due to their training cutoffs.</p>
+                    </div>
+                    <div class="card">
+                        <h3 class="card-title">🌐 X Integration</h3>
+                        <p class="card-subtitle" style="margin-bottom: 0;">Grok's deep integration with X allows for contextual understanding of discussions, trends, and user behavior across the platform's 550M+ users.</p>
+                    </div>
+                    <div class="card">
+                        <h3 class="card-title">🧠 Multimodal Capabilities</h3>
+                        <p class="card-subtitle" style="margin-bottom: 0;">Grok-4 can process text, images, and soon video, enabling more comprehensive analysis and content generation than text-only models.</p>
+                    </div>
+                </div>
+                <div class="card" style="margin-top: 2rem;">
+                    <h3 class="card-title">Benchmark Performance: Grok-4 vs. Competitors</h3>
+                    <p class="card-subtitle">While not leading in all benchmarks, Grok-4 shows competitive performance against established models.</p>
+                    <div style="overflow-x: auto;">
+                        <table style="width: 100%; border-collapse: collapse; margin-top: 1rem;">
+                            <thead>
+                                <tr style="background-color: #f8f9fa; border-bottom: 2px solid var(--border-color);">
+                                    <th style="padding: 0.75rem; text-align: left;">Model</th>
+                                    <th style="padding: 0.75rem; text-align: center;">MMLU</th>
+                                    <th style="padding: 0.75rem; text-align: center;">GSM8K</th>
+                                    <th style="padding: 0.75rem; text-align: center;">HumanEval</th>
+                                    <th style="padding: 0.75rem; text-align: center;">MATH</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr style="border-bottom: 1px solid var(--border-color);">
+                                    <td style="padding: 0.75rem; font-weight: 600;">GPT-4o</td>
+                                    <td style="padding: 0.75rem; text-align: center;">88.7%</td>
+                                    <td style="padding: 0.75rem; text-align: center;">95.3%</td>
+                                    <td style="padding: 0.75rem; text-align: center;">89.4%</td>
+                                    <td style="padding: 0.75rem; text-align: center;">68.4%</td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid var(--border-color);">
+                                    <td style="padding: 0.75rem; font-weight: 600;">Claude 3 Opus</td>
+                                    <td style="padding: 0.75rem; text-align: center;">86.8%</td>
+                                    <td style="padding: 0.75rem; text-align: center;">94.2%</td>
+                                    <td style="padding: 0.75rem; text-align: center;">84.9%</td>
+                                    <td style="padding: 0.75rem; text-align: center;">61.7%</td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid var(--border-color); background-color: rgba(13, 110, 253, 0.05);">
+                                    <td style="padding: 0.75rem; font-weight: 600; color: var(--accent-color);">Grok-4</td>
+                                    <td style="padding: 0.75rem; text-align: center;">85.9%</td>
+                                    <td style="padding: 0.75rem; text-align: center;">92.8%</td>
+                                    <td style="padding: 0.75rem; text-align: center;">81.7%</td>
+                                    <td style="padding: 0.75rem; text-align: center;">59.3%</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 0.75rem; font-weight: 600;">Gemini 1.5 Pro</td>
+                                    <td style="padding: 0.75rem; text-align: center;">83.7%</td>
+                                    <td style="padding: 0.75rem; text-align: center;">91.5%</td>
+                                    <td style="padding: 0.75rem; text-align: center;">84.1%</td>
+                                    <td style="padding: 0.75rem; text-align: center;">58.1%</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Section 4: Risks -->
+            <section id="risks" class="content-section">
+                <div class="grid grid-cols-2">
+                    <div class="card">
+                        <h3 class="card-title">⚠️ Extreme Cash Burn</h3>
+                        <p class="card-subtitle" style="margin-bottom: 0;">xAI is spending an estimated $500M+ annually on compute alone. The company will likely need to raise additional capital before reaching profitability.</p>
+                    </div>
+                    <div class="card">
+                        <h3 class="card-title">⚠️ Governance Risk</h3>
+                        <p class="card-subtitle" style="margin-bottom: 0;">Elon Musk controls 100% of voting shares. Public shareholders will have no say in company direction, acquisitions, or capital allocation.</p>
+                    </div>
+                </div>
+                <div class="card" style="margin-top: 2rem;">
+                    <h3 class="card-title">Valuation Disconnect: Price-to-Sales Comparison</h3>
+                    <p class="card-subtitle">Both xAI and Newsmax reached extreme P/S multiples. Use the slider to compare.</p>
+                    <div id="ps-comparison" style="text-align: center;">
+                        <h4 id="ps-company-name" style="font-size: 1.5rem; font-weight: 700; color: #6f42c1;">xAI</h4>
+                        <p id="ps-multiple" style="font-size: 4rem; font-weight: 800; color: #fd7e14; margin: 0.5rem 0;">200x</p>
+                        <p style="font-weight: 500;">Price-to-Sales Multiple</p>
+                    </div>
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 1rem;">
+                        <span style="font-weight: 600; color: #6f42c1;">xAI</span>
+                        <input id="ps-slider" type="range" min="0" max="1" value="0" step="1" style="width: 80%; margin: 0 1rem; height: 8px; border-radius: 5px; background: linear-gradient(to right, #6f42c1, #dc3545); box-shadow: inset 2px 2px 4px rgba(0,0,0,0.1); outline: none; -webkit-appearance: none;">
+                        <span style="font-weight: 600; color: #dc3545;">Newsmax</span>
+                    </div>
+                </div>
+                 <div class="card" style="margin-top: 2rem;">
+                    <h3 class="card-title">Case Study: The Newsmax (NMAX) IPO Meltdown</h3>
+                    <p class="card-subtitle">Newsmax is a textbook example of a narrative-driven bubble, collapsing 95% after an initial surge. Hover to see daily prices.</p>
+                    <div class="chart-container">
+                        <canvas id="newsmaxChart"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 5: Toolkit -->
+            <section id="toolkit" class="content-section">
+                 <div class="grid grid-cols-3">
+                     <div class="card">
+                        <h3 class="card-title">🧠 Resist FOMO</h3>
+                        <p class="card-subtitle" style="margin-bottom: 0;">The fear of missing out drives poor decisions. The Newsmax case proves that chasing a parabolic stock run-up often leads to severe losses.</p>
+                     </div>
+                     <div class="card">
+                         <h3 class="card-title">🎯 Use Limit Orders</h3>
+                        <p class="card-subtitle" style="margin-bottom: 0;">In a volatile IPO, market orders are dangerous. Use a limit order to specify the absolute maximum price you are willing to pay.</p>
+                     </div>
+                     <div class="card">
+                        <h3 class="card-title">⚖️ Position Sizing</h3>
+                        <p class="card-subtitle" style="margin-bottom: 0;">Given the high risk, commit only a small fraction of your portfolio—an amount you can afford to lose entirely.</p>
+                     </div>
+                </div>
+                 <div class="card" style="margin-top: 2rem;">
+                   <h3 class="card-title">Final Assessment by Investor Profile</h3>
+                   <p class="card-subtitle">The right decision depends on your risk tolerance. Select a profile to see the report's conclusion.</p>
+                   <div>
+                        <div class="button-group" id="profile-tabs" style="display: flex;">
+                            <button data-profile="speculator" class="profile-tab active-tab">Speculator</button>
+                            <button data-profile="growth" class="profile-tab">Growth Investor</button>
+                            <button data-profile="value" class="profile-tab">Value Investor</button>
+                        </div>
+                        <div id="profile-content" style="padding: 1.5rem 0.5rem; font-size: 0.9rem; color: var(--text-muted);"></div>
+                   </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <footer style="text-align: center; padding: 2rem 0;">
+        <a href="https://VidiBuzz.com" style="color: #000000;">VidiBuzz.com</a>
+    </footer>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const data = {
+        sectionHeaders: {
+            opportunity: {
+                icon: '🚀',
+                title: 'The xAI Opportunity',
+                subtitle: 'This section explores the "bull case" for xAI, focusing on its ambitious vision, rapid valuation growth, and unique strategic advantages.'
+            },
+            competition: {
+                icon: '⚔️',
+                title: 'The AI Battlefield',
+                subtitle: 'xAI does not operate in a vacuum. It has entered an intensely competitive and capital-intensive arms race against entrenched technology giants.'
+            },
+            'use-cases': {
+                icon: '💡',
+                title: 'Use Cases & Competitive Edge',
+                subtitle: 'Beyond benchmarks, an AI model\'s value is defined by its real-world applications. This section compares Grok-4\'s practical uses against its top competitors.'
+            },
+            risks: {
+                icon: '⚠️',
+                title: 'Red Flags & Unmitigated Risks',
+                subtitle: 'An investment in xAI carries extraordinary risks, from its staggering cash burn to a valuation profoundly disconnected from fundamentals.'
+            },
+            toolkit: {
+                icon: '🛠️',
+                title: 'Investor Toolkit & Framework',
+                subtitle: 'This final section provides a practical framework for any investor considering a high-risk, high-reward IPO like xAI.'
+            }
+        },
+        valuation: {
+            labels: ['May 2024', 'Dec 2024', 'Mar 2025', 'Jul 2025'],
+            datasets: [{
+                label: 'xAI Post-Money Valuation ($B)',
+                data: [24, 50, 80, 200],
+                borderColor: '#0d6efd',
+                backgroundColor: 'rgba(13, 110, 253, 0.1)',
+                fill: true,
+                tension: 0.1,
+                pointBackgroundColor: '#0d6efd',
+                pointRadius: 5,
+                pointHoverRadius: 7
+            }]
+        },
+        competitors: {
+            revenue: { labels: ['OpenAI', 'Anthropic', 'xAI', 'Google (Cloud)'], data: [12.7, 3, 1, 32] },
+            valuation: { labels: ['Google (Alphabet)', 'OpenAI', 'xAI', 'Anthropic'], data: [3700, 300, 200, 61.5] },
+            investment: { labels: ['Amazon (AWS)', 'Microsoft', 'Google', 'Meta', 'xAI'], data: [100, 80, 75, 68, 18] }
+        },
+        newsmax: {
+            labels: ['IPO (Mar 31)', 'Day 2', 'Day 3', 'Early June'],
+            datasets: [{
+                label: 'NMAX Stock Price ($)',
+                data: [82.25, 233, 53, 16.19],
+                borderColor: '#dc3545',
+                backgroundColor: 'rgba(220, 53, 69, 0.1)',
+                fill: true,
+                tension: 0.1,
+                pointBackgroundColor: '#dc3545',
+                pointRadius: 5,
+                pointHoverRadius: 7
+            }]
+        },
+        psComparison: {
+            xai: { name: 'xAI', multiple: '200x' },
+            newsmax: { name: 'Newsmax', multiple: '122x' }
+        },
+        profiles: {
+            speculator: { title: 'For the Speculator / Trader', content: 'The opportunity is in extreme volatility. The IPO and lock-up expiration will see massive price swings. Experienced traders might use options (e.g., straddles) to profit from this volatility, regardless of direction. This is a high-risk, short-term approach.' },
+            growth: { title: 'For the Long-Term Growth Investor', content: 'An investment is a bet on the "Musk Factor" and compute dominance. It requires a belief that xAI will be a long-term winner. This means buying at a valuation that still offers upside and holding for 5-10+ years, enduring extreme volatility.' },
+            value: { title: 'For the Value / Fundamental Investor', content: 'An investment is currently unadvisable. The lack of profits, extreme valuation, and major governance risks are insurmountable red flags. Value investors should remain on the sidelines until a clear path to profitability is established.' }
+        }
+    };
+
+    Chart.defaults.font.family = "'Inter', sans-serif";
+    Chart.defaults.plugins.tooltip.backgroundColor = '#212529';
+    Chart.defaults.plugins.tooltip.titleFont = { size: 14, weight: 'bold' };
+    Chart.defaults.plugins.tooltip.bodyFont = { size: 12 };
+    Chart.defaults.plugins.tooltip.padding = 10;
+    Chart.defaults.plugins.tooltip.cornerRadius = 4;
+    Chart.defaults.plugins.legend.position = 'bottom';
+
+    let valuationChart, competitorChart, newsmaxChart;
+
+    const chartOptions = (yAxisLabel) => ({
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            y: { beginAtZero: true, title: { display: true, text: yAxisLabel, font: { size: 14 } }, grid: { color: '#e9ecef' } },
+            x: { grid: { display: false } }
+        }
+    });
+    
+    const barChartOptions = (xAxisLabel) => ({
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            x: { beginAtZero: true, title: { display: true, text: xAxisLabel, font: { size: 14 } }, grid: { color: '#e9ecef' } },
+            y: { grid: { display: false } }
+        },
+        plugins: { legend: { display: false } }
+    });
+
+    const createValuationChart = () => new Chart(document.getElementById('valuationChart').getContext('2d'), { type: 'line', data: data.valuation, options: chartOptions('Valuation in Billions ($B)') });
+    const createNewsmaxChart = () => new Chart(document.getElementById('newsmaxChart').getContext('2d'), { type: 'line', data: data.newsmax, options: chartOptions('Share Price ($)') });
+    
+    const createCompetitorChart = (metric = 'revenue') => {
+        const ctx = document.getElementById('competitorChart').getContext('2d');
+        const chartData = data.competitors[metric];
+        const colors = ['#0d6efd', '#198754', '#6f42c1', '#fd7e14', '#dc3545'];
+        if (competitorChart) competitorChart.destroy();
+        competitorChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: chartData.labels,
+                datasets: [{ data: chartData.data, backgroundColor: chartData.labels.map((_, i) => colors[i % colors.length]) }]
+            },
+            options: barChartOptions(document.getElementById('competitorMetric').options[document.getElementById('competitorMetric').selectedIndex].text)
+        });
+    };
+
+    const navLinks = document.querySelectorAll('.nav-link');
+    const sections = document.querySelectorAll('.content-section');
+    const headerIconEl = document.getElementById('header-icon');
+    const headerTitleEl = document.getElementById('main-header-title');
+    const headerSubtitleEl = document.getElementById('main-header-subtitle');
+
+    function switchSection(sectionId) {
+        sections.forEach(s => s.classList.remove('active'));
+        document.getElementById(sectionId)?.classList.add('active');
+
+        navLinks.forEach(l => l.classList.remove('active'));
+        document.querySelector(`.nav-link[data-section="${sectionId}"]`)?.classList.add('active');
+        
+        const headerData = data.sectionHeaders[sectionId];
+        if (headerData) {
+            headerIconEl.textContent = headerData.icon;
+            headerTitleEl.textContent = headerData.title;
+            headerSubtitleEl.textContent = headerData.subtitle;
+        }
+        
+        window.location.hash = sectionId;
+
+        if (sectionId === 'opportunity' && !valuationChart) valuationChart = createValuationChart();
+        if (sectionId === 'competition' && !competitorChart) createCompetitorChart();
+        if (sectionId === 'risks' && !newsmaxChart) newsmaxChart = createNewsmaxChart();
+    }
+
+    document.getElementById('main-nav').addEventListener('click', (e) => {
+        const link = e.target.closest('a');
+        if (link?.dataset.section) {
+            e.preventDefault();
+            switchSection(link.dataset.section);
+        }
+    });
+
+    const psSlider = document.getElementById('ps-slider');
+    psSlider.addEventListener('input', (e) => {
+        const company = e.target.value === '0' ? 'xai' : 'newsmax';
+        const companyName = document.getElementById('ps-company-name');
+        const psMultiple = document.getElementById('ps-multiple');
+        
+        // Update the company name and multiple
+        companyName.textContent = data.psComparison[company].name;
+        psMultiple.textContent = data.psComparison[company].multiple;
+        
+        // Update colors based on selected company
+        if (company === 'xai') {
+            companyName.style.color = '#6f42c1'; // Purple for xAI
+            psMultiple.style.color = '#fd7e14'; // Orange for the multiple
+        } else {
+            companyName.style.color = '#dc3545'; // Red for Newsmax
+            psMultiple.style.color = '#dc3545'; // Red for the multiple
+        }
+        
+        // Add a subtle animation effect
+        psMultiple.style.transform = 'scale(1.1)';
+        setTimeout(() => {
+            psMultiple.style.transform = 'scale(1)';
+        }, 200);
+    });
+    
+    document.getElementById('competitorMetric').addEventListener('change', (e) => createCompetitorChart(e.target.value));
+
+    const profileTabs = document.getElementById('profile-tabs');
+    const profileContent = document.getElementById('profile-content');
+    
+    function switchProfile(profileKey) {
+        const profileData = data.profiles[profileKey];
+        profileContent.innerHTML = `<h4 style="font-weight: 700; font-size: 1rem; color: var(--text-color); margin-bottom: 0.5rem;">${profileData.title}</h4><p>${profileData.content}</p>`;
+        
+        profileTabs.querySelectorAll('button').forEach(tab => {
+            tab.classList.remove('active-tab');
+            if(tab.dataset.profile === profileKey) tab.classList.add('active-tab');
+        });
+    }
+
+    profileTabs.addEventListener('click', (e) => {
+        const tab = e.target.closest('button');
+        if(tab?.dataset.profile) switchProfile(tab.dataset.profile);
+    });
+
+    window.addEventListener('beforeunload', () => { window.scrollTo(0, 0); });
+    window.scrollTo(0, 0);
+    
+    const initialSection = window.location.hash.substring(1) || 'opportunity';
+    switchSection(initialSection);
+    switchProfile('speculator');
+    
+    // Prevent automatic scrolling on hash change
+    if (window.location.hash) {
+        setTimeout(() => window.scrollTo(0, 0), 1);
+    }
+});
+</script>
+</body>
+</html>

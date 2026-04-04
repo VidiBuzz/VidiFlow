@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VidiSmart: Interactive Channel Guide</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kumbh+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: "Sculpted Blue" -->
+    <!-- Application Structure Plan: A dashboard-style, single-page application designed for intuitive exploration. The structure abandons the linear report format in favor of four thematic, interactive modules: 'The AI Revolution', 'The Creator Economy', 'The VidiSmart Blueprint', and 'The Trust Imperative'. This modular approach allows users (business owners) to directly access the topics most relevant to their immediate needs—be it understanding market shifts, exploring new business models, seeing the content plan, or understanding the channel's ethics. Navigation is handled by a sticky top bar, enabling users to seamlessly jump between these core pillars. This design prioritizes user-driven discovery and quick access to actionable insights over passive reading, making the dense information of the report digestible and engaging. -->
+    <!-- Visualization & Content Choices: 
+        - Report Info: Creator Economy Market Size ($250B -> $480B). Goal: Show rapid growth. Viz: Interactive Bar Chart (Chart.js). Interaction: Hovering over bars reveals precise values and growth projections. Justification: A bar chart is instantly recognizable and effectively visualizes the magnitude of the growth. Library: Chart.js for its simplicity and responsiveness.
+        - Report Info: The "Create Once, Distribute Everywhere" strategy. Goal: Explain a multi-step process. Presentation: Interactive HTML/CSS Diagram. Interaction: Clicking on each step reveals a detailed explanation of the action and the AI tools involved. Justification: A static diagram would be dense. A clickable, step-by-step reveal breaks down the complex process into manageable, easy-to-understand parts. Method: Tailwind CSS and Vanilla JS.
+        - Report Info: The VidiSmart Review Standard vs. Low-Quality Reviews. Goal: Compare two opposing approaches. Presentation: Interactive Comparison Table. Interaction: Hovering over a principle on the "VidiSmart Standard" side highlights the corresponding failure on the "Low-Quality" side. Justification: A direct, interactive comparison visually reinforces the value and rigor of the VidiSmart approach. Method: HTML/Tailwind CSS and Vanilla JS.
+        - Report Info: VidiSmart Talent Roles. Goal: Organize and define roles. Presentation: Tabbed content switcher. Interaction: Clicking on a talent role (e.g., "Consumer Tech Journalist") displays their specific responsibilities and associated shows. Justification: Tabs are a space-efficient way to present distinct but related blocks of information, preventing cognitive overload. Method: HTML/Tailwind CSS and Vanilla JS.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Kumbh Sans', sans-serif;
+            background-color: #0B1A33; /* Fallback */
+            background-image: linear-gradient(to bottom, #112244, #0B1A33);
+            color: #E0E0E0;
+            min-height: 100vh;
+            font-weight: 700;
+        }
+        .nav-link {
+            transition: color 0.3s, border-color 0.3s;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-link.active, .nav-link:hover {
+            color: #F97316;
+            border-bottom-color: #F97316;
+        }
+        .card {
+            background-color: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            border-radius: 1rem;
+            transition: all 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.45);
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+            padding: 1rem;
+            background: rgba(0,0,0,0.2);
+            border-radius: 1rem;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .step-diagram-item {
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border-radius: 0.75rem;
+            background-color: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .step-diagram-item.active {
+            background-color: rgba(249, 115, 22, 0.2);
+            border-color: #F97316;
+            transform: translateY(-5px) scale(1.02);
+            color: #FFFFFF;
+        }
+        .comparison-table-row:hover {
+            background-color: rgba(255, 255, 255, 0.03);
+        }
+        .text-header {
+            color: #FFFFFF;
+        }
+        .text-subheader {
+            color: #A9C1E8;
+        }
+        .section-bg-light {
+             background-color: #112244;
+        }
+        p, .font-normal {
+            font-weight: 400;
+        }
+        .font-medium {
+             font-weight: 600;
+        }
+        .font-semibold {
+            font-weight: 700;
+        }
+        .font-bold {
+            font-weight: 700;
+        }
+        .font-extrabold {
+            font-weight: 800;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Header & Navigation -->
+    <header class="bg-slate-900/70 backdrop-blur-md sticky top-0 z-50 shadow-lg">
+        <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <h1 class="text-2xl font-extrabold text-white">
+                            <span class="text-orange-500">Vidi</span>Smart
+                        </h1>
+                    </div>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="#hero" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-300">Home</a>
+                        <a href="#ai-revolution" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-300">AI Revolution</a>
+                        <a href="#creator-economy" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-300">Creator Economy</a>
+                        <a href="#blueprint" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-300">Blueprint</a>
+                        <a href="#trust" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-300">Trust</a>
+                    </div>
+                </div>
+                <div class="-mr-2 flex md:hidden">
+                    <button id="mobile-menu-button" type="button" class="bg-slate-800 inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-800 focus:ring-white" aria-controls="mobile-menu" aria-expanded="false">
+                        <span class="sr-only">Open main menu</span>
+                        <svg class="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                        <svg class="hidden h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </nav>
+        <div class="md:hidden hidden" id="mobile-menu">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="#hero" class="nav-link block px-3 py-2 rounded-md text-base font-medium text-gray-300">Home</a>
+                <a href="#ai-revolution" class="nav-link block px-3 py-2 rounded-md text-base font-medium text-gray-300">AI Revolution</a>
+                <a href="#creator-economy" class="nav-link block px-3 py-2 rounded-md text-base font-medium text-gray-300">Creator Economy</a>
+                <a href="#blueprint" class="nav-link block px-3 py-2 rounded-md text-base font-medium text-gray-300">Blueprint</a>
+                <a href="#trust" class="nav-link block px-3 py-2 rounded-md text-base font-medium text-gray-300">Trust</a>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section id="hero" class="py-20 sm:py-24 lg:py-32">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-tight">
+                    The Guide to the New Economy
+                </h1>
+                <p class="mt-6 max-w-2xl mx-auto text-lg sm:text-xl text-subheader font-normal">
+                    An interactive brief for the VidiSmart channel, designed to help business owners navigate the convergence of the <span class="font-semibold text-orange-400">AI Revolution</span> and the <span class="font-semibold text-orange-400">Creator Economy</span>.
+                </p>
+                <div class="mt-8 flex justify-center">
+                    <a href="#ai-revolution" class="inline-block bg-orange-600 text-white font-semibold px-8 py-3 rounded-lg shadow-lg hover:bg-orange-700 transition-all duration-300 transform hover:scale-105">
+                        Start Exploring
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section: AI Revolution -->
+        <section id="ai-revolution" class="py-16 sm:py-20 section-bg-light">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl sm:text-4xl font-extrabold text-header">The AI Revolution</h2>
+                    <p class="mt-4 max-w-2xl mx-auto text-lg text-subheader font-normal">AI is reshaping the digital marketplace, changing how customers find businesses and how businesses operate. This section explores the core challenges and opportunities, from the decline of traditional SEO to the new mandate for becoming an AI-friendly authority.</p>
+                </div>
+                <div class="grid md:grid-cols-2 gap-8 items-center">
+                    <div class="card p-8">
+                        <h3 class="text-xl font-bold mb-3 text-header">The Great Traffic Heist</h3>
+                        <p class="text-gray-300 font-normal">Google's shift from a 'search engine' to an 'answer engine' with AI Overviews is the primary reason for the 25-40% traffic drop many businesses face. AI now summarizes information directly, reducing clicks to your website. Content that provides generic, easily summarized information is most at risk.</p>
+                    </div>
+                    <div class="card p-8">
+                        <h3 class="text-xl font-bold mb-3 text-header">The New Mandate: Be the Source</h3>
+                        <p class="text-gray-300 font-normal">To thrive, your business must become the trusted source AI relies on. This means creating content demonstrating genuine Experience, Expertise, Authoritativeness, and Trustworthiness (E-E-A-T). For local businesses, optimizing your Google Business Profile is now more critical than your website for attracting high-intent customers.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section: Creator Economy -->
+        <section id="creator-economy" class="py-16 sm:py-20">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl sm:text-4xl font-extrabold text-header">The Creator Economy</h2>
+                    <p class="mt-4 max-w-2xl mx-auto text-lg text-subheader font-normal">This isn't a trend; it's a $250 billion global industry that's reshaping entrepreneurship. This section explores the anatomy of this economy, the powerful role AI plays as a force multiplier, and how traditional businesses can strategically engage for growth.</p>
+                </div>
+                <div class="grid md:grid-cols-2 gap-8 items-center">
+                    <div class="card p-8">
+                        <h3 class="text-xl font-bold mb-3 text-header">Market Growth Projection</h3>
+                        <p class="text-gray-300 mb-4 font-normal">The creator economy is projected to nearly double in size, fueled by new platforms, monetization tools, and the integration of AI. This chart illustrates the projected growth, highlighting the immense opportunity.</p>
+                        <div class="chart-container">
+                            <canvas id="creatorEconomyChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="card p-8">
+                        <h3 class="text-xl font-bold mb-3 text-header">AI as a Force Multiplier</h3>
+                        <p class="text-gray-300 mb-4 font-normal">AI supercharges creators by automating complex tasks. A single piece of content can be efficiently repurposed into multiple formats for wide distribution. Explore the "Create Once, Distribute Everywhere" model below.</p>
+                        <div id="multiplier-diagram-container">
+                            <div id="multiplier-diagram-steps" class="space-y-3">
+                                <!-- Steps will be injected by JS -->
+                            </div>
+                            <div id="multiplier-diagram-details" class="mt-4 p-4 bg-slate-800/50 rounded-lg min-h-[100px] border border-slate-700">
+                                <!-- Details will be injected by JS -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section: VidiSmart Blueprint -->
+        <section id="blueprint" class="py-16 sm:py-20 section-bg-light">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl sm:text-4xl font-extrabold text-header">The VidiSmart Blueprint</h2>
+                    <p class="mt-4 max-w-2xl mx-auto text-lg text-subheader font-normal">To serve our audience, VidiSmart's content is built on clear pillars, delivered through signature shows, and produced by a team of specialized experts. This section outlines our strategic approach to content and talent.</p>
+                </div>
+
+                <div>
+                    <div class="mb-8">
+                        <div class="flex justify-center border-b border-slate-700">
+                            <button data-tab="talent" class="talent-tab active-tab py-4 px-6 block hover:text-orange-500 focus:outline-none text-orange-500 border-b-2 font-medium border-orange-500">Our Talent</button>
+                            <button data-tab="shows" class="talent-tab py-4 px-6 block hover:text-orange-500 focus:outline-none text-gray-400">Our Shows</button>
+                        </div>
+                    </div>
+                    <div id="talent-content" class="tab-content">
+                        <!-- Talent content will be injected by JS -->
+                    </div>
+                    <div id="shows-content" class="tab-content hidden">
+                        <!-- Shows content will be injected by JS -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section: Trust Imperative -->
+        <section id="trust" class="py-16 sm:py-20">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl sm:text-4xl font-extrabold text-header">The Trust Imperative</h2>
+                    <p class="mt-4 max-w-2xl mx-auto text-lg text-subheader font-normal">In an era of noise, trust is our most valuable asset. Our competitive advantage is an unwavering commitment to journalistic integrity. This section outlines the VidiSmart Review Standard that guarantees our content is independent, expert-driven, and valuable.</p>
+                </div>
+                <div class="card rounded-2xl overflow-hidden border-0">
+                    <div class="grid grid-cols-1 md:grid-cols-2">
+                        <div class="p-6 bg-red-900/30">
+                            <h3 class="text-xl font-bold text-red-300">The Low-Quality Review (What We Avoid)</h3>
+                        </div>
+                        <div class="p-6 bg-green-900/30">
+                            <h3 class="text-xl font-bold text-green-300">The VidiSmart Standard (Our Promise)</h3>
+                        </div>
+                    </div>
+                    <div id="comparison-table" class="divide-y divide-slate-700">
+                        <!-- Comparison rows will be injected by JS -->
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-slate-900 mt-20">
+        <div class="container mx-auto py-8 px-4 sm:px-6 lg:px-8 text-center text-gray-400">
+            <p class="font-normal">&copy; 2025 VidiSmart. All Rights Reserved.</p>
+            <p class="text-sm text-gray-500 mt-2 font-normal">Your essential guide to the AI Revolution and the Creator Economy.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+                mobileMenuButton.querySelector('svg:first-child').classList.toggle('hidden');
+                mobileMenuButton.querySelector('svg:last-child').classList.toggle('hidden');
+            });
+
+            const navLinks = document.querySelectorAll('.nav-link');
+            const sections = document.querySelectorAll('main section');
+
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.4
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const allNavLinks = document.querySelectorAll('.nav-link');
+                        allNavLinks.forEach(link => {
+                            link.classList.remove('active');
+                            if (link.getAttribute('href').substring(1) === entry.target.id) {
+                                link.classList.add('active');
+                            }
+                        });
+                    }
+                });
+            }, observerOptions);
+
+            sections.forEach(section => {
+                observer.observe(section);
+            });
+            
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                    if (mobileMenu.classList.contains('hidden') === false) {
+                        mobileMenu.classList.add('hidden');
+                        mobileMenuButton.querySelector('svg:first-child').classList.remove('hidden');
+                        mobileMenuButton.querySelector('svg:last-child').classList.add('hidden');
+                    }
+                });
+            });
+
+            const creatorEconomyData = {
+                labels: ['2023', '2027 (Projected)'],
+                datasets: [{
+                    label: 'Market Size (in Billions USD)',
+                    data: [250, 480],
+                    backgroundColor: [
+                        'rgba(249, 115, 22, 0.3)',
+                        'rgba(234, 88, 12, 0.3)'
+                    ],
+                    borderColor: [
+                        'rgba(249, 115, 22, 1)',
+                        'rgba(234, 88, 12, 1)'
+                    ],
+                    borderWidth: 2,
+                    borderRadius: 8,
+                }]
+            };
+
+            const creatorEconomyChartCtx = document.getElementById('creatorEconomyChart').getContext('2d');
+            new Chart(creatorEconomyChartCtx, {
+                type: 'bar',
+                data: creatorEconomyData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `Market Size: $${context.raw} Billion`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Market Size (Billions USD)',
+                                color: '#A9C1E8'
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: '#A9C1E8'
+                            }
+                        },
+                        x: {
+                             grid: {
+                                display: false
+                            },
+                            ticks: {
+                                color: '#A9C1E8'
+                            }
+                        }
+                    }
+                }
+            });
+
+            const multiplierStepsData = [
+                { id: 1, title: '1. Create Core Content', details: 'Start with a single piece of high-value, expert content. This could be a long-form video, an in-depth interview, or a detailed webinar.' },
+                { id: 2, title: '2. AI-Powered Transcription', details: 'Use AI tools to generate a full, accurate transcript of your audio or video content. This forms the basis for all written materials.' },
+                { id: 3, title: '3. Generate Summaries & Posts', details: 'Feed the transcript into an LLM to create a detailed blog post, key takeaways for a newsletter, and concise summaries.' },
+                { id: 4, title: '4. Atomize for Social Media', details: 'Use AI to extract compelling quotes for Twitter/X, create scripts for short-form videos (TikTok/Reels), and generate discussion prompts.' },
+                { id: 5, title: '5. Globalize with AI Voice', details: 'Use AI voice cloning and translation tools to dub your content into multiple languages, massively expanding your reach with minimal effort.' }
+            ];
+
+            const stepsContainer = document.getElementById('multiplier-diagram-steps');
+            const detailsContainer = document.getElementById('multiplier-diagram-details');
+
+            multiplierStepsData.forEach(step => {
+                const stepEl = document.createElement('div');
+                stepEl.className = 'step-diagram-item p-3 text-center font-semibold';
+                stepEl.textContent = step.title;
+                stepEl.dataset.id = step.id;
+                stepsContainer.appendChild(stepEl);
+            });
+
+            stepsContainer.addEventListener('click', function(e) {
+                if (e.target.classList.contains('step-diagram-item')) {
+                    const selectedId = e.target.dataset.id;
+                    const stepData = multiplierStepsData.find(s => s.id == selectedId);
+
+                    document.querySelectorAll('.step-diagram-item').forEach(item => item.classList.remove('active'));
+                    e.target.classList.add('active');
+
+                    detailsContainer.innerHTML = `<p class="text-gray-300 font-normal">${stepData.details}</p>`;
+                }
+            });
+            
+            document.querySelector('.step-diagram-item').click();
+
+            const talentData = [
+                { 
+                    name: 'The Consumer Technology Journalist', 
+                    description: 'The anchor of "The Tech Teardown." A skeptical, rigorous investigator with experience in hands-on product testing. Responsible for upholding the VidiSmart Review Standard.',
+                    shows: ['The VidiSmart Review', 'Stack Wars']
+                },
+                { 
+                    name: 'The Creator Economy Analyst', 
+                    description: 'Leads "The Creator-Entrepreneur Playbook." An expert deeply embedded in the creator world, likely a former creator, bringing authentic, practical experience.',
+                    shows: ['The Multiplier Effect', 'Brand-Creator Connect']
+                },
+                { 
+                    name: 'The Small Business Strategist', 
+                    description: 'The heart of "AI-Powered Business." A storyteller who finds and shares the successes of mainstream business owners, translating complex tech into real-world ROI.',
+                    shows: ['AI in Action', 'The AI-Ready Playbook']
+                }
+            ];
+
+            const showsData = [
+                {
+                    pillar: 'AI-Powered Business',
+                    series: [
+                        { name: 'AI in Action', description: 'Case studies of real small businesses using AI successfully.' },
+                        { name: 'The AI-Ready Playbook', description: 'Tactical "how-to" guides on critical AI strategies for business.' }
+                    ]
+                },
+                {
+                    pillar: 'The Creator-Entrepreneur Playbook',
+                    series: [
+                        { name: 'The Multiplier Effect', description: 'Demonstrates how to use AI to atomize one piece of content into a full marketing campaign.' },
+                        { name: 'Brand-Creator Connect', description: 'Interviews with brands and creators who have built successful partnerships.' }
+                    ]
+                },
+                {
+                    pillar: 'The Tech Teardown',
+                    series: [
+                        { name: 'The VidiSmart Review', description: 'The flagship show for rigorous, unbiased reviews of AI and creator tools.' },
+                        { name: 'Stack Wars', description: 'Compares different "stacks" of tools for achieving specific business goals.' }
+                    ]
+                },
+                {
+                    pillar: 'Future Focus',
+                    series: [
+                        { name: 'This Week in AI', description: 'A fast-paced weekly news roundup of the most important industry developments.' },
+                        { name: 'The Human Angle', description: 'Debates and discussions on the ethical and societal implications of new technologies.' }
+                    ]
+                }
+            ];
+
+            const talentContainer = document.getElementById('talent-content');
+            const showsContainer = document.getElementById('shows-content');
+
+            talentContainer.innerHTML = `
+                <div class="grid md:grid-cols-3 gap-8">
+                    ${talentData.map(talent => `
+                        <div class="card p-8 text-center">
+                            <h4 class="text-xl font-bold text-header mb-2">${talent.name}</h4>
+                            <p class="text-gray-300 mb-4 font-normal">${talent.description}</p>
+                            <div class="text-sm">
+                                <p class="font-semibold text-orange-400">Leads Shows:</p>
+                                <p class="text-gray-400 font-normal">${talent.shows.join(', ')}</p>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            
+            showsContainer.innerHTML = `
+                <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    ${showsData.map(pillar => `
+                        <div class="card p-6">
+                            <h4 class="text-xl font-bold text-header mb-4 border-b-2 border-orange-500/50 pb-2">${pillar.pillar}</h4>
+                            <div class="space-y-4">
+                                ${pillar.series.map(show => `
+                                    <div>
+                                        <h5 class="font-semibold text-gray-200">${show.name}</h5>
+                                        <p class="text-sm text-gray-400 font-normal">${show.description}</p>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+
+            const talentTabs = document.querySelectorAll('.talent-tab');
+            talentTabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    talentTabs.forEach(t => {
+                        t.classList.remove('active-tab', 'text-orange-500', 'border-orange-500');
+                        t.classList.add('text-gray-400');
+                    });
+                    this.classList.add('active-tab', 'text-orange-500', 'border-orange-500');
+                    this.classList.remove('text-gray-400');
+                    
+                    document.querySelectorAll('.tab-content').forEach(content => content.classList.add('hidden'));
+                    document.getElementById(`${this.dataset.tab}-content`).classList.remove('hidden');
+                });
+            });
+
+            const comparisonData = [
+                { bad: 'Lists technical specs without explaining their impact.', good: 'Translates specs into tangible, real-world benefits for the user.' },
+                { bad: 'Only highlights positive features, reading like an ad.', good: 'Presents a balanced, critical analysis with a clear list of pros and cons.' },
+                { bad: 'Uses vague, generic language ("it\'s a great product").', good: 'Provides specific examples, personal anecdotes, and proof of hands-on use.' },
+                { bad: 'Lacks a clear final verdict or recommendation.', good: 'Delivers a clear, actionable recommendation for a specific type of user.' },
+                { bad: 'Evaluates the product in isolation.', good: 'Includes direct comparisons to key competitors in the market.' },
+                { bad: 'Reads like a robotic, AI-generated summary.', good: 'Is edited for an authentic human voice that reflects genuine experience.' }
+            ];
+
+            const comparisonTable = document.getElementById('comparison-table');
+            comparisonData.forEach(row => {
+                const rowEl = document.createElement('div');
+                rowEl.className = 'grid grid-cols-1 md:grid-cols-2 comparison-table-row';
+                rowEl.innerHTML = `
+                    <div class="p-4 md:p-6 text-red-300 flex items-center font-normal">
+                        <span class="font-bold text-xl mr-3">✗</span>
+                        <span>${row.bad}</span>
+                    </div>
+                    <div class="p-4 md:p-6 text-green-300 flex items-center bg-slate-800/20 md:bg-transparent md:border-l border-slate-700 font-normal">
+                        <span class="font-bold text-xl mr-3">✓</span>
+                        <span>${row.good}</span>
+                    </div>
+                `;
+                comparisonTable.appendChild(rowEl);
+            });
+        });
+    </script>
+</body>
+</html>

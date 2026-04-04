@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VidiSmart News Aggregator - AI Video Publishing Architecture</title>
+    <link href="https://fonts.googleapis.com/css2?family=Kumbh+Sans:wght@300;400;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --primary: #f59e0b;
+            --primary-glow: rgba(245, 158, 11, 0.4);
+            --secondary: #06b6d4;
+            --secondary-glow: rgba(6, 182, 212, 0.4);
+            --accent: #ec4899;
+            --accent-glow: rgba(236, 72, 153, 0.4);
+            --green: #10b981;
+            --green-glow: rgba(16, 185, 129, 0.4);
+            --purple: #8b5cf6;
+            --dark: #0a0a0f;
+            --darker: #050508;
+            --card-bg: rgba(15, 15, 25, 0.85);
+            --text: #e2e8f0;
+            --text-muted: #94a3b8;
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Kumbh Sans', sans-serif;
+            background: var(--darker);
+            color: var(--text);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        #three-canvas {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .section {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            z-index: 1;
+            padding: 60px 40px;
+        }
+
+        .content-box {
+            max-width: 1400px;
+            width: 100%;
+        }
+
+        /* Hero */
+        .hero-title {
+            font-size: clamp(2.5rem, 6vw, 4.5rem);
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 50%, var(--accent) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 20px;
+            opacity: 0;
+        }
+
+        .hero-subtitle {
+            font-size: clamp(1.1rem, 2vw, 1.5rem);
+            color: var(--text-muted);
+            max-width: 900px;
+            opacity: 0;
+        }
+
+        .hero-stats {
+            display: flex;
+            gap: 40px;
+            margin-top: 40px;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 8px 20px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border-radius: 50px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            opacity: 0;
+        }
+
+        /* Section Headers */
+        .section-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .section-header h2 {
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 800;
+            margin-bottom: 15px;
+            opacity: 0;
+        }
+
+        .section-header p {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            max-width: 700px;
+            margin: 0 auto;
+            opacity: 0;
+        }
+
+        /* Core Stack */
+        .stack-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .stack-item {
+            background: var(--card-bg);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            opacity: 0;
+            transform: translateY(30px);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .stack-item:hover {
+            transform: translateY(-5px) !important;
+            border-color: var(--primary);
+        }
+
+        .stack-icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .stack-title {
+            font-weight: 700;
+            font-size: 1rem;
+            margin-bottom: 5px;
+        }
+
+        .stack-tech {
+            font-size: 0.8rem;
+            color: var(--primary);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Component Cards */
+        .component-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+        }
+
+        .component-card {
+            background: var(--card-bg);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 24px;
+            padding: 35px;
+            opacity: 0;
+            transform: translateY(40px);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .component-card:hover {
+            transform: translateY(-8px) !important;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+        }
+
+        .component-card.orange { border-left: 4px solid var(--primary); }
+        .component-card.cyan { border-left: 4px solid var(--secondary); }
+        .component-card.pink { border-left: 4px solid var(--accent); }
+        .component-card.green { border-left: 4px solid var(--green); }
+        .component-card.purple { border-left: 4px solid var(--purple); }
+
+        .component-number {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            margin-bottom: 20px;
+        }
+
+        .component-card h3 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .component-card p {
+            color: var(--text-muted);
+            margin-bottom: 15px;
+        }
+
+        .component-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .component-list li {
+            padding: 8px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--text-muted);
+        }
+
+        .component-list li::before {
+            content: "▸";
+            color: var(--primary);
+        }
+
+        /* Qwen Matrix Table */
+        .matrix-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 30px;
+            opacity: 0;
+        }
+
+        .matrix-table th, .matrix-table td {
+            padding: 15px 20px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .matrix-table th {
+            background: rgba(245, 158, 11, 0.2);
+            font-weight: 700;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .matrix-table tr {
+            transition: all 0.3s ease;
+        }
+
+        .matrix-table tr:hover {
+            background: rgba(255,255,255,0.05);
+        }
+
+        .matrix-table td:first-child {
+            font-weight: 600;
+        }
+
+        .tier-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .tier-badge.cloud { background: linear-gradient(135deg, #8b5cf6, #6366f1); }
+        .tier-badge.local { background: linear-gradient(135deg, var(--green), #059669); }
+        .tier-badge.edge { background: linear-gradient(135deg, var(--secondary), #0891b2); }
+
+        /* Workflow */
+        .workflow-container {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+            position: relative;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .workflow-line {
+            position: absolute;
+            left: 30px;
+            top: 40px;
+            bottom: 40px;
+            width: 2px;
+            background: linear-gradient(180deg, var(--primary), var(--secondary), var(--accent), var(--green));
+        }
+
+        .workflow-step {
+            display: flex;
+            gap: 25px;
+            padding: 20px 0;
+            opacity: 0;
+            transform: translateX(-30px);
+        }
+
+        .workflow-dot {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--card-bg);
+            border: 3px solid var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+            z-index: 2;
+        }
+
+        .workflow-content {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 25px;
+            flex: 1;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .workflow-content h4 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .workflow-content p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        /* Navigation */
+        .nav-dots {
+            position: fixed;
+            right: 30px;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .nav-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .nav-dot.active {
+            background: var(--primary);
+            box-shadow: 0 0 20px var(--primary-glow);
+            transform: scale(1.3);
+        }
+
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent));
+            z-index: 100;
+            width: 0%;
+        }
+
+        /* Tech Tags */
+        .tech-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .tech-tag {
+            padding: 5px 12px;
+            background: rgba(245, 158, 11, 0.2);
+            border: 1px solid var(--primary);
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        /* GPU Strategy */
+        .gpu-box {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(6, 182, 212, 0.1));
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            margin-top: 40px;
+            opacity: 0;
+        }
+
+        .gpu-box h3 {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+        }
+
+        .gpu-highlight {
+            font-size: 3rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        @media (max-width: 768px) {
+            .section { padding: 40px 20px; }
+            .nav-dots { right: 15px; }
+            .component-grid { grid-template-columns: 1fr; }
+            .hero-stats { gap: 20px; }
+            .matrix-table { font-size: 0.85rem; }
+            .workflow-line { left: 25px; }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="three-canvas"></canvas>
+    <div class="progress-bar" id="progress"></div>
+
+    <nav class="nav-dots">
+        <div class="nav-dot active" data-section="0"></div>
+        <div class="nav-dot" data-section="1"></div>
+        <div class="nav-dot" data-section="2"></div>
+        <div class="nav-dot" data-section="3"></div>
+        <div class="nav-dot" data-section="4"></div>
+        <div class="nav-dot" data-section="5"></div>
+    </nav>
+
+    <!-- Section 1: Hero -->
+    <section class="section" id="section-0">
+        <div class="content-box">
+            <div class="badge">AI-Powered Content Pipeline</div>
+            <h1 class="hero-title">News Aggregator & Video Publishing</h1>
+            <p class="hero-subtitle">Daily AI news aggregation and video publishing system. Automated ingestion, human curation, and video-optimized publishing for VidiSmart.com</p>
+
+            <div class="hero-stats">
+                <div class="stat-item">
+                    <div class="stat-number">5-20</div>
+                    <div class="stat-label">Daily AI News Items</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">&lt;$2</div>
+                    <div class="stat-label">Per Hour GPU Cost</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">235B</div>
+                    <div class="stat-label">Qwen 3 Parameters</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 2: Core Stack -->
+    <section class="section" id="section-1">
+        <div class="content-box">
+            <div class="section-header">
+                <h2>Core Technology Stack</h2>
+                <p>Purpose-built for AI content processing at scale</p>
+            </div>
+
+            <div class="stack-grid">
+                <div class="stack-item">
+                    <div class="stack-icon">📡</div>
+                    <div class="stack-title">Ingestion</div>
+                    <div class="stack-tech">FreshRSS + Crawl4AI + Swirl</div>
+                </div>
+                <div class="stack-item">
+                    <div class="stack-icon">🔄</div>
+                    <div class="stack-title">Orchestration</div>
+                    <div class="stack-tech">LangGraph</div>
+                </div>
+                <div class="stack-item">
+                    <div class="stack-icon">🧠</div>
+                    <div class="stack-title">Intelligence</div>
+                    <div class="stack-tech">Qwen 3 VL MoE</div>
+                </div>
+                <div class="stack-item">
+                    <div class="stack-icon">🗄️</div>
+                    <div class="stack-title">Data Layer</div>
+                    <div class="stack-tech">PostgreSQL + PostGIS</div>
+                </div>
+                <div class="stack-item">
+                    <div class="stack-icon">🔮</div>
+                    <div class="stack-title">Vector Engine</div>
+                    <div class="stack-tech">Qdrant Server</div>
+                </div>
+                <div class="stack-item">
+                    <div class="stack-icon">📐</div>
+                    <div class="stack-title">Embeddings</div>
+                    <div class="stack-tech">BGE-M3</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 3: Components -->
+    <section class="section" id="section-2">
+        <div class="content-box">
+            <div class="section-header">
+                <h2>System Components</h2>
+                <p>Seven interconnected layers powering the content machine</p>
+            </div>
+
+            <div class="component-grid">
+                <div class="component-card orange">
+                    <div class="component-number">1</div>
+                    <h3>Ingestion & Search Layer</h3>
+                    <p>Signal collection and content discovery</p>
+                    <ul class="component-list">
+                        <li>FreshRSS aggregates AI news feeds</li>
+                        <li>Swirl AI federated search (Teams, Slack, Drive)</li>
+                        <li>Crawl4AI scrapes full content to markdown</li>
+                    </ul>
+                    <div class="tech-tags">
+                        <span class="tech-tag">FreshRSS</span>
+                        <span class="tech-tag">Swirl AI</span>
+                        <span class="tech-tag">Crawl4AI</span>
+                    </div>
+                </div>
+
+                <div class="component-card cyan">
+                    <div class="component-number">2</div>
+                    <h3>Processing Layer</h3>
+                    <p>LangGraph orchestration with human-in-the-loop</p>
+                    <ul class="component-list">
+                        <li>Tier 1: RunPod 8xH100 for heavy batches</li>
+                        <li>Tier 2: Local RTX 4090 for city nodes</li>
+                        <li>Human review pause for high-impact stories</li>
+                    </ul>
+                    <div class="tech-tags">
+                        <span class="tech-tag">LangGraph</span>
+                        <span class="tech-tag">RunPod</span>
+                    </div>
+                </div>
+
+                <div class="component-card pink">
+                    <div class="component-number">3</div>
+                    <h3>Data & Storage</h3>
+                    <p>Vector + Geospatial unified search</p>
+                    <ul class="component-list">
+                        <li>Qdrant stores BGE-M3 embeddings</li>
+                        <li>PostGIS enables geo-qualified searches</li>
+                        <li>S3/R2 for raw video assets</li>
+                    </ul>
+                    <div class="tech-tags">
+                        <span class="tech-tag">Qdrant</span>
+                        <span class="tech-tag">PostGIS</span>
+                        <span class="tech-tag">R2</span>
+                    </div>
+                </div>
+
+                <div class="component-card green">
+                    <div class="component-number">4</div>
+                    <h3>Publishing Layer</h3>
+                    <p>Directus CMS with automated workflows</p>
+                    <ul class="component-list">
+                        <li>Directus "News Room" visual editor</li>
+                        <li>Flows: Draft → AI → Review → Published</li>
+                        <li>Next.js frontend renders via GraphQL</li>
+                    </ul>
+                    <div class="tech-tags">
+                        <span class="tech-tag">Directus</span>
+                        <span class="tech-tag">Next.js</span>
+                    </div>
+                </div>
+
+                <div class="component-card purple">
+                    <div class="component-number">5</div>
+                    <h3>VidiFlow Controller</h3>
+                    <p>AI-enabled AppFlowy fork for local intelligence</p>
+                    <ul class="component-list">
+                        <li>Mobile sync (iOS & Android)</li>
+                        <li>Local Qwen 3 for private analysis</li>
+                        <li>Auto-tags linked to knowledge graph</li>
+                    </ul>
+                    <div class="tech-tags">
+                        <span class="tech-tag">AppFlowy</span>
+                        <span class="tech-tag">Local AI</span>
+                    </div>
+                </div>
+
+                <div class="component-card orange">
+                    <div class="component-number">6</div>
+                    <h3>SmartChannel Distribution</h3>
+                    <p>Multi-platform content syndication</p>
+                    <ul class="component-list">
+                        <li>WP Connect pushes to external WordPress</li>
+                        <li>Astro generates zero-JS static pages</li>
+                        <li>Island architecture for interactive components</li>
+                    </ul>
+                    <div class="tech-tags">
+                        <span class="tech-tag">WordPress</span>
+                        <span class="tech-tag">Astro</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 4: Qwen Matrix -->
+    <section class="section" id="section-3">
+        <div class="content-box">
+            <div class="section-header">
+                <h2>Qwen 3 Deployment Matrix</h2>
+                <p>Right-sized AI for every use case</p>
+            </div>
+
+            <table class="matrix-table">
+                <thead>
+                    <tr>
+                        <th>Level</th>
+                        <th>Model Variant</th>
+                        <th>Hardware</th>
+                        <th>Precision</th>
+                        <th>Use Case</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><span class="tier-badge cloud">Cloud Max</span></td>
+                        <td>Qwen3-VL-235B-Instruct</td>
+                        <td>RunPod 8×H100</td>
+                        <td>FP16 / BF16</td>
+                        <td>Deepest Context, Paid Work</td>
+                    </tr>
+                    <tr>
+                        <td><span class="tier-badge local">Local High</span></td>
+                        <td>Qwen3-VL-30B-Instruct</td>
+                        <td>1× RTX 4090 (24GB)</td>
+                        <td>Q4_K_M (22GB)</td>
+                        <td>Core City Node, High Quality</td>
+                    </tr>
+                    <tr>
+                        <td><span class="tier-badge local">Local Mid</span></td>
+                        <td>Qwen3-VL-30B-Instruct</td>
+                        <td>1× RTX 3090/4080</td>
+                        <td>Q3_K_M (16GB)</td>
+                        <td>Standard Node</td>
+                    </tr>
+                    <tr>
+                        <td><span class="tier-badge edge">Edge Fast</span></td>
+                        <td>Qwen3-VL-7B (Projected)</td>
+                        <td>Consumer 12GB</td>
+                        <td>FP16</td>
+                        <td>Quick Validation</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="gpu-box">
+                <h3>GPU Strategy</h3>
+                <p style="color: var(--text-muted); margin-bottom: 20px;">"Burst" usage model - spin up for batch processing</p>
+                <div class="gpu-highlight">&lt;$2/day</div>
+                <p style="color: var(--text-muted); margin-top: 10px;">Estimated cost for 20-50 videos/articles queue</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 5: Workflow -->
+    <section class="section" id="section-4">
+        <div class="content-box">
+            <div class="section-header">
+                <h2>Content Workflow</h2>
+                <p>From signal detection to published content</p>
+            </div>
+
+            <div class="workflow-container">
+                <div class="workflow-line"></div>
+
+                <div class="workflow-step">
+                    <div class="workflow-dot">📡</div>
+                    <div class="workflow-content">
+                        <h4>1. Signal Detection</h4>
+                        <p>FreshRSS detects new item → Webhook fires to LangGraph orchestrator</p>
+                    </div>
+                </div>
+
+                <div class="workflow-step">
+                    <div class="workflow-dot">🕷️</div>
+                    <div class="workflow-content">
+                        <h4>2. Content Scraping</h4>
+                        <p>Crawl4AI fetches full text and media, cleaning HTML to optimized markdown</p>
+                    </div>
+                </div>
+
+                <div class="workflow-step">
+                    <div class="workflow-dot">🧠</div>
+                    <div class="workflow-content">
+                        <h4>3. AI Analysis</h4>
+                        <p>Qwen 3 VL MoE generates summary, tags, and "Viral Score" prediction</p>
+                    </div>
+                </div>
+
+                <div class="workflow-step">
+                    <div class="workflow-dot">📐</div>
+                    <div class="workflow-content">
+                        <h4>4. Embedding</h4>
+                        <p>BGE-M3 vectorizes the summary for semantic search in Qdrant</p>
+                    </div>
+                </div>
+
+                <div class="workflow-step">
+                    <div class="workflow-dot">👤</div>
+                    <div class="workflow-content">
+                        <h4>5. Human Curation</h4>
+                        <p>Content appears in Directus as "Ready for Review". Editor tweaks and approves.</p>
+                    </div>
+                </div>
+
+                <div class="workflow-step">
+                    <div class="workflow-dot">🚀</div>
+                    <div class="workflow-content">
+                        <h4>6. Publish</h4>
+                        <p>Directus Flow updates status to published. Next.js revalidates path instantly.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 6: Summary -->
+    <section class="section" id="section-5">
+        <div class="content-box" style="text-align: center;">
+            <div class="section-header">
+                <h2>VidiSmart & VidiCity</h2>
+                <p>Geospatial GraphRAG for Community Smart Channels</p>
+            </div>
+
+            <div style="margin-top: 50px; opacity: 0;" class="final-summary">
+                <div class="tech-tags" style="justify-content: center; margin-bottom: 40px;">
+                    <span class="tech-tag">Qwen 3 VL MoE</span>
+                    <span class="tech-tag">LangGraph</span>
+                    <span class="tech-tag">Qdrant</span>
+                    <span class="tech-tag">PostGIS</span>
+                    <span class="tech-tag">Directus</span>
+                    <span class="tech-tag">BGE-M3</span>
+                    <span class="tech-tag">Swirl AI</span>
+                    <span class="tech-tag">Next.js</span>
+                    <span class="tech-tag">Astro</span>
+                </div>
+
+                <p style="font-size: 1.3rem; color: var(--text-muted); max-width: 700px; margin: 0 auto;">
+                    Built for scale. Optimized for cost. Designed for humans in the loop.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // Three.js Data Flow Background
+        const canvas = document.getElementById('three-canvas');
+        const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.z = 50;
+
+        // Create flowing data particles
+        const particleCount = 800;
+        const positions = new Float32Array(particleCount * 3);
+        const velocities = [];
+        const colors = new Float32Array(particleCount * 3);
+
+        const colorPalette = [
+            new THREE.Color(0xf59e0b), // orange
+            new THREE.Color(0x06b6d4), // cyan
+            new THREE.Color(0xec4899), // pink
+            new THREE.Color(0x10b981)  // green
+        ];
+
+        for (let i = 0; i < particleCount; i++) {
+            positions[i * 3] = (Math.random() - 0.5) * 150;
+            positions[i * 3 + 1] = (Math.random() - 0.5) * 100;
+            positions[i * 3 + 2] = (Math.random() - 0.5) * 50;
+
+            velocities.push({
+                x: (Math.random() - 0.3) * 0.15,
+                y: (Math.random() - 0.5) * 0.05,
+                z: (Math.random() - 0.5) * 0.02
+            });
+
+            const color = colorPalette[Math.floor(Math.random() * colorPalette.length)];
+            colors[i * 3] = color.r;
+            colors[i * 3 + 1] = color.g;
+            colors[i * 3 + 2] = color.b;
+        }
+
+        const geometry = new THREE.BufferGeometry();
+        geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+        const material = new THREE.PointsMaterial({
+            size: 1.5,
+            vertexColors: true,
+            transparent: true,
+            opacity: 0.7,
+            blending: THREE.AdditiveBlending
+        });
+
+        const particles = new THREE.Points(geometry, material);
+        scene.add(particles);
+
+        // Mouse tracking
+        let mouseX = 0, mouseY = 0;
+        document.addEventListener('mousemove', (e) => {
+            mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
+            mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
+        });
+
+        // Animation
+        function animate() {
+            requestAnimationFrame(animate);
+
+            const positions = particles.geometry.attributes.position.array;
+
+            for (let i = 0; i < particleCount; i++) {
+                positions[i * 3] += velocities[i].x;
+                positions[i * 3 + 1] += velocities[i].y;
+                positions[i * 3 + 2] += velocities[i].z;
+
+                // Reset particles that flow off screen
+                if (positions[i * 3] > 75) {
+                    positions[i * 3] = -75;
+                    positions[i * 3 + 1] = (Math.random() - 0.5) * 100;
+                }
+            }
+
+            particles.geometry.attributes.position.needsUpdate = true;
+            particles.rotation.y += 0.0003;
+
+            camera.position.x += (mouseX * 8 - camera.position.x) * 0.02;
+            camera.position.y += (-mouseY * 5 - camera.position.y) * 0.02;
+            camera.lookAt(scene.position);
+
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // GSAP Animations
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Hero
+        gsap.to('.badge', { opacity: 1, y: 0, duration: 0.8, delay: 0.3 });
+        gsap.to('.hero-title', { opacity: 1, y: 0, duration: 1, delay: 0.5 });
+        gsap.to('.hero-subtitle', { opacity: 1, y: 0, duration: 1, delay: 0.7 });
+        gsap.to('.stat-item', { opacity: 1, y: 0, duration: 0.6, stagger: 0.15, delay: 1 });
+
+        // Section headers
+        document.querySelectorAll('.section-header').forEach(header => {
+            ScrollTrigger.create({
+                trigger: header,
+                start: 'top 80%',
+                onEnter: () => {
+                    gsap.to(header.querySelectorAll('h2, p'), {
+                        opacity: 1, y: 0, duration: 0.8, stagger: 0.2
+                    });
+                }
+            });
+        });
+
+        // Stack items
+        ScrollTrigger.create({
+            trigger: '.stack-grid',
+            start: 'top 75%',
+            onEnter: () => {
+                gsap.to('.stack-item', {
+                    opacity: 1, y: 0, duration: 0.5, stagger: 0.08, ease: 'power2.out'
+                });
+            }
+        });
+
+        // Component cards
+        document.querySelectorAll('.component-card').forEach((card, i) => {
+            ScrollTrigger.create({
+                trigger: card,
+                start: 'top 85%',
+                onEnter: () => {
+                    gsap.to(card, {
+                        opacity: 1, y: 0, duration: 0.7, delay: i * 0.1, ease: 'power2.out'
+                    });
+                }
+            });
+        });
+
+        // Matrix table
+        ScrollTrigger.create({
+            trigger: '.matrix-table',
+            start: 'top 75%',
+            onEnter: () => {
+                gsap.to('.matrix-table', { opacity: 1, duration: 0.8 });
+            }
+        });
+
+        // GPU box
+        ScrollTrigger.create({
+            trigger: '.gpu-box',
+            start: 'top 80%',
+            onEnter: () => {
+                gsap.to('.gpu-box', { opacity: 1, y: 0, duration: 0.8 });
+            }
+        });
+
+        // Workflow steps
+        document.querySelectorAll('.workflow-step').forEach((step, i) => {
+            ScrollTrigger.create({
+                trigger: step,
+                start: 'top 80%',
+                onEnter: () => {
+                    gsap.to(step, {
+                        opacity: 1, x: 0, duration: 0.7, delay: i * 0.12, ease: 'power2.out'
+                    });
+                }
+            });
+        });
+
+        // Final summary
+        ScrollTrigger.create({
+            trigger: '.final-summary',
+            start: 'top 80%',
+            onEnter: () => {
+                gsap.to('.final-summary', { opacity: 1, duration: 1 });
+            }
+        });
+
+        // Progress bar
+        gsap.to('.progress-bar', {
+            width: '100%',
+            ease: 'none',
+            scrollTrigger: {
+                trigger: 'body',
+                start: 'top top',
+                end: 'bottom bottom',
+                scrub: 0.3
+            }
+        });
+
+        // Navigation
+        const sections = document.querySelectorAll('.section');
+        const navDots = document.querySelectorAll('.nav-dot');
+
+        sections.forEach((section, i) => {
+            ScrollTrigger.create({
+                trigger: section,
+                start: 'top center',
+                end: 'bottom center',
+                onEnter: () => updateNav(i),
+                onEnterBack: () => updateNav(i)
+            });
+        });
+
+        function updateNav(index) {
+            navDots.forEach((dot, i) => {
+                dot.classList.toggle('active', i === index);
+            });
+        }
+
+        navDots.forEach(dot => {
+            dot.addEventListener('click', () => {
+                const sectionIndex = dot.dataset.section;
+                document.getElementById(`section-${sectionIndex}`).scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+    </script>
+</body>
+</html>

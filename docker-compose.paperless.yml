@@ -1,0 +1,144 @@
+version: '3.8'
+
+# Paperless-ngx with OCR support
+# Run with: docker-compose -f docker-compose.paperless.yml up -d
+
+services:
+  # --------------------------------------------------------------------------------------------------
+  # 1. PAPERLESS-NGX (Document Management with OCR)
+  # --------------------------------------------------------------------------------------------------
+  paperless:
+    container_name: vidismart-paperless
+    image: ghcr.io/paperless-ngx/paperless-ngx:latest
+    ports:
+      - '8090:8000'
+    volumes:
+      - paperless_data:/data
+      - paperless_media:/media
+      - paperless_consume:/consume
+      - paperless_export:/export
+      # Map your host documents folder
+      - ./documents:/documents
+    environment:
+      # Core Settings
+      PAPERLESS_URL: http://localhost:8090
+      PAPERLESS_SECRET_KEY: ${PAPERLESS_SECRET_KEY:-change_this_to_a_random_secret_key}
+      
+      # Admin Account
+      PAPERLESS_ADMIN_USER: ${PAPERLESS_ADMIN_USER:-admin}
+      PAPERLESS_ADMIN_EMAIL: ${PAPERLESS_ADMIN_EMAIL:-admin@vidismart.com}
+      PAPERLESS_ADMIN_PASSWORD: ${PAPERLESS_ADMIN_PASSWORD:-admin123}
+      
+      # OCR Settings - MULTI-LANGUAGE SUPPORT
+      OCR_LANGUAGE: eng+spa+fra+deu
+      OCR_MODE: skip
+      OCR_OUTPUT_FORMAT: pdfa
+      PAPERLESS_OCR_USER_ARGS: '{"skip_text": false, "deskew": true, "clean": true}'
+      
+      # Enhanced OCR with proper memory settings
+      PAPERLESS_OCR_CONTAINER_MEMORY: 4096
+      PAPERLESS_OCR_CONTAINER_MEMORY_LIMIT: 4g
+      
+      # Tika for document parsing (DOCX, DOC, etc.)
+      PAPERLESS_TIKA_ENABLED: 1
+      PAPERLESS_TIKA_ENDPOINT: http://tika:9998
+      
+      # Gotenberg for PDF conversion
+      PAPERLESS_GOTENBERG_ENABLED: 1
+      PAPERLESS_GOTENBERG_ENDPOINT: http://gotenberg:8091
+      
+      # Redis for task queue
+      PAPERLESS_REDIS: redis://redis:6379
+      
+      # File types
+      PAPERLESS_CONSUMER_RECURSIVE: "true"
+      PAPERLESS_CONSUMER_SUBDIRS_AS_TAGS: "true"
+      
+      # Enable full-text search
+      PAPERLESS_ENABLE_SEARCH: "true"
+      
+      # Authentication
+      PAPERLESS_SESSION_COOKIE_SAMESITE: lax
+      
+      # Timezone
+      TZ: ${TZ:-America/New_York}
+      
+    depends_on:
+      redis:
+        condition: service_healthy
+      tika:
+        condition: service_started
+      gotenberg:
+        condition: service_started
+
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # --------------------------------------------------------------------------------------------------
+  # 2. REDIS (Task Queue)
+  # --------------------------------------------------------------------------------------------------
+  redis:
+    container_name: paperless-redis
+    image: redis:7-alpine
+    volumes:
+      - paperless_redis:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # --------------------------------------------------------------------------------------------------
+  # 3. APACHE TIKA (Document Parsing)
+  # --------------------------------------------------------------------------------------------------
+  tika:
+    container_name: paperless-tika
+    image: apache/tika:2.9.1.0
+    ports:
+      - '9998:9998'
+    environment:
+      JAVA_OPTS: "-Xmx2g"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9998/tika"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # --------------------------------------------------------------------------------------------------
+  # 4. GOTENBERG (PDF Conversion)
+  # --------------------------------------------------------------------------------------------------
+  gotenberg:
+    container_name: paperless-gotenberg
+    image: gotenberg/gotenberg:8.0
+    ports:
+      - '8091:3000'
+    environment:
+      GOTENBERG_GLOBALUPROPATH: /etc/gotenberg/properties.json
+      GOTENBERG_CHROMIUM_DISABLEGPU: 1
+      GOTENBERG_CHROMIUM_HEADLESS: 1
+      GOTENBERG_CHROMIUM_ALLOWFILEACCESS: 1
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+# --------------------------------------------------------------------------------------------------
+# VOLUMES
+# --------------------------------------------------------------------------------------------------
+volumes:
+  paperless_data:
+  paperless_media:
+  paperless_consume:
+  paperless_export:
+  paperless_redis:
+
+# --------------------------------------------------------------------------------------------------
+# NETWORKS
+# --------------------------------------------------------------------------------------------------
+networks:
+  default:
+    name: vidismart-paperless-network

@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Channel CX - Technical Architecture</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Kumbh+Sans:wght@700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap"
+        rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <link rel="stylesheet" href="vidi-nav-component.css">
+    <script src="vidi-nav-component.js"></script>
+
+    <style>
+        :root {
+            --bg-dark: #0a0a0f;
+            --bg-card: #12121a;
+            --bg-card-hover: #1a1a25;
+            --accent-primary: #6366f1;
+            --accent-secondary: #8b5cf6;
+            --text-primary: #ffffff;
+            --text-secondary: #9ca3af;
+            --text-muted: #6b7280;
+            --border-color: rgba(255, 255, 255, 0.08);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        #canvas-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.3;
+            pointer-events: none;
+            background: radial-gradient(ellipse at 50% 0%, rgba(99, 102, 241, 0.06) 0%, transparent 50%);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4 {
+            font-family: 'Kumbh Sans', sans-serif;
+            letter-spacing: -0.01em;
+            color: var(--text-primary);
+        }
+
+        .hero-title {
+            font-size: clamp(2rem, 4vw, 3rem);
+            line-height: 1.15;
+            background: linear-gradient(135deg, #fff 0%, #e0e7ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+            text-align: center;
+            padding-top: 2rem;
+        }
+
+        .hero-subtitle {
+            text-align: center;
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            max-width: 650px;
+            margin: 0 auto 2.5rem auto;
+            line-height: 1.6;
+        }
+
+        .glass-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .glass-card:hover {
+            border-color: rgba(99, 102, 241, 0.25);
+            background: var(--bg-card-hover);
+        }
+
+        .nav-bar {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            background: rgba(18, 18, 26, 0.9);
+            padding: 8px;
+            border-radius: 50px;
+            border: 1px solid var(--border-color);
+            max-width: fit-content;
+            margin: 0 auto 2rem auto;
+        }
+
+        .nav-link {
+            padding: 8px 16px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.85rem;
+            border-radius: 25px;
+            transition: all 0.3s;
+        }
+
+        .nav-link:hover {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .nav-link.active {
+            color: #fff;
+            background: var(--accent-primary);
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .section-header h2 {
+            font-size: 1.75rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .section-header p {
+            color: var(--text-secondary);
+            max-width: 450px;
+            margin: 0 auto;
+        }
+
+        .agent-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 3rem;
+            align-items: center;
+        }
+
+        .agent-row.reversed {
+            direction: rtl;
+        }
+
+        .agent-row.reversed .agent-content {
+            direction: ltr;
+        }
+
+        .agent-visual {
+            position: relative;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            aspect-ratio: 16/10;
+        }
+
+        .agent-visual img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .agent-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 5px 12px;
+            border-radius: 50px;
+            background: rgba(99, 102, 241, 0.1);
+            color: var(--accent-primary);
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            margin-bottom: 0.75rem;
+            border: 1px solid rgba(99, 102, 241, 0.2);
+        }
+
+        .agent-title {
+            font-size: 1.35rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .agent-desc {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+            line-height: 1.6;
+        }
+
+        .capability-list {
+            margin-bottom: 1rem;
+            border-left: 2px solid rgba(99, 102, 241, 0.2);
+            padding-left: 1rem;
+        }
+
+        .capability-list li {
+            list-style: none;
+            margin-bottom: 0.5rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+        }
+
+        .capability-list li::before {
+            content: '→';
+            color: var(--accent-primary);
+        }
+
+        .tech-pill-container {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .tech-pill {
+            background: rgba(255, 255, 255, 0.04);
+            padding: 4px 10px;
+            border-radius: 5px;
+            font-size: 0.75rem;
+            font-family: 'Fira Code', monospace;
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+        }
+
+        .stack-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1rem;
+        }
+
+        .stack-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            padding: 1.25rem;
+            border-radius: 10px;
+            transition: all 0.3s;
+        }
+
+        .stack-card:hover {
+            border-color: var(--accent-primary);
+            background: var(--bg-card-hover);
+        }
+
+        .stack-icon {
+            font-size: 1.75rem;
+            margin-bottom: 0.75rem;
+            display: block;
+        }
+
+        .mermaid {
+            background: transparent;
+            margin: 0 auto;
+            text-align: center;
+            overflow-x: auto;
+        }
+
+        footer {
+            border-top: 1px solid var(--border-color);
+            padding: 3rem 0;
+            text-align: center;
+            margin-top: 3rem;
+        }
+
+        .btn-launch {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 28px;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            color: white;
+            font-weight: 600;
+            font-size: 0.95rem;
+            border-radius: 50px;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .btn-launch:hover {
+            transform: scale(1.02);
+        }
+
+        footer p {
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+        }
+
+        .video-container {
+            max-width: 700px;
+            margin: 0 auto 2rem auto;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            aspect-ratio: 16/9;
+            background: var(--bg-card);
+        }
+
+        .video-container video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        @media (max-width: 768px) {
+
+            .agent-row,
+            .agent-row.reversed {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+                direction: ltr;
+            }
+
+            .nav-bar {
+                flex-wrap: wrap;
+                border-radius: 12px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation injected by vidi-nav-component.js -->
+
+    <!-- 3D Background -->
+    <div id="canvas-container"></div>
+
+    <div class="container">
+        <h1 class="hero-title">Intelligent Video Orchestration</h1>
+        <p class="hero-subtitle">
+            Smart Channel CX: The AI-Native Platform.<br>
+            Multi-agent automation and frame-accurate collaboration.
+        </p>
+
+        <!-- Video -->
+        <div class="video-container">
+            <video controls muted loop style="width: 100%; height: 100%; display: block;">
+                <source src="https://cdn.vidi.news/vidismart.mp4?v=2" type="video/mp4">
+            </video>
+        </div>
+
+        <!-- Navigation -->
+        <nav class="nav-bar">
+            <a href="#overview" class="nav-link">Overview</a>
+            <a href="#agents" class="nav-link">AI Agents</a>
+            <a href="#stack" class="nav-link">Tech Stack</a>
+        </nav>
+
+        <!-- Executive Summary -->
+        <section id="overview" class="glass-card">
+            <div style="display: flex; gap: 1.5rem; align-items: flex-start;">
+                <i data-lucide="cpu" style="color: var(--accent-primary); width: 40px; height: 40px;"></i>
+                <div>
+                    <h3 style="color: white; margin-bottom: 0.75rem; font-size: 1.35rem;">Executive Summary</h3>
+                    <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 0.75rem;">
+                        Smart Channel CX brings desktop NLE capabilities to the browser via a distributed multi-agent
+                        system.
+                        Uses <strong>Remotion</strong> and <strong>WebAssembly</strong> for client-side agility, backed
+                        by <strong>Cloudflare R2</strong>.
+                    </p>
+                    <p style="color: var(--text-muted); font-size: 0.9rem;">
+                        <strong>Core capabilities:</strong> Frame.io-style collaboration, Generative AI graphics
+                        (ComfyUI), and Visual Vector Omni Search.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Topology -->
+        <section class="glass-card" style="text-align: center;">
+            <h3 style="margin-bottom: 1.5rem;">High-Level Topology</h3>
+            <div class="mermaid">
+                flowchart TB
+                subgraph "Client Layer"
+                WEB[Next.js 14]
+                EDITOR[Remotion Editor]
+                end
+                subgraph "Edge - Cloudflare"
+                WORKERS[Workers]
+                R2[R2 Storage]
+                D1[D1 Database]
+                end
+                subgraph "AI Services"
+                COMFY[ComfyUI]
+                GEMINI[Gemini API]
+                end
+                WEB --> WORKERS
+                EDITOR --> R2
+                WORKERS --> D1
+                WORKERS --> COMFY
+                WORKERS --> GEMINI
+                linkStyle default stroke:#6366f1,stroke-width:2px;
+            </div>
+        </section>
+
+        <!-- Agents -->
+        <section id="agents">
+            <div class="section-header">
+                <h2>Multi-Agent Orchestration</h2>
+                <p>7 specialized autonomous agents handling the production pipeline.</p>
+            </div>
+
+            <!-- Agent 01 -->
+            <div class="agent-row">
+                <div class="agent-visual">
+                    <img referrerpolicy="no-referrer" src="https://cdn.vidi.news/vidismart_cloud_editor_ui_mockup.png" alt="VidiSmart Cloud Editor">
+                </div>
+                <div class="agent-content">
+                    <div class="agent-badge"><i data-lucide="scissors"></i> AGENT 01</div>
+                    <h3 class="agent-title">VidiSmart Cloud Editor</h3>
+                    <p class="agent-desc">Browser-based NLE merging traditional editing with AI. Computer vision
+                        prepares timelines and syncs assets in real-time.</p>
+                    <ul class="capability-list">
+                        <li>Multi-track non-linear editor in browser</li>
+                        <li>Automated take selection</li>
+                        <li>Agent Chat timeline manipulation</li>
+                    </ul>
+                    <div class="tech-pill-container">
+                        <span class="tech-pill">Remotion</span>
+                        <span class="tech-pill">React</span>
+                        <span class="tech-pill">WebGPU</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Agent 02 -->
+            <div class="agent-row reversed">
+                <div class="agent-visual">
+                    <img src="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=800&q=80"
+                        alt="Server Data Center">
+                </div>
+                <div class="agent-content">
+                    <div class="agent-badge"><i data-lucide="hard-drive"></i> AGENT 02</div>
+                    <h3 class="agent-title">Media Ingestion</h3>
+                    <p class="agent-desc">TUS protocol for massive file uploads. Event-driven workflow triggers upon R2
+                        arrival.</p>
+                    <ul class="capability-list">
+                        <li>MP4/MOV validation</li>
+                        <li>HLS adaptive bitrate streams</li>
+                        <li>EXIF/XMP metadata extraction</li>
+                        <li>Whisper API transcription</li>
+                    </ul>
+                    <div class="tech-pill-container">
+                        <span class="tech-pill">FFmpeg.wasm</span>
+                        <span class="tech-pill">Whisper API</span>
+                        <span class="tech-pill">S3/R2 SDK</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Agent 03 -->
+            <div class="agent-row">
+                <div class="agent-visual">
+                    <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&q=80"
+                        alt="AI Art Generation">
+                </div>
+                <div class="agent-content">
+                    <div class="agent-badge"><i data-lucide="palette"></i> AGENT 03</div>
+                    <h3 class="agent-title">Graphics Generation</h3>
+                    <p class="agent-desc">ComfyUI-powered engine generating brand-compliant visuals on the fly.</p>
+                    <ul class="capability-list">
+                        <li>Context-aware b-roll suggestions</li>
+                        <li>Brand style transfer</li>
+                        <li>Dynamic lower thirds</li>
+                    </ul>
+                    <div class="tech-pill-container">
+                        <span class="tech-pill">ComfyUI</span>
+                        <span class="tech-pill">Stable Diffusion XL</span>
+                        <span class="tech-pill">Gemini-Pro-Vision</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Agent 04 -->
+            <div class="agent-row reversed">
+                <div class="agent-visual">
+                    <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800&q=80"
+                        alt="Team Collaboration">
+                </div>
+                <div class="agent-content">
+                    <div class="agent-badge"><i data-lucide="users"></i> AGENT 04</div>
+                    <h3 class="agent-title">Collaboration Core</h3>
+                    <p class="agent-desc">Frame.io standard with WebSockets for frame-accurate commentary.</p>
+                    <ul class="capability-list">
+                        <li>Live cursor presence</li>
+                        <li>Secure review links</li>
+                        <li>Git-style version control</li>
+                    </ul>
+                    <div class="tech-pill-container">
+                        <span class="tech-pill">Cloudflare Durable Objects</span>
+                        <span class="tech-pill">WebSockets</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Agent 05 -->
+            <div class="agent-row">
+                <div class="agent-visual">
+                    <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80" alt="Search">
+                </div>
+                <div class="agent-content">
+                    <div class="agent-badge"><i data-lucide="search"></i> AGENT 05</div>
+                    <h3 class="agent-title">Omni Search Index</h3>
+                    <p class="agent-desc">Unpacks video into searchable vectors for content discovery.</p>
+                    <ul class="capability-list">
+                        <li>CLIP embeddings for visual search</li>
+                        <li>GPS geospatial lookups</li>
+                        <li>Neo4j knowledge mapping</li>
+                    </ul>
+                    <div class="tech-pill-container">
+                        <span class="tech-pill">Pinecone</span>
+                        <span class="tech-pill">Neo4j</span>
+                        <span class="tech-pill">CLIP-ViT</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Agent 06 -->
+            <div class="agent-row reversed">
+                <div class="agent-visual">
+                    <img src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800&q=80"
+                        alt="Quality Control">
+                </div>
+                <div class="agent-content">
+                    <div class="agent-badge"><i data-lucide="shield-check"></i> AGENT 06</div>
+                    <h3 class="agent-title">Quality Control</h3>
+                    <p class="agent-desc">Automated technical QC for broadcast safety.</p>
+                    <ul class="capability-list">
+                        <li>EBU R128 loudness compliance</li>
+                        <li>Color gamut safety detection</li>
+                        <li>Copyright fingerprinting</li>
+                    </ul>
+                    <div class="tech-pill-container">
+                        <span class="tech-pill">FFmpeg Filters</span>
+                        <span class="tech-pill">TensorFlow JS</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Agent 07 -->
+            <div class="agent-row">
+                <div class="agent-visual">
+                    <img src="https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&q=80"
+                        alt="Render Farm">
+                </div>
+                <div class="agent-content">
+                    <div class="agent-badge"><i data-lucide="server"></i> AGENT 07</div>
+                    <h3 class="agent-title">Render Cluster</h3>
+                    <p class="agent-desc">Distributed serverless rendering for minutes-scale outputs.</p>
+                    <ul class="capability-list">
+                        <li>Lambda parallel processing</li>
+                        <li>Smart segment caching</li>
+                        <li>Multi-format export</li>
+                    </ul>
+                    <div class="tech-pill-container">
+                        <span class="tech-pill">Remotion Lambda</span>
+                        <span class="tech-pill">AWS Lambda</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tech Stack -->
+        <section id="stack" class="glass-card">
+            <h2 style="text-align: center; margin-bottom: 1.5rem;">Technology Stack</h2>
+            <div class="stack-grid">
+                <div class="stack-card">
+                    <span class="stack-icon">⚛️</span>
+                    <h4>Frontend</h4>
+                    <p style="color: var(--text-muted); font-size: 0.85rem;">
+                        Next.js 14 App Router<br>
+                        Remotion video engine<br>
+                        TailwindCSS styling
+                    </p>
+                </div>
+                <div class="stack-card">
+                    <span class="stack-icon">🦀</span>
+                    <h4>Backend & Edge</h4>
+                    <p style="color: var(--text-muted); font-size: 0.85rem;">
+                        Rust + Cloudflare Workers<br>
+                        Cloudflare D1 (SQLite)<br>
+                        R2 Storage
+                    </p>
+                </div>
+                <div class="stack-card">
+                    <span class="stack-icon">🧠</span>
+                    <h4>AI Pipelines</h4>
+                    <p style="color: var(--text-muted); font-size: 0.85rem;">
+                        ComfyUI workflows<br>
+                        Gemini API multimodal<br>
+                        ONNX Runtime
+                    </p>
+                </div>
+                <div class="stack-card">
+                    <span class="stack-icon">🔍</span>
+                    <h4>Search</h4>
+                    <p style="color: var(--text-muted); font-size: 0.85rem;">
+                        Pinecone vector search<br>
+                        Neo4j relationships<br>
+                        BM25 keywords
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            <p>Smart Channel CX - Architecture Plan v2.4 - 2026</p>
+            <a href="smartchannelcx.html" class="btn-launch">Launch Dashboard</a>
+        </footer>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+        const particlesGeometry = new THREE.BufferGeometry();
+        const particlesCount = 1500;
+        const posArray = new Float32Array(particlesCount * 3);
+
+        for (let i = 0; i < particlesCount * 3; i++) {
+            posArray[i] = (Math.random() - 0.5) * 15;
+        }
+
+        particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+        const material = new THREE.PointsMaterial({
+            size: 0.02,
+            color: 0x6366f1,
+            transparent: true,
+            opacity: 0.6,
+            blending: THREE.AdditiveBlending
+        });
+
+        const particlesMesh = new THREE.Points(particlesGeometry, material);
+        scene.add(particlesMesh);
+
+        const gridHelper = new THREE.GridHelper(20, 20, 0x8b5cf6, 0x1a1a2e);
+        gridHelper.position.y = -3;
+        scene.add(gridHelper);
+
+        camera.position.z = 4;
+
+        let mouseX = 0, mouseY = 0;
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX / window.innerWidth - 0.5;
+            mouseY = e.clientY / window.innerHeight - 0.5;
+        });
+
+        function animate() {
+            requestAnimationFrame(animate);
+            particlesMesh.rotation.y += 0.002;
+            particlesMesh.rotation.x += mouseY * 0.01;
+            camera.position.x += (mouseX - camera.position.x) * 0.02;
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'dark',
+            securityLevel: 'loose',
+            themeVariables: {
+                primaryColor: '#6366f1',
+                primaryTextColor: '#fff',
+                secondaryColor: '#8b5cf6',
+                tertiaryColor: '#12121a',
+                mainBkg: 'transparent',
+                nodeBorder: '#6366f1',
+                lineColor: '#6366f1'
+            }
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VidiSmart Ai Site Planner</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kumbh+Sans:wght@700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #111827; /* Dark Gray-Blue */
+            color: #F3F4F6; /* Light Gray */
+            overflow-x: hidden;
+        }
+
+        #bg-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.7;
+        }
+
+        h1, h2, h3 {
+            font-family: 'Kumbh Sans', sans-serif;
+        }
+
+        .vidismart-yellow {
+            color: #FBBF24; /* Amber-400 */
+        }
+        
+        /* Updated main panel for a sculpted look */
+        .vidismart-bg-dark {
+             background: linear-gradient(145deg, #2a374a, #1c2635);
+             backdrop-filter: blur(10px);
+             -webkit-backdrop-filter: blur(10px);
+             border: 1px solid #4b5563; /* Slightly lighter border */
+             box-shadow: 
+                inset 0px 2px 3px rgba(255, 255, 255, 0.06), /* Inner top highlight */
+                inset 0px -2px 3px rgba(0, 0, 0, 0.4), /* Inner bottom shadow */
+                0 15px 35px rgba(0,0,0,0.5); /* Outer shadow */
+        }
+
+        .vidismart-border {
+            border-color: #374151; /* Gray-700 */
+        }
+
+        /* Gradient for headline */
+        .headline-gradient {
+            background: linear-gradient(to right, #d4a325, #FBBF24 50%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        /* Updated select for sculpted look and hover glow */
+        select, .btn {
+            font-family: 'Roboto', sans-serif;
+            border-radius: 0.5rem; /* 8px */
+            border: 1px solid #1f2937; /* Darker border */
+            background-color: #1f2937;
+            color: #F3F4F6;
+            padding: 0.75rem 1rem;
+            transition: all 0.3s ease-in-out;
+            box-shadow: inset 0 2px 4px 0 rgba(0,0,0,0.5), 0 1px 1px rgba(255,255,255,0.05);
+        }
+        
+        select:hover {
+            border-color: #FBBF24;
+            box-shadow: 
+                inset 0 2px 4px 0 rgba(0,0,0,0.5),
+                0 0 15px 2px rgba(251, 191, 36, 0.25); /* Yellow glow */
+        }
+
+        select:focus, .btn:focus {
+            outline: none;
+            border-color: #FBBF24;
+            box-shadow: 
+                inset 0 2px 4px 0 rgba(0,0,0,0.5),
+                0 0 15px 2px rgba(251, 191, 36, 0.25);
+        }
+
+        /* Sweep animation for buttons */
+        .btn-sweep {
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .btn-sweep::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(120deg, transparent, rgba(251, 191, 36, 0.4), transparent);
+            transition: left 0.6s ease;
+            z-index: -1;
+        }
+
+        .btn-sweep:hover::before {
+            left: 100%;
+        }
+        
+        .btn-sweep:hover {
+            border-color: #FBBF24;
+        }
+
+        .result-card {
+            background-color: rgba(31, 41, 55, 0.8); /* Gray-800 with opacity */
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid #374151;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .result-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2), 0 0 15px rgba(251, 191, 36, 0.1);
+        }
+    </style>
+</head>
+<body class="antialiased">
+    <canvas id="bg-canvas"></canvas>
+
+    <div class="container mx-auto p-4 md:p-8 max-w-7xl relative z-10">
+        <!-- Header -->
+        <header class="text-center mb-10">
+            <!-- New VidiSmart Symbol -->
+            <svg class="w-24 h-24 mx-auto mb-4" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <linearGradient id="logo-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#FBBF24;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#d4a325;stop-opacity:1" />
+                    </linearGradient>
+                    <filter id="blur">
+                        <feGaussianBlur in="SourceGraphic" stdDeviation="1" />
+                    </filter>
+                </defs>
+                <path d="M 20,50 A 30,30 0 1,1 80,50 A 30,30 0 1,1 20,50" fill="url(#logo-gradient)" opacity="0.3" filter="url(#blur)"/>
+                <path d="M 75,50 L 40,68 L 40,32 Z" fill="url(#logo-gradient)" />
+            </svg>
+        </header>
+
+        <!-- Configuration Form -->
+        <div class="vidismart-bg-dark p-6 md:p-8 rounded-xl">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Project Archetype -->
+                <div>
+                    <label for="archetype" class="block mb-2 font-semibold text-gray-300 text-lg">Project Archetype</label>
+                    <select id="archetype" class="w-full"></select>
+                </div>
+                <!-- Frontend -->
+                <div>
+                    <label for="frontend" class="block mb-2 font-semibold text-gray-300 text-lg">Frontend Framework</label>
+                    <select id="frontend" class="w-full"></select>
+                </div>
+                <!-- Backend -->
+                <div>
+                    <label for="backend" class="block mb-2 font-semibold text-gray-300 text-lg">Backend & Database</label>
+                    <select id="backend" class="w-full"></select>
+                </div>
+                <!-- CMS -->
+                <div>
+                    <label for="cms" class="block mb-2 font-semibold text-gray-300 text-lg">Content Management (CMS)</label>
+                    <select id="cms" class="w-full"></select>
+                </div>
+                <!-- AI Models -->
+                <div>
+                    <label for="ai-model" class="block mb-2 font-semibold text-gray-300 text-lg">Primary AI Model</label>
+                    <select id="ai-model" class="w-full"></select>
+                </div>
+                <!-- AI Video Creation -->
+                <div>
+                    <label for="ai-video" class="block mb-2 font-semibold text-gray-300 text-lg">AI Video Creation Tool</label>
+                    <select id="ai-video" class="w-full"></select>
+                </div>
+                 <!-- CRM -->
+                <div>
+                    <label for="crm" class="block mb-2 font-semibold text-gray-300 text-lg">CRM & Marketing</label>
+                    <select id="crm" class="w-full"></select>
+                </div>
+                <!-- Payments -->
+                <div>
+                    <label for="payment" class="block mb-2 font-semibold text-gray-300 text-lg">Payment Gateway</label>
+                    <select id="payment" class="w-full"></select>
+                </div>
+                <!-- Hosting -->
+                <div>
+                    <label for="hosting" class="block mb-2 font-semibold text-gray-300 text-lg">Hosting & Deployment</label>
+                    <select id="hosting" class="w-full"></select>
+                </div>
+            </div>
+
+            <!-- Generate Button -->
+            <div class="mt-10 text-center">
+                <button id="generate-plan" class="btn btn-sweep font-bold text-lg bg-yellow-500 text-gray-900 hover:bg-yellow-400 w-full md:w-auto px-10 py-3">
+                    Generate My Solution
+                </button>
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <div id="results-container" class="mt-12">
+            <!-- Generated plan will be injected here -->
+        </div>
+
+    </div>
+
+    <script>
+        // --- Three.js Background Animation ---
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        // Added antialias: true to smooth out edges
+        const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('bg-canvas'), alpha: true, antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+
+        const clock = new THREE.Clock();
+
+        const geometry = new THREE.PlaneGeometry(2, 2); // Use a simple plane that covers the screen
+        const material = new THREE.ShaderMaterial({
+            uniforms: {
+                u_time: { value: 0.0 },
+                u_resolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) },
+                u_mouse: { value: new THREE.Vector2(0.5, 0.5) }
+            },
+            vertexShader: `
+                void main() {
+                    gl_Position = vec4(position, 1.0);
+                }
+            `,
+            // New, calmer fragment shader for a "lava lamp" effect
+            fragmentShader: `
+                uniform vec2 u_resolution;
+                uniform float u_time;
+                
+                // Function to create organic noise
+                float random (in vec2 st) {
+                    return fract(sin(dot(st.xy, vec2(12.9898,78.233))) * 43758.5453123);
+                }
+
+                float noise (in vec2 st) {
+                    vec2 i = floor(st);
+                    vec2 f = fract(st);
+
+                    float a = random(i);
+                    float b = random(i + vec2(1.0, 0.0));
+                    float c = random(i + vec2(0.0, 1.0));
+                    float d = random(i + vec2(1.0, 1.0));
+
+                    vec2 u = f*f*(3.0-2.0*f);
+                    return mix(a, b, u.x) + (c - a)* u.y * (1.0 - u.x) + (d - b) * u.x * u.y;
+                }
+
+                void main() {
+                    vec2 st = gl_FragCoord.xy/u_resolution.xy;
+                    st.x *= u_resolution.x/u_resolution.y;
+
+                    float n = noise(st * 3.0 + u_time * 0.1);
+                    
+                    vec3 color1 = vec3(0.0, 0.01, 0.03); // Dark blue
+                    vec3 color2 = vec3(0.2, 0.0, 0.3);  // Dark purple
+                    vec3 color3 = vec3(0.8, 0.4, 0.1);  // VidiSmart Yellow/Orange hint
+
+                    float mix1 = smoothstep(0.3, 0.5, noise(st * 2.0 + u_time * 0.2));
+                    float mix2 = smoothstep(0.6, 0.7, noise(st * 2.5 - u_time * 0.15));
+
+                    vec3 color = mix(color1, color2, mix1);
+                    color = mix(color, color3, mix2 * 0.3);
+
+                    gl_FragColor = vec4(color, 1.0);
+                }
+            `
+        });
+        const plane = new THREE.Mesh(geometry, material);
+        scene.add(plane);
+
+        function animate() {
+            requestAnimationFrame(animate);
+            material.uniforms.u_time.value = clock.getElapsedTime();
+            renderer.render(scene, camera);
+        }
+        
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            material.uniforms.u_resolution.value.set(window.innerWidth, window.innerHeight);
+        }
+
+        function onMouseMove(event) {
+            material.uniforms.u_mouse.value.x = event.clientX / window.innerWidth;
+            material.uniforms.u_mouse.value.y = 1.0 - (event.clientY / window.innerHeight);
+        }
+
+        window.addEventListener('resize', onWindowResize, false);
+        window.addEventListener('mousemove', onMouseMove, false);
+
+        animate();
+
+
+        // --- VidiSmart App Logic ---
+        const techData = {
+            archetype: [
+                { id: 'creator-hub', name: 'Video-First Creator Hub', description: 'A platform focused on video content, community engagement, and monetization for creators.' },
+                { id: 'knowledge-forum', name: 'Knowledge-Based Discussion Forum', description: 'A community centered around structured discussions, knowledge sharing, and long-form content.' },
+                { id: 'elearning', name: 'E-learning Community', description: 'An integrated platform for online courses, student interaction, and educational content delivery.' },
+                { id: 'brand-community', name: 'Brand-Sponsored Community', description: 'A space for customers to connect, share experiences, and engage directly with a brand.' },
+            ],
+            frontend: [
+                { id: 'nextjs', name: 'Next.js', description: 'A powerful React framework for building scalable, high-performance web applications with both server-side and static rendering.', website: 'https://nextjs.org/', video: 'https://www.youtube.com/watch?v=Sklc_fQBmcs' },
+                { id: 'nuxtjs', name: 'Nuxt.js', description: 'The intuitive Vue framework for creating universal applications, static websites, and single-page applications.', website: 'https://nuxt.com/', video: 'https://www.youtube.com/watch?v=d_B1GtrA7sU' },
+                { id: 'sveltekit', name: 'SvelteKit', description: 'A framework for building web applications of all sizes, with a beautiful development experience and flexible filesystem-based routing.', website: 'https://kit.svelte.dev/', video: 'https://www.youtube.com/watch?v=UGBJg3b9A7U' },
+                { id: 'angular', name: 'Angular', description: 'A platform for building mobile and desktop web applications, developed and maintained by Google.', website: 'https://angular.dev/', video: 'https://www.youtube.com/watch?v=3qBXWUpoPHo' },
+            ],
+            backend: [
+                { id: 'supabase', name: 'Supabase', description: 'An open-source Firebase alternative built on PostgreSQL. Provides a database, authentication, instant APIs, and storage.', website: 'https://supabase.com/', video: 'https://www.youtube.com/watch?v=6C3t_8pI5s' },
+                { id: 'self-hosted-pg', name: 'Self-Hosted Postgres + Node.js', description: 'A flexible and powerful combination for full control over your backend infrastructure, using Node.js for the application server.', website: 'https://www.postgresql.org/', video: 'https://www.youtube.com/watch?v=e4S22_N_aC4' },
+                { id: 'laravel', name: 'Laravel (PHP)', description: 'A PHP web application framework with expressive, elegant syntax, focusing on easing common development tasks.', website: 'https://laravel.com/', video: 'https://www.youtube.com/watch?v=ImtZ5_V2_o' },
+                { id: 'firebase', name: 'Firebase', description: 'Google\'s platform for creating mobile and web applications. Provides a realtime NoSQL database, auth, and hosting.', website: 'https://firebase.google.com/', video: 'https://www.youtube.com/watch?v=jsrg_i66n-4' },
+            ],
+            cms: [
+                { id: 'strapi', name: 'Strapi', description: 'A leading open-source headless CMS. It’s 100% JavaScript, fully customizable, and developer-first.', website: 'https://strapi.io/', video: 'https://www.youtube.com/watch?v=Bomyso33sLg' },
+                { id: 'payload', name: 'Payload CMS', description: 'A TypeScript-native headless CMS and application framework. Can be installed directly into a Next.js app.', website: 'https://payloadcms.com/', video: 'https://www.youtube.com/watch?v=h8pYAAc3ySM' },
+                { id: 'headless-wp', name: 'Headless WordPress', description: 'Using the world\'s most popular CMS as a content backend, serving data via its REST API to a modern frontend.', website: 'https://wordpress.org/', video: 'https://www.youtube.com/watch?v=VtsD_IqC30c' },
+                { id: 'octobercms', name: 'October CMS (Laravel)', description: 'A free, open-source, self-hosted CMS platform based on the Laravel PHP Framework, known for its simplicity and extensibility.', website: 'https://octobercms.com/', video: 'https://www.youtube.com/watch?v=5A9aY6a_3E4' },
+                { id: 'statamic', name: 'Statamic (Laravel)', description: 'A highly flexible, flat-file CMS built on Laravel. It stores content in files, not a database, offering a unique developer experience.', website: 'https://statamic.com/', video: 'https://www.youtube.com/watch?v=Tq9z-Q_3_kU' },
+                { id: 'wintercms', name: 'Winter CMS (Laravel)', description: 'A community-driven fork of October CMS, offering a back-to-basics approach with a focus on speed, security, and simplicity.', website: 'https://wintercms.com/', video: 'https://www.youtube.com/watch?v=U-g0_m_fA_I' },
+                { id: 'hygraph', name: 'Hygraph', description: 'A federated content platform that allows you to connect and manage content from various sources through a single API.', website: 'https://hygraph.com/', video: 'https://www.youtube.com/watch?v=Yj2e04a-5FY' },
+            ],
+            'ai-model': [
+                { id: 'gemini', name: 'Google Gemini', description: 'A powerful family of natively multimodal models, designed to understand and process text, images, audio, and video.', website: 'https://gemini.google.com/', video: 'https://www.youtube.com/watch?v=jV1vkHv4Ofs' },
+                { id: 'claude', name: 'Anthropic Claude', description: 'A family of large language models renowned for strong performance in creative writing, complex reasoning, and nuanced text generation.', website: 'https://www.anthropic.com/', video: 'https://www.youtube.com/watch?v=7t1fHrN0-pI' },
+                { id: 'openai-gpt', name: 'OpenAI GPT-4o', description: 'A highly advanced multimodal model from OpenAI, capable of processing and generating text, audio, and image content.', website: 'https://openai.com/', video: 'https://www.youtube.com/watch?v=oZ9pcoG49Gk' },
+                { id: 'ollama', name: 'Ollama (Local LLM)', description: 'Run large language models like Llama 3 and others locally on your own machine for privacy and control.', website: 'https://ollama.com/', video: 'https://www.youtube.com/watch?v=9ayACi_y_O' },
+            ],
+            'ai-video': [
+                { id: 'heygen', name: 'HeyGen', description: 'An AI video platform for creating engaging videos with generative avatars and voice cloning for business use cases.', website: 'https://www.heygen.com/', video: 'https://www.youtube.com/watch?v=cUMc5r1An-A' },
+                { id: 'tavus', name: 'Tavus', description: 'An AI video personalization platform that automatically generates unique videos of you for thousands of recipients.', website: 'https://www.tavus.io/', video: 'https://www.youtube.com/watch?v=LqgQ52d32a4' },
+                { id: 'pictory', name: 'Pictory AI', description: 'An AI tool that automatically creates short, highly-shareable branded videos from your long-form content.', website: 'https://pictory.ai/', video: 'https://www.youtube.com/watch?v=iZ5a1XieHj4' },
+                { id: 'invideo', name: 'InVideo', description: 'An online video editor with templates, stock media, and AI tools to make professional videos quickly and easily.', website: 'https://invideo.io/', video: 'https://www.youtube.com/watch?v=s45Vf2a2o' },
+                 { id: 'veo', name: 'Google Veo', description: 'Google\'s most capable generative video model, creating high-quality, realistic video clips from text and image prompts.', website: 'https://deepmind.google/technologies/veo/', video: 'https://www.youtube.com/watch?v=K8e95e1dcI' },
+            ],
+            crm: [
+                { id: 'gohighlevel', name: 'GoHighLevel', description: 'An all-in-one sales and marketing platform for agencies and small businesses, providing CRM, funnels, and automation.', website: 'https://www.gohighlevel.com/', video: 'https://www.youtube.com/watch?v=Sg_mKxYy9A' },
+                { id: 'zapier', name: 'Zapier', description: 'An automation tool that connects your web apps, allowing you to create automated workflows (Zaps) without code.', website: 'https://zapier.com/', video: 'https://www.youtube.com/watch?v=p55AAl_y55I' },
+                { id: 'n8n', name: 'n8n', description: 'A free and source-available workflow automation tool. Can be self-hosted for full data control and customization.', website: 'https://n8n.io/', video: 'https://www.youtube.com/watch?v=j9g9sChsS' },
+            ],
+            payment: [
+                { id: 'stripe', name: 'Stripe', description: 'A developer-first payments platform with powerful APIs for handling online transactions, subscriptions, and more.', website: 'https://stripe.com/', video: 'https://www.youtube.com/watch?v=p3--gI67g' },
+                { id: 'paypal', name: 'PayPal', description: 'A globally recognized and trusted payment provider, offering a simple way to accept payments online.', website: 'https://www.paypal.com/', video: 'https://www.youtube.com/watch?v=3MUnSaim_w' },
+                { id: 'bitpay', name: 'BitPay', description: 'A leading crypto payment processor that allows merchants to accept cryptocurrencies and receive settlement in fiat.', website: 'https://bitpay.com/', video: 'https://www.youtube.com/watch?v=t3-w2t3t2o' },
+                { id: 'coinbase-commerce', name: 'Coinbase Commerce', description: 'A straightforward solution for businesses to accept cryptocurrency payments from a trusted brand in the crypto space.', website: 'https://commerce.coinbase.com/', video: 'https://www.youtube.com/watch?v=Js-Q_qQ' },
+            ],
+            hosting: [
+                { id: 'vercel', name: 'Vercel (JS Platform)', description: 'The platform from the creators of Next.js. Offers seamless git-based deployment and a global edge network.', website: 'https://vercel.com/', video: 'https://www.youtube.com/watch?v=f5h_3I4p-I' },
+                { id: 'netlify', name: 'Netlify (JS Platform)', description: 'A powerful platform for building and deploying modern Jamstack web projects.', website: 'https://www.netlify.com/', video: 'https://www.youtube.com/watch?v=3W9p3S' },
+                { id: 'cloudflare-pages', name: 'Cloudflare Pages (JS Platform)', description: 'A Jamstack platform for frontend developers to collaborate and deploy websites.', website: 'https://pages.cloudflare.com/', video: 'https://www.youtube.com/watch?v=1YVj' },
+                { id: 'render', name: 'Render (JS Platform)', description: 'A unified cloud to build and run all your apps and websites with free TLS certificates, a global CDN, and DDoS protection.', website: 'https://render.com/', video: 'https://www.youtube.com/watch?v=dC_i4y_2h2Y' },
+                { id: 'replit', name: 'Replit (JS Platform)', description: 'An online IDE and hosting platform that allows for rapid development and deployment directly from the browser.', website: 'https://replit.com/', video: 'https://www.youtube.com/watch?v=20t3-I4A2dM' },
+                { id: 'hostinger', name: 'Hostinger (VPS)', description: 'A popular and affordable web hosting provider offering a range of services from shared hosting to VPS and cloud plans.', website: 'https://www.hostinger.com/', video: 'https://www.youtube.com/watch?v=Gg_g' },
+                { id: 'bluehost', name: 'Bluehost (VPS)', description: 'A leading web hosting solutions company, specializing in WordPress and offering a variety of hosting services.', website: 'https://www.bluehost.com/', video: 'https://www.youtube.com/watch?v=z4c94s9A-l8' },
+                { id: 'siteground', name: 'SiteGround (VPS)', description: 'A web hosting company known for top-rated customer support and fast, reliable hosting services.', website: 'https://www.siteground.com/', video: 'https://www.youtube.com/watch?v=T9uMWV3f6gY' },
+                { id: 'contabo', name: 'Contabo (VPS)', description: 'A German hosting company offering powerful and affordable VPS and dedicated servers with a focus on performance.', website: 'https://contabo.com/', video: 'https://www.youtube.com/watch?v=k2v_q4_w5_g' },
+                { id: 'godaddy', name: 'GoDaddy (VPS)', description: 'A major domain registrar and web hosting company providing a wide range of online services, including VPS hosting.', website: 'https://www.godaddy.com/', video: 'https://www.youtube.com/watch?v=i_pA9f4S_Yc' },
+                { id: 'hostgator', name: 'HostGator (VPS)', description: 'A global provider of web hosting and related services, offering VPS plans for growing websites.', website: 'https://www.hostgator.com/', video: 'https://www.youtube.com/watch?v=wKOA7_gE5A' },
+                { id: 'ionos', name: 'IONOS (1&1) (VPS)', description: 'A web hosting and cloud partner for small and medium-sized businesses, offering a wide array of products.', website: 'https://www.ionos.com/', video: 'https://www.youtube.com/watch?v=0_2Xn9g_t_g' },
+            ]
+        };
+
+        // Function to populate select dropdowns
+        function populateSelects() {
+            for (const category in techData) {
+                const selectElement = document.getElementById(category);
+                if (selectElement) {
+                    techData[category].forEach(item => {
+                        const option = document.createElement('option');
+                        option.value = item.id;
+                        option.textContent = item.name;
+                        selectElement.appendChild(option);
+                    });
+                }
+            }
+        }
+
+        // Function to generate the results
+        function generatePlan() {
+            const resultsContainer = document.getElementById('results-container');
+            resultsContainer.innerHTML = ''; // Clear previous results
+
+            const selectedIds = {};
+            for (const category in techData) {
+                const selectElement = document.getElementById(category);
+                if (selectElement) {
+                    selectedIds[category] = selectElement.value;
+                }
+            }
+
+            let html = '<h2 class="text-3xl font-bold text-center mb-8"><span class="vidismart-yellow">Your</span> Customized Tech Stack</h2>';
+            html += '<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">';
+
+            for (const category in selectedIds) {
+                const selectedId = selectedIds[category];
+                const item = techData[category].find(d => d.id === selectedId);
+                
+                if (item) {
+                    html += `
+                        <div class="result-card flex flex-col">
+                            <h3 class="text-xl font-bold vidismart-yellow mb-2">${getCategoryTitle(category)}</h3>
+                            <h4 class="text-lg font-semibold text-white mb-3">${item.name}</h4>
+                            <p class="text-gray-400 flex-grow mb-4">${item.description}</p>
+                            <div class="mt-auto flex space-x-3">
+                                ${item.website ? `<a href="${item.website}" target="_blank" rel="noopener noreferrer" class="btn btn-sweep w-1/2 text-center font-semibold">Website</a>` : ''}
+                                ${item.video ? `<a href="${item.video}" target="_blank" rel="noopener noreferrer" class="btn btn-sweep w-1/2 text-center font-semibold">Watch Video</a>` : ''}
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+
+            html += '</div>';
+            resultsContainer.innerHTML = html;
+        }
+        
+        function getCategoryTitle(categoryKey) {
+            const titles = {
+                archetype: 'Project Archetype',
+                frontend: 'Frontend Framework',
+                backend: 'Backend & Database',
+                cms: 'Content Management (CMS)',
+                'ai-model': 'Primary AI Model',
+                'ai-video': 'AI Video Tool',
+                crm: 'CRM & Automation',
+                payment: 'Payment Gateway',
+                hosting: 'Hosting & Deployment'
+            };
+            return titles[categoryKey] || categoryKey;
+        }
+
+        // Event Listener for the button
+        document.getElementById('generate-plan').addEventListener('click', generatePlan);
+
+        // Initial population of dropdowns
+        window.onload = () => {
+            populateSelects();
+        };
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,1331 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Channel CX - Technical Architecture</title>
+    <!-- Fonts - Plus Jakarta Sans for UI, Kumbh Sans for Headings, Fira Code for technical terms -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Kumbh+Sans:wght@700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap"
+        rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Three.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <!-- Mermaid -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+
+    <style>
+        :root {
+            /* Cyberpunk / High-Tech Palette */
+            --blue-glow: #00f0ff;
+            --purple-glow: #bd00ff;
+            --glass-bg: rgba(10, 10, 20, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --card-hover-bg: rgba(255, 255, 255, 0.03);
+            --text-main: #ffffff;
+            --text-muted: #94a3b8;
+            --code-bg: rgba(0, 240, 255, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: #020202;
+            color: var(--text-main);
+            overflow-x: hidden;
+            line-height: 1.7;
+            /* Increased line-height for readability */
+        }
+
+        /* Ambient Background Canvas */
+        #canvas-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Typography Override */
+        h1,
+        h2,
+        h3 {
+            font-family: 'Kumbh Sans', sans-serif;
+            letter-spacing: -0.01em;
+        }
+
+        .hero-title {
+            font-size: 5rem;
+            line-height: 1;
+            background: linear-gradient(135deg, #fff 0%, #cbd5e1 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            padding-top: 6rem;
+            text-shadow: 0 0 30px rgba(0, 240, 255, 0.15);
+            /* Subtle glow */
+        }
+
+        .hero-subtitle {
+            text-align: center;
+            font-size: 1.25rem;
+            color: var(--text-muted);
+            max-width: 800px;
+            margin: 0 auto 4rem auto;
+            font-weight: 300;
+        }
+
+        /* Glass Cards - The core container style */
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 3rem;
+            margin-bottom: 2rem;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .glass-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+        }
+
+        .glass-card:hover {
+            border-color: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+            transform: translateY(-2px);
+        }
+
+        /* Navigation Pill */
+        .nav-bar {
+            position: sticky;
+            top: 20px;
+            z-index: 100;
+            display: flex;
+            justify-content: center;
+            background: rgba(5, 5, 10, 0.8);
+            backdrop-filter: blur(12px);
+            padding: 8px;
+            border-radius: 50px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            max-width: fit-content;
+            margin: 0 auto 4rem auto;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .nav-link {
+            padding: 10px 24px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            border-radius: 30px;
+            transition: all 0.3s;
+        }
+
+        .nav-link:hover {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-link.active {
+            color: #000;
+            background: #fff;
+        }
+
+        /* Feature Grid & Agent Layout */
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-header h2 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .section-header p {
+            color: var(--text-muted);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .agent-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            margin-bottom: 8rem;
+            /* Large spacing between agents */
+            align-items: center;
+        }
+
+        .agent-row.reversed {
+            direction: rtl;
+        }
+
+        .agent-row.reversed .agent-content {
+            direction: ltr;
+        }
+
+        .agent-visual {
+            position: relative;
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 60px rgba(0, 0, 0, 0.5);
+            aspect-ratio: 16/9;
+        }
+
+        .agent-visual img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.7s;
+        }
+
+        .agent-visual:hover img {
+            transform: scale(1.03);
+        }
+
+        .agent-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border-radius: 50px;
+            background: rgba(0, 240, 255, 0.08);
+            /* Low opacity cyan */
+            color: var(--blue-glow);
+            font-size: 0.85rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 1.5rem;
+            border: 1px solid rgba(0, 240, 255, 0.2);
+        }
+
+        .agent-title {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .agent-desc {
+            font-size: 1.1rem;
+            color: #cbd5e1;
+            /* Lighter than muted for readability */
+            margin-bottom: 2rem;
+        }
+
+        .capability-list {
+            margin-bottom: 2rem;
+            border-left: 2px solid rgba(255, 255, 255, 0.1);
+            padding-left: 1.5rem;
+        }
+
+        .capability-list li {
+            list-style: none;
+            margin-bottom: 0.5rem;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .capability-list li::before {
+            content: '•';
+            color: var(--blue-glow);
+            font-weight: bold;
+        }
+
+        .tech-pill-container {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .tech-pill {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-family: 'Fira Code', monospace;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-muted);
+        }
+
+        /* Tech Stack Cards */
+        .stack-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .stack-card {
+            background: rgba(20, 20, 25, 0.5);
+            border: 1px solid var(--glass-border);
+            padding: 2rem;
+            border-radius: 16px;
+            transition: all 0.3s;
+        }
+
+        .stack-card:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: var(--blue-glow);
+        }
+
+        .stack-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        /* Mermaid Diagrams */
+        .mermaid {
+            background: transparent !important;
+            /* Override default */
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        /* Footer */
+        footer {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 5rem 0;
+            text-align: center;
+            margin-top: 8rem;
+            background: linear-gradient(to bottom, transparent, #000);
+        }
+
+        .btn-launch {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px 40px;
+            background: linear-gradient(90deg, #6366f1, #8b5cf6);
+            color: white;
+            font-weight: 700;
+            font-size: 1.1rem;
+            border-radius: 50px;
+            text-decoration: none;
+            box-shadow: 0 0 30px rgba(99, 102, 241, 0.4);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .btn-launch:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 50px rgba(99, 102, 241, 0.6);
+        }
+
+        @media (max-width: 900px) {
+            .hero-title {
+                font-size: 3rem;
+                padding-top: 8rem;
+            }
+
+            .agent-row,
+            .agent-row.reversed {
+                grid-template-columns: 1fr;
+                gap: 3rem;
+                direction: ltr;
+            }
+
+            .nav-bar {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- VidiSmart Super Bowl Navigation - Emotional Connection Edition -->
+    <style>
+        /* Reset any padding conflicts */
+        body {
+            padding-top: 0 !important;
+        }
+
+        /* Cinematic Navigation Container */
+        .vidi-superbowl-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 99999;
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.95) 0%, rgba(20, 20, 40, 0.98) 100%);
+            backdrop-filter: blur(30px) saturate(180%);
+            border-bottom: 2px solid transparent;
+            border-image: linear-gradient(90deg, #6366f1, #a855f7, #ec4899, #f59e0b) 1;
+            padding: 0;
+            overflow: visible;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5), 0 0 80px rgba(99, 102, 241, 0.3);
+            animation: navSlideIn 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes navSlideIn {
+            from {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .vidi-nav-wrapper {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            gap: 3rem;
+        }
+
+        /* Animated Logo */
+        .vidi-logo-super {
+            font-size: 2rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #6366f1 0%, #a855f7 40%, #ec4899 70%, #f59e0b 100%);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            animation: gradientShift 3s ease infinite;
+            position: relative;
+            white-space: nowrap;
+            transition: all 0.3s ease;
+        }
+
+        .vidi-logo-super:hover {
+            transform: scale(1.1);
+            filter: drop-shadow(0 0 20px rgba(99, 102, 241, 0.8));
+        }
+
+        .vidi-logo-icon {
+            font-size: 2.5rem;
+            display: inline-block;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes gradientShift {
+
+            0%,
+            100% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.15);
+            }
+        }
+
+        /* Epic Menu Grid */
+        .vidi-mega-menu {
+            flex: 1;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 0.75rem;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .vidi-mega-menu li {
+            margin: 0;
+        }
+
+        /* Emotional Menu Cards */
+        .vidi-menu-card {
+            position: relative;
+            display: block;
+            padding: 1rem 1.25rem;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(168, 85, 247, 0.05) 100%);
+            border: 2px solid rgba(99, 102, 241, 0.3);
+            border-radius: 16px;
+            text-decoration: none;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            cursor: pointer;
+        }
+
+        .vidi-menu-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, #6366f1, #a855f7, #ec4899);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            z-index: 0;
+        }
+
+        .vidi-menu-card:hover::before {
+            opacity: 0.2;
+        }
+
+        .vidi-menu-card::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s ease, height 0.6s ease;
+        }
+
+        .vidi-menu-card:hover::after {
+            width: 300px;
+            height: 300px;
+            opacity: 0;
+        }
+
+        .vidi-menu-card:hover {
+            transform: translateY(-8px) scale(1.05);
+            border-color: rgba(236, 72, 153, 0.8);
+            box-shadow:
+                0 20px 40px rgba(0, 0, 0, 0.4),
+                0 0 40px rgba(99, 102, 241, 0.6),
+                inset 0 0 20px rgba(255, 255, 255, 0.1);
+        }
+
+        .vidi-menu-card:active {
+            transform: translateY(-4px) scale(1.02);
+        }
+
+        /* Emotional Copy */
+        .vidi-menu-icon {
+            font-size: 1.5rem;
+            display: block;
+            margin-bottom: 0.5rem;
+            filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3));
+            position: relative;
+            z-index: 1;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-5px);
+            }
+        }
+
+        .vidi-menu-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #fff;
+            margin: 0 0 0.25rem 0;
+            position: relative;
+            z-index: 1;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .vidi-menu-story {
+            font-size: 0.75rem;
+            color: #cbd5e1;
+            font-weight: 500;
+            font-style: italic;
+            line-height: 1.3;
+            position: relative;
+            z-index: 1;
+            opacity: 0.9;
+        }
+
+        /* Contact Info - Cinematic Style */
+        .vidi-contact-hero {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+            padding: 1rem 1.5rem;
+            background: linear-gradient(135deg, rgba(236, 72, 153, 0.2) 0%, rgba(245, 158, 11, 0.2) 100%);
+            border: 2px solid rgba(236, 72, 153, 0.4);
+            border-radius: 16px;
+            white-space: nowrap;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .vidi-contact-hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            animation: shine 3s infinite;
+        }
+
+        @keyframes shine {
+            0% {
+                left: -100%;
+            }
+
+            50%,
+            100% {
+                left: 200%;
+            }
+        }
+
+        .vidi-contact-name {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: #fff;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .vidi-contact-detail {
+            font-size: 0.85rem;
+            color: #fbbf24;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .vidi-contact-detail:hover {
+            color: #fff;
+            transform: translateX(3px);
+        }
+
+        /* Mobile Hamburger */
+        .vidi-mobile-toggle {
+            display: none;
+            background: linear-gradient(135deg, #6366f1, #a855f7);
+            border: none;
+            color: #fff;
+            padding: 0.75rem 1.25rem;
+            border-radius: 12px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .vidi-mobile-toggle:hover {
+            transform: scale(1.1) rotate(90deg);
+            box-shadow: 0 6px 25px rgba(99, 102, 241, 0.6);
+        }
+
+        /* Particle Effects Container */
+        .vidi-particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(99, 102, 241, 0.6);
+            border-radius: 50%;
+            animation: particleFloat 4s infinite ease-in-out;
+        }
+
+        @keyframes particleFloat {
+
+            0%,
+            100% {
+                transform: translateY(0) translateX(0);
+                opacity: 0;
+            }
+
+            10% {
+                opacity: 1;
+            }
+
+            90% {
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(-100vh) translateX(20px);
+                opacity: 0;
+            }
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 1200px) {
+            .vidi-nav-wrapper {
+                flex-wrap: wrap;
+                gap: 1.5rem;
+            }
+
+            .vidi-mega-menu {
+                grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+                gap: 0.5rem;
+            }
+
+            .vidi-menu-card {
+                padding: 0.75rem 1rem;
+            }
+
+            .vidi-contact-hero {
+                order: -1;
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .vidi-mobile-toggle {
+                display: block;
+            }
+
+            .vidi-mega-menu {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                grid-template-columns: 1fr;
+                background: rgba(0, 0, 0, 0.98);
+                padding: 1rem;
+                backdrop-filter: blur(30px);
+                border-bottom: 2px solid rgba(99, 102, 241, 0.5);
+            }
+
+            .vidi-mega-menu.open {
+                display: grid;
+                animation: slideDown 0.4s ease;
+            }
+
+            @keyframes slideDown {
+                from {
+                    opacity: 0;
+                    transform: translateY(-20px);
+                }
+
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            .vidi-contact-hero {
+                display: none;
+            }
+        }
+
+        /* Spacer for fixed nav */
+        .vidi-nav-spacer {
+            height: 100px;
+        }
+
+        @media (max-width: 768px) {
+            .vidi-nav-spacer {
+                height: 80px;
+            }
+        }
+    </style>
+
+    <nav class="vidi-superbowl-nav">
+        <!-- Particle Effects -->
+        <div class="vidi-particles" id="vidiParticles"></div>
+
+        <div class="vidi-nav-wrapper">
+            <!-- Epic Animated Logo -->
+            <a href="https://vidismart.com/" class="vidi-logo-super">
+                <span class="vidi-logo-icon">📹</span>
+                <span>VidiSmart</span>
+            </a>
+
+            <!-- Mobile Toggle -->
+            <button class="vidi-mobile-toggle"
+                onclick="document.querySelector('.vidi-mega-menu').classList.toggle('open')">
+                ☰
+            </button>
+
+            <!-- Emotional Mega Menu -->
+            <!-- Emotional Mega Menu -->
+            <ul class="vidi-mega-menu">
+                <li>
+                    <a href="https://vidibuzz.com" class="vidi-menu-card">
+                        <span class="vidi-menu-icon">💌</span>
+                        <div class="vidi-menu-title">VidiMail</div>
+                        <div class="vidi-menu-story">Turn strangers into friends</div>
+                    </a>
+                </li>
+
+                <li>
+                    <a href="smartchannelcx-tech.html" class="vidi-menu-card">
+                        <span class="vidi-menu-icon">🎯</span>
+                        <div class="vidi-menu-title">SmartChannel</div>
+                        <div class="vidi-menu-story">Where business gets personal</div>
+                    </a>
+                </li>
+
+                <li>
+                    <a href="viditwin.html" class="vidi-menu-card">
+                        <span class="vidi-menu-icon">👤</span>
+                        <div class="vidi-menu-title">VidiTwin</div>
+                        <div class="vidi-menu-story">You. But digital. Never sleeps.</div>
+                    </a>
+                </li>
+
+                <li>
+                    <a href="https://vidibuzz.com" class="vidi-menu-card">
+                        <span class="vidi-menu-icon">🛍️</span>
+                        <div class="vidi-menu-title">VidiShop</div>
+                        <div class="vidi-menu-story">Shopping becomes an experience</div>
+                    </a>
+                </li>
+
+                <li>
+                    <a href="SmartGenUi.html" class="vidi-menu-card">
+                        <span class="vidi-menu-icon">✨</span>
+                        <div class="vidi-menu-title">SmartGen AI</div>
+                        <div class="vidi-menu-story">Content that writes itself</div>
+                    </a>
+                </li>
+
+                <li>
+                    <a href="vidismart-competitive-analysis-2026.html" class="vidi-menu-card">
+                        <span class="vidi-menu-icon">📊</span>
+                        <div class="vidi-menu-title">Why We Win</div>
+                        <div class="vidi-menu-story">See the difference</div>
+                    </a>
+                </li>
+            </ul>
+
+            <!-- Hero Contact Card -->
+            <div class="vidi-contact-hero">
+                <div class="vidi-contact-name">James May</div>
+                <a href="mailto:VidiMan@VidiSmart.com" class="vidi-contact-detail">VidiMan@VidiSmart.com</a>
+                <a href="tel:+15615100021" class="vidi-contact-detail">561.510.0021</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Spacer to prevent content hiding under nav -->
+    <div class="vidi-nav-spacer"></div>
+
+    <script>
+        // Particle Generation
+        (function () {
+            const particleContainer = document.getElementById('vidiParticles');
+            const particleCount = 15;
+
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 4 + 's';
+                particle.style.animationDuration = (3 + Math.random() * 3) + 's';
+                particleContainer.appendChild(particle);
+            }
+
+            // Auto-highlight active page
+            const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+            const menuCards = document.querySelectorAll('.vidi-menu-card');
+            menuCards.forEach(card => {
+                if (card.getAttribute('href').includes(currentPage)) {
+                    card.style.borderColor = '#ec4899';
+                    card.style.background = 'linear-gradient(135deg, rgba(236,72,153,0.3) 0%, rgba(168,85,247,0.2) 100%)';
+                    card.style.transform = 'translateY(-4px)';
+                    card.style.boxShadow = '0 10px 30px rgba(236,72,153,0.4)';
+                }
+            });
+
+            // Add entrance animation to menu items
+            const menuItems = document.querySelectorAll('.vidi-mega-menu li');
+            menuItems.forEach((item, index) => {
+                item.style.opacity = '0';
+                item.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    item.style.transition = 'all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)';
+                    item.style.opacity = '1';
+                    item.style.transform = 'translateY(0)';
+                }, 100 * index);
+            });
+        })();
+    </script>
+
+
+    <!-- 3D Background -->
+    <div id="canvas-container"></div>
+
+    <div class="container">
+        <!-- Header -->
+        <h1 class="hero-title">System Architecture</h1>
+        <p class="hero-subtitle">
+            Smart Channel CX: An AI-Native Video Orchestration Platform.<br>
+            Designed for zero-egress rendering, multi-agent automation, and frame-accurate collaboration.
+        </p>
+
+        <!-- Hero Demo Video -->
+        <div
+            style="max-width: 900px; margin: 0 auto 4rem auto; border-radius: 20px; overflow: hidden; box-shadow: 0 0 50px rgba(0, 240, 255, 0.2); border: 1px solid rgba(255, 255, 255, 0.1);">
+            <video controls autoplay muted loop style="width: 100%; display: block;"
+                poster="https://placehold.co/800x450/1e293b/3b82f6?text=Loading+SmartChannel+Video">
+                <source src="https://cdn.vidi.news/vidismart.mp4?v=2" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+        </div>
+
+        <!-- Navigation -->
+        <nav class="nav-bar">
+            <a href="#overview" class="nav-link">Overview</a>
+            <a href="#agents" class="nav-link">AI Agents</a>
+            <a href="#stack" class="nav-link">Tech Stack</a>
+            <a href="#integrations" class="nav-link">Integrations</a>
+            <a href="smartchannelcx.html" class="nav-link active">Dashboard</a>
+        </nav>
+
+        <!-- Executive Summary -->
+        <section id="overview" class="glass-card">
+            <div style="display: flex; gap: 2rem; align-items: flex-start;">
+                <i data-lucide="cpu" style="color: var(--blue-glow); width: 48px; height: 48px;"></i>
+                <div>
+                    <h3 style="color: white; margin-bottom: 1rem; font-size: 1.75rem;">Executive Summary</h3>
+                    <p style="color: var(--text-muted); font-size: 1.1rem; margin-bottom: 1.5rem;">
+                        Smart Channel CX brings the power of desktop NLEs (Non-Linear Editors) to the browser by
+                        leveraging a <strong>distributed multi-agent system</strong>. unlike traditional cloud editors
+                        that rely on heavy server-side rendering for every preview, we utilize <strong>Remotion</strong>
+                        and <strong>WebAssembly</strong> for client-side agility, backed by <strong>Cloudflare
+                            R2</strong> for massive storage scale without egress costs.
+                    </p>
+                    <p style="color: var(--text-muted);">
+                        <strong>Core capabilities:</strong> Frame.io-style collaboration, Generative AI for graphics
+                        (ComfyUI), and a Visual Vector Omni Search specifically tuned for video content discovery.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- System Topology Diagram -->
+        <section class="glass-card" style="text-align: center;">
+            <h3 style="margin-bottom: 2rem;">High-Level Topology</h3>
+            <div class="mermaid">
+                flowchart TB
+                subgraph "Client Layer"
+                WEB[Next.js 14 App Router]
+                EDITOR[Remotion Video Editor]
+                end
+
+                subgraph "Edge Layer - Cloudflare"
+                WORKERS[Cloudflare Workers]
+                R2[Cloudflare R2 Storage]
+                D1[Cloudflare D1 Database]
+                end
+
+                subgraph "AI Services"
+                COMFY[ComfyUI Server]
+                GEMINI[Gemini API]
+                end
+
+                WEB --> WORKERS
+                EDITOR --> R2
+                WORKERS --> D1
+                WORKERS --> COMFY
+                WORKERS --> GEMINI
+
+                linkStyle default stroke:#00f0ff,stroke-width:2px;
+            </div>
+        </section>
+
+        <!-- AGENTS SECTION - DEEP DIVE -->
+        <section id="agents">
+            <div class="section-header">
+                <h2>Multi-Agent Orchestration</h2>
+                <p>The system comprises 7 specialized autonomous agents, each handling a specific domain of the
+                    production pipeline.</p>
+            </div>
+            <div class="agent-list">
+                <!-- Agent 01: VidiSmart Cloud Editor -->
+                <div class="agent-row">
+                    <div class="agent-visual">
+                        <img referrerpolicy="no-referrer" src="https://cdn.vidi.news/vidismart_cloud_editor_ui_mockup.png"
+                            alt="VidiSmart Cloud Editor UI">
+                    </div>
+                    <div class="agent-content">
+                        <div class="agent-badge active"><i data-lucide="scissors"></i> AGENT 01</div>
+                        <h3 class="agent-title text-orange-400">VidiSmart Cloud Editor</h3>
+                        <p class="agent-desc">
+                            The primary interface for 2026. Acts as a co-pilot for the human editor, merging traditional
+                            NLE
+                            capabilities with browser-native performance. It uses computer vision to prepare the
+                            timeline
+                            and synchronize AI-generated assets in real-time.
+                        </p>
+                        <ul class="capability-list">
+                            <li>Multi-track non-linear editor (NLE) in the browser</li>
+                            <li>Automated take selection based on emotional resonance</li>
+                            <li>Real-time Agent Chat integration for timeline manipulation</li>
+                            <li>Direct link between media folders and Remotion render engine</li>
+                        </ul>
+                        <div class="tech-pill-container">
+                            <span class="tech-pill">Remotion</span>
+                            <span class="tech-pill">React</span>
+                            <span class="tech-pill">WebGPU</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Agent 02: Media Ingestion -->
+                <div class="agent-row reversed">
+                    <div class="agent-visual">
+                        <img src="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=800&q=80"
+                            alt="Server Data Center">
+                    </div>
+                    <div class="agent-content">
+                        <div class="agent-badge"><i data-lucide="hard-drive"></i> AGENT 02</div>
+                        <h3 class="agent-title text-blue-400">Media Ingestion</h3>
+                        <p class="agent-desc">
+                            The gateway to the platform. It handles massive file uploads via the TUS protocol, ensuring
+                            resume capability for 4K/8K footage. Upon arrival in R2, it triggers an event-driven
+                            workflow.
+                        </p>
+                        <ul class="capability-list">
+                            <li>Validates MP4/MOV container integrity headers</li>
+                            <li>Generates HLS adaptive bitrate streams for smooth playback</li>
+                            <li>Extracts EXIF/XMP metadata (Camera model, Lens, FPS)</li>
+                            <li>Triggers Whisper API for immediate transcription</li>
+                        </ul>
+                        <div class="tech-pill-container">
+                            <span class="tech-pill">FFmpeg.wasm</span>
+                            <span class="tech-pill">Whisper API</span>
+                            <span class="tech-pill">S3/R2 SDK</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Agent 3: Graphics Generation -->
+                <div class="agent-row">
+                    <div class="agent-visual">
+                        <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&q=80"
+                            alt="Abstract AI Art Generation">
+                    </div>
+                    <div class="agent-content">
+                        <div class="agent-badge"><i data-lucide="palette"></i> AGENT 03</div>
+                        <h3 class="agent-title">Graphics Generation</h3>
+                        <p class="agent-desc">
+                            The creative engine powered by ComfyUI. It removes the need for external stock assets by
+                            generating brand-compliant visuals on the fly.
+                        </p>
+                        <ul class="capability-list">
+                            <li><strong>Context Awareness:</strong> Reads video transcript to suggest relevant b-roll
+                            </li>
+                            <li><strong>Style Transfer:</strong> Applies brand color palette to generated assets</li>
+                            <li><strong>Dynamic Lower Thirds:</strong> Procedurally generates titles based on speaker ID
+                            </li>
+                        </ul>
+                        <div class="tech-pill-container">
+                            <span class="tech-pill">ComfyUI</span>
+                            <span class="tech-pill">Stable Diffusion XL</span>
+                            <span class="tech-pill">Gemini-Pro-Vision</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Agent 4: Collaboration -->
+            <div class="agent-row reversed">
+                <div class="agent-visual">
+                    <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800&q=80"
+                        alt="Team Collaboration">
+                </div>
+                <div class="agent-content">
+                    <div class="agent-badge"><i data-lucide="users"></i> AGENT 04</div>
+                    <h3 class="agent-title">Collaboration Core</h3>
+                    <p class="agent-desc">
+                        Implements the "Frame.io" standard. It synchronizes state across multiple clients using
+                        WebSockets, ensuring frame-accurate commentary.
+                    </p>
+                    <ul class="capability-list">
+                        <li><strong>Live Presence:</strong> See active cursors of other team members</li>
+                        <li><strong>Review Links:</strong> Generate secure, expiring URLs for external client review
+                        </li>
+                        <li><strong>Version Control:</strong> Branch/Merge logic (Git-style) for video timelines</li>
+                    </ul>
+                    <div class="tech-pill-container">
+                        <span class="tech-pill">Cloudflare Durable Objects</span>
+                        <span class="tech-pill">WebSockets</span>
+                        <span class="tech-pill">SQLite (D1)</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Agent 5: Search & Index -->
+            <div class="agent-row">
+                <div class="agent-visual">
+                    <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80"
+                        alt="Data Network Search">
+                </div>
+                <div class="agent-content">
+                    <div class="agent-badge"><i data-lucide="search"></i> AGENT 05</div>
+                    <h3 class="agent-title">Omni Search Index</h3>
+                    <p class="agent-desc">
+                        Videos are traditionally "black boxes" of data. This agent unpacks them into searchable vectors.
+                    </p>
+                    <ul class="capability-list">
+                        <li><strong>Visual Vectors:</strong> CLIP embeddings for searching "dog dealing poker" inside
+                            video</li>
+                        <li><strong>Geospatial:</strong> Extractor for GPS lookups (integrates with VidiCity)</li>
+                        <li><strong>Knowledge Graph:</strong> Neo4j mapping of entities (People, Places, Products)</li>
+                    </ul>
+                    <div class="tech-pill-container">
+                        <span class="tech-pill">Pinecone</span>
+                        <span class="tech-pill">Neo4j</span>
+                        <span class="tech-pill">CLIP-ViT-L/14</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Agent 6: Quality Control -->
+            <div class="agent-row reversed">
+                <div class="agent-visual">
+                    <img src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800&q=80"
+                        alt="Quality Control Monitoring">
+                </div>
+                <div class="agent-content">
+                    <div class="agent-badge"><i data-lucide="shield-check"></i> AGENT 06</div>
+                    <h3 class="agent-title">Quality Control</h3>
+                    <p class="agent-desc">
+                        The gatekeeper ensuring broadcast safety. Automates the technical QC process that usually
+                        requires a dedicated engineer.
+                    </p>
+                    <ul class="capability-list">
+                        <li><strong>Loudness Spec:</strong> Checks EBU R128 compliance (-23 LUFS)</li>
+                        <li><strong>Color Safety:</strong> Detects gamut violations (Rec.709 safe area)</li>
+                        <li><strong>Copyright Check:</strong> Fingerprints audio against licensed libraries</li>
+                    </ul>
+                    <div class="tech-pill-container">
+                        <span class="tech-pill">FFmpeg Filters</span>
+                        <span class="tech-pill">TensorFlow JS</span>
+                        <span class="tech-pill">Audible API</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Agent 7: Cluster Render -->
+            <div class="agent-row">
+                <div class="agent-visual">
+                    <img src="https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&q=80"
+                        alt="Render Farm Servers">
+                </div>
+                <div class="agent-content">
+                    <div class="agent-badge"><i data-lucide="server"></i> AGENT 07</div>
+                    <h3 class="agent-title">Render Cluster</h3>
+                    <p class="agent-desc">
+                        Handles the final mile. Distributes frame rendering across potentially thousands of concurrent
+                        serverless functions to reduce render times from hours to minutes.
+                    </p>
+                    <ul class="capability-list">
+                        <li><strong>Lambda Rendering:</strong> Parallel processing of video segments</li>
+                        <li><strong>Smart Caching:</strong> Re-uses previously rendered segments if unchanged</li>
+                        <li><strong>Multi-Format:</strong> Simultaneous export of MP4, ProRes, and GIF Preview</li>
+                    </ul>
+                    <div class="tech-pill-container">
+                        <span class="tech-pill">Remotion Lambda</span>
+                        <span class="tech-pill">AWS Lambda / CF Workers</span>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- TECH STACK SUMMARY -->
+        <section id="stack" class="glass-card">
+            <h2 style="text-align: center; margin-bottom: 3rem;">Technology Stack Breakdown</h2>
+            <div class="stack-grid">
+                <div class="stack-card">
+                    <span class="stack-icon">⚛️</span>
+                    <h4>Frontend Core</h4>
+                    <p style="color: var(--text-muted); font-size: 0.95rem;">
+                        <strong>Next.js 14 App Router</strong> for framework features. <br>
+                        <strong>Remotion</strong> for the video engine. <br>
+                        <strong>TailwindCSS</strong> for molecular styling.
+                    </p>
+                </div>
+                <div class="stack-card">
+                    <span class="stack-icon">🦀</span>
+                    <h4>Backend & Edge</h4>
+                    <p style="color: var(--text-muted); font-size: 0.95rem;">
+                        <strong>Rust + Cloudflare Workers</strong> for high-performance WASM logic.<br>
+                        <strong>Cloudflare D1</strong> (SQLite) for state.<br>
+                        <strong>R2 Storage</strong> for media.
+                    </p>
+                </div>
+                <div class="stack-card">
+                    <span class="stack-icon">🧠</span>
+                    <h4>AI Pipelines</h4>
+                    <p style="color: var(--text-muted); font-size: 0.95rem;">
+                        <strong>ComfyUI</strong> for manageable Stable Diffusion workflows.<br>
+                        <strong>Gemini API</strong> for multimodal understanding.<br>
+                        <strong>ONNX Runtime</strong> for edge inference.
+                    </p>
+                </div>
+                <div class="stack-card">
+                    <span class="stack-icon">🔍</span>
+                    <h4>Search</h4>
+                    <p style="color: var(--text-muted); font-size: 0.95rem;">
+                        <strong>Pinecone</strong> for high-dimensional vector search.<br>
+                        <strong>Neo4j</strong> for graph relationships.<br>
+                        <strong>BM25</strong> for traditional keyword matching.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            <div style="max-width: 600px; margin: 0 auto; margin-bottom: 3rem;">
+                <p style="color: var(--text-muted);">
+                    Smart Channel CX is a trademark of VidiSmart Inc.<br>
+                    Architecture Plan Version 2.4 - 2026
+                </p>
+            </div>
+            <a href="smartchannelcx.html" class="btn-launch">Launch Dashboard</a>
+        </footer>
+
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        // Init Lucide Icons
+        lucide.createIcons();
+
+        // Three.js Background Logic
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+        // Generate Particles
+        const particlesGeometry = new THREE.BufferGeometry();
+        const particlesCount = 2000;
+        const posArray = new Float32Array(particlesCount * 3);
+
+        for (let i = 0; i < particlesCount * 3; i++) {
+            posArray[i] = (Math.random() - 0.5) * 20; // Wide spread
+        }
+
+        particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+        const material = new THREE.PointsMaterial({
+            size: 0.03,
+            color: 0x00f0ff,
+            transparent: true,
+            opacity: 0.8,
+            blending: THREE.AdditiveBlending
+        });
+
+        const particlesMesh = new THREE.Points(particlesGeometry, material);
+        scene.add(particlesMesh);
+
+        // Grid Plane (Tron style)
+        const gridHelper = new THREE.GridHelper(30, 30, 0xbd00ff, 0x222222);
+        gridHelper.position.y = -5;
+        gridHelper.rotation.x = 0; // Flat
+        scene.add(gridHelper);
+
+        camera.position.z = 6;
+        camera.position.y = 1;
+
+        // Mouse Interaction
+        let mouseX = 0;
+        let mouseY = 0;
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX / window.innerWidth - 0.5;
+            mouseY = e.clientY / window.innerHeight - 0.5;
+        });
+
+        // Animation Loop
+        const clock = new THREE.Clock();
+        function animate() {
+            const elapsedTime = clock.getElapsedTime();
+            requestAnimationFrame(animate);
+
+            // Subtle rotation
+            particlesMesh.rotation.y = elapsedTime * 0.05;
+            particlesMesh.rotation.x = mouseY * 0.2;
+
+            // Camera Parallax
+            camera.position.x += (mouseX * 2 - camera.position.x) * 0.05;
+
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        // Responsive
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // Mermaid Config
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'dark',
+            securityLevel: 'loose',
+            themeVariables: {
+                primaryColor: '#6366f1',
+                primaryTextColor: '#fff',
+                secondaryColor: '#8b5cf6',
+                tertiaryColor: '#0f172a',
+                mainBkg: 'transparent',
+                nodeBorder: '#00f0ff',
+                lineColor: '#00f0ff'
+            }
+        });
+    </script>
+</body>
+
+</html>

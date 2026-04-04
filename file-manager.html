@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartChannel CX - File Manager</title>
+    <style>
+        :root {
+            --bg-dark: #1a1a1a;
+            --bg-panel: #2a2a2a;
+            --bg-card: #333333;
+            --bg-hover: #3a3a3a;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0a0;
+            --accent-blue: #4a90d9;
+            --accent-green: #4caf50;
+            --accent-red: #e74c3c;
+            --border-color: #404040;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+        .header {
+            background-color: var(--bg-panel);
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header h1 { font-size: 20px; font-weight: 600; }
+        .btn {
+            padding: 10px 20px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-primary { background-color: var(--accent-blue); color: white; }
+        .btn-primary:hover { background-color: #5a9fe9; }
+        .container { padding: 24px; }
+        .upload-area {
+            border: 2px dashed var(--border-color);
+            border-radius: 12px;
+            padding: 48px;
+            text-align: center;
+            margin-bottom: 24px;
+            transition: all 0.2s;
+        }
+        .upload-area.dragover {
+            border-color: var(--accent-blue);
+            background-color: rgba(74, 144, 217, 0.1);
+        }
+        .upload-area p { color: var(--text-secondary); margin-top: 12px; }
+        .file-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 16px;
+        }
+        .file-card {
+            background-color: var(--bg-panel);
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .file-card:hover {
+            background-color: var(--bg-card);
+            transform: translateY(-2px);
+        }
+        .file-preview {
+            width: 100%;
+            aspect-ratio: 16/9;
+            background-color: var(--bg-dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        .file-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .file-icon {
+            width: 48px;
+            height: 48px;
+            color: var(--text-secondary);
+        }
+        .file-info { padding: 12px; }
+        .file-name {
+            font-size: 14px;
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-bottom: 4px;
+        }
+        .file-meta {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+        .file-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+        }
+        .file-actions button {
+            flex: 1;
+            padding: 6px;
+            font-size: 12px;
+        }
+        .btn-download { background-color: var(--bg-card); color: var(--text-primary); border: 1px solid var(--border-color); }
+        .btn-delete { background-color: transparent; color: var(--accent-red); border: 1px solid var(--border-color); }
+        .progress-bar {
+            height: 4px;
+            background-color: var(--bg-dark);
+            border-radius: 2px;
+            margin-top: 16px;
+            overflow: hidden;
+            display: none;
+        }
+        .progress-fill {
+            height: 100%;
+            background-color: var(--accent-blue);
+            transition: width 0.3s;
+        }
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            padding: 14px 20px;
+            background-color: var(--bg-panel);
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+            z-index: 1000;
+            display: none;
+        }
+        .toast.show { display: block; }
+        .toast.success { border-left: 4px solid var(--accent-green); }
+        .toast.error { border-left: 4px solid var(--accent-red); }
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 48px;
+        }
+        .spinner {
+            width: 32px;
+            height: 32px;
+            border: 3px solid var(--bg-card);
+            border-top-color: var(--accent-blue);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .empty-state {
+            text-align: center;
+            padding: 64px 20px;
+            color: var(--text-secondary);
+        }
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.7);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        .modal.show { display: flex; }
+        .modal-content {
+            background: var(--bg-panel);
+            border-radius: 12px;
+            padding: 24px;
+            max-width: 400px;
+            width: 90%;
+        }
+        .modal-content h3 { margin-bottom: 16px; }
+        .modal-content input {
+            width: 100%;
+            padding: 10px;
+            background: var(--bg-dark);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+        }
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+        .path-info {
+            background: var(--bg-dark);
+            padding: 12px;
+            border-radius: 6px;
+            margin-top: 16px;
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+        .path-info code {
+            color: var(--accent-blue);
+            word-break: break-all;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>SmartChannel CX - File Manager</h1>
+        <button class="btn btn-primary" onclick="document.getElementById('fileInput').click()">
+            Upload Files
+        </button>
+    </div>
+    <div class="container">
+        <div class="upload-area" id="uploadArea">
+            <div style="font-size: 48px;">📤</div>
+            <p>Drag and drop files here or click "Upload Files" button</p>
+            <div class="progress-bar" id="progressBar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+        </div>
+        <div id="loading" class="loading">
+            <div class="spinner"></div>
+        </div>
+        <div id="fileGrid" class="file-grid" style="display: none;"></div>
+        <div id="emptyState" class="empty-state" style="display: none;">
+            <div style="font-size: 64px; margin-bottom: 16px;">📂</div>
+            <p>No files uploaded yet</p>
+        </div>
+    </div>
+    <input type="file" id="fileInput" multiple style="display: none;">
+    <div class="toast" id="toast"></div>
+    <div class="modal" id="renameModal">
+        <div class="modal-content">
+            <h3>Rename File</h3>
+            <input type="text" id="renameInput" placeholder="New file name">
+            <input type="hidden" id="renamePath">
+            <div class="modal-actions">
+                <button class="btn btn-download" onclick="closeRenameModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="confirmRename()">Rename</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        const API_URL = 'https://vidismart.com/smartchannel/upload.php';
+        const CDN_URL = 'https://cdn.vidi.news';
+        let files = [];
+
+        document.addEventListener('DOMContentLoaded', loadFiles);
+
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+        uploadArea.addEventListener('dragleave', () => uploadArea.classList.remove('dragover'));
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            uploadFiles(e.dataTransfer.files);
+        });
+        fileInput.addEventListener('change', (e) => {
+            uploadFiles(e.target.files);
+            fileInput.value = '';
+        });
+
+        async function loadFiles() {
+            document.getElementById('loading').style.display = 'flex';
+            document.getElementById('fileGrid').style.display = 'none';
+            document.getElementById('emptyState').style.display = 'none';
+            try {
+                const response = await fetch(API_URL + '?action=list');
+                const data = await response.json();
+                if (data.success) {
+                    files = data.files;
+                    displayFiles();
+                } else {
+                    showToast('Failed to load files', 'error');
+                    document.getElementById('loading').style.display = 'none';
+                    document.getElementById('emptyState').style.display = 'flex';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showToast('Failed to connect to server', 'error');
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('emptyState').style.display = 'flex';
+            }
+        }
+
+        function displayFiles() {
+            document.getElementById('loading').style.display = 'none';
+            const grid = document.getElementById('fileGrid');
+            const emptyState = document.getElementById('emptyState');
+            if (files.length === 0) {
+                grid.style.display = 'none';
+                emptyState.style.display = 'flex';
+                return;
+            }
+            emptyState.style.display = 'none';
+            grid.style.display = 'grid';
+            grid.innerHTML = files.map(file => {
+                const key = file.key;
+                const ext = key.split('.').pop().toLowerCase();
+                const isImage = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'].includes(ext);
+                const url = CDN_URL + '/' + key;
+                return `
+                    <div class="file-card">
+                        <div class="file-preview">
+                            ${isImage ? `<img src="${url}" alt="${key}" onerror="this.style.display='none'">` : '<div style="font-size:32px;">📄</div>'}
+                        </div>
+                        <div class="file-info">
+                            <div class="file-name" title="${key}">${key.split('/').pop()}</div>
+                            <div class="file-meta">${formatSize(file.size)}</div>
+                            <div class="file-actions">
+                                <button class="btn btn-download" onclick="downloadFile('${key}')">Download</button>
+                                <button class="btn btn-delete" onclick="deleteFile('${key}')">Delete</button>
+                            </div>
+                            <div class="path-info">
+                                <strong>SmartGen Path:</strong><br>
+                                <code>${url}</code>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        async function uploadFiles(filesToUpload) {
+            const progressBar = document.getElementById('progressBar');
+            const progressFill = document.getElementById('progressFill');
+            progressBar.style.display = 'block';
+            for (let i = 0; i < filesToUpload.length; i++) {
+                const file = filesToUpload[i];
+                const formData = new FormData();
+                formData.append('file', file);
+                formData.append('action', 'upload');
+                try {
+                    await new Promise((resolve, reject) => {
+                        const xhr = new XMLHttpRequest();
+                        xhr.upload.addEventListener('progress', (e) => {
+                            if (e.lengthComputable) {
+                                const percent = (e.loaded / e.total) * 100;
+                                progressFill.style.width = percent + '%';
+                            }
+                        });
+                        xhr.addEventListener('load', () => {
+                            if (xhr.status === 200) {
+                                const response = JSON.parse(xhr.responseText);
+                                if (response.success) {
+                                    showToast(file.name + ' uploaded!', 'success');
+                                    resolve();
+                                } else {
+                                    reject(response.error);
+                                }
+                            } else {
+                                reject('Upload failed');
+                            }
+                        });
+                        xhr.addEventListener('error', () => reject('Network error'));
+                        xhr.open('POST', API_URL);
+                        xhr.send(formData);
+                    });
+                } catch (error) {
+                    showToast('Failed: ' + file.name, 'error');
+                }
+            }
+            progressBar.style.display = 'none';
+            progressFill.style.width = '0%';
+            loadFiles();
+        }
+
+        function downloadFile(key) {
+            const url = CDN_URL + '/' + key;
+            window.open(url, '_blank');
+            showToast('Download started', 'success');
+        }
+
+        async function deleteFile(key) {
+            if (!confirm('Delete ' + key + '?')) return;
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'delete', key: key })
+                });
+                const data = await response.json();
+                if (data.success) {
+                    showToast('File deleted', 'success');
+                    loadFiles();
+                } else {
+                    showToast('Delete failed', 'error');
+                }
+            } catch (error) {
+                showToast('Delete failed', 'error');
+            }
+        }
+
+        function formatSize(bytes) {
+            if (bytes === 0) return '0 B';
+            const k = 1024;
+            const sizes = ['B', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+        }
+
+        function showToast(message, type) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = 'toast show ' + type;
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+    </script>
+</body>
+</html>

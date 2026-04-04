@@ -1,0 +1,1141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VidiSmart — Advanced Lottie Animations</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Kumbh+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
+    <style>
+        :root {
+            --bg: #06060e;
+            --bg2: #0c0c1a;
+            --surface: rgba(255,255,255,0.04);
+            --border: rgba(255,255,255,0.08);
+            --text: #ededf5;
+            --muted: rgba(237,237,245,0.45);
+            --cyan: #00e5ff;
+            --magenta: #ff1f6e;
+            --violet: #7c3aed;
+            --blue: #1d4ed8;
+            --green: #10d98a;
+            --crm: #38bdf8;
+            --cx: #10d98a;
+            --mail: #fb923c;
+            --blast: #f472b6;
+            --twin: #a78bfa;
+            --font: 'Kumbh Sans', sans-serif;
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: var(--font);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            background: rgba(6,6,14,0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+        }
+        
+        nav ul {
+            display: flex;
+            gap: 2rem;
+            justify-content: center;
+            list-style: none;
+        }
+        
+        nav a {
+            color: var(--muted);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+        
+        nav a:hover { color: var(--cyan); }
+        
+        /* VidiSmart Logo */
+        .vidismart-logo {
+            position: fixed;
+            top: 1rem;
+            left: 2rem;
+            z-index: 200;
+            font-family: 'Kumbh Sans', sans-serif;
+            font-weight: 800;
+            font-size: 1.5rem;
+            letter-spacing: -0.02em;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0;
+        }
+        
+        .vidismart-logo .vidi {
+            background: linear-gradient(120deg, #00e5ff, #1d4ed8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .vidismart-logo .smart {
+            color: #ededf5;
+            margin-left: 0;
+        }
+        
+        /* Section Styles */
+        section {
+            min-height: 100vh;
+            padding: 8rem 2rem 4rem;
+            position: relative;
+        }
+        
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+        
+        .section-tag {
+            display: inline-block;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            padding: 0.4rem 1rem;
+            border-radius: 100px;
+            margin-bottom: 1rem;
+        }
+        
+        .section-tag.lottie { background: rgba(167,139,250,0.15); color: var(--twin); }
+        
+        h1 {
+            font-size: clamp(2.5rem, 6vw, 4rem);
+            font-weight: 800;
+            letter-spacing: -0.04em;
+            margin-bottom: 1rem;
+        }
+        
+        h2 {
+            font-size: clamp(2rem, 5vw, 3rem);
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            margin-bottom: 1rem;
+        }
+        
+        .section-desc {
+            font-size: 1.1rem;
+            color: var(--muted);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        /* Demo Grid */
+        .demo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+        
+        .demo-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            overflow: hidden;
+            transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
+        }
+        
+        .demo-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(255,255,255,0.15);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+        
+        .demo-preview {
+            height: 300px;
+            background: var(--bg2);
+            position: relative;
+            overflow: hidden;
+            transition: background 0.3s;
+        }
+        
+        .demo-card:hover .demo-preview {
+            background: rgba(12,12,26,0.8);
+        }
+        
+        /* Lottie container hover effects */
+        .demo-preview > div {
+            transition: transform 0.3s;
+        }
+        
+        .demo-card:hover .demo-preview > div {
+            transform: scale(1.05);
+        }
+        
+        .demo-info {
+            padding: 1.5rem;
+        }
+        
+        .demo-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .demo-desc {
+            font-size: 0.875rem;
+            color: var(--muted);
+            margin-bottom: 1rem;
+        }
+        
+        .demo-code {
+            background: rgba(0,0,0,0.3);
+            border-radius: 8px;
+            padding: 1rem;
+            font-family: monospace;
+            font-size: 0.75rem;
+            color: var(--muted);
+            overflow-x: auto;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+        
+        /* Lottie Section */
+        #lottie { background: var(--bg2); }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            nav ul { gap: 1rem; font-size: 0.875rem; }
+            .demo-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- VidiSmart Logo -->
+<a href="#" class="vidismart-logo">
+    <span class="vidi">Vidi</span><span class="smart">Smart</span>
+</a>
+
+<!-- Navigation -->
+<nav>
+    <ul>
+        <li><a href="#lottie">Lottie Animations</a></li>
+    </ul>
+</nav>
+
+<!-- Lottie Section -->
+<section id="lottie">
+    <div class="container">
+        <div class="section-header">
+            <span class="section-tag lottie">Lottie</span>
+            <h2>Advanced Lottie Animations</h2>
+            <p class="section-desc">Sophisticated animations with morphing, path animations, and complex keyframes</p>
+        </div>
+        
+        <div class="demo-grid">
+            
+            <!-- Lottie Demo 1: Morphing Shape -->
+            <div class="demo-card">
+                <div class="demo-preview">
+                    <div id="lottie-morph-demo" style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;"></div>
+                </div>
+                <div class="demo-info">
+                    <div class="demo-title">Morphing Shape</div>
+                    <div class="demo-desc">Smooth shape morphing between different forms. Perfect for logo animations and transitions.</div>
+                    <div class="demo-code">
+lottie.loadAnimation({
+  container: document.getElementById('morph'),
+  renderer: 'svg',
+  loop: true,
+  autoplay: true,
+  path: 'morph.json'
+});
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Lottie Demo 2: Path Animation -->
+            <div class="demo-card">
+                <div class="demo-preview">
+                    <div id="lottie-path-demo" style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;"></div>
+                </div>
+                <div class="demo-info">
+                    <div class="demo-title">Path Animation</div>
+                    <div class="demo-desc">Animated paths with stroke drawing effects. Great for signatures and line art.</div>
+                    <div class="demo-code">
+lottie.loadAnimation({
+  container: document.getElementById('path'),
+  renderer: 'svg',
+  loop: true,
+  autoplay: true,
+  path: 'path.json'
+});
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Lottie Demo 3: Complex Morph -->
+            <div class="demo-card">
+                <div class="demo-preview">
+                    <div id="lottie-complex-demo" style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;"></div>
+                </div>
+                <div class="demo-info">
+                    <div class="demo-title">Complex Morph</div>
+                    <div class="demo-desc">Multi-element morphing with color transitions. Perfect for loading states and progress indicators.</div>
+                    <div class="demo-code">
+lottie.loadAnimation({
+  container: document.getElementById('complex'),
+  renderer: 'svg',
+  loop: true,
+  autoplay: true,
+  path: 'complex.json'
+});
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Lottie Demo 4: Particle Effect -->
+            <div class="demo-card">
+                <div class="demo-preview">
+                    <div id="lottie-particle-demo" style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;"></div>
+                </div>
+                <div class="demo-info">
+                    <div class="demo-title">Particle Effect</div>
+                    <div class="demo-desc">Animated particles with physics-based movement. Great for celebrations and success states.</div>
+                    <div class="demo-code">
+lottie.loadAnimation({
+  container: document.getElementById('particle'),
+  renderer: 'svg',
+  loop: true,
+  autoplay: true,
+  path: 'particle.json'
+});
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Lottie Demo 5: Wave Animation -->
+            <div class="demo-card">
+                <div class="demo-preview">
+                    <div id="lottie-wave-demo" style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;"></div>
+                </div>
+                <div class="demo-info">
+                    <div class="demo-title">Wave Animation</div>
+                    <div class="demo-desc">Smooth wave animations with multiple layers. Perfect for audio visualizers and backgrounds.</div>
+                    <div class="demo-code">
+lottie.loadAnimation({
+  container: document.getElementById('wave'),
+  renderer: 'svg',
+  loop: true,
+  autoplay: true,
+  path: 'wave.json'
+});
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Lottie Demo 6: 3D Rotation -->
+            <div class="demo-card">
+                <div class="demo-preview">
+                    <div id="lottie-3d-demo" style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;"></div>
+                </div>
+                <div class="demo-info">
+                    <div class="demo-title">3D Rotation</div>
+                    <div class="demo-desc">Pseudo-3D rotation effects with perspective. Great for product showcases and cards.</div>
+                    <div class="demo-code">
+lottie.loadAnimation({
+  container: document.getElementById('3d'),
+  renderer: 'svg',
+  loop: true,
+  autoplay: true,
+  path: '3d.json'
+});
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+</section>
+
+<script>
+// ============================================
+// LOTTIE DEMOS WITH COMPLEX ANIMATIONS
+// ============================================
+
+// Store Lottie animation instances for hover control
+const lottieAnimations = {};
+
+// Morphing Shape Animation
+const morphAnimation = {
+    v: "5.7.4",
+    fr: 60,
+    ip: 0,
+    op: 120,
+    w: 200,
+    h: 200,
+    nm: "Morph",
+    ddd: 0,
+    assets: [],
+    layers: [
+        {
+            ddd: 0,
+            ind: 1,
+            ty: 4,
+            nm: "Shape",
+            sr: 1,
+            ks: {
+                o: { a: 0, k: 100 },
+                r: { a: 0, k: 0 },
+                p: { a: 0, k: [100, 100, 0] },
+                a: { a: 0, k: [0, 0, 0] },
+                s: { a: 0, k: [100, 100, 100] }
+            },
+            ao: 0,
+            shapes: [
+                {
+                    ty: "gr",
+                    it: [
+                        {
+                            ty: "sr",
+                            sy: 1,
+                            d: 1,
+                            pt: { a: 0, k: 4 },
+                            p: { a: 0, k: [0, 0] },
+                            r: { a: 0, k: 0 },
+                            ir: { a: 0, k: 30 },
+                            is: { a: 0, k: 0 },
+                            or: { a: 0, k: 60 },
+                            os: { a: 0, k: 0 }
+                        },
+                        {
+                            ty: "fl",
+                            c: { a: 0, k: [0, 0.898, 1, 1] },
+                            o: { a: 0, k: 100 }
+                        },
+                        {
+                            ty: "tr",
+                            p: { a: 0, k: [0, 0] },
+                            a: { a: 0, k: [0, 0] },
+                            s: {
+                                a: 1,
+                                k: [
+                                    { t: 0, s: [100, 100], e: [150, 150] },
+                                    { t: 60, s: [150, 150], e: [100, 100] },
+                                    { t: 120, s: [100, 100] }
+                                ]
+                            },
+                            r: {
+                                a: 1,
+                                k: [
+                                    { t: 0, s: [0], e: [180] },
+                                    { t: 60, s: [180], e: [360] },
+                                    { t: 120, s: [360] }
+                                ]
+                            },
+                            o: { a: 0, k: 100 }
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+};
+
+lottieAnimations.morph = lottie.loadAnimation({
+    container: document.getElementById('lottie-morph-demo'),
+    renderer: 'svg',
+    loop: true,
+    autoplay: true,
+    animationData: morphAnimation
+});
+
+// Path Animation (Stroke Drawing)
+const pathAnimation = {
+    v: "5.7.4",
+    fr: 60,
+    ip: 0,
+    op: 120,
+    w: 200,
+    h: 200,
+    nm: "Path",
+    ddd: 0,
+    assets: [],
+    layers: [
+        {
+            ddd: 0,
+            ind: 1,
+            ty: 4,
+            nm: "Path",
+            sr: 1,
+            ks: {
+                o: { a: 0, k: 100 },
+                r: { a: 0, k: 0 },
+                p: { a: 0, k: [100, 100, 0] },
+                a: { a: 0, k: [0, 0, 0] },
+                s: { a: 0, k: [100, 100, 100] }
+            },
+            ao: 0,
+            shapes: [
+                {
+                    ty: "gr",
+                    it: [
+                        {
+                            ty: "sh",
+                            d: 1,
+                            ks: {
+                                a: 0,
+                                k: {
+                                    c: false,
+                                    v: [[-60, 0], [-30, -40], [0, 0], [30, 40], [60, 0]],
+                                    i: [[0, 0], [0, 0], [0, 0], [0, 0], [0, 0]],
+                                    o: [[0, 0], [0, 0], [0, 0], [0, 0], [0, 0]]
+                                }
+                            }
+                        },
+                        {
+                            ty: "st",
+                            c: { a: 0, k: [1, 0.122, 0.431, 1] },
+                            o: { a: 0, k: 100 },
+                            w: { a: 0, k: 4 },
+                            lc: 2,
+                            lj: 2
+                        },
+                        {
+                            ty: "tm",
+                            s: { a: 0, k: 0 },
+                            e: {
+                                a: 1,
+                                k: [
+                                    { t: 0, s: [0], e: [100] },
+                                    { t: 60, s: [100], e: [0] },
+                                    { t: 120, s: [0] }
+                                ]
+                            },
+                            o: { a: 0, k: 0 }
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+};
+
+lottieAnimations.path = lottie.loadAnimation({
+    container: document.getElementById('lottie-path-demo'),
+    renderer: 'svg',
+    loop: true,
+    autoplay: true,
+    animationData: pathAnimation
+});
+
+// Complex Morph Animation
+const complexAnimation = {
+    v: "5.7.4",
+    fr: 60,
+    ip: 0,
+    op: 180,
+    w: 200,
+    h: 200,
+    nm: "Complex",
+    ddd: 0,
+    assets: [],
+    layers: [
+        {
+            ddd: 0,
+            ind: 1,
+            ty: 4,
+            nm: "Circle1",
+            sr: 1,
+            ks: {
+                o: { a: 0, k: 100 },
+                r: { a: 0, k: 0 },
+                p: {
+                    a: 1,
+                    k: [
+                        { t: 0, s: [70, 100, 0], e: [130, 100, 0] },
+                        { t: 90, s: [130, 100, 0], e: [70, 100, 0] },
+                        { t: 180, s: [70, 100, 0] }
+                    ]
+                },
+                a: { a: 0, k: [0, 0, 0] },
+                s: {
+                    a: 1,
+                    k: [
+                        { t: 0, s: [100, 100, 100], e: [150, 150, 100] },
+                        { t: 90, s: [150, 150, 100], e: [100, 100, 100] },
+                        { t: 180, s: [100, 100, 100] }
+                    ]
+                }
+            },
+            ao: 0,
+            shapes: [
+                {
+                    ty: "gr",
+                    it: [
+                        {
+                            ty: "el",
+                            d: 1,
+                            s: { a: 0, k: [40, 40] },
+                            p: { a: 0, k: [0, 0] }
+                        },
+                        {
+                            ty: "fl",
+                            c: {
+                                a: 1,
+                                k: [
+                                    { t: 0, s: [0, 0.898, 1, 1], e: [1, 0.122, 0.431, 1] },
+                                    { t: 90, s: [1, 0.122, 0.431, 1], e: [0, 0.898, 1, 1] },
+                                    { t: 180, s: [0, 0.898, 1, 1] }
+                                ]
+                            },
+                            o: { a: 0, k: 100 }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            ddd: 0,
+            ind: 2,
+            ty: 4,
+            nm: "Circle2",
+            sr: 1,
+            ks: {
+                o: { a: 0, k: 100 },
+                r: { a: 0, k: 0 },
+                p: {
+                    a: 1,
+                    k: [
+                        { t: 0, s: [130, 100, 0], e: [70, 100, 0] },
+                        { t: 90, s: [70, 100, 0], e: [130, 100, 0] },
+                        { t: 180, s: [130, 100, 0] }
+                    ]
+                },
+                a: { a: 0, k: [0, 0, 0] },
+                s: {
+                    a: 1,
+                    k: [
+                        { t: 0, s: [100, 100, 100], e: [150, 150, 100] },
+                        { t: 90, s: [150, 150, 100], e: [100, 100, 100] },
+                        { t: 180, s: [100, 100, 100] }
+                    ]
+                }
+            },
+            ao: 0,
+            shapes: [
+                {
+                    ty: "gr",
+                    it: [
+                        {
+                            ty: "el",
+                            d: 1,
+                            s: { a: 0, k: [40, 40] },
+                            p: { a: 0, k: [0, 0] }
+                        },
+                        {
+                            ty: "fl",
+                            c: {
+                                a: 1,
+                                k: [
+                                    { t: 0, s: [1, 0.122, 0.431, 1], e: [0, 0.898, 1, 1] },
+                                    { t: 90, s: [0, 0.898, 1, 1], e: [1, 0.122, 0.431, 1] },
+                                    { t: 180, s: [1, 0.122, 0.431, 1] }
+                                ]
+                            },
+                            o: { a: 0, k: 100 }
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+};
+
+lottieAnimations.complex = lottie.loadAnimation({
+    container: document.getElementById('lottie-complex-demo'),
+    renderer: 'svg',
+    loop: true,
+    autoplay: true,
+    animationData: complexAnimation
+});
+
+// Particle Effect Animation
+const particleAnimation = {
+    v: "5.7.4",
+    fr: 60,
+    ip: 0,
+    op: 120,
+    w: 200,
+    h: 200,
+    nm: "Particle",
+    ddd: 0,
+    assets: [],
+    layers: [
+        {
+            ddd: 0,
+            ind: 1,
+            ty: 4,
+            nm: "Particle1",
+            sr: 1,
+            ks: {
+                o: {
+                    a: 1,
+                    k: [
+                        { t: 0, s: [100], e: [0] },
+                        { t: 60, s: [0], e: [100] },
+                        { t: 120, s: [100] }
+                    ]
+                },
+                r: { a: 0, k: 0 },
+                p: {
+                    a: 1,
+                    k: [
+                        { t: 0, s: [100, 100, 0], e: [100, 50, 0] },
+                        { t: 60, s: [100, 50, 0], e: [100, 100, 0] },
+                        { t: 120, s: [100, 100, 0] }
+                    ]
+                },
+                a: { a: 0, k: [0, 0, 0] },
+                s: {
+                    a: 1,
+                    k: [
+                        { t: 0, s: [100, 100, 100], e: [50, 50, 100] },
+                        { t: 60, s: [50, 50, 100], e: [100, 100, 100] },
+                        { t: 120, s: [100, 100, 100] }
+                    ]
+                }
+            },
+            ao: 0,
+            shapes: [
+                {
+                    ty: "gr",
+                    it: [
+                        {
+                            ty: "el",
+                            d: 1,
+                            s: { a: 0, k: [20, 20] },
+                            p: { a: 0, k: [0, 0] }
+                        },
+                        {
+                            ty: "fl",
+                            c: { a: 0, k: [0.063, 0.851, 0.541, 1] },
+                            o: { a: 0, k: 100 }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            ddd: 0,
+            ind: 2,
+            ty: 4,
+            nm: "Particle2",
+            sr: 1,
+            ks: {
+                o: {
+                    a: 1,
+                    k: [
+                        { t: 0, s: [100], e: [0] },
+                        { t: 60, s: [0], e: [100] },
+                        { t: 120, s: [100] }
+                    ]
+                },
+                r: { a: 0, k: 0 },
+                p: {
+                    a: 1,
+                    k: [
+                        { t: 0, s: [100, 100, 0], e: [60, 140, 0] },
+                        { t: 60, s: [60, 140, 0], e: [100, 100, 0] },
+                        { t: 120, s: [100, 100, 0] }
+                    ]
+                },
+                a: { a: 0, k: [0, 0, 0] },
+                s: {
+                    a: 1,
+                    k: [
+                        { t: 0, s: [100, 100, 100], e: [50, 50, 100] },
+                        { t: 60, s: [50, 50, 100], e: [100, 100, 100] },
+                        { t: 120, s: [100, 100, 100] }
+                    ]
+                }
+            },
+            ao: 0,
+            shapes: [
+                {
+                    ty: "gr",
+                    it: [
+                        {
+                            ty: "el",
+                            d: 1,
+                            s: { a: 0, k: [20, 20] },
+                            p: { a: 0, k: [0, 0] }
+                        },
+                        {
+                            ty: "fl",
+                            c: { a: 0, k: [0.486, 0.227, 0.929, 1] },
+                            o: { a: 0, k: 100 }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            ddd: 0,
+            ind: 3,
+            ty: 4,
+            nm: "Particle3",
+            sr: 1,
+            ks: {
+                o: {
+                    a: 1,
+                    k: [
+                        { t: 0, s: [100], e: [0] },
+                        { t: 60, s: [0], e: [100] },
+                        { t: 120, s: [100] }
+                    ]
+                },
+                r: { a: 0, k: 0 },
+                p: {
+                    a: 1,
+                    k: [
+                        { t: 0, s: [100, 100, 0], e: [140, 60, 0] },
+                        { t: 60, s: [140, 60, 0], e: [100, 100, 0] },
+                        { t: 120, s: [100, 100, 0] }
+                    ]
+                },
+                a: { a: 0, k: [0, 0, 0] },
+                s: {
+                    a: 1,
+                    k: [
+                        { t: 0, s: [100, 100, 100], e: [50, 50, 100] },
+                        { t: 60, s: [50, 50, 100], e: [100, 100, 100] },
+                        { t: 120, s: [100, 100, 100] }
+                    ]
+                }
+            },
+            ao: 0,
+            shapes: [
+                {
+                    ty: "gr",
+                    it: [
+                        {
+                            ty: "el",
+                            d: 1,
+                            s: { a: 0, k: [20, 20] },
+                            p: { a: 0, k: [0, 0] }
+                        },
+                        {
+                            ty: "fl",
+                            c: { a: 0, k: [0.22, 0.306, 0.847, 1] },
+                            o: { a: 0, k: 100 }
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+};
+
+lottieAnimations.particle = lottie.loadAnimation({
+    container: document.getElementById('lottie-particle-demo'),
+    renderer: 'svg',
+    loop: true,
+    autoplay: true,
+    animationData: particleAnimation
+});
+
+// Wave Animation
+const waveAnimation = {
+    v: "5.7.4",
+    fr: 60,
+    ip: 0,
+    op: 120,
+    w: 200,
+    h: 200,
+    nm: "Wave",
+    ddd: 0,
+    assets: [],
+    layers: [
+        {
+            ddd: 0,
+            ind: 1,
+            ty: 4,
+            nm: "Wave1",
+            sr: 1,
+            ks: {
+                o: { a: 0, k: 100 },
+                r: { a: 0, k: 0 },
+                p: { a: 0, k: [100, 100, 0] },
+                a: { a: 0, k: [0, 0, 0] },
+                s: { a: 0, k: [100, 100, 100] }
+            },
+            ao: 0,
+            shapes: [
+                {
+                    ty: "gr",
+                    it: [
+                        {
+                            ty: "sh",
+                            d: 1,
+                            ks: {
+                                a: 1,
+                                k: [
+                                    {
+                                        t: 0,
+                                        s: {
+                                            c: false,
+                                            v: [[-80, 0], [-40, -30], [0, 0], [40, 30], [80, 0]],
+                                            i: [[0, 0], [0, 0], [0, 0], [0, 0], [0, 0]],
+                                            o: [[0, 0], [0, 0], [0, 0], [0, 0], [0, 0]]
+                                        },
+                                        e: {
+                                            c: false,
+                                            v: [[-80, 0], [-40, 30], [0, 0], [40, -30], [80, 0]],
+                                            i: [[0, 0], [0, 0], [0, 0], [0, 0], [0, 0]],
+                                            o: [[0, 0], [0, 0], [0, 0], [0, 0], [0, 0]]
+                                        }
+                                    },
+                                    {
+                                        t: 60,
+                                        s: {
+                                            c: false,
+                                            v: [[-80, 0], [-40, 30], [0, 0], [40, -30], [80, 0]],
+                                            i: [[0, 0], [0, 0], [0, 0], [0, 0], [0, 0]],
+                                            o: [[0, 0], [0, 0], [0, 0], [0, 0], [0, 0]]
+                                        },
+                                        e: {
+                                            c: false,
+                                            v: [[-80, 0], [-40, -30], [0, 0], [40, 30], [80, 0]],
+                                            i: [[0, 0], [0, 0], [0, 0], [0, 0], [0, 0]],
+                                            o: [[0, 0], [0, 0], [0, 0], [0, 0], [0, 0]]
+                                        }
+                                    },
+                                    {
+                                        t: 120,
+                                        s: {
+                                            c: false,
+                                            v: [[-80, 0], [-40, -30], [0, 0], [40, 30], [80, 0]],
+                                            i: [[0, 0], [0, 0], [0, 0], [0, 0], [0, 0]],
+                                            o: [[0, 0], [0, 0], [0, 0], [0, 0], [0, 0]]
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            ty: "st",
+                            c: { a: 0, k: [0, 0.898, 1, 1] },
+                            o: { a: 0, k: 100 },
+                            w: { a: 0, k: 3 },
+                            lc: 2,
+                            lj: 2
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            ddd: 0,
+            ind: 2,
+            ty: 4,
+            nm: "Wave2",
+            sr: 1,
+            ks: {
+                o: { a: 0, k: 50 },
+                r: { a: 0, k: 0 },
+                p: { a: 0, k: [100, 120, 0] },
+                a: { a: 0, k: [0, 0, 0] },
+                s: { a: 0, k: [100, 100, 100] }
+            },
+            ao: 0,
+            shapes: [
+                {
+                    ty: "gr",
+                    it: [
+                        {
+                            ty: "sh",
+                            d: 1,
+                            ks: {
+                                a: 1,
+                                k: [
+                                    {
+                                        t: 0,
+                                        s: {
+                                            c: false,
+                                            v: [[-80, 0], [-40, -30], [0, 0], [40, 30], [80, 0]],
+                                            i: [[0, 0], [0, 0], [0, 0], [0, 0], [0, 0]],
+                                            o: [[0, 0], [0, 0], [0, 0], [0, 0], [0, 0]]
+                                        },
+                                        e: {
+                                            c: false,
+                                            v: [[-80, 0], [-40, 30], [0, 0], [40, -30], [80, 0]],
+                                            i: [[0, 0], [0, 0], [0, 0], [0, 0], [0, 0]],
+                                            o: [[0, 0], [0, 0], [0, 0], [0, 0], [0, 0]]
+                                        }
+                                    },
+                                    {
+                                        t: 60,
+                                        s: {
+                                            c: false,
+                                            v: [[-80, 0], [-40, 30], [0, 0], [40, -30], [80, 0]],
+                                            i: [[0, 0], [0, 0], [0, 0], [0, 0], [0, 0]],
+                                            o: [[0, 0], [0, 0], [0, 0], [0, 0], [0, 0]]
+                                        },
+                                        e: {
+                                            c: false,
+                                            v: [[-80, 0], [-40, -30], [0, 0], [40, 30], [80, 0]],
+                                            i: [[0, 0], [0, 0], [0, 0], [0, 0], [0, 0]],
+                                            o: [[0, 0], [0, 0], [0, 0], [0, 0], [0, 0]]
+                                        }
+                                    },
+                                    {
+                                        t: 120,
+                                        s: {
+                                            c: false,
+                                            v: [[-80, 0], [-40, -30], [0, 0], [40, 30], [80, 0]],
+                                            i: [[0, 0], [0, 0], [0, 0], [0, 0], [0, 0]],
+                                            o: [[0, 0], [0, 0], [0, 0], [0, 0], [0, 0]]
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            ty: "st",
+                            c: { a: 0, k: [1, 0.122, 0.431, 1] },
+                            o: { a: 0, k: 100 },
+                            w: { a: 0, k: 3 },
+                            lc: 2,
+                            lj: 2
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+};
+
+lottieAnimations.wave = lottie.loadAnimation({
+    container: document.getElementById('lottie-wave-demo'),
+    renderer: 'svg',
+    loop: true,
+    autoplay: true,
+    animationData: waveAnimation
+});
+
+// 3D Rotation Animation
+const rotation3dAnimation = {
+    v: "5.7.4",
+    fr: 60,
+    ip: 0,
+    op: 120,
+    w: 200,
+    h: 200,
+    nm: "3D",
+    ddd: 0,
+    assets: [],
+    layers: [
+        {
+            ddd: 0,
+            ind: 1,
+            ty: 4,
+            nm: "Cube",
+            sr: 1,
+            ks: {
+                o: { a: 0, k: 100 },
+                r: {
+                    a: 1,
+                    k: [
+                        { t: 0, s: [0], e: [180] },
+                        { t: 60, s: [180], e: [360] },
+                        { t: 120, s: [360] }
+                    ]
+                },
+                p: { a: 0, k: [100, 100, 0] },
+                a: { a: 0, k: [0, 0, 0] },
+                s: { a: 0, k: [100, 100, 100] }
+            },
+            ao: 0,
+            shapes: [
+                {
+                    ty: "gr",
+                    it: [
+                        {
+                            ty: "rc",
+                            d: 1,
+                            s: { a: 0, k: [60, 60] },
+                            p: { a: 0, k: [0, 0] },
+                            r: { a: 0, k: 0 }
+                        },
+                        {
+                            ty: "fl",
+                            c: { a: 0, k: [0.22, 0.306, 0.847, 1] },
+                            o: { a: 0, k: 100 }
+                        },
+                        {
+                            ty: "st",
+                            c: { a: 0, k: [0, 0.898, 1, 1] },
+                            o: { a: 0, k: 100 },
+                            w: { a: 0, k: 2 },
+                            lc: 2,
+                            lj: 2
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+};
+
+lottieAnimations.rotation3d = lottie.loadAnimation({
+    container: document.getElementById('lottie-3d-demo'),
+    renderer: 'svg',
+    loop: true,
+    autoplay: true,
+    animationData: rotation3dAnimation
+});
+
+// Add hover interactions to Lottie demo cards only
+const lottieDemoCards = document.querySelectorAll('#lottie .demo-card');
+lottieDemoCards.forEach((card) => {
+    const demoPreview = card.querySelector('.demo-preview');
+    if (demoPreview) {
+        const lottieContainer = demoPreview.querySelector('[id^="lottie-"]');
+        if (lottieContainer) {
+            const animId = lottieContainer.id.replace('-demo', '').replace('lottie-', '');
+            const animKey = animId === '3d' ? 'rotation3d' : animId;
+            
+            if (animKey && lottieAnimations[animKey]) {
+                demoPreview.addEventListener('mouseenter', () => {
+                    lottieAnimations[animKey].pause();
+                });
+                
+                demoPreview.addEventListener('mouseleave', () => {
+                    lottieAnimations[animKey].play();
+                });
+            }
+        }
+    }
+});
+</script>
+
+</body>
+</html>

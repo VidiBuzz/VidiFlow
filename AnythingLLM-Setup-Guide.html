@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AnythingLLM Complete Setup Guide</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #e2e8f0;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        header {
+            text-align: center;
+            padding: 3rem 0;
+            background: rgba(30, 41, 59, 0.5);
+            border-radius: 1rem;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(94, 234, 212, 0.2);
+        }
+        h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(90deg, #5eead4, #38bdf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+        .subtitle {
+            color: #94a3b8;
+            font-size: 1.1rem;
+        }
+        .toc {
+            background: rgba(30, 41, 59, 0.7);
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(94, 234, 212, 0.1);
+        }
+        .toc h2 {
+            color: #5eead4;
+            margin-bottom: 1rem;
+            font-size: 1.25rem;
+        }
+        .toc ul {
+            list-style: none;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 0.5rem;
+        }
+        .toc a {
+            color: #cbd5e1;
+            text-decoration: none;
+            padding: 0.5rem;
+            border-radius: 0.375rem;
+            transition: all 0.2s;
+            display: block;
+        }
+        .toc a:hover {
+            background: rgba(94, 234, 212, 0.1);
+            color: #5eead4;
+        }
+        section {
+            background: rgba(30, 41, 59, 0.5);
+            padding: 2rem;
+            border-radius: 0.75rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid rgba(94, 234, 212, 0.1);
+        }
+        h2 {
+            color: #5eead4;
+            font-size: 1.75rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid rgba(94, 234, 212, 0.3);
+        }
+        h3 {
+            color: #38bdf8;
+            font-size: 1.25rem;
+            margin: 1.5rem 0 0.75rem 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            background: rgba(15, 23, 42, 0.5);
+            border-radius: 0.5rem;
+            overflow: hidden;
+        }
+        th, td {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(94, 234, 212, 0.1);
+        }
+        th {
+            background: rgba(94, 234, 212, 0.1);
+            color: #5eead4;
+            font-weight: 600;
+        }
+        tr:hover {
+            background: rgba(94, 234, 212, 0.05);
+        }
+        code {
+            background: rgba(15, 23, 42, 0.8);
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9rem;
+            color: #5eead4;
+        }
+        pre {
+            background: rgba(15, 23, 42, 0.9);
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            overflow-x: auto;
+            margin: 1rem 0;
+            border: 1px solid rgba(94, 234, 212, 0.2);
+        }
+        pre code {
+            background: none;
+            padding: 0;
+            color: #e2e8f0;
+        }
+        .highlight {
+            background: linear-gradient(90deg, rgba(94, 234, 212, 0.2), rgba(56, 189, 248, 0.2));
+            padding: 1rem;
+            border-radius: 0.5rem;
+            border-left: 4px solid #5eead4;
+            margin: 1rem 0;
+        }
+        .warning {
+            background: rgba(251, 191, 36, 0.1);
+            border-left-color: #fbbf24;
+        }
+        ul, ol {
+            margin: 1rem 0 1rem 2rem;
+        }
+        li {
+            margin: 0.5rem 0;
+        }
+        a {
+            color: #38bdf8;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .checklist {
+            list-style: none;
+            margin-left: 0;
+        }
+        .checklist li::before {
+            content: "☐ ";
+            color: #5eead4;
+            font-weight: bold;
+            margin-right: 0.5rem;
+        }
+        footer {
+            text-align: center;
+            padding: 2rem;
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🤖 AnythingLLM Complete Setup Guide</h1>
+            <p class="subtitle">Comprehensive guide for Qwen 3.5, Agent Skills, Team Sharing & AppFlowy Integration</p>
+            <p style="margin-top: 0.5rem; color: #64748b;">March 9, 2026</p>
+        </header>
+
+        <div class="toc">
+            <h2>📋 Table of Contents</h2>
+            <ul>
+                <li><a href="#qwen-setup">Quick Start for Qwen 3.5</a></li>
+                <li><a href="#agents">Agent Skills & Plugins</a></li>
+                <li><a href="#file-manager">File Manager Deep Dive</a></li>
+                <li><a href="#resources">Learning Resources & Videos</a></li>
+                <li><a href="#team-setup">Team Sharing Setup</a></li>
+                <li><a href="#appflowy">AppFlowy Integration</a></li>
+            </ul>
+        </div>
+
+        <section id="qwen-setup">
+            <h2>⚡ Quick Start for Qwen 3.5</h2>
+            
+            <h3>Local Ollama Setup</h3>
+            <pre><code># Install Qwen 3.5 (latest version)
+ollama pull qwen3:8b
+# Or for larger model
+ollama pull qwen3:14b
+# Or for the massive model
+ollama pull qwen3:32b</code></pre>
+
+            <h3>In AnythingLLM UI</h3>
+            <ol>
+                <li>Go to <strong>Settings → LLM Preferences</strong></li>
+                <li>Select "<strong>Ollama</strong>" as provider</li>
+                <li>Set Base URL: <code>http://localhost:11434</code></li>
+                <li>Select Model: <code>qwen3:8b</code> (or 14b/32b)</li>
+                <li>Test Connection → Save</li>
+            </ol>
+
+            <h3>Qwen3-Embedding-2B Setup</h3>
+            <pre><code># Pull the embedding model
+ollama pull qwen3-embedding:2b</code></pre>
+            <ol>
+                <li>Go to <strong>Settings → Embedding Preferences</strong></li>
+                <li>Select "<strong>Ollama</strong>" as provider</li>
+                <li>Set Base URL: <code>http://localhost:11434</code></li>
+                <li>Select Model: <code>qwen3-embedding:2b</code></li>
+                <li>Test Connection → Save</li>
+            </ol>
+
+            <h3>OpenRouter (Cloud Option)</h3>
+            <ul>
+                <li>Select "OpenRouter" as provider</li>
+                <li>Get API key from <a href="https://openrouter.ai">openrouter.ai</a></li>
+                <li>Use model ID: <code>qwen/qwen3-8b-instruct</code></li>
+            </ul>
+        </section>
+
+        <section id="agents">
+            <h2>🔌 Agent Skills & Plugins</h2>
+            
+            <div class="highlight">
+                <strong>Trigger agents:</strong> Type <code>@agent</code> in chat to activate agentic capabilities
+            </div>
+
+            <h3>Built-in Agent Skills</h3>
+            <table>
+                <tr>
+                    <th>Skill</th>
+                    <th>Description</th>
+                    <th>Status</th>
+                </tr>
+                <tr>
+                    <td><strong>Web Search</strong></td>
+                    <td>Live Google/Tavily search integration</td>
+                    <td>Built-in</td>
+                </tr>
+                <tr>
+                    <td><strong>File System</strong></td>
+                    <td>Read/write local files, search Vector DB</td>
+                    <td>Built-in</td>
+                </tr>
+                <tr>
+                    <td><strong>Code Execution</strong></td>
+                    <td>Run Python, JavaScript, shell commands</td>
+                    <td>Built-in</td>
+                </tr>
+                <tr>
+                    <td><strong>Document Processing</strong></td>
+                    <td>Parse PDFs, Word docs, images with OCR</td>
+                    <td>Built-in</td>
+                </tr>
+                <tr>
+                    <td><strong>RAG Query</strong></td>
+                    <td>Search embedded documents in workspaces</td>
+                    <td>Built-in</td>
+                </tr>
+            </table>
+
+            <h3>MCP (Model Context Protocol) Servers</h3>
+            <p>MCP is an open protocol connecting AI models to external tools.</p>
+            
+            <table>
+                <tr>
+                    <th>Server</th>
+                    <th>Purpose</th>
+                    <th>Setup</th>
+                </tr>
+                <tr>
+                    <td><strong>Filesystem</strong></td>
+                    <td>Local file operations</td>
+                    <td><code>npx -y @modelcontextprotocol/server-filesystem /path</code></td>
+                </tr>
+                <tr>
+                    <td><strong>Brave Search</strong></td>
+                    <td>Privacy web search</td>
+                    <td>Set <code>BRAVE_API_KEY</code></td>
+                </tr>
+                <tr>
+                    <td><strong>Tavily Search</strong></td>
+                    <td>Deep AI search</td>
+                    <td>Set <code>TAVILY_API_KEY</code></td>
+                </tr>
+                <tr>
+                    <td><strong>GitHub</strong></td>
+                    <td>Repo/issue access</td>
+                    <td>Set <code>GITHUB_TOKEN</code></td>
+                </tr>
+                <tr>
+                    <td><strong>PostgreSQL</strong></td>
+                    <td>Database queries</td>
+                    <td>Set <code>POSTGRES_URL</code></td>
+                </tr>
+                <tr>
+                    <td><strong>Google Drive</strong></td>
+                    <td>Drive file access</td>
+                    <td>OAuth setup</td>
+                </tr>
+                <tr>
+                    <td><strong>Playwright</strong></td>
+                    <td>Browser automation</td>
+                    <td><code>npx -y @modelcontextprotocol/server-playwright</code></td>
+                </tr>
+            </table>
+
+            <h3>Setting Up MCP Servers</h3>
+            <ol>
+                <li>Click <strong>Settings → MCP Servers</strong></li>
+                <li>Add Server:</li>
+                <ul>
+                    <li>Name: <code>brave-search</code></li>
+                    <li>Transport: <code>stdio</code></li>
+                    <li>Command: <code>env BRAVE_API_KEY=your_key npx -y @modelcontextprotocol/server-brave-search</code></li>
+                </ul>
+                <li>Save → Restart AnythingLLM</li>
+            </ol>
+        </section>
+
+        <section id="file-manager">
+            <h2>📁 File Manager Deep Dive</h2>
+            
+            <div class="highlight warning">
+                <strong>The built-in file manager is bare bones.</strong> You need plugins/integrations to make it usable.
+            </div>
+
+            <h3>Option 1: Paperless-ngx Integration (RECOMMENDED)</h3>
+            <p>Provides proper document management with OCR, tagging, and automatic ingestion.</p>
+            
+            <pre><code># docker-compose.paperless.yml
+version: '3.8'
+services:
+  paperless:
+    image: ghcr.io/paperless-ngx/paperless-ngx:latest
+    ports:
+      - '8090:8000'
+    volumes:
+      - paperless_data:/data
+      - paperless_media:/media
+      - ./documents:/documents  # Your intake folder
+    environment:
+      PAPERLESS_URL: http://localhost:8090
+      PAPERLESS_SECRET_KEY: your_random_secret
+      OCR_LANGUAGE: eng
+      PAPERLESS_CONSUMER_RECURSIVE: "true"
+    restart: unless-stopped
+
+volumes:
+  paperless_data:
+  paperless_media:</code></pre>
+
+            <p><strong>Workflow:</strong> Drop docs → Paperless OCRs & tags → Export to AnythingLLM</p>
+
+            <h3>Option 2: File System MCP (PRIMARY FILE MANAGER)</h3>
+            <p><strong>This is your main file manager interface</strong> - browse, search, and manage local files.</p>
+            
+            <h4>Step 1: Install Filesystem MCP</h4>
+            <ol>
+                <li>Settings → MCP Servers → Add Server</li>
+                <li>Configure:
+                    <ul>
+                        <li><strong>Name:</strong> <code>local-filesystem</code></li>
+                        <li><strong>Transport:</strong> <code>stdio</code></li>
+                        <li><strong>Command:</strong> <code>npx -y @modelcontextprotocol/server-filesystem C:\Users\You\Documents C:\Users\You\Projects</code></li>
+                    </ul>
+                </li>
+                <li>Save → Restart AnythingLLM</li>
+            </ol>
+
+            <h4>Step 2: Using the File Manager</h4>
+            <p>Once connected, use @agent commands:</p>
+            <pre><code>@agent List all files in my Documents folder
+@agent Search for files containing "contract" in Projects
+@agent Read the file at C:\Users\You\Documents\report.pdf
+@agent Show me the folder structure of Downloads</code></pre>
+
+            <h4>Step 3: Auto-Upload Script (Optional)</h4>
+            <pre><code># auto-upload-watchdog.py
+import os, time, requests
+from watchdog.observers import Observer
+from watchdog.events import FileSystemEventHandler
+
+WATCH_FOLDERS = [
+    "C:\\Users\\You\\Documents\\Scan-Inbox",
+    "C:\\Users\\You\\Downloads\\To-Process"
+]
+
+class DocumentHandler(FileSystemEventHandler):
+    def on_created(self, event):
+        if not event.is_directory:
+            print(f"📄 New file: {event.src_path}")
+            # Auto-upload to AnythingLLM
+
+if __name__ == "__main__":
+    observer = Observer()
+    for folder in WATCH_FOLDERS:
+        observer.schedule(DocumentHandler(), folder, recursive=True)
+    observer.start()</code></pre>
+
+            <h3>Option 3: Google Drive MCP (CLOUD FILE MANAGER)</h3>
+            <p><strong>Use this for cloud-based file management and team collaboration.</strong></p>
+            
+            <h4>Step 1: Google Cloud Console Setup</h4>
+            <ol>
+                <li>Go to <a href="https://console.cloud.google.com">console.cloud.google.com</a></li>
+                <li>Create new project → "AnythingLLM-Integration"</li>
+                <li>Enable Google Drive API:
+                    <ul>
+                        <li>APIs & Services → Library → Search "Google Drive API" → Enable</li>
+                    </ul>
+                </li>
+                <li>Create OAuth Credentials:
+                    <ul>
+                        <li>APIs & Services → Credentials → Create Credentials → OAuth client ID</li>
+                        <li>Application type: "Desktop app"</li>
+                        <li>Name: "AnythingLLM Drive"</li>
+                        <li>Download the <code>client_secret.json</code> file</li>
+                    </ul>
+                </li>
+            </ol>
+
+            <h4>Step 2: Install Google Drive MCP</h4>
+            <ol>
+                <li>Settings → MCP Servers → Add Server</li>
+                <li>Configure:
+                    <ul>
+                        <li><strong>Name:</strong> <code>google-drive</code></li>
+                        <li><strong>Transport:</strong> <code>stdio</code></li>
+                        <li><strong>Command:</strong> <code>npx -y @modelcontextprotocol/server-gdrive</code></li>
+                    </ul>
+                </li>
+                <li>On first run, authenticate with Google OAuth</li>
+                <li>Save → Restart AnythingLLM</li>
+            </ol>
+
+            <h4>Step 3: Using Google Drive as File Manager</h4>
+            <pre><code>@agent List files in my Google Drive root
+@agent Search Drive for "budget spreadsheet"
+@agent Read the document "Q4 Report" from Google Drive
+@agent Show me files in Drive folder "Projects/Active"
+@agent Download "contract.pdf" from Drive to local</code></pre>
+
+            <div class="highlight">
+                <strong>Pro Tip:</strong> Combine both File System and Google Drive MCPs for maximum flexibility. Use Paperless only for initial document intake/OCR.
+            </div>
+
+            <h3>Recommended Workflow: Complete Document Pipeline</h3>
+            <pre><code>STEP 1: INTAKE              STEP 2: ORGANIZE
+┌──────────────┐           ┌──────────────────┐
+│ Paperless    │ ──OCR──▶ │ Google Drive     │
+│ (Scan docs)  │           │ (Cloud filing)   │
+└──────────────┘           └──────────────────┘
+                                    │
+                                    ▼
+STEP 4: CHAT/SEARCH        STEP 3: LOCAL SYNC
+┌──────────────────┐       ┌──────────────────┐
+│ AnythingLLM      │ ◀──── │ File System MCP  │
+│ (RAG + Qwen 3.5) │       │ (Local cache)    │
+└──────────────────┘       └──────────────────┘</code></pre>
+
+            <h3>Where Files Are Stored
+
+            <h3>File Manager Comparison</h3>
+            <table>
+                <tr>
+                    <th>Solution</th>
+                    <th>Best For</th>
+                    <th>OCR</th>
+                    <th>Auto-tagging</th>
+                </tr>
+                <tr>
+                    <td><strong>Paperless-ngx</strong></td>
+                    <td>Document-heavy workflows</td>
+                    <td>✅ Yes</td>
+                    <td>✅ Yes</td>
+                </tr>
+                <tr>
+                    <td><strong>Filesystem MCP</strong></td>
+                    <td>Simple folder watching</td>
+                    <td>❌ No</td>
+                    <td>❌ No</td>
+                </tr>
+                <tr>
+                    <td><strong>Google Drive MCP</strong></td>
+                    <td>Cloud collaboration</td>
+                    <td>❌ No</td>
+                    <td>❌ No</td>
+                </tr>
+                <tr>
+                    <td><strong>Built-in Only</strong></td>
+                    <td>Quick tests only</td>
+                    <td>❌ No</td>
+                    <td>❌ No</td>
+                </tr>
+            </table>
+
+            <h3>Storage Locations</h3>
+            <table>
+                <tr>
+                    <th>Platform</th>
+                    <th>Path</th>
+                </tr>
+                <tr>
+                    <td><strong>Windows</strong></td>
+                    <td><code>C:\Users\&lt;user&gt;\AppData\Roaming\anythingllm-desktop\storage</code></td>
+                </tr>
+                <tr>
+                    <td><strong>Mac</strong></td>
+                    <td><code>/Users/&lt;user&gt;/Library/Application Support/anythingllm-desktop/storage</code></td>
+                </tr>
+                <tr>
+                    <td><strong>Linux</strong></td>
+                    <td><code>~/.config/anythingllm-desktop/storage/</code></td>
+                </tr>
+                <tr>
+                    <td><strong>Docker</strong></td>
+                    <td>Configurable via <code>STORAGE_DIR</code> env var</td>
+                </tr>
+            </table>
+
+            <h3>Storage Structure</h3>
+            <pre><code>storage/
+├── lancedb/          # Vector database (LanceDB default)
+├── documents/        # Parsed document content
+├── vector-cache/     # Cached embeddings (hashed filenames)
+├── models/           # Local LLMs/Embedder models
+├── anythingllm.db    # SQLite metadata database
+├── plugins/          # Custom agent skills
+└── direct-uploads/   # Chat attachments</code></pre>
+
+            <h3>File Manager Limitations & Workarounds</h3>
+            <table>
+                <tr>
+                    <th>Limitation</th>
+                    <th>Workaround</th>
+                </tr>
+                <tr>
+                    <td>3GB file size limit</td>
+                    <td>Split documents, use external references</td>
+                </tr>
+                <tr>
+                    <td>No folder sync</td>
+                    <td>Use API + automation scripts</td>
+                </tr>
+                <tr>
+                    <td>Single-user LanceDB</td>
+                    <td>Switch to Qdrant/Chroma for teams</td>
+                </tr>
+                <tr>
+                    <td>No auto-watching</td>
+                    <td>Use API polling or webhooks</td>
+                </tr>
+            </table>
+
+            <h3>Qdrant Integration (You Have This Installed!)</h3>
+            <div class="highlight">
+                <strong>Connect your Qdrant:</strong> Settings → Vector Database → Select Qdrant → URL: <code>http://localhost:6333</code>
+            </div>
+            
+            <pre><code># Qdrant docker-compose
+services:
+  qdrant:
+    image: qdrant/qdrant:latest
+    ports:
+      - "6333:6333"
+    volumes:
+      - qdrant_storage:/qdrant/storage</code></pre>
+        </section>
+
+        <section id="resources">
+            <h2>📚 Learning Resources & Videos</h2>
+            
+            <h3>Official Resources</h3>
+            <table>
+                <tr>
+                    <th>Resource</th>
+                    <th>Link</th>
+                </tr>
+                <tr>
+                    <td>Documentation</td>
+                    <td><a href="https://useanything.com/docs">useanything.com/docs</a></td>
+                </tr>
+                <tr>
+                    <td>GitHub</td>
+                    <td><a href="https://github.com/Mintplex-Labs/anything-llm">github.com/Mintplex-Labs/anything-llm</a></td>
+                </tr>
+                <tr>
+                    <td>Discord</td>
+                    <td><a href="https://useanything.com/discord">useanything.com/discord</a></td>
+                </tr>
+            </table>
+
+            <h3>Top YouTube Channels</h3>
+            <table>
+                <tr>
+                    <th>Channel</th>
+                    <th>Focus</th>
+                </tr>
+                <tr>
+                    <td><strong>All About AI (Jordan Wilson)</strong></td>
+                    <td>Lead Tech Reviewer - Best source for AnythingLLM updates</td>
+                </tr>
+                <tr>
+                    <td><strong>NetworkChuck</strong></td>
+                    <td>Docker deployment, home servers</td>
+                </tr>
+                <tr>
+                    <td><strong>Onoma</strong></td>
+                    <td>MCP implementation tutorials</td>
+                </tr>
+            </table>
+
+            <h3>Key Videos</h3>
+            <ul>
+                <li><strong>Mastering @agent & MCP:</strong> <a href="https://www.youtube.com/watch?v=Wjrdr0NU4Sk">youtube.com/watch?v=Wjrdr0NU4Sk</a></li>
+                <li><strong>Private Vector DBs:</strong> <a href="https://www.youtube.com/watch?v=Mv9N6Yn_R-o">youtube.com/watch?v=Mv9N6Yn_R-o</a></li>
+                <li><strong>Search:</strong> "anythingllm mcp tutorial" on YouTube</li>
+            </ul>
+        </section>
+
+        <section id="team-setup">
+            <h2>👥 Team Sharing & Multi-User Setup</h2>
+            
+            <h3>Docker Deployment for Teams</h3>
+            <pre><code>version: '3.8'
+services:
+  anythingllm:
+    image: mintplexlabs/anythingllm:latest
+    container_name: anythingllm-team
+    ports:
+      - "3001:3001"
+    volumes:
+      - anythingllm-storage:/app/server/storage
+    environment:
+      - SERVER_PORT=3001
+      - STORAGE_DIR=/app/server/storage
+      - JWT_SECRET=change-this-to-32-char-random-string
+      - AUTH_TOKEN=change-this-to-32-char-random-string
+      - LLM_PROVIDER=ollama
+      - OLLAMA_BASE_PATH=http://host.docker.internal:11434
+      - OLLAMA_MODEL_PREF=qwen2.5:7b
+      - VECTOR_DB=qdrant
+      - QDRANT_ENDPOINT=http://qdrant:6333
+    restart: unless-stopped
+    
+  qdrant:
+    image: qdrant/qdrant:latest
+    volumes:
+      - qdrant-storage:/qdrant/storage
+    ports:
+      - "6333:6333"
+
+volumes:
+  anythingllm-storage:
+  qdrant-storage:</code></pre>
+
+            <h3>Network Access</h3>
+            <table>
+                <tr>
+                    <th>Setup</th>
+                    <th>URL</th>
+                </tr>
+                <tr>
+                    <td>Local</td>
+                    <td><code>http://localhost:3001</code></td>
+                </tr>
+                <tr>
+                    <td>Network</td>
+                    <td><code>http://&lt;server-ip&gt;:3001</code></td>
+                </tr>
+                <tr>
+                    <td>With Domain</td>
+                    <td>Use Nginx reverse proxy</td>
+                </tr>
+            </table>
+
+            <h3>Security Checklist</h3>
+            <ul class="checklist">
+                <li>Change JWT_SECRET (32+ characters)</li>
+                <li>Set AUTH_TOKEN</li>
+                <li>Disable signups after setup: DISABLE_SIGNUPS=true</li>
+                <li>Use HTTPS in production</li>
+                <li>Regular backups of storage folder</li>
+            </ul>
+
+            <h3>Key API Endpoints</h3>
+            <pre><code># Upload document
+curl -X POST http://localhost:3001/api/v1/document/upload \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -F "file=@document.pdf"
+
+# Chat with workspace
+curl -X POST http://localhost:3001/api/v1/workspace/my-workspace/chat \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"message": "Summarize documents"}'</code></pre>
+        </section>
+
+        <section id="appflowy">
+            <h2>📝 AppFlowy Integration</h2>
+            
+            <div class="highlight warning">
+                <strong>Limitation:</strong> AppFlowy does NOT have a public REST API for document creation. Requires workarounds.
+            </div>
+
+            <h3>Recommended Pattern</h3>
+            <pre><code>AnythingLLM Chat → Export Markdown → Import to AppFlowy</code></pre>
+
+            <h3>Option 1: Manual Export (Simplest)</h3>
+            <ol>
+                <li>In AnythingLLM: Copy chat output</li>
+                <li>Paste into markdown file</li>
+                <li>Drag into AppFlowy</li>
+            </ol>
+
+            <h3>Option 2: Python Automation Script</h3>
+            <pre><code># save_chat_to_appflowy.py
+import os
+from datetime import datetime
+
+CHAT_EXPORT_DIR = "C:/Users/You/AppFlowy/Chat-Imports"
+
+def save_chat(chat_content, title="Chat Session"):
+    filename = f"{datetime.now().strftime('%Y-%m-%d_%H-%M')}_{title}.md"
+    filepath = os.path.join(CHAT_EXPORT_DIR, filename)
+    
+    with open(filepath, 'w', encoding='utf-8') as f:
+        f.write(f"# {title}\n\n{chat_content}")
+    
+    print(f"Saved to: {filepath}")
+    # Drag this file into AppFlowy</code></pre>
+
+            <h3>Option 3: Advanced (Database Integration)</h3>
+            <p>AppFlowy stores data in SQLite with Collab/Yrs CRDT format. Requires modifying AppFlowy's Rust codebase.</p>
+            <p>Reference files in your workspace:</p>
+            <ul>
+                <li><code>appflowy-date-integration.py</code> - Template pattern</li>
+                <li><code>APPFLOWY-WEBSEARCH-COMPLETE.md</code> - Modification guide</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>🚀 Quick Reference Commands</h2>
+            
+            <h3>Start Qdrant</h3>
+            <pre><code>docker run -d --name qdrant -p 6333:6333 qdrant/qdrant:latest</code></pre>
+
+            <h3>Start AnythingLLM (Docker)</h3>
+            <pre><code>docker run -d --name anythingllm \
+  -p 3001:3001 \
+  -v anythingllm-storage:/app/server/storage \
+  -e JWT_SECRET="your-secret-key-32-chars-long" \
+  mintplexlabs/anythingllm:latest</code></pre>
+
+            <h3>Backup Storage (Windows)</h3>
+            <pre><code>tar -czf anythingllm-backup-%date%.tar.gz "C:\Users\%USERNAME%\AppData\Roaming\anythingllm-desktop\storage"</code></pre>
+        </section>
+
+        <section>
+            <h2>✅ Next Steps Checklist</h2>
+            <ul class="checklist">
+                <li>Set up Qwen 3.5 with Ollama or OpenRouter</li>
+                <li>Enable @agent and test web search</li>
+                <li>Connect your Qdrant instance</li>
+                <li>Configure MCP servers (Brave/Tavily search recommended)</li>
+                <li>Set up team Docker deployment if needed</li>
+                <li>Create AppFlowy export workflow</li>
+            </ul>
+        </section>
+
+        <footer>
+            <p>Generated from workspace research - March 9, 2026</p>
+            <p>Files saved to: <code>m:\code\vidismart\AnythingLLM-Complete-Setup-Guide.md</code> and <code>AnythingLLM-Setup-Guide.html</code></p>
+        </footer>
+    </div>
+</body>
+</html>

@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PMax Integration Strategy Guide</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Chosen Palette: Warm Neutrals and Google Blue -->
+    <!-- Application Structure Plan: The SPA is structured as a 5-part thematic journey, navigable via a sticky header. 1) 'Home' immediately hooks the user by validating their 'faceted content' concept and showing its place in PMax. 2) 'What is PMax?' provides foundational knowledge. 3) 'The Core Engine' interactively breaks down Assets & Signals, explicitly linking them to the user's system. 4) 'Your Integration Strategy' is the app's core—a simulator that lets the user input their 'facets' and see a tangible PMax Asset Group structure. 5) 'Best Practices' provides a checklist and a chart to set expectations. This task-oriented flow was chosen over a linear article to directly answer the user's specific, advanced integration question and provide a reusable tool. -->
+    <!-- Visualization & Content Choices:
+        - Report Info: PMax high-level concept. -> Goal: Connect to user's system. -> Viz/Method: HTML/CSS flowchart diagram. -> Interaction: Static visual. -> Justification: Immediately validates user's idea and provides context.
+        - Report Info: PMax channel reach. -> Goal: Inform. -> Viz/Method: HTML/CSS icon grid. -> Interaction: Hover to show names. -> Justification: More engaging and scannable than a text list.
+        - Report Info: Asset Groups & Audience Signals. -> Goal: Explain core inputs. -> Viz/Method: 2-column interactive card list. -> Interaction: Click-to-reveal details. -> Justification: Connects PMax's abstract inputs (Assets, Signals) to the user's tangible outputs (Faceted Content, Viewers).
+        - Report Info: User's 'Faceted Content' + PMax structure. -> Goal: Demonstrate practical integration. -> Viz/Method: JS-powered 'Simulator' (text input, dynamic HTML output). -> Interaction: User inputs a 'facet', app generates a sample Asset Group. -> Justification: This is the app's centerpiece, directly answering the user's core "how-to" question with a tangible, interactive tool.
+        - Report Info: PMax 'Learning Period'. -> Goal: Set expectations. -> Viz/Method: Line Chart (Chart.js/Canvas). -> Interaction: Static chart. -> Justification: Visually communicates the abstract but critical concept of "being patient" for the AI to optimize.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        :root {
+            --brand-blue: #4285F4;
+            --brand-green: #34A853;
+            --brand-yellow: #FBBC05;
+            --brand-red: #EA4335;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+        .nav-link {
+            @apply px-4 py-2 text-gray-700 rounded-lg hover:bg-blue-100 hover:text-blue-600 transition-colors;
+        }
+        .nav-link.active {
+            @apply bg-blue-600 text-white hover:bg-blue-700;
+        }
+        .icon-grid-item {
+            @apply flex flex-col items-center justify-center p-4 bg-gray-100 rounded-lg shadow-sm transition-transform hover:scale-105 hover:shadow-md;
+        }
+        .icon-placeholder {
+            @apply w-12 h-12 rounded-full flex items-center justify-center text-xl font-bold text-white;
+        }
+        .flow-arrow {
+            @apply text-3xl text-gray-400 mx-2 md:mx-4;
+        }
+        .strategy-card {
+            @apply bg-white p-6 rounded-lg shadow-lg border border-gray-200;
+        }
+        .clickable-list-item {
+            @apply block w-full text-left p-4 bg-gray-50 border rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500;
+        }
+        .checklist-item {
+            @apply flex items-center p-3 bg-white rounded-lg border border-gray-200 cursor-pointer hover:bg-gray-50;
+        }
+        .checklist-icon {
+            @apply w-6 h-6 mr-3 rounded-full border-2 border-gray-400 flex-shrink-0 flex items-center justify-center;
+        }
+        .checklist-item.completed .checklist-icon {
+            @apply bg-green-500 border-green-500 text-white;
+        }
+        .checklist-item.completed .checklist-text {
+            @apply line-through text-gray-500;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans text-gray-800">
+
+    <header class="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-50">
+        <nav class="container mx-auto px-4 py-3 flex flex-wrap justify-between items-center">
+            <h1 class="text-xl md:text-2xl font-bold text-blue-600">PMax Integration Guide</h1>
+            <div id="nav-links" class="flex flex-wrap items-center space-x-1 md:space-x-2 mt-2 md:mt-0">
+                <a href="#home" class="nav-link active" data-section="home">Home</a>
+                <a href="#what-is-pmax" class="nav-link" data-section="what-is-pmax">What is PMax?</a>
+                <a href="#core-engine" class="nav-link" data-section="core-engine">Core Engine</a>
+                <a href="#strategy" class="nav-link" data-section="strategy">Your Strategy</a>
+                <a href="#best-practices" class="nav-link" data-section="best-practices">Best Practices</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container mx-auto px-4 py-8 md:py-12">
+
+        <section id="home" class="text-center space-y-8 py-12">
+            <h2 class="text-3xl md:text-5xl font-extrabold text-gray-900">
+                Google PMax: From <span class="text-blue-600">Faceted Content</span> to <span class="text-green-600">Full-Funnel Conversions</span>
+            </h2>
+            <p class="text-lg md:text-xl text-gray-700 max-w-3xl mx-auto">
+                Welcome. You have an AI-powered VidiBUZZ Smart Channel™ for faceted content creation. This is a powerful asset. This interactive guide will show you how to map your existing system directly onto Google's Performance Max to supercharge your reach and results.
+            </p>
+            <div class="strategy-card p-8">
+                <h3 class="text-2xl font-bold mb-6">Your Integration Model</h3>
+                <div class="flex flex-col md:flex-row items-center justify-center space-y-4 md:space-y-0">
+                    <div class="text-center">
+                        <div class="p-4 bg-blue-100 rounded-lg shadow">
+                            <span class="text-4xl">🤖</span>
+                            <h4 class="font-bold mt-2">Your AI Content System</h4>
+                            <p class="text-sm">(Faceted Content)</p>
+                        </div>
+                    </div>
+                    <span class="flow-arrow">↓</span>
+                    <div class="text-center">
+                        <div class="p-4 bg-green-100 rounded-lg shadow">
+                            <span class="text-4xl">⚙️</span>
+                            <h4 class="font-bold mt-2">PMax Engine</h4>
+                            <p class="text-sm">(Asset Groups + Signals)</p>
+                        </div>
+                    </div>
+                    <span class="flow-arrow">↓</span>
+                    <div class="text-center">
+                        <div class="p-4 bg-yellow-100 rounded-lg shadow">
+                            <span class="text-4xl">🌐</span>
+                            <h4 class="font-bold mt-2">All Google Channels</h4>
+                            <p class="text-sm">(YouTube, Search, etc.)</p>
+                        </div>
+                    </div>
+                    <span class="flow-arrow">↓</span>
+                    <div class="text-center">
+                        <div class="p-4 bg-red-100 rounded-lg shadow">
+                            <span class="text-4xl">🎯</span>
+                            <h4 class="font-bold mt-2">Your "Many Viewers"</h4>
+                            <p class="text-sm">(Targeted Audiences)</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <hr class="my-12 border-t border-gray-200">
+
+        <section id="what-is-pmax" class="space-y-8 scroll-mt-20">
+            <h2 class="text-3xl md:text-4xl font-bold text-center">What is Performance Max?</h2>
+            <p class="text-lg text-gray-700 max-w-3xl mx-auto text-center">
+                This section covers the fundamentals. Performance Max (PMax) is an AI-powered, goal-based campaign type that lets you access all Google Ads inventory from a single campaign. Think of it as an automation and amplification engine for the assets you're already creating.
+            </p>
+            
+            <div class="strategy-card">
+                <h3 class="text-2xl font-bold text-center mb-6">Where Your Ads Appear</h3>
+                <div id="channel-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+                    <div class="icon-grid-item" title="YouTube">
+                        <span class="text-4xl">📺</span>
+                        <span class="font-medium mt-3">YouTube</span>
+                    </div>
+                    <div class="icon-grid-item" title="Google Display Network">
+                        <span class="text-4xl">🖼️</span>
+                        <span class="font-medium mt-3">Display</span>
+                    </div>
+                    <div class="icon-grid-item" title="Google Search">
+                        <span class="text-4xl">🔍</span>
+                        <span class="font-medium mt-3">Search</span>
+                    </div>
+                    <div class="icon-grid-item" title="Google Discover">
+                        <span class="text-4xl">✨</span>
+                        <span class="font-medium mt-3">Discover</span>
+                    </div>
+                    <div class="icon-grid-item" title="Gmail">
+                        <span class="text-4xl">✉️</span>
+                        <span class="font-medium mt-3">Gmail</span>
+                    </div>
+                    <div class="icon-grid-item" title="Google Maps">
+                        <span class="text-4xl">📍</span>
+                        <span class="font-medium mt-3">Maps</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-8 items-stretch">
+                <div class="strategy-card border-gray-300 shadow-xl flex flex-col">
+                    <h3 class="text-xl font-bold mb-5 text-gray-800">The "Before" (Manual)</h3>
+                    <div class="space-y-4 flex-grow">
+                        <div class="flex items-start space-x-3">
+                            <span class="text-xl pt-1">❌</span>
+                            <span class="text-gray-700">Separate, siloed campaigns for Search, Display, Video.</span>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                            <span class="text-xl pt-1">❌</span>
+                            <span class="text-gray-700">Manual bidding and audience targeting per channel.</span>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                            <span class="text-xl pt-1">❌</span>
+                            <span class="text-gray-700">Creative assets locked in different campaign types.</span>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                            <span class="text-xl pt-1">❌</span>
+                            <span class="text-gray-700">Difficult to see full cross-channel attribution.</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="strategy-card border-blue-500 border-2 shadow-2xl transform transition-all duration-300 hover:scale-[1.02] flex flex-col">
+                    <h3 class="text-xl font-bold mb-5 text-blue-700">The "After" (PMax)</h3>
+                    <div classs="space-y-4 flex-grow">
+                        <div class="flex items-start space-x-3">
+                            <span class="text-xl pt-1">✅</span>
+                            <span class="text-gray-900 font-medium">One campaign for all channels.</span>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                            <span class="text-xl pt-1">✅</span>
+                            <span class="text-gray-900 font-medium">AI-driven bidding towards your conversion goals.</span>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                            <span class="text-xl pt-1">✅</span>
+                            <span class="text-gray-900 font-medium">Assets pooled for AI to mix-and-match.</span>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                            <span class="text-xl pt-1">✅</span>
+                            <span class="text-gray-900 font-medium">Consolidated, conversion-focused reporting.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <hr class="my-12 border-t border-gray-200">
+
+        <section id="core-engine" class="space-y-8 scroll-mt-20">
+            <h2 class="text-3xl md:text-4xl font-bold text-center">The Core Engine: Your Inputs</h2>
+            <p class="text-lg text-gray-700 max-w-3xl mx-auto text-center">
+                PMax runs on two inputs: <strong class="text-blue-600">Assets</strong> (the "what") and <strong class="text-green-600">Audience Signals</strong> (the "who"). This is where your AI-powered system directly plugs in. Click each to see how.
+            </p>
+
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="strategy-card">
+                    <h3 class="text-2xl font-bold mb-4">Assets: Your "Faceted Content"</h3>
+                    <p class="mb-4 text-gray-700">These are the creative building blocks AI will mix and match. Your AI system is a perfect factory for these.</p>
+                    <div id="asset-explainer" class="space-y-2">
+                        <button class="clickable-list-item" data-target="asset-text"><strong>Text:</strong> Headlines, Descriptions</button>
+                        <button class="clickable-list-item" data-target="asset-image"><strong>Images:</strong> Lifestyle, Product Shots</button>
+                        <button class="clickable-list-item" data-target="asset-video"><strong>Video:</strong> Short-form, Long-form</button>
+
+                        <div id="asset-text" class="p-4 bg-gray-100 rounded-lg mt-2 hidden">
+                            <h4 class="font-bold">Text Assets</h4>
+                            <p class="text-sm">Your AI can generate dozens of headlines (e.g., "Save 20% Today," "Durable & Stylish") and descriptions for each content facet. PMax requires at least 5 headlines and 5 descriptions.</p>
+                        </div>
+                        <div id="asset-image" class="p-4 bg-gray-100 rounded-lg mt-2 hidden">
+                            <h4 class="font-bold">Image Assets</h4>
+                            <p class="text-sm">Provide a mix of images. Your AI-generated lifestyle shots, product close-ups, and infographics are all valuable. PMax will test them all to see what converts.</p>
+                        </div>
+                        <div id="asset-video" class="p-4 bg-gray-100 rounded-lg mt-2 hidden">
+                            <h4 class="font-bold">Video Assets</h4>
+                            <p class="text-sm">This is critical. Provide at least one video (10s+). Your AI-generated faceted videos are a huge advantage. If you don't provide one, PMax will auto-generate a low-quality one.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="strategy-card">
+                    <h3 class="text-2xl font-bold mb-4">Signals: Your "Many Viewers"</h3>
+                    <p class="mb-4 text-gray-700">These are not restrictive targeting. They are hints to tell the AI who to start looking for.</p>
+                    <div id="signal-explainer" class="space-y-2">
+                        <button class="clickable-list-item" data-target="signal-first-party"><strong>Your Data (Most Powerful)</strong></button>
+                        <button class="clickable-list-item" data-target="signal-custom"><strong>Custom Segments</strong></button>
+                        <button class="clickable-list-item" data-target="signal-google"><strong>Google Audiences</strong></button>
+
+                        <div id="signal-first-party" class="p-4 bg-gray-100 rounded-lg mt-2 hidden">
+                            <h4 class="font-bold">Your Data (First-Party)</h4>
+                            <p class="text-sm">Upload your customer lists, website visitor lists (e.g., "cart abandoners," "past purchasers"), and app users. This is the AI's #1 signal.</p>
+                        </div>
+                        <div id="signal-custom" class="p-4 bg-gray-100 rounded-lg mt-2 hidden">
+                            <h4 class="font-bold">Custom Segments</h4>
+                            <p class="text-sm">Build audiences based on people who search for your keywords (e.g., "best trail running shoes") or browse specific types of websites (e.g., running blogs).</p>
+                        </div>
+                        <div id="signal-google" class="p-4 bg-gray-100 rounded-lg mt-2 hidden">
+                            <h4 class="font-bold">Google Audiences</h4>
+                            <p class="text-sm">Use Google's pre-built In-Market (e.g., "Apparel & Accessories") and Affinity (e.g., "Fitness Enthusiasts") audiences to give the AI a broader starting point.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <hr class="my-12 border-t border-gray-200">
+
+        <section id="strategy" class="space-y-8 scroll-mt-20">
+            <h2 class="text-3xl md:text-4xl font-bold text-center">Your Integration Strategy: The "Facet" Simulator</h2>
+            <p class="text-lg text-gray-700 max-w-3xl mx-auto text-center">
+                Let's build your campaign. The best practice is to map your "content facets" to PMax "Asset Groups." An Asset Group = 1 Facet. Use this tool to see how it works.
+            </p>
+
+            <div class="strategy-card max-w-4xl mx-auto">
+                <div class="space-y-4">
+                    <label for="facet-input" class="block text-xl font-medium">Enter one of your "Content Facets":</label>
+                    <div class="flex flex-col md:flex-row gap-2">
+                        <input type="text" id="facet-input" placeholder="e.g., 'Men's Trail Running Shoes'" class="flex-grow p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                        <button id="generate-strategy" class="px-6 py-3 bg-blue-600 text-white font-bold rounded-lg shadow-md hover:bg-blue-700 transition-colors">Generate PMax Structure</button>
+                    </div>
+                </div>
+
+                <div id="strategy-output" class="mt-8 border-t border-gray-200 pt-8 hidden">
+                    <h3 class="text-2xl font-bold mb-4">Generated PMax Structure</h3>
+                    <div class="border-2 border-blue-500 rounded-lg p-6 bg-blue-50/50">
+                        <h4 id="output-title" class="text-xl font-bold text-blue-800"></h4>
+                        <div class="grid md:grid-cols-2 gap-6 mt-4">
+                            <div>
+                                <h5 class="font-bold text-lg mb-2">Assets (from your AI)</h5>
+                                <ul id="output-assets" class="list-disc list-inside space-y-1 text-gray-700"></ul>
+                            </div>
+                            <div>
+                                <h5 class="font-bold text-lg mb-2">Audience Signals (for this viewer)</h5>
+                                <ul id="output-signals" class="list-disc list-inside space-y-1 text-gray-700"></ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <hr class="my-12 border-t border-gray-200">
+
+        <section id="best-practices" class="space-y-8 scroll-mt-20">
+            <h2 class="text-3xl md:text-4xl font-bold text-center">Best Practices & Expectations</h2>
+            <p class="text-lg text-gray-700 max-w-3xl mx-auto text-center">
+                To make your integration successful, follow these key rules. The most important one is patience. PMax is an AI that needs time to learn and optimize.
+            </p>
+
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="strategy-card">
+                    <h3 class="text-2xl font-bold mb-4">Your Success Checklist</h3>
+                    <div id="checklist-container" class="space-y-3">
+                        <div class="checklist-item" data-task="1">
+                            <span class="checklist-icon"></span>
+                            <span class="checklist-text">Provide <strong class="text-blue-600">diverse assets</strong> (5+ headlines, 5+ images, 1+ video) per Asset Group.</span>
+                        </div>
+                        <div class="checklist-item" data-task="2">
+                            <span class="checklist-icon"></span>
+                            <span class="checklist-text">Use your <strong class="text-blue-600">best 1st-party data</strong> (customer lists) for Audience Signals.</span>
+                        </div>
+                        <div class="checklist-item" data-task="3">
+                            <span class="checklist-icon"></span>
+                            <span class="checklist-text">Enable <strong class="text-blue-600">"Final URL Expansion"</strong> to let Google find new conversion paths.</span>
+                        </div>
+                        <div class="checklist-item" data-task="4">
+                            <span class="checklist-icon"></span>
+                            <span class="checklist-text">Consolidate old campaigns into PMax to avoid self-competition.</span>
+                        </div>
+                        <div class="checklist-item" data-task="5">
+                            <span class="checklist-icon"></span>
+                            <span class="checklist-text"><strong class="text-red-600">BE PATIENT:</strong> Wait 4-6 weeks for the AI "Learning Period" to complete before judging performance.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="strategy-card">
+                    <h3 class="text-2xl font-bold mb-4 text-center">Visualize the "Learning Period"</h3>
+                    <p class="text-center text-sm text-gray-600 mb-4">Performance will be unstable at first, then optimize.</p>
+                    <div class="chart-container">
+                        <canvas id="learningChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+    
+    <footer class="text-center py-8 mt-12 bg-gray-100 border-t border-gray-200">
+        <p class="text-gray-600">This interactive guide was generated to help integrate your AI content system with Performance Max.</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            const sections = document.querySelectorAll('section');
+            const navLinks = document.querySelectorAll('#nav-links a');
+
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.4
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const id = entry.target.getAttribute('id');
+                        navLinks.forEach(link => {
+                            link.classList.toggle('active', link.dataset.section === id);
+                        });
+                    }
+                });
+            }, observerOptions);
+
+            sections.forEach(section => {
+                observer.observe(section);
+            });
+
+            navLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const targetId = link.getAttribute('href');
+                    const targetElement = document.querySelector(targetId);
+                    
+                    if (targetElement) {
+                        targetElement.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    } else {
+                        console.warn('Could not find element with ID:', targetId);
+                    }
+                });
+            });
+
+            function setupClickToReveal(containerId) {
+                const container = document.getElementById(containerId);
+                if (!container) return;
+                
+                const buttons = container.querySelectorAll('button.clickable-list-item');
+                buttons.forEach(button => {
+                    button.addEventListener('click', () => {
+                        const targetId = button.dataset.target;
+                        const targetElement = document.getElementById(targetId);
+                        
+                        if (targetElement) {
+                            const isVisible = !targetElement.classList.contains('hidden');
+                            container.querySelectorAll('.p-4.bg-gray-100').forEach(el => el.classList.add('hidden'));
+                            
+                            if (!isVisible) {
+                                targetElement.classList.remove('hidden');
+                            }
+                        }
+                    });
+                });
+            }
+
+            setupClickToReveal('asset-explainer');
+            setupClickToReveal('signal-explainer');
+
+            const generateButton = document.getElementById('generate-strategy');
+            const facetInput = document.getElementById('facet-input');
+            const outputContainer = document.getElementById('strategy-output');
+            const outputTitle = document.getElementById('output-title');
+            const outputAssets = document.getElementById('output-assets');
+            const outputSignals = document.getElementById('output-signals');
+
+            generateButton.addEventListener('click', () => {
+                const facet = facetInput.value.trim() || "Your Example Facet";
+                
+                outputTitle.textContent = `Asset Group: "${facet}"`;
+                
+                outputAssets.innerHTML = `
+                    <li>Headline 1: Best ${facet}</li>
+                    <li>Headline 2: High-Performance ${facet}</li>
+                    <li>Headline 3: Shop ${facet} Now</li>
+                    <li>Description: Discover our top-rated ${facet}, built for performance...</li>
+                    <li>Image: [Your AI-gen lifestyle image for ${facet}]</li>
+                    <li>Video: [Your AI-gen 15s video for ${facet}]</li>
+                `;
+                
+                outputSignals.innerHTML = `
+                    <li><strong>Your Data:</strong> "Past ${facet} Purchasers"</li>
+                    <li><strong>Your Data:</strong> "Viewed ${facet} Category"</li>
+                    <li><strong>Custom Segment:</strong> "Searched 'best ${facet}'"</li>
+                    <li><strong>In-Market:</strong> "[Related Google Audience, e.g., 'Sporting Goods']"</li>
+                `;
+                
+                outputContainer.classList.remove('hidden');
+            });
+
+            const checklistItems = document.querySelectorAll('.checklist-item');
+            checklistItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    item.classList.toggle('completed');
+                    const icon = item.querySelector('.checklist-icon');
+                    icon.innerHTML = item.classList.contains('completed') ? '&#10003;' : '';
+                });
+            });
+
+            const ctx = document.getElementById('learningChart').getContext('2d');
+            const learningChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6', 'Week 7', 'Week 8'],
+                    datasets: [{
+                        label: 'Conversion Volume',
+                        data: [10, 15, 12, 20, 25, 40, 55, 70],
+                        borderColor: 'var(--brand-blue)',
+                        backgroundColor: 'rgba(66, 133, 244, 0.1)',
+                        fill: true,
+                        tension: 0.3,
+                        pointBackgroundColor: 'var(--brand-blue)',
+                        pointRadius: 5,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false,
+                        },
+                        tooltip: {
+                            enabled: true,
+                            mode: 'index',
+                            intersect: false,
+                        },
+                        title: {
+                            display: false,
+                            text: 'Typical PMax Learning Period'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Conversion Volume'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Time Since Launch'
+                            }
+                        }
+                    },
+                    interaction: {
+                        mode: 'nearest',
+                        axis: 'x',
+                        intersect: false
+                    }
+                }
+            });
+
+        });
+    </script>
+</body>
+</html>

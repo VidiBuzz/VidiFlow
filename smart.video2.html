@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VidiSmart | Smart Content Intelligence</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Kumbh+Sans:wght@400;700;900&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --accent: #6366f1;
+            --bg: #030712;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            color: #f8fafc;
+            overflow-x: hidden;
+        }
+        .font-kumbh { font-family: 'Kumbh Sans', sans-serif; }
+        
+        #canvas-container {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100vh;
+            z-index: -1;
+            opacity: 0.6;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: all 0.4s ease;
+        }
+        .glass-card:hover {
+            border-color: var(--accent);
+            background: rgba(255, 255, 255, 0.06);
+            transform: translateY(-5px);
+        }
+
+        .image-header {
+            height: 140px;
+            width: 100%;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+        .image-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to bottom, transparent, var(--bg));
+        }
+
+        .logo-box {
+            position: absolute;
+            bottom: -15px;
+            left: 20px;
+            width: 50px;
+            height: 50px;
+            background: white;
+            padding: 5px;
+            border-radius: 10px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+        }
+
+        .gradient-text {
+            background: linear-gradient(to right, #818cf8, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Three.js Background -->
+    <div id="canvas-container"></div>
+
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full z-50 px-8 py-6 backdrop-blur-md border-b border-white/5">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <span class="font-kumbh text-2xl font-black uppercase tracking-tighter">Vidi<span class="text-indigo-500">Smart</span></span>
+            </div>
+            <div class="hidden md:flex space-x-10 text-[10px] font-bold uppercase tracking-[0.3em] text-slate-400">
+                <a href="#directory" class="hover:text-white transition">Network</a>
+                <a href="https://ltx.studio" target="_blank" class="bg-indigo-600 text-white px-6 py-2 rounded-full hover:bg-white hover:text-black transition">Access LTX</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <header class="relative max-w-7xl mx-auto px-6 pt-48 pb-32 text-center">
+        <h1 class="font-kumbh text-6xl md:text-9xl font-black mb-6 tracking-tighter leading-none" id="hero-title">
+            CONTEXT AWARE<br><span class="gradient-text">SMART CONTENT</span>
+        </h1>
+        <p class="text-slate-400 text-lg md:text-xl max-w-2xl mx-auto font-light leading-relaxed opacity-0" id="hero-sub">
+            The 2026 Competitive Audit of Visual Synthesis, World Models, and Enterprise Generative Infrastructure.
+        </p>
+    </header>
+
+    <!-- Directory Grid -->
+    <main id="directory" class="max-w-7xl mx-auto px-6 pb-40">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="grid">
+            <!-- Cards Injected via JS -->
+        </div>
+    </main>
+
+    <script>
+        // THREE.JS BACKGROUND SETUP
+        const container = document.getElementById('canvas-container');
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        container.appendChild(renderer.domElement);
+
+        const geometry = new THREE.BufferGeometry();
+        const vertices = [];
+        for (let i = 0; i < 6000; i++) {
+            vertices.push(THREE.MathUtils.randFloatSpread(2000), THREE.MathUtils.randFloatSpread(2000), THREE.MathUtils.randFloatSpread(2000));
+        }
+        geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+        const particles = new THREE.Points(geometry, new THREE.PointsMaterial({ color: 0x6366f1, size: 2 }));
+        scene.add(particles);
+        camera.position.z = 500;
+
+        function animate() {
+            requestAnimationFrame(animate);
+            particles.rotation.y += 0.001;
+            particles.rotation.x += 0.0005;
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        // DATA - Symbolic Unsplash mapping
+        const apps = [
+            { name: "Lightricks", url: "https://lightricks.com", niche: "AI Platform", img: "https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?q=80&w=800", desc: "The prosumer benchmark. LTX Studio enables frame-by-frame control over generative narratives." },
+            { name: "Oasis (Decart)", url: "https://oasis-model.github.io", niche: "Simulation", img: "https://images.unsplash.com/photo-1614728263952-84ea256f9679?q=80&w=800", desc: "The real-time World Model. Generating physics and gameplay purely through transformer inference." },
+            { name: "HoloCine", url: "https://holo-cine.github.io", niche: "Research", img: "https://images.unsplash.com/photo-1485846234645-a62644f84728?q=80&w=800", desc: "Ensuring temporal coherence across multi-shot long video narratives using scene-graph optimization." },
+            { name: "Bria AI", url: "https://bria.ai", niche: "Enterprise", img: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=800", desc: "Responsible AI platform trained exclusively on licensed data to offer full legal indemnity." },
+            { name: "RealizeMD", url: "https://realizemd.com", niche: "Medical", img: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?q=80&w=800", desc: "Neural rendering for medical privacy. Anonymizing faces while preserving surgical/clinical accuracy." },
+            { name: "InVideo", url: "https://invideo.io", niche: "Automation", img: "https://images.unsplash.com/photo-1492724441997-5dc865305da7?q=80&w=800", desc: "Text-to-Video automation for faceless content creators and high-volume marketing workflows." },
+            { name: "PhotoRoom", url: "https://photoroom.com", niche: "E-Commerce", img: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=800", desc: "The standard for product photography. AI batch removal of backgrounds for global resellers." },
+            { name: "LiveLink", url: "https://livelink.ai", niche: "Social", img: "https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=800", desc: "Automating virality. AI-driven clipping of long-form podcasts into high-engagement shorts." },
+            { name: "Bending Spoons", url: "https://bendingspoons.com", niche: "Holding", img: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=800", desc: "Ruthless asset optimization. Revitalizing apps like Remini and Splice through centralized AI stacks." }
+        ];
+
+        // RENDER CARDS
+        const grid = document.getElementById('grid');
+        apps.forEach(app => {
+            const domain = new URL(app.url).hostname;
+            const card = `
+                <div class="glass-card rounded-[2rem] overflow-hidden flex flex-col group opacity-0 card-element">
+                    <div class="image-header" style="background-image: url('${app.img}')">
+                        <div class="image-overlay"></div>
+                        <div class="logo-box">
+                            <img src="https://logo.clearbit.com/${domain}" onerror="this.src='https://ui-avatars.com/api/?name=${app.name}&background=6366f1&color=fff'" class="w-full h-full object-contain">
+                        </div>
+                    </div>
+                    <div class="p-8 pt-10">
+                        <span class="text-[10px] font-bold tracking-[0.3em] text-indigo-400 uppercase mb-2 block">${app.niche}</span>
+                        <h3 class="font-kumbh text-2xl font-bold mb-3 group-hover:text-indigo-400 transition-colors">${app.name}</h3>
+                        <p class="text-slate-400 text-sm leading-relaxed mb-8 flex-grow">${app.desc}</p>
+                        <a href="${app.url}" target="_blank" class="w-full py-4 text-center rounded-2xl bg-white/5 border border-white/5 font-bold text-xs uppercase tracking-widest hover:bg-white hover:text-black transition-all">
+                            View Platform
+                        </a>
+                    </div>
+                </div>
+            `;
+            grid.innerHTML += card;
+        });
+
+        // GSAP ANIMATIONS
+        window.onload = () => {
+            gsap.registerPlugin(ScrollTrigger);
+
+            // Title Animation
+            gsap.from("#hero-title", { duration: 1.5, y: 100, opacity: 0, ease: "power4.out" });
+            gsap.to("#hero-sub", { duration: 1, opacity: 1, delay: 0.5 });
+
+            // Card Reveal
+            gsap.to(".card-element", {
+                opacity: 1,
+                y: 0,
+                stagger: 0.15,
+                duration: 1,
+                ease: "power3.out",
+                scrollTrigger: {
+                    trigger: "#grid",
+                    start: "top 80%"
+                }
+            });
+        };
+    </script>
+</body>
+</html>

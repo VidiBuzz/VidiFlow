@@ -1,0 +1,1084 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VidiMail Competitive Analysis 2026</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* ===== CSS Variables ===== */
+        :root {
+            --bg-deep: #03030a;
+            --bg-panel: #0a0a14;
+            --bg-elevated: #11111f;
+            --accent-primary: #6366f1;
+            --accent-secondary: #a855f7;
+            --accent-tertiary: #ec4899;
+            --accent-glow: #818cf8;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --border-subtle: rgba(255, 255, 255, 0.06);
+            --border-light: rgba(255, 255, 255, 0.12);
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #3b82f6;
+        }
+
+        /* ===== Reset & Base ===== */
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-deep);
+            color: var(--text-primary);
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        /* ===== Background FX ===== */
+        .bg-fixed {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .bg-gradient-1 {
+            position: absolute;
+            width: 800px;
+            height: 800px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, transparent 70%);
+            top: -200px;
+            left: -200px;
+            animation: float 20s ease-in-out infinite;
+        }
+
+        .bg-gradient-2 {
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(168, 85, 247, 0.12) 0%, transparent 70%);
+            top: 50%;
+            right: -200px;
+            animation: float 15s ease-in-out infinite reverse;
+        }
+
+        .bg-gradient-3 {
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(236, 72, 153, 0.08) 0%, transparent 70%);
+            bottom: -100px;
+            left: 30%;
+            animation: float 18s ease-in-out infinite;
+        }
+
+        .grid-overlay {
+            position: absolute;
+            inset: 0;
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+            background-size: 60px 60px;
+            mask-image: radial-gradient(circle at center, black 40%, transparent 100%);
+            opacity: 0.5;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(20px, -20px) rotate(2deg); }
+            50% { transform: translate(-10px, 20px) rotate(-1deg); }
+            75% { transform: translate(15px, 15px) rotate(1deg); }
+        }
+
+        /* ===== Layout ===== */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ===== Typography ===== */
+        h1, h2, h3, h4, h5, h6 {
+            font-weight: 700;
+            line-height: 1.2;
+            letter-spacing: -0.02em;
+        }
+
+        h1 {
+            font-size: clamp(2.5rem, 6vw, 4.5rem);
+        }
+
+        h2 {
+            font-size: clamp(1.75rem, 4vw, 2.5rem);
+        }
+
+        h3 {
+            font-size: clamp(1.25rem, 3vw, 1.5rem);
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #fff 0%, #cbd5e1 50%, #94a3b8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .gradient-primary {
+            background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 50%, var(--accent-tertiary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* ===== Navigation ===== */
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 1rem 0;
+            background: rgba(3, 3, 10, 0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .nav-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-badge {
+            background: rgba(99, 102, 241, 0.15);
+            color: var(--accent-glow);
+            padding: 0.5rem 1.25rem;
+            border-radius: 100px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            border: 1px solid rgba(99, 102, 241, 0.3);
+        }
+
+        /* ===== Hero Section ===== */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 8rem 0 6rem;
+            text-align: center;
+        }
+
+        .hero-content {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .hero-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(99, 102, 241, 0.1);
+            color: var(--accent-glow);
+            padding: 0.5rem 1rem;
+            border-radius: 100px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            margin-bottom: 2rem;
+        }
+
+        .hero h1 {
+            margin-bottom: 1.5rem;
+        }
+
+        .hero p {
+            font-size: 1.35rem;
+            color: var(--text-secondary);
+            max-width: 800px;
+            margin: 0 auto 2.5rem;
+        }
+
+        /* ===== Buttons ===== */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            cursor: pointer;
+            border: none;
+            font-size: 1rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
+            color: white;
+            box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.3), 0 0 30px rgba(99, 102, 241, 0.2);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px -5px rgba(99, 102, 241, 0.4), 0 0 40px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn-glass {
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .btn-glass:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        /* ===== Sections ===== */
+        section {
+            padding: 6rem 0;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-header h2 {
+            margin-bottom: 1rem;
+        }
+
+        .section-header p {
+            color: var(--text-secondary);
+            font-size: 1.15rem;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        /* ===== Cards ===== */
+        .card {
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%);
+            border: 1px solid var(--border-light);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 2rem;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            border-color: rgba(99, 102, 241, 0.3);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 30px rgba(99, 102, 241, 0.1);
+        }
+
+        .card-highlight {
+            background: linear-gradient(145deg, rgba(99, 102, 241, 0.08) 0%, rgba(168, 85, 247, 0.05) 100%);
+            border-color: rgba(99, 102, 241, 0.2);
+        }
+
+        /* ===== Grids ===== */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .grid-4 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        /* ===== Tables ===== */
+        .table-container {
+            overflow-x: auto;
+            margin: 2rem 0;
+            border-radius: 16px;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--border-subtle);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        th, td {
+            padding: 1rem 1.25rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        th {
+            background: rgba(99, 102, 241, 0.1);
+            color: var(--accent-glow);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.08em;
+            white-space: nowrap;
+        }
+
+        tr:hover {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* ===== Badges ===== */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 100px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .badge-success { background: rgba(16, 185, 129, 0.15); color: var(--success); }
+        .badge-warning { background: rgba(245, 158, 11, 0.15); color: var(--warning); }
+        .badge-danger { background: rgba(239, 68, 68, 0.15); color: var(--danger); }
+        .badge-info { background: rgba(99, 102, 241, 0.15); color: var(--accent-glow); }
+        .badge-neutral { background: rgba(255, 255, 255, 0.08); color: var(--text-secondary); }
+
+        /* ===== Stars ===== */
+        .stars {
+            color: #fbbf24;
+            letter-spacing: 2px;
+        }
+
+        /* ===== Highlight Box ===== */
+        .highlight-box {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.08) 0%, rgba(168, 85, 247, 0.06) 100%);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 20px;
+            padding: 2.5rem;
+            margin: 2.5rem 0;
+        }
+
+        .highlight-box h4 {
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+            color: var(--accent-glow);
+        }
+
+        /* ===== Checklist ===== */
+        .checklist {
+            list-style: none;
+        }
+
+        .checklist li {
+            padding: 0.85rem 0;
+            padding-left: 2rem;
+            position: relative;
+            color: var(--text-secondary);
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .checklist li:last-child {
+            border-bottom: none;
+        }
+
+        .checklist li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: var(--success);
+            font-weight: bold;
+        }
+
+        /* ===== Stats ===== */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin: 3rem 0;
+        }
+
+        .stat-card {
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%);
+            border: 1px solid var(--border-subtle);
+            border-radius: 16px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* ===== Progress Bars ===== */
+        .progress-bar {
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 100px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+            border-radius: 100px;
+            transition: width 1s ease-out;
+        }
+
+        /* ===== Footer ===== */
+        footer {
+            background: rgba(0, 0, 0, 0.3);
+            border-top: 1px solid var(--border-subtle);
+            padding: 4rem 0;
+            margin-top: 4rem;
+            text-align: center;
+        }
+
+        footer p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        footer strong {
+            color: var(--text-secondary);
+        }
+
+        /* ===== Responsive ===== */
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 1.25rem;
+            }
+
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero {
+                padding: 6rem 0 4rem;
+            }
+
+            .hero p {
+                font-size: 1.1rem;
+            }
+
+            section {
+                padding: 4rem 0;
+            }
+
+            .grid-2, .grid-3, .grid-4 {
+                grid-template-columns: 1fr;
+            }
+
+            .card {
+                padding: 1.5rem;
+            }
+        }
+
+        /* ===== Animations ===== */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate {
+            animation: fadeInUp 0.8s ease-out forwards;
+        }
+
+        .animate-delay-1 { animation-delay: 0.1s; }
+        .animate-delay-2 { animation-delay: 0.2s; }
+        .animate-delay-3 { animation-delay: 0.3s; }
+        .animate-delay-4 { animation-delay: 0.4s; }
+
+        /* ===== Scrollbar ===== */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-deep);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--bg-elevated);
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(99, 102, 241, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <!-- Background -->
+    <div class="bg-fixed">
+        <div class="bg-gradient-1"></div>
+        <div class="bg-gradient-2"></div>
+        <div class="bg-gradient-3"></div>
+        <div class="grid-overlay"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="container">
+            <div class="nav-content">
+                <div class="nav-logo">📹 VidiMail</div>
+                <div class="nav-badge">Competitive Analysis 2026</div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="hero-content">
+                <div class="hero-tag animate">
+                    <span>📊</span>
+                    <span>Strategic Intelligence Report</span>
+                </div>
+                <h1 class="animate animate-delay-1">
+                    <span class="gradient-text">Video Email</span><br>
+                    <span class="gradient-primary">Competitive Analysis</span>
+                </h1>
+                <p class="animate animate-delay-2">
+                    Comprehensive comparison of VidiMail against HeyGen, Synthesia, Sendspark, iDecide, 
+                    and leading AI avatar technologies including 11Labs, NVIDIA PersonaPlex, and Microsoft Azure.
+                </p>
+                <div class="animate animate-delay-3">
+                    <span class="badge badge-info">February 2026</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Key Findings -->
+        <section>
+            <div class="section-header">
+                <h2><span class="gradient-primary">Key Findings</span></h2>
+                <p>Strategic insights from the competitive landscape analysis</p>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">5</div>
+                    <div class="stat-label">Competitors Analyzed</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">9</div>
+                    <div class="stat-label">AI Technologies Compared</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">12</div>
+                    <div class="stat-label">Features Evaluated</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">$4.2B</div>
+                    <div class="stat-label">Addressable Market</div>
+                </div>
+            </div>
+
+            <div class="highlight-box">
+                <h4>🎯 VidiMail's Unique Market Position</h4>
+                <p>VidiMail combines video email infrastructure with SmartGen AI faceted creation, Visual Vector knowledge graph, and Omni Search — a combination <strong>no single competitor offers</strong>.</p>
+            </div>
+        </section>
+
+        <!-- Platform Comparison -->
+        <section>
+            <div class="section-header">
+                <h2><span class="gradient-primary">Platform Feature Comparison</span></h2>
+                <p>Video email platforms evaluated across 12 key dimensions</p>
+            </div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Feature</th>
+                            <th>VidiMail</th>
+                            <th>HeyGen</th>
+                            <th>Synthesia</th>
+                            <th>Sendspark</th>
+                            <th>iDecide</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Video Email Sending</strong></td>
+                            <td><span class="badge badge-success">✅ Native</span></td>
+                            <td><span class="badge badge-warning">⚠️ API</span></td>
+                            <td><span class="badge badge-warning">⚠️ API</span></td>
+                            <td><span class="badge badge-success">✅ Native</span></td>
+                            <td><span class="badge badge-success">✅ Native</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Bulk Personalization</strong></td>
+                            <td><span class="badge badge-success">✅ VidiBlast</span></td>
+                            <td><span class="badge badge-success">✅</span></td>
+                            <td><span class="badge badge-success">✅</span></td>
+                            <td><span class="badge badge-success">✅</span></td>
+                            <td><span class="badge badge-success">✅</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>AI Voice Cloning</strong></td>
+                            <td><span class="badge badge-success">✅ ElevenLabs</span></td>
+                            <td><span class="badge badge-success">✅ Native</span></td>
+                            <td><span class="badge badge-success">✅ Native</span></td>
+                            <td><span class="badge badge-warning">⚠️ Basic</span></td>
+                            <td><span class="badge badge-danger">❌</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Visual Avatar/Cloning</strong></td>
+                            <td><span class="badge badge-warning">🔄 Q2 2026</span></td>
+                            <td><span class="badge badge-success">✅ Advanced</span></td>
+                            <td><span class="badge badge-success">✅ Advanced</span></td>
+                            <td><span class="badge badge-danger">❌</span></td>
+                            <td><span class="badge badge-danger">❌</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Dynamic Backgrounds</strong></td>
+                            <td><span class="badge badge-success">✅ Auto</span></td>
+                            <td><span class="badge badge-warning">⚠️ Limited</span></td>
+                            <td><span class="badge badge-warning">⚠️ Limited</span></td>
+                            <td><span class="badge badge-warning">⚠️ Basic</span></td>
+                            <td><span class="badge badge-danger">❌</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Smart Landing Pages</strong></td>
+                            <td><span class="badge badge-success">✅ SPA</span></td>
+                            <td><span class="badge badge-warning">⚠️ Basic</span></td>
+                            <td><span class="badge badge-warning">⚠️ Basic</span></td>
+                            <td><span class="badge badge-success">✅</span></td>
+                            <td><span class="badge badge-success">✅</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>CRM Integration</strong></td>
+                            <td><span class="badge badge-success">✅ Deep</span></td>
+                            <td><span class="badge badge-success">✅</span></td>
+                            <td><span class="badge badge-success">✅</span></td>
+                            <td><span class="badge badge-success">✅</span></td>
+                            <td><span class="badge badge-success">✅</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Starting Price</strong></td>
+                            <td><span class="badge badge-warning">📦 Package Only</span></td>
+                            <td>$29/mo</td>
+                            <td>$22/mo</td>
+                            <td>$12/mo</td>
+                            <td>Custom</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- LipSync Technology -->
+        <section>
+            <div class="section-header">
+                <h2><span class="gradient-primary">LipSync Technology Deep Dive</span></h2>
+                <p>Comparing quality, latency, and real-time capabilities</p>
+            </div>
+
+            <div class="grid-2">
+                <div class="card card-highlight">
+                    <h3 style="color: var(--accent-glow); margin-bottom: 1.5rem;">🏆 Technology Leaders</h3>
+                    <div class="table-container" style="margin: 0;">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Technology</th>
+                                    <th>Quality</th>
+                                    <th>Latency</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>NVIDIA PersonaPlex</strong></td>
+                                    <td><span class="stars">⭐⭐⭐⭐⭐</span> 98%</td>
+                                    <td><100ms</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Microsoft Azure Speech</strong></td>
+                                    <td><span class="stars">⭐⭐⭐⭐⭐</span> 96%</td>
+                                    <td><150ms</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>HeyGen Native</strong></td>
+                                    <td><span class="stars">⭐⭐⭐⭐⭐</span> 95%</td>
+                                    <td>~500ms</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>11Labs (Audio)</strong></td>
+                                    <td><span class="stars">⭐⭐⭐⭐⭐</span> 99%</td>
+                                    <td><50ms</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3 style="color: var(--accent-secondary); margin-bottom: 1.5rem;">⚡ VidiMail Architecture</h3>
+                    <div class="highlight-box" style="margin: 0;">
+                        <p><strong>Audio Layer:</strong> ElevenLabs Voice (32+ languages, 99% fidelity)</p>
+                        <p><strong>Video Layer:</strong> NVIDIA/MSFT LipSync (evaluating)</p>
+                        <p><strong>Content Layer:</strong> SmartGen Faceted Control</p>
+                        <p><strong>Context Layer:</strong> Visual Vector Knowledge Graph</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Voice Cloning -->
+        <section>
+            <div class="section-header">
+                <h2><span class="gradient-primary">Voice Cloning Technology</span></h2>
+                <p>Evaluating the leading voice synthesis platforms</p>
+            </div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Platform</th>
+                            <th>Fidelity</th>
+                            <th>Training Time</th>
+                            <th>Languages</th>
+                            <th>Emotion</th>
+                            <th>Pricing</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>11Labs</strong></td>
+                            <td><span class="stars">⭐⭐⭐⭐⭐</span></td>
+                            <td>~5 min</td>
+                            <td>32+</td>
+                            <td><span class="stars">⭐⭐⭐⭐⭐</span></td>
+                            <td>$5/1K chars</td>
+                        </tr>
+                        <tr>
+                            <td><strong>NVIDIA Riva</strong></td>
+                            <td><span class="stars">⭐⭐⭐⭐⭐</span></td>
+                            <td>~10 min</td>
+                            <td>14</td>
+                            <td><span class="stars">⭐⭐⭐⭐</span></td>
+                            <td>$4/hour GPU</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Microsoft Azure</strong></td>
+                            <td><span class="stars">⭐⭐⭐⭐⭐</span></td>
+                            <td>~15 min</td>
+                            <td>140+</td>
+                            <td><span class="stars">⭐⭐⭐⭐</span></td>
+                            <td>$15/hour</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Amazon Polly</strong></td>
+                            <td><span class="stars">⭐⭐⭐⭐</span></td>
+                            <td>~1 hour</td>
+                            <td>35+</td>
+                            <td><span class="stars">⭐⭐⭐</span></td>
+                            <td>$16/1M chars</td>
+                        </tr>
+                        <tr>
+                            <td><strong>VidiMail</strong></td>
+                            <td><span class="stars">⭐⭐⭐⭐⭐</span></td>
+                            <td>~5 min</td>
+                            <td>32+</td>
+                            <td><span class="stars">⭐⭐⭐⭐⭐</span></td>
+                            <td>Via 11Labs</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Competitive Advantages -->
+        <section>
+            <div class="section-header">
+                <h2><span class="gradient-primary">Competitive Positioning</span></h2>
+                <p>VidiMail's strengths and areas for improvement</p>
+            </div>
+
+            <div class="grid-2">
+                <div class="card card-highlight">
+                    <h3 style="color: var(--success); margin-bottom: 1.5rem;">✓ Strengths</h3>
+                    <ul class="checklist">
+                        <li><strong>20+ audience facets</strong> (vs 3-5 for competitors)</li>
+                        <li>Visual Vector Knowledge Graph (unique)</li>
+                        <li>SmartGen AI-powered content creation</li>
+                        <li>Seamless VidiTwin live conversation</li>
+                        <li>Unified platform (voice + visual + email)</li>
+                        <li>Automated dynamic website backgrounds</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h3 style="color: var(--warning); margin-bottom: 1.5rem;">⚠️ Areas to Address</h3>
+                    <ul class="checklist">
+                        <li>No native avatar library (<strong>Q2 2026</strong>)</li>
+                        <li>No mobile app yet (<strong>Q2 2026</strong>)</li>
+                        <li>Newer brand recognition</li>
+                        <li>Smaller template library (offset by SmartGen)</li>
+                        <li>Limited real-time streaming (VidiTwin beta)</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Strategic Recommendations -->
+        <section>
+            <div class="section-header">
+                <h2><span class="gradient-primary">Strategic Roadmap 2026</span></h2>
+                <p>Key initiatives and success metrics</p>
+            </div>
+
+            <div class="grid-3">
+                <div class="card">
+                    <h4 style="color: var(--accent-primary); margin-bottom: 1rem;">🚀 Q1 2026</h4>
+                    <h3>Visual Avatar Integration</h3>
+                    <p>Partner with HeyGen API for avatar library. Timeline: 6-8 weeks.</p>
+                    <div style="margin-top: 1rem;">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 60%;"></div>
+                        </div>
+                        <small style="color: var(--text-muted);">In Progress - 60%</small>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h4 style="color: var(--accent-secondary); margin-bottom: 1rem;">📱 Q1-Q2 2026</h4>
+                    <h3>Mobile App & VidiTwin</h3>
+                    <p>iOS app and live avatar conversation beta. Timeline: 12 weeks.</p>
+                    <div style="margin-top: 1rem;">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 30%;"></div>
+                        </div>
+                        <small style="color: var(--text-muted);">Planning - 30%</small>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h4 style="color: var(--accent-tertiary); margin-bottom: 1rem;">🌐 Q2-Q3 2026</h4>
+                    <h3>Global Expansion</h3>
+                    <p>Target 100+ languages via Azure. APAC market expansion.</p>
+                    <div style="margin-top: 1rem;">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 15%;"></div>
+                        </div>
+                        <small style="color: var(--text-muted);">Research - 15%</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="highlight-box" style="margin-top: 3rem;">
+                <h4>📊 2026 Success Targets</h4>
+                <div class="grid-4" style="margin-top: 1.5rem;">
+                    <div style="text-align: center;">
+                        <div style="font-size: 2rem; font-weight: 700; color: var(--accent-glow);">Top 3</div>
+                        <div style="color: var(--text-secondary);">Market Position</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 2rem; font-weight: 700; color: var(--accent-glow);">100+</div>
+                        <div style="color: var(--text-secondary);">Languages</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 2rem; font-weight: 700; color: var(--accent-glow);">50+</div>
+                        <div style="color: var(--text-secondary);">Enterprise Logos</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 2rem; font-weight: 700; color: var(--accent-glow);">1000+</div>
+                        <div style="color: var(--text-secondary);">API Developers</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Use Cases -->
+        <section>
+            <div class="section-header">
+                <h2><span class="gradient-primary">Use Case Recommendations</span></h2>
+                <p>Best platform selection by use case</p>
+            </div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Use Case</th>
+                            <th>Best Choice</th>
+                            <th>Runner-up</th>
+                            <th>Key Factor</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Sales Prospecting</strong></td>
+                            <td><span class="badge badge-success">VidiMail</span></td>
+                            <td>Sendspark</td>
+                            <td>Faceted personalization</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Enterprise Training</strong></td>
+                            <td><span class="badge badge-info">Synthesia</span></td>
+                            <td>HeyGen</td>
+                            <td>Stability, compliance</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Marketing Campaigns</strong></td>
+                            <td><span class="badge badge-success">VidiMail</span></td>
+                            <td>HeyGen</td>
+                            <td><strong>300% more efficient</strong> with persona matching & full personalization</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Customer Support</strong></td>
+                            <td><span class="badge badge-success">VidiTwin</span></td>
+                            <td>D-ID</td>
+                            <td>Live handoff capability</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Budget Conscious</strong></td>
+                            <td><span class="badge badge-warning">Sendspark</span></td>
+                            <td>D-ID</td>
+                            <td>Low entry price</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Enterprise Scale</strong></td>
+                            <td><span class="badge badge-success">VidiMail</span></td>
+                            <td>HeyGen</td>
+                            <td>VidiBlast bulk engine</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Conclusion -->
+        <section>
+            <div class="section-header">
+                <h2><span class="gradient-primary">Key Takeaways</span></h2>
+            </div>
+
+            <div class="grid-2">
+                <div class="card card-highlight">
+                    <h3 style="margin-bottom: 1.5rem;">🎯 Market Position</h3>
+                    <p style="margin-bottom: 1rem;">VidiMail occupies a <strong>unique position</strong> combining:</p>
+                    <ul class="checklist">
+                        <li>Video email infrastructure</li>
+                        <li>AI avatar generation</li>
+                        <li>Intelligent personalization</li>
+                        <li>Live conversation (VidiTwin)</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h3 style="margin-bottom: 1.5rem;">💡 Strategic Insights</h3>
+                    <ul class="checklist">
+                        <li>No direct competitor offers this combination</li>
+                        <li>11Labs provides best-in-class voice cloning</li>
+                        <li>$4.2B addressable market opportunity</li>
+                        <li>Visual Vector creates defensible moat</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p><strong>VidiMail Competitive Analysis Report</strong></p>
+            <p style="margin-top: 0.5rem;">Prepared for VidiSmart Product Team | February 2026</p>
+            <p style="margin-top: 1.5rem; font-size: 0.8rem;">
+                Document Version: 1.0 | Classification: Internal Use Only
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // Animate progress bars on scroll
+        const observerOptions = {
+            threshold: 0.5
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const progressBars = entry.target.querySelectorAll('.progress-fill');
+                    progressBars.forEach(bar => {
+                        const width = bar.style.width;
+                        bar.style.width = '0%';
+                        setTimeout(() => {
+                            bar.style.width = width;
+                        }, 100);
+                    });
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.card').forEach(card => {
+            observer.observe(card);
+        });
+    </script>
+</body>
+</html>

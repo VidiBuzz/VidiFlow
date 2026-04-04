@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gemini 3.1 Chat - No Terminal Needed</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        .chat-container { height: calc(100vh - 200px); }
+        .message { animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .typing-indicator::after {
+            content: '...';
+            animation: dots 1.5s steps(4, end) infinite;
+        }
+        @keyframes dots { 0%, 20% { content: ''; } 40% { content: '.'; } 60% { content: '..'; } 80%, 100% { content: '...'; } }
+    </style>
+</head>
+<body class="bg-slate-950 text-white min-h-screen">
+    <div class="max-w-4xl mx-auto p-4">
+        <!-- Header -->
+        <div class="flex items-center justify-between mb-6">
+            <div>
+                <h1 class="text-2xl font-bold bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
+                    Gemini 3.1 Chat
+                </h1>
+                <p class="text-slate-400 text-sm">No terminal required - Works in browser</p>
+            </div>
+            <div class="flex gap-2">
+                <button onclick="clearChat()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 rounded-lg text-sm transition">
+                    Clear Chat
+                </button>
+                <a href="index.html" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 rounded-lg text-sm transition">
+                    Back to VidiSmart
+                </a>
+            </div>
+        </div>
+
+        <!-- API Key Input (if not set) -->
+        <div id="apiKeySection" class="mb-4">
+            <div class="bg-slate-900 rounded-xl p-4 border border-slate-800">
+                <label class="block text-sm text-slate-400 mb-2">OpenRouter API Key (stored locally)</label>
+                <div class="flex gap-2">
+                    <input type="password" id="apiKeyInput" placeholder="sk-or-v1-..." 
+                        class="flex-1 bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500">
+                    <button onclick="saveApiKey()" class="px-6 py-2 bg-blue-600 hover:bg-blue-500 rounded-lg transition">
+                        Save
+                    </button>
+                </div>
+                <p class="text-xs text-slate-500 mt-2">
+                    Get key from <a href="https://openrouter.ai/keys" target="_blank" class="text-blue-400 hover:underline">openrouter.ai/keys</a> • 
+                    Free tier includes Gemini 3.1
+                </p>
+            </div>
+        </div>
+
+        <!-- Chat Container -->
+        <div id="chatContainer" class="chat-container bg-slate-900 rounded-xl border border-slate-800 overflow-hidden flex flex-col">
+            <!-- Messages -->
+            <div id="messages" class="flex-1 overflow-y-auto p-4 space-y-4">
+                <div class="message bg-slate-800/50 rounded-lg p-4">
+                    <div class="flex items-start gap-3">
+                        <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-full flex items-center justify-center text-sm font-bold">
+                            AI
+                        </div>
+                        <div>
+                            <div class="font-semibold text-blue-400 mb-1">Gemini 3.1</div>
+                            <div class="text-slate-300">
+                                Hello! I'm Gemini 3.1, ready to help you with coding, analysis, and more. 
+                                No terminal needed - this runs entirely in your browser using the OpenRouter API.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Input Area -->
+            <div class="p-4 border-t border-slate-800 bg-slate-900">
+                <div class="flex gap-2">
+                    <textarea id="userInput" rows="2" placeholder="Type your message... (Shift+Enter for new line)"
+                        class="flex-1 bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white resize-none focus:outline-none focus:border-blue-500"
+                        onkeydown="if(event.key==='Enter' && !event.shiftKey){event.preventDefault();sendMessage();}"></textarea>
+                    <button onclick="sendMessage()" id="sendBtn" class="px-6 py-2 bg-blue-600 hover:bg-blue-500 rounded-lg transition flex items-center gap-2">
+                        <span>Send</span>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="mt-4 flex flex-wrap gap-2">
+            <button onclick="quickAsk('Help me fix my VSCode terminal that has a WSL wrapper bug')" 
+                class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 rounded-full text-sm text-slate-300 transition">
+                Fix VSCode Terminal
+            </button>
+            <button onclick="quickAsk('Explain NanoBanana 2.0 and how to use it')" 
+                class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 rounded-full text-sm text-slate-300 transition">
+                NanoBanana 2.0
+            </button>
+            <button onclick="quickAsk('Generate a Python script to copy files in Windows')" 
+                class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 rounded-full text-sm text-slate-300 transition">
+                File Copy Script
+            </button>
+            <button onclick="quickAsk('Help me finish my vidismart app - what should I do next?')" 
+                class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 rounded-full text-sm text-slate-300 transition">
+                VidiSmart Help
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Load API key from localStorage
+        let API_KEY = localStorage.getItem('openrouter_api_key') || '';
+        const API_URL = 'https://openrouter.ai/api/v1/chat/completions';
+        let conversation = [];
+
+        // Check for existing API key
+        if (API_KEY) {
+            document.getElementById('apiKeySection').style.display = 'none';
+            document.getElementById('apiKeyInput').value = API_KEY;
+        }
+
+        function saveApiKey() {
+            const key = document.getElementById('apiKeyInput').value.trim();
+            if (key) {
+                API_KEY = key;
+                localStorage.setItem('openrouter_api_key', key);
+                document.getElementById('apiKeySection').style.display = 'none';
+                addMessage('system', 'API key saved! You can now chat with Gemini 3.1.');
+            }
+        }
+
+        function addMessage(role, content, isTyping = false) {
+            const messagesDiv = document.getElementById('messages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message';
+            
+            const isUser = role === 'user';
+            const bgClass = isUser ? 'bg-blue-600/20 border border-blue-600/30' : 'bg-slate-800/50';
+            const name = isUser ? 'You' : 'Gemini 3.1';
+            const nameColor = isUser ? 'text-blue-400' : 'text-cyan-400';
+            const avatar = isUser ? 'You' : 'AI';
+            const avatarBg = isUser ? 'from-blue-500 to-blue-600' : 'from-cyan-500 to-blue-500';
+            
+            messageDiv.innerHTML = `
+                <div class="${bgClass} rounded-lg p-4">
+                    <div class="flex items-start gap-3">
+                        <div class="w-8 h-8 bg-gradient-to-br ${avatarBg} rounded-full flex items-center justify-center text-sm font-bold shrink-0">
+                            ${avatar}
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <div class="font-semibold ${nameColor} mb-1">${name}</div>
+                            <div class="text-slate-300 whitespace-pre-wrap ${isTyping ? 'typing-indicator' : ''}">${content}</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            messagesDiv.appendChild(messageDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            return messageDiv;
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('userInput');
+            const content = input.value.trim();
+            
+            if (!content) return;
+            if (!API_KEY) {
+                alert('Please enter your OpenRouter API key first');
+                document.getElementById('apiKeySection').style.display = 'block';
+                return;
+            }
+
+            // Add user message
+            addMessage('user', content);
+            conversation.push({ role: 'user', content });
+            input.value = '';
+
+            // Show typing indicator
+            const typingMsg = addMessage('assistant', 'Thinking', true);
+            const sendBtn = document.getElementById('sendBtn');
+            sendBtn.disabled = true;
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${API_KEY}`,
+                        'Content-Type': 'application/json',
+                        'HTTP-Referer': window.location.href,
+                        'X-Title': 'VidiSmart Gemini Chat'
+                    },
+                    body: JSON.stringify({
+                        model: 'google/gemini-3.1-pro',
+                        messages: [
+                            { role: 'system', content: 'You are a helpful AI assistant helping with the VidiSmart project.' },
+                            ...conversation
+                        ],
+                        temperature: 0.7,
+                        max_tokens: 4000
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                const assistantMessage = data.choices[0].message.content;
+                
+                // Remove typing indicator and add real response
+                typingMsg.remove();
+                addMessage('assistant', assistantMessage);
+                conversation.push({ role: 'assistant', content: assistantMessage });
+
+            } catch (error) {
+                typingMsg.remove();
+                addMessage('assistant', `Error: ${error.message}. Please check your API key and try again.`);
+                console.error('Error:', error);
+            } finally {
+                sendBtn.disabled = false;
+            }
+        }
+
+        function quickAsk(question) {
+            document.getElementById('userInput').value = question;
+            sendMessage();
+        }
+
+        function clearChat() {
+            conversation = [];
+            document.getElementById('messages').innerHTML = `
+                <div class="message bg-slate-800/50 rounded-lg p-4">
+                    <div class="flex items-start gap-3">
+                        <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-full flex items-center justify-center text-sm font-bold">
+                            AI
+                        </div>
+                        <div>
+                            <div class="font-semibold text-blue-400 mb-1">Gemini 3.1</div>
+                            <div class="text-slate-300">Chat cleared. How can I help you?</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>

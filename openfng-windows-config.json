@@ -1,0 +1,112 @@
+{
+  "name": "VidiSmart Windows App Launcher",
+  "version": "1.0.0",
+  "description": "OpenFNG configuration for Windows app management",
+  "platform": "windows",
+  "apps": [
+    {
+      "id": "vidiai",
+      "name": "Vidi AI",
+      "type": "web",
+      "url": "http://localhost:3001",
+      "icon": "🎬",
+      "logo": "M:\\code\\vidismart\\images\\VidiAi.png",
+      "autostart": false,
+      "category": "AI Tools"
+    },
+    {
+      "id": "lm-studio",
+      "name": "LM Studio",
+      "type": "service",
+      "command": "C:\\Users\\%USERNAME%\\AppData\\Local\\LM-Studio\\LM Studio.exe",
+      "port": 1234,
+      "healthCheck": "http://localhost:1234/v1/models",
+      "icon": "🧠",
+      "autostart": true,
+      "category": "AI Tools"
+    },
+    {
+      "id": "qdrant",
+      "name": "Qdrant Vector DB",
+      "type": "docker",
+      "image": "qdrant/qdrant:latest",
+      "ports": [
+        "6333:6333"
+      ],
+      "volumes": [
+        "qdrant_storage:/qdrant/storage"
+      ],
+      "icon": "🔍",
+      "autostart": true,
+      "category": "Database"
+    },
+    {
+      "id": "cursor",
+      "name": "Cursor IDE",
+      "type": "executable",
+      "path": "C:\\Users\\%USERNAME%\\AppData\\Local\\Programs\\cursor\\Cursor.exe",
+      "icon": "💻",
+      "category": "Development"
+    },
+    {
+      "id": "appflowy",
+      "name": "AppFlowy",
+      "type": "executable",
+      "path": "C:\\Program Files\\AppFlowy\\AppFlowy.exe",
+      "icon": "📝",
+      "category": "Productivity"
+    }
+  ],
+  "shortcuts": {
+    "global": {
+      "Ctrl+Alt+A": "vidiai",
+      "Ctrl+Alt+L": "lm-studio",
+      "Ctrl+Alt+Q": "qdrant",
+      "Ctrl+Alt+C": "cursor"
+    }
+  },
+  "startup": {
+    "delay": 2000,
+    "apps": [
+      "qdrant",
+      "lm-studio"
+    ]
+  },
+  "workspace": {
+    "name": "VidiSmart",
+    "root": "M:\\code\\vidismart",
+    "projects": [
+      {
+        "name": "Vidi AI Guide",
+        "path": "M:\\code\\vidismart\\AnythingLLM-Setup-Guide.html"
+      },
+      {
+        "name": "Continue Config",
+        "path": "M:\\code\\vidismart\\continue-config.json"
+      },
+      {
+        "name": "LM Studio Config",
+        "path": "M:\\code\\vidismart\\lm-studio-config.json"
+      }
+    ]
+  },
+  "environment": {
+    "OLLAMA_HOST": "localhost:11434",
+    "PIPER_URL": "http://localhost:5000",
+    "QDRANT_URL": "http://localhost:6333",
+    "VIDIAI_URL": "http://localhost:3001"
+  },
+  "scripts": {
+    "start-all": [
+      "docker start qdrant",
+      "ollama serve",
+      "python M:\\code\\vidismart\\piper\\piper_server.py"
+    ],
+    "stop-all": [
+      "docker stop qdrant",
+      "taskkill /F /IM piper.exe",
+      "taskkill /F /IM ollama.exe"
+    ],
+    "status": "curl http://localhost:5000/health && curl http://localhost:11434/api/tags && curl http://localhost:6333/healthz"
+  }
+}

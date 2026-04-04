@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vidi.NEWS | Digital Twin Strategy | VidiSmart Alpha</title>
+    <!-- Core Visual & Logic Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Fonts: Kumbh Sans for Titles, Plus Jakarta for Body -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Kumbh+Sans:wght@400;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --color-silver-base: #cfd3d7;
+            --color-silver-bright: #f3f4f7;
+            --color-silver-deep: #b8bfc6;
+            --color-white: #ffffff;
+            --color-slate-900: #0f172a;
+            --color-blue-premium: #3b82f6;
+            --color-teal: #0d9488;
+            --shadow-3d: 0 15px 35px -5px rgba(0, 0, 0, 0.1), 0 5px 15px -5px rgba(0, 0, 0, 0.05);
+            --shadow-hover: 0 40px 70px -15px rgba(0, 0, 0, 0.25);
+            --font-title: 'Kumbh Sans', sans-serif;
+            --font-body: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        body {
+            font-family: var(--font-body);
+            color: var(--color-slate-900);
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            background-attachment: fixed;
+            line-height: 1.6;
+            overflow-x: hidden;
+            color: #f8fafc;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        .brand-logo {
+            font-family: var(--font-title);
+        }
+
+        nav {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: rgba(15, 23, 42, 0.85);
+            -webkit-backdrop-filter: blur(20px);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 0 3rem;
+            height: 85px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .brand-logo {
+            width: 44px;
+            height: 44px;
+            background: var(--color-blue-premium);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 900;
+            font-size: 22px;
+        }
+
+        .export-btn {
+            background: var(--color-blue-premium);
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 50px;
+            font-weight: 800;
+            font-size: 13px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.4);
+        }
+
+        .export-btn:hover {
+            background: #2563eb;
+            transform: translateY(-3px);
+        }
+
+        main {
+            max-width: 1440px;
+            margin: 0 auto;
+            padding: 5rem 2rem;
+        }
+
+        .glass-card {
+            background: rgba(30, 41, 59, 0.7);
+            -webkit-backdrop-filter: blur(12px);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 40px;
+            padding: 3rem;
+            box-shadow: var(--shadow-3d);
+            transition: all 0.4s ease;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--color-blue-premium);
+        }
+
+        .hero {
+            text-align: center;
+            max-width: 1100px;
+            margin: 0 auto 5rem;
+        }
+
+        .hero h1 {
+            font-size: 72px;
+            font-weight: 900;
+            line-height: 1.05;
+            letter-spacing: -4px;
+            color: #f8fafc;
+        }
+
+        .hero h1 span {
+            color: var(--color-blue-premium);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+            margin-bottom: 6rem;
+        }
+
+        .chart-box {
+            background: rgba(15, 23, 42, 0.6);
+            padding: 3rem;
+            border-radius: 50px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .chart-container {
+            position: relative;
+            height: 350px;
+            width: 100%;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 10px;
+            margin-top: 1rem;
+        }
+
+        th {
+            padding: 1rem;
+            text-align: left;
+            color: #94a3b8;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        td {
+            padding: 1.5rem 1rem;
+            background: rgba(255, 255, 255, 0.03);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        tr td:first-child {
+            border-radius: 15px 0 0 15px;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        tr td:last-child {
+            border-radius: 0 15px 15px 0;
+        }
+
+        /* Workflow */
+        .workflow-step {
+            text-align: center;
+        }
+
+        .step-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            font-size: 32px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Intelligence Analyst Panel */
+        #analyst-panel {
+            position: fixed;
+            top: 0;
+            right: -500px;
+            width: 500px;
+            height: 100%;
+            background: #1e293b;
+            z-index: 2000;
+            box-shadow: -10px 0 30px rgba(0, 0, 0, 0.3);
+            transition: right 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            padding: 3rem;
+            display: flex;
+            flex-direction: column;
+            border-left: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        #analyst-panel.open {
+            right: 0;
+        }
+
+        #analyst-overlay-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(4px);
+            z-index: 1999;
+            display: none;
+        }
+
+        #chat-results {
+            flex-grow: 1;
+            overflow-y: auto;
+            margin: 2rem 0;
+            padding-right: 1rem;
+        }
+
+        .ai-response {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 1.5rem;
+            border-radius: 20px;
+            border-left: 4px solid var(--color-blue-premium);
+            margin-bottom: 1.5rem;
+            font-size: 14px;
+            color: #cbd5e1;
+        }
+
+        .loader {
+            border: 3px solid rgba(255, 255, 255, 0.2);
+            border-top: 3px solid var(--color-blue-premium);
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 0.8s linear infinite;
+            display: inline-block;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .sparkle-btn {
+            background: transparent;
+            border: 2px solid var(--color-blue-premium);
+            color: var(--color-blue-premium);
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .sparkle-btn:hover {
+            background: var(--color-blue-premium);
+            color: white;
+        }
+
+        footer {
+            background: #0f172a;
+            padding: 6rem 2rem;
+            text-align: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .analyst-header {
+            font-size: 24px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 1rem;
+            color: #fff;
+        }
+
+        .hero-title {
+            font-size: 72px;
+            font-weight: 900;
+            line-height: 1.05;
+            letter-spacing: -4px;
+            color: #f8fafc;
+        }
+
+        .hero-span {
+            color: var(--color-blue-premium);
+        }
+
+        .hero-subtitle {
+            color: #94a3b8;
+            margin-top: 1.5rem;
+            font-size: 20px;
+        }
+
+        .section-title {
+            font-size: 32px;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .text-premium {
+            color: var(--color-blue-premium);
+        }
+
+        .text-red {
+            color: #f87171;
+        }
+
+        .text-green {
+            color: #34d399;
+        }
+
+        .text-amber {
+            color: #fbbf24;
+        }
+
+        .workflow-title {
+            text-align: center;
+            font-size: 38px;
+            margin-bottom: 4rem;
+        }
+
+        .workflow-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .workflow-desc {
+            margin-top: 4rem;
+            padding: 2rem;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            text-align: center;
+            font-size: 14px;
+            color: #cbd5e1;
+        }
+
+        .roadmap-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+        }
+
+        .roadmap-card {
+            padding: 2.5rem;
+        }
+
+        .roadmap-card h4 {
+            color: var(--color-blue-premium);
+            margin-bottom: 1rem;
+        }
+
+        .roadmap-card p {
+            font-size: 14px;
+            color: #cbd5e1;
+        }
+
+        .footer-logo {
+            font-family: var(--font-title);
+            font-size: 24px;
+            margin-bottom: 1rem;
+        }
+
+        .footer-tag {
+            font-size: 11px;
+            color: #64748b;
+            text-transform: uppercase;
+            font-weight: 800;
+            letter-spacing: 2px;
+        }
+
+        .chart-title {
+            font-size: 20px;
+            margin-bottom: 2rem;
+        }
+
+        .workflow-step-inner {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .step-icon-blue {
+            background: rgba(59, 130, 246, 0.2);
+            color: #3b82f6;
+        }
+
+        .step-icon-purple {
+            background: rgba(168, 85, 247, 0.2);
+            color: #a855f7;
+        }
+
+        .step-icon-pink {
+            background: rgba(236, 72, 153, 0.2);
+            color: #ec4899;
+        }
+
+        .step-icon-green {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+        }
+
+        .step-text-title {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        .step-text-subtitle {
+            font-size: 12px;
+            color: #94a3b8;
+        }
+
+        .avatar-step {
+            border: 2px dashed var(--color-blue-premium);
+            padding: 20px;
+            border-radius: 30px;
+        }
+
+        .cost-title {
+            font-size: 24px;
+            margin-bottom: 2rem;
+        }
+
+        .roadmap-title {
+            font-size: 32px;
+            margin-bottom: 3rem;
+        }
+
+        .analyst-textarea {
+            width: 100%;
+            height: 100px;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 1rem;
+            font-family: inherit;
+            font-size: 14px;
+            outline: none;
+            margin-bottom: 1rem;
+            color: #fff;
+        }
+
+        .analyst-btn {
+            width: 100%;
+            padding: 1rem;
+            background: var(--color-blue-premium);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            font-weight: 800;
+            text-transform: uppercase;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .brand-text-title {
+            font-family: var(--font-title);
+            color: #fff;
+        }
+
+        .brand-text-subtitle {
+            font-size: 10px;
+            font-weight: 800;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .analyst-footer {
+            margin-top: auto;
+        }
+
+        .comp-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .comp-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 1.5rem;
+            transition: all 0.3s;
+        }
+
+        .comp-card:hover {
+            background: rgba(255, 255, 255, 0.05);
+            transform: translateY(-3px);
+            border-color: var(--color-blue-premium);
+        }
+
+        .comp-card h4 {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            font-size: 16px;
+            color: #fff;
+        }
+
+        .comp-card .model-tag {
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            font-weight: 800;
+        }
+
+        .tag-saas {
+            background: rgba(248, 113, 113, 0.2);
+            color: #f87171;
+        }
+
+        .tag-hybrid {
+            background: rgba(251, 191, 36, 0.2);
+            color: #fbbf24;
+        }
+
+        .tag-oss {
+            background: rgba(52, 211, 153, 0.2);
+            color: #34d399;
+        }
+
+        .comp-card p {
+            font-size: 12px;
+            color: #94a3b8;
+            line-height: 1.5;
+            margin-bottom: 1rem;
+        }
+
+        .hx-note {
+            font-size: 11px;
+            color: #cbd5e1;
+            font-style: italic;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            padding-top: 0.75rem;
+            display: flex;
+            gap: 8px;
+        }
+
+        /* Highlighted Card Styles */
+        .comp-card-highlight {
+            border-color: var(--color-blue-premium) !important;
+            background: rgba(59, 130, 246, 0.05) !important;
+        }
+
+        .text-blue-light {
+            color: #60a5fa !important;
+        }
+
+        .mt-8 {
+            margin-top: 2rem !important;
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav>
+        <div class="nav-brand">
+            <div class="brand-logo">N</div>
+            <div class="brand-text">
+                <h2 class="brand-text-title">Vidi<span>.NEWS</span></h2>
+                <p class="brand-text-subtitle">
+                    Digital Twin Alpha</p>
+            </div>
+        </div>
+        <div class="nav-buttons">
+            <button class="sparkle-btn" onclick="toggleAnalyst()">Digital Twin Analyst ✨</button>
+            <button class="export-btn" id="exportBtn" onclick="generatePDF()">Export Strategy</button>
+        </div>
+    </nav>
+
+    <div id="analyst-overlay-bg" onclick="toggleAnalyst()"></div>
+    <div id="analyst-panel">
+        <h2 class="analyst-header">Digital Twin Analyst ✨</h2>
+        <div id="chat-results">
+            <div class="ai-response">I am focused on the VidiSmart Digital Twin Strategy: Low-latency, open-source
+                first, and human experience mirroring. How can I assist your deployment roadmap?</div>
+        </div>
+        <div class="analyst-footer">
+            <textarea id="analyst-query" placeholder="Ask about LivePortrait, vLLM, or HeyGen vs OSS costs..."
+                class="analyst-textarea"></textarea>
+            <button onclick="runAnalyst()" class="analyst-btn">
+                Generate Insight <span id="analyst-loader" style="display: none;" class="loader"></span>
+            </button>
+        </div>
+    </div>
+
+    <div id="capture-area">
+        <main>
+            <section class="hero">
+                <h1 class="hero-title">Digital Twin & <span class="hero-span">Conversational</span> AI</h1>
+                <p class="hero-subtitle">Strategic Implementation Roadmap for VidiSmart Community</p>
+            </section>
+
+            <!-- Hero Visual -->
+            <!-- Hero Visual -->
+            <section class="glass-card mb-12" style="padding: 0; overflow: hidden; position: relative;">
+                <img referrerpolicy="no-referrer" src="https://cdn.vidi.news/vidishop_lingerie_model.png" alt="VidiShop Fashion Experience Interface"
+                    style="width: 100%; display: block; opacity: 0.9;">
+
+                <!-- Live Speech Caption -->
+                <div
+                    style="position: absolute; bottom: 25%; width: 100%; display: flex; justify-content: center; pointer-events: none;">
+                    <span
+                        style="background: rgba(15, 23, 42, 0.75); color: white; padding: 12px 24px; border-radius: 50px; font-size: 18px; font-weight: 500; backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 10px 20px rgba(0,0,0,0.3);">
+                        "What can I help you with next? Is this exactly the style you were looking for?"
+                    </span>
+                </div>
+
+                <div
+                    style="position: absolute; bottom: 0; left: 0; width: 100%; background: linear-gradient(to top, #0f172a, transparent); padding: 4rem 2rem 2rem;">
+                    <h3 style="font-size: 24px; color: #fff; display: flex; align-items: center; gap: 10px;">
+                        <span
+                            style="background: var(--color-blue-premium); width: 10px; height: 10px; border-radius: 50%; display: inline-block; box-shadow: 0 0 10px var(--color-blue-premium);"></span>
+                        VidiShop Experience Preview
+                    </h3>
+                </div>
+            </section>
+
+            <section class="glass-card mb-12">
+                <h2 class="section-title">
+                    <i data-lucide="layout-grid" class="text-premium"></i> Market Landscape & Cost Analysis
+                </h2>
+
+                <!-- Expanded Comparison Cards for Education -->
+                <div class="comp-grid">
+                    <div class="comp-card">
+                        <h4>HeyGen / Tavus <span class="model-tag tag-saas">SaaS API</span></h4>
+                        <p>Leading video generation APIs. Excellent visual quality (4K) but relies on high-latency cloud
+                            rendering ($2-5/min). Ideal for async marketing videos, not live interaction.</p>
+                        <div class="hx-note"><i data-lucide="user" size="14"></i> <span>Feels scripted; 3-5s delay
+                                breaks conversation.</span></div>
+                    </div>
+                    <div class="comp-card">
+                        <h4>Inworld AI <span class="model-tag tag-hybrid">Hybrid</span></h4>
+                        <p>Gaming-focused engine. Uses "Character Engine" for logic but often relies on proprietary
+                            black-box infrastructure. Usage-based pricing can scale unpredictably.</p>
+                        <div class="hx-note"><i data-lucide="gamepad-2" size="14"></i> <span>Great behavioral logic, but
+                                video is often avatar-based.</span></div>
+                    </div>
+                    <div class="comp-card comp-card-highlight">
+                        <h4>LivePortrait OSS <span class="model-tag tag-oss">VidiSmart Choice</span></h4>
+                        <p>Open source SOTA framework. Runs locally on consumer GPUs (RTX 3090/4090). Zero platform
+                            cost, sub-50ms latency (TensorRT). Total privacy and control.</p>
+                        <div class="hx-note text-blue-light"><i data-lucide="zap" size="14"></i> <span>True
+                                human-speed (sub-200ms) interaction loop.</span></div>
+                    </div>
+                    <div class="comp-card">
+                        <h4>Synthesia <span class="model-tag tag-saas">Enterprise</span></h4>
+                        <p>The corporate standard for training videos. High monthly subscription ($500+/mo). Extremely
+                            realistic lip-sync but strictly non-interactive video generation.</p>
+                        <div class="hx-note"><i data-lucide="video" size="14"></i> <span>Perfect for lectures,
+                                impossible for Q&A.</span></div>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto mt-8">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Platform</th>
+                                <th>Type</th>
+                                <th>Latency</th>
+                                <th>Cost Model</th>
+                                <th>Extensibility</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>HeyGen API</td>
+                                <td>SaaS</td>
+                                <td class="text-red">3-5 sec</td>
+                                <td class="text-red">$2.00/min</td>
+                                <td>Low (Black Box)</td>
+                            </tr>
+                            <tr>
+                                <td>Inworld AI</td>
+                                <td>Hybrid</td>
+                                <td class="text-amber">1-2 sec</td>
+                                <td class="text-amber">Usage-based</td>
+                                <td>High (Game Engines)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>VidiSmart (OSS)</strong></td>
+                                <td class="text-green">Open Source</td>
+                                <td class="text-green">~200 ms</td>
+                                <td class="text-green">Compute Only</td>
+                                <td>Infinite (Custom)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section class="stats-grid">
+                <div class="glass-card chart-box">
+                    <h3 class="chart-title">Implementation Latency</h3>
+                    <div class="chart-container">
+                        <canvas id="latencyChart"></canvas>
+                    </div>
+                </div>
+                <div class="glass-card chart-box">
+                    <h3 class="chart-title">Feature Flexibility Index</h3>
+                    <div class="chart-container">
+                        <canvas id="flexChart"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <section class="glass-card mb-12">
+                <h2 class="workflow-title">VidiSmart Integration Workflow</h2>
+
+                <!-- Architecture Diagram -->
+                <div
+                    style="margin-bottom: 3rem; border-radius: 20px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1);">
+                    <img referrerpolicy="no-referrer" src="https://cdn.vidi.news/vidismart-moe-stack.png" alt="VidiSmart MoE Architecture"
+                        style="width: 100%; display: block;">
+                </div>
+
+                <div class="workflow-container">
+                    <div class="workflow-step workflow-step-inner">
+                        <div class="step-icon step-icon-blue">
+                            <i data-lucide="database"></i>
+                        </div>
+                        <h4 class="step-text-title">Intelligence Layer</h4>
+                        <p class="step-text-subtitle">Vector DB / BI Reports</p>
+                    </div>
+                    <div class="workflow-step workflow-step-inner">
+                        <div class="step-icon step-icon-purple">
+                            <i data-lucide="brain"></i>
+                        </div>
+                        <h4 class="step-text-title">Conversational Brain</h4>
+                        <p class="step-text-subtitle">Nemotron-4 / PersonaPlex</p>
+                    </div>
+                    <div class="workflow-step workflow-step-inner">
+                        <div class="step-icon step-icon-pink">
+                            <i data-lucide="mic"></i>
+                        </div>
+                        <h4 class="step-text-title">Voice Synthesis</h4>
+                        <p class="step-text-subtitle">Parakeet / VidiVoice</p>
+                    </div>
+                    <div class="workflow-step workflow-step-inner avatar-step">
+                        <div class="step-icon step-icon-green">
+                            <i data-lucide="video"></i>
+                        </div>
+                        <h4 class="step-text-title">Visual Avatar</h4>
+                        <p class="step-text-subtitle">VidiTwin Live / LivePortrait</p>
+                    </div>
+                </div>
+                <div class="workflow-desc">
+                    <p><strong>Mechanism:</strong> User queries are processed
+                        via <strong>Vector RAG</strong>. The LLM response is converted to audio, then animated
+                        frame-by-frame by the <strong>Avatar Engine</strong>.</p>
+                </div>
+            </section>
+
+            <section class="glass-card mb-12">
+                <h3 class="cost-title">Annual Cost Projection (1,000 Hrs/Mo)</h3>
+                <div class="chart-container" style="height: 400px;">
+                    <canvas id="costChart"></canvas>
+                </div>
+            </section>
+
+            <section>
+                <h2 class="roadmap-title">Detailed Technical Roadmap</h2>
+                <div class="roadmap-grid">
+                    <div class="glass-card roadmap-card">
+                        <h4>Avatar Selection & Source
+                        </h4>
+                        <p>Use <strong>LivePortrait</strong> for custom
+                            avatars. Record 30s of source video to serve as the "Driving Video". 0% platform dependence.
+                        </p>
+                    </div>
+                    <div class="glass-card roadmap-card">
+                        <h4>The Brain (RAG Stack)</h4>
+                        <p><strong>LangChain + pgvector</strong>. Ingest
+                            company intelligence via PDFs/CSVs. Contextually aware grounding.</p>
+                    </div>
+                    <div class="glass-card roadmap-card">
+                        <h4>LLM Connectivity</h4>
+                        <p>OpenAI-compatible wrappers for direct swap between GPT-4o and <strong>Nemotron-4</strong>
+                            without code changes.</p>
+                    </div>
+                    <div class="glass-card roadmap-card">
+                        <h4>Streaming WebSocket</h4>
+                        <p>Chunked audio/video delivery to eliminate wait
+                            times. Immediate user interaction loop.</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <footer>
+        <h3 class="footer-logo">VidiSmart.com</h3>
+        <p class="footer-tag">Proprietary Institutional Strategy © 2026</p>
+    </footer>
+
+    <script>
+        lucide.createIcons();
+
+        async function callGemini(p, s) {
+            const u = "ai-proxy.php";
+            try {
+                const r = await fetch(u, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ contents: [{ parts: [{ text: p }] }], systemInstruction: { parts: [{ text: s }] } })
+                });
+                const d = await r.json();
+                return d.candidates?.[0]?.content?.parts?.[0]?.text || "Error.";
+            } catch (e) { return "API error."; }
+        }
+
+        function toggleAnalyst() {
+            const p = document.getElementById('analyst-panel');
+            const b = document.getElementById('analyst-overlay-bg');
+            p.classList.toggle('open');
+            b.style.display = p.classList.contains('open') ? 'block' : 'none';
+        }
+
+        async function runAnalyst() {
+            const q = document.getElementById('analyst-query').value; if (!q) return;
+            const l = document.getElementById('analyst-loader'); const r = document.getElementById('chat-results');
+            l.style.display = 'inline-block';
+            const s = `VidiSmart Digital Twin Specialist. Focus: Open Source (LivePortrait, SadTalker), Low Latency, Human Experience. Compare SaaS (HeyGen) vs OSS costs. Context: Implementation Roadmap. Always use "Ai" casing.`;
+            const insight = await callGemini(q, s);
+            const d = document.createElement('div'); d.className = 'ai-response'; d.innerHTML = `<strong>Inquiry:</strong> ${q}<br><br><strong>Analyst:</strong><br>${insight.replace(/\n/g, '<br>')}`;
+            r.prepend(d); document.getElementById('analyst-query').value = ""; l.style.display = 'none';
+        }
+
+        function initCharts() {
+            const config = {
+                latency: {
+                    type: 'bar',
+                    data: {
+                        labels: ['Synthesia', 'HeyGen API', 'Inworld', 'OSS (Local)'],
+                        datasets: [{ data: [15, 4.5, 1.2, 0.8], backgroundColor: ['#ef4444', '#f59e0b', '#3b82f6', '#10b981'], borderRadius: 10 }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#64748b' } }, x: { ticks: { color: '#64748b' } } } }
+                },
+                flex: {
+                    type: 'radar',
+                    data: {
+                        labels: ['Brain', 'Voice', 'Realism', 'Privacy', 'Integration'],
+                        datasets: [
+                            { label: 'VidiSmart Custom', data: [100, 95, 85, 100, 100], fill: true, backgroundColor: 'rgba(59, 130, 246, 0.2)', borderColor: '#3b82f6' },
+                            { label: 'SaaS', data: [40, 60, 95, 30, 50], fill: true, backgroundColor: 'rgba(239, 68, 68, 0.2)', borderColor: '#ef4444' }
+                        ]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false, scales: { r: { angleLines: { color: 'rgba(255,255,255,0.1)' }, grid: { color: 'rgba(255,255,255,0.1)' }, pointLabels: { color: '#94a3b8' }, ticks: { display: false } } } }
+                },
+                cost: {
+                    type: 'line',
+                    data: {
+                        labels: ['Mo 1', 'Mo 3', 'Mo 6', 'Mo 9', 'Mo 12'],
+                        datasets: [
+                            { label: 'SaaS (HeyGen)', data: [5000, 15000, 30000, 45000, 60000], borderColor: '#f87171', tension: 0.3 },
+                            { label: 'OSS (Compute)', data: [12000, 13000, 14500, 16000, 17500], borderColor: '#34d399', tension: 0.3 }
+                        ]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: '#fff' } } }, scales: { y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#64748b' } }, x: { ticks: { color: '#64748b' } } } }
+                }
+            };
+            new Chart(document.getElementById('latencyChart'), config.latency);
+            new Chart(document.getElementById('flexChart'), config.flex);
+            new Chart(document.getElementById('costChart'), config.cost);
+        }
+
+        async function generatePDF() {
+            const btn = document.getElementById('exportBtn'); btn.innerText = "Exporting...";
+            try {
+                const el = document.getElementById('capture-area');
+                const canv = await html2canvas(el, { scale: 2, useCORS: true, backgroundColor: "#0f172a" });
+                const { jsPDF } = window.jspdf; const pdf = new jsPDF('p', 'px', 'a4');
+                pdf.addImage(canv.toDataURL('image/png'), 'PNG', 0, 0, pdf.internal.pageSize.getWidth(), (canv.height * pdf.internal.pageSize.getWidth()) / canv.width);
+                pdf.save('VidiSmart-Digital-Twin-Strategy-2026.pdf');
+            } catch (err) { window.print(); } finally { btn.innerText = "Export Strategy"; }
+        }
+
+        window.onload = function () { initCharts(); };
+    </script>
+</body>
+
+</html>

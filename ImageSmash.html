@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ad Mockup Studio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        /* Custom scrollbar for better aesthetics */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+    <div class="container mx-auto p-4 md:p-8">
+        <header class="text-center mb-8">
+            <h1 class="text-4xl md:text-5xl font-bold text-gray-900">Ad Mockup Studio</h1>
+            <p class="text-gray-600 mt-2">Powered by Gemini - Turn your product photos into stunning ads.</p>
+        </header>
+
+        <main class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <!-- Controls Column -->
+            <div class="lg:col-span-4 bg-white p-6 rounded-2xl shadow-lg h-full">
+                <div class="space-y-6">
+                    <!-- Step 1: Upload Image -->
+                    <div>
+                        <h2 class="text-xl font-semibold mb-3 text-gray-700 flex items-center">
+                            <span class="bg-blue-500 text-white rounded-full h-8 w-8 text-sm flex items-center justify-center mr-3">1</span>
+                            Upload Product Image
+                        </h2>
+                        <div id="image-uploader" class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center cursor-pointer hover:border-blue-500 transition-colors">
+                            <input type="file" id="image-input" class="hidden" accept="image/*">
+                            <div id="upload-prompt">
+                                <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
+                                    <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                </svg>
+                                <p class="mt-2 text-sm text-gray-500">Click to upload or drag and drop</p>
+                                <p class="text-xs text-gray-400">PNG, JPG, GIF up to 10MB</p>
+                            </div>
+                            <img id="image-preview" class="hidden max-h-48 mx-auto rounded-lg" alt="Product Preview">
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Add Text -->
+                    <div>
+                        <h2 class="text-xl font-semibold mb-3 text-gray-700 flex items-center">
+                            <span class="bg-blue-500 text-white rounded-full h-8 w-8 text-sm flex items-center justify-center mr-3">2</span>
+                            Add Overlay Text
+                        </h2>
+                        <input type="text" id="ad-text" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition" placeholder="e.g., 'Summer Sale!'">
+                    </div>
+
+                    <!-- Step 3: Choose Ad Format -->
+                    <div>
+                        <h2 class="text-xl font-semibold mb-3 text-gray-700 flex items-center">
+                            <span class="bg-blue-500 text-white rounded-full h-8 w-8 text-sm flex items-center justify-center mr-3">3</span>
+                            Choose Ad Format
+                        </h2>
+                        <div id="ad-formats-container" class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                            <!-- Ad format buttons will be injected here by JS -->
+                        </div>
+                    </div>
+
+                    <!-- Generate Button -->
+                    <button id="generate-button" class="w-full bg-blue-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-700 transition-transform transform hover:scale-105 disabled:bg-gray-400 disabled:cursor-not-allowed disabled:scale-100" disabled>
+                        Generate 4 Ad Versions
+                    </button>
+                </div>
+            </div>
+
+            <!-- Results Column -->
+            <div class="lg:col-span-8 bg-white p-6 rounded-2xl shadow-lg">
+                 <h2 class="text-2xl font-semibold mb-4 text-gray-800">Generated Ads</h2>
+                 <div id="results-container" class="grid grid-cols-1 md:grid-cols-2 gap-6 min-h-[500px]">
+                    <div id="placeholder" class="col-span-full flex flex-col items-center justify-center text-center text-gray-500">
+                        <svg class="h-16 w-16 text-gray-300 mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+                        </svg>
+                        <p class="font-semibold">Your ad mockups will appear here.</p>
+                        <p class="text-sm">Follow the steps to get started.</p>
+                    </div>
+                     <!-- Generated images and loaders will appear here -->
+                 </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // --- DOM Elements ---
+        const imageInput = document.getElementById('image-input');
+        const imageUploader = document.getElementById('image-uploader');
+        const uploadPrompt = document.getElementById('upload-prompt');
+        const imagePreview = document.getElementById('image-preview');
+        const adText = document.getElementById('ad-text');
+        const adFormatsContainer = document.getElementById('ad-formats-container');
+        const generateButton = document.getElementById('generate-button');
+        const resultsContainer = document.getElementById('results-container');
+        const placeholder = document.getElementById('placeholder');
+
+        let uploadedImageBase64 = null;
+        let selectedFormat = null;
+
+        // --- Ad Format Definitions ---
+        const adFormats = {
+            'billboard': {
+                name: 'City Billboard',
+                icon: '🏙️',
+                versions: [
+                    "on a giant digital billboard in Times Square, New York, at night with vibrant city lights.",
+                    "on a classic billboard overlooking a sunny California highway with palm trees.",
+                    "on a modern billboard on a skyscraper in Tokyo, during a rainy evening.",
+                    "on a billboard in a futuristic, cyberpunk city with neon glows."
+                ]
+            },
+            'bus_stop': {
+                name: 'Bus Stop Ad',
+                icon: '🚏',
+                versions: [
+                    "in a sleek, modern bus stop shelter in London on a cloudy day.",
+                    "in a busy bus stop in Paris, with the Eiffel Tower faintly in the background, during sunset.",
+                    "in a minimalist, clean bus stop shelter with a simple concrete background.",
+                    "in a suburban bus stop at night, illuminated brightly."
+                ]
+            },
+            'magazine': {
+                name: 'Magazine Spread',
+                icon: '📖',
+                versions: [
+                    "on a glossy, full-page spread of a high-fashion magazine like Vogue.",
+                    "in a tech magazine like Wired, with a modern, edgy layout.",
+                    "in a lifestyle magazine like Architectural Digest, placed in a luxurious home setting.",
+                    "in a vintage-style magazine from the 1960s, with retro colors and typography."
+                ]
+            },
+            'subway': {
+                name: 'Subway Ad',
+                icon: '🚇',
+                versions: [
+                    "on an ad panel inside a crowded New York City subway car.",
+                    "on a large poster in a clean, futuristic subway station in Seoul.",
+                    "inside a vintage, wooden subway car, giving a historical feel.",
+                    "on a digital screen in a modern subway station, with motion blur from a passing train."
+                ]
+            },
+            'newspaper': {
+                name: 'Newspaper Ad',
+                icon: '📰',
+                versions: [
+                    "as a classic black-and-white ad in a traditional newspaper like The New York Times.",
+                    "as a full-color ad on the front page of a local, community newspaper.",
+                    "in a tabloid-style newspaper with bold, attention-grabbing headlines.",
+                    "in a financial newspaper like The Wall Street Journal, looking professional and serious."
+                ]
+            },
+            'social_media': {
+                name: 'Social Media Post',
+                icon: '📱',
+                versions: [
+                    "in a stylish Instagram post on a smartphone screen, held by a person at a cafe.",
+                    "as a promoted post in a Facebook feed, with likes and comments visible.",
+                    "in a Pinterest-style mood board surrounded by other aesthetic images.",
+                    "as a TikTok video frame on a phone, with a trendy, colorful background."
+                ]
+            },
+            'coffee_shop': {
+                name: 'Coffee Shop Ad',
+                icon: '☕',
+                versions: [
+                    "on a small table tent card in a cozy, rustic coffee shop with warm lighting.",
+                    "on a poster on the brick wall of a hip, industrial-style cafe.",
+                    "on a digital menu screen behind the counter of a modern coffee shop.",
+                    "on a coffee cup sleeve, held by a person reading a book."
+                ]
+            },
+            'storefront': {
+                name: 'Luxury Storefront',
+                icon: '🛍️',
+                versions: [
+                    "in a high-end window display on Rodeo Drive, Beverly Hills, at night.",
+                    "in a minimalist, Scandinavian-style storefront window during the day.",
+                    "in the main window display of a famous department store like Harrods in London.",
+                    "projected onto the glass of a futuristic, all-glass storefront."
+                ]
+            },
+            'jumbotron': {
+                name: 'Stadium Jumbotron',
+                icon: '🏟️',
+                versions: [
+                    "on a massive jumbotron in a packed football stadium during a game.",
+                    "on the screen at a basketball arena during a timeout, with cheering fans.",
+                    "on a jumbotron at a nighttime baseball game, with stadium lights.",
+                    "on a screen at an outdoor music festival, with a large crowd below."
+                ]
+            },
+            'website': {
+                name: 'Tech Website',
+                icon: '💻',
+                versions: [
+                    "as the featured product on the homepage of a website like Product Hunt.",
+                    "on a sleek, dark-mode tech blog reviewing new gadgets.",
+                    "in a banner ad on a popular tech news website like The Verge.",
+                    "as the main image on a minimalist, beautifully designed e-commerce product page."
+                ]
+            }
+        };
+
+        // --- Functions ---
+
+        /**
+         * Initializes the application by populating ad formats and setting up event listeners.
+         */
+        function initialize() {
+            populateAdFormats();
+            setupEventListeners();
+        }
+
+        /**
+         * Populates the ad format selection container with buttons.
+         */
+        function populateAdFormats() {
+            for (const key in adFormats) {
+                const format = adFormats[key];
+                const button = document.createElement('button');
+                button.className = 'p-3 border-2 border-gray-300 rounded-lg text-left hover:border-blue-500 hover:bg-blue-50 focus:border-blue-500 focus:bg-blue-50 transition-colors';
+                button.dataset.format = key;
+                button.innerHTML = `<span class="text-2xl">${format.icon}</span><p class="font-semibold text-sm mt-1">${format.name}</p>`;
+                button.onclick = () => selectFormat(key, button);
+                adFormatsContainer.appendChild(button);
+            }
+        }
+
+        /**
+         * Sets up all necessary event listeners for the UI.
+         */
+        function setupEventListeners() {
+            imageUploader.addEventListener('click', () => imageInput.click());
+            imageUploader.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                imageUploader.classList.add('border-blue-500', 'bg-blue-50');
+            });
+            imageUploader.addEventListener('dragleave', () => {
+                imageUploader.classList.remove('border-blue-500', 'bg-blue-50');
+            });
+            imageUploader.addEventListener('drop', (e) => {
+                e.preventDefault();
+                imageUploader.classList.remove('border-blue-500', 'bg-blue-50');
+                if (e.dataTransfer.files.length) {
+                    handleImageUpload(e.dataTransfer.files[0]);
+                }
+            });
+            imageInput.addEventListener('change', (e) => {
+                if (e.target.files.length) {
+                    handleImageUpload(e.target.files[0]);
+                }
+            });
+            generateButton.addEventListener('click', handleGeneration);
+        }
+
+        /**
+         * Handles the image file upload, validation, and preview generation.
+         * @param {File} file The image file selected by the user.
+         */
+        function handleImageUpload(file) {
+            if (!file.type.startsWith('image/')) {
+                alert('Please upload an image file.');
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                uploadedImageBase64 = e.target.result.split(',')[1];
+                imagePreview.src = e.target.result;
+                imagePreview.classList.remove('hidden');
+                uploadPrompt.classList.add('hidden');
+                checkFormValidity();
+            };
+            reader.readAsDataURL(file);
+        }
+
+        /**
+         * Handles the selection of an ad format.
+         * @param {string} key The key of the selected ad format.
+         * @param {HTMLElement} buttonElement The button element that was clicked.
+         */
+        function selectFormat(key, buttonElement) {
+            selectedFormat = key;
+            // Update UI to show selection
+            const buttons = adFormatsContainer.querySelectorAll('button');
+            buttons.forEach(btn => {
+                btn.classList.remove('ring-2', 'ring-blue-500', 'bg-blue-50');
+            });
+            buttonElement.classList.add('ring-2', 'ring-blue-500', 'bg-blue-50');
+            checkFormValidity();
+        }
+
+        /**
+         * Checks if the required inputs (image and format) are selected to enable the generate button.
+         */
+        function checkFormValidity() {
+            if (uploadedImageBase64 && selectedFormat) {
+                generateButton.disabled = false;
+            } else {
+                generateButton.disabled = true;
+            }
+        }
+        
+        /**
+         * Orchestrates the ad generation process when the button is clicked.
+         */
+        async function handleGeneration() {
+            if (!uploadedImageBase64 || !selectedFormat) {
+                alert("Please upload an image and select an ad format first.");
+                return;
+            }
+            
+            generateButton.disabled = true;
+            generateButton.textContent = 'Generating...';
+            resultsContainer.innerHTML = '';
+            placeholder.classList.add('hidden');
+
+            const format = adFormats[selectedFormat];
+            const text = adText.value;
+
+            // Create loaders for each of the 4 versions
+            for (let i = 0; i < 4; i++) {
+                const loaderCell = document.createElement('div');
+                loaderCell.id = `loader-${i}`;
+                loaderCell.className = 'flex flex-col items-center justify-center p-4 bg-gray-50 rounded-lg border aspect-square';
+                loaderCell.innerHTML = `<div class="loader mb-2"></div><p class="text-sm text-gray-500">Generating version ${i+1}...</div>`;
+                resultsContainer.appendChild(loaderCell);
+            }
+
+            // Generate each version
+            format.versions.forEach((versionPrompt, index) => {
+                generateSingleAd(versionPrompt, text, index);
+            });
+        }
+        
+        /**
+         * Generates a single ad version by calling the Gemini API.
+         * @param {string} versionPrompt The specific prompt for this version.
+         * @param {string} text The user-provided overlay text.
+         * @param {number} index The index of the version (0-3).
+         */
+        async function generateSingleAd(versionPrompt, text, index) {
+            const fullPrompt = `A photorealistic image of the user-provided product placed in this scene: ${versionPrompt}. The product should look natural in the environment. If the user provided text, overlay it creatively and legibly on the ad. User text: "${text}". Make it look like a real advertisement.`;
+            
+            try {
+                const generatedImageBase64 = await callGeminiAPIWithBackoff(fullPrompt, uploadedImageBase64);
+                
+                const resultCell = document.createElement('div');
+                resultCell.className = 'w-full h-full aspect-square rounded-lg overflow-hidden shadow-md';
+                resultCell.innerHTML = `<img src="data:image/png;base64,${generatedImageBase64}" class="w-full h-full object-cover" alt="Generated Ad Mockup ${index + 1}">`;
+
+                const loaderCell = document.getElementById(`loader-${index}`);
+                resultsContainer.replaceChild(resultCell, loaderCell);
+                
+            } catch (error) {
+                console.error(`Error generating version ${index + 1}:`, error);
+                const errorCell = document.createElement('div');
+                errorCell.className = 'flex flex-col items-center justify-center p-4 bg-red-50 text-red-700 rounded-lg border border-red-200 aspect-square';
+                errorCell.innerHTML = `<strong>Error!</strong><p class="text-sm text-center">Failed to generate version ${index + 1}. Please try again.</p>`;
+                const loaderCell = document.getElementById(`loader-${index}`);
+                resultsContainer.replaceChild(errorCell, loaderCell);
+            } finally {
+                 // Check if all loaders are gone
+                const remainingLoaders = resultsContainer.querySelectorAll('[id^="loader-"]');
+                if (remainingLoaders.length === 0) {
+                    generateButton.disabled = false;
+                    generateButton.textContent = 'Generate 4 Ad Versions';
+                }
+            }
+        }
+        
+        /**
+         * Calls the Gemini API with exponential backoff for retries.
+         * @param {string} prompt The text prompt for the API.
+         * @param {string} imageBase64 The base64 encoded image data.
+         * @returns {Promise<string>} A promise that resolves with the base64 string of the generated image.
+         */
+        async function callGeminiAPIWithBackoff(prompt, imageBase64) {
+            const model = 'gemini-2.5-flash-image-preview'; 
+            const apiKey = ""; // API key is handled by the environment
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+
+            const payload = {
+                contents: [{
+                    parts: [
+                        { text: prompt },
+                        {
+                            inlineData: {
+                                mimeType: "image/png",
+                                data: imageBase64
+                            }
+                        }
+                    ]
+                }],
+                 generationConfig: {
+                    responseModalities: ['TEXT', 'IMAGE']
+                },
+            };
+
+            let response;
+            let attempts = 0;
+            const maxAttempts = 5;
+            let delay = 1000;
+
+            while (attempts < maxAttempts) {
+                try {
+                    response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (response.ok) {
+                        const result = await response.json();
+                        const base64Data = result?.candidates?.[0]?.content?.parts?.find(p => p.inlineData)?.inlineData?.data;
+
+                        if (!base64Data) {
+                             throw new Error("No image data found in API response.");
+                        }
+                        return base64Data;
+                    } else if (response.status === 429 || response.status >= 500) {
+                        // Throttling or server error, so retry
+                        attempts++;
+                        if (attempts >= maxAttempts) {
+                            throw new Error(`API request failed after ${maxAttempts} attempts with status: ${response.status}`);
+                        }
+                        await new Promise(resolve => setTimeout(resolve, delay));
+                        delay *= 2; // Exponential backoff
+                    } else {
+                        // Client-side error, don't retry
+                        const errorBody = await response.json();
+                        console.error("API Error:", errorBody);
+                        throw new Error(`API request failed with status: ${response.status}`);
+                    }
+                } catch (error) {
+                    console.error(`Attempt ${attempts + 1} failed:`, error.message);
+                     attempts++;
+                     if (attempts >= maxAttempts) {
+                       throw error;
+                     }
+                     await new Promise(resolve => setTimeout(resolve, delay));
+                     delay *= 2;
+                }
+            }
+        }
+
+        // --- Initial Load ---
+        document.addEventListener('DOMContentLoaded', initialize);
+    </script>
+</body>
+</html>

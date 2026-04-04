@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VidiSmart | The Smart Stack Strategy</title>
+    
+    <!-- Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kumbh+Sans:wght@300;400;700;900&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+    <!-- 
+         Application Structure Plan: 
+         - Architecture: Unified Smart Stack Framework.
+         - Logic: 
+            1. Hero: Three.js Particle Swarm (Sovereign Data).
+            2. The Problem: 90% Unstructured Data.
+            3. The Solution: Vector + Lexical (BM25) + Knowledge Graphs = Truth.
+            4. Market Matrix: 20 Categories (Manufacturing, B2B, etc.).
+            5. Directory: Top 10 Consultants (Fixed rendering).
+         - Technical Excellence: Implementation of robust API error handling with exponential backoff for visual generation.
+    -->
+
+    <style>
+        :root {
+            --vidi-teal: #0d9488;
+            --vidi-teal-bright: #2dd4bf;
+            --vidi-obsidian: #020617;
+            --vidi-dark: #0f172a;
+            --vidi-slate: #1e293b;
+            --vidi-bg: #f8fafc;
+            --font-main: 'Inter', sans-serif;
+            --font-vidi: 'Kumbh Sans', sans-serif;
+            --vidi-gradient: linear-gradient(135deg, #020617 0%, #0f172a 100%);
+            --vidi-teal-gradient: linear-gradient(135deg, #2dd4bf 0%, #0d9488 100%);
+        }
+
+        /* BASE */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: var(--font-main);
+            background-color: var(--vidi-bg);
+            color: var(--vidi-slate);
+            height: 100vh;
+            display: flex;
+            overflow: hidden;
+        }
+
+        /* SIDEBAR - Enhanced with Gradient */
+        aside {
+            width: 300px;
+            background: var(--vidi-gradient);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .sidebar-header { padding: 40px 30px; }
+        .logo { font-family: var(--font-vidi); font-size: 2rem; font-weight: 900; letter-spacing: -1.5px; }
+        .logo span { background: var(--vidi-teal-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        
+        nav { flex: 1; padding: 20px 15px; overflow-y: auto; }
+        .nav-link {
+            width: 100%; display: flex; align-items: center; gap: 15px; padding: 14px 20px;
+            color: #94a3b8; text-decoration: none; font-size: 0.85rem; font-weight: 600;
+            border-radius: 12px; transition: all 0.3s ease; cursor: pointer; background: none; border: none; text-align: left;
+        }
+        .nav-link:hover { color: white; background: rgba(255,255,255,0.05); }
+        .nav-link.active { background: var(--vidi-teal); color: white; box-shadow: 0 4px 20px rgba(13, 148, 136, 0.4); }
+
+        /* MAIN */
+        main { flex: 1; overflow-y: auto; scroll-behavior: smooth; position: relative; background: var(--vidi-bg); }
+
+        /* HERO - THREE.JS */
+        #hero {
+            height: 85vh; background: var(--vidi-obsidian); position: relative;
+            display: flex; align-items: center; padding: 0 80px; overflow: hidden;
+        }
+        #hero-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; opacity: 0.6; }
+        .hero-body { position: relative; z-index: 10; max-width: 900px; }
+        .badge {
+            display: inline-block; padding: 8px 16px; background: rgba(45, 212, 191, 0.1);
+            border: 1px solid rgba(45, 212, 191, 0.3); color: var(--vidi-teal-bright);
+            border-radius: 50px; font-size: 0.7rem; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 25px;
+        }
+        h1 { font-family: var(--font-vidi); font-size: 5.5rem; font-weight: 900; color: white; line-height: 0.85; margin-bottom: 30px; letter-spacing: -3px; }
+        .hero-text { font-size: 1.3rem; color: #94a3b8; line-height: 1.6; font-weight: 300; max-width: 700px; }
+
+        /* SECTIONS */
+        section { padding: 100px 80px; max-width: 1400px; margin: 0 auto; }
+        .section-header { margin-bottom: 80px; text-align: center; }
+        .section-title { font-family: var(--font-vidi); font-size: 3.5rem; font-weight: 900; color: var(--vidi-dark); letter-spacing: -2px; }
+        .section-subtitle { color: #64748b; font-size: 1.2rem; max-width: 800px; margin: 20px auto; line-height: 1.6; }
+
+        /* TECH STACK CARDS */
+        .tech-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; margin-top: 50px; }
+        .tech-card {
+            background: white; padding: 40px; border-radius: 40px; border: 1px solid rgba(0,0,0,0.05);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.02); transition: all 0.4s ease;
+        }
+        .tech-card:hover { transform: translateY(-10px); border-color: var(--vidi-teal); box-shadow: 0 30px 60px rgba(13, 148, 136, 0.1); }
+        .tech-icon { font-size: 2.5rem; color: var(--vidi-teal); margin-bottom: 25px; }
+        .tech-label { font-family: var(--font-vidi); font-size: 1.5rem; font-weight: 900; margin-bottom: 15px; }
+        .tech-desc { color: #64748b; font-size: 0.95rem; line-height: 1.6; }
+
+        /* CATEGORY MATRIX - 20 VERTICALS */
+        .matrix-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; }
+        .market-tag {
+            background: white; padding: 20px; border-radius: 20px; text-align: center;
+            border: 1px solid rgba(0,0,0,0.05); font-weight: 700; font-size: 0.75rem;
+            color: var(--vidi-slate); transition: all 0.2s ease; cursor: default;
+            text-transform: uppercase; letter-spacing: 1px;
+        }
+        .market-tag:hover { background: var(--vidi-teal); color: white; transform: scale(1.05); }
+
+        /* CONSULTANT GRID - FIXED RENDERING */
+        .directory-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 30px; }
+        .firm-card {
+            background: white; padding: 45px; border-radius: 40px; border: 1px solid rgba(0,0,0,0.03);
+            display: flex; flex-direction: column; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative; overflow: hidden;
+        }
+        .firm-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: var(--vidi-teal-gradient); opacity: 0; transition: 0.3s; }
+        .firm-card:hover { transform: translateY(-10px); box-shadow: 0 40px 80px rgba(0,0,0,0.08); }
+        .firm-card:hover::before { opacity: 1; }
+
+        .firm-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .firm-icon-box { width: 60px; height: 60px; background: var(--vidi-dark); color: white; border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
+        .firm-cat { font-size: 0.7rem; font-weight: 900; color: var(--vidi-teal); text-transform: uppercase; }
+        .firm-name { font-family: var(--font-vidi); font-size: 1.75rem; font-weight: 900; margin-bottom: 10px; color: var(--vidi-dark); }
+        .firm-desc { color: #64748b; font-size: 1rem; line-height: 1.6; margin-bottom: 30px; flex: 1; }
+        .firm-footer { padding-top: 30px; border-top: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center; }
+        .price-label { font-size: 0.7rem; color: #94a3b8; font-weight: 700; text-transform: uppercase; }
+        .price-val { font-family: var(--font-vidi); font-size: 1.4rem; font-weight: 900; color: var(--vidi-dark); }
+
+        /* ASSETS SECTION */
+        .asset-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
+        .asset-card { border-radius: 50px; overflow: hidden; background: white; box-shadow: 0 20px 50px rgba(0,0,0,0.05); }
+        .img-placeholder { width: 100%; aspect-ratio: 16/9; background: #e2e8f0; display: flex; align-items: center; justify-content: center; position: relative; }
+        .img-placeholder img { width: 100%; height: 100%; object-fit: cover; }
+
+        /* UTILS */
+        .highlight { color: var(--vidi-teal-bright); }
+        .vidi-btn {
+            display: inline-block; margin-top: 40px; padding: 20px 50px; background: var(--vidi-teal-gradient);
+            color: white; border-radius: 50px; text-decoration: none; font-weight: 800; text-transform: uppercase;
+            letter-spacing: 2px; font-size: 0.8rem; box-shadow: 0 15px 30px rgba(13, 148, 136, 0.3);
+            transition: all 0.3s ease; border: none; cursor: pointer;
+        }
+        .vidi-btn:hover { transform: translateY(-3px); box-shadow: 0 20px 40px rgba(13, 148, 136, 0.4); filter: brightness(1.1); }
+
+        /* ANIMATIONS */
+        .shimmer { background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; }
+        @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+        @media (max-width: 1200px) {
+            aside { transform: translateX(-100%); position: absolute; }
+            .tech-grid, .asset-grid { grid-template-columns: 1fr; }
+            .matrix-grid { grid-template-columns: repeat(3, 1fr); }
+            h1 { font-size: 3.5rem; }
+            section { padding: 60px 30px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <aside id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">Vidi<span>Smart</span></div>
+            <div class="tagline">Smart Stack Engine</div>
+        </div>
+
+        <nav>
+            <button onclick="navTo('hero')" class="nav-link active" id="nav-hero"><i class="fas fa-microchip"></i> Executive Brief</button>
+            <button onclick="navTo('smartstack')" class="nav-link" id="nav-smartstack"><i class="fas fa-layer-group"></i> The Smart Stack</button>
+            <button onclick="navTo('visualai')" class="nav-link" id="nav-visualai"><i class="fas fa-eye"></i> Visual AI Assets</button>
+            <button onclick="navTo('verticals')" class="nav-link" id="nav-verticals"><i class="fas fa-th"></i> 20 Market Verticals</button>
+            <button onclick="navTo('directory')" class="nav-link" id="nav-directory"><i class="fas fa-users-gear"></i> Top 10 Partners</button>
+        </nav>
+
+        <div style="padding: 20px;">
+            <div style="background: rgba(255,255,255,0.03); padding: 20px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.05);">
+                <div style="font-size: 0.6rem; color: #64748b; text-transform: uppercase; margin-bottom: 8px;">Encryption Mode</div>
+                <div style="font-size: 0.75rem; color: var(--vidi-teal-bright); font-weight: 800; display: flex; align-items: center; gap: 8px;">
+                    <span style="width: 8px; height: 8px; background: var(--vidi-teal-bright); border-radius: 50%;"></span>
+                    Sovereign Core
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <main id="scroll-root">
+        
+        <!-- Hero -->
+        <section id="hero" style="max-width: none;">
+            <canvas id="hero-canvas"></canvas>
+            <div class="hero-body">
+                <div class="badge">Proprietary Strategic Analysis</div>
+                <h1>Truth is in <br>the <span class="highlight">Smart Stack.</span></h1>
+                <p class="hero-text">
+                    For the <strong>$5M revenue core</strong>. Stop feeding public models. We convert your <strong>90% unstructured data</strong> into Vector and Tensor profiles, anchoring AI in truth using Knowledge Graphs and Hybrid Search.
+                </p>
+                <button onclick="navTo('directory')" class="vidi-btn">Secure Your Stack</button>
+            </div>
+        </section>
+
+        <!-- The Smart Stack Logic -->
+        <section id="smartstack">
+            <div class="section-header">
+                <h2 class="section-title">Beyond the Tech Stack</h2>
+                <p class="section-subtitle">A legacy tech stack holds data. A VidiSmart <strong>Smart Stack</strong> generates truth. This is how we convert unstructured chaos into private enterprise intelligence.</p>
+            </div>
+
+            <div class="tech-grid">
+                <div class="tech-card">
+                    <div class="tech-icon"><i class="fas fa-diagram-project"></i></div>
+                    <div class="tech-label">Tensor Truth</div>
+                    <p class="tech-desc">We transform images, video, and text into multi-dimensional tensors. This ensures the AI understands "meaning" rather than just keywords.</p>
+                </div>
+                <div class="tech-card">
+                    <div class="tech-icon"><i class="fas fa-network-wired"></i></div>
+                    <div class="tech-label">Knowledge Graphs</div>
+                    <p class="tech-desc">By mapping relationships between entities, we anchor RAG systems in verifiable facts. No more AI hallucinations.</p>
+                </div>
+                <div class="tech-card">
+                    <div class="tech-icon"><i class="fas fa-magnifying-glass-chart"></i></div>
+                    <div class="tech-label">Hybrid RAG</div>
+                    <p class="tech-desc">Combining Vector search with Lexical (BM25) precision. The only way to achieve 99.9% accuracy in corporate search.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Visual AI Assets -->
+        <section id="visualai">
+            <div class="section-header">
+                <h2 class="section-title">Visual AI Sovereignty</h2>
+                <p class="section-subtitle">Capturing the unstructured visual market. We convert video feeds and image archives into smart content searchable via natural language.</p>
+            </div>
+
+            <div class="asset-grid">
+                <div class="asset-card">
+                    <div class="img-placeholder shimmer" id="img-gen-1">
+                        <i class="fas fa-spinner fa-spin" style="color:#94a3b8"></i>
+                    </div>
+                    <div style="padding: 30px;">
+                        <div class="firm-cat">Asset 01</div>
+                        <h4 class="firm-name" style="font-size: 1.25rem;">Visual Content Ingestion</h4>
+                        <p class="tech-desc">AI agents analyzing raw video frames to extract metadata and tensor profiles.</p>
+                    </div>
+                </div>
+                <div class="asset-card">
+                    <div class="img-placeholder shimmer" id="img-gen-2">
+                        <i class="fas fa-spinner fa-spin" style="color:#94a3b8"></i>
+                    </div>
+                    <div style="padding: 30px;">
+                        <div class="firm-cat">Asset 02</div>
+                        <h4 class="firm-name" style="font-size: 1.25rem;">The Private GPU Core</h4>
+                        <p class="tech-desc">On-premise hardware clusters processing visual tensors without cloud dependency.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 20 Vertical Markets -->
+        <section id="verticals">
+            <div class="section-header">
+                <h2 class="section-title">20 Target Verticals</h2>
+                <p class="section-subtitle">VidiSmart provides Smart Stack frameworks tailored to mid-market leaders in every sector.</p>
+            </div>
+
+            <div class="matrix-grid" id="market-matrix">
+                <!-- Injected via JS -->
+            </div>
+        </section>
+
+        <!-- Consultant Directory -->
+        <section id="directory">
+            <div class="section-header">
+                <h2 class="section-title">Top 10 Partners</h2>
+                <p class="section-subtitle">The technical teams we trust to implement your Smart Stack for $10k-$50k/mo.</p>
+            </div>
+
+            <div class="directory-grid" id="firm-grid">
+                <!-- Cards Injected via JS -->
+            </div>
+        </section>
+
+        <footer style="padding: 80px; text-align: center; border-top: 1px solid #e2e8f0; background: white;">
+            <div class="logo" style="color: var(--vidi-dark); margin-bottom: 20px;">Vidi<span>Smart</span></div>
+            <p style="color: #64748b; font-size: 0.8rem; font-weight: 600;">© 2026 VidiSmart Private Intelligence Core. Independent. Sovereign. True.</p>
+        </footer>
+
+    </main>
+
+    <script>
+        const apiKey = ""; // Environment handled
+
+        // --- 1. DATA: 20 VERTICALS ---
+        const markets = [
+            "Advanced Manufacturing", "Logistics & Supply Chain", "B2B Professional Services", "Specialized Healthcare",
+            "Retail Operations", "Commercial Real Estate", "Agri-Tech & Farming", "Energy & Renewables",
+            "Construction & BIM", "FinTech & Private Equity", "Educational Tech", "Hospitality & Travel",
+            "Pharmaceutical R&D", "Legal Tech & Compliance", "Industrial Automation", "E-commerce Platforms",
+            "Non-Profit Management", "Government Contractors", "Media & Entertainment", "Cybersecurity Firms"
+        ];
+
+        // --- 2. DATA: TOP 10 CONSULTANTS ---
+        const consultants = [
+            { name: "ScienceSoft", cat: "Engineering", price: "$15k-$40k", desc: "Stable engineering with 30+ years experience. Perfect for legacy DB to Smart Stack migration.", icon: "fa-database" },
+            { name: "Mosaic Data", cat: "AI/ML", price: "$20k-$50k", desc: "The masters of Hybrid Search (Vector + BM25). They specialize in corporate truth engines.", icon: "fa-brain" },
+            { name: "10Clouds", cat: "Product", price: "$10k-$30k", desc: "Specialists in the Visual AI interface. They make tensor-level data accessible to your non-tech team.", icon: "fa-eye" },
+            { name: "DataArt", cat: "Infrastructure", price: "$25k-$50k", desc: "High-end plumbing for on-prem AI. They build the GPU clusters that live behind your firewall.", icon: "fa-server" },
+            { name: "Addepto", cat: "AI/ML", price: "$12k-$35k", desc: "Fractional data offices. Excellent for rapid iteration of Knowledge Graph architectures.", icon: "fa-diagram-project" },
+            { name: "Vention", cat: "DevOps", price: "$20k-$45k", desc: "Agile build teams. Perfect for converting unstructured data archives into searchable tensor assets.", icon: "fa-bolt" },
+            { name: "ITRex Group", cat: "Automation", price: "$18k-$40k", desc: "Experts in local AI agents. They automate the data ingestion pipeline from old-fashioned DBs.", icon: "fa-robot" },
+            { name: "MobiDev", cat: "Mobile AI", price: "$12k-$25k", desc: "Bridging the gap to mobile. Secure internal apps that access your Smart Stack on-the-go.", icon: "fa-mobile-screen-button" },
+            { name: "ThirdEye Data", cat: "Big Data", price: "$15k-$35k", desc: "Open-source Purists. They build using Llama/Mistral/Apache so you own the code and the data.", icon: "fa-code" },
+            { name: "ScienceSoft", cat: "Audit", price: "$10k-$30k", desc: "AI Governance specialists. They ensure your Smart Stack is secure, legal, and hallucination-free.", icon: "fa-check-double" }
+        ];
+
+        // --- 3. THREE.JS HERO ---
+        let scene, camera, renderer, particles;
+        function initThree() {
+            const canvas = document.getElementById('hero-canvas');
+            if(!canvas) return;
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(75, canvas.clientWidth / canvas.clientHeight, 0.1, 1000);
+            
+            renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+            renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+            const geometry = new THREE.BufferGeometry();
+            const count = 4000;
+            const pos = new Float32Array(count * 3);
+            for(let i=0; i<count*3; i++) pos[i] = (Math.random() - 0.5) * 15;
+            geometry.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+
+            const material = new THREE.PointsMaterial({
+                size: 0.015, color: 0x2dd4bf, transparent: true, opacity: 0.6, sizeAttenuation: true
+            });
+
+            particles = new THREE.Points(geometry, material);
+            scene.add(particles);
+            camera.position.z = 4;
+
+            function animate() {
+                requestAnimationFrame(animate);
+                particles.rotation.y += 0.001;
+                particles.rotation.x += 0.0005;
+                renderer.render(scene, camera);
+            }
+            animate();
+        }
+
+        // --- 4. ASSET GENERATION ---
+        async function fetchAssets() {
+            const prompts = [
+                "Detailed 3D render of a futuristic GPU cluster with fiber optic teal cables, glowing data streams, dark atmospheric background",
+                "Conceptual map of a digital knowledge graph, interconnected nodes glowing with cyan light, complex network, premium tech aesthetic"
+            ];
+
+            const fetchImg = async (prompt, id) => {
+                const url = `https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-generate-001:predict?key=${apiKey}`;
+                const payload = { instances: { prompt: prompt }, parameters: { sampleCount: 1 } };
+                
+                let retries = 0;
+                const maxRetries = 5;
+                const delays = [1000, 2000, 4000, 8000, 16000];
+
+                while (retries < maxRetries) {
+                    try {
+                        const res = await fetch(url, { 
+                            method: 'POST', 
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(payload) 
+                        });
+                        
+                        if (!res.ok) {
+                            throw new Error(`HTTP error! status: ${res.status}`);
+                        }
+
+                        const text = await res.text();
+                        if (!text) {
+                            throw new Error("Empty response");
+                        }
+
+                        const data = JSON.parse(text);
+                        if (data.predictions?.[0]?.bytesBase64Encoded) {
+                            const el = document.getElementById(id);
+                            el.innerHTML = `<img src="data:image/png;base64,${data.predictions[0].bytesBase64Encoded}" alt="Smart Stack Asset">`;
+                            el.classList.remove('shimmer');
+                            return; // Success
+                        } else {
+                            throw new Error("Invalid response format");
+                        }
+                    } catch (e) {
+                        retries++;
+                        if (retries >= maxRetries) {
+                            console.error("Asset Gen Fail after all retries", e);
+                            const el = document.getElementById(id);
+                            el.innerHTML = `<div style="padding: 20px; text-align: center; color: #94a3b8;"><i class="fas fa-exclamation-triangle"></i><br><small>Visual generation unavailable</small></div>`;
+                            el.classList.remove('shimmer');
+                        } else {
+                            await new Promise(resolve => setTimeout(resolve, delays[retries - 1]));
+                        }
+                    }
+                }
+            };
+
+            fetchImg(prompts[0], 'img-gen-1');
+            fetchImg(prompts[1], 'img-gen-2');
+        }
+
+        // --- 5. UI RENDERING ---
+        function renderUI() {
+            // Matrix
+            const matrix = document.getElementById('market-matrix');
+            markets.forEach(m => {
+                const tag = document.createElement('div');
+                tag.className = 'market-tag';
+                tag.innerText = m;
+                matrix.appendChild(tag);
+            });
+
+            // Firms
+            const grid = document.getElementById('firm-grid');
+            grid.innerHTML = ""; // Clear
+            consultants.forEach(f => {
+                const card = document.createElement('div');
+                card.className = 'firm-card';
+                card.innerHTML = `
+                    <div class="firm-header">
+                        <div class="firm-icon-box"><i class="fas ${f.icon}"></i></div>
+                        <div class="firm-cat">${f.cat}</div>
+                    </div>
+                    <h3 class="firm-name">${f.name}</h3>
+                    <p class="firm-desc">${f.desc}</p>
+                    <div class="firm-footer">
+                        <div class="price-label">Monthly Retainer</div>
+                        <div class="price-val">${f.price}</div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function navTo(id) {
+            document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+            document.querySelectorAll('.nav-link').forEach(l => {
+                l.classList.remove('active');
+                if(l.id === 'nav-' + id) l.classList.add('active');
+            });
+        }
+
+        // --- 6. LIFECYCLE ---
+        window.onload = () => {
+            initThree();
+            renderUI();
+            fetchAssets();
+
+            // GSAP
+            gsap.registerPlugin(ScrollTrigger);
+            gsap.from(".firm-card", {
+                scrollTrigger: { trigger: ".directory-grid", start: "top 80%" },
+                opacity: 0, y: 50, duration: 0.8, stagger: 0.1, ease: "power2.out"
+            });
+            gsap.from(".market-tag", {
+                scrollTrigger: { trigger: ".matrix-grid", start: "top 90%" },
+                scale: 0.8, opacity: 0, duration: 0.5, stagger: 0.05, ease: "back.out(1.7)"
+            });
+        };
+
+        window.onresize = () => {
+            const canvas = document.getElementById('hero-canvas');
+            if(canvas && camera && renderer) {
+                camera.aspect = canvas.clientWidth / canvas.clientHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+            }
+        };
+    </script>
+</body>
+</html>

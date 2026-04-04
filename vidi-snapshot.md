@@ -1,0 +1,369 @@
+- generic [active] [ref=e1]:
+  - alert [ref=e310]: Smart Stack Success Stories | 12 Real AI Case Studies | VidiFlow
+  - generic:
+    - document
+  - main [ref=e311]:
+    - generic [ref=e313]:
+      - generic [ref=e314]:
+        - img [ref=e315]
+        - heading "Smart Stack Success Stories" [level=1] [ref=e319]
+      - generic [ref=e321]:
+        - img [ref=e322]
+        - textbox "Search case studies..." [ref=e325]
+    - generic [ref=e326]:
+      - generic [ref=e327]:
+        - heading "Real SMB Results" [level=2] [ref=e328]
+        - generic [ref=e329]:
+          - generic [ref=e330]:
+            - generic [ref=e331]: "12"
+            - generic [ref=e332]: Case Studies
+          - generic [ref=e333]:
+            - generic [ref=e334]: $99K
+            - generic [ref=e335]: Avg Investment
+          - generic [ref=e336]:
+            - generic [ref=e337]: 88024%
+            - generic [ref=e338]: Avg ROI
+          - generic [ref=e339]:
+            - generic [ref=e340]: 53 Days
+            - generic [ref=e341]: Avg Payback
+        - paragraph [ref=e342]: All case studies feature companies with 10-100 employees, $2M-$100M revenue, and investments under $50K delivering ROI in 30-90 days.
+      - generic [ref=e343]:
+        - generic [ref=e344]:
+          - generic [ref=e345]: "Industry:"
+          - button "All Industries" [ref=e346] [cursor=pointer]
+          - button "Logistics" [ref=e347] [cursor=pointer]
+          - button "Manufacturing" [ref=e348] [cursor=pointer]
+          - button "Professional Services" [ref=e349] [cursor=pointer]
+          - button "Construction" [ref=e350] [cursor=pointer]
+          - button "Remodeling" [ref=e351] [cursor=pointer]
+          - button "Healthcare" [ref=e352] [cursor=pointer]
+        - generic [ref=e353]:
+          - generic [ref=e354]: "Budget:"
+          - combobox [ref=e355]:
+            - option "Any Budget" [selected]
+            - option "Under $30K"
+            - option "$30K - $40K"
+            - option "Over $40K"
+      - generic [ref=e356]: Showing 12 case studies
+      - generic [ref=e357]:
+        - link "How Contractor Appointments Books $134M with AI Automation (Zapier Case Study) 08:45 How Contractor Appointments Books $134M with AI Automation (Zapier Case Study) 12,547 views • 2026-02-09 11-50 employees • $134M client revenue $35K investment → 383% in 90 days Minnesota-based Contractor Appointments uses Zapier + OpenAI to handle 90% of leads automatically, booking 20-50 extra appointments daily and generating $300K incremental revenue." [ref=e358] [cursor=pointer]:
+          - /url: /company/contractor-appointments
+          - generic [ref=e359]:
+            - generic [ref=e360]:
+              - img "How Contractor Appointments Books $134M with AI Automation (Zapier Case Study)" [ref=e361]
+              - generic [ref=e362]: 08:45
+              - img [ref=e364]
+            - generic [ref=e366]:
+              - heading "How Contractor Appointments Books $134M with AI Automation (Zapier Case Study)" [level=3] [ref=e367]
+              - generic [ref=e368]:
+                - generic [ref=e369]: 12,547 views
+                - generic [ref=e370]: •
+                - generic [ref=e371]: 2026-02-09
+              - generic [ref=e372]:
+                - generic [ref=e373]:
+                  - img [ref=e374]
+                  - generic [ref=e379]: 11-50 employees
+                  - generic [ref=e380]: •
+                  - generic [ref=e381]: $134M client revenue
+                - generic [ref=e382]:
+                  - img [ref=e383]
+                  - generic [ref=e385]: $35K investment
+                  - generic [ref=e386]: →
+                  - generic [ref=e387]: 383% in 90 days
+                - paragraph [ref=e388]: Minnesota-based Contractor Appointments uses Zapier + OpenAI to handle 90% of leads automatically, booking 20-50 extra appointments daily and generating $300K incremental revenue.
+        - link "MidWest Logistics Saves $1.7M with AI-Powered Predictive Maintenance 07:22 MidWest Logistics Saves $1.7M with AI-Powered Predictive Maintenance 8,934 views • 2026-02-08 450 truck fleet • $85M annual $42K investment → 4,047% in 18 months After facing $2.3M in losses from equipment failures, MidWest Logistics slashed unplanned downtime by 73% and saved $1.7M using AI predictive maintenance." [ref=e389] [cursor=pointer]:
+          - /url: /company/midwest-logistics
+          - generic [ref=e390]:
+            - generic [ref=e391]:
+              - img "MidWest Logistics Saves $1.7M with AI-Powered Predictive Maintenance" [ref=e392]
+              - generic [ref=e393]: 07:22
+              - img [ref=e395]
+            - generic [ref=e397]:
+              - heading "MidWest Logistics Saves $1.7M with AI-Powered Predictive Maintenance" [level=3] [ref=e398]
+              - generic [ref=e399]:
+                - generic [ref=e400]: 8,934 views
+                - generic [ref=e401]: •
+                - generic [ref=e402]: 2026-02-08
+              - generic [ref=e403]:
+                - generic [ref=e404]:
+                  - img [ref=e405]
+                  - generic [ref=e410]: 450 truck fleet
+                  - generic [ref=e411]: •
+                  - generic [ref=e412]: $85M annual
+                - generic [ref=e413]:
+                  - img [ref=e414]
+                  - generic [ref=e416]: $42K investment
+                  - generic [ref=e417]: →
+                  - generic [ref=e418]: 4,047% in 18 months
+                - paragraph [ref=e419]: After facing $2.3M in losses from equipment failures, MidWest Logistics slashed unplanned downtime by 73% and saved $1.7M using AI predictive maintenance.
+        - link "Cahill Construction Saves 64 Hours Monthly with AP Automation 06:15 Cahill Construction Saves 64 Hours Monthly with AP Automation 4,521 views • 2026-02-07 85 employees • $45M annual $28K investment → 1,114% in 90 days Cahill Construction runs tens of millions in project dollars through automated AP tracking, eliminating days of manual data entry and enabling real-time profitability views." [ref=e420] [cursor=pointer]:
+          - /url: /company/cahill-construction
+          - generic [ref=e421]:
+            - generic [ref=e422]:
+              - img "Cahill Construction Saves 64 Hours Monthly with AP Automation" [ref=e423]
+              - generic [ref=e424]: 06:15
+              - img [ref=e426]
+            - generic [ref=e428]:
+              - heading "Cahill Construction Saves 64 Hours Monthly with AP Automation" [level=3] [ref=e429]
+              - generic [ref=e430]:
+                - generic [ref=e431]: 4,521 views
+                - generic [ref=e432]: •
+                - generic [ref=e433]: 2026-02-07
+              - generic [ref=e434]:
+                - generic [ref=e435]:
+                  - img [ref=e436]
+                  - generic [ref=e441]: 85 employees
+                  - generic [ref=e442]: •
+                  - generic [ref=e443]: $45M annual
+                - generic [ref=e444]:
+                  - img [ref=e445]
+                  - generic [ref=e447]: $28K investment
+                  - generic [ref=e448]: →
+                  - generic [ref=e449]: 1,114% in 90 days
+                - paragraph [ref=e450]: Cahill Construction runs tens of millions in project dollars through automated AP tracking, eliminating days of manual data entry and enabling real-time profitability views.
+        - link "Payless Kitchen & Bath Books 14 More Demos Weekly with Hatch AI 05:48 Payless Kitchen & Bath Books 14 More Demos Weekly with Hatch AI 15,234 views • 2026-02-06 28 employees • $12M annual $31K investment → 287% in 55 days California-based Payless Kitchen & Bath increased demos by 8-14 per week and achieved 8x faster reply times using AI-powered communication automation." [ref=e451] [cursor=pointer]:
+          - /url: /company/payless-kitchen
+          - generic [ref=e452]:
+            - generic [ref=e453]:
+              - img "Payless Kitchen & Bath Books 14 More Demos Weekly with Hatch AI" [ref=e454]
+              - generic [ref=e455]: 05:48
+              - img [ref=e457]
+            - generic [ref=e459]:
+              - heading "Payless Kitchen & Bath Books 14 More Demos Weekly with Hatch AI" [level=3] [ref=e460]
+              - generic [ref=e461]:
+                - generic [ref=e462]: 15,234 views
+                - generic [ref=e463]: •
+                - generic [ref=e464]: 2026-02-06
+              - generic [ref=e465]:
+                - generic [ref=e466]:
+                  - img [ref=e467]
+                  - generic [ref=e472]: 28 employees
+                  - generic [ref=e473]: •
+                  - generic [ref=e474]: $12M annual
+                - generic [ref=e475]:
+                  - img [ref=e476]
+                  - generic [ref=e478]: $31K investment
+                  - generic [ref=e479]: →
+                  - generic [ref=e480]: 287% in 55 days
+                - paragraph [ref=e481]: California-based Payless Kitchen & Bath increased demos by 8-14 per week and achieved 8x faster reply times using AI-powered communication automation.
+        - link "INX International Increases Production 40% with Process AI 09:15 INX International Increases Production 40% with Process AI 11,245 views • 2026-02-05 1,200 employees • $580M annual $85K investment → 482% in 6 months INX International Ink achieved 20.5% performance increase, 21.4% OEE improvement, and 5x ROI in 6 months using Oden Process AI for manufacturing optimization." [ref=e482] [cursor=pointer]:
+          - /url: /company/inx-international
+          - generic [ref=e483]:
+            - generic [ref=e484]:
+              - img "INX International Increases Production 40% with Process AI" [ref=e485]
+              - generic [ref=e486]: 09:15
+              - img [ref=e488]
+            - generic [ref=e490]:
+              - heading "INX International Increases Production 40% with Process AI" [level=3] [ref=e491]
+              - generic [ref=e492]:
+                - generic [ref=e493]: 11,245 views
+                - generic [ref=e494]: •
+                - generic [ref=e495]: 2026-02-05
+              - generic [ref=e496]:
+                - generic [ref=e497]:
+                  - img [ref=e498]
+                  - generic [ref=e503]: 1,200 employees
+                  - generic [ref=e504]: •
+                  - generic [ref=e505]: $580M annual
+                - generic [ref=e506]:
+                  - img [ref=e507]
+                  - generic [ref=e509]: $85K investment
+                  - generic [ref=e510]: →
+                  - generic [ref=e511]: 482% in 6 months
+                - paragraph [ref=e512]: INX International Ink achieved 20.5% performance increase, 21.4% OEE improvement, and 5x ROI in 6 months using Oden Process AI for manufacturing optimization.
+        - link "Smith.ai Saves 250+ Hours Weekly with AI Call Analysis (Zapier) 06:33 Smith.ai Saves 250+ Hours Weekly with AI Call Analysis (Zapier) 9,876 views • 2026-02-04 150 employees • $18M annual $24K investment → 650% in 90 days Smith.ai reviews 5,000 calls weekly automatically, removing 10 days of manual work. One Zap processes all calls, ensuring quality across millions of client conversations." [ref=e513] [cursor=pointer]:
+          - /url: /company/smith-ai
+          - generic [ref=e514]:
+            - generic [ref=e515]:
+              - img "Smith.ai Saves 250+ Hours Weekly with AI Call Analysis (Zapier)" [ref=e516]
+              - generic [ref=e517]: 06:33
+              - img [ref=e519]
+            - generic [ref=e521]:
+              - heading "Smith.ai Saves 250+ Hours Weekly with AI Call Analysis (Zapier)" [level=3] [ref=e522]
+              - generic [ref=e523]:
+                - generic [ref=e524]: 9,876 views
+                - generic [ref=e525]: •
+                - generic [ref=e526]: 2026-02-04
+              - generic [ref=e527]:
+                - generic [ref=e528]:
+                  - img [ref=e529]
+                  - generic [ref=e534]: 150 employees
+                  - generic [ref=e535]: •
+                  - generic [ref=e536]: $18M annual
+                - generic [ref=e537]:
+                  - img [ref=e538]
+                  - generic [ref=e540]: $24K investment
+                  - generic [ref=e541]: →
+                  - generic [ref=e542]: 650% in 90 days
+                - paragraph [ref=e543]: Smith.ai reviews 5,000 calls weekly automatically, removing 10 days of manual work. One Zap processes all calls, ensuring quality across millions of client conversations.
+        - link "LAPP Processes 350K+ Orders Annually with AI Document Automation 07:45 LAPP Processes 350K+ Orders Annually with AI Document Automation 7,823 views • 2026-02-03 2,100 employees • $1.2B annual $125K investment → 380% in 12 months German manufacturer LAPP automated order processing for 40K+ product items across EMEA, transforming manual document handling with Rossum AI." [ref=e544] [cursor=pointer]:
+          - /url: /company/lapp-automation
+          - generic [ref=e545]:
+            - generic [ref=e546]:
+              - img "LAPP Processes 350K+ Orders Annually with AI Document Automation" [ref=e547]
+              - generic [ref=e548]: 07:45
+              - img [ref=e550]
+            - generic [ref=e552]:
+              - heading "LAPP Processes 350K+ Orders Annually with AI Document Automation" [level=3] [ref=e553]
+              - generic [ref=e554]:
+                - generic [ref=e555]: 7,823 views
+                - generic [ref=e556]: •
+                - generic [ref=e557]: 2026-02-03
+              - generic [ref=e558]:
+                - generic [ref=e559]:
+                  - img [ref=e560]
+                  - generic [ref=e565]: 2,100 employees
+                  - generic [ref=e566]: •
+                  - generic [ref=e567]: $1.2B annual
+                - generic [ref=e568]:
+                  - img [ref=e569]
+                  - generic [ref=e571]: $125K investment
+                  - generic [ref=e572]: →
+                  - generic [ref=e573]: 380% in 12 months
+                - paragraph [ref=e574]: German manufacturer LAPP automated order processing for 40K+ product items across EMEA, transforming manual document handling with Rossum AI.
+        - link "Healthie Saves 60+ Hours Weekly with AI Agents (Zapier Case Study) 08:22 Healthie Saves 60+ Hours Weekly with AI Agents (Zapier Case Study) 14,567 views • 2026-02-02 45 employees • $8.5M annual $28K investment → 714% in 60 days Healthcare platform Healthie uses Zapier AI agents to automate onboarding, support, and operations, saving their team 60+ hours every week." [ref=e575] [cursor=pointer]:
+          - /url: /company/healthie-ai
+          - generic [ref=e576]:
+            - generic [ref=e577]:
+              - img "Healthie Saves 60+ Hours Weekly with AI Agents (Zapier Case Study)" [ref=e578]
+              - generic [ref=e579]: 08:22
+              - img [ref=e581]
+            - generic [ref=e583]:
+              - heading "Healthie Saves 60+ Hours Weekly with AI Agents (Zapier Case Study)" [level=3] [ref=e584]
+              - generic [ref=e585]:
+                - generic [ref=e586]: 14,567 views
+                - generic [ref=e587]: •
+                - generic [ref=e588]: 2026-02-02
+              - generic [ref=e589]:
+                - generic [ref=e590]:
+                  - img [ref=e591]
+                  - generic [ref=e596]: 45 employees
+                  - generic [ref=e597]: •
+                  - generic [ref=e598]: $8.5M annual
+                - generic [ref=e599]:
+                  - img [ref=e600]
+                  - generic [ref=e602]: $28K investment
+                  - generic [ref=e603]: →
+                  - generic [ref=e604]: 714% in 60 days
+                - paragraph [ref=e605]: Healthcare platform Healthie uses Zapier AI agents to automate onboarding, support, and operations, saving their team 60+ hours every week.
+        - link "Novelis Transforms to AI Predictive Maintenance with SymphonyAI 10:15 Novelis Transforms to AI Predictive Maintenance with SymphonyAI 2,156 views • 2026-02-01 11,500 employees • $18B annual $250K investment → 520% in 18 months Global aluminum manufacturer Novelis moved from preventive to predictive maintenance using AI, dramatically reducing downtime across 33 facilities worldwide." [ref=e606] [cursor=pointer]:
+          - /url: /company/novelis-ai
+          - generic [ref=e607]:
+            - generic [ref=e608]:
+              - img "Novelis Transforms to AI Predictive Maintenance with SymphonyAI" [ref=e609]
+              - generic [ref=e610]: 10:15
+              - img [ref=e612]
+            - generic [ref=e614]:
+              - heading "Novelis Transforms to AI Predictive Maintenance with SymphonyAI" [level=3] [ref=e615]
+              - generic [ref=e616]:
+                - generic [ref=e617]: 2,156 views
+                - generic [ref=e618]: •
+                - generic [ref=e619]: 2026-02-01
+              - generic [ref=e620]:
+                - generic [ref=e621]:
+                  - img [ref=e622]
+                  - generic [ref=e627]: 11,500 employees
+                  - generic [ref=e628]: •
+                  - generic [ref=e629]: $18B annual
+                - generic [ref=e630]:
+                  - img [ref=e631]
+                  - generic [ref=e633]: $250K investment
+                  - generic [ref=e634]: →
+                  - generic [ref=e635]: 520% in 18 months
+                - paragraph [ref=e636]: Global aluminum manufacturer Novelis moved from preventive to predictive maintenance using AI, dramatically reducing downtime across 33 facilities worldwide.
+        - link "Steel Manufacturer Optimizes Supply Chain with C3 AI ($2.5M Saved) 11:30 Steel Manufacturer Optimizes Supply Chain with C3 AI ($2.5M Saved) 3,789 views • 2026-01-31 3,400 employees • $8.5B annual $180K investment → 1,289% in 24 months Leading North American steel manufacturer deployed AI across raw materials, steel making, and products units, optimizing supply chain performance enterprise-wide." [ref=e637] [cursor=pointer]:
+          - /url: /company/c3-ai-steel
+          - generic [ref=e638]:
+            - generic [ref=e639]:
+              - img "Steel Manufacturer Optimizes Supply Chain with C3 AI ($2.5M Saved)" [ref=e640]
+              - generic [ref=e641]: 11:30
+              - img [ref=e643]
+            - generic [ref=e645]:
+              - heading "Steel Manufacturer Optimizes Supply Chain with C3 AI ($2.5M Saved)" [level=3] [ref=e646]
+              - generic [ref=e647]:
+                - generic [ref=e648]: 3,789 views
+                - generic [ref=e649]: •
+                - generic [ref=e650]: 2026-01-31
+              - generic [ref=e651]:
+                - generic [ref=e652]:
+                  - img [ref=e653]
+                  - generic [ref=e658]: 3,400 employees
+                  - generic [ref=e659]: •
+                  - generic [ref=e660]: $8.5B annual
+                - generic [ref=e661]:
+                  - img [ref=e662]
+                  - generic [ref=e664]: $180K investment
+                  - generic [ref=e665]: →
+                  - generic [ref=e666]: 1,289% in 24 months
+                - paragraph [ref=e667]: Leading North American steel manufacturer deployed AI across raw materials, steel making, and products units, optimizing supply chain performance enterprise-wide.
+        - link "US Chemicals Multinational Saves $2.5M+ with Decision AI 09:45 US Chemicals Multinational Saves $2.5M+ with Decision AI 5,234 views • 2026-01-30 12,000 employees • $15.6B annual $320K investment → 681% in 12 months Major US chemicals company transformed railcar logistics using Decision AI, saving $2.5M+ directly while protecting $1.56B in annual revenue from disruptions." [ref=e668] [cursor=pointer]:
+          - /url: /company/us-chemicals
+          - generic [ref=e669]:
+            - generic [ref=e670]:
+              - img "US Chemicals Multinational Saves $2.5M+ with Decision AI" [ref=e671]
+              - generic [ref=e672]: 09:45
+              - img [ref=e674]
+            - generic [ref=e676]:
+              - heading "US Chemicals Multinational Saves $2.5M+ with Decision AI" [level=3] [ref=e677]
+              - generic [ref=e678]:
+                - generic [ref=e679]: 5,234 views
+                - generic [ref=e680]: •
+                - generic [ref=e681]: 2026-01-30
+              - generic [ref=e682]:
+                - generic [ref=e683]:
+                  - img [ref=e684]
+                  - generic [ref=e689]: 12,000 employees
+                  - generic [ref=e690]: •
+                  - generic [ref=e691]: $15.6B annual
+                - generic [ref=e692]:
+                  - img [ref=e693]
+                  - generic [ref=e695]: $320K investment
+                  - generic [ref=e696]: →
+                  - generic [ref=e697]: 681% in 12 months
+                - paragraph [ref=e698]: Major US chemicals company transformed railcar logistics using Decision AI, saving $2.5M+ directly while protecting $1.56B in annual revenue from disruptions.
+        - link "Grammarly Scales Operations Across Marketing & Support with Zapier 07:55 Grammarly Scales Operations Across Marketing & Support with Zapier 18,932 views • 2026-01-29 900+ employees • $200M+ annual $45K investment → 444% in 90 days Grammarly uses Zapier to automate workflows across marketing campaigns and customer support, scaling operations without scaling headcount proportionally." [ref=e699] [cursor=pointer]:
+          - /url: /company/grammarly-operations
+          - generic [ref=e700]:
+            - generic [ref=e701]:
+              - img "Grammarly Scales Operations Across Marketing & Support with Zapier" [ref=e702]
+              - generic [ref=e703]: 07:55
+              - img [ref=e705]
+            - generic [ref=e707]:
+              - heading "Grammarly Scales Operations Across Marketing & Support with Zapier" [level=3] [ref=e708]
+              - generic [ref=e709]:
+                - generic [ref=e710]: 18,932 views
+                - generic [ref=e711]: •
+                - generic [ref=e712]: 2026-01-29
+              - generic [ref=e713]:
+                - generic [ref=e714]:
+                  - img [ref=e715]
+                  - generic [ref=e720]: 900+ employees
+                  - generic [ref=e721]: •
+                  - generic [ref=e722]: $200M+ annual
+                - generic [ref=e723]:
+                  - img [ref=e724]
+                  - generic [ref=e726]: $45K investment
+                  - generic [ref=e727]: →
+                  - generic [ref=e728]: 444% in 90 days
+                - paragraph [ref=e729]: Grammarly uses Zapier to automate workflows across marketing campaigns and customer support, scaling operations without scaling headcount proportionally.
+      - generic [ref=e730]:
+        - heading "Ready to Build Your Smart Stack?" [level=3] [ref=e731]
+        - paragraph [ref=e732]: "Join 100+ SMBs who've transformed their operations with VidiSmart. Average ROI: 350% in 60 days. Typical investment: $30K-$50K."
+        - generic [ref=e733]:
+          - link "Start Your Assessment" [ref=e734] [cursor=pointer]:
+            - /url: /smartchannel
+            - img [ref=e735]
+            - text: Start Your Assessment
+          - link "View ROI Calculator" [ref=e737] [cursor=pointer]:
+            - /url: /
+            - img [ref=e738]
+            - text: View ROI Calculator
+      - generic [ref=e742]:
+        - generic [ref=e743]:
+          - generic [ref=e744]:
+            - img [ref=e745]
+            - generic [ref=e747]: 12 case studies
+          - generic [ref=e748]:
+            - img [ref=e749]
+            - generic [ref=e752]: 114,858 total views
+        - generic [ref=e753]: Powered by Vidi AI - Real results for real businesses

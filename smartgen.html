@@ -1,0 +1,1221 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Channel Technical Specification v1.0</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script type="module" src="https://unpkg.com/@splinetool/viewer@1.0.51/build/spline-viewer.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap"
+        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Kumbh+Sans:wght@700;800&display=swap" rel="stylesheet">
+    <!-- Sovereign Core Aesthetic: Dark Mode, Gold/Cyan Variables -->
+    <style>
+        .font-kumbh {
+            font-family: 'Kumbh Sans', sans-serif;
+        }
+
+        :root {
+            --gold: #D4AF37;
+            --ai-blue: #00f2ff;
+            --deep-black: #050505;
+            --glass: rgba(255, 255, 255, 0.02);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --neon-purple: #9d00ff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--deep-black);
+            color: #e2e8f0;
+            line-height: 1.6;
+            background-image:
+                radial-gradient(circle at 15% 50%, rgba(157, 0, 255, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 85% 30%, rgba(0, 242, 255, 0.05) 0%, transparent 50%);
+            background-attachment: fixed;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+
+        header {
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            letter-spacing: -0.05em;
+            text-transform: uppercase;
+        }
+
+        .nav-links {
+            display: none;
+            gap: 2.5rem;
+        }
+
+        .nav-link {
+            font-weight: 700;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-decoration: none;
+            color: #64748b;
+            transition: color 0.3s;
+            position: relative;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: var(--gold);
+        }
+
+        .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -6px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--gold);
+            box-shadow: 0 0 10px var(--gold);
+        }
+
+        .mobile-menu-button {
+            font-size: 1.5rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            display: block;
+            color: white;
+        }
+
+        .mobile-menu {
+            display: none;
+            background: #0a0a0a;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .mobile-menu.show {
+            display: block;
+        }
+
+        .mobile-menu a {
+            display: block;
+            padding: 0.75rem 0;
+            text-align: center;
+            text-decoration: none;
+            color: #e2e8f0;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 0.8rem;
+        }
+
+        main {
+            padding: 2rem 1.5rem;
+        }
+
+        section {
+            margin-bottom: 10rem;
+        }
+
+        h2 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            text-align: center;
+            letter-spacing: -0.02em;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            color: white;
+        }
+
+        h4 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: white;
+        }
+
+        h5 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #cbd5e1;
+        }
+
+        p {
+            margin-bottom: 1rem;
+            color: #94a3b8;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .max-w-3xl {
+            max-width: 48rem;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .grid {
+            display: grid;
+            gap: 2rem;
+        }
+
+        .grid-cols-2 {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .grid-cols-3 {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        .card {
+            padding: 2.5rem;
+            border-radius: 24px;
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            background: var(--glass);
+            backdrop-filter: blur(25px);
+            border: 1px solid var(--glass-border);
+            color: #e2e8f0;
+            position: relative;
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            border-color: rgba(212, 175, 55, 0.4);
+            box-shadow: 0 15px 40px rgba(212, 175, 55, 0.1);
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .panel-3d {
+            padding: 3rem;
+            border-radius: 24px;
+            background: rgba(10, 10, 10, 0.6);
+            backdrop-filter: blur(30px);
+            border: 1px solid var(--glass-border);
+            color: #e2e8f0;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1), box-shadow 0.4s ease, border-color 0.4s ease;
+        }
+
+        .panel-3d:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
+            border-color: rgba(0, 242, 255, 0.2);
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #fff 0%, var(--gold) 50%, #f1d37e 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .card .gradient-text,
+        .panel-3d .gradient-text {
+            background: linear-gradient(135deg, #fff 0%, var(--ai-blue) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .tab-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            margin-bottom: 3rem;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .tab {
+            padding: 1rem 2.5rem;
+            font-weight: 700;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #475569;
+            cursor: pointer;
+            background: none;
+            border: none;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .tab:hover {
+            color: #cbd5e1;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 8px 8px 0 0;
+        }
+
+        .tab.active {
+            color: var(--ai-blue);
+        }
+
+        .tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--ai-blue);
+            box-shadow: 0 0 10px var(--ai-blue);
+        }
+
+        .spec-section {
+            border-left: 2px solid var(--neon-purple);
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            background: var(--glass);
+            border-radius: 0 20px 20px 0;
+            color: #e2e8f0;
+            transition: all 0.3s ease;
+            border-top: 1px solid var(--glass-border);
+            border-right: 1px solid var(--glass-border);
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .spec-section:hover {
+            background: rgba(157, 0, 255, 0.05);
+            border-left-color: var(--gold);
+        }
+
+        .number-badge {
+            flex-shrink: 0;
+            width: 3.5rem;
+            height: 3.5rem;
+            background: rgba(0, 242, 255, 0.05);
+            border: 1px solid var(--ai-blue);
+            color: var(--ai-blue);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            margin-right: 2rem;
+            box-shadow: 0 0 15px rgba(0, 242, 255, 0.2);
+            font-size: 1.25rem;
+        }
+
+        .step-container {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 2rem;
+            background: var(--glass);
+            padding: 2rem;
+            border-radius: 20px;
+            border: 1px solid var(--glass-border);
+            transition: transform 0.3s cubic-bezier(0.165, 0.84, 0.44, 1), background 0.3s ease, border-color 0.3s ease;
+        }
+
+        .step-container:hover {
+            transform: translateX(8px);
+            background: rgba(255, 255, 255, 0.05);
+            border-color: var(--neon-purple);
+        }
+
+        .flex {
+            display: flex;
+        }
+
+        .items-center {
+            align-items: center;
+        }
+
+        .items-start {
+            align-items: flex-start;
+        }
+
+        .gap-8 {
+            gap: 2.5rem;
+        }
+
+        .space-y-6>*+* {
+            margin-top: 1.5rem;
+        }
+
+        .space-y-4>*+* {
+            margin-top: 1rem;
+        }
+
+        .space-y-2>*+* {
+            margin-top: 0.5rem;
+        }
+
+        .mb-12 {
+            margin-bottom: 4rem;
+        }
+
+        .mb-8 {
+            margin-bottom: 2rem;
+        }
+
+        .mb-6 {
+            margin-bottom: 1.5rem;
+        }
+
+        .mb-4 {
+            margin-bottom: 1rem;
+        }
+
+        .mb-2 {
+            margin-bottom: 0.5rem;
+        }
+
+        .bg-gray-50 {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+        }
+
+        .bg-gray-800 {
+            background-color: #000;
+            border-top: 1px solid var(--glass-border);
+        }
+
+        .text-white {
+            color: white !important;
+        }
+
+        .text-gray-600 {
+            color: #94a3b8 !important;
+        }
+
+        .text-gray-700 {
+            color: #cbd5e1 !important;
+        }
+
+        .text-gray-400 {
+            color: #64748b !important;
+        }
+
+        .text-sm {
+            font-size: 0.875rem;
+        }
+
+        .text-lg {
+            font-size: 1.125rem;
+        }
+
+        .text-xl {
+            font-size: 1.25rem;
+        }
+
+        .text-2xl {
+            font-size: 1.5rem;
+        }
+
+        .text-3xl {
+            font-size: 1.875rem;
+        }
+
+        .text-4xl {
+            font-size: 2.25rem;
+        }
+
+        .text-5xl {
+            font-size: 3rem;
+        }
+
+        .font-bold {
+            font-weight: 700;
+        }
+
+        .font-semibold {
+            font-weight: 600;
+        }
+
+        .font-medium {
+            font-weight: 500;
+        }
+
+        .rounded-lg {
+            border-radius: 0.5rem;
+        }
+
+        .rounded-xl {
+            border-radius: 1rem;
+        }
+
+        .p-4 {
+            padding: 1rem;
+        }
+
+        .p-6 {
+            padding: 1.5rem;
+        }
+
+        .p-8 {
+            padding: 2rem;
+        }
+
+        .py-8 {
+            padding-top: 2rem;
+            padding-bottom: 2rem;
+        }
+
+        .list-disc {
+            list-style-type: disc;
+        }
+
+        .list-inside {
+            list-style-position: inside;
+        }
+
+        .mt-2 {
+            margin-top: 0.5rem;
+        }
+
+        .mt-4 {
+            margin-top: 1rem;
+        }
+
+        ul {
+            padding-left: 1.5rem;
+        }
+
+        footer {
+            padding: 4rem 1.5rem;
+            text-align: center;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* SVG Icon & Chart Styles */
+        .section-icon {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 1.5rem;
+            display: block;
+        }
+
+        .card-icon {
+            width: 48px;
+            height: 48px;
+            margin: 0 auto 1.5rem;
+            display: block;
+        }
+
+        .flow-chart {
+            max-width: 100%;
+            height: auto;
+            margin: 4rem auto;
+            display: block;
+        }
+
+        .svg-connector {
+            stroke: var(--glass-border);
+            stroke-width: 2;
+            fill: none;
+            stroke-dasharray: 4, 4;
+            animation: dash 20s linear infinite;
+        }
+
+        .svg-connector-active {
+            stroke: var(--ai-blue);
+            stroke-width: 2;
+            fill: none;
+            stroke-dasharray: 4, 4;
+            animation: dash 10s linear infinite reverse;
+        }
+
+        @keyframes dash {
+            to {
+                stroke-dashoffset: 1000;
+            }
+        }
+
+        .flow-box {
+            fill: #0a0a0a;
+            stroke: var(--glass-border);
+            stroke-width: 2;
+        }
+
+        .flow-box:hover {
+            stroke: var(--ai-blue);
+            box-shadow: 0 0 20px rgba(0, 242, 255, 0.2);
+        }
+
+        .flow-text {
+            fill: #e2e8f0;
+            font-size: 14px;
+            font-weight: 600;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .flow-text-small {
+            fill: #94a3b8;
+            font-size: 11px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .arrow-marker {
+            fill: var(--ai-blue);
+        }
+
+        /* Decorative background elements */
+        .bg-decoration {
+            position: fixed;
+            pointer-events: none;
+            z-index: -1;
+            opacity: 0.15;
+            filter: blur(50px);
+        }
+
+        @media (min-width: 768px) {
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            h2 {
+                font-size: 3rem;
+            }
+
+            .nav-links {
+                display: flex;
+            }
+
+            .mobile-menu-button {
+                display: none;
+            }
+
+            main {
+                padding: 3rem 1.5rem;
+            }
+
+            section {
+                margin-bottom: 12rem;
+            }
+
+            .grid-cols-3 {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .grid-cols-2 {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .tab-container {
+                flex-direction: row;
+            }
+
+            .flex-row {
+                flex-direction: row;
+            }
+
+            .text-4xl {
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+</head>
+
+<body class="antialiased">
+
+    <!-- Decorative Animated Background SVG Elements -->
+    <svg class="bg-decoration" style="top: 10%; left: -5%; width: 400px; height: 400px;" viewBox="0 0 200 200"
+        xmlns="http://www.w3.org/2000/svg">
+        <defs>
+            <linearGradient id="bgGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style="stop-color:var(--neon-purple);stop-opacity:0.3">
+                    <animate attributeName="stop-opacity" values="0.3;0.6;0.3" dur="4s" repeatCount="indefinite" />
+                </stop>
+                <stop offset="100%" style="stop-color:var(--ai-blue);stop-opacity:0.3">
+                    <animate attributeName="stop-opacity" values="0.3;0.6;0.3" dur="4s" repeatCount="indefinite" />
+                </stop>
+            </linearGradient>
+        </defs>
+        <circle cx="100" cy="100" r="80" fill="url(#bgGrad1)">
+            <animate attributeName="r" values="80;90;80" dur="6s" repeatCount="indefinite" />
+        </circle>
+        <circle cx="100" cy="100" r="60" fill="none" stroke="url(#bgGrad1)" stroke-width="2">
+            <animate attributeName="r" values="60;70;60" dur="5s" repeatCount="indefinite" />
+        </circle>
+    </svg>
+
+    <svg class="bg-decoration" style="top: 50%; right: -5%; width: 350px; height: 350px;" viewBox="0 0 200 200"
+        xmlns="http://www.w3.org/2000/svg">
+        <defs>
+            <linearGradient id="bgGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style="stop-color:var(--gold);stop-opacity:0.2" />
+                <stop offset="100%" style="stop-color:#f1d37e;stop-opacity:0.2" />
+            </linearGradient>
+        </defs>
+        <polygon points="100,20 180,180 20,180" fill="url(#bgGrad2)" stroke="url(#bgGrad2)" stroke-width="3">
+            <animateTransform attributeName="transform" type="rotate" from="0 100 100" to="360 100 100" dur="30s"
+                repeatCount="indefinite" />
+        </polygon>
+    </svg>
+
+    <svg class="bg-decoration" style="bottom: 10%; left: 50%; width: 300px; height: 300px;" viewBox="0 0 200 200"
+        xmlns="http://www.w3.org/2000/svg">
+        <defs>
+            <linearGradient id="bgGrad3" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style="stop-color:var(--neon-purple);stop-opacity:0.25" />
+                <stop offset="100%" style="stop-color:var(--ai-blue);stop-opacity:0.25" />
+            </linearGradient>
+        </defs>
+        <rect x="50" y="50" width="100" height="100" fill="url(#bgGrad3)" rx="20">
+            <animate attributeName="rx" values="20;50;20" dur="8s" repeatCount="indefinite" />
+        </rect>
+    </svg>
+
+    <header id="header">
+        <nav class="container">
+            <h1 class="gradient-text font-kumbh">SmartChannel CX</h1>
+            <div class="nav-links">
+                <a href="#overview" class="nav-link">Overview</a>
+                <a href="#ingestion" class="nav-link">Ingestion</a>
+                <a href="#processing" class="nav-link">Processing & Storage</a>
+                <a href="#generation" class="nav-link">Content Generation</a>
+                <a href="#personas" class="nav-link">Persona Matrix</a>
+            </div>
+            <button id="mobile-menu-button" class="mobile-menu-button">☰</button>
+        </nav>
+        <div id="mobile-menu" class="mobile-menu hidden">
+            <a href="#overview" class="nav-link">Overview</a>
+            <a href="#ingestion" class="nav-link">Ingestion</a>
+            <a href="#processing" class="nav-link">Processing & Storage</a>
+            <a href="#generation" class="nav-link">Content Generation</a>
+            <a href="#personas" class="nav-link">Persona Matrix</a>
+        </div>
+    </header>
+
+    <div
+        style="width: 100%; position: relative; height: 50vh; overflow: hidden; border-bottom: 1px solid var(--glass-border);">
+        <img referrerpolicy="no-referrer" src="https://cdn.vidi.news/smart_channel_hero_wide.png" alt="Smart Channel Architecture"
+            style="width: 100%; height: 100%; object-fit: cover; opacity: 0.8;" />
+        <div
+            style="position: absolute; inset: 0; background: linear-gradient(to top, var(--deep-black) 0%, transparent 60%); pointer-events: none;">
+        </div>
+        <div style="position: absolute; bottom: 40px; left: 0; right: 0; text-align: center; padding: 0 20px;">
+            <h2 class="text-4xl md:text-5xl font-bold text-white mb-2" style="font-family: 'Kumbh Sans', sans-serif;">
+                Smart Channel CX</h2>
+            <p class="text-xl text-gray-700 max-w-3xl text-center" style="margin: 0 auto; color: #cbd5e1 !important;">
+                Hybrid Vector-Graph Database Architecture & Multimodal Generation</p>
+        </div>
+    </div>
+
+    <main class="container">
+
+        <section id="overview" class="text-center">
+            <h2 class="gradient-text font-kumbh">Project: SmartChannel CX</h2>
+            <p class="max-w-3xl text-lg text-gray-700 mb-8">
+                This document outlines the technical specification for the "Smart Channel," a generative content
+                platform powered by a hybrid vector-graph database architecture. The system is designed to ingest
+                multimodal content (text, images, video), process it into a rich, interconnected knowledge base, and
+                generate high-quality, contextually relevant content on demand for Generative Engine Optimization (GEO).
+            </p>
+            <div class="grid grid-cols-3">
+                <div class="card">
+                    <svg class="card-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M21 16V8C21 6.89543 20.1046 6 19 6H5C3.89543 6 3 6.89543 3 8V16C3 17.1046 3.89543 18 5 18H19C20.1046 18 21 17.1046 21 16Z"
+                            stroke="url(#gradient1)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                        <path d="M12 10L3 6L12 2L21 6L12 10Z" stroke="url(#gradient1)" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round" />
+                        <path d="M12 22V10" stroke="url(#gradient1)" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                        <defs>
+                            <linearGradient id="gradient1" x1="3" y1="2" x2="21" y2="22">
+                                <stop offset="0%" stop-color="#667eea" />
+                                <stop offset="100%" stop-color="#764ba2" />
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                    <h3 class="text-xl font-semibold mb-2 gradient-text">Automated Ingestion</h3>
+                    <p class="text-gray-600">Continuously process unstructured text, image, and video content into a
+                        machine-readable format.</p>
+                </div>
+                <div class="card">
+                    <svg class="card-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="12" cy="12" r="3" stroke="url(#gradient2)" stroke-width="2" />
+                        <circle cx="12" cy="4" r="2" fill="#667eea" />
+                        <circle cx="12" cy="20" r="2" fill="#764ba2" />
+                        <circle cx="4" cy="12" r="2" fill="#667eea" />
+                        <circle cx="20" cy="12" r="2" fill="#764ba2" />
+                        <circle cx="6" cy="6" r="1.5" fill="#f59e0b" />
+                        <circle cx="18" cy="6" r="1.5" fill="#f59e0b" />
+                        <circle cx="6" cy="18" r="1.5" fill="#f59e0b" />
+                        <circle cx="18" cy="18" r="1.5" fill="#f59e0b" />
+                        <line x1="12" y1="6" x2="12" y2="9" stroke="#667eea" stroke-width="1.5" />
+                        <line x1="12" y1="15" x2="12" y2="18" stroke="#764ba2" stroke-width="1.5" />
+                        <line x1="6" y1="12" x2="9" y2="12" stroke="#667eea" stroke-width="1.5" />
+                        <line x1="15" y1="12" x2="18" y2="12" stroke="#764ba2" stroke-width="1.5" />
+                        <defs>
+                            <linearGradient id="gradient2" x1="9" y1="9" x2="15" y2="15">
+                                <stop offset="0%" stop-color="#667eea" />
+                                <stop offset="100%" stop-color="#764ba2" />
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                    <h3 class="text-xl font-semibold mb-2 gradient-text">Semantic Understanding</h3>
+                    <p class="text-gray-600">Utilize a hybrid vector and graph database to understand deep semantic
+                        relationships between all content assets.</p>
+                </div>
+                <div class="card">
+                    <svg class="card-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M14 2H6C5.46957 2 4.96086 2.21071 4.58579 2.58579C4.21071 2.96086 4 3.46957 4 4V20C4 20.5304 4.21071 21.0391 4.58579 21.4142C4.96086 21.7893 5.46957 22 6 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V8L14 2Z"
+                            stroke="url(#gradient3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                        <path d="M14 2V8H20" stroke="url(#gradient3)" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                        <path d="M16 13H8" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" />
+                        <path d="M16 17H8" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" />
+                        <path d="M10 9H9H8" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" />
+                        <defs>
+                            <linearGradient id="gradient3" x1="4" y1="2" x2="20" y2="22">
+                                <stop offset="0%" stop-color="#667eea" />
+                                <stop offset="100%" stop-color="#764ba2" />
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                    <h3 class="text-xl font-semibold mb-2 gradient-text">Generative Output</h3>
+                    <p class="text-gray-600">Generate blog articles, video clips, and image suggestions based on queries
+                        and persona-driven narratives.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="ingestion">
+            <h2 class="gradient-text">Phase 1: Multimodal Ingestion & Embedding</h2>
+            <p class="max-w-3xl text-lg text-center text-gray-700 mb-12">
+                The foundation of the Smart Channel is its ability to convert raw unstructured media into meaningful
+                vector embeddings and visually model those relationships in a 3D neural network knowledge graph. Each
+                content type requires a specialized approach to capture its unique semantic information. This section
+                details the recommended models and platforms for text, image, and video processing, including cost
+                considerations.
+            </p>
+
+            <div class="panel-3d">
+                <h3 class="gradient-text">Embedding Model Options by Modality</h3>
+                <div class="tab-container">
+                    <button data-tab="text" class="tab active">Text & Text+Image</button>
+                    <button data-tab="image" class="tab">Image-Only</button>
+                    <button data-tab="video" class="tab">Video</button>
+                </div>
+
+                <div id="ingestion-content">
+                </div>
+            </div>
+        </section>
+
+        <section id="processing">
+            <h2 class="gradient-text">Phase 2: Processing & Storage Architecture</h2>
+            <p class="max-w-3xl text-lg text-center text-gray-700 mb-12">
+                To enable both semantic similarity search and complex relationship queries, we will implement a hybrid
+                database architecture. This combines the strengths of a vector database for nearest-neighbor search with
+                a graph database for understanding explicit connections, powered by a GraphRAG engine.
+            </p>
+
+            <div
+                style="margin-bottom: 3rem; border-radius: 24px; overflow: hidden; border: 1px solid var(--glass-border); position: relative; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);">
+                <img referrerpolicy="no-referrer" src="https://cdn.vidi.news/smart_channel_processing_wide.png" alt="AI Generative Engine Processing"
+                    style="width: 100%; height: auto; object-fit: cover; opacity: 0.9; display: block;" />
+                <div
+                    style="position: absolute; inset: 0; background: linear-gradient(to top, var(--deep-black) 0%, transparent 40%); pointer-events: none;">
+                </div>
+            </div>
+
+            <div class="panel-3d">
+                <h3 class="gradient-text">Hybrid Vector-Graph System</h3>
+
+                <div class="grid md:grid-cols-3 gap-6 my-10 relative">
+                    <!-- Connector Line -->
+                    <div
+                        class="hidden md:block absolute top-1/2 left-0 w-full h-1 bg-gradient-to-r from-[--ai-blue] to-[--neon-purple] transform -translate-y-1/2 opacity-30">
+                    </div>
+
+                    <!-- Qdrant Box -->
+                    <div
+                        class="glass-panel p-6 border-l-4 border-[--ai-blue] relative z-10 bg-slate-900/80 transform hover:-translate-y-2 transition duration-300">
+                        <div class="text-[--ai-blue] text-xs font-black uppercase tracking-widest mb-2">Vector Database
+                        </div>
+                        <h4 class="text-2xl font-bold text-white mb-2" style="font-family: 'Kumbh Sans', sans-serif;">
+                            Qdrant</h4>
+                        <p class="text-sm text-gray-400">Embeddings Storage & Semantic Search</p>
+                    </div>
+
+                    <!-- GraphRAG Engine Box -->
+                    <div
+                        class="glass-panel p-6 border-2 border-[--gold] relative z-10 bg-slate-900/90 transform hover:-translate-y-2 transition duration-300 shadow-[0_0_30px_rgba(212,175,55,0.2)]">
+                        <div class="text-[--gold] text-xs font-black uppercase tracking-widest mb-2 text-center">
+                            Orchestration Layer</div>
+                        <h4 class="text-2xl font-bold text-white mb-2 text-center"
+                            style="font-family: 'Kumbh Sans', sans-serif;">GraphRAG Engine</h4>
+                        <p class="text-sm text-gray-400 text-center">Fuses Vector + High-Res Graph</p>
+                    </div>
+
+                    <!-- Neo4j Box -->
+                    <div
+                        class="glass-panel p-6 border-r-4 border-[--neon-purple] relative z-10 bg-slate-900/80 transform hover:-translate-y-2 transition duration-300">
+                        <div class="text-[--neon-purple] text-xs font-black uppercase tracking-widest mb-2 text-right">
+                            Graph Database</div>
+                        <h4 class="text-2xl font-bold text-white mb-2 text-right"
+                            style="font-family: 'Kumbh Sans', sans-serif;">Neo4j</h4>
+                        <p class="text-sm text-gray-400 text-right">Explicit Connective Knowledge</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 items-center gap-8">
+                    <div class="spec-section border-slate-700">
+                        <h4 class="text-xl font-semibold mb-2">Vector Database: Qdrant</h4>
+                        <p class="mb-2"><strong>Role:</strong> Stores all multimodal vector embeddings (text, image,
+                            video).</p>
+                        <p class="mb-2"><strong>Function:</strong> Enables high-speed semantic search to find the most
+                            relevant content based on a query's meaning, using Approximate Nearest Neighbor (ANN)
+                            search.</p>
+                        <p><strong>Key Feature:</strong> Scalable and optimized for low-latency vector similarity
+                            operations.</p>
+                    </div>
+                    <div class="text-5xl text-center text-gray-300 font-bold">+</div>
+                    <div class="spec-section border-slate-700 md:col-start-1">
+                        <h4 class="text-xl font-semibold mb-2">Graph Database: Neo4j</h4>
+                        <p class="mb-2"><strong>Role:</strong> Stores entities (e.g., topics, people, products) and
+                            their explicit relationships.</p>
+                        <p class="mb-2"><strong>Function:</strong> Used to build a knowledge graph that provides context
+                            and factual grounding for the LLM. It answers "how" things are connected.</p>
+                        <p><strong>Key Feature:</strong> Allows for multi-hop queries and community detection to uncover
+                            non-obvious relationships.</p>
+                    </div>
+                    <div class="text-5xl text-center text-gray-300 font-bold">=</div>
+                    <div class="bg-slate-800 p-6 rounded-lg" style="grid-column: span 2;">
+                        <h4 class="text-xl font-semibold mb-2 text-center gradient-text">GraphRAG Engine</h4>
+                        <p class="text-center">This engine sits between the databases and the user. When a query is
+                            made, it first performs a vector search in Qdrant to find relevant items, then uses Neo4j to
+                            explore the relationships around those items, providing rich, grounded context to the
+                            generative AI for superior accuracy and relevance.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="generation">
+            <h2 class="gradient-text">Phase 3: Content Generation Pipeline</h2>
+            <p class="max-w-3xl text-lg text-center text-gray-700 mb-12">
+                The output side of the Smart Channel leverages the interconnected data to generate new content. This
+                automated workflow uses dedicated AI agents for different tasks, ensuring a cohesive and high-quality
+                final product, from blog posts to video clips.
+            </p>
+            <div class="panel-3d">
+                <h3 class="gradient-text">From Vector to Value: The Generation Flow</h3>
+
+                <div class="flex flex-col items-center gap-8 my-10">
+                    <!-- Step 1 -->
+                    <div
+                        class="glass-panel px-8 py-6 w-full max-w-lg text-center border-t-2 border-[--ai-blue] bg-slate-900/80 relative transition transform hover:-translate-y-1">
+                        <div
+                            class="absolute -top-4 left-1/2 transform -translate-x-1/2 w-8 h-8 rounded-full bg-[--ai-blue] text-black font-black flex items-center justify-center">
+                            1</div>
+                        <h4 class="text-xl font-bold text-white mt-2" style="font-family: 'Kumbh Sans', sans-serif;">
+                            GraphRAG Payload</h4>
+                        <p class="text-xs text-[--ai-blue] uppercase tracking-widest mt-1">Vector Search + Graph Query
+                        </p>
+                    </div>
+
+                    <!-- Down Arrow -->
+                    <div class="w-1 h-8 bg-gradient-to-b from-[--ai-blue] to-[--neon-purple]"></div>
+
+                    <!-- Step 2 Agents -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 w-full">
+                        <div
+                            class="glass-panel p-6 text-center border border-[--neon-purple]/30 bg-slate-900/60 hover:bg-slate-800 transition shadow-[0_0_20px_rgba(157,0,255,0.05)] transform hover:-translate-y-1">
+                            <h4 class="text-lg font-bold text-[--neon-purple] mb-2"
+                                style="font-family: 'Kumbh Sans', sans-serif;">Text Agent</h4>
+                            <p class="text-sm text-gray-400">Synthesize Draft Article</p>
+                        </div>
+                        <div
+                            class="glass-panel p-6 text-center border border-[--neon-purple]/30 bg-slate-900/60 hover:bg-slate-800 transition shadow-[0_0_20px_rgba(157,0,255,0.05)] transform hover:-translate-y-1 relative">
+                            <div
+                                class="absolute -top-4 left-1/2 transform -translate-x-1/2 w-8 h-8 rounded-full bg-[--gold] text-black font-black flex items-center justify-center">
+                                2</div>
+                            <h4 class="text-lg font-bold text-[--neon-purple] mb-2 mt-2"
+                                style="font-family: 'Kumbh Sans', sans-serif;">Image Agent</h4>
+                            <p class="text-sm text-gray-400">Match High-Res Visuals</p>
+                        </div>
+                        <div
+                            class="glass-panel p-6 text-center border border-[--neon-purple]/30 bg-slate-900/60 hover:bg-slate-800 transition shadow-[0_0_20px_rgba(157,0,255,0.05)] transform hover:-translate-y-1">
+                            <h4 class="text-lg font-bold text-[--neon-purple] mb-2"
+                                style="font-family: 'Kumbh Sans', sans-serif;">Video Agent</h4>
+                            <p class="text-sm text-gray-400">Extract Action Clips</p>
+                        </div>
+                    </div>
+
+                    <!-- Down Arrow -->
+                    <div class="w-1 h-8 bg-gradient-to-b from-[--neon-purple] to-[--ai-blue]"></div>
+
+                    <!-- Step 3 Final output -->
+                    <div
+                        class="glass-panel px-8 py-8 w-full border-b-4 border-[--ai-blue] bg-slate-900/90 text-center relative shadow-[0_0_40px_rgba(0,242,255,0.15)] transition transform hover:-translate-y-1">
+                        <div
+                            class="absolute -top-4 left-1/2 transform -translate-x-1/2 w-8 h-8 rounded-full bg-[--neon-purple] text-white font-black flex items-center justify-center shadow-lg">
+                            3</div>
+                        <h4 class="text-2xl font-bold text-[--ai-blue] mt-2 tracking-wide uppercase"
+                            style="font-family: 'Kumbh Sans', sans-serif;">Complete Content Package</h4>
+                        <p class="text-sm text-gray-300 mt-2">Blog Article + Images + Video Clips</p>
+                    </div>
+                </div>
+
+                <div class="space-y-6">
+                    <div class="step-container">
+                        <div class="number-badge">1</div>
+                        <div>
+                            <h4 class="font-bold">Semantic Query & RAG</h4>
+                            <p>A user prompt or topic initiates a query. The GraphRAG engine retrieves the most relevant
+                                text, image, and video vectors from the database, providing a rich, contextual payload.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="step-container">
+                        <div class="number-badge">2</div>
+                        <div>
+                            <h4 class="font-bold">Content Agent Assembly</h4>
+                            <p>The retrieved data is passed to a team of specialized AI agents:</p>
+                            <ul class="list-disc list-inside mt-2 space-y-1 text-gray-600">
+                                <li><strong>Text Agent:</strong> Drafts the main blog article, creating a narrative from
+                                    the textual data.</li>
+                                <li><strong>Image Agent:</strong> Analyzes the text and identifies optimal locations for
+                                    visuals. It then searches the vector database for the best matching images, creating
+                                    placeholders and suggested captions.</li>
+                                <li><strong>Video Agent:</strong> Identifies key moments or concepts in the text and
+                                    finds corresponding clips from the video vectors to be embedded.</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="step-container">
+                        <div class="number-badge">3</div>
+                        <div>
+                            <h4 class="font-bold">Content Compilation & Output</h4>
+                            <p>The outputs from all agents are compiled into a final package: a complete blog article
+                                with text, marked-up image placeholders, and ready-to-embed video clips, all
+                                semantically aligned and contextually relevant.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="personas">
+            <h2 class="gradient-text">Critical Overlay: Personality Modeling Matrix</h2>
+            <p class="max-w-3xl text-lg text-center text-gray-700 mb-12">
+                To move beyond simple factual generation, a Personality Modeling Matrix will be applied as an
+                independent layer during the content generation phase. This matrix allows the system to tailor the tone,
+                style, and point-of-view of the generated content to specific target audience personas.
+            </p>
+            <div class="panel-3d flex flex-row items-center gap-8">
+                <div style="width: 50%;">
+                    <h3 class="font-bold mb-4 gradient-text">How the Matrix Works</h3>
+                    <p class="mb-4">The matrix is a configurable set of instructions and style guides that are injected
+                        into the prompts for the content generation agents. It acts as a final "lens" through which the
+                        retrieved data is interpreted and written.</p>
+                    <div class="space-y-4">
+                        <div class="step-container">
+                            <div class="number-badge" style="width: 2rem; height: 2rem; font-size: 0.875rem;">1</div>
+                            <p><strong>Persona Selection:</strong> Before generation, a target persona is selected
+                                (e.g., "Industry Expert," "Curious Novice," "Skeptical Analyst").</p>
+                        </div>
+                        <div class="step-container">
+                            <div class="number-badge" style="width: 2rem; height: 2rem; font-size: 0.875rem;">2</div>
+                            <p><strong>Style Injection:</strong> The matrix provides persona-specific instructions to
+                                the AI agents (e.g., "Adopt a formal, academic tone," "Use simple language and
+                                analogies," "Focus on data and potential risks").</p>
+                        </div>
+                        <div class="step-container">
+                            <div class="number-badge" style="width: 2rem; height: 2rem; font-size: 0.875rem;">3</div>
+                            <p><strong>Tailored Output:</strong> The final content reflects the chosen personality,
+                                ensuring it resonates with the intended audience, even though it's based on the same
+                                underlying vector data.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="px-6 py-10 bg-slate-800 rounded-lg" style="width: 50%;">
+                    <h4 class="font-bold text-lg mb-4 text-white" style="font-family: 'Kumbh Sans', sans-serif;">Live
+                        Persona Mapping</h4>
+                    <p class="mb-4 text-sm text-gray-400"><strong>Target Simulation:</strong> Human Digital Twin
+                        rendered in real-time, matching narrative delivery to executive audience profiles.</p>
+
+                    <!-- Spinning Persona Video / 3D Block -->
+                    <div
+                        style="width: 100%; height: 350px; border-radius: 12px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); position: relative; background: #000;">
+                        <!-- We utilize a looping video or Spline 3D embedded object here to simulate the animated human scanning -->
+                        <!-- The source points to spinning_persona.mp4, which you can replace with your preferred asset -->
+                        <video src="images/spinning_persona.mp4" autoplay loop muted playsinline
+                            style="width: 100%; height: 100%; object-fit: cover; opacity: 0.9;"></video>
+
+                        <!-- Spline Fallback (Interactive 3D) if no mp4 loaded -->
+                        <spline-viewer url="https://prod.spline.design/kS1rS-y19P13xKjW/scene.splinecode"
+                            style="position: absolute; inset:0; z-index: 0; pointer-events: none; opacity: 0.6; mix-blend-mode: screen;"></spline-viewer>
+
+                        <div style="position: absolute; bottom: 15px; left: 15px; z-index: 10;">
+                            <span
+                                class="bg-[--ai-blue]/20 border border-[--ai-blue]/40 text-[--ai-blue] px-3 py-1 rounded text-xs uppercase tracking-widest font-bold">Scanning
+                                Biometrics</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-gray-800 text-white">
+        <div class="container text-center py-8">
+            <p>&copy; 2025 Smart Channel Project. All rights reserved.</p>
+            <p class="text-sm text-gray-400 mt-2">This interactive specification was generated based on provided project
+                documents.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+
+            const ingestionData = {
+                text: {
+                    title: 'Text & Text+Image Embedding',
+                    platform: 'Google Vertex AI or Amazon Titan',
+                    model: 'Multimodal Embedding Models (e.g., `multimodalembedding@001`)',
+                    process: 'These models are ideal for creating a unified vector space where text descriptions are semantically close to the images they describe. This is crucial for text-to-image search.',
+                    cost: 'Typically priced per 1,000 characters or tokens for text, and per image for the image part. Example: Google charges ~$0.0001 per 1k characters and ~$0.0001 per image.',
+                    useCase: 'Creating rich alt-text, meta descriptions, and finding images based on article content.'
+                },
+                image: {
+                    title: 'Image-Only Embedding',
+                    platform: 'Google Vision AI, Amazon Rekognition',
+                    model: 'Specialized Image Models',
+                    process: 'These services excel at identifying objects, scenes, and concepts within an image without requiring accompanying text. They generate a vector based purely on visual features.',
+                    cost: 'Priced per image, often with tiered pricing based on volume. Can range from $0.001 to $0.0015 per image.',
+                    useCase: 'Visual similarity search (finding visually alike images) and content-based image categorization.'
+                },
+                video: {
+                    title: 'Video Embedding',
+                    platform: 'Twelve Labs or Amazon Bedrock (with Twelve Labs model)',
+                    model: 'Video-Native Foundation Models',
+                    process: 'Video is deconstructed into audio, motion, and visual elements. These models are trained to understand temporality and context, creating vectors that represent actions and narratives, not just static frames.',
+                    cost: 'Priced per minute of video indexed. Twelve Labs is approximately $0.07/min for indexing and search. AWS Bedrock provides integrated access.',
+                    useCase: 'Searching for specific actions or spoken phrases within a massive video library (e.g., "find all clips where a product is being unboxed").'
+                }
+            };
+
+            const ingestionContentContainer = document.getElementById('ingestion-content');
+            const ingestionTabs = document.querySelectorAll('#ingestion .tab');
+
+            function updateIngestionContent(tabKey) {
+                const data = ingestionData[tabKey];
+                ingestionContentContainer.innerHTML = `
+                    <div class="p-4 grid md:grid-cols-2 gap-8">
+                        <div>
+                            <h4 class="text-xl font-bold mb-2" style="color:var(--ai-blue);">${data.title}</h4>
+                            <p class="mb-4 text-gray-700">${data.process}</p>
+                             <ul class="space-y-2 text-sm text-gray-700">
+                                <li><strong>Recommended Platform:</strong> ${data.platform}</li>
+                                <li><strong>Model Type:</strong> ${data.model}</li>
+                                <li><strong style="color:var(--gold);">Primary Use Case:</strong> ${data.useCase}</li>
+                            </ul>
+                        </div>
+                        <div class="bg-slate-800 p-4 rounded-lg">
+                             <h5 class="font-semibold text-lg mb-2 text-white">Cost Considerations</h5>
+                             <p class="text-gray-400">${data.cost}</p>
+                        </div>
+                    </div>
+                `;
+            }
+
+            ingestionTabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    ingestionTabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    updateIngestionContent(tab.dataset.tab);
+                });
+            });
+
+            updateIngestionContent('text');
+
+
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+                mobileMenu.classList.toggle('show');
+            });
+
+            const navLinks = document.querySelectorAll('.nav-link');
+            const sections = document.querySelectorAll('main section');
+            const header = document.getElementById('header');
+
+            const observerOptions = {
+                root: null,
+                rootMargin: `-${header.offsetHeight}px 0px 0px 0px`,
+                threshold: 0.4
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        navLinks.forEach(link => {
+                            link.classList.remove('active');
+                            if (link.getAttribute('href').substring(1) === entry.target.id) {
+                                link.classList.add('active');
+                            }
+                        });
+                    }
+                });
+            }, observerOptions);
+
+            sections.forEach(section => {
+                observer.observe(section);
+            });
+
+            navLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    if (mobileMenu.classList.contains('hidden') === false) {
+                        mobileMenu.classList.add('hidden');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>

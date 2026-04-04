@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VidiShop | Where Search Becomes the Store</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="vidi-nav-component.css">
+    <script src="vidi-nav-component.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Geist', 'Inter', sans-serif;
+            background-color: #030712;
+            color: #f8fafc;
+        }
+        .brand-font { font-family: 'Geist', sans-serif; }
+
+        /* Glow effects */
+        .glow-red { box-shadow: 0 0 60px rgba(239, 68, 68, 0.15), 0 0 120px rgba(239, 68, 68, 0.05); }
+        .glow-blue { box-shadow: 0 0 60px rgba(59, 130, 246, 0.15), 0 0 120px rgba(59, 130, 246, 0.05); }
+        .glow-text { text-shadow: 0 0 40px rgba(239, 68, 68, 0.3); }
+
+        /* Glass */
+        .glass {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+        .glass-light {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        /* Cards */
+        .tech-card {
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+        }
+        .tech-card:hover {
+            transform: translateY(-2px);
+            border-left-color: #ef4444;
+            background: rgba(255, 255, 255, 0.06);
+        }
+        .tech-card.active {
+            border-left-color: #ef4444;
+            background: rgba(239, 68, 68, 0.08);
+        }
+
+        /* Stats counter animation */
+        @keyframes countUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .stat-animate { animation: countUp 0.6s ease-out forwards; }
+
+        /* Floating animation */
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+        .float { animation: float 4s ease-in-out infinite; }
+
+        /* Gradient mesh bg */
+        .mesh-bg {
+            background:
+                radial-gradient(at 20% 20%, rgba(239, 68, 68, 0.08) 0%, transparent 50%),
+                radial-gradient(at 80% 80%, rgba(59, 130, 246, 0.08) 0%, transparent 50%),
+                radial-gradient(at 50% 50%, rgba(139, 92, 246, 0.05) 0%, transparent 50%);
+        }
+
+        /* Chart container */
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            height: 300px;
+        }
+        @media (min-width: 768px) { .chart-container { height: 350px; } }
+
+        /* Timeline node */
+        .timeline-node { transition: all 0.3s ease; }
+        .timeline-node:hover { transform: scale(1.03); }
+
+        /* Scroll snap for demo reel */
+        .demo-scroll { scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; }
+        .demo-scroll > * { scroll-snap-align: center; }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
+    </style>
+</head>
+
+<body class="antialiased">
+    <!-- Universal Nav injected by vidi-nav-component.js -->
+    <div style="height: 70px;"></div>
+
+    <!-- ============================================ -->
+    <!-- HERO: Full-bleed cinematic -->
+    <!-- ============================================ -->
+    <section class="relative min-h-[90vh] flex items-center overflow-hidden mesh-bg">
+        <!-- Ambient orbs -->
+        <div class="absolute top-[-20%] left-[-10%] w-[600px] h-[600px] bg-red-500/10 rounded-full blur-[120px] pointer-events-none"></div>
+        <div class="absolute bottom-[-20%] right-[-10%] w-[500px] h-[500px] bg-blue-500/10 rounded-full blur-[120px] pointer-events-none"></div>
+
+        <div class="max-w-7xl mx-auto px-6 lg:px-8 py-20 grid lg:grid-cols-2 gap-16 items-center relative z-10">
+            <div>
+                <div class="flex items-center gap-3 mb-6">
+                    <span class="px-3 py-1.5 glass-light rounded-full text-[10px] font-black uppercase tracking-[0.2em] text-red-400 border border-red-500/20">
+                        <i class="fas fa-bolt mr-1"></i> Gen UI Commerce
+                    </span>
+                    <span class="px-3 py-1.5 glass-light rounded-full text-[10px] font-black uppercase tracking-[0.2em] text-emerald-400 border border-emerald-500/20">
+                        <span class="inline-block w-1.5 h-1.5 bg-emerald-400 rounded-full mr-1 animate-pulse"></span> Live
+                    </span>
+                </div>
+
+                <h1 class="text-5xl md:text-7xl font-black brand-font tracking-tighter leading-[0.9] mb-6">
+                    Search<br>
+                    Becomes<br>
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-rose-400 to-amber-400 glow-text">The Store.</span>
+                </h1>
+
+                <p class="text-lg md:text-xl text-slate-400 max-w-xl mb-10 leading-relaxed font-medium">
+                    VidiShop doesn't list products. It <strong class="text-white">generates the entire shopping interface</strong> in real-time — custom-faceted through visual vector intelligence while you watch video content.
+                </p>
+
+                <div class="flex flex-wrap gap-4">
+                    <a href="#demo-reel" class="px-8 py-4 bg-gradient-to-r from-red-600 to-red-500 text-white rounded-xl font-bold hover:from-red-500 hover:to-red-400 transition-all flex items-center shadow-lg shadow-red-500/20 hover:shadow-red-500/40 transform hover:-translate-y-1">
+                        <i class="fas fa-play-circle mr-3"></i> Watch Demo
+                    </a>
+                    <a href="#smart-stack" class="px-8 py-4 glass text-white rounded-xl font-bold hover:bg-white/10 transition-all flex items-center">
+                        <i class="fas fa-layer-group mr-3 text-slate-400"></i> View Architecture
+                    </a>
+                </div>
+
+                <!-- Stats bar -->
+                <div class="flex gap-8 mt-12 pt-8 border-t border-white/5">
+                    <div>
+                        <div class="text-2xl font-black text-white stat-animate">138+</div>
+                        <div class="text-[11px] text-slate-500 font-bold uppercase tracking-wider">Categories</div>
+                    </div>
+                    <div>
+                        <div class="text-2xl font-black text-white stat-animate">&lt;50ms</div>
+                        <div class="text-[11px] text-slate-500 font-bold uppercase tracking-wider">UI Generation</div>
+                    </div>
+                    <div>
+                        <div class="text-2xl font-black text-white stat-animate">24fps</div>
+                        <div class="text-[11px] text-slate-500 font-bold uppercase tracking-wider">Real-Time</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hero Image -->
+            <div class="relative float">
+                <div class="absolute -inset-4 bg-gradient-to-r from-red-600/20 to-blue-600/20 rounded-3xl blur-2xl opacity-50"></div>
+                <div class="relative glass rounded-3xl p-3 glow-red">
+                    <img referrerpolicy="no-referrer" src="https://cdn.vidi.news/vidishop_ui_mockup.png" alt="VidiShop AI-Generated Shopping Interface" class="w-full rounded-2xl">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- DEMO REEL: Video + Live Commerce Mockup -->
+    <!-- ============================================ -->
+    <section id="demo-reel" class="py-24 relative">
+        <div class="absolute inset-0 bg-gradient-to-b from-transparent via-red-950/5 to-transparent pointer-events-none"></div>
+        <div class="max-w-7xl mx-auto px-6 lg:px-8 relative z-10">
+            <div class="text-center mb-16">
+                <span class="px-4 py-2 glass-light rounded-full text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 inline-block mb-6">
+                    The Experience
+                </span>
+                <h2 class="text-4xl md:text-5xl font-black brand-font tracking-tighter mb-4">
+                    Watch Content. <span class="text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-amber-400">Shop Instantly.</span>
+                </h2>
+                <p class="text-slate-500 max-w-2xl mx-auto text-lg font-medium">The AI detects purchase intent from video context and generates a shoppable interface — overlaid in real-time.</p>
+            </div>
+
+            <div class="grid lg:grid-cols-2 gap-8">
+                <!-- Video Player -->
+                <div class="glass rounded-3xl overflow-hidden glow-blue">
+                    <div class="p-4 border-b border-white/5 flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="flex gap-1.5">
+                                <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                                <div class="w-3 h-3 rounded-full bg-amber-500"></div>
+                                <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                            </div>
+                            <span class="text-[11px] text-slate-500 font-mono">vidishop.live/demo</span>
+                        </div>
+                        <span class="px-2 py-0.5 bg-red-500/20 text-red-400 text-[9px] font-bold rounded uppercase tracking-wider">
+                            <span class="inline-block w-1.5 h-1.5 bg-red-500 rounded-full mr-1 animate-pulse"></span> Recording
+                        </span>
+                    </div>
+                    <div class="relative w-full aspect-video bg-black">
+                        <video controls autoplay muted loop class="w-full h-full object-contain">
+                            <source src="https://cdn.vidi.news/smartchannel.vidishop.mp4" type="video/mp4">
+                        </video>
+                    </div>
+                    <div class="p-4 flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <i class="fas fa-brain text-red-400 text-xs"></i>
+                            <span class="text-[11px] text-slate-400 font-medium">AI detecting intent from video frames...</span>
+                        </div>
+                        <div class="flex gap-2">
+                            <span class="px-2 py-0.5 bg-emerald-500/10 text-emerald-400 text-[9px] font-bold rounded">TENSOR MATCH</span>
+                            <span class="px-2 py-0.5 bg-blue-500/10 text-blue-400 text-[9px] font-bold rounded">GEN UI ACTIVE</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Commerce Preview -->
+                <div class="glass rounded-3xl overflow-hidden glow-red relative group">
+                    <div class="p-4 border-b border-white/5 flex items-center justify-between">
+                        <span class="text-[11px] text-slate-400 font-bold uppercase tracking-wider"><i class="fas fa-magic text-red-400 mr-2"></i>Generated Commerce Interface</span>
+                        <span class="text-[10px] text-slate-600">Powered by Visual Vector Search</span>
+                    </div>
+                    <div class="relative">
+                        <img referrerpolicy="no-referrer" src="https://cdn.vidi.news/vidishop_lingerie_model.png" alt="VidiShop Live Commerce Experience" class="w-full">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+                        <div class="absolute bottom-0 left-0 right-0 p-6">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-white font-bold text-lg">Live Shopping Experience</p>
+                                    <p class="text-slate-300 text-sm">AI-generated product overlay from video content</p>
+                                </div>
+                                <div class="flex gap-2">
+                                    <span class="w-10 h-10 glass-light rounded-full flex items-center justify-center text-white hover:bg-white/20 transition cursor-pointer"><i class="fas fa-shopping-bag"></i></span>
+                                    <span class="w-10 h-10 glass-light rounded-full flex items-center justify-center text-white hover:bg-white/20 transition cursor-pointer"><i class="fas fa-expand"></i></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- HOW IT WORKS: 3-step visual flow -->
+    <!-- ============================================ -->
+    <section class="py-24">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <span class="px-4 py-2 glass-light rounded-full text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 inline-block mb-6">
+                    How It Works
+                </span>
+                <h2 class="text-4xl md:text-5xl font-black brand-font tracking-tighter">
+                    From Video to <span class="text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-amber-400">Checkout</span> in 3 Steps
+                </h2>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-6 relative">
+                <!-- Connecting line -->
+                <div class="hidden md:block absolute top-1/2 left-[16%] right-[16%] h-px bg-gradient-to-r from-red-500/30 via-amber-500/30 to-emerald-500/30 -translate-y-1/2 z-0"></div>
+
+                <div class="glass rounded-3xl p-8 relative z-10 group hover:bg-white/[0.04] transition">
+                    <div class="w-14 h-14 bg-gradient-to-br from-red-600 to-red-500 rounded-2xl flex items-center justify-center text-white text-xl font-black mb-6 shadow-lg shadow-red-500/20 group-hover:scale-110 transition">1</div>
+                    <h3 class="text-xl font-bold text-white mb-3">User Watches Video</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed">A viewer watches a VidiCity news segment about a new restaurant opening, a fashion event, or local lifestyle content.</p>
+                </div>
+
+                <div class="glass rounded-3xl p-8 relative z-10 group hover:bg-white/[0.04] transition">
+                    <div class="w-14 h-14 bg-gradient-to-br from-amber-600 to-amber-500 rounded-2xl flex items-center justify-center text-white text-xl font-black mb-6 shadow-lg shadow-amber-500/20 group-hover:scale-110 transition">2</div>
+                    <h3 class="text-xl font-bold text-white mb-3">AI Detects Intent</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed">Visual vector search analyzes video frames in real-time. Tensor matching identifies products, locations, and purchase signals with sub-50ms latency.</p>
+                </div>
+
+                <div class="glass rounded-3xl p-8 relative z-10 group hover:bg-white/[0.04] transition">
+                    <div class="w-14 h-14 bg-gradient-to-br from-emerald-600 to-emerald-500 rounded-2xl flex items-center justify-center text-white text-xl font-black mb-6 shadow-lg shadow-emerald-500/20 group-hover:scale-110 transition">3</div>
+                    <h3 class="text-xl font-bold text-white mb-3">Shop Interface Appears</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed">Gen UI assembles a custom shopping overlay — faceted products, pricing, reviews — all generated from context, not templates.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- TENSOR ARCHITECTURE: Visual explainer -->
+    <!-- ============================================ -->
+    <section class="py-24 relative">
+        <div class="absolute inset-0 bg-gradient-to-b from-transparent via-blue-950/5 to-transparent pointer-events-none"></div>
+        <div class="max-w-7xl mx-auto px-6 lg:px-8 relative z-10">
+            <div class="text-center mb-12">
+                <span class="px-4 py-2 glass-light rounded-full text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 inline-block mb-6">
+                    Visual Vector Intelligence
+                </span>
+                <h2 class="text-4xl md:text-5xl font-black brand-font tracking-tighter mb-4">
+                    The Brain Behind <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">Every Search</span>
+                </h2>
+                <p class="text-slate-500 max-w-2xl mx-auto text-lg font-medium">Multi-dimensional tensors don't just match keywords — they reason about visual context, location, and user intent simultaneously.</p>
+            </div>
+
+            <div class="glass rounded-3xl overflow-hidden glow-blue p-4 max-w-5xl mx-auto mb-12">
+                <img referrerpolicy="no-referrer" src="https://cdn.vidi.news/Tensor.VVOmni.png" alt="Tensor Architecture: The Multi-Factor Brain of Multimodal AI" class="w-full rounded-2xl">
+            </div>
+
+            <!-- Key capabilities grid -->
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4 max-w-5xl mx-auto">
+                <div class="glass rounded-2xl p-6 hover:bg-white/[0.04] transition group">
+                    <div class="w-10 h-10 bg-red-500/10 rounded-xl flex items-center justify-center text-red-400 mb-4 group-hover:scale-110 transition">
+                        <i class="fas fa-eye"></i>
+                    </div>
+                    <h4 class="font-bold text-white text-sm mb-1">Visual Matching</h4>
+                    <p class="text-[11px] text-slate-500 leading-relaxed">ColPali vision model identifies products in video frames without text descriptions.</p>
+                </div>
+                <div class="glass rounded-2xl p-6 hover:bg-white/[0.04] transition group">
+                    <div class="w-10 h-10 bg-blue-500/10 rounded-xl flex items-center justify-center text-blue-400 mb-4 group-hover:scale-110 transition">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <h4 class="font-bold text-white text-sm mb-1">Tensor Reasoning</h4>
+                    <p class="text-[11px] text-slate-500 leading-relaxed">Multi-dimensional tensors preserve context — distinguishing "luxury yacht" from "water texture".</p>
+                </div>
+                <div class="glass rounded-2xl p-6 hover:bg-white/[0.04] transition group">
+                    <div class="w-10 h-10 bg-amber-500/10 rounded-xl flex items-center justify-center text-amber-400 mb-4 group-hover:scale-110 transition">
+                        <i class="fas fa-map-marker-alt"></i>
+                    </div>
+                    <h4 class="font-bold text-white text-sm mb-1">Geospatial Context</h4>
+                    <p class="text-[11px] text-slate-500 leading-relaxed">Location-aware results surface local businesses and inventory within delivery range.</p>
+                </div>
+                <div class="glass rounded-2xl p-6 hover:bg-white/[0.04] transition group">
+                    <div class="w-10 h-10 bg-emerald-500/10 rounded-xl flex items-center justify-center text-emerald-400 mb-4 group-hover:scale-110 transition">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <h4 class="font-bold text-white text-sm mb-1">Real-Time Assembly</h4>
+                    <p class="text-[11px] text-slate-500 leading-relaxed">Gen UI components instantiate from JSON schemas — no templates, fully dynamic.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- SMART STACK: Interactive tech blueprint -->
+    <!-- ============================================ -->
+    <section id="smart-stack" class="py-24">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8">
+            <div class="mb-12">
+                <span class="px-4 py-2 glass-light rounded-full text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 inline-block mb-6">
+                    Technical Architecture
+                </span>
+                <h2 class="text-4xl md:text-5xl font-black brand-font tracking-tighter mb-4">
+                    The Smart Stack <span class="text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-amber-400">Blueprint</span>
+                </h2>
+                <p class="text-slate-500 max-w-3xl text-lg font-medium">
+                    Three pillars power VidiShop: <strong class="text-slate-300">Frontend (Flutter)</strong>, <strong class="text-slate-300">The Brain (Vidi AI)</strong>, and <strong class="text-slate-300">System Connectors</strong>. Click any card to inspect.
+                </p>
+            </div>
+
+            <div class="grid lg:grid-cols-3 gap-6">
+                <!-- Column A: Frontend -->
+                <div>
+                    <div class="bg-blue-500/10 border border-blue-500/20 p-4 rounded-t-2xl flex items-center gap-3">
+                        <div class="w-10 h-10 bg-blue-500/20 rounded-xl flex items-center justify-center text-blue-400">
+                            <i class="fas fa-mobile-alt text-lg"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-white text-sm">A. Frontend Integration</h3>
+                            <p class="text-[10px] text-blue-400 font-mono">Flutter & Dart / SDUI</p>
+                        </div>
+                    </div>
+                    <div class="glass border-t-0 rounded-b-2xl p-4 space-y-2">
+                        <div class="tech-card p-4 rounded-xl cursor-pointer" onclick="updateDetail('flutter')">
+                            <h4 class="font-bold text-white text-sm">Server-Driven UI</h4>
+                            <p class="text-xs text-slate-500 mt-1">Dynamic Widget Builder instead of hard-coded layouts.</p>
+                        </div>
+                        <div class="tech-card p-4 rounded-xl cursor-pointer" onclick="updateDetail('factories')">
+                            <h4 class="font-bold text-white text-sm">Widget Factories</h4>
+                            <p class="text-xs text-slate-500 mt-1">Mapping JSON tags to native Dart widget classes.</p>
+                        </div>
+                        <div class="tech-card p-4 rounded-xl cursor-pointer" onclick="updateDetail('assembly')">
+                            <h4 class="font-bold text-white text-sm">Real-Time Assembly</h4>
+                            <p class="text-xs text-slate-500 mt-1">Instant overlay assembly on "High Purchase Intent".</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Column B: Brain -->
+                <div>
+                    <div class="bg-purple-500/10 border border-purple-500/20 p-4 rounded-t-2xl flex items-center gap-3">
+                        <div class="w-10 h-10 bg-purple-500/20 rounded-xl flex items-center justify-center text-purple-400">
+                            <i class="fas fa-brain text-lg"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-white text-sm">B. Visual Vector Search</h3>
+                            <p class="text-[10px] text-purple-400 font-mono">Vidi AI Platform</p>
+                        </div>
+                    </div>
+                    <div class="glass border-t-0 rounded-b-2xl p-4 space-y-2">
+                        <div class="tech-card p-4 rounded-xl cursor-pointer" onclick="updateDetail('vespa')">
+                            <h4 class="font-bold text-white text-sm">Vidi AI Engine</h4>
+                            <p class="text-xs text-slate-500 mt-1">Sub-millisecond visual matching & re-ranking.</p>
+                        </div>
+                        <div class="tech-card p-4 rounded-xl cursor-pointer" onclick="updateDetail('tensors')">
+                            <h4 class="font-bold text-white text-sm">Tensors vs. Vectors</h4>
+                            <p class="text-xs text-slate-500 mt-1">Multi-dimensional tensors to "reason" about context.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Column C: Connectors -->
+                <div>
+                    <div class="bg-amber-500/10 border border-amber-500/20 p-4 rounded-t-2xl flex items-center gap-3">
+                        <div class="w-10 h-10 bg-amber-500/20 rounded-xl flex items-center justify-center text-amber-400">
+                            <i class="fas fa-plug text-lg"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-white text-sm">C. Connectors</h3>
+                            <p class="text-[10px] text-amber-400 font-mono">MCP / CMS / APIs</p>
+                        </div>
+                    </div>
+                    <div class="glass border-t-0 rounded-b-2xl p-4 space-y-2">
+                        <div class="tech-card p-4 rounded-xl cursor-pointer" onclick="updateDetail('mcp')">
+                            <h4 class="font-bold text-white text-sm">Model Context Protocol</h4>
+                            <p class="text-xs text-slate-500 mt-1">The "Handshake" between Agent and Checkout.</p>
+                        </div>
+                        <div class="tech-card p-4 rounded-xl cursor-pointer" onclick="updateDetail('cms')">
+                            <h4 class="font-bold text-white text-sm">Directus / Strapi</h4>
+                            <p class="text-xs text-slate-500 mt-1">Headless CMS for 138+ Business Categories.</p>
+                        </div>
+                        <div class="tech-card p-4 rounded-xl cursor-pointer" onclick="updateDetail('youtube')">
+                            <h4 class="font-bold text-white text-sm">YouTube IFrame API</h4>
+                            <p class="text-xs text-slate-500 mt-1">PMax-style overlays on video content.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Detail Panel -->
+            <div id="tech-detail-panel" class="mt-6 bg-gradient-to-r from-slate-900 to-slate-800 border border-white/10 text-white p-8 rounded-2xl shadow-2xl hidden">
+                <div class="flex items-start justify-between">
+                    <div>
+                        <h4 id="detail-title" class="text-xl font-bold text-red-400 mb-2">Select a component</h4>
+                        <p id="detail-desc" class="text-slate-300 text-sm leading-relaxed max-w-3xl">Click on any card in the stack above to view deep-dive technical specifications.</p>
+                    </div>
+                    <div class="w-12 h-12 bg-red-500/10 rounded-xl flex items-center justify-center text-red-400 shrink-0">
+                        <i class="fas fa-microchip text-xl"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- PMAX STRATEGY: Interactive simulator -->
+    <!-- ============================================ -->
+    <section id="pmax" class="py-24 relative">
+        <div class="absolute inset-0 bg-gradient-to-b from-transparent via-red-950/5 to-transparent pointer-events-none"></div>
+        <div class="max-w-7xl mx-auto px-6 lg:px-8 relative z-10">
+            <div class="text-center mb-16">
+                <span class="px-4 py-2 glass-light rounded-full text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 inline-block mb-6">
+                    Growth Engine
+                </span>
+                <h2 class="text-4xl md:text-5xl font-black brand-font tracking-tighter mb-4">
+                    Performance Max <span class="text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-amber-400">Strategy</span>
+                </h2>
+                <p class="text-slate-500 max-w-2xl mx-auto text-lg font-medium">VidiCity segments are high-impact assets for Google PMax. Drag the sliders to simulate reach.</p>
+            </div>
+
+            <div class="grid lg:grid-cols-2 gap-8 items-stretch">
+                <!-- Simulator Controls -->
+                <div class="glass rounded-3xl p-8 flex flex-col">
+                    <h3 class="font-bold text-white text-lg mb-6"><i class="fas fa-sliders-h text-red-400 mr-2"></i> Impact Simulator</h3>
+
+                    <div class="space-y-6 flex-1">
+                        <div>
+                            <label class="flex justify-between text-sm font-medium text-slate-300 mb-2">
+                                <span>VidiCity Video Assets</span>
+                                <span id="asset-count-display" class="text-red-400 font-bold">10</span>
+                            </label>
+                            <input type="range" id="asset-slider" min="5" max="50" value="10"
+                                class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-red-500">
+                        </div>
+                        <div>
+                            <label class="flex justify-between text-sm font-medium text-slate-300 mb-2">
+                                <span>PMax Ad Budget Multiplier</span>
+                                <span id="budget-display" class="text-red-400 font-bold">1x</span>
+                            </label>
+                            <input type="range" id="budget-slider" min="1" max="5" value="1"
+                                class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-red-500">
+                        </div>
+                    </div>
+
+                    <div class="mt-8 p-6 bg-gradient-to-r from-red-600/10 to-amber-600/10 rounded-2xl border border-red-500/20">
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm font-bold text-slate-400">Projected Local Reach</span>
+                            <span id="reach-projection" class="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-amber-400">25,000</span>
+                        </div>
+                    </div>
+
+                    <button onclick="window.alert('Redirecting to Google Ads Strategy Portal...')"
+                        class="mt-6 w-full bg-gradient-to-r from-red-600 to-red-500 hover:from-red-500 hover:to-red-400 text-white font-bold py-4 px-6 rounded-xl transition shadow-lg shadow-red-500/20 flex items-center justify-center gap-2">
+                        <i class="fas fa-calendar"></i> Book Google Meeting
+                    </button>
+                </div>
+
+                <!-- Chart -->
+                <div class="glass rounded-3xl p-8 flex flex-col">
+                    <h3 class="font-bold text-white text-lg mb-6 text-center"><i class="fas fa-chart-bar text-blue-400 mr-2"></i> Asset Impact Analysis</h3>
+                    <div class="chart-container flex-1">
+                        <canvas id="pmaxChart"></canvas>
+                    </div>
+                    <p class="text-xs text-center text-slate-600 mt-4">Simulated data based on PMax visual conversion benchmarks.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- ROADMAP: Execution timeline -->
+    <!-- ============================================ -->
+    <section id="roadmap" class="py-24">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <span class="px-4 py-2 glass-light rounded-full text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 inline-block mb-6">
+                    Execution
+                </span>
+                <h2 class="text-4xl md:text-5xl font-black brand-font tracking-tighter mb-4">
+                    Deployment <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400">Roadmap</span>
+                </h2>
+                <p class="text-slate-500 max-w-xl mx-auto text-lg font-medium">Three steps to launch the VidiShop "Story-to-Shop" pilot.</p>
+            </div>
+
+            <div class="relative">
+                <!-- Timeline connector -->
+                <div class="hidden md:block absolute top-1/2 left-[10%] right-[10%] h-px bg-gradient-to-r from-emerald-500/40 via-blue-500/40 to-red-500/40 -translate-y-1/2 z-0"></div>
+
+                <div class="grid md:grid-cols-3 gap-8">
+                    <!-- Step 1 -->
+                    <div class="glass rounded-3xl p-8 relative z-10 border-emerald-500/30 border timeline-node hover:border-emerald-400/50 transition">
+                        <div class="absolute -top-4 left-1/2 -translate-x-1/2 w-8 h-8 bg-emerald-500 rounded-full flex items-center justify-center font-black text-sm text-white shadow-lg shadow-emerald-500/30">1</div>
+                        <div class="text-center mt-2">
+                            <h3 class="font-bold text-lg text-white mb-2">Vector-VidiBridge</h3>
+                            <p class="text-sm text-slate-400 mb-4">Initialize the index of <strong class="text-slate-300">138 business categories</strong> in Vidi AI.</p>
+                            <span class="px-3 py-1 bg-emerald-500/20 text-emerald-400 text-xs font-bold rounded-full">
+                                <i class="fas fa-spinner fa-spin mr-1"></i> In Progress
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Step 2 -->
+                    <div class="glass rounded-3xl p-8 relative z-10 timeline-node hover:border-blue-400/30 transition">
+                        <div class="absolute -top-4 left-1/2 -translate-x-1/2 w-8 h-8 bg-slate-700 rounded-full flex items-center justify-center font-black text-sm text-slate-400 border border-slate-600">2</div>
+                        <div class="text-center mt-2">
+                            <h3 class="font-bold text-lg text-white mb-2">Gen UI Spec</h3>
+                            <p class="text-sm text-slate-400 mb-4">Define <strong class="text-slate-300">JSON Schema</strong> for Flutter widgets. Map AI agent tools.</p>
+                            <span class="px-3 py-1 bg-slate-700 text-slate-400 text-xs font-bold rounded-full">Pending</span>
+                        </div>
+                    </div>
+
+                    <!-- Step 3 -->
+                    <div class="glass rounded-3xl p-8 relative z-10 timeline-node hover:border-red-400/30 transition">
+                        <div class="absolute -top-4 left-1/2 -translate-x-1/2 w-8 h-8 bg-slate-700 rounded-full flex items-center justify-center font-black text-sm text-slate-400 border border-slate-600">3</div>
+                        <div class="text-center mt-2">
+                            <h3 class="font-bold text-lg text-white mb-2">Pilot Deployment</h3>
+                            <p class="text-sm text-slate-400 mb-4">Launch <strong class="text-slate-300">West Palm Beach</strong> "Story-to-Shop" demo in VidiCity App.</p>
+                            <span class="px-3 py-1 bg-slate-700 text-slate-400 text-xs font-bold rounded-full">Scheduled</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- CTA: Final section -->
+    <!-- ============================================ -->
+    <section class="py-24 relative overflow-hidden">
+        <div class="absolute inset-0 mesh-bg pointer-events-none"></div>
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-red-500/10 rounded-full blur-[150px] pointer-events-none"></div>
+
+        <div class="max-w-3xl mx-auto px-6 text-center relative z-10">
+            <h2 class="text-4xl md:text-6xl font-black brand-font tracking-tighter mb-6">
+                Ready to Make<br>Search <span class="text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-amber-400">Shoppable?</span>
+            </h2>
+            <p class="text-slate-400 text-lg mb-10 max-w-xl mx-auto font-medium">Join the VidiShop pilot program and transform video content into a real-time commerce channel.</p>
+            <div class="flex flex-wrap justify-center gap-4">
+                <a href="SmartGenUi.html" class="px-10 py-5 bg-gradient-to-r from-red-600 to-red-500 text-white rounded-2xl font-black uppercase tracking-wider hover:from-red-500 hover:to-red-400 transition-all shadow-xl shadow-red-500/20 hover:shadow-red-500/40 transform hover:-translate-y-1">
+                    Explore Gen UI
+                </a>
+                <a href="vidismart.masterlist.html" class="px-10 py-5 glass text-white rounded-2xl font-black uppercase tracking-wider hover:bg-white/10 transition-all">
+                    View Full Smart Stack
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="border-t border-white/5 py-12">
+        <div class="max-w-7xl mx-auto px-6 text-center">
+            <p class="text-slate-600 text-xs font-bold uppercase tracking-[0.3em] mb-2">VidiSmart.com</p>
+            <p class="text-slate-700 text-[10px] uppercase tracking-widest">&copy; 2026 VidiSmart Inc. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // --- TECH STACK DETAILS ---
+        const techDetails = {
+            'flutter': {
+                title: "Frontend: Server-Driven UI (SDUI)",
+                desc: "Your existing Flutter app is perfectly suited. By utilizing a 'Dynamic Widget Builder', we avoid hard-coding UI changes. The app listens for JSON instructions from the AI agent and renders native Dart widgets dynamically — no app store updates required."
+            },
+            'factories': {
+                title: "Widget Factories",
+                desc: "This maps specific JSON tags (like `product_facet_grid` or `video_overlay`) directly to your existing Dart widget classes, allowing the AI to 'pick' the right component for every context."
+            },
+            'assembly': {
+                title: "Real-Time Assembly",
+                desc: "When the AI Agent detects 'High Purchase Intent' during a video, it sends a JSON payload. The Flutter app instantly assembles the VidiShop overlay on top of the news video — in under 50 milliseconds."
+            },
+            'vespa': {
+                title: "Vidi AI Engine",
+                desc: "Unlike standard vector databases, Vidi AI is a full Search Platform with built-in tensor operations. It enables sub-millisecond visual matching of video frames to product categories, essential for real-time commerce."
+            },
+            'tensors': {
+                title: "Tensors vs. Vectors",
+                desc: "While vectors flatten data into single-dimensional embeddings, tensors preserve multi-dimensional context. We use them to 'reason' about visual scenes — distinguishing 'yacht texture' from 'water texture' for far more accurate product matching."
+            },
+            'mcp': {
+                title: "Model Context Protocol (MCP)",
+                desc: "The critical 'handshake' protocol allowing the AI agent to navigate between the VidiCity video library and the VidiShop checkout system securely and contextually."
+            },
+            'cms': {
+                title: "Headless CMS (Directus/Strapi)",
+                desc: "Acts as the central repository for the metadata of 138+ business categories, feeding structured data to the Vidi AI index for instant retrieval."
+            },
+            'youtube': {
+                title: "YouTube IFrame API",
+                desc: "Used to embed VidiCity segments within the app while triggering PMax-style ad overlays, leveraging Google's infrastructure for delivery and analytics."
+            }
+        };
+
+        function updateDetail(key) {
+            const panel = document.getElementById('tech-detail-panel');
+            const title = document.getElementById('detail-title');
+            const desc = document.getElementById('detail-desc');
+
+            document.querySelectorAll('.tech-card').forEach(c => c.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+
+            if (techDetails[key]) {
+                title.textContent = techDetails[key].title;
+                desc.textContent = techDetails[key].desc;
+                panel.classList.remove('hidden');
+            }
+        }
+
+        // --- PMAX SIMULATOR ---
+        const assetSlider = document.getElementById('asset-slider');
+        const budgetSlider = document.getElementById('budget-slider');
+        const assetDisplay = document.getElementById('asset-count-display');
+        const budgetDisplay = document.getElementById('budget-display');
+        const reachDisplay = document.getElementById('reach-projection');
+        let pmaxChartInstance = null;
+
+        function initChart() {
+            const ctx = document.getElementById('pmaxChart').getContext('2d');
+            pmaxChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Search Views', 'Video Impressions', 'Local Actions'],
+                    datasets: [{
+                        label: 'Monthly Metrics',
+                        data: calculateMetrics(10, 1),
+                        backgroundColor: [
+                            'rgba(59, 130, 246, 0.6)',
+                            'rgba(239, 68, 68, 0.6)',
+                            'rgba(34, 197, 94, 0.6)'
+                        ],
+                        borderColor: [
+                            'rgba(59, 130, 246, 0.8)',
+                            'rgba(239, 68, 68, 0.8)',
+                            'rgba(34, 197, 94, 0.8)'
+                        ],
+                        borderWidth: 1,
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: 'rgba(255,255,255,0.03)' },
+                            ticks: { color: '#64748b' }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: '#64748b', font: { size: 11 } }
+                        }
+                    }
+                }
+            });
+        }
+
+        function calculateMetrics(assets, budgetMult) {
+            const base = 2500;
+            const sv = (base * (assets * 0.1)) * budgetMult;
+            const vi = (base * (assets * 0.5)) * budgetMult;
+            const la = (base * (assets * 0.02)) * budgetMult;
+            reachDisplay.textContent = Math.round(sv + vi).toLocaleString();
+            return [sv, vi, la];
+        }
+
+        function updateSimulation() {
+            const a = parseInt(assetSlider.value);
+            const b = parseInt(budgetSlider.value);
+            assetDisplay.textContent = a;
+            budgetDisplay.textContent = b + 'x';
+            pmaxChartInstance.data.datasets[0].data = calculateMetrics(a, b);
+            pmaxChartInstance.update();
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initChart();
+            assetSlider.addEventListener('input', updateSimulation);
+            budgetSlider.addEventListener('input', updateSimulation);
+        });
+    </script>
+</body>
+
+</html>

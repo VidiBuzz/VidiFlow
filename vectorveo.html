@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Vector Embeddings for Visual AI - Dominate GEO Search</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Neutrals -->
+    <!-- Application Structure Plan: The SPA is designed as an interactive dashboard with a sticky top navigation for easy access to key themes: Strategy (GEO), Technology (Models & Workflow), Implementation (Platforms & DB), Impact (Visual AI Schema), and Context (Market & Future). This thematic structure is more user-friendly than the report's linear 8-section layout. Interactivity, such as clickable cards for platform comparison, tabs for model architectures, and a dynamic cost chart, is used to break down complex information and encourage user exploration, improving comprehension and engagement. -->
+    <!-- Visualization & Content Choices: 1. Cost Data (Table 7.1) -> Goal: Compare -> Viz: Interactive Bar Chart -> Interaction: Hover for details -> Justification: More engaging and easier for quick comparison than a static table -> Library: Chart.js. 2. Model Architectures (Table 2.1) -> Goal: Organize/Compare -> Viz: Tabbed Card Layout -> Interaction: Click tabs to switch views -> Justification: Saves space and focuses user on one model type at a time -> Library: HTML/CSS/JS. 3. Implementation Process -> Goal: Organize/Inform -> Viz: Step-by-step visual flow diagram -> Interaction: Static visual guide -> Justification: Clarifies the end-to-end process better than text -> Library: HTML/CSS. 4. Indexing Comparison -> Goal: Compare -> Viz: Toggle Switch UI -> Interaction: Click to toggle -> Justification: Simple, direct interaction for a binary choice -> Library: HTML/CSS/JS. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F8F5F2;
+            color: #3D3D3D;
+        }
+        .nav-link {
+            transition: color 0.3s, border-bottom-color 0.3s;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: #B98B73;
+            border-bottom-color: #B98B73;
+        }
+        .card {
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .tab.active {
+            background-color: #4A7C59;
+            color: #F8F5F2;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            margin-left: auto;
+            margin-right: auto;
+            max-height: 450px;
+        }
+        #index-toggle:checked + #toggle-bg {
+            background-color: #B98B73;
+        }
+        #index-toggle:checked ~ #toggle-dot {
+            transform: translateX(28px);
+        }
+        .toggle-container:hover #toggle-dot {
+            box-shadow: 0 0 0 4px rgba(74, 124, 89, 0.2);
+        }
+        #index-toggle:checked ~ #toggle-dot:hover {
+            box-shadow: 0 0 0 4px rgba(185, 139, 115, 0.2);
+        }
+        #toggle-dot {
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+        }
+        #toggle-bg {
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <header id="header" class="bg-[#F8F5F2]/80 backdrop-blur-md sticky top-0 z-50 shadow-sm">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <h1 class="text-xl md:text-2xl font-bold text-[#4A7C59]">Video Embeddings & GEO</h1>
+            <div class="hidden md:flex space-x-8">
+                <a href="#strategy" class="nav-link font-medium border-b-2 border-transparent pb-1">Strategy</a>
+                <a href="#technology" class="nav-link font-medium border-b-2 border-transparent pb-1">Technology</a>
+                <a href="#implementation" class="nav-link font-medium border-b-2 border-transparent pb-1">Implementation</a>
+                <a href="#impact" class="nav-link font-medium border-b-2 border-transparent pb-1">Impact</a>
+                <a href="#outlook" class="nav-link font-medium border-b-2 border-transparent pb-1">Outlook</a>
+            </div>
+            <button id="mobile-menu-button" class="md:hidden text-2xl">☰</button>
+        </nav>
+        <div id="mobile-menu" class="hidden md:hidden bg-[#F8F5F2] py-4 px-6">
+            <a href="#strategy" class="block py-2 text-center nav-link">Strategy</a>
+            <a href="#technology" class="block py-2 text-center nav-link">Technology</a>
+            <a href="#implementation" class="block py-2 text-center nav-link">Implementation</a>
+            <a href="#impact" class="block py-2 text-center nav-link">Impact</a>
+            <a href="#outlook" class="block py-2 text-center nav-link">Outlook</a>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-6 py-8 md:py-12">
+
+        <section id="strategy" class="mb-16 md:mb-24 text-center">
+            <h2 class="text-3xl md:text-4xl font-bold mb-4 text-[#4A7C59]">The New Frontier: From SEO to GEO</h2>
+            <p class="max-w-3xl mx-auto text-lg text-gray-700 mb-8">
+                This guide explores the shift from traditional Search Engine Optimization (SEO) to Generative Engine Optimization (GEO). We'll uncover how AI is changing search and how video vector embeddings are the key to establishing deep domain expertise. Understand the strategic imperative to not just rank, but to be the source AI models trust and cite in their answers.
+            </p>
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="bg-white/50 p-6 rounded-xl shadow-md card">
+                    <h3 class="text-xl font-semibold mb-2 text-[#B98B73]">AI Overviews</h3>
+                    <p class="text-gray-600">Search is no longer a list of links. It's an answer engine. The goal is to be featured directly in AI-generated summaries.</p>
+                </div>
+                <div class="bg-white/50 p-6 rounded-xl shadow-md card">
+                    <h3 class="text-xl font-semibold mb-2 text-[#B98B73]">Domain Expertise</h3>
+                    <p class="text-gray-600">AI evaluates authority through signals of expertise, trust, and comprehensive content, going far beyond old keyword tactics.</p>
+                </div>
+                <div class="bg-white/50 p-6 rounded-xl shadow-md card">
+                    <h3 class="text-xl font-semibold mb-2 text-[#B98B73]">Video's Role</h3>
+                    <p class="text-gray-600">Vector embeddings unlock the rich semantic content inside your videos, making them a machine-readable signal of your expertise.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="technology" class="mb-16 md:mb-24">
+            <h2 class="text-3xl md:text-4xl font-bold mb-4 text-center text-[#4A7C59]">How It Works: The Technology Explained</h2>
+            <p class="max-w-3xl mx-auto text-lg text-center text-gray-700 mb-12">
+                To create a powerful video embedding, we must first deconstruct the video into its core components and then choose the right AI model to translate that information into a meaningful vector. This section breaks down the technology, from the initial analysis workflow to a comparison of leading model architectures.
+            </p>
+
+            <div class="bg-white/50 p-8 rounded-xl shadow-lg mb-12">
+                <h3 class="text-2xl font-bold mb-6 text-center text-[#B98B73]">Choosing Your Embedding Model</h3>
+                <div class="flex justify-center mb-6 border-b border-gray-200">
+                    <button data-tab="cnn" class="tab px-4 py-2 font-medium text-gray-600 rounded-t-lg active">3D CNN</button>
+                    <button data-tab="transformer" class="tab px-4 py-2 font-medium text-gray-600 rounded-t-lg">Transformer</button>
+                    <button data-tab="clip" class="tab px-4 py-2 font-medium text-gray-600 rounded-t-lg">CLIP-based / Hybrid</button>
+                </div>
+
+                <div id="model-content">
+                </div>
+            </div>
+
+            <div class="bg-white/50 p-8 rounded-xl shadow-lg">
+                <h3 class="text-2xl font-bold mb-6 text-center text-[#B98B73]">Industry-Leading Models: TwelveLabs Marengo & Pegasus</h3>
+                <p class="text-gray-700 mb-8 text-center">
+                    TwelveLabs has emerged as a leader in AI video intelligence with two flagship models that represent the cutting edge of video understanding technology.
+                </p>
+
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div class="bg-gray-50 p-6 rounded-lg border-2 border-[#4A7C59]">
+                        <h4 class="text-xl font-bold mb-3 text-[#4A7C59]">Marengo 2.7: Multimodal Video Embeddings</h4>
+                        <p class="text-gray-700 mb-4">
+                            <strong>Marengo</strong> is TwelveLabs' state-of-the-art foundation model for generating multimodal video embeddings—compact 1024-dimensional vector representations that capture the complete meaning of video content. Unlike traditional single-vector approaches, Marengo 2.7 uses a pioneering <strong>multi-vector embedding architecture</strong> that decomposes video into specialized vectors, achieving over 15% improvement in accuracy over its predecessor.
+                        </p>
+                        <p class="text-gray-700 mb-4">
+                            Built on a Transformer-based architecture, Marengo processes videos through a unified framework that understands <strong>visual elements</strong> (fine-grained object detection, motion dynamics, temporal relationships), <strong>audio elements</strong> (native speech, non-verbal sounds, music), and can even embed text and images into the same vector space for true cross-modality search.
+                        </p>
+                        <div class="bg-white p-4 rounded-md mb-4">
+                            <h5 class="font-semibold text-sm mb-2 text-[#B98B73]">Key Specifications:</h5>
+                            <ul class="text-sm text-gray-600 space-y-1">
+                                <li>• <strong>Embedding Dimension:</strong> 1024 vectors</li>
+                                <li>• <strong>Similarity Metric:</strong> Cosine similarity</li>
+                                <li>• <strong>Modalities:</strong> Video, audio, text, images</li>
+                                <li>• <strong>Architecture:</strong> Multi-vector Transformer</li>
+                            </ul>
+                        </div>
+                        <p class="text-sm text-gray-600">
+                            <strong>Use Cases:</strong> Semantic video search, content recommendation, cross-modal retrieval, video clustering, duplicate detection, and establishing domain expertise for GEO optimization. Available on Amazon Bedrock in US East, Europe (Ireland), and Asia Pacific (Seoul).
+                        </p>
+                    </div>
+
+                    <div class="bg-gray-50 p-6 rounded-lg border-2 border-[#B98B73]">
+                        <h4 class="text-xl font-bold mb-3 text-[#B98B73]">Pegasus 1.2: Video-to-Text Generation</h4>
+                        <p class="text-gray-700 mb-4">
+                            <strong>Pegasus</strong> is TwelveLabs' generative video language model designed for sophisticated video-to-text applications. Released in February 2025, Pegasus 1.2 represents an industry-grade breakthrough in long-form video understanding, capable of processing videos up to 1 hour in length while maintaining best-in-class accuracy with low latency.
+                        </p>
+                        <p class="text-gray-700 mb-4">
+                            The model excels at <strong>granular visual comprehension</strong>—detecting objects, reading on-screen text, interpreting numerical content, and providing precise temporal grounding to identify when events occur. Its multimodal understanding combines visual, audio, and textual signals to generate contextually rich text including summaries, highlights, detailed reports, creative content, and answers to complex questions about video content.
+                        </p>
+                        <div class="bg-white p-4 rounded-md mb-4">
+                            <h5 class="font-semibold text-sm mb-2 text-[#4A7C59]">Key Capabilities:</h5>
+                            <ul class="text-sm text-gray-600 space-y-1">
+                                <li>• <strong>Max Video Length:</strong> Up to 1 hour</li>
+                                <li>• <strong>Text Generation:</strong> Summaries, titles, reports, Q&A</li>
+                                <li>• <strong>Temporal Grounding:</strong> Precise timestamp identification</li>
+                                <li>• <strong>Multimodal Fusion:</strong> Visual + audio + text analysis</li>
+                            </ul>
+                        </div>
+                        <p class="text-sm text-gray-600">
+                            <strong>Use Cases:</strong> Automatic video summarization, marketing copy generation, content moderation, educational content extraction, accessibility (captions/transcripts), and creating rich Schema.org VideoObject metadata for AI Overviews and GEO. Available on Amazon Bedrock.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="mt-8 p-6 bg-gradient-to-r from-[#4A7C59]/10 to-[#B98B73]/10 rounded-lg border border-gray-300">
+                    <h5 class="font-bold text-lg mb-3 text-center">The Power of Combining Both Models</h5>
+                    <p class="text-gray-700 text-center">
+                        Use <strong>Marengo</strong> to create searchable embeddings of your entire video library, enabling semantic discovery. Then apply <strong>Pegasus</strong> to generate rich metadata, transcripts, and structured content that feeds AI search engines. Together, they create the complete "Visual AI Schema" that establishes your domain authority and dominates GEO results.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <section id="implementation" class="mb-16 md:mb-24">
+            <h2 class="text-3xl md:text-4xl font-bold mb-4 text-center text-[#4A7C59]">Your Implementation Roadmap</h2>
+            <p class="max-w-3xl mx-auto text-lg text-center text-gray-700 mb-12">
+                Putting this strategy into practice involves a clear, three-step process: generating the embeddings, storing them in a capable database, and querying them efficiently. This section provides a practical guide, comparing platforms and technologies to help you build your system.
+            </p>
+
+            <div class="grid md:grid-cols-2 gap-8 items-start">
+                <div class="bg-white/50 p-8 rounded-xl shadow-lg">
+                    <h3 class="text-2xl font-bold mb-2 text-[#B98B73]">Step 1: Generate Embeddings</h3>
+                    <p class="text-gray-600 mb-6">Compare leading platforms to find the best fit for your speed, cost, and control requirements.</p>
+                    <div class="chart-container">
+                        <canvas id="costChart"></canvas>
+                    </div>
+                     <p class="text-center text-sm text-gray-500 mt-4">Hover over bars for details. Costs are estimates for a 5-minute video.</p>
+                </div>
+
+                <div class="bg-white/50 p-8 rounded-xl shadow-lg">
+                    <h3 class="text-2xl font-bold mb-2 text-[#B98B73]">Step 2: Store & Query</h3>
+                    <p class="text-gray-600 mb-6">Using PostgreSQL with the `pgvector` extension is a powerful way to store embeddings alongside your existing data. The key to performance is choosing the right index.</p>
+                    
+                    <div class="flex items-center justify-center space-x-4 mb-4">
+                        <span id="ivfflat-label" class="font-medium text-[#4A7C59]">IVFFlat</span>
+                        <label for="index-toggle" class="flex items-center cursor-pointer toggle-container">
+                            <div class="relative">
+                                <input type="checkbox" id="index-toggle" class="sr-only">
+                                <div id="toggle-bg" class="block bg-[#4A7C59] w-16 h-9 rounded-full transition-colors duration-300"></div>
+                                <div id="toggle-dot" class="absolute left-1 top-1 bg-white w-7 h-7 rounded-full transition-all duration-300"></div>
+                            </div>
+                        </label>
+                        <span id="hnsw-label" class="font-medium text-gray-500">HNSW</span>
+                    </div>
+
+                    <div id="index-details" class="p-4 bg-gray-50 rounded-lg">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="impact" class="mb-16 md:mb-24">
+            <h2 class="text-3xl md:text-4xl font-bold mb-4 text-center text-[#4A7C59]">The GEO Flywheel: Creating a "Visual AI Schema"</h2>
+            <p class="max-w-3xl mx-auto text-lg text-center text-gray-700 mb-12">
+                The ultimate goal is to bridge the gap between your unstructured video content and the structured data AI models crave. By creating a "Visual AI Schema," you generate rich, machine-readable metadata that makes your videos exceptionally valuable to AI Overviews, creating a powerful, self-reinforcing flywheel for authority and traffic.
+            </p>
+            <div class="bg-white/50 p-8 rounded-xl shadow-lg flex flex-col md:flex-row items-center gap-8">
+                <div class="w-full md:w-1/2">
+                    <h3 class="text-2xl font-bold mb-4 text-[#B98B73]">The Flywheel Effect</h3>
+                    <div class="space-y-4">
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0 w-8 h-8 bg-[#4A7C59] text-white rounded-full flex items-center justify-center font-bold mr-4">1</div>
+                            <p><strong>Analyze Video:</strong> Automatically extract transcripts, objects, and scenes from your video content.</p>
+                        </div>
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0 w-8 h-8 bg-[#4A7C59] text-white rounded-full flex items-center justify-center font-bold mr-4">2</div>
+                            <p><strong>Generate Rich Schema:</strong> Programmatically create detailed `Schema.org/VideoObject` data with chapters, keywords, and transcripts.</p>
+                        </div>
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0 w-8 h-8 bg-[#4A7C59] text-white rounded-full flex items-center justify-center font-bold mr-4">3</div>
+                            <p><strong>Feed the AI:</strong> AI search engines consume this rich data, understanding your content at a granular level.</p>
+                        </div>
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0 w-8 h-8 bg-[#4A7C59] text-white rounded-full flex items-center justify-center font-bold mr-4">4</div>
+                            <p><strong>Dominate Overviews:</strong> Your content is cited and featured in AI answers, establishing authority and driving engagement.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="w-full md:w-1/2 p-6 bg-gray-50 rounded-lg">
+                    <h4 class="font-bold text-lg mb-2">Case Study: Sourdough Video</h4>
+                    <p class="mb-4">A search for "sourdough baking steps" could generate an AI Overview that directly lists the video's chapters as steps, because the rich schema made that information available.</p>
+                    <pre class="bg-gray-800 text-white p-4 rounded-md text-xs overflow-x-auto"><code>{
+  "@context": "https://schema.org",
+  "@type": "VideoObject",
+  "name": "How to Bake Sourdough",
+  "transcript": "First, feed your starter...",
+  "hasPart": [
+    {
+      "@type": "Clip",
+      "name": "Mixing the Levain",
+      "startOffset": 15,
+      "endOffset": 90
+    },
+    {
+      "@type": "Clip",
+      "name": "Bulk Fermentation",
+      "startOffset": 90,
+      "endOffset": 165
+    }
+  ]
+}</code></pre>
+                </div>
+            </div>
+        </section>
+
+        <section id="outlook" class="mb-16 md:mb-24">
+            <h2 class="text-3xl md:text-4xl font-bold mb-4 text-center text-[#4A7C59]">Market & Future Outlook</h2>
+            <p class="max-w-3xl mx-auto text-lg text-center text-gray-700 mb-12">
+                Understand the current data market and the future trajectory of multimodal AI. This section explains why custom embeddings are a competitive advantage and how today's work is a foundational investment in the future of AI-driven information discovery.
+            </p>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="bg-white/50 p-8 rounded-xl shadow-lg">
+                    <h3 class="text-2xl font-bold mb-4 text-[#B98B73]">Build, Don't Buy</h3>
+                    <p class="text-gray-600 mb-4">The market for pre-computed video embeddings is virtually non-existent because their true value lies in domain specificity. Generic embeddings are lossy and can't capture the nuances of your industry.</p>
+                    <p class="text-gray-600">Creating custom embeddings from your own content builds a proprietary semantic space—a competitive moat that signals true expertise to AI models and cannot be easily replicated.</p>
+                </div>
+                 <div class="bg-white/50 p-8 rounded-xl shadow-lg">
+                    <h3 class="text-2xl font-bold mb-4 text-[#B98B73]">The Road Ahead</h3>
+                    <p class="text-gray-600 mb-4">The field is moving towards AI that can natively reason across text, images, and video in real-time. Future search engines won't just link to your video; they may "watch" relevant segments to formulate an answer.</p>
+                    <p class="text-gray-600">Building a deep, semantically searchable video library today is not just a GEO tactic; it's the creation of a foundational, "AI-native" asset for your organization's future.</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-gray-800 text-white">
+        <div class="container mx-auto px-6 py-8 text-center">
+            <p>&copy; Copyright VidiSmart 1999-2026 Interactive Guide to Video Embeddings. All rights reserved.</p>
+            <p class="text-sm text-gray-400 mt-2">This application was generated to provide an interactive summary of the "Video Vector Embeddings for Visual AI" report.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            
+            const modelData = {
+                cnn: {
+                    title: '3D Convolutional Neural Networks (3D CNNs)',
+                    content: 'Pioneers in video understanding, these models (like C3D, I3D) add a time dimension to image recognition. They excel at learning "spatiotemporal" features like local motion.',
+                    strengths: 'Excellent for short-clip action recognition.',
+                    weaknesses: 'Computationally expensive and less effective at modeling long-range narratives.',
+                    useCase: 'Action Recognition, Video Classification'
+                },
+                transformer: {
+                    title: 'Transformer-based Architectures',
+                    content: 'Inspired by their success in language, models like ViViT and TimeSformer use self-attention to model relationships between video "patches" over time.',
+                    strengths: 'Superior at modeling long-range dependencies and complex narratives.',
+                    weaknesses: 'Requires substantial memory and large training datasets.',
+                    useCase: 'Complex Scene Understanding'
+                },
+                clip: {
+                    title: 'CLIP-based / Hybrid Models',
+                    content: 'These models (like VideoCLIP) are trained on massive video-text pairs to learn a shared, multimodal embedding space. This is a significant advancement for search.',
+                    strengths: 'Creates a shared space for video and text, making them excellent for text-based video search.',
+                    weaknesses: 'Performance depends heavily on the quality of paired training data.',
+                    useCase: 'Generative Engine Optimization (GEO)'
+                }
+            };
+
+            const indexData = {
+                hnsw: {
+                    title: 'HNSW (Hierarchical Navigable Small World)',
+                    content: 'A modern, high-performance graph-based index. It builds a multi-layered graph to allow for efficient traversal and finding the nearest neighbors. Recommended for this use case.',
+                    tradeoff: '<strong>Superior speed-recall trade-off.</strong> Slower to build and uses more memory, but finds more relevant results.'
+                },
+                ivfflat: {
+                    title: 'IVFFlat (Inverted File with Flat Compression)',
+                    content: 'Partitions the vector space into clusters. A search is restricted to only the closest clusters, making it faster than a full scan.',
+                    tradeoff: '<strong>Faster build times and lower memory usage.</strong> Generally provides lower recall for a given query speed compared to HNSW.'
+                }
+            };
+            
+            const modelContentContainer = document.getElementById('model-content');
+            const tabs = document.querySelectorAll('.tab');
+
+            function updateModelContent(modelKey) {
+                const data = modelData[modelKey];
+                modelContentContainer.innerHTML = `
+                    <div class="p-4">
+                        <h4 class="text-xl font-bold text-[#4A7C59] mb-2">${data.title}</h4>
+                        <p class="text-gray-700 mb-4">${data.content}</p>
+                        <ul class="space-y-2 text-sm">
+                            <li><strong>Strengths:</strong> ${data.strengths}</li>
+                            <li><strong>Weaknesses:</strong> ${data.weaknesses}</li>
+                            <li><strong class="text-[#B98B73]">Best Use Case:</strong> ${data.useCase}</li>
+                        </ul>
+                    </div>
+                `;
+            }
+
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    updateModelContent(tab.dataset.tab);
+                });
+            });
+
+            updateModelContent('cnn');
+
+            const indexToggle = document.getElementById('index-toggle');
+            const indexDetailsContainer = document.getElementById('index-details');
+            const hnswLabel = document.getElementById('hnsw-label');
+            const ivfflatLabel = document.getElementById('ivfflat-label');
+            const toggleDot = document.getElementById('toggle-dot');
+            const toggleBg = document.getElementById('toggle-bg');
+
+            function updateIndexDetails() {
+                const data = indexToggle.checked ? indexData.hnsw : indexData.ivfflat;
+                indexDetailsContainer.innerHTML = `
+                    <h5 class="font-bold text-lg mb-2">${data.title}</h5>
+                    <p class="text-sm text-gray-600 mb-2">${data.content}</p>
+                    <p class="text-sm text-gray-800">${data.tradeoff}</p>
+                `;
+                if(indexToggle.checked) {
+                    // HNSW selected (right side) - orange
+                    hnswLabel.classList.add('text-[#B98B73]');
+                    hnswLabel.classList.remove('text-gray-500');
+                    ivfflatLabel.classList.add('text-gray-500');
+                    ivfflatLabel.classList.remove('text-[#4A7C59]');
+                    toggleDot.style.transform = 'translateX(28px)';
+                    toggleBg.style.backgroundColor = '#B98B73';
+                } else {
+                    // IVFFlat selected (left side) - green
+                    ivfflatLabel.classList.add('text-[#4A7C59]');
+                    ivfflatLabel.classList.remove('text-gray-500');
+                    hnswLabel.classList.add('text-gray-500');
+                    hnswLabel.classList.remove('text-[#B98B73]');
+                    toggleDot.style.transform = 'translateX(0)';
+                    toggleBg.style.backgroundColor = '#4A7C59';
+                }
+            }
+
+            indexToggle.addEventListener('change', updateIndexDetails);
+            indexToggle.checked = false;
+            updateIndexDetails();
+
+            const costData = {
+                labels: ['AWS Bedrock', 'TwelveLabs', 'Google Vertex AI'],
+                datasets: [{
+                    label: 'Estimated Cost per 5-min Video',
+                    data: [0.018, 0.21, 0.30],
+                    backgroundColor: [
+                        'rgba(185, 139, 115, 0.7)',
+                        'rgba(74, 124, 89, 0.7)',
+                        'rgba(61, 61, 61, 0.7)',
+                    ],
+                    borderColor: [
+                        '#B98B73',
+                        '#4A7C59',
+                        '#3D3D3D',
+                    ],
+                    borderWidth: 2
+                }]
+            };
+
+            const costChartCtx = document.getElementById('costChart').getContext('2d');
+            new Chart(costChartCtx, {
+                type: 'bar',
+                data: costData,
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed.x !== null) {
+                                        label += new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(context.parsed.x);
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Estimated Cost (USD)'
+                            }
+                        }
+                    }
+                }
+            });
+
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+            
+            const navLinks = document.querySelectorAll('.nav-link');
+            const sections = document.querySelectorAll('main section');
+            const header = document.getElementById('header');
+
+            const observerOptions = {
+                root: null,
+                rootMargin: `-${header.offsetHeight}px 0px 0px 0px`,
+                threshold: 0.4
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        navLinks.forEach(link => {
+                            link.classList.remove('active');
+                            if (link.getAttribute('href').substring(1) === entry.target.id) {
+                                link.classList.add('active');
+                            }
+                        });
+                    }
+                });
+            }, observerOptions);
+
+            sections.forEach(section => {
+                observer.observe(section);
+            });
+
+            navLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    if (mobileMenu.classList.contains('hidden') === false) {
+                        mobileMenu.classList.add('hidden');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

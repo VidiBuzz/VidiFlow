@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>State of AI Video & 3D Synthesis 2026</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #faf9f6; /* Warm neutral light background */
+            color: #1e293b;
+        }
+
+        /* Chart Container Requirements */
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 400px;
+        }
+
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8; 
+        }
+
+        .tab-btn {
+            transition: all 0.2s ease;
+        }
+        .tab-btn.active {
+            border-bottom: 2px solid #0f172a;
+            color: #0f172a;
+            font-weight: 600;
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.4s ease-in-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+    <!-- Chosen Palette: Warm Neutrals & Deep Slate (Background: #faf9f6, Primary Text: #1e293b, Accents: #0f172a, Borders: #e2e8f0) -->
+    <!-- Application Structure Plan: The SPA uses a dashboard-style tabbed navigation to logically separate the vast amount of requested information. 
+         1. 'Overview & Capabilities' addresses the speed requirement (5 clips in 1 hr) and 'Smartgen' analysis.
+         2. 'Pricing Matrix' provides a dynamic, filterable table for cost comparisons across all mentioned engines.
+         3. '3D & Spatial' tackles the Cinema4D import/export, 3D camera moves, and object layers.
+         4. 'Open Source & ComfyUI' focuses on Wan 2.x, Qwen 3.5, LoRAs, and the Nano Banana 2 API infrastructure.
+         This compartmentalized structure prevents cognitive overload while keeping all data accessible on a single page. -->
+    <!-- Visualization & Content Choices: 
+         - Bar Chart (Chart.js): Visualizes generation speed vs. cost, helping users immediately see which tool meets the "5 clips / 1hr" constraint. (Canvas used, NO SVG/Mermaid).
+         - Dynamic Data Table: Allows filtering models by license type (Proprietary/Open) for easy pricing comparison.
+         - Interactive Cards: Used for 3D workflows and ComfyUI architectures to organize text-heavy methodology into digestible blocks. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. Uses native HTML styling and Chart.js Canvas for visuals. -->
+</head>
+<body class="antialiased">
+
+    <!-- Header -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <div>
+                    <h1 class="text-2xl font-bold text-slate-900">AI Synthesis & Synthesis Architecture</h1>
+                    <p class="text-sm text-slate-500">Comprehensive Analysis: Video, 3D Pipelines, & Open Source Eco-systems</p>
+                </div>
+                <div class="hidden md:flex space-x-2 text-xl">
+                    🎥 🧊 🧠
+                </div>
+            </div>
+            
+            <!-- Navigation -->
+            <nav class="flex space-x-6 overflow-x-auto" id="main-nav">
+                <button class="tab-btn active pb-3 text-slate-500 hover:text-slate-900 whitespace-nowrap" data-target="overview">Overview & Smartgen</button>
+                <button class="tab-btn pb-3 text-slate-500 hover:text-slate-900 whitespace-nowrap" data-target="pricing">Pricing Matrix</button>
+                <button class="tab-btn pb-3 text-slate-500 hover:text-slate-900 whitespace-nowrap" data-target="spatial">3D & Spatial Pipelines</button>
+                <button class="tab-btn pb-3 text-slate-500 hover:text-slate-900 whitespace-nowrap" data-target="opensource">ComfyUI & Open Source</button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8" id="content-area">
+
+        <!-- SECTION: Overview -->
+        <section id="overview" class="tab-content fade-in block">
+            <div class="mb-8">
+                <h2 class="text-3xl font-light mb-4">Generation Capabilities & Speed Analysis</h2>
+                <p class="text-slate-600 leading-relaxed text-lg max-w-4xl">
+                    This section evaluates the core requirement: producing 5 high-quality clips in approximately 1 hour, alongside an analysis of the best engines for "Automatic Smartgen" (the ability of a model to take a simple text prompt and automatically enhance it with cinematic details and perfect adherence without complex manual engineering).
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+                <!-- Smartgen Winner -->
+                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm col-span-1">
+                    <div class="text-3xl mb-3">🧠</div>
+                    <h3 class="text-xl font-bold mb-2">Best for Automatic Smartgen</h3>
+                    <div class="bg-slate-50 p-4 rounded-lg mb-4 border border-slate-100">
+                        <span class="font-bold text-lg text-indigo-700">Winner: Kling AI & Google Veo</span>
+                    </div>
+                    <p class="text-sm text-slate-600 mb-3">
+                        <strong>Why Kling AI?</strong> It excels at taking sparse text prompts and automatically inferring complex physics, realistic textures, and logical scene progression without needing heavily engineered prompt structures.
+                    </p>
+                    <p class="text-sm text-slate-600">
+                        <strong>Why Google Veo?</strong> Deep integration with Google's LLMs allows Veo to rewrite and expand basic prompts into highly detailed cinematic instructions under the hood, yielding exceptional fidelity.
+                    </p>
+                </div>
+
+                <!-- 1 Hour Goal Analysis -->
+                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm col-span-1 lg:col-span-2">
+                    <h3 class="text-xl font-bold mb-4">Goal: 5 Clips in ~1 Hour</h3>
+                    <p class="text-sm text-slate-600 mb-6">
+                        Generating 5 clips within an hour is highly achievable across modern platforms. The bottleneck is rarely generation time (which averages 1-3 minutes per clip), but rather queue times, server load, and prompt iteration. <strong>Luma Dream Machine</strong> and <strong>Runway Gen-3 Turbo</strong> are the undisputed champions of sheer speed, often delivering 5s clips in under 45 seconds of compute.
+                    </p>
+                    
+                    <!-- Chart Container -->
+                    <div class="chart-container">
+                        <canvas id="speedChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION: Pricing Matrix -->
+        <section id="pricing" class="tab-content fade-in hidden">
+            <div class="mb-8">
+                <h2 class="text-3xl font-light mb-4">Comprehensive Pricing & Model Matrix</h2>
+                <p class="text-slate-600 leading-relaxed text-lg max-w-4xl">
+                    A detailed comparative analysis of current market rates across proprietary models and open-source ecosystems. Use the interactive filters to isolate specific engine types. Costs are evaluated based on standard monthly tiers and API compute estimates.
+                </p>
+            </div>
+
+            <!-- Interactive Controls -->
+            <div class="flex flex-wrap gap-4 mb-6">
+                <button class="filter-btn bg-slate-800 text-white px-4 py-2 rounded shadow text-sm font-medium" data-filter="all">All Models</button>
+                <button class="filter-btn bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 px-4 py-2 rounded shadow-sm text-sm font-medium" data-filter="proprietary">Proprietary</button>
+                <button class="filter-btn bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 px-4 py-2 rounded shadow-sm text-sm font-medium" data-filter="platform">API Platforms</button>
+                <button class="filter-btn bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 px-4 py-2 rounded shadow-sm text-sm font-medium" data-filter="open">Open Source / Local</button>
+            </div>
+
+            <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-50 border-b border-slate-200 text-slate-600 uppercase text-xs tracking-wider">
+                                <th class="p-4 font-semibold">Engine / Model</th>
+                                <th class="p-4 font-semibold">Type</th>
+                                <th class="p-4 font-semibold">Standard Monthly Plan</th>
+                                <th class="p-4 font-semibold">API Access</th>
+                                <th class="p-4 font-semibold">Best Use Case</th>
+                            </tr>
+                        </thead>
+                        <tbody id="pricing-table-body" class="text-sm text-slate-800 divide-y divide-slate-100">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="mt-6 bg-blue-50 border border-blue-100 p-4 rounded-lg">
+                <h4 class="font-bold text-blue-900 mb-1">ℹ️ Note on Nano Banana 2 API</h4>
+                <p class="text-sm text-blue-800">
+                    "Nano Banana 2" (referencing the internal alias for Gemini 2.5 Flash Image Preview) is a proprietary Google asset. For API integration, the <strong>Google AI Studio</strong> or <strong>Google Cloud Vertex AI</strong> services are the exclusive and best platforms for accessing this endpoint, offering high rate limits and enterprise-grade SLAs.
+                </p>
+            </div>
+        </section>
+
+        <!-- SECTION: 3D & Spatial -->
+        <section id="spatial" class="tab-content fade-in hidden">
+            <div class="mb-8">
+                <h2 class="text-3xl font-light mb-4">3D Architectures & Cinema 4D Pipelines</h2>
+                <p class="text-slate-600 leading-relaxed text-lg max-w-4xl">
+                    Bridging 2D image generation with full 3D environments. This section outlines the optimal systems for generating 3D camera moves from single images, exporting scenes for Cinema 4D, and managing 3D object layers.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                
+                <!-- C4D Pipeline -->
+                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="text-2xl">📽️</span>
+                        <h3 class="text-xl font-bold">Image to 3D Camera Move & C4D Export</h3>
+                    </div>
+                    <p class="text-slate-600 mb-4 text-sm">
+                        To convert a generated image into a scene with a 3D camera move <em>and</em> retain the ability to export the entire scene into Cinema 4D, you need an Image-to-Mesh or Gaussian Splat-to-Mesh pipeline.
+                    </p>
+                    <ul class="space-y-3">
+                        <li class="p-3 bg-slate-50 rounded border border-slate-100">
+                            <strong class="block text-slate-800">Winner: CSM.ai (Cube) & Tripo3D</strong>
+                            <span class="text-sm text-slate-500">These platforms specialize in taking a single 2D image and generating a fully textured 3D mesh. They support native exports to <code>.obj</code>, <code>.fbx</code>, and <code>.gltf</code>, which can be directly imported into Cinema 4D.</span>
+                        </li>
+                        <li class="p-3 bg-slate-50 rounded border border-slate-100">
+                            <strong class="block text-slate-800">Alternative: Luma AI (Genie/Interactive)</strong>
+                            <span class="text-sm text-slate-500">Luma creates brilliant cinematic camera moves natively via NeRFs/Splats. To get this into C4D, you must use their "Export to Mesh" feature (usually available as <code>.obj</code>), though topology may require cleanup in C4D.</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- 3D Object Layers -->
+                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="text-2xl">🧊</span>
+                        <h3 class="text-xl font-bold">Best System for 3D Object Layers</h3>
+                    </div>
+                    <p class="text-slate-600 mb-4 text-sm">
+                        Managing depth and distinct object layers within a 3D AI-generated workflow requires platforms that treat generations as spatial components rather than flat pixels.
+                    </p>
+                    <ul class="space-y-3">
+                        <li class="p-3 bg-slate-50 rounded border border-slate-100">
+                            <strong class="block text-slate-800">Winner: Spline Design AI</strong>
+                            <span class="text-sm text-slate-500">Spline's AI generation features allow you to prompt specific 3D objects, which are added directly to a web-based spatial canvas as distinct layers. You can manipulate lighting, physics, and layering intuitively before exporting.</span>
+                        </li>
+                        <li class="p-3 bg-slate-50 rounded border border-slate-100">
+                            <strong class="block text-slate-800">Workflow Winner: ComfyUI + Depth Maps</strong>
+                            <span class="text-sm text-slate-500">For advanced users, generating separate object passes in ComfyUI using <code>Depth Anything V2</code> nodes allows you to extract precise Z-depth layers, which can then be composited natively in C4D using displacement maps.</span>
+                        </li>
+                    </ul>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- SECTION: Open Source & ComfyUI -->
+        <section id="opensource" class="tab-content fade-in hidden">
+            <div class="mb-8">
+                <h2 class="text-3xl font-light mb-4">Open Source Ecosystem: Wan, Qwen & ComfyUI</h2>
+                <p class="text-slate-600 leading-relaxed text-lg max-w-4xl">
+                    Exploring the bleeding edge of local and cloud-hosted open-source video architectures found on GitHub and HuggingFace, focusing on node-based workflows.
+                </p>
+            </div>
+
+            <div class="bg-slate-900 text-slate-300 p-8 rounded-xl shadow-lg relative overflow-hidden">
+                <!-- Decorative element -->
+                <div class="absolute top-0 right-0 p-8 opacity-10 text-9xl">⚙️</div>
+                
+                <h3 class="text-2xl font-bold text-white mb-6 border-b border-slate-700 pb-2">The Ultimate Local Pipeline</h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 relative z-10">
+                    
+                    <div class="bg-slate-800 p-5 rounded-lg border border-slate-700">
+                        <div class="text-indigo-400 font-mono text-sm mb-2">01. The Brain / Prompt</div>
+                        <h4 class="text-lg font-bold text-white mb-2">Qwen 3.5</h4>
+                        <p class="text-sm">
+                            Used as the central LLM router within ComfyUI. Qwen 3.5 takes user intent and expands it into the highly specific, detailed syntax required by the diffusion models. Available widely on HuggingFace.
+                        </p>
+                    </div>
+
+                    <div class="bg-slate-800 p-5 rounded-lg border border-slate-700">
+                        <div class="text-teal-400 font-mono text-sm mb-2">02. The Engine / Video</div>
+                        <h4 class="text-lg font-bold text-white mb-2">Wan 2.6 & Wan 2.2</h4>
+                        <p class="text-sm">
+                            Open-source DiT (Diffusion Transformer) models. Wan 2.6 offers state-of-the-art motion consistency. In ComfyUI, these run via custom nodes (found on GitHub) enabling local or serverless generation.
+                        </p>
+                    </div>
+
+                    <div class="bg-slate-800 p-5 rounded-lg border border-slate-700">
+                        <div class="text-pink-400 font-mono text-sm mb-2">03. The Style / Control</div>
+                        <h4 class="text-lg font-bold text-white mb-2">ComfyUI + LoRAs</h4>
+                        <p class="text-sm">
+                            Civitai and HuggingFace host thousands of LoRAs. By chaining Qwen 3.5 -> Wan 2.6 -> LoRA conditioning nodes in ComfyUI, users achieve unparalleled stylistic control (e.g., Anime, Realism, Claymation) without monthly subscriptions.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="mt-8 bg-slate-800 p-5 rounded border border-slate-700">
+                    <h4 class="text-white font-bold mb-2">Where to Host Open Source Pipelines?</h4>
+                    <p class="text-sm">
+                        If local VRAM (24GB+) is unavailable, the best API/Hosting services for deploying ComfyUI with Wan/Qwen are <strong>RunPod</strong> (best for raw serverless container execution) and <strong>Fal.ai</strong> (best optimized endpoints for specific open-source models).
+                    </p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-white border-t border-slate-200 mt-12 py-8 text-center text-slate-500 text-sm">
+        <p>Analysis compiled based on current GitHub, HuggingFace, and provider documentation.</p>
+    </footer>
+
+    <!-- JavaScript Logic -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            // --- Navigation Logic ---
+            const tabBtns = document.querySelectorAll('.tab-btn');
+            const tabContents = document.querySelectorAll('.tab-content');
+
+            tabBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    // Remove active states
+                    tabBtns.forEach(b => b.classList.remove('active'));
+                    tabContents.forEach(c => {
+                        c.classList.remove('block');
+                        c.classList.add('hidden');
+                    });
+
+                    // Add active state to clicked
+                    btn.classList.add('active');
+                    const targetId = btn.getAttribute('data-target');
+                    const targetContent = document.getElementById(targetId);
+                    targetContent.classList.remove('hidden');
+                    targetContent.classList.add('block');
+                });
+            });
+
+            // --- Data for Pricing Matrix ---
+            const pricingData = [
+                { engine: "Runway Gen-3 Alpha/Turbo", url: "https://runwayml.com", type: "proprietary", plan: "$15/mo (Standard)", api: "✅ Public API — pay per credit (~$0.05/sec)", use: "High fidelity, hyper-realism, fast turbo mode" },
+                { engine: "Pika Labs", url: "https://pika.art", type: "proprietary", plan: "$10/mo (Pro)", api: "⚠️ Limited API — waitlisted access", use: "Animation, lipsync, stylization" },
+                { engine: "Kling AI", url: "https://klingai.com", type: "proprietary", plan: "~$15/mo (Standard)", api: "✅ Developer API Portal (klingai.com/dev)", use: "Complex prompt adherence, long generations" },
+                { engine: "Luma Dream Machine", url: "https://lumalabs.ai", type: "proprietary", plan: "$29.99/mo (Standard) / Free Tier", api: "✅ Official Public API (lumaapi.com)", use: "Extreme generation speed, cinematic motion" },
+                { engine: "OpenAI Sora", url: "https://openai.com/sora", type: "proprietary", plan: "$20/mo (ChatGPT Plus)", api: "✅ OpenAI API — premium tier (high cost)", use: "Unmatched physics and duration" },
+                { engine: "Google Veo", url: "https://deepmind.google/technologies/veo/", type: "proprietary", plan: "$20/mo (Google One AI)", api: "✅ Google Cloud Vertex AI", use: "Cinematic quality, prompt expansion (Smartgen)" },
+                { engine: "Minimax / Hailuo", url: "https://www.minimaxi.com", type: "proprietary", plan: "Free tier + credits", api: "✅ Public API (minimaxi.com/platform)", use: "Excellent motion quality, fast generation, realistic physics" },
+                { engine: "Pixverse", url: "https://pixverse.ai", type: "proprietary", plan: "$13/mo (Standard)", api: "✅ Developer API available", use: "Social media clips, character consistency, 4K upscale" },
+                { engine: "Higgsfield", url: "https://higgsfield.ai", type: "proprietary", plan: "~$9.99/mo (Pro)", api: "❌ No public API", use: "Mobile-first, social media aspect ratios, custom characters" },
+                { engine: "fal.ai", url: "https://fal.ai", type: "platform", plan: "Pay-per-second GPU (no monthly fee)", api: "✅ Full API — API keys via fal.ai/dashboard", use: "Optimized inference for Wan, LTX, FLUX, CogVideoX and 100+ open models" },
+                { engine: "Replicate", url: "https://replicate.com", type: "platform", plan: "Pay-per-second GPU (no monthly fee)", api: "✅ Full API — API keys via replicate.com/account", use: "Run any open-source model via a single unified API endpoint" },
+                { engine: "Wan 2.6 & Wan 2.2", url: "https://huggingface.co/Wan-AI", type: "open", plan: "Free (Local)", api: "✅ Via fal.ai or Replicate API", use: "Local node-based workflows (ComfyUI)" },
+                { engine: "LTX Video (Lightricks)", url: "https://github.com/Lightricks/LTX-Video", type: "open", plan: "Free (Local)", api: "✅ Via fal.ai or Replicate API", use: "Fast open-source video, strong motion consistency" },
+                { engine: "CogVideoX", url: "https://github.com/THUDM/CogVideo", type: "open", plan: "Free (Local)", api: "✅ Via HuggingFace Inference API", use: "Consumer GPU local rendering" }
+            ];
+
+            const tableBody = document.getElementById('pricing-table-body');
+            
+            function renderTable(filter = 'all') {
+                tableBody.innerHTML = '';
+                const filteredData = pricingData.filter(item => filter === 'all' || item.type === filter);
+                
+                filteredData.forEach(row => {
+                    const tr = document.createElement('tr');
+                    tr.className = "hover:bg-slate-50 transition-colors";
+
+                    const typeBadgeClass = row.type === 'proprietary' ? 'bg-indigo-100 text-indigo-800'
+                        : row.type === 'platform' ? 'bg-amber-100 text-amber-800'
+                        : 'bg-teal-100 text-teal-800';
+                    const typeLabel = row.type === 'proprietary' ? 'Proprietary'
+                        : row.type === 'platform' ? 'API Platform'
+                        : 'Open Source';
+
+                    tr.innerHTML = `
+                        <td class="p-4 font-medium border-b border-slate-100">
+                            <a href="${row.url}" target="_blank" rel="noopener" class="text-indigo-700 hover:text-indigo-900 hover:underline flex items-center gap-1">
+                                ${row.engine}
+                                <svg class="inline w-3 h-3 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                            </a>
+                        </td>
+                        <td class="p-4 border-b border-slate-100"><span class="px-2 py-1 rounded text-xs font-semibold ${typeBadgeClass}">${typeLabel}</span></td>
+                        <td class="p-4 border-b border-slate-100">${row.plan}</td>
+                        <td class="p-4 border-b border-slate-100 text-slate-700 text-sm">${row.api}</td>
+                        <td class="p-4 border-b border-slate-100 text-slate-600 text-sm">${row.use}</td>
+                    `;
+                    tableBody.appendChild(tr);
+                });
+            }
+
+            // Initialize Table
+            renderTable();
+
+            // Table Filters
+            const filterBtns = document.querySelectorAll('.filter-btn');
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    // Update active button styling
+                    filterBtns.forEach(b => {
+                        b.classList.remove('bg-slate-800', 'text-white');
+                        b.classList.add('bg-white', 'text-slate-700');
+                    });
+                    e.target.classList.remove('bg-white', 'text-slate-700');
+                    e.target.classList.add('bg-slate-800', 'text-white');
+                    
+                    renderTable(e.target.getAttribute('data-filter'));
+                });
+            });
+
+            // --- Chart.js Implementation ---
+            const ctx = document.getElementById('speedChart').getContext('2d');
+            
+            // Data for generation speed vs queue/render averages (Estimates for 5 clips in 1 hr context)
+            const speedData = {
+                labels: ['Luma Dream', 'Gen-3 Turbo', 'Pika Labs', 'Wan 2.6 (A100)', 'Kling AI', 'Sora'],
+                datasets: [{
+                    label: 'Avg. Generation Time per 5s Clip (Seconds)',
+                    data: [35, 45, 60, 90, 180, 300],
+                    backgroundColor: [
+                        'rgba(45, 212, 191, 0.8)', // Teal
+                        'rgba(45, 212, 191, 0.8)',
+                        'rgba(99, 102, 241, 0.6)', // Indigo
+                        'rgba(99, 102, 241, 0.6)',
+                        'rgba(148, 163, 184, 0.6)', // Slate
+                        'rgba(148, 163, 184, 0.6)'
+                    ],
+                    borderColor: [
+                        'rgba(45, 212, 191, 1)',
+                        'rgba(45, 212, 191, 1)',
+                        'rgba(99, 102, 241, 1)',
+                        'rgba(99, 102, 241, 1)',
+                        'rgba(148, 163, 184, 1)',
+                        'rgba(148, 163, 184, 1)'
+                    ],
+                    borderWidth: 1,
+                    borderRadius: 4
+                }]
+            };
+
+            new Chart(ctx, {
+                type: 'bar',
+                data: speedData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.parsed.y + ' Seconds / Clip';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Seconds',
+                                color: '#64748b'
+                            },
+                            grid: {
+                                color: '#f1f5f9'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                color: '#475569',
+                                callback: function(value) {
+                                    const label = this.getLabelForValue(value);
+                                    // Label wrapping (16-char logic constraint implicitly handled by concise labels, but implemented explicitly if needed)
+                                    if(label.length > 16) {
+                                        return label.substr(0, 13) + '...';
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

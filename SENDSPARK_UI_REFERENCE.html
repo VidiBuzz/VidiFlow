@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sendspark UI Reference - Vidimail Feature Analysis</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        h1 {
+            font-size: 2.5em;
+            color: #764ba2;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 1.3em;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .meta-info {
+            background: #f8f9fa;
+            padding: 15px 20px;
+            border-radius: 10px;
+            border-left: 4px solid #764ba2;
+        }
+
+        .meta-info p {
+            margin: 5px 0;
+            color: #555;
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+        }
+
+        .feature-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px 30px;
+        }
+
+        .feature-header h2 {
+            font-size: 1.8em;
+            margin-bottom: 5px;
+        }
+
+        .feature-number {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 40px;
+            margin-right: 15px;
+            font-weight: bold;
+        }
+
+        .feature-content {
+            padding: 30px;
+        }
+
+        .screenshot-container {
+            margin: 20px 0;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .screenshot-container img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .description-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+        }
+
+        .description-section h3 {
+            color: #764ba2;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .vidimail-mapping {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+            border: 2px solid #764ba2;
+        }
+
+        .vidimail-mapping h3 {
+            color: #764ba2;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .feature-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .feature-list li {
+            padding: 10px 0 10px 30px;
+            position: relative;
+            color: #444;
+        }
+
+        .feature-list li::before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #764ba2;
+            font-weight: bold;
+        }
+
+        .implementation-notes {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .tech-specs {
+            background: #e7f3ff;
+            border-left: 4px solid #0066cc;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        footer {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 20px;
+            margin-top: 30px;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .summary-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        .summary-table th,
+        .summary-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .summary-table th {
+            background: #764ba2;
+            color: white;
+        }
+
+        .summary-table tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+
+        .badge-core {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .badge-advanced {
+            background: #e3f2fd;
+            color: #1565c0;
+        }
+
+        .badge-planned {
+            background: #fff3e0;
+            color: #ef6c00;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8em;
+            }
+
+            .feature-header h2 {
+                font-size: 1.4em;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>Sendspark UI Reference</h1>
+            <p class="subtitle">Comprehensive Feature Analysis for Vidimail Implementation</p>
+            <div class="meta-info">
+                <p><strong>Source:</strong> https://www.sendspark.com</p>
+                <p><strong>Project:</strong> Vidimail - Smart Channel CX</p>
+                <p><strong>Group Feature:</strong> Vidiblast</p>
+                <p><strong>Date Analyzed:</strong> February 1, 2026</p>
+                <p><strong>Screenshots Captured:</strong> 12</p>
+            </div>
+        </header>
+
+        <!-- Feature 1: Hero Section -->
+        <div class="feature-card">
+            <div class="feature-header">
+                <h2><span class="feature-number">1</span>AI Personalized Sales Videos - Hero</h2>
+            </div>
+            <div class="feature-content">
+                <div class="screenshot-container"><img referrerpolicy="no-referrer" src="https://cdn.vidi.news/images/sendspark/01-hero-section.jpg"
+                        alt="Sendspark Hero Section"></div>
+                <div class="description-section">
+                    <h3>Sendspark Feature Description</h3>
+                    <p><strong>Value Proposition:</strong> "Shoot just one video. Then, automatically personalize each
+                        video for each viewer with AI."</p>
+                    <p>This is the core landing page hero that immediately communicates the AI-powered personalization
+                        capability. The design emphasizes simplicity and scale.</p>
+                </div>
+                <div class="vidimail-mapping">
+                    <h3>Vidimail Implementation Equivalent</h3>
+                    <ul class="feature-list">
+                        <li><strong>VidiMail Hero Module:</strong> Main landing page for personalized video email
+                            campaigns</li>
+                        <li><strong>One-to-Many Personalization:</strong> Record once, generate thousands of
+                            personalized versions</li>
+                        <li><strong>Smart Channel CX Integration:</strong> Embedded as primary video messaging feature
+                        </li>
+                        <li><strong>AI Voice & Visual Cloning:</strong> Generate personalized greetings and messages at
+                            scale</li>
+                    </ul>
+                </div>
+                <div class="implementation-notes">
+                    <strong>Implementation Notes:</strong> The hero should emphasize the time-saving aspect and the AI
+                    personalization engine. Include a live demo widget similar to Sendspark's "Get Started Now" CTA that
+                    leads to a sample personalized video.
+                </div>
+            </div>
+        </div>
+
+        <!-- Feature 2: AI Demo Modal -->
+        <div class="feature-card">
+            <div class="feature-header">
+                <h2><span class="feature-number">2</span>AI Demo Modal - "See it in action!"</h2>
+            </div>
+            <div class="feature-content">
+                <div class="screenshot-container"><img referrerpolicy="no-referrer" src="https://cdn.vidi.news/images/sendspark/02-ai-demo-modal.jpg"
+                        alt="Sendspark AI Demo Modal"></div>
+                <div class="description-section">
+                    <h3>Sendspark Feature Description</h3>
+                    <p><strong>Interactive Demo:</strong> Users can enter their name, email, and website URL to receive
+                        a personalized AI-generated video in their inbox.</p>
+                    <p>The modal shows a preview of stacked personalized videos with names like "Hey Brandon!", "Hey
+                        Bethany!" demonstrating the output.</p>
+                </div>
+                <div class="vidimail-mapping">
+                    <h3>Vidimail Implementation Equivalent</h3>
+                    <ul class="feature-list">
+                        <li><strong>VidiMail Demo Generator:</strong> Interactive preview modal on the landing page</li>
+                        <li><strong>Lead Capture Integration:</strong> Name, email, website URL fields for prospecting
+                        </li>
+                        <li><strong>AI Preview Engine:</strong> Show stacked video previews with personalized names</li>
+                        <li><strong>Email Delivery:</strong> Send sample personalized video to user's inbox</li>
+                        <li><strong>CRM Integration:</strong> Capture leads directly into Smart Channel CX</li>
+                    </ul>
+                </div>
+                <div class="tech-specs">
+                    <strong>Technical Requirements:</strong> AI Video Generation API integration, Email delivery system,
+                    Lead capture forms, CRM webhooks
+                </div>
+            </div>
+        </div>
+
+        <!-- Feature 3: Record Once Personalize Thousands -->
+        <div class="feature-card">
+            <div class="feature-header">
+                <h2><span class="feature-number">3</span>Record Once. Personalize Thousands.</h2>
+            </div>
+            <div class="feature-content">
+                <div class="screenshot-container"><img
+                        src="https://cdn.vidi.news/images/sendspark/03-record-once-personalize.jpg"
+                        alt="Record Once Personalize Thousands"></div>
+                <div class="description-section">
+                    <h3>Sendspark Feature Description</h3>
+                    <p><strong>Visual Workflow:</strong> Shows a stack of personalized video thumbnails with different
+                        names: "Hey Brandon!", "Hey Bethany!", "Hey Isaac!", "Hey Pablo!", "Hey Carlos!"</p>
+                    <p>This visually demonstrates the core value proposition of creating multiple personalized versions
+                        from a single recording.</p>
+                </div>
+                <div class="vidimail-mapping">
+                    <h3>Vidimail Implementation Equivalent</h3>
+                    <ul class="feature-list">
+                        <li><strong>VidiBlast Bulk Generation:</strong> Core feature for mass personalization</li>
+                        <li><strong>Visual Queue System:</strong> Show stacked videos being generated</li>
+                        <li><strong>Batch Processing UI:</strong> Progress indicators for large campaigns</li>
+                        <li><strong>Personalization Variables:</strong> Name, company, role, custom fields</li>
+                        <li><strong>Template System:</strong> Reusable video templates with variable slots</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Feature 4: Dynamic Backgrounds -->
+        <div class="feature-card">
+            <div class="feature-header">
+                <h2><span class="feature-number">4</span>Dynamic Backgrounds</h2>
+            </div>
+            <div class="feature-content">
+                <div class="screenshot-container"><img
+                        src="https://cdn.vidi.news/images/sendspark/04-dynamic-backgrounds.jpg"
+                        alt="Dynamic Backgrounds"></div>
+                <div class="description-section">
+                    <h3>Sendspark Feature Description</h3>
+                    <p><strong>Feature:</strong> "Automatically add the website or LinkedIn profile of your prospect to
+                        your video."</p>
+                    <p>Shows a video with the prospect's LinkedIn profile or website screenshot dynamically inserted as
+                        the background behind the speaker.</p>
+                </div>
+                <div class="vidimail-mapping">
+                    <h3>Vidimail Implementation Equivalent</h3>
+                    <ul class="feature-list">
+                        <li><strong>Dynamic Background Engine:</strong> AI-powered background replacement</li>
+                        <li><strong>Website Screenshot Integration:</strong> Auto-capture prospect websites</li>
+                        <li><strong>LinkedIn Profile Overlay:</strong> Import profile data as background</li>
+                        <li><strong>Custom Background Library:</strong> Upload branded backgrounds</li>
+                        <li><strong>Contextual Awareness:</strong> Background changes based on recipient data</li>
+                    </ul>
+                </div>
+                <div class="tech-specs">
+                    <strong>Technical Requirements:</strong> Website screenshot API (Puppeteer/Playwright), LinkedIn API
+                    integration, Background removal AI (remove.bg), Video compositing engine
+                </div>
+            </div>
+        </div>
+
+        <!-- Feature 5: Personalized Video Pages -->
+        <div class="feature-card">
+            <div class="feature-header">
+                <h2><span class="feature-number">5</span>Personalized Video Pages</h2>
+            </div>
+            <div class="feature-content">
+                <div class="screenshot-container"><img
+                        src="https://cdn.vidi.news/images/sendspark/05-personalized-video-pages.jpg"
+                        alt="Personalized Video Pages"></div>
+                <div class="description-section">
+                    <h3>Sendspark Feature Description</h3>
+                    <p><strong>Feature:</strong> "Share in email or on branded landing pages with your logo & a
+                        call-to-action."</p>
+                    <p>Each recipient gets their own personalized landing page with the video, custom message, and
+                        branded elements.</p>
+                </div>
+                <div class="vidimail-mapping">
+                    <h3>Vidimail Implementation Equivalent</h3>
+                    <ul class="feature-list">
+                        <li><strong>Smart Channel CX Landing Pages:</strong> Auto-generated pages per recipient</li>
+                        <li><strong>White-Label Branding:</strong> Custom logos, colors, domains</li>
+                        <li><strong>CTA Integration:</strong> Book meeting, reply, download, custom actions</li>
+                        <li><strong>Analytics Tracking:</strong> View counts, engagement metrics per page</li>
+                        <li><strong>Mobile-Responsive Design:</strong> Optimized for all devices</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Feature 6: Edit Video Landing Page -->
+        <div class="feature-card">
+            <div class="feature-header">
+                <h2><span class="feature-number">6</span>Edit Video Landing Page</h2>
+            </div>
+            <div class="feature-content">
+                <div class="screenshot-container"><img
+                        src="https://cdn.vidi.news/images/sendspark/06-edit-landing-page.jpg"
+                        alt="Edit Video Landing Page"></div>
+                <div class="description-section">
+                    <h3>Sendspark Feature Description</h3>
+                    <p><strong>Feature:</strong> "Customize the viewing experience for each of your recipients with a
+                        header, message, and call-to-action."</p>
+                    <p>Visual editor showing form fields for Header, Message, and CTA Button with live preview.</p>
+                </div>
+                <div class="vidimail-mapping">
+                    <h3>Vidimail Implementation Equivalent</h3>
+                    <ul class="feature-list">
+                        <li><strong>Landing Page Builder:</strong> Drag-and-drop editor for video pages</li>
+                        <li><strong>Template Variables:</strong> {{firstName}}, {{company}}, {{customField}}</li>
+                        <li><strong>CTA Builder:</strong> Custom buttons with links, forms, calendar integrations</li>
+                        <li><strong>Real-Time Preview:</strong> See changes as you edit</li>
+                        <li><strong>A/B Testing:</strong> Test different page variations</li>
+                    </ul>
+                </div>
+                <div class="implementation-notes">
+                    <strong>Key UI Elements:</strong> Header text field, Message textarea, CTA button text & URL, Live
+                    preview pane, Template variable dropdown
+                </div>
+            </div>
+        </div>
+
+        <!-- Feature 7: Add Contacts & Generate Videos -->
+        <div class="feature-card">
+            <div class="feature-header">
+                <h2><span class="feature-number">7</span>Add Contacts & Generate Videos</h2>
+            </div>
+            <div class="feature-content">
+                <div class="screenshot-container"><img
+                        src="https://cdn.vidi.news/images/sendspark/07-add-contacts-generate.jpg"
+                        alt="Add Contacts and Generate Videos"></div>
+                <div class="description-section">
+                    <h3>Sendspark Feature Description</h3>
+                    <p><strong>Feature:</strong> "Import your contacts into Sendspark and click 'Generate Videos' to
+                        make personalized videos for each of your prospects."</p>
+                    <p>Contact list interface with columns for name, email, company, role, and URL. Bulk selection and
+                        generation capabilities.</p>
+                </div>
+                <div class="vidimail-mapping">
+                    <h3>Vidimail Implementation Equivalent</h3>
+                    <ul class="feature-list">
+                        <li><strong>VidiBlast Contact Manager:</strong> Import and manage prospect lists</li>
+                        <li><strong>CSV/Excel Import:</strong> Bulk upload contacts with custom fields</li>
+                        <li><strong>CRM Sync:</strong> Direct integration with Smart Channel CX CRM</li>
+                        <li><strong>Bulk Generation:</strong> Queue system for processing thousands of videos</li>
+                        <li><strong>Progress Dashboard:</strong> Real-time generation status</li>
+                        <li><strong>Segmentation:</strong> Group contacts for targeted campaigns</li>
+                    </ul>
+                </div>
+                <div class="tech-specs">
+                    <strong>Technical Requirements:</strong> Queue management system (Bull/BullMQ), Batch processing,
+                    CRM sync API, CSV parsing, Progress tracking WebSocket
+                </div>
+            </div>
+        </div>
+
+        <!-- Feature 8: CTA Section -->
+        <div class="feature-card">
+            <div class="feature-header">
+                <h2><span class="feature-number">8</span>Call-to-Action Section</h2>
+            </div>
+            <div class="feature-content">
+                <div class="screenshot-container"><img referrerpolicy="no-referrer" src="https://cdn.vidi.news/images/sendspark/08-cta-section.jpg"
+                        alt="CTA Section"></div>
+                <div class="description-section">
+                    <h3>Sendspark Feature Description</h3>
+                    <p><strong>Messaging:</strong> "Send a video, spark a conversation"</p>
+                    <p><strong>Subtext:</strong> "Sendspark helps sales and marketing teams stand out and connect to
+                        customers with personalized video messages."</p>
+                    <p>Dual CTA buttons: "Book a Demo" and "Get Started Now"</p>
+                </div>
+                <div class="vidimail-mapping">
+                    <h3>Vidimail Implementation Equivalent</h3>
+                    <ul class="feature-list">
+                        <li><strong>VidiMail CTA Module:</strong> Conversion-focused section</li>
+                        <li><strong>Dual Path Onboarding:</strong> Self-serve vs. Demo request</li>
+                        <li><strong>Smart Channel CX Positioning:</strong> Emphasize integration benefits</li>
+                        <li><strong>Value Reinforcement:</strong> "Stand out in the inbox" messaging</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Feature 9: Main Homepage Hero -->
+        <div class="feature-card">
+            <div class="feature-header">
+                <h2><span class="feature-number">9</span>Main Homepage Hero</h2>
+            </div>
+            <div class="feature-content">
+                <div class="screenshot-container"><img referrerpolicy="no-referrer" src="https://cdn.vidi.news/images/sendspark/09-main-hero.jpg"
+                        alt="Main Homepage Hero"></div>
+                <div class="description-section">
+                    <h3>Sendspark Feature Description</h3>
+                    <p><strong>Headline:</strong> "Record One Video Personalize at Scale with AI"</p>
+                    <p><strong>Subheadline:</strong> "Boost your outreach, schedule more meetings, and increase revenue
+                        with the #1 video platform for sales."</p>
+                    <p>Features G2 rating badge (4.8/5 stars) for social proof.</p>
+                </div>
+                <div class="vidimail-mapping">
+                    <h3>Vidimail Implementation Equivalent</h3>
+                    <ul class="feature-list">
+                        <li><strong>Smart Channel CX Homepage:</strong> Position Vidimail as core feature</li>
+                        <li><strong>G2/Trustpilot Integration:</strong> Display review ratings</li>
+                        <li><strong>Outcome-Focused Copy:</strong> Emphasize meetings booked, revenue increased</li>
+                        <li><strong>AI-First Positioning:</strong> Lead with AI personalization benefits</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Feature 10: Video Demo -->
+        <div class="feature-card">
+            <div class="feature-header">
+                <h2><span class="feature-number">10</span>Interactive Video Demo</h2>
+            </div>
+            <div class="feature-content">
+                <div class="screenshot-container"><img referrerpolicy="no-referrer" src="https://cdn.vidi.news/images/sendspark/10-video-demo.jpg"
+                        alt="Interactive Video Demo"></div>
+                <div class="description-section">
+                    <h3>Sendspark Feature Description</h3>
+                    <p><strong>Demo:</strong> "You just record one video... We'll clone your voice & visuals to each
+                        prospect with AI"</p>
+                    <p>Shows a video player with "Hey Bethany!" personalized greeting overlay. Demonstrates the AI
+                        cloning capability.</p>
+                </div>
+                <div class="vidimail-mapping">
+                    <h3>Vidimail Implementation Equivalent</h3>
+                    <ul class="feature-list">
+                        <li><strong>AI Cloning Showcase:</strong> Demonstrate voice & visual synthesis</li>
+                        <li><strong>Interactive Demo Video:</strong> Embedded hero video showing results</li>
+                        <li><strong>Personalization Preview:</strong> Toggle between different prospect examples</li>
+                        <li><strong>Before/After Comparison:</strong> Show original vs. AI-personalized</li>
+                    </ul>
+                </div>
+                <div class="tech-specs">
+                    <strong>Technical Requirements:</strong> Voice cloning AI (ElevenLabs), Lip-sync technology, Video
+                    player with overlay capabilities
+                </div>
+            </div>
+        </div>
+
+        <!-- Feature 11: Social Proof -->
+        <div class="feature-card">
+            <div class="feature-header">
+                <h2><span class="feature-number">11</span>Social Proof - Company Logos</h2>
+            </div>
+            <div class="feature-content">
+                <div class="screenshot-container"><img referrerpolicy="no-referrer" src="https://cdn.vidi.news/images/sendspark/11-social-proof.jpg"
+                        alt="Social Proof"></div>
+                <div class="description-section">
+                    <h3>Sendspark Feature Description</h3>
+                    <p><strong>Messaging:</strong> "50,000+ companies drive revenue with Sendspark videos"</p>
+                    <p>Logo bar featuring: deel, paddle, udemy, Apollo.io, HubSpot, indeed, Superside, Dreamdata</p>
+                </div>
+                <div class="vidimail-mapping">
+                    <h3>Vidimail Implementation Equivalent</h3>
+                    <ul class="feature-list">
+                        <li><strong>Trust Bar:</strong> Client logo showcase on landing pages</li>
+                        <li><strong>Stats Counter:</strong> "X+ videos sent" "Y+ meetings booked"</li>
+                        <li><strong>Case Study Teasers:</strong> Link to detailed success stories</li>
+                        <li><strong>Industry Variety:</strong> Show diverse client base</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Feature 12: Personalized Video Example -->
+        <div class="feature-card">
+            <div class="feature-header">
+                <h2><span class="feature-number">12</span>Personalized Video Email Example</h2>
+            </div>
+            <div class="feature-content">
+                <div class="screenshot-container"><img
+                        src="https://cdn.vidi.news/images/sendspark/12-personalized-example.jpg"
+                        alt="Personalized Video Example"></div>
+                <div class="description-section">
+                    <h3>Sendspark Feature Description</h3>
+                    <p><strong>Feature:</strong> "Get your own personalized video email from Sendspark"</p>
+                    <p>Shows a preview of what recipients see: "Hey Brandon, I made you a video..." with video thumbnail
+                        and play button.</p>
+                </div>
+                <div class="vidimail-mapping">
+                    <h3>Vidimail Implementation Equivalent</h3>
+                    <ul class="feature-list">
+                        <li><strong>Email Template Preview:</strong> Show how videos appear in email clients</li>
+                        <li><strong>Animated Thumbnails:</strong> GIF previews of video content</li>
+                        <li><strong>Personalized Subject Lines:</strong> "{{firstName}}, I made you a video"</li>
+                        <li><strong>Email Builder:</strong> Compose emails with embedded video</li>
+                        <li><strong>Deliverability Optimization:</strong> Ensure videos reach inbox</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Summary Table -->
+        <div class="feature-card">
+            <div class="feature-header">
+                <h2>Feature Summary Matrix</h2>
+            </div>
+            <div class="feature-content">
+                <table class="summary-table">
+                    <thead>
+                        <tr>
+                            <th>Sendspark Feature</th>
+                            <th>Vidimail Equivalent</th>
+                            <th>Priority</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>AI Personalized Videos</td>
+                            <td>VidiMail Core Engine</td>
+                            <td><span class="badge badge-core">Core</span></td>
+                            <td>Required</td>
+                        </tr>
+                        <tr>
+                            <td>Demo Modal</td>
+                            <td>Lead Capture Widget</td>
+                            <td><span class="badge badge-core">Core</span></td>
+                            <td>Required</td>
+                        </tr>
+                        <tr>
+                            <td>Record Once, Personalize Thousands</td>
+                            <td>VidiBlast Bulk Generation</td>
+                            <td><span class="badge badge-core">Core</span></td>
+                            <td>Required</td>
+                        </tr>
+                        <tr>
+                            <td>Dynamic Backgrounds</td>
+                            <td>AI Background Engine</td>
+                            <td><span class="badge badge-advanced">Advanced</span></td>
+                            <td>Phase 2</td>
+                        </tr>
+                        <tr>
+                            <td>Personalized Video Pages</td>
+                            <td>Smart Channel CX Landing Pages</td>
+                            <td><span class="badge badge-core">Core</span></td>
+                            <td>Required</td>
+                        </tr>
+                        <tr>
+                            <td>Landing Page Editor</td>
+                            <td>Page Builder Module</td>
+                            <td><span class="badge badge-core">Core</span></td>
+                            <td>Required</td>
+                        </tr>
+                        <tr>
+                            <td>Contact Import & Generation</td>
+                            <td>VidiBlast Contact Manager</td>
+                            <td><span class="badge badge-core">Core</span></td>
+                            <td>Required</td>
+                        </tr>
+                        <tr>
+                            <td>Video Email Delivery</td>
+                            <td>Email Integration Module</td>
+                            <td><span class="badge badge-core">Core</span></td>
+                            <td>Required</td>
+                        </tr>
+                        <tr>
+                            <td>AI Voice/Visual Cloning</td>
+                            <td>AI Synthesis Engine</td>
+                            <td><span class="badge badge-advanced">Advanced</span></td>
+                            <td>Phase 2</td>
+                        </tr>
+                        <tr>
+                            <td>Analytics & Tracking</td>
+                            <td>Smart Channel CX Analytics</td>
+                            <td><span class="badge badge-advanced">Advanced</span></td>
+                            <td>Phase 1.5</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Implementation Roadmap -->
+        <div class="feature-card">
+            <div class="feature-header">
+                <h2>Vidimail Implementation Roadmap</h2>
+            </div>
+            <div class="feature-content">
+                <div class="description-section">
+                    <h3>Phase 1: Core MVP (Weeks 1-4)</h3>
+                    <ul class="feature-list">
+                        <li>Video recording and upload</li>
+                        <li>Basic personalization (name, company)</li>
+                        <li>Email delivery system</li>
+                        <li>Simple landing pages</li>
+                        <li>Contact import (CSV)</li>
+                    </ul>
+                </div>
+                <div class="description-section">
+                    <h3>Phase 2: AI Enhancement (Weeks 5-8)</h3>
+                    <ul class="feature-list">
+                        <li>AI voice synthesis integration</li>
+                        <li>Dynamic background replacement</li>
+                        <li>Advanced personalization variables</li>
+                        <li>Bulk generation queue system</li>
+                        <li>Landing page builder</li>
+                    </ul>
+                </div>
+                <div class="description-section">
+                    <h3>Phase 3: Advanced Features (Weeks 9-12)</h3>
+                    <ul class="feature-list">
+                        <li>Visual cloning technology</li>
+                        <li>CRM deep integration</li>
+                        <li>A/B testing capabilities</li>
+                        <li>Advanced analytics dashboard</li>
+                        <li>API for third-party integrations</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p><strong>Vidimail - Smart Channel CX</strong></p>
+            <p>Feature analysis based on Sendspark.com research | February 2026</p>
+            <p>All screenshots captured for reference and implementation planning</p>
+        </footer>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,1075 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VidiSmart Agent Force - 9 AI Agents for Vidi.NEWS & Vidi.CITY</title>
+    <link href="https://fonts.googleapis.com/css2?family=Kumbh+Sans:wght@300;400;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --primary: #8b5cf6;
+            --primary-glow: rgba(139, 92, 246, 0.4);
+            --secondary: #06b6d4;
+            --secondary-glow: rgba(6, 182, 212, 0.4);
+            --accent: #f43f5e;
+            --accent-glow: rgba(244, 63, 94, 0.4);
+            --green: #10b981;
+            --orange: #f59e0b;
+            --blue: #3b82f6;
+            --dark: #0a0a0f;
+            --darker: #050508;
+            --card-bg: rgba(15, 15, 25, 0.85);
+            --text: #e2e8f0;
+            --text-muted: #94a3b8;
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Kumbh Sans', sans-serif;
+            background: var(--darker);
+            color: var(--text);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        #three-canvas {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .section {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            z-index: 1;
+            padding: 60px 40px;
+        }
+
+        .content-box {
+            max-width: 1400px;
+            width: 100%;
+        }
+
+        /* Hero */
+        .hero-title {
+            font-size: clamp(2.5rem, 6vw, 5rem);
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 50%, var(--orange) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 20px;
+            opacity: 0;
+        }
+
+        .hero-subtitle {
+            font-size: clamp(1.1rem, 2vw, 1.4rem);
+            color: var(--text-muted);
+            max-width: 800px;
+            opacity: 0;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 8px 20px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border-radius: 50px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            opacity: 0;
+        }
+
+        .agent-count {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            margin-top: 50px;
+            opacity: 0;
+        }
+
+        .count-number {
+            font-size: 8rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1;
+        }
+
+        .count-label {
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+
+        .count-sublabel {
+            color: var(--text-muted);
+        }
+
+        /* Section Headers */
+        .section-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .section-header h2 {
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 800;
+            margin-bottom: 15px;
+            opacity: 0;
+        }
+
+        .section-header p {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            max-width: 700px;
+            margin: 0 auto;
+            opacity: 0;
+        }
+
+        /* Phase Header */
+        .phase-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 25px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 40px;
+            opacity: 0;
+        }
+
+        .phase-badge.phase1 { background: linear-gradient(135deg, var(--green), #059669); }
+        .phase-badge.phase2 { background: linear-gradient(135deg, var(--blue), #2563eb); }
+        .phase-badge.phase3 { background: linear-gradient(135deg, var(--orange), #d97706); }
+        .phase-badge.phase4 { background: linear-gradient(135deg, var(--accent), #dc2626); }
+
+        /* Agent Cards */
+        .agents-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+        }
+
+        .agent-card {
+            background: var(--card-bg);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 24px;
+            padding: 30px;
+            opacity: 0;
+            transform: translateY(40px);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .agent-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+        }
+
+        .agent-card:hover {
+            transform: translateY(-8px) !important;
+            box-shadow: 0 25px 50px rgba(139, 92, 246, 0.2);
+            border-color: var(--primary);
+        }
+
+        .agent-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .agent-icon {
+            width: 55px;
+            height: 55px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+        }
+
+        .agent-number {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .agent-name {
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+
+        .agent-card p {
+            color: var(--text-muted);
+            margin-bottom: 20px;
+        }
+
+        .agent-code {
+            background: rgba(0,0,0,0.4);
+            border-radius: 12px;
+            padding: 15px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--green);
+            overflow-x: auto;
+        }
+
+        .agent-code .comment {
+            color: var(--text-muted);
+        }
+
+        .agent-code .keyword {
+            color: var(--primary);
+        }
+
+        .agent-code .string {
+            color: var(--orange);
+        }
+
+        .agent-code .number {
+            color: var(--secondary);
+        }
+
+        /* MCP Stack */
+        .mcp-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 20px;
+            margin-top: 40px;
+        }
+
+        .mcp-item {
+            background: var(--card-bg);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            padding: 25px;
+            text-align: center;
+            opacity: 0;
+            transform: scale(0.9);
+            transition: all 0.3s ease;
+        }
+
+        .mcp-item:hover {
+            transform: scale(1.05) !important;
+            border-color: var(--green);
+        }
+
+        .mcp-item.connected {
+            border-color: var(--green);
+            box-shadow: 0 0 20px var(--green-glow);
+        }
+
+        .mcp-item.pending {
+            border-color: var(--orange);
+            opacity: 0.7;
+        }
+
+        .mcp-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+
+        .mcp-name {
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .mcp-status {
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .mcp-status.connected { color: var(--green); }
+        .mcp-status.pending { color: var(--orange); }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .status-dot.connected { background: var(--green); }
+        .status-dot.pending { background: var(--orange); }
+
+        /* Timeline */
+        .timeline {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .timeline-item {
+            display: flex;
+            gap: 25px;
+            opacity: 0;
+            transform: translateX(-40px);
+        }
+
+        .timeline-marker {
+            width: 80px;
+            flex-shrink: 0;
+            text-align: center;
+        }
+
+        .timeline-dot {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            margin: 0 auto 10px;
+        }
+
+        .timeline-time {
+            font-size: 0.9rem;
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .timeline-content {
+            background: var(--card-bg);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            padding: 25px;
+            flex: 1;
+        }
+
+        .timeline-content h4 {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+        }
+
+        .timeline-content ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .timeline-content li {
+            padding: 6px 0;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .timeline-content li::before {
+            content: "✓";
+            color: var(--green);
+            font-weight: bold;
+        }
+
+        /* Navigation */
+        .nav-dots {
+            position: fixed;
+            right: 30px;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .nav-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .nav-dot.active {
+            background: var(--primary);
+            box-shadow: 0 0 20px var(--primary-glow);
+            transform: scale(1.3);
+        }
+
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--accent), var(--orange));
+            z-index: 100;
+            width: 0%;
+        }
+
+        /* CTA */
+        .cta-box {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(244, 63, 94, 0.2));
+            border: 1px solid var(--primary);
+            border-radius: 24px;
+            padding: 50px;
+            text-align: center;
+            margin-top: 60px;
+            opacity: 0;
+        }
+
+        .cta-box h3 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+
+        .cta-options {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-top: 30px;
+        }
+
+        .cta-option {
+            background: var(--card-bg);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 16px;
+            padding: 20px 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .cta-option:hover {
+            border-color: var(--primary);
+            transform: translateY(-5px);
+        }
+
+        .cta-option-number {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        .cta-option-label {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        @media (max-width: 768px) {
+            .section { padding: 40px 20px; }
+            .nav-dots { right: 15px; }
+            .agents-grid { grid-template-columns: 1fr; }
+            .agent-count { flex-direction: column; text-align: center; }
+            .count-number { font-size: 5rem; }
+            .timeline-item { flex-direction: column; }
+            .timeline-marker { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="three-canvas"></canvas>
+    <div class="progress-bar" id="progress"></div>
+
+    <nav class="nav-dots">
+        <div class="nav-dot active" data-section="0"></div>
+        <div class="nav-dot" data-section="1"></div>
+        <div class="nav-dot" data-section="2"></div>
+        <div class="nav-dot" data-section="3"></div>
+        <div class="nav-dot" data-section="4"></div>
+        <div class="nav-dot" data-section="5"></div>
+    </nav>
+
+    <!-- Section 1: Hero -->
+    <section class="section" id="section-0">
+        <div class="content-box">
+            <div class="badge">Vidi.NEWS & Vidi.CITY</div>
+            <h1 class="hero-title">Agent Force</h1>
+            <p class="hero-subtitle">Autonomous AI agents powering lead capture, follow-up, content multiplication, and revenue acceleration. Built on MCP server architecture.</p>
+
+            <div class="agent-count">
+                <div class="count-number">9</div>
+                <div>
+                    <div class="count-label">AI Agents</div>
+                    <div class="count-sublabel">4 Phases • Full Automation</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 2: Phase 1 -->
+    <section class="section" id="section-1">
+        <div class="content-box">
+            <div class="phase-badge phase1">🟢 Phase 1: Lead Capture → CRM Automation</div>
+
+            <div class="agents-grid">
+                <div class="agent-card">
+                    <div class="agent-header">
+                        <div class="agent-icon">🤖</div>
+                        <div>
+                            <div class="agent-number">AGENT 1</div>
+                            <div class="agent-name">Lead Processor</div>
+                        </div>
+                    </div>
+                    <p>Triggered on /api/signup POST. Captures, enriches, and routes leads to CRM.</p>
+                    <div class="agent-code">
+<span class="comment">// Triggered on: /api/signup POST</span>
+<span class="number">1.</span> Save to PostgreSQL ✅
+<span class="number">2.</span> Send to GoHighLevel CRM
+<span class="number">3.</span> Create contact + tags
+<span class="number">4.</span> Assign to sales rep
+<span class="number">5.</span> Trigger welcome sequence</div>
+                </div>
+
+                <div class="agent-card">
+                    <div class="agent-header">
+                        <div class="agent-icon">🔔</div>
+                        <div>
+                            <div class="agent-number">AGENT 2</div>
+                            <div class="agent-name">Notification Bot</div>
+                        </div>
+                    </div>
+                    <p>Immediate multi-channel alerts to sales team on every new lead.</p>
+                    <div class="agent-code">
+<span class="comment">// Immediate notifications</span>
+<span class="number">1.</span> Slack/Discord alert
+<span class="number">2.</span> Email with lead details
+<span class="number">3.</span> SMS to assigned rep</div>
+                </div>
+
+                <div class="agent-card">
+                    <div class="agent-header">
+                        <div class="agent-icon">🎯</div>
+                        <div>
+                            <div class="agent-number">AGENT 3</div>
+                            <div class="agent-name">Lead Qualifier</div>
+                        </div>
+                    </div>
+                    <p>AI analyzes submission quality and auto-routes to appropriate rep.</p>
+                    <div class="agent-code">
+<span class="comment">// AI analyzes the submission</span>
+<span class="number">1.</span> Score lead quality (1-10)
+<span class="number">2.</span> Check company size
+<span class="number">3.</span> Determine budget tier
+<span class="number">4.</span> Auto-assign to rep</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 3: Phase 2 -->
+    <section class="section" id="section-2">
+        <div class="content-box">
+            <div class="phase-badge phase2">🔵 Phase 2: Follow-up Automation</div>
+
+            <div class="agents-grid">
+                <div class="agent-card">
+                    <div class="agent-header">
+                        <div class="agent-icon">✉️</div>
+                        <div>
+                            <div class="agent-number">AGENT 4</div>
+                            <div class="agent-name">Email Sequence</div>
+                        </div>
+                    </div>
+                    <p>n8n workflow orchestrating personalized drip campaigns.</p>
+                    <div class="agent-code">
+<span class="comment">// n8n workflow</span>
+Day <span class="number">0</span>: Welcome + Calendar link
+Day <span class="number">1</span>: Case study PDF
+Day <span class="number">3</span>: Video demo invitation
+Day <span class="number">7</span>: Special offer</div>
+                </div>
+
+                <div class="agent-card">
+                    <div class="agent-header">
+                        <div class="agent-icon">📅</div>
+                        <div>
+                            <div class="agent-number">AGENT 5</div>
+                            <div class="agent-name">Smart Scheduler</div>
+                        </div>
+                    </div>
+                    <p>Intelligent calendar management based on lead score and availability.</p>
+                    <div class="agent-code">
+<span class="comment">// When they book demo</span>
+<span class="number">1.</span> Check GHL calendar
+<span class="number">2.</span> Find best time slot
+<span class="number">3.</span> Send Zoom link + prep
+<span class="number">4.</span> Remind 1 hour before</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 4: Phase 3 -->
+    <section class="section" id="section-3">
+        <div class="content-box">
+            <div class="phase-badge phase3">🟠 Phase 3: Content Multiplication</div>
+
+            <div class="agents-grid">
+                <div class="agent-card">
+                    <div class="agent-header">
+                        <div class="agent-icon">🎬</div>
+                        <div>
+                            <div class="agent-number">AGENT 6</div>
+                            <div class="agent-name">Video Analyzer</div>
+                        </div>
+                    </div>
+                    <p>Twelve Labs AI extracts scenes and generates multi-format content.</p>
+                    <div class="agent-code">
+<span class="comment">// When demo video uploaded</span>
+<span class="number">1.</span> Extract scenes (Twelve Labs)
+<span class="number">2.</span> Generate 30 social clips
+<span class="number">3.</span> Create thumbnails
+<span class="number">4.</span> Extract quote graphics</div>
+                </div>
+
+                <div class="agent-card">
+                    <div class="agent-header">
+                        <div class="agent-icon">📢</div>
+                        <div>
+                            <div class="agent-number">AGENT 7</div>
+                            <div class="agent-name">Smart Channel Bot</div>
+                        </div>
+                    </div>
+                    <p>Multi-platform scheduling with A/B testing and performance tracking.</p>
+                    <div class="agent-code">
+<span class="comment">// Auto-post generated content</span>
+<span class="number">1.</span> Schedule across platforms
+<span class="number">2.</span> A/B test variations
+<span class="number">3.</span> Track engagement
+<span class="number">4.</span> Report winners back</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 5: Phase 4 -->
+    <section class="section" id="section-4">
+        <div class="content-box">
+            <div class="phase-badge phase4">🔴 Phase 4: Revenue Acceleration</div>
+
+            <div class="agents-grid">
+                <div class="agent-card">
+                    <div class="agent-header">
+                        <div class="agent-icon">💰</div>
+                        <div>
+                            <div class="agent-number">AGENT 8</div>
+                            <div class="agent-name">Upsell Detective</div>
+                        </div>
+                    </div>
+                    <p>Monitor customer usage patterns and identify upgrade opportunities.</p>
+                    <div class="agent-code">
+<span class="comment">// Monitor customer usage</span>
+<span class="number">1.</span> Track video uploads
+<span class="number">2.</span> Identify power users
+<span class="number">3.</span> Suggest upgrades
+<span class="number">4.</span> Auto-generate upsell emails</div>
+                </div>
+
+                <div class="agent-card">
+                    <div class="agent-header">
+                        <div class="agent-icon">🛡️</div>
+                        <div>
+                            <div class="agent-number">AGENT 9</div>
+                            <div class="agent-name">Churn Preventer</div>
+                        </div>
+                    </div>
+                    <p>Retention monitoring with proactive re-engagement campaigns.</p>
+                    <div class="agent-code">
+<span class="comment">// Retention monitoring</span>
+<span class="number">1.</span> Detect low engagement
+<span class="number">2.</span> Trigger re-engagement
+<span class="number">3.</span> Offer bonus features
+<span class="number">4.</span> Schedule check-in call</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 6: MCP Stack & Timeline -->
+    <section class="section" id="section-5">
+        <div class="content-box">
+            <div class="section-header">
+                <h2>The MCP Server Stack</h2>
+                <p>Connected integrations powering the agent force</p>
+            </div>
+
+            <div class="mcp-grid">
+                <div class="mcp-item connected">
+                    <div class="mcp-icon">📊</div>
+                    <div class="mcp-name">GoHighLevel</div>
+                    <div class="mcp-status connected">
+                        <span class="status-dot connected"></span> Connected
+                    </div>
+                </div>
+
+                <div class="mcp-item connected">
+                    <div class="mcp-icon">🧠</div>
+                    <div class="mcp-name">Memory</div>
+                    <div class="mcp-status connected">
+                        <span class="status-dot connected"></span> Connected
+                    </div>
+                </div>
+
+                <div class="mcp-item connected">
+                    <div class="mcp-icon">✉️</div>
+                    <div class="mcp-name">Gmail</div>
+                    <div class="mcp-status connected">
+                        <span class="status-dot connected"></span> Connected
+                    </div>
+                </div>
+
+                <div class="mcp-item connected">
+                    <div class="mcp-icon">📁</div>
+                    <div class="mcp-name">Google Drive</div>
+                    <div class="mcp-status connected">
+                        <span class="status-dot connected"></span> Connected
+                    </div>
+                </div>
+
+                <div class="mcp-item connected">
+                    <div class="mcp-icon">🎥</div>
+                    <div class="mcp-name">YouTube</div>
+                    <div class="mcp-status connected">
+                        <span class="status-dot connected"></span> Connected
+                    </div>
+                </div>
+
+                <div class="mcp-item pending">
+                    <div class="mcp-icon">🎬</div>
+                    <div class="mcp-name">Twelve Labs</div>
+                    <div class="mcp-status pending">
+                        <span class="status-dot pending"></span> Pending
+                    </div>
+                </div>
+
+                <div class="mcp-item pending">
+                    <div class="mcp-icon">💳</div>
+                    <div class="mcp-name">Stripe</div>
+                    <div class="mcp-status pending">
+                        <span class="status-dot pending"></span> Pending
+                    </div>
+                </div>
+
+                <div class="mcp-item pending">
+                    <div class="mcp-icon">💬</div>
+                    <div class="mcp-name">Slack</div>
+                    <div class="mcp-status pending">
+                        <span class="status-dot pending"></span> Pending
+                    </div>
+                </div>
+
+                <div class="mcp-item pending">
+                    <div class="mcp-icon">🔄</div>
+                    <div class="mcp-name">n8n</div>
+                    <div class="mcp-status pending">
+                        <span class="status-dot pending"></span> Pending
+                    </div>
+                </div>
+            </div>
+
+            <div class="cta-box">
+                <h3>What Agent Should We Build First?</h3>
+                <p style="color: var(--text-muted);">Choose your automation priority</p>
+
+                <div class="cta-options">
+                    <div class="cta-option">
+                        <div class="cta-option-number">1</div>
+                        <div class="cta-option-label">GHL Auto-Contact</div>
+                    </div>
+                    <div class="cta-option">
+                        <div class="cta-option-number">2</div>
+                        <div class="cta-option-label">Email Sequence</div>
+                    </div>
+                    <div class="cta-option">
+                        <div class="cta-option-number">3</div>
+                        <div class="cta-option-label">Slack Notifications</div>
+                    </div>
+                    <div class="cta-option">
+                        <div class="cta-option-number">4</div>
+                        <div class="cta-option-label">Video Multiplier</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // Three.js Agent Network Background
+        const canvas = document.getElementById('three-canvas');
+        const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.z = 50;
+
+        // Create agent nodes (larger, fewer, connected)
+        const agentCount = 9;
+        const agents = [];
+        const agentGeometry = new THREE.SphereGeometry(1.5, 32, 32);
+
+        const agentColors = [
+            0x8b5cf6, 0x06b6d4, 0xf43f5e, 0x10b981, 0xf59e0b,
+            0x3b82f6, 0xec4899, 0x14b8a6, 0xa855f7
+        ];
+
+        for (let i = 0; i < agentCount; i++) {
+            const material = new THREE.MeshBasicMaterial({
+                color: agentColors[i],
+                transparent: true,
+                opacity: 0.8
+            });
+            const agent = new THREE.Mesh(agentGeometry, material);
+
+            const angle = (i / agentCount) * Math.PI * 2;
+            const radius = 25 + Math.random() * 10;
+            agent.position.set(
+                Math.cos(angle) * radius,
+                (Math.random() - 0.5) * 30,
+                Math.sin(angle) * radius - 20
+            );
+
+            agent.userData = {
+                angle: angle,
+                radius: radius,
+                speed: 0.001 + Math.random() * 0.002,
+                yOffset: agent.position.y
+            };
+
+            agents.push(agent);
+            scene.add(agent);
+
+            // Add glow
+            const glowGeometry = new THREE.SphereGeometry(2.5, 32, 32);
+            const glowMaterial = new THREE.MeshBasicMaterial({
+                color: agentColors[i],
+                transparent: true,
+                opacity: 0.15
+            });
+            const glow = new THREE.Mesh(glowGeometry, glowMaterial);
+            agent.add(glow);
+        }
+
+        // Create connections between agents
+        const lineMaterial = new THREE.LineBasicMaterial({
+            color: 0x8b5cf6,
+            transparent: true,
+            opacity: 0.2
+        });
+
+        const connections = [];
+        for (let i = 0; i < agentCount; i++) {
+            for (let j = i + 1; j < agentCount; j++) {
+                const geometry = new THREE.BufferGeometry().setFromPoints([
+                    agents[i].position,
+                    agents[j].position
+                ]);
+                const line = new THREE.Line(geometry, lineMaterial.clone());
+                line.userData = { i, j };
+                connections.push(line);
+                scene.add(line);
+            }
+        }
+
+        // Add floating particles
+        const particleCount = 500;
+        const positions = new Float32Array(particleCount * 3);
+
+        for (let i = 0; i < particleCount; i++) {
+            positions[i * 3] = (Math.random() - 0.5) * 150;
+            positions[i * 3 + 1] = (Math.random() - 0.5) * 100;
+            positions[i * 3 + 2] = (Math.random() - 0.5) * 50;
+        }
+
+        const particleGeometry = new THREE.BufferGeometry();
+        particleGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+
+        const particleMaterial = new THREE.PointsMaterial({
+            size: 0.5,
+            color: 0x8b5cf6,
+            transparent: true,
+            opacity: 0.4,
+            blending: THREE.AdditiveBlending
+        });
+
+        const particles = new THREE.Points(particleGeometry, particleMaterial);
+        scene.add(particles);
+
+        // Mouse tracking
+        let mouseX = 0, mouseY = 0;
+        document.addEventListener('mousemove', (e) => {
+            mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
+            mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
+        });
+
+        // Animation
+        function animate() {
+            requestAnimationFrame(animate);
+
+            const time = Date.now() * 0.001;
+
+            // Rotate agents around center
+            agents.forEach((agent, i) => {
+                agent.userData.angle += agent.userData.speed;
+                agent.position.x = Math.cos(agent.userData.angle) * agent.userData.radius;
+                agent.position.z = Math.sin(agent.userData.angle) * agent.userData.radius - 20;
+                agent.position.y = agent.userData.yOffset + Math.sin(time + i) * 3;
+            });
+
+            // Update connections
+            connections.forEach(line => {
+                const { i, j } = line.userData;
+                const positions = line.geometry.attributes.position;
+                if (positions) {
+                    positions.setXYZ(0, agents[i].position.x, agents[i].position.y, agents[i].position.z);
+                    positions.setXYZ(1, agents[j].position.x, agents[j].position.y, agents[j].position.z);
+                    positions.needsUpdate = true;
+
+                    const dist = agents[i].position.distanceTo(agents[j].position);
+                    line.material.opacity = Math.max(0, 0.3 - dist * 0.004);
+                }
+            });
+
+            particles.rotation.y += 0.0002;
+
+            camera.position.x += (mouseX * 10 - camera.position.x) * 0.02;
+            camera.position.y += (-mouseY * 5 - camera.position.y) * 0.02;
+            camera.lookAt(scene.position);
+
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // GSAP Animations
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Hero
+        gsap.to('.badge', { opacity: 1, y: 0, duration: 0.8, delay: 0.3 });
+        gsap.to('.hero-title', { opacity: 1, y: 0, duration: 1, delay: 0.5 });
+        gsap.to('.hero-subtitle', { opacity: 1, y: 0, duration: 1, delay: 0.7 });
+        gsap.to('.agent-count', { opacity: 1, duration: 1, delay: 1 });
+
+        // Phase badges
+        document.querySelectorAll('.phase-badge').forEach(badge => {
+            ScrollTrigger.create({
+                trigger: badge,
+                start: 'top 80%',
+                onEnter: () => {
+                    gsap.to(badge, { opacity: 1, y: 0, duration: 0.8 });
+                }
+            });
+        });
+
+        // Agent cards
+        document.querySelectorAll('.agent-card').forEach((card, i) => {
+            ScrollTrigger.create({
+                trigger: card,
+                start: 'top 85%',
+                onEnter: () => {
+                    gsap.to(card, {
+                        opacity: 1, y: 0, duration: 0.7, delay: i * 0.15, ease: 'power2.out'
+                    });
+                }
+            });
+        });
+
+        // Section headers
+        document.querySelectorAll('.section-header').forEach(header => {
+            ScrollTrigger.create({
+                trigger: header,
+                start: 'top 80%',
+                onEnter: () => {
+                    gsap.to(header.querySelectorAll('h2, p'), {
+                        opacity: 1, y: 0, duration: 0.8, stagger: 0.2
+                    });
+                }
+            });
+        });
+
+        // MCP items
+        ScrollTrigger.create({
+            trigger: '.mcp-grid',
+            start: 'top 75%',
+            onEnter: () => {
+                gsap.to('.mcp-item', {
+                    opacity: 1, scale: 1, duration: 0.5, stagger: 0.08, ease: 'back.out(1.2)'
+                });
+            }
+        });
+
+        // CTA box
+        ScrollTrigger.create({
+            trigger: '.cta-box',
+            start: 'top 80%',
+            onEnter: () => {
+                gsap.to('.cta-box', { opacity: 1, duration: 1 });
+            }
+        });
+
+        // Progress bar
+        gsap.to('.progress-bar', {
+            width: '100%',
+            ease: 'none',
+            scrollTrigger: {
+                trigger: 'body',
+                start: 'top top',
+                end: 'bottom bottom',
+                scrub: 0.3
+            }
+        });
+
+        // Navigation
+        const sections = document.querySelectorAll('.section');
+        const navDots = document.querySelectorAll('.nav-dot');
+
+        sections.forEach((section, i) => {
+            ScrollTrigger.create({
+                trigger: section,
+                start: 'top center',
+                end: 'bottom center',
+                onEnter: () => updateNav(i),
+                onEnterBack: () => updateNav(i)
+            });
+        });
+
+        function updateNav(index) {
+            navDots.forEach((dot, i) => {
+                dot.classList.toggle('active', i === index);
+            });
+        }
+
+        navDots.forEach(dot => {
+            dot.addEventListener('click', () => {
+                const sectionIndex = dot.dataset.section;
+                document.getElementById(`section-${sectionIndex}`).scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+    </script>
+</body>
+</html>

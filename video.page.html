@@ -1,0 +1,904 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alibaba Cloud Model Studio - Foundation for AI Creation</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #050507;
+            --card-bg: #0f0f12;
+            --border-color: #2a2a35;
+            --primary-purple: #6b52ff;
+            --primary-gradient: linear-gradient(135deg, #6b52ff 0%, #4a36c7 100%);
+            --text-main: #ffffff;
+            --text-secondary: #a1a1aa;
+            --accent-glow: radial-gradient(circle at 50% 0%, rgba(107, 82, 255, 0.15) 0%, rgba(5, 5, 7, 0) 60%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.5;
+            overflow-x: hidden;
+        }
+
+        a { text-decoration: none; color: inherit; transition: 0.2s; }
+        ul { list-style: none; }
+
+        /* --- Header --- */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 100;
+            background: rgba(5, 5, 7, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        .logo img { height: 24px; }
+
+        nav ul {
+            display: flex;
+            gap: 2rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        nav ul li:hover { color: var(--text-main); cursor: pointer; }
+
+        .start-free {
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        /* --- Hero Section --- */
+        .hero {
+            padding-top: 120px;
+            padding-bottom: 80px;
+            text-align: center;
+            position: relative;
+            background: var(--accent-glow);
+        }
+
+        .announcement-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+        
+        .announcement-pill span { color: var(--primary-purple); font-weight: 600; cursor: pointer; }
+
+        .hero h1 {
+            font-size: 4rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 1rem;
+            background: linear-gradient(to bottom, #fff, #ccc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            max-width: 700px;
+            margin: 0 auto 2.5rem;
+        }
+
+        .cta-btn {
+            background: var(--primary-gradient);
+            color: white;
+            padding: 12px 32px;
+            border-radius: 30px;
+            font-weight: 600;
+            display: inline-block;
+            box-shadow: 0 4px 20px rgba(107, 82, 255, 0.4);
+        }
+        
+        .cta-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 25px rgba(107, 82, 255, 0.6); }
+
+        /* --- Models Section --- */
+        .models-section {
+            padding: 4rem 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .tabs {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 3rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 1rem;
+        }
+
+        .tab {
+            color: var(--text-secondary);
+            cursor: pointer;
+            position: relative;
+            padding-bottom: 5px;
+        }
+
+        .tab.active {
+            color: var(--text-main);
+            font-weight: 600;
+        }
+
+        .tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--primary-purple);
+        }
+
+        .models-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .model-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: 0.3s;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 280px;
+        }
+
+        .model-card:hover {
+            border-color: #444;
+            background: #15151a;
+        }
+
+        .model-header {
+            margin-bottom: 1rem;
+        }
+
+        .model-name {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .model-tag {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .model-desc {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .more-models-btn {
+            display: block;
+            margin: 3rem auto 0;
+            padding: 10px 24px;
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            color: var(--text-main);
+            width: fit-content;
+        }
+
+        /* --- Why Model Studio --- */
+        .why-section {
+            padding: 6rem 2rem;
+            background: linear-gradient(180deg, var(--bg-color) 0%, #0a0a0f 100%);
+            border-top: 1px solid var(--border-color);
+        }
+
+        .why-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .why-list h2 {
+            font-size: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .feature-item {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: rgba(255,255,255,0.03);
+            border-radius: 12px;
+            border: 1px solid transparent;
+        }
+        
+        .feature-item:hover {
+            border-color: rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.05);
+        }
+
+        .feature-icon {
+            width: 40px;
+            height: 40px;
+            background: #2a2a35;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .feature-text h3 { font-size: 1.1rem; margin-bottom: 0.5rem; }
+        .feature-text p { font-size: 0.9rem; color: var(--text-secondary); }
+
+        .bubble-cloud {
+            position: relative;
+            height: 400px;
+            background: radial-gradient(circle at center, rgba(107, 82, 255, 0.1) 0%, transparent 70%);
+            border-radius: 20px;
+        }
+
+        .bubble {
+            position: absolute;
+            padding: 10px 20px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 30px;
+            font-size: 0.9rem;
+            backdrop-filter: blur(5px);
+            white-space: nowrap;
+        }
+
+        .bubble.main {
+            background: rgba(107, 82, 255, 0.2);
+            border-color: var(--primary-purple);
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        /* Positioning bubbles roughly */
+        .b1 { top: 20%; left: 20%; }
+        .b2 { top: 15%; right: 25%; }
+        .b3 { top: 45%; left: 10%; }
+        .b4 { top: 40%; right: 15%; }
+        .b5 { top: 60%; left: 30%; }
+        .b6 { top: 70%; right: 30%; }
+        .b7 { top: 30%; left: 50%; transform: translateX(-50%); } /* Center */
+        .b8 { top: 55%; right: 45%; }
+
+        /* --- Latest Updates --- */
+        .updates-section {
+            padding: 6rem 2rem;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .update-item {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .update-date {
+            min-width: 100px;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .update-content {
+            flex: 1;
+        }
+
+        .update-badge {
+            display: inline-block;
+            font-size: 0.75rem;
+            padding: 2px 8px;
+            border-radius: 4px;
+            background: rgba(107, 82, 255, 0.1);
+            color: var(--primary-purple);
+            margin-right: 10px;
+            font-weight: 600;
+        }
+
+        .update-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .update-desc {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        /* --- Get Started --- */
+        .get-started-section {
+            padding: 6rem 2rem;
+            background: #08080a;
+        }
+
+        .gs-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            gap: 4rem;
+        }
+
+        .gs-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+        
+        .gs-header h2 { font-size: 2.5rem; margin-bottom: 1rem; }
+        .gs-header p { color: var(--text-secondary); max-width: 600px; margin: 0 auto 2rem; }
+
+        .steps-list {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .step {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .step-icon {
+            width: 50px;
+            height: 50px;
+            background: #1a1a20;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: var(--primary-purple);
+        }
+
+        .step-text h4 { font-size: 1.1rem; margin-bottom: 0.2rem; }
+        .step-text p { font-size: 0.85rem; color: var(--text-secondary); }
+
+        .api-mockup {
+            background: #121215;
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 2rem;
+            position: relative;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        }
+
+        .mockup-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid #222;
+            padding-bottom: 1rem;
+        }
+
+        .mockup-form {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-input {
+            width: 100%;
+            background: #0a0a0c;
+            border: 1px solid #333;
+            padding: 12px;
+            border-radius: 8px;
+            color: white;
+            font-family: inherit;
+        }
+
+        .mockup-btn {
+            background: var(--primary-purple);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            width: fit-content;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+        }
+
+        /* --- Empowering Industries --- */
+        .empowering-section {
+            padding: 6rem 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .industry-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+        }
+
+        .industry-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .quote-icon {
+            font-size: 2rem;
+            color: var(--primary-purple);
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .industry-text {
+            font-size: 0.95rem;
+            color: #ccc;
+            margin-bottom: 2rem;
+            flex: 1;
+        }
+
+        .industry-person {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .person-img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #333;
+            object-fit: cover;
+        }
+
+        .person-info h5 { font-size: 0.95rem; }
+        .person-info p { font-size: 0.8rem; color: var(--text-secondary); }
+
+        /* --- Footer --- */
+        footer {
+            padding: 6rem 2rem 2rem;
+            text-align: center;
+            border-top: 1px solid var(--border-color);
+            background: #020203;
+        }
+
+        .footer-cta h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .footer-cta p {
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            margin: 4rem 0;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .footer-links a:hover { color: white; }
+
+        .copyright {
+            color: #555;
+            font-size: 0.8rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .why-container, .gs-container, .industry-grid {
+                grid-template-columns: 1fr;
+            }
+            .bubble-cloud { display: none; } /* Hide complex visual on mobile for simplicity */
+            .hero h1 { font-size: 2.5rem; }
+            .models-grid { grid-template-columns: 1fr 1fr; }
+        }
+        @media (max-width: 768px) {
+            .models-grid { grid-template-columns: 1fr; }
+            nav ul { display: none; } /* Simplified mobile nav */
+            .update-item { flex-direction: column; gap: 0.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">
+            <!-- Simple SVG Logo Placeholder -->
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="#6b52ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M2 17L12 22L22 17" stroke="#6b52ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M2 12L12 17L22 12" stroke="#6b52ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Alibaba Cloud Model Studio
+        </div>
+        <nav>
+            <ul>
+                <li>Models</li>
+                <li>Docs</li>
+                <li>API Guide</li>
+            </ul>
+        </nav>
+        <div class="start-free">Start Free</div>
+    </header>
+
+    <section class="hero">
+        <div class="announcement-pill">
+            Model Studio Now Available in the U.S.! <span>Try Now &rarr;</span>
+        </div>
+        <h1>Foundation for AI Creation</h1>
+        <p>Accelerate deployment and scaling of Qwen, Wan, and more leading models on one secure Alibaba Cloud platform</p>
+        <a href="#" class="cta-btn">Claim 1M Free Tokens per Model</a>
+    </section>
+
+    <section class="models-section">
+        <h2 class="section-title">Explore Industry-Leading Foundational Models</h2>
+        
+        <div class="tabs">
+            <div class="tab active">Flagship</div>
+            <div class="tab">Cost-optimized</div>
+            <div class="tab">Visual</div>
+            <div class="tab">Wan</div>
+            <div class="tab">Multi-modal</div>
+            <div class="tab">Embeddings</div>
+        </div>
+
+        <div class="models-grid">
+            <!-- Card 1 -->
+            <div class="model-card">
+                <div class="model-header">
+                    <div class="model-name">Qwen3-Max</div>
+                    <div class="model-tag">✨ Qwen3</div>
+                </div>
+                <div class="model-desc">
+                    The Qwen 3 series Max model has undergone specialized upgrades in agent programming and tool invocation compared to the preview version.
+                </div>
+            </div>
+
+            <!-- Card 2 -->
+            <div class="model-card">
+                <div class="model-header">
+                    <div class="model-name">Qwen3-Coder-Plus</div>
+                    <div class="model-tag">✨ Qwen3</div>
+                </div>
+                <div class="model-desc">
+                    Powered by Qwen3, this is a powerful Coding Agent that excels in tool calling and environment interaction to achieve autonomous programming.
+                </div>
+            </div>
+
+            <!-- Card 3 -->
+            <div class="model-card">
+                <div class="model-header">
+                    <div class="model-name">Qwen-MT-Plus</div>
+                    <div class="model-tag">✨ Qwen3</div>
+                </div>
+                <div class="model-desc">
+                    Qwen-MT-Plus, the flagship translation model from our Qwen series, is now fully upgraded with the Qwen3 architecture. It supports 92 languages.
+                </div>
+            </div>
+
+            <!-- Card 4 -->
+            <div class="model-card">
+                <div class="model-header">
+                    <div class="model-name">Qwen-Plus</div>
+                    <div class="model-tag">✨ Qwen3</div>
+                </div>
+                <div class="model-desc">
+                    Qwen-Plus is an enhanced version of the Qwen ultra-large language model that supports multiple input languages such as Chinese and English.
+                </div>
+            </div>
+        </div>
+
+        <a href="#" class="more-models-btn">More models</a>
+    </section>
+
+    <section class="why-section">
+        <div class="why-container">
+            <div class="why-list">
+                <h2>Why Model Studio?</h2>
+                
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <path d="M12 16v-4"></path>
+                            <path d="M12 8h.01"></path>
+                        </svg>
+                    </div>
+                    <div class="feature-text">
+                        <h3>Diverse Model Ecosystem</h3>
+                        <p>Easily experience and quickly access Alibaba Cloud's latest foundational models (FM), including Qwen-Max, Qwen-Plus, Qwen-Turbo, Qwen-VL, and the Wan series.</p>
+                    </div>
+                </div>
+
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                            <polyline points="16 18 22 12 16 6"></polyline>
+                            <polyline points="8 6 2 12 8 18"></polyline>
+                        </svg>
+                    </div>
+                    <div class="feature-text">
+                        <h3>Efficient Full-Chain Development</h3>
+                        <p>Streamline your workflow from prototyping to production with integrated tools and APIs.</p>
+                    </div>
+                </div>
+
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                        </svg>
+                    </div>
+                    <div class="feature-text">
+                        <h3>Enterprise-Grade Security</h3>
+                        <p>Built on Alibaba Cloud's robust infrastructure ensuring data privacy and compliance.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bubble-cloud">
+                <div class="bubble main b7">Qwen</div>
+                <div class="bubble main" style="top: 60%; left: 40%;">Wan</div>
+                
+                <div class="bubble b1">Qwen-VL-Plus</div>
+                <div class="bubble b2">Qwen3</div>
+                <div class="bubble b3">Qwen-Omni-Turbo</div>
+                <div class="bubble b4">Qwen3-Coder-Plus</div>
+                <div class="bubble b5">Wan2.2-Plus</div>
+                <div class="bubble b6">wan2.2-i2v-plus</div>
+                <div class="bubble b8">Qwen-Flash</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="updates-section">
+        <h2 class="section-title">Latest Updates</h2>
+        
+        <div class="update-item">
+            <div class="update-date">2026-01-23</div>
+            <div class="update-content">
+                <span class="update-badge">New Model Launched</span>
+                <span class="update-title">Qwen3-Max-2026-01-23</span>
+                <p class="update-desc">Compared with the snapshot as of September 23, 2025, the Qwen-3 series Max model in this release achieves an effective integration of thinking and non-thinking modes...</p>
+            </div>
+        </div>
+
+        <div class="update-item">
+            <div class="update-date">2026-01-15</div>
+            <div class="update-content">
+                <span class="update-badge">New Model Launched</span>
+                <span class="update-title">Wan2.6-i2v-Flash</span>
+            </div>
+        </div>
+
+        <div class="update-item">
+            <div class="update-date">2026-01-15</div>
+            <div class="update-content">
+                <span class="update-badge">New Model Launched</span>
+                <span class="update-title">Qwen-Image-Edit-Max</span>
+            </div>
+        </div>
+
+        <div class="update-item">
+            <div class="update-date">2026-01-04</div>
+            <div class="update-content">
+                <span class="update-badge">New Region</span>
+                <span class="update-title">Alibaba Cloud Model Studio Now Available in the U.S.!</span>
+            </div>
+        </div>
+        
+        <div class="update-item">
+            <div class="update-date">2025-12-31</div>
+            <div class="update-content">
+                <span class="update-badge">New Model Launched</span>
+                <span class="update-title">Qwen-Image-Max</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="get-started-section">
+        <div class="gs-header">
+            <h2>Get Started in Minutes</h2>
+            <p>Quickly integrate generative AI into your applications using our straightforward REST API or dedicated SDKs.</p>
+            <a href="#" class="cta-btn">Generate your API key</a>
+        </div>
+
+        <div class="gs-container">
+            <div class="steps-list">
+                <div class="step">
+                    <div class="step-icon">1</div>
+                    <div class="step-text">
+                        <h4>Get a API Key</h4>
+                        <p>Generate your unique access key securely.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-icon">2</div>
+                    <div class="step-text">
+                        <h4>Set Up Environment</h4>
+                        <p>Configure your development environment variables.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-icon">3</div>
+                    <div class="step-text">
+                        <h4>Send Your First Request</h4>
+                        <p>Start building with a simple API call.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="api-mockup">
+                <div class="mockup-header">
+                    <span style="color:#aaa; font-size:0.9rem;">API Key Management</span>
+                    <button class="mockup-btn" style="margin:0; padding: 5px 10px; font-size: 0.8rem;">Create API Key (1/10)</button>
+                </div>
+                <div class="mockup-form">
+                    <div style="display:flex; justify-content:space-between; border-bottom:1px solid #333; padding-bottom:10px; color:#888; font-size:0.8rem;">
+                        <span>ID NO.</span>
+                        <span>API Key</span>
+                        <span>Workspace</span>
+                        <span>Description</span>
+                        <span>Actions</span>
+                    </div>
+                    <!-- Simulating a modal overlay -->
+                    <div style="position:absolute; top:50%; left:50%; transform:translate(-50%, -60%); background:#1a1a1f; padding:20px; border:1px solid #444; border-radius:8px; width:300px; box-shadow:0 10px 30px rgba(0,0,0,0.8);">
+                        <h4 style="margin-bottom:15px;">Create API Key</h4>
+                        <div style="margin-bottom:15px;">
+                            <label style="font-size:0.8rem; color:#aaa;">Workspace *</label>
+                            <div style="background:#0a0a0c; border:1px solid #333; padding:8px; border-radius:4px; color:#666; font-size:0.9rem;">Select a workspace</div>
+                        </div>
+                        <div style="margin-bottom:15px;">
+                            <label style="font-size:0.8rem; color:#aaa;">Description</label>
+                            <div style="background:#0a0a0c; border:1px solid #333; padding:8px; border-radius:4px; color:#666; font-size:0.9rem;">Enter a description</div>
+                        </div>
+                        <div style="text-align:right;">
+                            <button style="background:var(--primary-purple); color:white; border:none; padding:6px 12px; border-radius:4px; cursor:pointer;">OK</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="empowering-section">
+        <h2 class="section-title">Empowering Industries</h2>
+        <div class="industry-grid">
+            <!-- Card 1 -->
+            <div class="industry-card">
+                <div class="quote-icon">"</div>
+                <p class="industry-text">Through its partnership with Alibaba Cloud, AstraZeneca has introduced a groundbreaking adverse event summary system in the pharmaceutical industry, utilizing Qwen LLM and Dedicated Model Studio to significantly enhance the accuracy and efficiency of reporting.</p>
+                <div class="industry-person">
+                    <img src="https://placehold.co/100x100/333/fff?text=XZ" alt="Xin Zhong" class="person-img">
+                    <div class="person-info">
+                        <h5>Xin Zhong</h5>
+                        <p>Executive director-Head of IT, China and Hong Kong</p>
+                        <a href="#" style="color:var(--primary-purple); font-size:0.8rem; margin-top:5px; display:block;">Learn More &rarr;</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 2 -->
+            <div class="industry-card">
+                <div class="quote-icon">"</div>
+                <p class="industry-text">Drunk Elephant partnered with Alibaba Cloud because it had the cosmetics industry know-how, was familiar with the client's IT infrastructure, and, as the largest cloud computing company in China and Asia Pacific, offered digital expertise and a huge advantage in the Eastern market.</p>
+                <div class="industry-person">
+                    <img src="https://placehold.co/100x100/333/fff?text=TC" alt="Tina Chen" class="person-img">
+                    <div class="person-info">
+                        <h5>Tina Chen</h5>
+                        <p>Chief Digital Officer China Region, Shiseido</p>
+                        <a href="#" style="color:var(--primary-purple); font-size:0.8rem; margin-top:5px; display:block;">Learn More &rarr;</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 3 -->
+            <div class="industry-card">
+                <div class="quote-icon">"</div>
+                <p class="industry-text">eSignGlobal partnered with Alibaba Cloud to leverage its AI capabilities, launching eSignGlobal 2.0, a sophisticated Contract Lifecycle Management system featuring enhanced multilingual support, automated risk detection, and efficient contract processing.</p>
+                <div class="industry-person">
+                    <img src="https://placehold.co/100x100/333/fff?text=EG" alt="eSignGlobal" class="person-img">
+                    <div class="person-info">
+                        <h5>eSignGlobal</h5>
+                        <p>A convenient, efficient, secure, low-cost, and eco-friendly electronic signature product.</p>
+                        <a href="#" style="color:var(--primary-purple); font-size:0.8rem; margin-top:5px; display:block;">Learn More &rarr;</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer-cta">
+            <h2>Start Building with Model Studio Today</h2>
+            <p>Leverage our leading foundational models and secure platform to bring your ideas to life.</p>
+            <a href="#" class="cta-btn" style="background:transparent; border:1px solid #444; box-shadow:none;">Start Your Free Trial Now</a>
+        </div>
+
+        <div class="footer-links">
+            <a href="#">Qwen</a>
+            <a href="#">Wan</a>
+            <a href="#">ModelScope</a>
+            <a href="#">Alibaba Cloud</a>
+            <a href="#">Community</a>
+        </div>
+
+        <div class="copyright">
+            Copyright © 2026 Alibaba. All rights reserved.
+        </div>
+    </footer>
+
+</body>
+</html>
+```

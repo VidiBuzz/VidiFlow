@@ -1,0 +1,2584 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VidiTwin 2026 | The Smart Stack Champion</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Kumbh+Sans:wght@300;400;500;600;700;800;900&family=Inter:wght@400;600&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="vidi-nav-component.css">
+    <script src="vidi-nav-component.js"></script>
+    <style>
+        /* --- VidiSmart Universal Design System 2026 --- */
+        :root {
+            /* Core Palette - Dark Mode Foundation */
+            --bg-deep: #050511;
+            --bg-panel: #0f111a;
+            --accent-primary: #6366f1;
+            --accent-secondary: #a855f7;
+            --accent-glow: #818cf8;
+            --text-main: #e2e8f0;
+            --text-muted: #94a3b8;
+
+            /* Legacy mappings for partial compatibility */
+            --bg-main: #FAF9F6;
+            /* Keeping for content area if needed, though dark is better */
+            --accent: #6366f1;
+            /* Override old orange with new primary */
+            --dark: #0f172a;
+
+            /* Glassmorphism Tokens */
+            --glass-bg: rgba(15, 23, 42, 0.85);
+            --glass-border: 1px solid rgba(255, 255, 255, 0.08);
+            --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+            --backdrop-blur: blur(20px);
+        }
+
+
+
+        body {
+            font-family: "Inter", sans-serif;
+            background-color: transparent;
+            color: var(--dark);
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            margin: 0;
+        }
+
+        /* Utility helper since Tailwind is removed */
+        .w-full {
+            width: 100%;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Essential Responsive Utilities */
+        @media (max-width: 1023px) {
+            .desktop-only {
+                display: none !important;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .lg-block {
+                display: block !important;
+            }
+
+            .lg-grid {
+                display: grid !important;
+            }
+
+            .lg-grid-2 {
+                display: grid !important;
+                grid-template-columns: 1fr 1fr !important;
+            }
+        }
+
+        #bg-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+            opacity: 1;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        .brand-font {
+            font-family: 'Kumbh Sans', sans-serif;
+        }
+
+        .chart-container {
+            position: relative;
+            width: 100%;
+            margin: auto;
+            height: 480px;
+            /* Slightly taller for more detail */
+        }
+
+        .nav-link.active {
+            border-bottom: 3px solid var(--accent);
+            color: var(--accent);
+            font-weight: 800;
+        }
+
+        .hero-gradient {
+            background: linear-gradient(135deg, #111827 0%, #1e3a8a 100%);
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 20px;
+            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+            position: relative;
+            transform-style: preserve-3d;
+            box-shadow:
+                0 10px 20px -5px rgba(0, 0, 0, 0.05),
+                inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+        }
+
+        .glass-card:hover {
+            transform: translateY(-10px) scale(1.03) rotateX(4deg) rotateY(2deg);
+            box-shadow:
+                0 40px 60px -15px rgba(0, 0, 0, 0.15),
+                inset 0 0 20px rgba(255, 255, 255, 0.5),
+                0 0 0 1px rgba(180, 83, 9, 0.3);
+            /* Subtle accent glow */
+            background: rgba(255, 255, 255, 0.95);
+            border-bottom: 4px solid var(--accent);
+            /* Physical thickness cue */
+        }
+
+        /* Removed global glass-card::before to fix faded image issue */
+
+        /* Modern Animations for Sense Revolution Section */
+        @keyframes shimmer {
+            0% {
+                transform: translateX(-100%);
+            }
+
+            100% {
+                transform: translateX(100%);
+            }
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        @keyframes glow {
+
+            0%,
+            100% {
+                box-shadow: 0 0 20px rgba(139, 92, 246, 0.3);
+            }
+
+            50% {
+                box-shadow: 0 0 40px rgba(139, 92, 246, 0.6);
+            }
+        }
+
+        .animate-float {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .animate-glow {
+            animation: glow 3s ease-in-out infinite;
+        }
+
+        .winner-badge {
+            background: linear-gradient(90deg, #B45309, #D97706);
+            color: white;
+            font-weight: 900;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.65rem;
+            text-transform: uppercase;
+        }
+
+        .video-box {
+            background: #000;
+            aspect-ratio: 16/9;
+            border-radius: 12px;
+            position: relative;
+            cursor: pointer;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .video-box::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.4);
+            transition: background 0.3s;
+        }
+
+        .video-box:hover::before {
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .video-box::after {
+            content: '▶ WATCH DEMO';
+            position: absolute;
+            color: white;
+            font-weight: 900;
+            font-size: 0.7rem;
+            background: var(--accent);
+            padding: 6px 12px;
+            border-radius: 4px;
+            opacity: 1;
+            z-index: 10;
+        }
+
+        /* Elaborated Services Styles */
+        .service-card {
+            cursor: help;
+            overflow: hidden;
+            border: 2px solid rgba(59, 130, 246, 0.3) !important;
+            box-shadow: 
+                0 4px 6px -1px rgba(0, 0, 0, 0.1),
+                0 2px 4px -1px rgba(0, 0, 0, 0.06),
+                inset 0 1px 0 rgba(255, 255, 255, 0.6),
+                0 0 0 1px rgba(59, 130, 246, 0.15) !important;
+        }
+        
+        .service-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 20px;
+            padding: 2px;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.5), rgba(147, 51, 234, 0.3), rgba(59, 130, 246, 0.5));
+            -webkit-mask: 
+                linear-gradient(#fff 0 0) content-box, 
+                linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        .service-card:hover {
+            border-color: rgba(59, 130, 246, 0.6) !important;
+            box-shadow: 
+                0 20px 25px -5px rgba(0, 0, 0, 0.15),
+                0 10px 10px -5px rgba(0, 0, 0, 0.08),
+                0 0 0 3px rgba(59, 130, 246, 0.2),
+                0 0 20px rgba(59, 130, 246, 0.15) !important;
+            transform: translateY(-5px);
+        }
+
+        .service-elaborate {
+            position: absolute;
+            inset: 0;
+            background: #1e3a8a;
+            /* Explicit Deep Blue */
+            color: white;
+            padding: 1.5rem;
+            transform: translateY(101%);
+            transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            z-index: 20;
+            overflow-y: auto;
+        }
+
+        .service-card:hover .service-elaborate {
+            transform: translateY(0);
+        }
+
+        .hx-badge {
+            font-size: 10px;
+            font-weight: 900;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 2px 6px;
+            border-radius: 3px;
+            margin-bottom: 8px;
+            display: inline-block;
+            letter-spacing: 1px;
+        }
+
+        .live-status {
+            animation: pulse 2s infinite;
+        }
+
+        /* --- VANILLA CSS REPLACEMENT FOR TAILWIND --- */
+        .hidden {
+            display: none;
+        }
+
+        .flex {
+            display: flex;
+        }
+
+        .flex-col {
+            flex-direction: column;
+        }
+
+        .flex-grow {
+            flex-grow: 1;
+        }
+
+        .items-center {
+            align-items: center;
+        }
+
+        .items-stretch {
+            align-items: stretch;
+        }
+
+        .justify-between {
+            justify-content: space-between;
+        }
+
+        .justify-center {
+            justify-content: center;
+        }
+
+        .gap-2 {
+            gap: 0.5rem;
+        }
+
+        .gap-3 {
+            gap: 0.75rem;
+        }
+
+        .gap-4 {
+            gap: 1rem;
+        }
+
+        .gap-6 {
+            gap: 1.5rem;
+        }
+
+        .gap-8 {
+            gap: 2rem;
+        }
+
+        .gap-10 {
+            gap: 2.5rem;
+        }
+
+        .gap-12 {
+            gap: 3rem;
+        }
+
+        .grid {
+            display: grid;
+        }
+
+        .grid-cols-1 {
+            grid-template-columns: repeat(1, minmax(0, 1fr));
+        }
+
+        @media (min-width: 768px) {
+            .md\:flex {
+                display: flex !important;
+            }
+
+            .md\:flex-row {
+                flex-direction: row;
+            }
+
+            .md\:grid-cols-2 {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .md\:grid-cols-3 {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+
+            .md\:p-12 {
+                padding: 3rem;
+            }
+
+            .md\:p-16 {
+                padding: 4rem;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .lg\:flex {
+                display: flex !important;
+            }
+
+            .lg\:grid-cols-2 {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .lg\:grid-cols-3 {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+
+            .lg\:w-1\/3 {
+                width: 33.333333%;
+            }
+
+            .lg\:w-2\/3 {
+                width: 66.666667%;
+            }
+
+            .lg\:col-span-2 {
+                grid-column: span 2 / span 2;
+            }
+
+            .lg\:col-span-3 {
+                grid-column: span 3 / span 3;
+            }
+        }
+
+        .max-w-7xl {
+            max-width: 80rem;
+        }
+
+        .mx-auto {
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .px-4 {
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+
+        .py-10 {
+            padding-top: 2.5rem;
+            padding-bottom: 2.5rem;
+        }
+
+        .py-16 {
+            padding-top: 4rem;
+            padding-bottom: 4rem;
+        }
+
+        .p-4 {
+            padding: 1rem;
+        }
+
+        .p-6 {
+            padding: 1.5rem;
+        }
+
+        .p-8 {
+            padding: 2rem;
+        }
+
+        .p-10 {
+            padding: 2.5rem;
+        }
+
+        .w-full {
+            width: 100%;
+        }
+
+        .h-16 {
+            height: 4rem;
+        }
+
+        .bg-white {
+            background-color: white;
+        }
+
+        .bg-black {
+            background-color: black;
+        }
+
+        .bg-gray-50 {
+            background-color: #f9fafb;
+        }
+
+        .bg-gray-100 {
+            background-color: #f3f4f6;
+        }
+
+        .bg-gray-900 {
+            background-color: #111827;
+        }
+
+        .bg-amber-100 {
+            background-color: #fef3c7;
+        }
+
+        .bg-amber-500 {
+            background-color: #f59e0b;
+        }
+
+        .bg-blue-900 {
+            background-color: #1e3a8a;
+        }
+
+        .bg-blue-100 {
+            background-color: #dbeafe;
+        }
+
+        .text-white {
+            color: white;
+        }
+
+        .text-gray-400 {
+            color: #9ca3af;
+        }
+
+        .text-gray-500 {
+            color: #6b7280;
+        }
+
+        .text-gray-600 {
+            color: #4b5563;
+        }
+
+        .text-gray-800 {
+            color: #1f2937;
+        }
+
+        .text-gray-900 {
+            color: #111827;
+        }
+
+        .text-amber-600 {
+            color: #d97706;
+        }
+
+        .text-amber-700 {
+            color: #b45309;
+        }
+
+        .text-amber-800 {
+            color: #92400e;
+        }
+
+        .text-amber-400 {
+            color: #fbbf24;
+        }
+
+        .text-blue-100 {
+            color: #dbeafe;
+        }
+
+        .text-blue-800 {
+            color: #1e40af;
+        }
+
+        .font-black {
+            font-weight: 900;
+        }
+
+        .font-bold {
+            font-weight: 700;
+        }
+
+        .font-medium {
+            font-weight: 500;
+        }
+
+        .italic {
+            font-style: italic;
+        }
+
+        .uppercase {
+            text-transform: uppercase;
+        }
+
+        .tracking-tight {
+            letter-spacing: -0.025em;
+        }
+
+        .tracking-widest {
+            letter-spacing: 0.1em;
+        }
+
+        .tracking-tighter {
+            letter-spacing: -0.05em;
+        }
+
+        .text-xs {
+            font-size: 0.85rem;
+            /* Increased from 0.75rem */
+        }
+
+        .text-sm {
+            font-size: 1rem;
+            /* Increased from 0.875rem */
+        }
+
+        .text-lg {
+            font-size: 1.25rem;
+            /* Increased from 1.125rem */
+        }
+
+        .text-xl {
+            font-size: 1.25rem;
+        }
+
+        .text-2xl {
+            font-size: 1.5rem;
+        }
+
+        .text-3xl {
+            font-size: 1.875rem;
+        }
+
+        .text-4xl {
+            font-size: 2.25rem;
+        }
+
+        .text-5xl {
+            font-size: 3rem;
+        }
+
+        .border-b {
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .border {
+            border: 1px solid #e5e7eb;
+        }
+
+        .border-gray-200 {
+            border-color: #e5e7eb;
+        }
+
+        .border-white\/20 {
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .rounded {
+            border-radius: 0.25rem;
+        }
+
+        .rounded-xl {
+            border-radius: 0.75rem;
+        }
+
+        .rounded-2xl {
+            border-radius: 1rem;
+        }
+
+        .rounded-3xl {
+            border-radius: 1.5rem;
+        }
+
+        .rounded-full {
+            border-radius: 9999px;
+        }
+
+        .sticky {
+            position: sticky;
+        }
+
+        .top-0 {
+            top: 0;
+        }
+
+        .z-50 {
+            z-index: 50;
+        }
+
+        .relative {
+            position: relative;
+        }
+
+        .absolute {
+            position: absolute;
+        }
+
+        .inset-0 {
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+        }
+
+        .overflow-hidden {
+            overflow: hidden;
+        }
+
+        .object-cover {
+            object-fit: cover;
+        }
+
+        .aspect-video {
+            aspect-ratio: 16 / 9;
+        }
+
+        .shadow-sm {
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        }
+
+        .shadow-xl {
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        .shadow-2xl {
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+
+        .mb-4 {
+            margin-bottom: 1rem;
+        }
+
+        .mb-2 {
+            margin-bottom: 0.5rem;
+        }
+
+        .mb-8 {
+            margin-bottom: 2rem;
+        }
+
+        .mb-16 {
+            margin-bottom: 4rem;
+        }
+
+        .mt-4 {
+            margin-top: 1rem;
+        }
+
+        .mt-6 {
+            margin-top: 1.5rem;
+        }
+
+        .space-y-12>*+* {
+            margin-top: 3rem;
+        }
+
+        .space-x-6>*+* {
+            margin-left: 1.5rem;
+        }
+
+        button {
+            cursor: pointer;
+            border: none;
+            background: transparent;
+        }
+
+        .nav-link {
+            background: none;
+            border: none;
+            padding: 0.5rem 0;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .nav-link:hover {
+            color: var(--accent);
+        }
+
+        /* Font Sizes */
+        .text-\[9px\] {
+            font-size: 11px;
+        }
+
+        /* Increased */
+        .text-\[10px\] {
+            font-size: 12px;
+        }
+
+        /* Increased */
+        .text-\[11px\] {
+            font-size: 13px;
+        }
+
+        /* Panning/Spacing */
+        .contents {
+            display: contents;
+        }
+
+        /* Fix for Services Grid Layout */
+
+        .p-2 {
+            padding: 0.5rem;
+        }
+
+        .p-3 {
+            padding: 0.75rem;
+        }
+
+        .py-1 {
+            padding-top: 0.25rem;
+            padding-bottom: 0.25rem;
+        }
+
+        .py-2 {
+            padding-top: 0.5rem;
+            padding-bottom: 0.5rem;
+        }
+
+        .px-2 {
+            padding-left: 0.5rem;
+            padding-right: 0.5rem;
+        }
+
+        .px-3 {
+            padding-left: 0.75rem;
+            padding-right: 0.75rem;
+        }
+
+        .px-5 {
+            padding-left: 1.25rem;
+            padding-right: 1.25rem;
+        }
+
+        .px-6 {
+            padding-left: 1.5rem;
+            padding-right: 1.5rem;
+        }
+
+        .py-4 {
+            padding-top: 1rem;
+            padding-bottom: 1rem;
+        }
+
+        .pb-2 {
+            padding-bottom: 0.5rem;
+        }
+
+        .pt-8 {
+            padding-top: 2rem;
+        }
+
+        .mt-2 {
+            margin-top: 0.5rem;
+        }
+
+        .mt-4 {
+            margin-top: 1rem;
+        }
+
+        .mt-6 {
+            margin-top: 1.5rem;
+        }
+
+        .-mt-1 {
+            margin-top: -0.25rem;
+        }
+
+        .mb-2 {
+            margin-bottom: 0.5rem;
+        }
+
+        .mb-3 {
+            margin-bottom: 0.75rem;
+        }
+
+        .mb-4 {
+            margin-bottom: 1rem;
+        }
+
+        .mb-6 {
+            margin-bottom: 1.5rem;
+        }
+
+        .mb-8 {
+            margin-bottom: 2rem;
+        }
+
+        /* Layout */
+        .w-10 {
+            width: 2.5rem;
+        }
+
+        .h-10 {
+            height: 2.5rem;
+        }
+
+        .w-64 {
+            width: 16rem;
+        }
+
+        .max-w-4xl {
+            max-width: 56rem;
+        }
+
+        .max-w-xl {
+            max-width: 36rem;
+        }
+
+        .max-w-3xl {
+            max-width: 48rem;
+        }
+
+        .max-h-\[500px\] {
+            max-height: 500px;
+        }
+
+        /* Colors & Borders */
+        .bg-amber-100 {
+            background-color: #fef3c7;
+        }
+
+        .text-amber-700 {
+            color: #b45309;
+        }
+
+        .text-emerald-600 {
+            color: #059669;
+        }
+
+        .bg-emerald-100 {
+            border-color: #d1fae5;
+        }
+
+        .divide-y>*+* {
+            border-top: 1px solid #f3f4f6;
+        }
+
+        .border-gray-100 {
+            border-color: #f3f4f6;
+        }
+
+        /* Table Styles */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        /* Navigation Links Fix */
+        .nav-link.active {
+            border-bottom: 3px solid var(--accent) !important;
+            color: var(--accent) !important;
+            font-weight: 800 !important;
+        }
+    </style>
+</head>
+
+<body class="min-h-screen flex flex-col">
+    <!-- Navigation injected by vidi-nav-component.js -->
+
+    <!-- Level 2: VidiTwin Context Navigation -->
+    <div id="viditwin-subnav"
+        style="position: fixed; top: 64px; left: 0; right: 0; z-index: 9998; background: rgba(0,0,0,0.5); backdrop-filter: blur(12px); border-top: 1px solid rgba(255,255,255,0.05);">
+        <div
+            style="max-width: 1800px; margin: 0 auto; padding: 0 1.5rem; height: 48px; display: flex; align-items: center; justify-content: space-between;">
+            <div style="display: flex; align-items: center; gap: 16px;">
+                <span
+                    style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: rgba(96,165,250,0.8); padding-left: 8px; border-left: 2px solid rgba(59,130,246,0.5);">Twin
+                    Context</span>
+                <div style="display: none;" class="viditwin-subnav-links">
+                    <button onclick="showPage('platform')" class="nav-twin-link"
+                        style="padding: 4px 12px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #fff; border: none; background: none; border-bottom: 2px solid #3b82f6; cursor: pointer;">Platform</button>
+                    <button onclick="showPage('models')" class="nav-twin-link"
+                        style="padding: 4px 12px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: rgba(255,255,255,0.7); border: none; background: none; border-bottom: 2px solid transparent; cursor: pointer;">SOTA
+                        Models</button>
+                    <button onclick="showPage('visual')" class="nav-twin-link"
+                        style="padding: 4px 12px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #f59e0b; border: none; background: none; border-bottom: 2px solid transparent; cursor: pointer;">Visual
+                        AI</button>
+                    <button onclick="showPage('infra')" class="nav-twin-link"
+                        style="padding: 4px 12px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: rgba(255,255,255,0.7); border: none; background: none; border-bottom: 2px solid transparent; cursor: pointer;">Hardware</button>
+                    <button onclick="showPage('examples')" class="nav-twin-link"
+                        style="padding: 4px 12px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: rgba(255,255,255,0.7); border: none; background: none; border-bottom: 2px solid transparent; cursor: pointer;">Market
+                        Proof</button>
+                </div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <span
+                    style="font-size: 9px; font-weight: 900; background: rgba(16,185,129,0.1); color: #34d399; padding: 4px 8px; border-radius: 4px; border: 1px solid rgba(16,185,129,0.2);">MAMBA-MOE
+                    READY</span>
+                <button
+                    style="background: #2563eb; color: #fff; padding: 6px 16px; border-radius: 6px; font-weight: 700; font-size: 11px; letter-spacing: 0.05em; border: none; cursor: pointer; box-shadow: 0 4px 12px rgba(37,99,235,0.2);">Deploy
+                    Agent</button>
+            </div>
+        </div>
+    </div>
+    <style>
+        @media (min-width: 768px) {
+            .viditwin-subnav-links {
+                display: flex !important;
+                gap: 4px;
+            }
+        }
+    </style>
+
+    <!-- Spacer for nav + subnav -->
+    <div style="height: 130px; width: 100%;"></div>
+
+    <script>
+        function updateActiveNav(id) {
+            document.querySelectorAll('.nav-twin-link').forEach(el => {
+                if (el.innerText.includes('VISUAL')) {
+                    el.style.color = '#f59e0b';
+                } else {
+                    el.style.color = 'rgba(255,255,255,0.7)';
+                }
+                el.style.borderBottom = '2px solid transparent';
+            });
+            const activeBtn = Array.from(document.querySelectorAll('.nav-twin-link')).find(b => b.getAttribute('onclick')?.includes("'" + id + "'"));
+            if (activeBtn) {
+                activeBtn.style.color = '#fff';
+                activeBtn.style.borderBottom = '2px solid #3b82f6';
+            }
+        }
+
+    </script>
+
+    <!-- Deprecated Nav Block Removed -->
+
+
+    <!-- Background Canvas -->
+    <canvas id="bg-canvas"></canvas>
+
+
+
+    <!-- Removed redundant .vidi-nav-menu to fix triple-header overlap -->
+
+    <!-- Actions -->
+    <!-- Removed redundant .vidi-nav-actions/header close tag -->
+    <div style="margin-top: 0px;"></div>
+
+    <!-- RESTORED: Page-Specific Navigation (Level 2: Local) -->
+    <!-- Positioned to stick BELOW the 70px Universal Nav -->
+    <nav class="hidden">
+        <div class="container mx-auto max-w-screen-2xl px-6 md:px-12 flex justify-between items-center h-16">
+            <div class="flex items-center gap-3">
+                <div
+                    class="w-10 h-10 bg-amber-600 rounded flex items-center justify-center text-white font-black text-xl brand-font">
+                    V</div>
+                <div>
+                    <h1 class="font-black text-xl tracking-tight brand-font">VIDITWIN</h1>
+                    <p class="text-[9px] uppercase tracking-widest text-gray-400 font-bold -mt-1">PaaS* Smart Stack •
+                        SOTA** 2026</p>
+                </div>
+            </div>
+
+            <!-- Original Page Links Preserved -->
+            <div class="hidden lg:flex space-x-6 text-xs font-bold uppercase tracking-widest text-gray-500">
+                <button onclick="showPage('platform')" class="nav-link active">Platform</button>
+                <button onclick="showPage('models')" class="nav-link">SOTA Models</button>
+                <button onclick="showPage('visual')" class="nav-link text-amber-600 font-bold">VidiTwin Visual
+                    AI</button>
+                <button onclick="showPage('infra')" class="nav-link">Hardware</button>
+                <button onclick="showPage('examples')" class="nav-link">Market Proof</button>
+            </div>
+
+            <div class="flex items-center gap-3">
+                <span class="text-[9px] font-black bg-amber-100 text-amber-800 px-2 py-1 rounded">MAMBA-MOE READY</span>
+                <button
+                    class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-1.5 rounded-full font-bold text-xs tracking-wide shadow-md transition-all">Deploy
+                    Agent</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- SECTION 1: PLATFORM MISSION -->
+    <div id="page-platform" class="space-y-12 px-6 md:px-12 lg:px-20 max-w-screen-xl mx-auto">
+        <!-- HERO VIDEO SECTION (Moved inside Platform) -->
+        <div class="mb-16">
+            <div class="glass-card overflow-hidden shadow-2xl border-0 !p-0 bg-black">
+                <video class="w-full aspect-video rounded-2xl" controls
+                    poster="https://cdn.vidi.news/digital_twin_poster.png">
+                    <source src="https://cdn.vidi.news/Digital_Twin_Tensor_Truth.mp4" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+                <div class="mt-6 p-6">
+                    <span
+                        class="inline-block px-3 py-1 bg-amber-500 text-black font-black text-[10px] rounded mb-4 uppercase tracking-tighter">New
+                        Era: Digital Twin Tensor Truth</span>
+                    <h2 class="text-3xl md:text-5xl font-black brand-font leading-tight mb-4">
+                        KG + Text + Vector Fusion
+                    </h2>
+                    <p class="text-gray-500 text-sm md:text-lg font-medium max-w-4xl leading-relaxed">
+                        Experience the next evolution of knowledge representation. We transcend traditional
+                        databases by
+                        fusing Knowledge Graphs with Vector embeddings at the speed of thought.
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="hero-gradient p-8 md:p-12 rounded-3xl text-white relative overflow-hidden shadow-2xl">
+            <div style="display: grid; grid-template-columns: 1fr; gap: 3rem; align-items: center;"
+                class="lg-grid-2 relative z-10">
+                <div>
+                    <span class="text-amber-500 font-black tracking-widest uppercase text-sm mb-4 block">The 2026
+                        Winner</span>
+                    <h2 class="text-4xl md:text-5xl font-black brand-font italic leading-tight mb-6">
+                        VidiSmart PaaS*<br><span class="text-amber-500 underline decoration-white/20">Smart
+                            Stack</span>
+                    </h2>
+                    <p class="text-sm md:text-base text-blue-100 leading-relaxed mb-8">
+                        The current hyperstack for voice agents utilizing leading-edge SOTA**
+                        performance. We integrate
+                        <strong>Llama Nemotron Super 49B hybrid</strong> and <strong>Mamba-Transformer
+                            Mixture-of-Experts (MoE)</strong> to provide the world's most responsive full-duplex
+                        experience.
+                    </p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-white/10 p-4 rounded-xl border border-white/20">
+                            <h4 class="text-amber-400 font-black text-xs uppercase mb-2">Primary Architecture</h4>
+                            <p class="text-xs font-medium">PersonaPlex-7B-v1 & Mamba-Transformer MoE</p>
+                        </div>
+                        <div class="bg-white/10 p-4 rounded-xl border border-white/20">
+                            <h4 class="text-amber-400 font-black text-xs uppercase mb-2">Streaming Intelligence
+                            </h4>
+                            <p class="text-xs font-medium">Nemotron ASR + Parakeet/Flamingo Diarization</p>
+                        </div>
+                    </div>
+                    <div class="mt-8 pt-4 border-t border-white/10">
+                        <p class="text-[10px] text-blue-200 uppercase tracking-widest font-bold">
+                            * Platform-as-a-Service <span class="mx-2 opacity-50">|</span> ** State of the Art
+                        </p>
+                    </div>
+                </div>
+                <!-- Final Addition: Custom MoE Architecture Diagram -->
+                <div class="relative z-10 desktop-only">
+                    <img referrerpolicy="no-referrer" src="https://cdn.vidi.news/images/vidismart-moe-stack.png" alt="VidiSmart MoE Smart Stack Architecture"
+                        class="w-full h-auto rounded-2xl shadow-2xl border border-white/10 hover:scale-105 transition-transform duration-700">
+                </div>
+            </div>
+            <!-- Decorative Layer -->
+            <div class="absolute -bottom-12 -right-12 w-64 h-64 bg-amber-500/20 rounded-full blur-3xl opacity-50">
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Data Problem Diagram -->
+            <div class="glass-card p-6 rounded-2xl lg:col-span-3 mb-8">
+                <img referrerpolicy="no-referrer" src="https://cdn.vidi.news/dark-data-problem.jpg" alt="The 90% Dark Data Problem"
+                    class="w-full rounded-xl shadow-lg border border-gray-700">
+                <p class="mt-4 text-sm text-gray-500 italic text-center">Unlocking the 90% of unstructured
+                    enterprise data ("Dark Data") through AI.</p>
+            </div>
+
+            <!-- SERVICES SECTION HEADER - Made More Prominent -->
+            <div class="lg:col-span-3 mb-6">
+                <div class="bg-gradient-to-r from-blue-900 via-indigo-900 to-purple-900 rounded-2xl p-8 shadow-2xl relative overflow-hidden">
+                    <!-- Decorative elements -->
+                    <div class="absolute top-0 right-0 w-64 h-64 bg-blue-500/20 rounded-full blur-3xl -mr-20 -mt-20"></div>
+                    <div class="absolute bottom-0 left-0 w-48 h-48 bg-purple-500/20 rounded-full blur-3xl -ml-10 -mb-10"></div>
+                    
+                    <div class="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
+                        <div>
+                            <div class="flex items-center gap-3 mb-3">
+                                <span class="text-3xl">🎯</span>
+                                <span class="text-amber-400 font-black text-xs uppercase tracking-[0.3em]">VidiTwin Applications</span>
+                            </div>
+                            <h2 class="text-3xl md:text-4xl font-black text-white uppercase tracking-tight mb-2">
+                                AI Agent Services
+                            </h2>
+                            <p class="text-blue-200 text-base md:text-lg max-w-2xl">
+                                Real-world applications powered by our Smart Stack. Hover over each card to see live dialogue examples.
+                            </p>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <div class="text-center px-6 py-4 bg-white/10 rounded-xl backdrop-blur-sm border border-white/20">
+                                <div class="text-3xl font-black text-white">10</div>
+                                <div class="text-xs text-blue-200 uppercase tracking-wider">Services</div>
+                            </div>
+                            <div class="text-center px-6 py-4 bg-white/10 rounded-xl backdrop-blur-sm border border-white/20">
+                                <div class="text-3xl font-black text-amber-400">24/7</div>
+                                <div class="text-xs text-blue-200 uppercase tracking-wider">Available</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- NEW: The Sense Revolution - Beyond Text Prediction -->
+            <div class="lg:col-span-3 mb-8">
+                <div
+                    class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 p-8 md:p-12 shadow-2xl">
+                    <!-- Animated background elements -->
+                    <div
+                        class="absolute top-0 right-0 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl -mr-20 -mt-20 animate-pulse">
+                    </div>
+                    <div class="absolute bottom-0 left-0 w-80 h-80 bg-cyan-500/20 rounded-full blur-3xl -ml-20 -mb-20">
+                    </div>
+                    <div
+                        class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full h-full bg-gradient-to-r from-transparent via-white/5 to-transparent">
+                    </div>
+
+                    <div class="relative z-10">
+                        <!-- Header Badge -->
+                        <div class="flex items-center gap-3 mb-6">
+                            <div
+                                class="flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full border border-white/20">
+                                <span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
+                                <span class="text-xs font-black uppercase tracking-widest text-white">The Sense
+                                    Revolution</span>
+                            </div>
+                            <div
+                                class="px-3 py-1 bg-amber-500 text-black text-[10px] font-black uppercase rounded-full">
+                                NEW ERA
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                            <div>
+                                <h2 class="text-3xl md:text-5xl font-black text-white leading-tight mb-6">
+                                    Beyond <span
+                                        class="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-cyan-400">Next-Word
+                                        Prediction</span>
+                                </h2>
+                                <p class="text-lg text-gray-300 leading-relaxed mb-6">
+                                    For decades, AI has been trapped in text—predicting the next word in a sentence.
+                                    <strong class="text-white">That era is ending.</strong>
+                                </p>
+                                <p class="text-base text-gray-400 leading-relaxed mb-8">
+                                    We're entering an age where AI <span class="text-cyan-400 font-bold">captures
+                                        90% of the world's information</span>—visual, audio, and sensory data that
+                                    text-based AI never accessed. But <strong class="text-white">capture is not
+                                        comprehension.</strong> While we record nearly everything, true
+                                    understanding remains in single digits. This is Day One of sense-based
+                                    AI—undiscovered territory where we're just learning to truly see, hear, and
+                                    experience.
+                                </p>
+
+                                <!-- Progress Marker -->
+                                <div class="bg-black/30 backdrop-blur-md rounded-2xl p-6 border border-white/10">
+                                    <div class="flex items-center justify-between mb-4">
+                                        <span class="text-xs font-black uppercase tracking-widest text-gray-400">True
+                                            Sense-Based AI Maturity</span>
+                                        <span class="text-amber-400 font-black text-sm">4.2% Achieved</span>
+                                    </div>
+                                    <div class="relative h-3 bg-gray-700 rounded-full overflow-hidden">
+                                        <div
+                                            class="absolute left-0 top-0 h-full w-[4.2%] bg-gradient-to-r from-amber-400 via-orange-500 to-red-500 rounded-full shadow-[0_0_10px_rgba(251,191,36,0.8)]">
+                                        </div>
+                                        <div
+                                            class="absolute left-0 top-0 h-full w-full bg-gradient-to-r from-transparent via-white/10 to-transparent animate-[shimmer_3s_infinite]">
+                                        </div>
+                                    </div>
+                                    <p class="mt-3 text-[11px] text-gray-500 italic">
+                                        While we capture 90% of data, true sensory understanding and integration
+                                        remains in its infancy.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- Sensory Data Visualization -->
+                            <div class="relative">
+                                <div class="grid grid-cols-2 gap-4">
+                                    <!-- Visual Data Card -->
+                                    <div
+                                        class="glass-card p-6 rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10 hover:bg-white/10 transition-all duration-500 group">
+                                        <div class="text-4xl mb-3 group-hover:scale-110 transition-transform">👁️
+                                        </div>
+                                        <h4 class="font-black text-white text-sm uppercase mb-2">Visual
+                                            Understanding</h4>
+                                        <p class="text-[10px] text-gray-400 leading-relaxed">
+                                            Capture: 100% | True comprehension: 17-23% on abstract reasoning tasks
+                                        </p>
+                                        <div class="mt-3 flex items-center gap-2">
+                                            <div class="flex-1 h-1 bg-gray-700 rounded-full overflow-hidden">
+                                                <div
+                                                    class="h-full w-[23%] bg-gradient-to-r from-purple-500 to-pink-500 rounded-full">
+                                                </div>
+                                            </div>
+                                            <span class="text-[9px] text-purple-400 font-bold">17-23%</span>
+                                        </div>
+                                        <p class="mt-2 text-[8px] text-slate-500">See citations section for
+                                            benchmark details</p>
+                                    </div>
+
+                                    <!-- Audio Data Card -->
+                                    <div
+                                        class="glass-card p-6 rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10 hover:bg-white/10 transition-all duration-500 group">
+                                        <div class="text-4xl mb-3 group-hover:scale-110 transition-transform">👂
+                                        </div>
+                                        <h4 class="font-black text-white text-sm uppercase mb-2">Auditory Processing
+                                        </h4>
+                                        <p class="text-[10px] text-gray-400 leading-relaxed">
+                                            Transcription: 77-91% | Contextual understanding: ~31%
+                                        </p>
+                                        <div class="mt-3 flex items-center gap-2">
+                                            <div class="flex-1 h-1 bg-gray-700 rounded-full overflow-hidden">
+                                                <div
+                                                    class="h-full w-[31%] bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full">
+                                                </div>
+                                            </div>
+                                            <span class="text-[9px] text-cyan-400 font-bold">~31%</span>
+                                        </div>
+                                        <p class="mt-2 text-[8px] text-slate-500">WER-based accuracy vs. semantic
+                                            understanding</p>
+                                    </div>
+
+                                    <!-- Spatial Data Card -->
+                                    <div
+                                        class="glass-card p-6 rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10 hover:bg-white/10 transition-all duration-500 group">
+                                        <div class="text-4xl mb-3 group-hover:scale-110 transition-transform">🌐
+                                        </div>
+                                        <h4 class="font-black text-white text-sm uppercase mb-2">Spatial
+                                            Understanding</h4>
+                                        <p class="text-[10px] text-gray-400 leading-relaxed">
+                                            Basic awareness: 35% | Complex 3D reasoning: 12%
+                                        </p>
+                                        <div class="mt-3 flex items-center gap-2">
+                                            <div class="flex-1 h-1 bg-gray-700 rounded-full overflow-hidden">
+                                                <div
+                                                    class="h-full w-[12%] bg-gradient-to-r from-green-500 to-emerald-500 rounded-full">
+                                                </div>
+                                            </div>
+                                            <span class="text-[9px] text-green-400 font-bold">12-35%</span>
+                                        </div>
+                                        <p class="mt-2 text-[8px] text-slate-500">3DSRBench shows major limitations
+                                        </p>
+                                    </div>
+
+                                    <!-- Temporal Data Card -->
+                                    <div
+                                        class="glass-card p-6 rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10 hover:bg-white/10 transition-all duration-500 group">
+                                        <div class="text-4xl mb-3 group-hover:scale-110 transition-transform">⏱️
+                                        </div>
+                                        <h4 class="font-black text-white text-sm uppercase mb-2">Temporal Reasoning
+                                        </h4>
+                                        <p class="text-[10px] text-gray-400 leading-relaxed">
+                                            Short clips: 15% | Long-horizon video: 8%
+                                        </p>
+                                        <div class="mt-3 flex items-center gap-2">
+                                            <div class="flex-1 h-1 bg-gray-700 rounded-full overflow-hidden">
+                                                <div
+                                                    class="h-full w-[8%] bg-gradient-to-r from-amber-500 to-orange-500 rounded-full">
+                                                </div>
+                                            </div>
+                                            <span class="text-[9px] text-amber-400 font-bold">8-15%</span>
+                                        </div>
+                                        <p class="mt-2 text-[8px] text-slate-500">Frame analysis vs. true temporal
+                                            integration</p>
+                                    </div>
+                                </div>
+
+                                <!-- Center Badge -->
+                                <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                                    <div
+                                        class="w-20 h-20 rounded-full bg-gradient-to-br from-purple-600 to-cyan-600 flex items-center justify-center shadow-2xl border-4 border-slate-900 animate-pulse">
+                                        <span class="text-3xl">🧠</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Bottom Stats Bar -->
+                        <div class="mt-12 grid grid-cols-2 md:grid-cols-4 gap-4 pt-8 border-t border-white/10">
+                            <div class="text-center">
+                                <div class="text-3xl font-black text-white mb-1">2.5B+</div>
+                                <div class="text-[10px] uppercase tracking-widest text-gray-500">Daily Video Hours
+                                </div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-3xl font-black text-cyan-400 mb-1">90%</div>
+                                <div class="text-[10px] uppercase tracking-widest text-gray-500">World's Data</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-3xl font-black text-purple-400 mb-1">&lt;100ms</div>
+                                <div class="text-[10px] uppercase tracking-widest text-gray-500">Processing Latency
+                                </div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-3xl font-black text-amber-400 mb-1">∞</div>
+                                <div class="text-[10px] uppercase tracking-widest text-gray-500">Possibilities</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- NEW: Human-in-the-Loop / CX Section -->
+            <div class="lg:col-span-3 glass-card p-8 rounded-2xl bg-gradient-to-br from-white to-blue-50/50 mb-4">
+                <div class="flex flex-col md:flex-row gap-8 items-stretch">
+                    <div class="w-full md:w-7/12">
+                        <div class="flex items-center gap-3 mb-4">
+                            <span class="bg-amber-100 text-amber-700 p-2 rounded-lg text-xl">🤝</span>
+                            <h4 class="font-black text-xl uppercase tracking-tight text-gray-900">CX First: The
+                                Human-in-the-Loop Advantage</h4>
+                        </div>
+                        <!-- Increased Font Size: ~14pt equivalent -->
+                        <p class="text-lg text-gray-800 leading-relaxed font-medium mb-6">
+                            At VidiSmart, we are 100% committed to the belief that AI is designed for collaboration,
+                            not replacement.
+                            While our agents are autonomous, our interactive process includes seamless handoffs to
+                            human experts, multiplying
+                            the capability of your team rather than removing it.
+                        </p>
+                        <!-- Increased Font Size: ~12pt equivalent -->
+                        <p class="text-base text-gray-600 leading-relaxed text-left">
+                            Whether the agent is fully autonomous or transparently blending with a human operator,
+                            our priority is always the
+                            <strong>optimal Customer Experience (CX)</strong>. We engineer systems where the
+                            end-user receives the highest quality service
+                            instantly, regardless of who—or what—is solving the problem. It is a combination effect
+                            of AI speed and human empathy that creates true value.
+                        </p>
+                    </div>
+
+                    <!-- CVI Engineering Section -->
+                    <div
+                        class="w-full md:w-5/12 bg-white p-8 rounded-xl border border-blue-100 shadow-xl relative overflow-hidden">
+                        <div class="absolute top-0 right-0 p-2 opacity-10">
+                            <span class="text-6xl">⚙️</span>
+                        </div>
+                        <h5 class="font-black text-xs uppercase text-blue-800 mb-3 border-b border-blue-50 pb-2">
+                            Engineering Philosophy: CVI</h5>
+                        <ul class="space-y-4">
+                            <li class="flex gap-3">
+                                <span class="font-black text-blue-600 text-sm">01</span>
+                                <div>
+                                    <strong class="block text-sm font-bold text-gray-900">CURATE</strong>
+                                    <span class="text-xs text-gray-500 leading-tight block">Selecting the
+                                        highest quality proprietary data sets.</span>
+                                </div>
+                            </li>
+                            <li class="flex gap-3">
+                                <span class="font-black text-blue-600 text-sm">02</span>
+                                <div>
+                                    <strong class="block text-sm font-bold text-gray-900">VALIDATE</strong>
+                                    <span class="text-xs text-gray-500 leading-tight block">Rigorous testing
+                                        against SOTA benchmarks.</span>
+                                </div>
+                            </li>
+                            <li class="flex gap-3">
+                                <span class="font-black text-blue-600 text-sm">03</span>
+                                <div>
+                                    <strong class="block text-sm font-bold text-gray-900">INTEGRATE</strong>
+                                    <span class="text-xs text-gray-500 leading-tight block">Seamless deployment
+                                        into enterprise workflows.</span>
+                                </div>
+                            </li>
+                        </ul>
+                        <div class="mt-4 pt-3 border-t border-blue-50 text-center">
+                            <span class="text-[9px] font-black uppercase text-gray-400 tracking-wider">Powered by
+                                VidiSmart Engine</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="services-grid" class="contents"></div>
+        </div>
+    </div>
+
+    <!-- SECTION 2: MODELS & RESEARCH -->
+    <div id="page-models" class="hidden space-y-12 px-6 md:px-12 lg:px-20 max-w-screen-xl mx-auto">
+        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem;">
+            <div class="glass-card p-8 rounded-2xl">
+                <h2 class="text-2xl font-black uppercase tracking-tighter mb-4">SOTA Intelligence Radar</h2>
+                <p class="text-sm text-gray-500 mb-8 max-w-xl">Mapping <strong>Parameter Count</strong> vs.
+                    <strong>VRAM Requirements</strong> for 2026 conversational systems.
+                </p>
+                <div class="chart-container" style="position: relative; height: 450px; width: 100%;">
+                    <canvas id="modelChart"></canvas>
+                </div>
+            </div>
+            <div class="space-y-4">
+                <!-- Workflow Diagram -->
+                <div class="mb-4 bg-gray-900 border-0 rounded-xl overflow-hidden">
+                    <img referrerpolicy="no-referrer" src="https://cdn.vidi.news/vidismart-workflow-diagram.jpg" alt="VidiSmart Workflow"
+                        class="w-full opacity-100">
+                </div>
+
+                <div class="bg-blue-900 text-white p-6 rounded-2xl shadow-xl">
+                    <div class="flex items-center gap-2 mb-3">
+                        <span class="winner-badge">Winner 2026</span>
+                        <h4 class="font-black text-sm uppercase">PersonaPlex-7B-v1</h4>
+                    </div>
+                    <p class="text-xs text-blue-100 leading-relaxed italic">
+                        NVIDIA's latest real-time speech-to-speech breakthrough. Designed specifically for
+                        full-duplex conversations with human-like prosody and sub-100ms response cycles.
+                    </p>
+                </div>
+                <div class="bg-white p-6 rounded-2xl border border-gray-200">
+                    <h4 class="font-black text-xs uppercase mb-2 text-gray-400">Diarization Engine</h4>
+                    <p class="text-xs text-gray-600 leading-relaxed">
+                        VidiTwin uses the <strong>Sortformer</strong> approach paired with
+                        <strong>Parakeet/Flamingo</strong> to ensure zero-lag speaker separation in streaming
+                        multi-speaker environments.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
+            <div class="p-6 border-b border-gray-100 flex flex-col md:flex-row justify-between gap-4">
+                <h3 class="text-lg font-black uppercase">Top 15+ Qualified Models</h3>
+                <input type="text" id="modelFilter" placeholder="Filter models..."
+                    class="bg-gray-50 border border-gray-200 rounded px-4 py-2 text-sm w-full md:w-64">
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm">
+                    <thead class="bg-gray-50 text-[10px] font-black uppercase text-gray-400">
+                        <tr>
+                            <th class="px-6 py-4">Solution</th>
+                            <th class="px-6 py-4">Params (B)</th>
+                            <th class="px-6 py-4">VRAM (4-bit)</th>
+                            <th class="px-6 py-4">Architecture Type</th>
+                            <th class="px-6 py-4">Source Code</th>
+                        </tr>
+                    </thead>
+                    <tbody id="model-table" class="divide-y divide-gray-100"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECTION 3: HARDWARE CALC -->
+    <div id="page-infra" class="hidden space-y-12 px-6 md:px-12 lg:px-20 max-w-screen-xl mx-auto">
+        <div class="max-w-4xl mx-auto text-center">
+            <h2 class="text-3xl font-black uppercase tracking-tighter brand-font">Smart Stack Infrastructure</h2>
+            <p class="text-gray-600 mt-2">Real answers for VRAM allocation in Mamba-Transformer MoE systems.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+            <div class="bg-white p-10 rounded-3xl shadow-xl border border-gray-100">
+                <h3 class="text-xl font-black mb-8">VRAM Estimator</h3>
+                <div class="space-y-8">
+                    <div>
+                        <div class="flex justify-between mb-2">
+                            <label class="text-[10px] font-black uppercase text-gray-400">Model Complexity</label>
+                            <span class="text-amber-600 font-black text-sm" id="p-val">49B (Super Hybrid)</span>
+                        </div>
+                        <input type="range" id="p-range" min="1" max="100" value="49" class="w-full accent-amber-600">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-black uppercase text-gray-400 mb-3">SOTA
+                            Precision</label>
+                        <div class="grid grid-cols-3 gap-2">
+                            <button onclick="setQ(16, this)"
+                                class="py-3 border border-gray-200 rounded-lg text-xs font-bold">FP16</button>
+                            <button onclick="setQ(8, this)"
+                                class="py-3 border border-gray-200 rounded-lg text-xs font-bold">8-bit</button>
+                            <button onclick="setQ(4, this)"
+                                class="py-3 border-2 border-amber-600 bg-amber-50 text-amber-700 rounded-lg text-xs font-black">4-bit
+                                MoE</button>
+                        </div>
+                    </div>
+                    <div class="pt-8 border-t border-gray-100 flex justify-between items-end">
+                        <div>
+                            <span class="block text-[10px] text-gray-400 font-black uppercase">Infrastructure
+                                Load</span>
+                            <span class="text-5xl font-black text-gray-900" id="v-res">32.4 GB</span>
+                        </div>
+                        <div class="text-right">
+                            <span class="block text-[10px] text-gray-400 font-black uppercase">GPU Target</span>
+                            <span class="text-sm font-bold text-amber-600" id="g-res">2x RTX 3090 / 4090</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="space-y-6">
+                <div class="bg-gray-900 text-white p-8 rounded-3xl">
+                    <h4 class="font-black text-amber-500 italic mb-3">RL-Powered Reasoning</h4>
+                    <p class="text-sm text-gray-400 leading-relaxed">
+                        VidiTwin 2026 integrates <strong>Reinforcement Learning (RL)</strong> directly into the
+                        reasoning loop. This allows the agent to self-correct during streaming conversations, a
+                        feature unique to the PersonaPlex architecture.
+                    </p>
+                </div>
+                <div class="bg-white border border-gray-200 p-8 rounded-3xl">
+                    <h4 class="font-black text-xs uppercase mb-3">Strategic Intelligence</h4>
+                    <p class="text-xs text-gray-600 mb-4">McKinsey Reports indicate that MoE-based voice agents
+                        provide 400% better cost-efficiency than monolithic models.</p>
+                    <a href="https://youtu.be/bCDcziL9OCo" target="_blank" rel="noopener noreferrer"
+                        class="text-xs font-bold text-amber-600 underline">Watch NVIDIA PersonaPlex Launch ↗</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Smart Stack Visual -->
+        <!-- Smart Stack Deep Dive Grid -->
+        <div class="mt-16">
+            <div class="mb-8 border-b border-gray-200 pb-2">
+                <h3 class="font-black text-xs uppercase tracking-[0.2em] text-gray-400">The Technology Behind
+                    VidiTwin</h3>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="rounded-2xl shadow-lg overflow-hidden">
+                    <img referrerpolicy="no-referrer" src="https://cdn.vidi.news/viditwin-brain-engine.jpg" alt="Vidi Ai Search Engine"
+                        class="w-full">
+                </div>
+                <div class="rounded-2xl shadow-lg overflow-hidden">
+                    <img referrerpolicy="no-referrer" src="https://cdn.vidi.news/viditwin-visual-vectors.jpg" alt="Visual Vectors" class="w-full">
+                </div>
+                <div class="rounded-2xl shadow-lg overflow-hidden">
+                    <img referrerpolicy="no-referrer" src="https://cdn.vidi.news/viditwin-graph-rag.jpg" alt="Graph RAG" class="w-full">
+                </div>
+                <div class="rounded-2xl shadow-lg overflow-hidden">
+                    <img referrerpolicy="no-referrer" src="https://cdn.vidi.news/viditwin-tensors.jpg" alt="In-Series Tensors" class="w-full">
+                </div>
+            </div>
+            <div class="mt-6 rounded-2xl shadow-lg overflow-hidden">
+                <img referrerpolicy="no-referrer" src="https://cdn.vidi.news/viditwin-privacy.jpg" alt="Privacy First Architecture" class="w-full">
+            </div>
+        </div>
+
+        <!-- Smart Stack Visual Removed (Moved to Hero) -->
+    </div>
+
+    <!-- SECTION 4: MARKET PROOF -->
+    <div id="page-examples" class="hidden space-y-12 px-6 md:px-12 lg:px-20 max-w-screen-xl mx-auto">
+        <!-- Header -->
+        <div class="bg-blue-100 p-10 rounded-3xl border border-blue-200 flex flex-col md:flex-row items-center gap-10">
+            <div class="flex-grow">
+                <h2 class="text-2xl font-black uppercase brand-font tracking-tight">Market Proof: Live Success</h2>
+                <p class="text-blue-800 font-medium">Real companies utilizing the Smart Stack to automate
+                    communication. No pie-in-the-sky—just results.</p>
+            </div>
+            <div class="flex gap-4">
+                <span
+                    class="live-status px-4 py-2 bg-white text-xs font-black text-emerald-600 rounded-lg shadow-sm border border-emerald-100">●
+                    LIVE AGENTS ACTIVE</span>
+            </div>
+        </div>
+
+        <!-- Updated Layout: Full Width Video Gallery -->
+        <div class="w-full">
+            <!-- Full Width Video Gallery -->
+            <div class="bg-gray-50 rounded-2xl border border-gray-200 p-8 h-fit">
+                <h3 class="font-black text-xs uppercase tracking-widest text-gray-400 mb-6 text-center">Voice Agent
+                    Gallery
+                    (Official Live Examples)</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 content-start">
+                    <!-- VidiSmart Demo -->
+                    <div class="glass-card p-4 rounded-2xl">
+                        <a href="https://youtu.be/bCDcziL9OCo" target="_blank" rel="noopener noreferrer"
+                            class="video-box block h-32 sm:h-40"
+                            style="background-image: url('https://img.youtube.com/vi/bCDcziL9OCo/hqdefault.jpg')"></a>
+                        <h4 class="mt-4 font-black text-sm uppercase">VidiSmart PaaS</h4>
+                        <p class="text-xs text-gray-500 font-bold">Llama Nemotron 49B</p>
+                    </div>
+                    <!-- PersonaPlex Demo -->
+                    <div class="glass-card p-4 rounded-2xl">
+                        <a href="https://youtu.be/n_m0fqp8xwQ?si=zmO683G4tObiIqmd" target="_blank"
+                            rel="noopener noreferrer" class="video-box block h-32 sm:h-40"
+                            style="background-image: url('https://img.youtube.com/vi/n_m0fqp8xwQ/hqdefault.jpg')"></a>
+                        <h4 class="mt-4 font-black text-sm uppercase">PersonaPlex</h4>
+                        <p class="text-xs text-gray-500 font-bold">NVIDIA Real-time S2S</p>
+                    </div>
+                    <!-- Klarna Demo -->
+                    <div class="glass-card p-4 rounded-2xl">
+                        <a href="https://youtu.be/g6zeNRFSa7k" target="_blank" rel="noopener noreferrer"
+                            class="video-box block h-32 sm:h-40"
+                            style="background-image: url('https://img.youtube.com/vi/g6zeNRFSa7k/hqdefault.jpg')"></a>
+                        <h4 class="mt-4 font-black text-sm uppercase">Klarna AI Agent</h4>
+                        <p class="text-xs text-gray-500 font-bold">Support automation</p>
+                    </div>
+                    <!-- Bland AI Demo -->
+                    <div class="glass-card p-4 rounded-2xl">
+                        <a href="https://youtube.com/shorts/zMmNb-FJlsQ" target="_blank" rel="noopener noreferrer"
+                            class="video-box block h-32 sm:h-40"
+                            style="background-image: url('https://img.youtube.com/vi/zMmNb-FJlsQ/hqdefault.jpg')"></a>
+                        <h4 class="mt-4 font-black text-sm uppercase">Bland AI Phone</h4>
+                        <p class="text-xs text-gray-500 font-bold">Phone screening</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Voice Cloning & Multilingual Translation Section -->
+        <div class="glass-card p-8 md:p-10 rounded-3xl border border-gray-200">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+                <div>
+                    <h3 class="text-2xl font-black uppercase brand-font mb-4">Neural Cloning & Global Translation
+                    </h3>
+                    <p class="text-sm text-gray-600 leading-relaxed font-medium">
+                        The VidiSmart stack utilizes <strong>Open Source Qwen TTS</strong> for high-fidelity
+                        zero-shot voice cloning. We capture any brand's unique vocal signature with 3 seconds of
+                        reference audio and translate it instantly across 29+ languages.
+                    </p>
+                    <div class="mt-6 flex flex-wrap gap-2 mb-8">
+                        <span class="px-3 py-1 bg-amber-100 text-amber-700 text-[10px] font-bold rounded-full">ZERO-SHOT
+                            CLONING</span>
+                        <span class="px-3 py-1 bg-blue-100 text-blue-700 text-[10px] font-bold rounded-full">FULL-DUPLEX
+                            TRANSLATION</span>
+                    </div>
+
+                    <!-- PLACEHOLDER_2 -->
+                    <!-- New Global Connection Image -->
+                    <div class="relative rounded-2xl overflow-hidden shadow-lg border border-gray-100 group">
+                        <img referrerpolicy="no-referrer" src="https://cdn.vidi.news/images/vidismart-global-connect.png" alt="Global Language Bridge"
+                            class="w-full h-auto transform transition-transform duration-700 group-hover:scale-105">
+                        <div class="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black/70 to-transparent p-4">
+                            <p class="text-[10px] text-white font-bold uppercase tracking-widest">Bridging the
+                                Language Gap</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="lg:w-2/3">
+                    <h4 class="text-xs font-black uppercase text-gray-400 mb-6 tracking-[0.2em]">Supported
+                        Multilingual Output (Qwen TTS Stack)</h4>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+                        <div class="flex items-center gap-2">
+                            <div class="w-1.5 h-1.5 rounded-full bg-amber-500"></div><span
+                                class="text-[11px] font-bold">English (US/UK)</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <div class="w-1.5 h-1.5 rounded-full bg-amber-500"></div><span
+                                class="text-[11px] font-bold">Chinese</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <div class="w-1.5 h-1.5 rounded-full bg-amber-500"></div><span
+                                class="text-[11px] font-bold">Japanese</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <div class="w-1.5 h-1.5 rounded-full bg-amber-500"></div><span
+                                class="text-[11px] font-bold">Korean</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <div class="w-1.5 h-1.5 rounded-full bg-amber-500"></div><span
+                                class="text-[11px] font-bold">German</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <div class="w-1.5 h-1.5 rounded-full bg-amber-500"></div><span
+                                class="text-[11px] font-bold">French</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <div class="w-1.5 h-1.5 rounded-full bg-amber-500"></div><span
+                                class="text-[11px] font-bold">Spanish (MX/ES)</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <div class="w-1.5 h-1.5 rounded-full bg-amber-500"></div><span
+                                class="text-[11px] font-bold">Italian</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <div class="w-1.5 h-1.5 rounded-full bg-amber-500"></div><span
+                                class="text-[11px] font-bold">Portuguese</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <div class="w-1.5 h-1.5 rounded-full bg-amber-500"></div><span
+                                class="text-[11px] font-bold">Russian</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <div class="w-1.5 h-1.5 rounded-full bg-amber-500"></div><span
+                                class="text-[11px] font-bold">Arabic</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <div class="w-1.5 h-1.5 rounded-full bg-amber-500"></div><span
+                                class="text-[11px] font-bold">Turkish</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <div class="w-1.5 h-1.5 rounded-full bg-amber-500"></div><span
+                                class="text-[11px] font-bold">Dutch</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <div class="w-1.5 h-1.5 rounded-full bg-amber-500"></div><span
+                                class="text-[11px] font-bold">Vietnamese</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <div class="w-1.5 h-1.5 rounded-full bg-amber-500"></div><span
+                                class="text-[11px] font-bold">Thai</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <div class="w-1.5 h-1.5 rounded-full bg-amber-500"></div><span
+                                class="text-[11px] font-bold">Indonesian</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <div class="w-1.5 h-1.5 rounded-full bg-amber-500"></div><span
+                                class="text-[11px] font-bold">Hindi</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <div class="w-1.5 h-1.5 rounded-full bg-amber-500"></div><span
+                                class="text-[11px] font-bold">Bengali</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <div class="w-1.5 h-1.5 rounded-full bg-amber-500"></div><span
+                                class="text-[11px] font-bold">Polish</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <div class="w-1.5 h-1.5 rounded-full bg-amber-500"></div><span
+                                class="text-[11px] font-bold">Swedish</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <p class="mt-8 text-[10px] text-gray-400 font-bold uppercase tracking-widest italic">Supports
+                29+ total languages including Nordic dialects, regional Slavic variations, and native
+                Cantonese/Gaelic checkpoints.</p>
+        </div>
+
+        <!-- SECTION 5: VISUAL AGENTS (VIDITWIN) -->
+        <div id="page-visual" class="hidden space-y-12 px-6 md:px-12 lg:px-20 max-w-screen-xl mx-auto">
+            <!-- Hero -->
+            <div class="glass-card p-10 rounded-3xl border border-gray-200 text-center relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-amber-500 via-blue-600 to-amber-500">
+                </div>
+                <h2 class="text-4xl font-black uppercase brand-font tracking-tighter mb-4 text-gray-900">VidiTwin <span
+                        class="text-blue-600">Visual AI</span></h2>
+                <p class="text-lg text-gray-600 max-w-2xl mx-auto mb-8 font-medium">
+                    The HX Answer Engine for Visual AI. Experience face-to-face latency-free interaction with
+                    intelligent video agents.
+                </p>
+                <div
+                    class="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-700 rounded-full text-xs font-black uppercase tracking-widest mb-8">
+                    <span class="w-2 h-2 rounded-full bg-blue-600 animate-pulse"></span>
+                    Live Visual Interface
+                </div>
+
+                <!-- Placeholder for UI Image -->
+                <div
+                    class="relative max-w-4xl mx-auto rounded-2xl overflow-hidden shadow-2xl border border-gray-200 bg-gray-900">
+                    <!-- Using the newly generated Viditwin Glass UI -->
+                    <img referrerpolicy="no-referrer" src="https://cdn.vidi.news/images/viditwin-glass.png" alt="VidiTwin Interface" class="w-full opacity-90">
+                    <div
+                        class="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black/80 to-transparent p-8 text-left">
+                        <h3 class="text-white font-black text-xl uppercase">Real-Time Q&A Avatar</h3>
+                        <p class="text-gray-300 text-xs mt-1">Autonomous Video Meeting Agent</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Features Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                    <div class="text-3xl mb-4">🎥</div>
+                    <h4 class="font-black text-sm uppercase mb-2">Google Meet Experience</h4>
+                    <p class="text-xs text-gray-500 leading-relaxed">
+                        Interaction feels exactly like a live video call. Use natural gestures, eye contact, and voice.
+                    </p>
+                </div>
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                    <div class="text-3xl mb-4">🧠</div>
+                    <h4 class="font-black text-sm uppercase mb-2">Visual Context</h4>
+                    <p class="text-xs text-gray-500 leading-relaxed">
+                        Agents can "see" shared screens or documents via multimodal vision capabilities.
+                    </p>
+                </div>
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                    <div class="text-3xl mb-4">⚡</div>
+                    <h4 class="font-black text-sm uppercase mb-2">Sub-Second Latency</h4>
+                    <p class="text-xs text-gray-500 leading-relaxed">
+                        Powered by VidiSmart Hyperstack for instant lip-sync and expression matching.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        </main>
+
+        <!-- Sense Revolution Data Sources & Methodology -->
+        <section id="sense-revolution-citations" class="bg-slate-950 py-16 border-t border-slate-800">
+            <div class="container mx-auto max-w-screen-2xl px-6 md:px-12">
+                <div class="mb-12">
+                    <h3 class="text-white font-black text-xl uppercase tracking-tight mb-2">Data Sources & Methodology
+                    </h3>
+                    <p class="text-slate-400 text-sm">All percentage ranges represent VidiSmart's aggregated analysis of
+                        current AI capabilities across multiple benchmarks and research studies.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <!-- Visual Understanding -->
+                    <div class="bg-slate-900/50 p-6 rounded-xl border border-slate-800">
+                        <div class="flex items-center gap-3 mb-4">
+                            <span class="text-2xl">👁️</span>
+                            <div>
+                                <h4 class="text-white font-black text-sm uppercase">Visual Understanding</h4>
+                                <span class="text-purple-400 text-xs font-bold">17-23% True Comprehension</span>
+                            </div>
+                        </div>
+                        <div class="space-y-3 text-xs text-slate-400">
+                            <p><strong class="text-white">Benchmark Range:</strong> 17% (Bongard problems) — 82.5%
+                                (ChatGPT-o1 on multi-image reasoning)</p>
+                            <p><strong class="text-white">What This Means:</strong> AI can capture 100% of visual data
+                                but
+                                demonstrates true abstract reasoning at only 17-23% on complex visual puzzles that
+                                humans
+                                solve at 84% accuracy.</p>
+                            <div class="pt-3 border-t border-slate-800">
+                                <p class="text-[10px] text-slate-500 mb-1"><strong>Sources:</strong></p>
+                                <ul class="space-y-1 text-[10px] text-slate-500">
+                                    <li>• Bongard Problems Study (2024): GPT-4o at 17% vs Human 84% — Pattern
+                                        Recognition
+                                        Journal</li>
+                                    <li>• Multi-Image Visual Reasoning (2025): ChatGPT-o1 at 82.5% accuracy — The
+                                        Debrief/Pattern Recognition</li>
+                                    <li>• UniBench Meta Research (2024): "VLMs struggle on simple digit recognition and
+                                        counting" — Meta AI Research</li>
+                                </ul>
+                            </div>
+                            <p class="text-[10px] text-slate-500 italic mt-2">Methodology: Weighted average across
+                                abstract
+                                reasoning (low) vs object recognition (high). True "understanding" scores reflect
+                                reasoning
+                                benchmarks, not just detection.</p>
+                        </div>
+                    </div>
+
+                    <!-- Audio Processing -->
+                    <div class="bg-slate-900/50 p-6 rounded-xl border border-slate-800">
+                        <div class="flex items-center gap-3 mb-4">
+                            <span class="text-2xl">👂</span>
+                            <div>
+                                <h4 class="text-white font-black text-sm uppercase">Audio Processing</h4>
+                                <span class="text-cyan-400 text-xs font-bold">77-91% Recognition / 31% Contextual
+                                    Understanding</span>
+                            </div>
+                        </div>
+                        <div class="space-y-3 text-xs text-slate-400">
+                            <p><strong class="text-white">Benchmark Range:</strong> 77.31% (Azure Speech WER) — 91.3%
+                                (Fireflies.ai transcription)</p>
+                            <p><strong class="text-white">What This Means:</strong> Word-level transcription is mature
+                                (77-91% accuracy), but contextual/emotional understanding remains limited. Word Error
+                                Rate
+                                (WER) of 22.69% means 77.31% word accuracy.</p>
+                            <div class="pt-3 border-t border-slate-800">
+                                <p class="text-[10px] text-slate-500 mb-1"><strong>Sources:</strong></p>
+                                <ul class="space-y-1 text-[10px] text-slate-500">
+                                    <li>• Azure Speech Services (2025): WER 22.69% (77.31% accuracy) — Medium Speech
+                                        Recognition Analysis</li>
+                                    <li>• Fireflies.ai (Jan 2025): 91.3% accuracy across 200 hours of diverse audio —
+                                        SummarizeMeeting.com Benchmark</li>
+                                    <li>• Human Baseline: 99% accuracy (Rev.com) — showing 8-22% gap to human
+                                        performance
+                                    </li>
+                                </ul>
+                            </div>
+                            <p class="text-[10px] text-slate-500 italic mt-2">Methodology: 31% contextual score reflects
+                                gap
+                                between transcription accuracy and true semantic understanding including emotional tone,
+                                speaker intent, and environmental context.</p>
+                        </div>
+                    </div>
+
+                    <!-- Spatial Understanding -->
+                    <div class="bg-slate-900/50 p-6 rounded-xl border border-slate-800">
+                        <div class="flex items-center gap-3 mb-4">
+                            <span class="text-2xl">🌐</span>
+                            <div>
+                                <h4 class="text-white font-black text-sm uppercase">Spatial Understanding</h4>
+                                <span class="text-emerald-400 text-xs font-bold">12-35% 3D Reasoning</span>
+                            </div>
+                        </div>
+                        <div class="space-y-3 text-xs text-slate-400">
+                            <p><strong class="text-white">Benchmark Range:</strong> 12% (complex 3D reasoning) — 35%
+                                (basic
+                                spatial awareness)</p>
+                            <p><strong class="text-white">What This Means:</strong> 3DSRBench reveals significant
+                                limitations in 3D spatial reasoning across height, orientation, location, and
+                                multi-object
+                                relationships. Industrial warehouse-scale understanding remains a critical frontier.</p>
+                            <div class="pt-3 border-t border-slate-800">
+                                <p class="text-[10px] text-slate-500 mb-1"><strong>Sources:</strong></p>
+                                <ul class="space-y-1 text-[10px] text-slate-500">
+                                    <li>• 3DSRBench (Dec 2024): 2,772 annotated VQA pairs showing limitations in 3D
+                                        awareness — Johns Hopkins/CMU</li>
+                                    <li>• AI City Challenge Track 3 (2025): "Understanding fine-grained spatial
+                                        relationships in industrial environments remains a critical frontier" —
+                                        NVIDIA/AI
+                                        City Challenge</li>
+                                    <li>• Warehouse Spatial Intelligence: "Systems often struggle to reason about 3D
+                                        object
+                                        layouts, dimensions, and spatial relations" — AI City Challenge 2025</li>
+                                </ul>
+                            </div>
+                            <p class="text-[10px] text-slate-500 italic mt-2">Methodology: Range reflects 12% on complex
+                                multi-object 3D reasoning to 35% on basic single-object spatial awareness. ETL protocol
+                                for
+                                3D data (extraction from 2D images, transformation to depth maps, loading into 3D scene
+                                graphs) remains error-prone.</p>
+                        </div>
+                    </div>
+
+                    <!-- Temporal Reasoning -->
+                    <div class="bg-slate-900/50 p-6 rounded-xl border border-slate-800">
+                        <div class="flex items-center gap-3 mb-4">
+                            <span class="text-2xl">⏱️</span>
+                            <div>
+                                <h4 class="text-white font-black text-sm uppercase">Temporal Reasoning</h4>
+                                <span class="text-amber-400 text-xs font-bold">8-15% Video Understanding</span>
+                            </div>
+                        </div>
+                        <div class="space-y-3 text-xs text-slate-400">
+                            <p><strong class="text-white">Benchmark Range:</strong> 8% (long-horizon video) — 15% (short
+                                clips)</p>
+                            <p><strong class="text-white">What This Means:</strong> Video understanding requires
+                                reasoning
+                                over time. Current models excel at frame-by-frame analysis but fail at long-horizon
+                                temporal
+                                reasoning. OVO-Bench and Neptune benchmarks show the gap between offline (full video)
+                                and
+                                online (streaming) understanding.</p>
+                            <div class="pt-3 border-t border-slate-800">
+                                <p class="text-[10px] text-slate-500 mb-1"><strong>Sources:</strong></p>
+                                <ul class="space-y-1 text-[10px] text-slate-500">
+                                    <li>• OVO-Bench (Jan 2025): "Temporal Awareness is the key distinction between
+                                        offline
+                                        and online video LLMs" — arXiv:2501.05510</li>
+                                    <li>• Neptune Benchmark (Dec 2024): Long video understanding requiring reasoning
+                                        over
+                                        long time horizons — Google Research, arXiv:2412.09582</li>
+                                    <li>• RTV-Bench (May 2025): "Existing benchmarks fall short in evaluating continuous
+                                        and
+                                        dynamic real-time video streams" — arXiv:2505.02064</li>
+                                </ul>
+                            </div>
+                            <p class="text-[10px] text-slate-500 italic mt-2">Methodology: 8% reflects long-horizon (>1
+                                minute) video understanding with complex causality. 15% reflects short-clip (10-30s)
+                                action
+                                recognition. Most "video AI" today is actually image-per-frame analysis without true
+                                temporal integration.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Overall Integration Score -->
+                <div class="mt-8 bg-gradient-to-r from-slate-900 to-slate-800 p-6 rounded-xl border border-slate-700">
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <h4 class="text-white font-black text-sm uppercase">Overall Sense-Based AI Maturity</h4>
+                            <span class="text-amber-400 text-xs font-bold">4.2% Aggregate Score</span>
+                        </div>
+                        <span class="text-3xl">🧠</span>
+                    </div>
+                    <p class="text-xs text-slate-400 mb-3">
+                        <strong class="text-white">Calculation Method:</strong> Weighted average across modalities
+                        accounting for integration complexity. While individual modalities show higher numbers (17-91%),
+                        true multimodal integration—where visual, audio, spatial, and temporal data fuse into coherent
+                        understanding—remains in early stages.
+                    </p>
+                    <p class="text-[10px] text-slate-500 italic">
+                        This 4.2% represents VidiSmart's estimate of true end-to-end sense-based AI capabilities,
+                        factoring
+                        in cross-modal reasoning, real-time processing, and human-level comprehension benchmarks.
+                        Individual
+                        modality scores are not additive due to integration complexity (multiplicative rather than
+                        additive
+                        effects).
+                    </p>
+                </div>
+
+                <!-- Key Insight Box -->
+                <div class="mt-8 bg-amber-500/10 border border-amber-500/30 p-6 rounded-xl">
+                    <h4 class="text-amber-400 font-black text-sm uppercase mb-3">⚠️ Critical Distinction: Capture vs.
+                        Comprehension</h4>
+                    <p class="text-xs text-slate-300 leading-relaxed">
+                        Our analysis distinguishes between <strong class="text-white">data capture</strong> (AI can
+                        record/store 90%+ of sensory data) and <strong class="text-white">true comprehension</strong>
+                        (AI
+                        understanding at human level). The percentages shown represent comprehension metrics, not
+                        capture
+                        capability. This is the critical gap: we have cameras and microphones everywhere (capture), but
+                        AI
+                        understanding of what those sensors record remains in single digits for complex reasoning tasks.
+                    </p>
+                    <p class="text-[10px] text-slate-500 mt-3">
+                        <strong>ETL Protocol Note:</strong> Extract-Transform-Load processes vary significantly by
+                        modality.
+                        Video ETL involves frame extraction, embedding generation, vector storage, and temporal
+                        indexing—each step introducing degradation. Text-based ETL is mature (95%+ fidelity), while
+                        video-to-vector ETL is emerging (40-60% fidelity depending on compression and model
+                        architecture).
+                    </p>
+                </div>
+
+                <div class="mt-8 pt-6 border-t border-slate-800 text-center">
+                    <p class="text-[10px] text-slate-500">
+                        Data compiled from peer-reviewed research published 2024-2025. Ranges reflect variance across
+                        different benchmarks and model architectures.
+                        Last updated: February 2026. For questions about methodology, contact research@vidismart.com
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <footer class="bg-gray-900 text-gray-500 py-16">
+            <div class="container mx-auto max-w-screen-2xl px-6 md:px-12 grid grid-cols-1 md:grid-cols-3 gap-12">
+                <div>
+                    <span class="text-white font-black text-xl brand-font tracking-tight">VIDITWIN</span>
+                    <p class="mt-4 text-xs leading-relaxed">The ultimate Business Automation PaaS. Building on the
+                        VidiSmart
+                        PaaS Smart Stack to redefine human-machine communication.</p>
+                </div>
+                <div>
+                    <h5 class="text-white font-bold text-xs uppercase tracking-widest mb-6">Stack Layers</h5>
+                    <ul class="text-[10px] space-y-3 font-bold uppercase">
+                        <li>Llama Nemotron Super 49B Hybrid</li>
+                        <li>Mamba-Transformer MoE Architecture</li>
+                        <li>PersonaPlex-7B-v1 Real-time S2S</li>
+                        <li>Parakeet / Flamingo Diarization</li>
+                    </ul>
+                </div>
+                <div class="text-right">
+                    <span class="winner-badge">Winner 2026</span>
+                    <p class="text-[10px] mt-4 font-black tracking-widest uppercase">Verified SOTA Benchmark</p>
+                </div>
+            </div>
+            <div class="mt-16 pt-8 border-t border-gray-800 text-center">
+                <div class="container mx-auto max-w-screen-2xl px-6 md:px-12">
+                    <p class="text-[10px] uppercase tracking-widest font-bold text-gray-600">
+                        All rights reserved 2026 ©VidiSmart <span class="mx-2 text-amber-900">•</span> Call for a quote:
+                        <span class="text-gray-400">James May - 561-510-0021</span>
+                    </p>
+                </div>
+            </div>
+        </footer>
+
+        <script>
+            const services = [
+                {
+                    icon: "🎧",
+                    title: "Customer Support",
+                    desc: "Autonomous tier-1 and tier-2 resolution for complex tickets.",
+                    hx: "Enhancing HX by providing instant, empathetic voice resolution 24/7 without the friction of hold times.",
+                    profile: { name: "Agent Sarah", role: "Retention Specialist", stats: "CSAT: 4.9/5 • Resolution: 94%" },
+                    example: { user: "My account is locked.", agent: "I see the flag. Verifying IP... Done. Sending 2FA code now." }
+                },
+                {
+                    icon: "💎",
+                    title: "Pre-Sales Services",
+                    desc: "Outbound/Inbound qualification and instant demo booking.",
+                    hx: "Human-like agents qualify leads in real-time, matching tone and pace to build immediate trust.",
+                    profile: { name: "Agent Marcus", role: "Lead Qualifier", stats: "Conv: 22% • Bookings: 45/day" },
+                    example: { user: "Is this enterprise ready?", agent: "Yes, we support SSO & SOC2. Shall I send the whitepaper?" }
+                },
+                {
+                    icon: "🤝",
+                    title: "HR Interviewing",
+                    desc: "Bias-free high-volume applicant screening and logic testing.",
+                    hx: "Standardizing the candidate experience while providing nuanced feedback through conversational analysis.",
+                    profile: { name: "Agent Elena", role: "Talent Scout", stats: "Bias: 0% • Candidates: 120/hr" },
+                    example: { user: "Tell me about culture.", agent: "We value autonomy. Describe a time you led a project alone." }
+                },
+                {
+                    icon: "🏢",
+                    title: "Internal Support",
+                    desc: "Employee policy navigation and helpdesk automation.",
+                    hx: "Navigating complex corporate knowledge bases through natural dialogue, empowering the modern workforce.",
+                    profile: { name: "Agent Alex", role: "IT Helpdesk", stats: "Fix Time: 45s • KB Coverage: 100%" },
+                    example: { user: "I can't access Jira.", agent: "Ticket created. I've reset your token. Try logging in now." }
+                },
+                {
+                    icon: "🔧",
+                    title: "Tech Support",
+                    desc: "Multimodal product troubleshooting via expressive voice.",
+                    hx: "Dynamic troubleshooting where agents can 'see' and 'discuss' technical issues via streaming vision-voice fusion.",
+                    profile: { name: "Agent David", role: "Solutions Engineer", stats: "Vision: Enabled • Accuracy: 99%" },
+                    example: { user: "*Shows broken part*", agent: "That's the intake valve. It looks cracked. Ordering replacement." }
+                },
+                {
+                    icon: "🔬",
+                    title: "Research & Analysis",
+                    desc: "Direct voice-to-BI querying and autonomous market surveys.",
+                    hx: "Transforming dry data into conversational insights, making business intelligence accessible to every stakeholder.",
+                    profile: { name: "Agent Sophia", role: "Data Analyst", stats: "Speed: 300GB/s • Sources: 50k+" },
+                    example: { user: "Trend on Gen Z buying?", agent: "Q3 showed a 40% spike in mobile. Here is the chart vs last year." }
+                },
+                {
+                    icon: "💰",
+                    title: "Cost Efficiency",
+                    desc: "Direct OpEx reduction by eliminating monolithic chat overhead.",
+                    hx: "Scaling operations without scaling headcount, allowing humans to focus on high-value creative strategy.",
+                    profile: { name: "Agent Rio", role: "Ops Optimizer", stats: "Savings: 40% • ROI: 12x" },
+                    example: { user: "Current burn rate?", agent: "We are 12% under budget due to the shift to hybrid support." }
+                },
+                {
+                    icon: "🛡️",
+                    title: "Secure Communications",
+                    desc: "Encrypted, voice-biometric-enabled enterprise agents.",
+                    hx: "Building safety into the interaction layer with real-time biometric verification and data sovereignty.",
+                    profile: { name: "Agent Cipher", role: "Security Officer", stats: "Enc: AES-256 • Biometrics: On" },
+                    example: { user: "Verify transaction.", agent: "Voiceprint matched. Location verified. Transaction approved." }
+                },
+                {
+                    icon: "📊",
+                    title: "Business Intelligence",
+                    desc: "Real-time database synthesis delivered via conversational agent.",
+                    hx: "The Smart Stack processes millions of vectors to deliver precise, context-aware answers in milliseconds.",
+                    profile: { name: "Agent Nova", role: "Strategy Guide", stats: "IQ: 180 • Latency: 80ms" },
+                    example: { user: "Why did sales drop?", agent: "Competitor X launched a promo. I recommend a counter-offer." }
+                },
+                {
+                    icon: "⚡",
+                    title: "Hyperstack Ops",
+                    desc: "Local orchestration of Mamba-Transformer MoE stacks.",
+                    hx: "Optimizing the silicon-to-syllable pipeline for the lowest latency possible—true human-speed interaction.",
+                    profile: { name: "Agent Pulse", role: "System Admin", stats: "Uptime: 99.99% • Nodes: 500" },
+                    example: { user: "Status of the cluster?", agent: "All nodes healthy. Latency 24ms. Auto-scaling triggered." }
+                }
+            ];
+
+            const models = [
+                { name: "VidiTwin 2026 / VidiSmart PaaS", maker: "VidiSmart", params: 49, vram: 32, type: "SOTA Winner", hf: "https://vidismart.com" },
+                { name: "PersonaPlex-7B-v1", maker: "NVIDIA", params: 7, vram: 6, type: "Real-time S2S", hf: "https://huggingface.co/nvidia/personaplex-7b-v1" },
+                { name: "Llama Nemotron Super 49B", maker: "NVIDIA", params: 49, vram: 36, type: "Hybrid Hybrid", hf: "https://huggingface.co/nvidia/llama-nemotron-super-49b" },
+                { name: "Qwen 2.5 72B", maker: "Alibaba", params: 72, vram: 44, type: "Open", hf: "https://huggingface.co/Qwen/Qwen2.5-72B" },
+                { name: "Llama 3.1 70B", maker: "Meta", params: 70, vram: 40, type: "Open", hf: "https://huggingface.co/meta-llama" },
+                { name: "Phi-3.5 MoE", maker: "Microsoft", params: 16, vram: 10, type: "MoE", hf: "https://huggingface.co/microsoft" },
+                { name: "Nemotron-4 340B", maker: "NVIDIA", params: 340, vram: 180, type: "Open", hf: "https://huggingface.co/nvidia" },
+                { name: "Mistral Large 2", maker: "Mistral", params: 123, vram: 75, type: "Open", hf: "https://huggingface.co/mistralai" },
+                { name: "Gemma 2 27B", maker: "Google", params: 27, vram: 16, type: "Open", hf: "https://huggingface.co/google" },
+                { name: "Deepgram Aura", maker: "Deepgram", params: 0.1, vram: 0, type: "Infra", hf: "https://deepgram.com" },
+                { name: "LiveKit Agents", maker: "LiveKit", params: 0, vram: 0, type: "Infra", hf: "https://github.com/livekit" },
+                { name: "GPT-4o Realtime", maker: "OpenAI", params: 0, vram: 0, type: "API", hf: "https://openai.com" },
+                { name: "Gemini 2.0 Flash", maker: "Google", params: 0, vram: 0, type: "API", hf: "https://google.com" },
+                { name: "Command R+", maker: "Cohere", params: 104, vram: 60, type: "Open", hf: "https://huggingface.co/CohereForAI" },
+                { name: "Falcon 180B", maker: "TII", params: 180, vram: 100, type: "Open", hf: "https://huggingface.co/tiiuae" }
+            ];
+
+            const apps = [
+                { name: "VidiTwin 2026", app: "Winning PaaS Smart Stack", link: "vidismart.com" },
+                { name: "NVIDIA PersonaPlex", app: "Real-time Voice Framework", link: "nvidia.com" },
+                { name: "LiveKit", app: "RTC Agent Infrastructure", link: "livekit.io" },
+                { name: "Deepgram", app: "Fastest ASR/TTS Engine", link: "deepgram.com" },
+                { name: "Klarna", app: "Global CS Automation", link: "klarna.com" },
+                { name: "Bland AI", app: "Voice Sales Automation", link: "bland.ai" },
+                { name: "Retell AI", app: "Real-time Voice Bots", link: "retellai.com" },
+                { name: "Vapi.ai", app: "Agent Orchestration", link: "vapi.ai" },
+                { name: "Hume AI", app: "Empathic Voice UI", link: "hume.ai" },
+                { name: "HeyGen", app: "Video/Voice Cloning", link: "heygen.com" },
+                { name: "ElevenLabs", app: "High-Fidelity Audio", link: "elevenlabs.io" },
+                { name: "Intercom Fin", app: "Customer Intelligence", link: "intercom.com" },
+                { name: "Observe.ai", app: "Call Center QA", link: "observe.ai" },
+                { name: "PolyAI", app: "Hospitality Agents", link: "poly.ai" },
+                { name: "Synthesia", app: "Video Presence AI", link: "synthesia.io" }
+            ];
+
+            function renderServices() {
+                const grid = document.getElementById('services-grid');
+                grid.innerHTML = services.map((s, index) => `
+                    <div class="glass-card service-card rounded-2xl relative group overflow-hidden border border-white/10 hover:border-blue-500/50 transition-all duration-300 bg-gradient-to-br from-white via-gray-50 to-blue-50/30">
+                        <!-- Video/Image Placeholder Header -->
+                        <div class="relative h-32 bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 overflow-hidden">
+                            <!-- Animated background -->
+                            <div class="absolute inset-0 bg-gradient-to-br from-blue-600/20 via-purple-600/20 to-amber-500/20"></div>
+                            <div class="absolute top-2 right-2 w-16 h-16 bg-white/10 rounded-full blur-xl"></div>
+                            
+                            <!-- Service Icon & Video Play Button -->
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <div class="text-center">
+                                    <div class="text-5xl mb-2 drop-shadow-lg">${s.icon}</div>
+                                    <div class="flex items-center justify-center gap-2">
+                                        <div class="w-8 h-8 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center border border-white/30 hover:bg-white/30 transition-all cursor-pointer group/play">
+                                            <svg class="w-4 h-4 text-white ml-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                                <path d="M6.3 5.84a.5.5 0 01.77-.42l7.15 4.16a.5.5 0 010 .84l-7.15 4.16a.5.5 0 01-.77-.42V5.84z"/>
+                                            </svg>
+                                        </div>
+                                        <span class="text-[10px] font-bold text-white/80 uppercase tracking-wider">Watch Demo</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Service Number Badge -->
+                            <div class="absolute top-3 left-3 w-7 h-7 rounded-full bg-amber-500 flex items-center justify-center text-white font-black text-xs shadow-lg">
+                                ${index + 1}
+                            </div>
+                            
+                            <!-- Role Badge -->
+                            <div class="absolute bottom-3 right-3">
+                                <div class="text-[10px] font-black uppercase tracking-wider text-blue-300 bg-blue-900/80 px-3 py-1.5 rounded-full border border-blue-500/30 backdrop-blur-sm">
+                                    ${s.profile.role}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Content Area -->
+                        <div class="p-5">
+                            <!-- Title - INCREASED SIZE -->
+                            <h4 class="font-black text-base uppercase mb-3 text-gray-900 tracking-tight">${s.title}</h4>
+                            
+                            <!-- Description - INCREASED SIZE -->
+                            <p class="text-[13px] text-gray-700 leading-relaxed font-medium mb-4">${s.desc}</p>
+                            
+                            <!-- Agent Profile Mini-Card - Enhanced -->
+                            <div class="bg-gradient-to-r from-gray-900 to-slate-800 rounded-xl p-4 border border-gray-700/50 mb-4 shadow-inner">
+                                <div class="flex items-center justify-between mb-3">
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center text-white font-bold text-xs">
+                                            ${s.profile.name.charAt(0)}
+                                        </div>
+                                        <div>
+                                            <span class="text-[12px] font-bold text-white block">${s.profile.name}</span>
+                                            <span class="text-[10px] text-emerald-400">● Active Now</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    ${s.profile.stats.split('•').map(stat => `
+                                        <div class="bg-white/10 rounded-lg px-3 py-1.5">
+                                            <span class="text-[11px] text-gray-300 font-mono">${stat.trim()}</span>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+
+                            <!-- Live Dialogue Snippet - INCREASED SIZE -->
+                            <div class="bg-gradient-to-r from-slate-900 to-black rounded-xl p-4 border-l-4 border-amber-500">
+                                <div class="space-y-2">
+                                    <div class="flex items-start gap-2">
+                                        <span class="text-amber-500 font-black text-[11px] uppercase whitespace-nowrap mt-0.5">User:</span>
+                                        <span class="text-[12px] text-gray-200 italic">"${s.example.user}"</span>
+                                    </div>
+                                    <div class="flex items-start gap-2">
+                                        <span class="text-blue-400 font-black text-[11px] uppercase whitespace-nowrap mt-0.5">Agent:</span>
+                                        <span class="text-[12px] text-gray-200 italic">"${s.example.agent}"</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Hover Reveal - Enhanced HX Section -->
+                        <div class="service-elaborate flex flex-col justify-center p-6 space-y-4 bg-gradient-to-br from-blue-900 via-indigo-900 to-purple-900">
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="text-2xl">💡</span>
+                                <span class="hx-badge self-start">HUMAN EXPERIENCE IMPACT</span>
+                            </div>
+                            <p class="text-[14px] font-bold text-white leading-relaxed">
+                                "${s.hx}"
+                            </p>
+                            <div class="mt-3 pt-4 border-t border-white/20">
+                                <button class="text-[11px] uppercase font-black tracking-widest text-amber-400 flex items-center gap-2 hover:text-amber-300 transition-colors">
+                                    View Case Study <span class="text-lg">→</span>
+                                </button>
+                            </div>
+                            
+                            <!-- Quick Stats on Hover -->
+                            <div class="grid grid-cols-3 gap-2 mt-4">
+                                <div class="bg-white/10 rounded-lg p-2 text-center">
+                                    <div class="text-lg font-black text-white">99%</div>
+                                    <div class="text-[9px] text-blue-200 uppercase">Accuracy</div>
+                                </div>
+                                <div class="bg-white/10 rounded-lg p-2 text-center">
+                                    <div class="text-lg font-black text-emerald-400">&lt;1s</div>
+                                    <div class="text-[9px] text-blue-200 uppercase">Response</div>
+                                </div>
+                                <div class="bg-white/10 rounded-lg p-2 text-center">
+                                    <div class="text-lg font-black text-amber-400">24/7</div>
+                                    <div class="text-[9px] text-blue-200 uppercase">Uptime</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            function renderModels(filter = "") {
+                const body = document.getElementById('model-table');
+                const filtered = models.filter(m =>
+                    m.name.toLowerCase().includes(filter.toLowerCase()) ||
+                    m.maker.toLowerCase().includes(filter.toLowerCase())
+                );
+                body.innerHTML = filtered.map((m, i) => `
+                    <tr class="hover:bg-gray-50 ${i === 0 ? 'bg-amber-50/50' : ''}">
+                        <td class="px-6 py-4 font-bold text-gray-800">
+                            ${i === 0 ? '<span class="winner-badge mr-2">Winner</span>' : ''}
+                            ${m.name}<br><span class="text-[9px] text-gray-400 font-normal uppercase tracking-widest">${m.maker}</span>
+                        </td>
+                        <td class="px-6 py-4 text-gray-600 font-bold">${m.params > 0 ? m.params + 'B' : 'API/Infra'}</td>
+                        <td class="px-6 py-4 text-amber-600 font-black">${m.vram > 0 ? m.vram + 'GB' : 'Cloud'}</td>
+                        <td class="px-6 py-4"><span class="px-2 py-1 text-[9px] font-black uppercase bg-gray-100 rounded">${m.type}</span></td>
+                        <td class="px-6 py-4 text-amber-600 font-black italic underline"><a href="${m.hf}" target="_blank">View Repo ↗</a></td>
+                    </tr>
+                `).join('');
+            }
+
+            function renderApps() {
+                const body = document.getElementById('apps-table');
+                if (!body) return; // Fix: Prevent crash if table was removed
+                body.innerHTML = apps.map((a, i) => `
+                    <tr class="hover:bg-blue-50/50 ${i === 0 ? 'bg-blue-50' : ''}">
+                        <td class="px-6 py-4 font-black text-gray-800">
+                            ${i === 0 ? '<span class="winner-badge mr-2">SOTA Solution</span>' : ''}
+                            ${a.name}
+                        </td>
+                        <td class="px-6 py-4 text-gray-500 font-medium">${a.app}</td>
+                        <td class="px-6 py-4 text-amber-600 font-black italic underline"><a href="https://${a.link}" target="_blank">${a.link} ↗</a></td>
+                    </tr>
+                `).join('');
+            }
+
+            let currentQ = 4;
+            function setQ(q, btn) {
+                currentQ = q;
+                const btns = btn.parentNode.querySelectorAll('button');
+                btns.forEach(b => b.className = "py-3 border border-gray-200 rounded-lg text-xs font-bold");
+                btn.className = "py-3 border-2 border-amber-600 bg-amber-50 text-amber-700 rounded-lg text-xs font-black";
+                calcV();
+            }
+
+            function calcV() {
+                const p = document.getElementById('p-range').value;
+                document.getElementById('p-val').innerText = p + "B" + (p == 49 ? " (Super Hybrid)" : "");
+                const v = (p * (currentQ / 8) * 1.32).toFixed(1);
+                document.getElementById('v-res').innerText = v + " GB";
+                let g = "RTX 3060 / 4060 Ti";
+                if (v > 48) g = "Multi-A100 / H100 Cluster";
+                else if (v > 24) g = "2x RTX 3090 / 4090";
+                else if (v > 16) g = "RTX 3090 / 4090 (24GB)";
+                else if (v > 8) g = "RTX 4060 Ti (16GB)";
+                document.getElementById('g-res').innerText = g;
+            }
+
+            function showPage(id) {
+                ['platform', 'models', 'visual', 'infra', 'examples'].forEach(p => {
+                    const el = document.getElementById('page-' + p);
+                    if (el) el.classList.add('hidden');
+                });
+                const target = document.getElementById('page-' + id);
+                if (target) target.classList.remove('hidden');
+
+                document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+                const btn = document.querySelector(`[onclick="showPage('${id}')"]`);
+                if (btn) btn.classList.add('active');
+
+                if (typeof updateActiveNav === 'function') updateActiveNav(id);
+
+                // Fix: Initialize chart if navigating to models page to solve "hidden canvas" issue
+                if (id === 'models') {
+                    setTimeout(initChart, 50);
+                }
+
+                window.scrollTo(0, 0);
+            }
+
+            function initChart() {
+                const ctx = document.getElementById('modelChart').getContext('2d');
+                const data = models.filter(m => m.params > 0);
+                new Chart(ctx, {
+                    type: 'bubble',
+                    data: {
+                        datasets: [{
+                            label: '2026 Smart Stack Frontier',
+                            data: data.map((m, i) => ({ x: m.params, y: m.vram, r: i === 0 ? 25 : m.params < 100 ? 10 : 20 })),
+                            backgroundColor: (c) => c.dataIndex === 0 ? 'rgba(30, 58, 138, 0.7)' : 'rgba(180, 83, 9, 0.4)',
+                            borderColor: (c) => c.dataIndex === 0 ? '#1e3a8a' : '#B45309',
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            x: { title: { display: true, text: 'Parameters (Billions)' }, type: 'logarithmic' },
+                            y: { title: { display: true, text: 'VRAM Required (GB)' }, beginAtZero: true }
+                        },
+                        plugins: {
+                            tooltip: {
+                                callbacks: {
+                                    label: (context) => {
+                                        const m = data[context.dataIndex];
+                                        return `${m.name}: ${m.params}B Params / ${m.vram}GB VRAM`;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            window.onload = () => {
+                try { if (document.getElementById('services-grid')) renderServices(); } catch (e) { }
+                // Hardened initialization with per-function error handling
+                function safeRun(fn) { try { fn(); } catch (e) { console.warn("Failed to run:", fn.name, e); } }
+
+                safeRun(renderServices);
+                safeRun(renderModels);
+                safeRun(() => {
+                    const body = document.getElementById('apps-table');
+                    if (body) renderApps(); // Only if it exists
+                });
+                safeRun(initChart);
+                safeRun(calcV);
+
+                if (document.getElementById('p-range')) {
+                    document.getElementById('p-range').addEventListener('input', calcV);
+                }
+                if (document.getElementById('modelFilter')) {
+                    document.getElementById('modelFilter').addEventListener('input', (e) => renderModels(e.target.value));
+                }
+
+                // Init Background Dots & Connection Animator
+                if (typeof initBgAnimation === 'function') initBgAnimation();
+            };
+
+            function initBgAnimation() {
+                const canvas = document.getElementById('bg-canvas');
+                if (!canvas) return;
+                const ctx = canvas.getContext('2d');
+                let width, height;
+                let nodes = [];
+
+                // Configuration
+                const NODE_COUNT = 60;
+                const CONN_DIST = 150;
+                const MOUSE_DIST = 200;
+
+                function resize() {
+                    width = canvas.width = window.innerWidth;
+                    height = canvas.height = window.innerHeight;
+                    initNodes();
+                }
+
+                class Node {
+                    constructor() {
+                        this.x = Math.random() * width;
+                        this.y = Math.random() * height;
+                        this.vx = (Math.random() - 0.5) * 0.8; // Slightly faster
+                        this.vy = (Math.random() - 0.5) * 0.8;
+                        this.size = Math.random() * 3 + 2; // Larger nodes
+                    }
+
+                    update() {
+                        this.x += this.vx;
+                        this.y += this.vy;
+
+                        // Bounce
+                        if (this.x < 0 || this.x > width) this.vx *= -1;
+                        if (this.y < 0 || this.y > height) this.vy *= -1;
+                    }
+
+                    draw() {
+                        ctx.beginPath();
+                        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                        ctx.fillStyle = 'rgba(100, 116, 139, 0.4)'; // Slate-500 equivalent
+                        ctx.fill();
+                    }
+                }
+
+                function initNodes() {
+                    nodes = [];
+                    for (let i = 0; i < NODE_COUNT; i++) {
+                        nodes.push(new Node());
+                    }
+                }
+
+                window.addEventListener('resize', resize);
+                resize();
+
+                function animate() {
+                    ctx.clearRect(0, 0, width, height);
+
+                    // Draw Connections First
+                    ctx.lineWidth = 1;
+                    for (let i = 0; i < nodes.length; i++) {
+                        const n1 = nodes[i];
+                        for (let j = i + 1; j < nodes.length; j++) {
+                            const n2 = nodes[j];
+                            const dx = n1.x - n2.x;
+                            const dy = n1.y - n2.y;
+                            const dist = Math.sqrt(dx * dx + dy * dy);
+
+                            if (dist < CONN_DIST) {
+                                const opacity = 1 - (dist / CONN_DIST);
+                                ctx.beginPath();
+                                ctx.moveTo(n1.x, n1.y);
+                                ctx.lineTo(n2.x, n2.y);
+                                ctx.strokeStyle = `rgba(148, 163, 184, ${opacity * 0.5})`; // Slate-400
+                                ctx.stroke();
+                            }
+                        }
+                    }
+
+                    // Draw Nodes
+                    nodes.forEach(node => {
+                        node.update();
+                        node.draw();
+                    });
+
+                    requestAnimationFrame(animate);
+                }
+                animate();
+            }
+        </script>
+</body>
+
+</html>

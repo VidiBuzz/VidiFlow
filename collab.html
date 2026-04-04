@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2026 AI-Native Collaboration Report</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            /* Palette: Cyber-Executive 2026 */
+            --bg-body: #02040a;
+            --bg-gradient: radial-gradient(circle at 50% -20%, #2e1065 0%, #02040a 70%);
+            
+            --glass-surface: rgba(255, 255, 255, 0.02);
+            --glass-surface-hover: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+
+            --primary: #818cf8; /* Indigo 400 */
+            --primary-glow: rgba(129, 140, 248, 0.4);
+            --secondary: #34d399; /* Emerald 400 */
+            --accent: #f472b6; /* Pink 400 */
+            --highlight: #fbbf24; /* Amber 400 */
+            
+            --text-main: #e2e8f0;
+            --text-secondary: #94a3b8;
+            --text-highlight: #ffffff;
+
+            --font-main: 'Outfit', sans-serif;
+            --radius-lg: 20px;
+            --radius-md: 14px;
+            
+            --transition-speed: 0.3s;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--bg-body);
+            background-image: var(--bg-gradient);
+            background-attachment: fixed;
+            color: var(--text-main);
+            min-height: 100vh;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Typography */
+        h1, h2, h3 {
+            color: var(--text-highlight);
+            line-height: 1.1;
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            background: linear-gradient(to right, #fff, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        h2 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            background: linear-gradient(to right, #e2e8f0, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: inline-block;
+        }
+
+        h3 {
+            font-size: 1.6rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        p {
+            margin-bottom: 1.5rem;
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        strong {
+            color: var(--text-main);
+            font-weight: 600;
+        }
+
+        a {
+            color: var(--primary);
+            text-decoration: none;
+            transition: color 0.2s;
+            border-bottom: 1px dotted var(--primary);
+        }
+
+        a:hover {
+            color: #a5b4fc;
+            border-bottom-style: solid;
+        }
+
+        /* Layout */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+
+        .grid {
+            display: grid;
+            gap: 2rem;
+        }
+
+        @media (min-width: 1024px) {
+            .grid-2 { grid-template-columns: repeat(2, 1fr); }
+            .grid-3 { grid-template-columns: repeat(3, 1fr); }
+        }
+
+        .mt-4 { margin-top: 1rem; }
+        .mb-2 { margin-bottom: 0.5rem; }
+
+        /* Header */
+        header {
+            text-align: center;
+            margin-bottom: 4rem;
+            position: relative;
+        }
+        
+        .badge {
+            display: inline-block;
+            background: rgba(129, 140, 248, 0.1);
+            color: var(--primary);
+            border: 1px solid rgba(129, 140, 248, 0.3);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* Navigation */
+        .nav-wrapper {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 3rem;
+            position: sticky;
+            top: 20px;
+            z-index: 100;
+        }
+
+        .nav-container {
+            display: flex;
+            background: rgba(15, 23, 42, 0.6);
+            padding: 0.5rem;
+            border-radius: 100px;
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            gap: 0.5rem;
+        }
+
+        .tab-button {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            padding: 0.75rem 1.75rem;
+            font-family: var(--font-main);
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 50px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .tab-button:hover {
+            color: var(--text-main);
+        }
+
+        .tab-button.active {
+            background: var(--primary);
+            color: #0f172a;
+            box-shadow: 0 0 25px var(--primary-glow);
+        }
+
+        /* Tabs Content */
+        .tab-content {
+            display: none;
+            animation: slideUp 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Cards */
+        .glass-card {
+            background: var(--glass-surface);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            padding: 2.5rem;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s ease;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .glass-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(145deg, rgba(255,255,255,0.03) 0%, transparent 100%);
+            pointer-events: none;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-8px);
+            border-color: rgba(255,255,255,0.15);
+            box-shadow: var(--glass-shadow);
+            background: var(--glass-surface-hover);
+        }
+
+        .card-img {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            border-radius: var(--radius-md);
+            margin: 1.5rem 0;
+            border: 1px solid var(--glass-border);
+            filter: grayscale(20%);
+            transition: filter 0.3s;
+        }
+
+        .glass-card:hover .card-img {
+            filter: grayscale(0%);
+            border-color: rgba(255,255,255,0.2);
+        }
+
+        .tag-container {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-top: auto;
+        }
+
+        .card-tag {
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 0.35rem 0.85rem;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.05);
+            color: var(--text-secondary);
+            border: 1px solid var(--glass-border);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .card-tag.feature {
+            background: rgba(52, 211, 153, 0.1);
+            color: var(--secondary);
+            border-color: rgba(52, 211, 153, 0.2);
+        }
+
+        .card-tag.ai {
+            background: rgba(244, 114, 182, 0.1);
+            color: var(--accent);
+            border-color: rgba(244, 114, 182, 0.2);
+        }
+
+        /* Lists */
+        .info-list {
+            list-style: none;
+            margin-bottom: 2rem;
+        }
+
+        .info-list li {
+            position: relative;
+            padding-left: 1.5rem;
+            margin-bottom: 1rem;
+            font-size: 1rem;
+        }
+
+        .info-list li::before {
+            content: '▹';
+            position: absolute;
+            left: 0;
+            color: var(--primary);
+        }
+
+        /* Special Sections */
+        .highlight-box {
+            background: linear-gradient(90deg, rgba(129, 140, 248, 0.05) 0%, transparent 100%);
+            border-left: 3px solid var(--primary);
+            padding: 1.5rem;
+            border-radius: 0 var(--radius-md) var(--radius-md) 0;
+            margin: 2rem 0;
+        }
+
+        .chart-wrapper {
+            background: rgba(0,0,0,0.2);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            height: 600px;
+            width: 100%;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-body); }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        
+        <header>
+            <span class="badge">Updated Jan 2026</span>
+            <h1>AI-Native Collaboration Report</h1>
+            <p style="max-width: 600px; margin: 0 auto;">The definitive guide to open-source, high-performance, and AI-enabled team platforms.</p>
+        </header>
+
+        <nav class="nav-wrapper">
+            <div class="nav-container">
+                <button class="tab-button active" data-tab="overview">Context</button>
+                <button class="tab-button" data-tab="platforms">The 2026 Top 6</button>
+                <button class="tab-button" data-tab="matrix">Feature Matrix</button>
+                <button class="tab-button" data-tab="automation">Automation Hub</button>
+                <button class="tab-button" data-tab="start">Deploy Now</button>
+            </div>
+        </nav>
+
+        <main>
+            <!-- OVERVIEW TAB -->
+            <div id="content-overview" class="tab-content active">
+                <div style="max-width: 900px; margin: 0 auto;">
+                    <h2>The Shift to "Modular & Fast"</h2>
+                    <p>In 2026, the era of the "bloated monolith" (like Nextcloud) is ending. Modern teams are shifting towards <strong>specialized, high-performance engines</strong> that connect via automation layers. You don't need a tool that does everything poorly; you need a stack of tools that do their specific jobs perfectly.</p>
+                    
+                    <div class="highlight-box">
+                        <h3 style="margin:0 0 0.5rem 0; font-size:1.2rem; color:var(--primary);">Key Criteria for this Report:</h3>
+                        <ul class="info-list" style="margin:0;">
+                            <li><strong>Speed & Stack:</strong> Modern languages only (Rust, Go, Node.js). No legacy PHP.</li>
+                            <li><strong>AI-Native:</strong> Not just "plugins", but deep integration with modern Local LLMs (Ollama) and APIs.</li>
+                            <li><strong>Visual-First:</strong> Storyboards, Kanban, and Gantt charts must be first-class citizens.</li>
+                        </ul>
+                    </div>
+
+                    <p>The following 6 platforms represent the best of the open-source ecosystem right now. We have removed older suggestions (like OpenProject and Zulip) to make room for <strong>Huly</strong> and <strong>Plane</strong>—two platforms defining the "next generation" of workspace software.</p>
+                </div>
+            </div>
+
+            <!-- PLATFORMS TAB -->
+            <div id="content-platforms" class="tab-content">
+                <h2>The 2026 Power Players</h2>
+                <div class="grid grid-3">
+                    
+                    <!-- Card 1: Huly -->
+                    <div class="glass-card" style="border-top: 2px solid var(--secondary);">
+                        <h3>1. Huly</h3>
+                        <p>The "All-in-One" OS. Replaces Linear, Slack, and Notion combined.</p>
+                        <img src="https://placehold.co/600x400/34d399/0f172a?text=Huly+Virtual+Office" alt="Huly Interface" class="card-img">
+                        <ul class="info-list">
+                            <li><strong>Vibe:</strong> The most modern tool on this list. Feels like the future.</li>
+                            <li><strong>Core:</strong> Chat, Project Management, and Wiki all in one unified UI.</li>
+                            <li><strong>Specialty:</strong> "Virtual Office" for remote teams and deep GitHub sync.</li>
+                        </ul>
+                        <div class="tag-container">
+                            <span class="card-tag feature">The "It" Tool</span>
+                            <span class="card-tag ai">Huly AI</span>
+                        </div>
+                    </div>
+
+                    <!-- Card 2: AppFlowy -->
+                    <div class="glass-card" style="border-top: 2px solid var(--accent);">
+                        <h3>2. AppFlowy</h3>
+                        <p>The Privacy-First Knowledge Beast. Fully AI-Native.</p>
+                        <img src="https://placehold.co/600x400/f472b6/0f172a?text=AppFlowy+v1.0" alt="AppFlowy Interface" class="card-img">
+                        <ul class="info-list">
+                            <li><strong>Stack:</strong> Rust + Flutter. Unmatched performance.</li>
+                            <li><strong>AI Power:</strong> Native support for <strong>Ollama</strong> & <strong>LM Studio</strong>. Run DeepSeek/Llama 3 locally.</li>
+                            <li><strong>Visuals:</strong> Kanban boards, Calendars, and Doc-based collaboration.</li>
+                        </ul>
+                        <div class="tag-container">
+                            <span class="card-tag feature">Local AI King</span>
+                            <span class="card-tag ai">Ollama Native</span>
+                        </div>
+                    </div>
+
+                    <!-- Card 3: Plane -->
+                    <div class="glass-card" style="border-top: 2px solid var(--primary);">
+                        <h3>3. Plane</h3>
+                        <p>The Open-Source Jira Killer. Modern, fast, and beautiful.</p>
+                        <img src="https://placehold.co/600x400/818cf8/0f172a?text=Plane+Cycles" alt="Plane Interface" class="card-img">
+                        <ul class="info-list">
+                            <li><strong>Stack:</strong> Next.js + Django. A pure modern web stack.</li>
+                            <li><strong>Workflow:</strong> "Cycles" and "Modules" approach perfect for agile devs.</li>
+                            <li><strong>AI:</strong> "Plane AI" for automated issue triage and writing assistance.</li>
+                        </ul>
+                        <div class="tag-container">
+                            <span class="card-tag feature">Dev Favorite</span>
+                            <span class="card-tag ai">Predictive</span>
+                        </div>
+                    </div>
+
+                    <!-- Card 4: Mattermost -->
+                    <div class="glass-card">
+                        <h3>4. Mattermost</h3>
+                        <p>The Security Standard for ChatOp.</p>
+                        <img src="https://placehold.co/600x400/64748b/0f172a?text=Mattermost+Ops" alt="Mattermost Interface" class="card-img">
+                        <ul class="info-list">
+                            <li><strong>Role:</strong> High-trust, high-security command center.</li>
+                            <li><strong>AI:</strong> "Copilot" plugin architecture allows connecting any model.</li>
+                            <li><strong>Best For:</strong> When security and audit trails are non-negotiable.</li>
+                        </ul>
+                        <div class="tag-container">
+                            <span class="card-tag">Enterprise Proven</span>
+                        </div>
+                    </div>
+
+                    <!-- Card 5: Rocket.Chat -->
+                    <div class="glass-card">
+                        <h3>5. Rocket.Chat</h3>
+                        <p>The Customizable Communication Hub.</p>
+                        <img src="https://placehold.co/600x400/ef4444/0f172a?text=Rocket.Chat+Apps" alt="Rocket.Chat Interface" class="card-img">
+                        <ul class="info-list">
+                            <li><strong>Role:</strong> Chat engine with a massive marketplace of apps.</li>
+                            <li><strong>Flexibility:</strong> If you want to script your own bots, this is it.</li>
+                            <li><strong>Integration:</strong> Excellent support for connecting to external AI APIs.</li>
+                        </ul>
+                        <div class="tag-container">
+                            <span class="card-tag">Highly Scriptable</span>
+                        </div>
+                    </div>
+
+                    <!-- Card 6: GitLab -->
+                    <div class="glass-card">
+                        <h3>6. GitLab</h3>
+                        <p>The DevOps & PM Titan.</p>
+                        <img src="https://placehold.co/600x400/e2e8f0/0f172a?text=GitLab+Duo" alt="GitLab Interface" class="card-img">
+                        <ul class="info-list">
+                            <li><strong>Role:</strong> Total Lifecycle Management from Code to Deploy.</li>
+                            <li><strong>Visuals:</strong> Best-in-class Roadmaps and Epics (Gantt).</li>
+                            <li><strong>AI:</strong> "GitLab Duo" is a leader in AI-assisted coding/planning.</li>
+                        </ul>
+                        <div class="tag-container">
+                            <span class="card-tag">Heavy Duty</span>
+                            <span class="card-tag ai">Duo AI</span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- MATRIX TAB -->
+            <div id="content-matrix" class="tab-content">
+                <h2>Feature Focus Matrix</h2>
+                <div class="chart-wrapper">
+                    <canvas id="featureChart"></canvas>
+                </div>
+            </div>
+
+            <!-- AUTOMATION TAB -->
+            <div id="content-automation" class="tab-content">
+                <h2>The Automation Backbone: n8n</h2>
+                <div class="grid grid-2">
+                    <div>
+                        <p>With tools like <strong>Huly</strong>, <strong>Plane</strong>, and <strong>AppFlowy</strong>, the strategy is to use <strong>n8n</strong> as the glue. You don't need one tool to rule them all; you need one automation engine to connect them.</p>
+                        <div class="glass-card" style="padding: 1.5rem;">
+                            <h3>The "Smart Stack" Workflow</h3>
+                            <ol class="info-list">
+                                <li><strong>Input:</strong> Lead touches <strong>GoHighLevel</strong>.</li>
+                                <li><strong>Process:</strong> n8n sends data to <strong>Ollama</strong> (running locally) to categorize priority.</li>
+                                <li><strong>Task:</strong> n8n creates a "Cycle Item" in <strong>Plane</strong> for the dev team.</li>
+                                <li><strong>Notify:</strong> n8n pings the core team in <strong>Huly</strong> chat.</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DEPLOY TAB -->
+            <div id="content-start" class="tab-content">
+                <h2>Quick-Deploy (Docker)</h2>
+                <div class="grid grid-3">
+                    <div class="glass-card" style="padding: 1.5rem;">
+                        <h3>Huly</h3>
+                        <a href="https://github.com/hcengineering/platform" target="_blank">GitHub Repo</a>
+                    </div>
+                    <div class="glass-card" style="padding: 1.5rem;">
+                        <h3>AppFlowy</h3>
+                        <a href="https://hub.docker.com/r/appflowy/appflowy" target="_blank">Docker Hub</a>
+                    </div>
+                    <div class="glass-card" style="padding: 1.5rem;">
+                        <h3>Plane</h3>
+                        <a href="https://github.com/makeplane/plane" target="_blank">GitHub Repo</a>
+                    </div>
+                    <div class="glass-card" style="padding: 1.5rem;">
+                        <h3>n8n</h3>
+                        <a href="https://hub.docker.com/r/n8nio/n8n" target="_blank">Docker Hub</a>
+                    </div>
+                    <div class="glass-card" style="padding: 1.5rem;">
+                        <h3>Mattermost</h3>
+                        <a href="https://hub.docker.com/r/mattermost/mattermost-team-edition" target="_blank">Docker Hub</a>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Tabs
+            const tabs = document.querySelectorAll('.tab-button');
+            const contents = document.querySelectorAll('.tab-content');
+
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const tabName = tab.dataset.tab;
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    contents.forEach(content => {
+                        content.classList.remove('active');
+                        if (content.id === `content-${tabName}`) content.classList.add('active');
+                    });
+                    if (tabName === 'matrix' && !window.featureChartInstance) renderFeatureChart();
+                });
+            });
+
+            // Chart
+            function renderFeatureChart() {
+                const ctx = document.getElementById('featureChart').getContext('2d');
+                
+                Chart.defaults.color = '#94a3b8';
+                Chart.defaults.borderColor = 'rgba(255, 255, 255, 0.05)';
+                Chart.defaults.font.family = 'Outfit';
+
+                const chartData = {
+                    labels: ['Chat-Centric', 'Task/PM-Centric', 'All-in-One OS', 'AI-Native Core', 'Modern Stack', 'Visual UX'],
+                    datasets: [
+                        {
+                            label: 'Huly',
+                            data: [8, 9, 10, 8, 10, 10], 
+                            fill: true,
+                            backgroundColor: 'rgba(52, 211, 153, 0.2)', // Emerald
+                            borderColor: '#34d399',
+                            pointBackgroundColor: '#34d399',
+                        },
+                        {
+                            label: 'AppFlowy',
+                            data: [2, 8, 9, 10, 10, 9],
+                            fill: true,
+                            backgroundColor: 'rgba(244, 114, 182, 0.2)', // Pink
+                            borderColor: '#f472b6',
+                            pointBackgroundColor: '#f472b6',
+                        },
+                        {
+                            label: 'Plane',
+                            data: [3, 10, 6, 8, 10, 9], 
+                            fill: true,
+                            backgroundColor: 'rgba(129, 140, 248, 0.2)', // Indigo
+                            borderColor: '#818cf8',
+                            pointBackgroundColor: '#818cf8',
+                        },
+                        {
+                            label: 'Mattermost/Rocket',
+                            data: [10, 5, 5, 7, 8, 6], 
+                            fill: true,
+                            backgroundColor: 'rgba(251, 191, 36, 0.1)', // Amber
+                            borderColor: '#fbbf24',
+                            pointBackgroundColor: '#fbbf24',
+                            borderDash: [5, 5]
+                        }
+                    ]
+                };
+
+                window.featureChartInstance = new Chart(ctx, {
+                    type: 'radar',
+                    data: chartData,
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        elements: {
+                            line: { borderWidth: 2 }
+                        },
+                        scales: {
+                            r: {
+                                grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                                pointLabels: { font: { size: 14 } },
+                                ticks: { display: false, max: 10 }
+                            }
+                        },
+                        plugins: {
+                            legend: { position: 'bottom', labels: { padding: 20, font: { size: 14 } } }
+                        }
+                    }
+                });
+            }
+
+            if(document.querySelector('.tab-button.active').dataset.tab === 'matrix') renderFeatureChart();
+        });
+    </script>
+</body>
+</html>

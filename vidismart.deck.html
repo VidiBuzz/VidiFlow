@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VidiSmart Deck</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+        
+        const ChevronRight = ({size = 24}) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="9 18 15 12 9 6"></polyline></svg>;
+        const ChevronLeft = ({size = 24}) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="15 18 9 12 15 6"></polyline></svg>;
+        const Zap = ({size = 24, className = ""}) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={className}><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>;
+        const TrendingUp = ({size = 24}) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>;
+        const Clock = ({size = 24, className = ""}) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={className}><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>;
+        const CheckCircle2 = ({size = 24, className = ""}) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={className}><circle cx="12" cy="12" r="10"></circle><path d="m9 12 2 2 4-4"></path></svg>;
+        const ArrowRight = ({size = 24}) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>;
+        const Coffee = ({size = 24, className = ""}) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={className}><path d="M17 8h1a4 4 0 1 1 0 8h-1"></path><path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z"></path></svg>;
+        const Cpu = ({size = 24}) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"></rect><rect x="9" y="9" width="6" height="6"></rect></svg>;
+        const Lock = ({size = 24}) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>;
+        const Globe = ({size = 24}) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line></svg>;
+        const Loader2 = ({size = 24, className = ""}) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={className}><line x1="12" y1="2" x2="12" y2="6"></line><line x1="12" y1="18" x2="12" y2="22"></line><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line></svg>;
+        const Sparkles = ({size = 24}) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"></path></svg>;
+
+        // SmartImage - Reads from admin settings
+        const SmartImage = ({ prompt, className = "" }) => {
+            const [imageUrl, setImageUrl] = useState(null);
+            const [loading, setLoading] = useState(true);
+            const [engineName, setEngineName] = useState('Picsum');
+            
+            const getSeed = (str) => {
+                let hash = 0;
+                for (let i = 0; i < str.length; i++) {
+                    hash = ((hash << 5) - hash) + str.charCodeAt(i);
+                    hash |= 0;
+                }
+                return Math.abs(hash);
+            };
+            
+            useEffect(() => {
+                // Read settings from localStorage (set by admin panel)
+                const settings = JSON.parse(localStorage.getItem('vidismart_settings')) || { imageProvider: 'picsum' };
+                const prompts = JSON.parse(localStorage.getItem('vidismart_deck_prompts'));
+                
+                // Find matching prompt from admin
+                let finalPrompt = prompt;
+                if (prompts) {
+                    const match = prompts.find(p => p.prompt.includes(prompt) || prompt.includes(p.prompt.substring(0, 50)));
+                    if (match) finalPrompt = match.prompt;
+                }
+                
+                const seed = getSeed(finalPrompt);
+                const provider = settings.imageProvider || 'picsum';
+                
+                // Set engine name for display
+                const providerNames = {
+                    picsum: 'Picsum',
+                    pollinations: 'Pollinations',
+                    nanobanana: 'Nano Banana',
+                    gemini: 'Gemini',
+                    craiyon: 'Craiyon',
+                    stability: 'Stability AI',
+                    'qwen-local': 'Qwen (Local)',
+                    'ltx-local': 'LTX (Local)'
+                };
+                setEngineName(providerNames[provider] || 'Picsum');
+                
+                let url;
+                switch(provider) {
+                    case 'pollinations':
+                        // Pollinations API - removed model=flux due to 500 errors
+                        url = `https://image.pollinations.ai/prompt/${encodeURIComponent(finalPrompt)}?width=800&height=600&nologo=true&seed=${seed}`;
+                        break;
+                    case 'picsum':
+                    default:
+                        url = `https://picsum.photos/seed/${seed}/800/600`;
+                }
+                
+                setImageUrl(url);
+            }, [prompt]);
+            
+            return (
+                <div className={`relative overflow-hidden rounded-3xl bg-slate-900 border border-white/10 ${className}`}>
+                    {loading && (
+                        <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-900 z-10">
+                            <Loader2 size={40} className="text-blue-500 animate-spin mb-4" />
+                            <div className="flex items-center gap-2 text-blue-400 font-bold animate-pulse uppercase tracking-widest text-xs">
+                                <Sparkles size={14} /> Loading Image...
+                            </div>
+                        </div>
+                    )}
+                    <img 
+                        src={imageUrl} 
+                        className={`w-full h-full object-cover transition-opacity duration-1000 ${loading ? 'opacity-0' : 'opacity-100'}`}
+                        alt="Visual placeholder"
+                        onLoad={() => setLoading(false)}
+                        onError={() => setLoading(false)}
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-br from-blue-900/40 to-purple-900/40 mix-blend-overlay" />
+                    {/* Engine label */}
+                    <div className="absolute bottom-3 right-3 bg-black/70 backdrop-blur-sm px-3 py-1.5 rounded-lg text-xs font-bold text-white/80">
+                        Generated by: {engineName}
+                    </div>
+                </div>
+            );
+        };
+
+        const ComparisonRow = ({ label, value, status }) => (
+            <div className="flex items-center justify-between py-3 border-b border-white/5 last:border-0">
+                <span className="text-slate-400 text-sm font-medium">{label}</span>
+                <span className={`text-sm font-bold ${status === 'good' ? 'text-green-400' : 'text-slate-300'}`}>{value}</span>
+            </div>
+        );
+
+        const App = () => {
+            const [currentSlide, setCurrentSlide] = useState(0);
+            const nextSlide = () => { if (currentSlide < slides.length - 1) setCurrentSlide(s => s + 1); };
+            const prevSlide = () => { if (currentSlide > 0) setCurrentSlide(s => s - 1); };
+
+            useEffect(() => {
+                const handleKeyDown = (e) => {
+                    if (e.key === 'ArrowRight' || e.key === ' ') nextSlide();
+                    if (e.key === 'ArrowLeft') prevSlide();
+                };
+                window.addEventListener('keydown', handleKeyDown);
+                return () => window.removeEventListener('keydown', handleKeyDown);
+            }, [currentSlide]);
+
+            const slides = [
+                { type: 'hero', title: 'VidiSmart', subtitle: 'The Complete Smart Stack Solution', description: 'Transforming how 36 million small businesses build, optimize, and scale their technology infrastructure in just 10 minutes.', imgPrompt: "futuristic technology" },
+                { type: 'problem', title: 'The SMB Tech Crisis', stats: [{ label: 'Outdated Tech', value: '93%' }, { label: 'Lost to Inefficiency', value: '$4.2T' }, { label: 'Privacy Concerns', value: '86%' }], points: ['Average business uses 15+ disconnected tools', '40% of time spent on manual processes', 'Consultants cost $10K-$50K (unaffordable)'], imgPrompt: "messy office technology" },
+                { type: 'solution', title: 'The 10-Minute Transformation', steps: [{ time: '2m', title: 'Discovery', desc: 'Scan URL' }, { time: '3m', title: 'Vector Search', desc: '481+ Techs' }, { time: '3m', title: 'Blueprint', desc: 'Custom Architecture' }, { time: '2m', title: 'Deploy', desc: 'One-click Launch' }], imgPrompt: "modern workspace" },
+                { type: 'comparison', title: 'Legacy vs. Smart Stack', traditional: { tools: '15+ Tools', cost: '$1,200+/mo', usage: '60% Waste', effort: 'Manual' }, smart: { tools: '5-8 Integrated', cost: '$221/mo', usage: '100% Utilized', effort: 'AI-Automated' }, imgPrompt: "technology comparison" },
+                { type: 'case-study', title: "Jo's Coffee Shop", before: { cost: '$1,200/mo', hours: '30 hrs/wk' }, after: { cost: '$221/mo', hours: '5 hrs/wk' }, result: '340% Retention Increase', imgPrompt: "coffee shop modern" },
+                { type: 'grid', title: 'Why VidiSmart Wins', items: [{ icon: <Cpu />, title: 'AI-First', desc: 'Optimized for agents & predictive analytics' }, { icon: <Lock />, title: 'Privacy-First', desc: 'GDPR/SOC2 compliant by default' }, { icon: <Globe />, title: 'Omni Search', desc: 'Visual Vector matching technology' }, { icon: <TrendingUp />, title: 'Scalable', desc: 'Enterprise-grade at SMB prices' }], imgPrompt: "processor chip" },
+                { type: 'pricing', title: 'Transparent Pricing', plans: [{ name: 'Starter', price: 'Free', features: ['Stack Analysis', '3 Recs'] }, { name: 'Professional', price: '$199', sub: 'One-time', features: ['Full Blueprint', 'ROI Calculator', '10 Recs'], highlight: true }, { name: 'Enterprise', price: '$499', sub: '+ $99/mo', features: ['White-glove Service', 'Custom API', 'SLA Guarantees'] }] },
+                { type: 'cta', title: 'Ready to Transform?', description: 'Start your free analysis today and see your Smart Stack in 10 minutes.', links: ['Enter Website URL', 'Answer 3 Questions', 'Get Custom Stack'], imgPrompt: "smartphone futuristic" }
+            ];
+
+            const renderSlide = (slide) => {
+                switch (slide.type) {
+                    case 'hero':
+                        return (
+                            <div className="grid grid-cols-1 lg:grid-cols-2 h-full">
+                                <div className="flex flex-col justify-center p-8 lg:p-16">
+                                    <div className="bg-blue-600/15 w-fit p-4 rounded-3xl mb-10 border border-blue-500/30"><Zap size={32} className="text-blue-400 fill-blue-400" /></div>
+                                    <h1 className="text-6xl md:text-7xl font-black mb-4 tracking-tighter text-white leading-tight">{slide.title}</h1>
+                                    <p className="text-2xl md:text-3xl text-blue-400 font-bold mb-8 uppercase tracking-[0.2em]">{slide.subtitle}</p>
+                                    <p className="text-xl text-slate-400 leading-relaxed max-w-lg mb-12">{slide.description}</p>
+                                    <button onClick={nextSlide} className="flex items-center gap-3 bg-blue-600 hover:bg-blue-500 text-white px-8 py-5 rounded-2xl font-bold w-fit transition-all hover:scale-105 shadow-xl shadow-blue-900/40">Begin Analysis <ArrowRight size={20} /></button>
+                                </div>
+                                <div className="p-8 hidden lg:block"><SmartImage prompt={slide.imgPrompt} className="h-full shadow-2xl" /></div>
+                            </div>
+                        );
+                    case 'problem':
+                        return (
+                            <div className="grid grid-cols-1 lg:grid-cols-5 h-full">
+                                <div className="lg:col-span-3 p-8 lg:p-16 flex flex-col justify-center">
+                                    <h2 className="text-4xl md:text-5xl font-black mb-12 flex items-center gap-4"><Clock className="text-red-500" /> {slide.title}</h2>
+                                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-16">{slide.stats.map((s, i) => (<div key={i} className="bg-slate-800/50 p-6 rounded-3xl border border-white/5"><div className="text-4xl font-black text-blue-400 mb-1">{s.value}</div><div className="text-[10px] text-slate-500 uppercase font-black tracking-widest">{s.label}</div></div>))}</div>
+                                    <div className="space-y-6">{slide.points.map((p, i) => (<div key={i} className="flex items-center gap-4 text-xl text-slate-300"><div className="w-2 h-2 bg-red-500 rounded-full shrink-0" />{p}</div>))}</div>
+                                </div>
+                                <div className="lg:col-span-2 p-8 hidden lg:block"><SmartImage prompt={slide.imgPrompt} className="h-full" /></div>
+                            </div>
+                        );
+                    case 'solution':
+                        return (
+                            <div className="p-8 lg:p-16 h-full flex flex-col">
+                                <div className="mb-16"><h2 className="text-4xl md:text-5xl font-black mb-4 flex items-center gap-4"><Zap className="text-yellow-400" /> {slide.title}</h2><p className="text-slate-400 text-xl italic">"Months of research in 10 minutes of execution."</p></div>
+                                <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-16 relative">
+                                    <div className="absolute top-12 left-0 right-0 h-[2px] bg-slate-800 -z-0 hidden md:block" />
+                                    {slide.steps.map((s, i) => (<div key={i} className="relative z-10 flex flex-col items-center text-center"><div className="w-20 h-20 md:w-24 md:h-24 bg-blue-600 rounded-full flex flex-col items-center justify-center border-8 border-slate-900 shadow-xl mb-6"><span className="text-[10px] font-black uppercase text-blue-200">Stage {i+1}</span><span className="text-lg md:text-xl font-black">{s.time}</span></div><h3 className="text-lg font-bold mb-2">{s.title}</h3><p className="text-slate-500 text-xs md:text-sm px-4">{s.desc}</p></div>))}
+                                </div>
+                                <div className="flex-grow hidden lg:block"><SmartImage prompt={slide.imgPrompt} className="h-full max-h-[300px]" /></div>
+                            </div>
+                        );
+                    case 'comparison':
+                        return (
+                            <div className="p-8 lg:p-16 h-full flex flex-col">
+                                <h2 className="text-4xl md:text-5xl font-black mb-12">{slide.title}</h2>
+                                <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 flex-grow">
+                                    <div className="bg-slate-800/30 rounded-3xl p-8 border border-white/5 flex flex-col">
+                                        <h3 className="text-lg font-black mb-8 text-slate-500 uppercase tracking-widest">Legacy Stack</h3>
+                                        <div className="space-y-4 flex-grow">
+                                            <ComparisonRow label="Tools" value={slide.traditional.tools} /><ComparisonRow label="Cost" value={slide.traditional.cost} /><ComparisonRow label="Utilization" value={slide.traditional.usage} /><ComparisonRow label="Effort" value={slide.traditional.effort} />
+                                        </div>
+                                        <div className="mt-8 pt-8 border-t border-white/5 text-red-400 font-bold text-sm">Inefficient & Disconnected</div>
+                                    </div>
+                                    <div className="bg-blue-600/10 rounded-3xl p-8 border-2 border-blue-500/50 flex flex-col relative overflow-hidden">
+                                        <div className="absolute top-0 right-0 bg-blue-500 px-4 py-1 text-[10px] font-black uppercase tracking-tighter rounded-bl-xl">Optimized</div>
+                                        <h3 className="text-lg font-black mb-8 text-blue-400 uppercase tracking-widest">VidiSmart Stack</h3>
+                                        <div className="space-y-4 flex-grow">
+                                            <ComparisonRow label="Tools" value={slide.smart.tools} status="good" /><ComparisonRow label="Cost" value={slide.smart.cost} status="good" /><ComparisonRow label="Utilization" value={slide.smart.usage} status="good" /><ComparisonRow label="Effort" value={slide.smart.effort} status="good" />
+                                        </div>
+                                        <div className="mt-8 pt-8 border-t border-white/10 text-green-400 font-bold text-sm flex items-center gap-2"><CheckCircle2 size={16} /> AI-Powered Growth</div>
+                                    </div>
+                                    <div className="h-full hidden lg:block"><SmartImage prompt={slide.imgPrompt} className="h-full" /></div>
+                                </div>
+                            </div>
+                        );
+                    case 'case-study':
+                        return (
+                            <div className="p-8 lg:p-16 h-full grid grid-cols-1 lg:grid-cols-2 gap-16">
+                                <div className="flex flex-col justify-center">
+                                    <h2 className="text-4xl md:text-5xl font-black mb-12 flex items-center gap-4"><Coffee className="text-orange-400" /> {slide.title}</h2>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-12">
+                                        <div className="bg-slate-800/50 p-8 rounded-3xl border border-white/5"><div className="text-slate-500 text-[10px] font-black uppercase tracking-widest mb-4">Old Expenses</div><div className="text-4xl font-black text-red-500">{slide.before.cost}</div><div className="text-sm text-slate-500 mt-1">{slide.before.hours} lost/wk</div></div>
+                                        <div className="bg-green-500/10 p-8 rounded-3xl border border-green-500/30"><div className="text-green-500 text-[10px] font-black uppercase tracking-widest mb-4">New Efficiency</div><div className="text-4xl font-black text-green-400">{slide.after.cost}</div><div className="text-sm text-green-700 mt-1">{slide.after.hours} tech/wk</div></div>
+                                    </div>
+                                    <div className="bg-blue-600 p-8 rounded-3xl"><div className="flex items-center gap-6"><div className="bg-white/20 p-4 rounded-2xl"><TrendingUp size={40} className="text-white" /></div><div><div className="text-3xl md:text-4xl font-black text-white">{slide.result}</div><div className="text-blue-100 opacity-80">$18,000 new profit in 6 months</div></div></div></div>
+                                </div>
+                                <div className="h-full hidden lg:block"><SmartImage prompt={slide.imgPrompt} className="h-full" /></div>
+                            </div>
+                        );
+                    case 'grid':
+                        return (
+                            <div className="p-8 lg:p-16 h-full flex flex-col">
+                                <h2 className="text-4xl md:text-5xl font-black mb-12">{slide.title}</h2>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 mb-12 flex-grow">{slide.items.map((item, i) => (<div key={i} className="flex gap-6 p-8 bg-slate-800/40 rounded-3xl border border-white/5 group hover:border-blue-500/50 transition-all"><div className="w-16 h-16 bg-blue-600/20 rounded-2xl flex items-center justify-center text-blue-400 shrink-0 group-hover:scale-110 transition-transform">{item.icon}</div><div><h3 className="text-xl font-bold mb-2">{item.title}</h3><p className="text-slate-500 text-sm leading-relaxed">{item.desc}</p></div></div>))}</div>
+                                <div className="h-48 hidden lg:block"><SmartImage prompt={slide.imgPrompt} className="h-full" /></div>
+                            </div>
+                        );
+                    case 'pricing':
+                        return (
+                            <div className="p-8 lg:p-16 h-full flex flex-col items-center">
+                                <h2 className="text-4xl md:text-5xl font-black mb-16">{slide.title}</h2>
+                                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 w-full flex-grow">{slide.plans.map((plan, i) => (<div key={i} className={`rounded-[2.5rem] p-10 border flex flex-col relative transition-transform hover:scale-[1.02] ${plan.highlight ? 'bg-blue-600 border-blue-400 scale-105 z-10 shadow-[0_32px_64px_-16px_rgba(37,99,235,0.4)]' : 'bg-slate-800/50 border-white/5'}`}>
+                                    {plan.highlight && <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-white text-blue-600 px-6 py-2 rounded-full text-xs font-black shadow-lg">RECOMMENDED</div>}
+                                    <h3 className="text-2xl font-black mb-2 uppercase tracking-tight">{plan.name}</h3>
+                                    <div className="flex items-baseline gap-2 mb-8"><span className="text-5xl font-black">{plan.price}</span><span className="text-sm opacity-60 font-medium">{plan.sub || ''}</span></div>
+                                    <ul className="space-y-4 mb-12 flex-grow">{plan.features.map((f, j) => (<li key={j} className="flex items-center gap-3 text-sm font-medium"><CheckCircle2 size={18} className={plan.highlight ? 'text-blue-200' : 'text-blue-500'} />{f}</li>))}</ul>
+                                    <button className={`w-full py-5 rounded-2xl font-black text-sm uppercase tracking-widest transition-all ${plan.highlight ? 'bg-white text-blue-600 hover:bg-blue-50 shadow-xl' : 'bg-white/5 hover:bg-white/10 text-white'}`}>Select {plan.name}</button>
+                                </div>))}</div>
+                            </div>
+                        );
+                    case 'cta':
+                        return (
+                            <div className="grid grid-cols-1 lg:grid-cols-2 h-full">
+                                <div className="p-8 lg:p-16 flex flex-col justify-center">
+                                    <div className="bg-yellow-400/20 w-fit p-4 rounded-3xl mb-8 border border-yellow-400/30"><Zap size={48} className="text-yellow-400 fill-yellow-400" /></div>
+                                    <h2 className="text-5xl md:text-7xl font-black mb-6 leading-tight tracking-tighter">10 Minutes to a<br/><span className="text-blue-500">Better Business.</span></h2>
+                                    <p className="text-2xl text-slate-400 mb-12 leading-relaxed">{slide.description}</p>
+                                    <div className="space-y-4">{slide.links.map((link, i) => (<div key={i} className="flex items-center gap-6 p-6 bg-slate-800/50 rounded-2xl border border-white/5 group hover:border-blue-500 cursor-pointer transition-all"><span className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center font-black text-sm">{i+1}</span><span className="text-lg font-bold group-hover:text-blue-400 transition-colors">{link}</span><ChevronRight className="ml-auto text-slate-600 group-hover:text-blue-500" /></div>))}</div>
+                                </div>
+                                <div className="p-8 hidden lg:block"><SmartImage prompt={slide.imgPrompt} className="h-full" /></div>
+                            </div>
+                        );
+                    default: return null;
+                }
+            };
+
+            return (
+                <div className="fixed inset-0 bg-[#0a0a0c] text-white font-sans selection:bg-blue-500/30 overflow-hidden">
+                    <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-20">
+                        <div className="absolute -top-[20%] -left-[10%] w-[60%] h-[60%] bg-blue-600/30 blur-[120px] rounded-full" />
+                        <div className="absolute -bottom-[20%] -right-[10%] w-[60%] h-[60%] bg-indigo-900/30 blur-[120px] rounded-full" />
+                    </div>
+                    <div className="relative h-full flex flex-col max-w-[1600px] mx-auto">
+                        <div className="flex justify-between items-center p-6 lg:p-8 z-50">
+                            <div className="flex items-center gap-3"><div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center font-black italic">V</div><span className="text-2xl font-black tracking-tighter">VIDISMART</span></div>
+                            <div className="hidden sm:flex gap-2 bg-slate-800/50 p-1.5 rounded-2xl border border-white/5 backdrop-blur-md">{slides.map((_, i) => (<button key={i} onClick={() => setCurrentSlide(i)} className={`h-2.5 rounded-full transition-all duration-300 ${i === currentSlide ? 'w-12 bg-blue-500 shadow-[0_0_15px_rgba(59,130,246,0.5)]' : 'w-2.5 bg-slate-700 hover:bg-slate-500'}`} />))}</div>
+                            <div className="text-xs font-black text-slate-500 uppercase tracking-widest hidden sm:block">Pitch Deck 2026</div>
+                        </div>
+                        <div className="flex-grow relative overflow-hidden">
+                            <div className="h-full w-full transition-all duration-700 ease-out flex" style={{ transform: `translateX(-${currentSlide * 100}%)` }}>{slides.map((slide, i) => (<div key={i} className="w-full h-full shrink-0">{renderSlide(slide)}</div>))}</div>
+                        </div>
+                        <div className="p-6 lg:p-8 flex justify-between items-center z-50">
+                            <button onClick={prevSlide} disabled={currentSlide === 0} className={`p-4 rounded-2xl border transition-all ${currentSlide === 0 ? 'opacity-20 border-white/5 cursor-not-allowed' : 'bg-slate-800/50 border-white/5 hover:border-blue-500 text-white'}`}><ChevronLeft size={32} /></button>
+                            <div className="bg-slate-800/50 px-6 lg:px-8 py-3 rounded-2xl border border-white/5 backdrop-blur-md flex items-center gap-4 lg:gap-6">
+                                <div className="flex flex-col"><span className="text-[10px] text-slate-500 font-black uppercase tracking-widest">Slide</span><span className="text-xl font-black leading-none">{currentSlide + 1}<span className="text-slate-600 mx-1">/</span>{slides.length}</span></div>
+                                <div className="h-8 w-px bg-white/10" />
+                                <div className="hidden sm:flex gap-2"><span className="text-[10px] text-slate-500 font-black uppercase tracking-widest">Navigate</span><span className="text-slate-400 text-xs">← →</span></div>
+                            </div>
+                            <button onClick={nextSlide} disabled={currentSlide === slides.length - 1} className={`p-4 rounded-2xl border transition-all ${currentSlide === slides.length - 1 ? 'opacity-20 border-white/5 cursor-not-allowed' : 'bg-slate-800/50 border-white/5 hover:border-blue-500 text-white'}`}><ChevronRight size={32} /></button>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>

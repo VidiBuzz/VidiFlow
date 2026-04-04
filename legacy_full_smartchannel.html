@@ -1,0 +1,152 @@
+import React, { useState } from 'react';
+import { 
+  LayoutDashboard, 
+  Image as ImageIcon, 
+  Video, 
+  Music, 
+  Wand2, 
+  Search, 
+  Bell, 
+  User, 
+  Settings,
+  ArrowRight,
+  UploadCloud,
+  Layers,
+  Sparkles
+} from 'lucide-react';
+
+const SmartChannelDashboard = () => {
+  const [activeTab, setActiveTab] = useState('all');
+
+  const tools = [
+    { id: 1, name: 'SmartGen Image', desc: 'Context-aware visual generation', icon: <Sparkles className="text-purple-500" />, cat: 'image' },
+    { id: 2, name: 'Video Enhancer', desc: 'AI-driven resolution scaling', icon: <Video className="text-blue-500" />, cat: 'video' },
+    { id: 3, name: 'Background Remover', desc: 'Instant object isolation', icon: <Layers className="text-green-500" />, cat: 'image' },
+    { id: 4, name: 'Smart Restyle', desc: 'Apply context-aware style transfer', icon: <Wand2 className="text-pink-500" />, cat: 'image' },
+    { id: 5, name: 'Audio Cleaner', desc: 'Remove noise via context AI', icon: <Music className="text-yellow-500" />, cat: 'audio' },
+    { id: 6, name: 'Object Eraser', desc: 'Contextual fill for images', icon: <ImageIcon className="text-orange-500" />, cat: 'image' },
+  ];
+
+  return (
+    <div className="flex h-screen bg-[#f8fafc] font-sans text-slate-900">
+      {/* Sidebar */}
+      <aside className="w-64 bg-white border-r border-slate-200 flex flex-col">
+        <div className="p-6">
+          <h1 className="text-xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+            SmartChannel CX
+          </h1>
+        </div>
+        
+        <nav className="flex-1 px-4 space-y-2">
+          <NavItem icon={<LayoutDashboard size={20}/>} label="Dashboard" active />
+          <NavItem icon={<Sparkles size={20}/>} label="SmartGen AI" />
+          <NavItem icon={<ImageIcon size={20}/>} label="Image Tools" />
+          <NavItem icon={<Video size={20}/>} label="Video Tools" />
+          <NavItem icon={<Music size={20}/>} label="Audio Tools" />
+        </nav>
+
+        <div className="p-4 border-t border-slate-200">
+          <div className="bg-indigo-50 p-4 rounded-xl">
+            <p className="text-xs font-semibold text-indigo-600 uppercase">Credits</p>
+            <p className="text-sm text-slate-600 mt-1">1,250 remaining</p>
+            <div className="w-full bg-indigo-200 h-1.5 rounded-full mt-2">
+              <div className="bg-indigo-600 h-1.5 rounded-full w-3/4"></div>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      {/* Main Content */}
+      <main className="flex-1 overflow-y-auto">
+        {/* Top Header */}
+        <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-8 sticky top-0 z-10">
+          <div className="relative w-96">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+            <input 
+              type="text" 
+              placeholder="Search AI tools..." 
+              className="w-full pl-10 pr-4 py-2 bg-slate-100 border-none rounded-lg focus:ring-2 focus:ring-indigo-500 transition-all outline-none"
+            />
+          </div>
+          <div className="flex items-center gap-4">
+            <button className="p-2 hover:bg-slate-100 rounded-full"><Bell size={20}/></button>
+            <button className="p-2 hover:bg-slate-100 rounded-full"><Settings size={20}/></button>
+            <div className="h-8 w-8 bg-indigo-600 rounded-full flex items-center justify-center text-white text-sm font-bold">
+              JD
+            </div>
+          </div>
+        </header>
+
+        <div className="p-8 max-w-6xl mx-auto">
+          {/* SmartGen Hero Section */}
+          <section className="mb-12 relative overflow-hidden rounded-3xl bg-slate-900 text-white p-10">
+            <div className="relative z-10 max-w-xl">
+              <span className="bg-indigo-500/20 text-indigo-300 px-3 py-1 rounded-full text-xs font-bold tracking-wider uppercase">
+                New: SmartGen Engine
+              </span>
+              <h2 className="text-4xl font-bold mt-4 mb-4 leading-tight">
+                Visual AI that understands your context.
+              </h2>
+              <p className="text-slate-400 mb-8 text-lg">
+                Upload any asset and our SmartGen engine will suggest the best edits, styles, and enhancements based on your brand identity.
+              </p>
+              <button className="bg-indigo-600 hover:bg-indigo-500 text-white px-8 py-3 rounded-xl font-bold flex items-center gap-2 transition-all transform hover:scale-105">
+                Start Generating <ArrowRight size={18}/>
+              </button>
+            </div>
+            {/* Abstract Background Element */}
+            <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-indigo-500/20 to-transparent flex items-center justify-center">
+                <div className="w-64 h-64 border-4 border-indigo-500/30 rounded-full animate-pulse flex items-center justify-center">
+                    <Sparkles size={80} className="text-indigo-400 opacity-50" />
+                </div>
+            </div>
+          </section>
+
+          {/* Quick Tools Filter */}
+          <div className="flex items-center gap-4 mb-8">
+            <button onClick={() => setActiveTab('all')} className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${activeTab === 'all' ? 'bg-white shadow-sm border border-slate-200' : 'text-slate-500 hover:text-indigo-600'}`}>All Tools</button>
+            <button onClick={() => setActiveTab('image')} className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${activeTab === 'image' ? 'bg-white shadow-sm border border-slate-200' : 'text-slate-500 hover:text-indigo-600'}`}>Images</button>
+            <button onClick={() => setActiveTab('video')} className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${activeTab === 'video' ? 'bg-white shadow-sm border border-slate-200' : 'text-slate-500 hover:text-indigo-600'}`}>Video</button>
+          </div>
+
+          {/* Tool Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {tools.filter(t => activeTab === 'all' || t.cat === activeTab).map(tool => (
+              <div 
+                key={tool.id} 
+                className="group bg-white p-6 rounded-2xl border border-slate-200 hover:border-indigo-500 transition-all hover:shadow-xl cursor-pointer"
+              >
+                <div className="w-12 h-12 bg-slate-50 rounded-xl flex items-center justify-center mb-4 group-hover:bg-indigo-50 transition-colors">
+                  {tool.icon}
+                </div>
+                <h3 className="font-bold text-lg mb-1">{tool.name}</h3>
+                <p className="text-slate-500 text-sm mb-4">{tool.desc}</p>
+                <div className="flex items-center text-indigo-600 text-sm font-bold opacity-0 group-hover:opacity-100 transition-opacity">
+                  Open Tool <ArrowRight size={14} className="ml-1" />
+                </div>
+              </div>
+            ))}
+            
+            {/* Custom Upload Card */}
+            <div className="border-2 border-dashed border-slate-300 rounded-2xl p-6 flex flex-col items-center justify-center text-center hover:bg-white transition-all cursor-pointer">
+              <div className="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center mb-2">
+                <UploadCloud className="text-slate-400" />
+              </div>
+              <p className="font-semibold">Drag & Drop Files</p>
+              <p className="text-xs text-slate-400 mt-1">SmartGen will auto-detect tool</p>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  );
+};
+
+const NavItem = ({ icon, label, active = false }) => (
+  <div className={`flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer transition-colors ${active ? 'bg-indigo-50 text-indigo-600 font-semibold' : 'text-slate-600 hover:bg-slate-100'}`}>
+    {icon}
+    <span>{label}</span>
+  </div>
+);
+
+export default SmartChannelDashboard;

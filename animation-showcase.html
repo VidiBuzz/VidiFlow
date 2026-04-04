@@ -1,0 +1,1326 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VidiSmart — Animation Showcase</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Kumbh+Sans:wght@300;400;500;600;700;800;900&display=swap"
+    rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
+  <style>
+    :root {
+      --bg: #06060e;
+      --bg2: #0c0c1a;
+      --surface: rgba(255, 255, 255, 0.04);
+      --border: rgba(255, 255, 255, 0.08);
+      --text: #ededf5;
+      --muted: rgba(237, 237, 245, 0.45);
+      --cyan: #00e5ff;
+      --magenta: #ff1f6e;
+      --violet: #7c3aed;
+      --blue: #1d4ed8;
+      --green: #10d98a;
+      --crm: #38bdf8;
+      --cx: #10d98a;
+      --mail: #fb923c;
+      --blast: #f472b6;
+      --twin: #a78bfa;
+      --font: 'Kumbh Sans', sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 2rem;
+    }
+
+    /* Navigation */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      background: rgba(6, 6, 14, 0.8);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 2rem;
+    }
+
+    nav ul {
+      display: flex;
+      gap: 2rem;
+      justify-content: center;
+      list-style: none;
+    }
+
+    nav a {
+      color: var(--muted);
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    nav a:hover {
+      color: var(--cyan);
+    }
+
+    /* VidiSmart Logo */
+    .vidismart-logo {
+      position: fixed;
+      top: 1rem;
+      left: 2rem;
+      z-index: 200;
+      font-family: 'Kumbh Sans', sans-serif;
+      font-weight: 800;
+      font-size: 1.5rem;
+      letter-spacing: -0.02em;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 0;
+    }
+
+    .vidismart-logo .vidi {
+      background: linear-gradient(120deg, #00e5ff, #1d4ed8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .vidismart-logo .smart {
+      color: #ededf5;
+      margin-left: 0;
+    }
+
+    /* Section Styles */
+    section {
+      min-height: 100vh;
+      padding: 8rem 2rem 4rem;
+      position: relative;
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 4rem;
+    }
+
+    .section-tag {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0.4rem 1rem;
+      border-radius: 100px;
+      margin-bottom: 1rem;
+    }
+
+    .section-tag.gsap {
+      background: rgba(16, 217, 138, 0.15);
+      color: var(--green);
+    }
+
+    .section-tag.three {
+      background: rgba(56, 189, 248, 0.15);
+      color: var(--crm);
+    }
+
+    .section-tag.lottie {
+      background: rgba(167, 139, 250, 0.15);
+      color: var(--twin);
+    }
+
+    h1 {
+      font-size: clamp(2.5rem, 6vw, 4rem);
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      margin-bottom: 1rem;
+    }
+
+    h2 {
+      font-size: clamp(2rem, 5vw, 3rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      margin-bottom: 1rem;
+    }
+
+    .section-desc {
+      font-size: 1.1rem;
+      color: var(--muted);
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    /* Demo Grid */
+    .demo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 2rem;
+    }
+
+    .demo-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+      transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
+    }
+
+    .demo-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(255, 255, 255, 0.15);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+
+    .demo-preview {
+      height: 300px;
+      background: var(--bg2);
+      position: relative;
+      overflow: hidden;
+      transition: background 0.3s;
+    }
+
+    .demo-card:hover .demo-preview {
+      background: rgba(12, 12, 26, 0.8);
+    }
+
+    /* Lottie container hover effects */
+    .demo-preview>div {
+      transition: transform 0.3s;
+    }
+
+    .demo-card:hover .demo-preview>div {
+      transform: scale(1.05);
+    }
+
+    /* GSAP demo specific hover effects */
+    .scroll-box {
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .scroll-box:hover {
+      transform: scale(1.1);
+      box-shadow: 0 0 30px rgba(16, 217, 138, 0.5);
+    }
+
+    .stagger-box {
+      transition: transform 0.2s;
+    }
+
+    .stagger-box:hover {
+      transform: scale(1.2);
+    }
+
+    /* Three.js demo hover effects */
+    #three-particles-demo:hover,
+    #three-shape-demo:hover,
+    #three-spheres-demo:hover,
+    #three-grid-demo:hover {
+      cursor: pointer;
+    }
+
+    /* Button hover states */
+    .btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+      background: var(--surface);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .btn-secondary:hover {
+      background: var(--surface2);
+      border-color: var(--cyan);
+    }
+
+    .demo-info {
+      padding: 1.5rem;
+    }
+
+    .demo-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .demo-desc {
+      font-size: 0.875rem;
+      color: var(--muted);
+      margin-bottom: 1rem;
+    }
+
+    .demo-code {
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 8px;
+      padding: 1rem;
+      font-family: monospace;
+      font-size: 0.75rem;
+      color: var(--muted);
+      overflow-x: auto;
+      max-height: 150px;
+      overflow-y: auto;
+    }
+
+    /* Hero Section */
+    #hero {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    #hero-canvas {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* GSAP Section */
+    #gsap {
+      background: var(--bg2);
+    }
+
+    /* Three.js Section */
+    #three {
+      background: var(--bg);
+    }
+
+    /* Lottie Section */
+    #lottie {
+      background: var(--bg2);
+    }
+
+    /* Interactive Demo Areas */
+    .interactive-demo {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Button */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.9rem 2rem;
+      border-radius: 10px;
+      font-family: var(--font);
+      font-weight: 600;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      text-decoration: none;
+      border: none;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--blue), var(--violet));
+      color: #fff;
+      box-shadow: 0 0 30px rgba(29, 78, 216, 0.35);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 50px rgba(29, 78, 216, 0.5);
+    }
+
+    .btn-secondary {
+      background: var(--surface);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .btn-secondary:hover {
+      background: var(--surface2);
+      border-color: var(--cyan);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      nav ul {
+        gap: 1rem;
+        font-size: 0.875rem;
+      }
+
+      .demo-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- VidiSmart Logo -->
+  <a href="https://vidismart.com" class="vidismart-logo">
+    <span class="vidi">Vidi</span><span class="smart">Smart</span>
+  </a>
+
+  <!-- Navigation -->
+  <nav>
+    <ul>
+      <li><a href="#hero">Hero</a></li>
+      <li><a href="#gsap">GSAP</a></li>
+      <li><a href="#three">Three.js</a></li>
+      <li><a href="#lottie">Lottie</a></li>
+    </ul>
+  </nav>
+
+  <!-- Hero Section with Three.js Background -->
+  <section id="hero">
+    <div id="hero-canvas"></div>
+    <div class="hero-content">
+      <h1>Animation <span
+          style="background: linear-gradient(135deg, var(--cyan), var(--magenta)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Showcase</span>
+      </h1>
+      <p class="section-desc">Interactive examples of GSAP, Three.js, and Lottie animations for VidiBuzz</p>
+      <div style="margin-top: 2rem; display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+        <a href="#gsap" class="btn btn-primary">GSAP Examples</a>
+        <a href="#three" class="btn btn-secondary">Three.js Examples</a>
+        <a href="#lottie" class="btn btn-secondary">Lottie Examples</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- GSAP Section -->
+  <section id="gsap">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag gsap">GSAP</span>
+        <h2>Scroll-Triggered & Timeline Animations</h2>
+        <p class="section-desc">GSAP excels at UI animations, scroll effects, and precise timeline control</p>
+      </div>
+
+      <div class="demo-grid">
+
+        <!-- GSAP Demo 1: Scroll Reveal -->
+        <div class="demo-card">
+          <div class="demo-preview">
+            <div id="gsap-scroll-demo"
+              style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
+              <div class="scroll-box"
+                style="width: 100px; height: 100px; background: linear-gradient(135deg, var(--green), var(--cyan)); border-radius: 14px;">
+              </div>
+            </div>
+          </div>
+          <div class="demo-info">
+            <div class="demo-title">Scroll Reveal</div>
+            <div class="demo-desc">Elements fade and slide in as you scroll. Perfect for section reveals.</div>
+            <div class="demo-code">
+              gsap.from('.scroll-box', {
+              opacity: 0,
+              y: 50,
+              duration: 1,
+              scrollTrigger: {
+              trigger: '.scroll-box',
+              start: 'top 80%'
+              }
+              });
+            </div>
+          </div>
+        </div>
+
+        <!-- GSAP Demo 2: Counter Animation -->
+        <div class="demo-card">
+          <div class="demo-preview">
+            <div id="gsap-counter-demo"
+              style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 1rem;">
+              <div class="counter" style="font-size: 3rem; font-weight: 800; color: var(--cyan);">0</div>
+              <div style="font-size: 0.875rem; color: var(--muted);">Videos Generated</div>
+            </div>
+          </div>
+          <div class="demo-info">
+            <div class="demo-title">Counter Animation</div>
+            <div class="demo-desc">Animated number counters that increment when visible. Great for stats.</div>
+            <div class="demo-code">
+              gsap.to('.counter', {
+              textContent: 50000,
+              duration: 2,
+              snap: { textContent: 1 },
+              scrollTrigger: {
+              trigger: '.counter',
+              start: 'top 80%'
+              }
+              });
+            </div>
+          </div>
+        </div>
+
+        <!-- GSAP Demo 3: Stagger Effect -->
+        <div class="demo-card">
+          <div class="demo-preview">
+            <div id="gsap-stagger-demo"
+              style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+              <div class="stagger-box" style="width: 30px; height: 30px; background: var(--green); border-radius: 6px;">
+              </div>
+              <div class="stagger-box" style="width: 30px; height: 30px; background: var(--cyan); border-radius: 6px;">
+              </div>
+              <div class="stagger-box"
+                style="width: 30px; height: 30px; background: var(--violet); border-radius: 6px;"></div>
+              <div class="stagger-box"
+                style="width: 30px; height: 30px; background: var(--magenta); border-radius: 6px;"></div>
+              <div class="stagger-box" style="width: 30px; height: 30px; background: var(--blast); border-radius: 6px;">
+              </div>
+            </div>
+          </div>
+          <div class="demo-info">
+            <div class="demo-title">Stagger Effect</div>
+            <div class="demo-desc">Animate multiple elements with a staggered delay. Perfect for lists and grids.</div>
+            <div class="demo-code">
+              gsap.from('.stagger-box', {
+              scale: 0,
+              opacity: 0,
+              duration: 0.5,
+              stagger: 0.1,
+              repeat: -1,
+              yoyo: true
+              });
+            </div>
+          </div>
+        </div>
+
+        <!-- GSAP Demo 4: Morphing -->
+        <div class="demo-card">
+          <div class="demo-preview">
+            <div id="gsap-morph-demo"
+              style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
+              <svg width="150" height="150" viewBox="0 0 150 150">
+                <path id="morph-path" d="M75 20 L130 75 L75 130 L20 75 Z" fill="none" stroke="var(--cyan)"
+                  stroke-width="3" />
+              </svg>
+            </div>
+          </div>
+          <div class="demo-info">
+            <div class="demo-title">Path Morphing</div>
+            <div class="demo-desc">Smoothly morph between different shapes. Great for icon transitions.</div>
+            <div class="demo-code">
+              gsap.to('#morph-path', {
+              attr: { d: 'M75 10 Q140 75 75 140 Q10 75 75 10' },
+              duration: 2,
+              repeat: -1,
+              yoyo: true,
+              ease: 'power1.inOut'
+              });
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Three.js Section -->
+  <section id="three">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag three">Three.js</span>
+        <h2>3D Graphics & Particle Systems</h2>
+        <p class="section-desc">Three.js creates stunning 3D visuals, particle effects, and immersive backgrounds</p>
+      </div>
+
+      <div class="demo-grid">
+
+        <!-- Three.js Demo 1: Particle Network -->
+        <div class="demo-card">
+          <div class="demo-preview">
+            <div id="three-particles-demo" style="width: 100%; height: 100%;"></div>
+          </div>
+          <div class="demo-info">
+            <div class="demo-title">Particle Network</div>
+            <div class="demo-desc">Connected particle system that responds to mouse movement. Perfect for hero
+              backgrounds.</div>
+            <div class="demo-code">
+              const particles = new THREE.Points(
+              new THREE.BufferGeometry(),
+              new THREE.PointsMaterial({ color: 0x00e5ff, size: 0.02 })
+              );
+              scene.add(particles);
+            </div>
+          </div>
+        </div>
+
+        <!-- Three.js Demo 2: Rotating Shape -->
+        <div class="demo-card">
+          <div class="demo-preview">
+            <div id="three-shape-demo" style="width: 100%; height: 100%;"></div>
+          </div>
+          <div class="demo-info">
+            <div class="demo-title">Wireframe Shape</div>
+            <div class="demo-desc">Rotating wireframe geometry with glow effect. Great for tech/abstract visuals.</div>
+            <div class="demo-code">
+              const geometry = new THREE.IcosahedronGeometry(1, 0);
+              const edges = new THREE.EdgesGeometry(geometry);
+              const line = new THREE.LineSegments(edges,
+              new THREE.LineBasicMaterial({ color: 0x38bdf8 })
+              );
+            </div>
+          </div>
+        </div>
+
+        <!-- Three.js Demo 3: Floating Spheres -->
+        <div class="demo-card">
+          <div class="demo-preview">
+            <div id="three-spheres-demo" style="width: 100%; height: 100%;"></div>
+          </div>
+          <div class="demo-info">
+            <div class="demo-title">Floating Spheres</div>
+            <div class="demo-desc">Multiple spheres with physics-based floating motion. Eye-catching background element.
+            </div>
+            <div class="demo-code">
+              spheres.forEach((sphere, i) => {
+              sphere.position.y = Math.sin(time + i) * 0.3;
+              sphere.position.x = Math.cos(time + i) * 0.2;
+              });
+            </div>
+          </div>
+        </div>
+
+        <!-- Three.js Demo 4: Grid Plane -->
+        <div class="demo-card">
+          <div class="demo-preview">
+            <div id="three-grid-demo" style="width: 100%; height: 100%;"></div>
+          </div>
+          <div class="demo-info">
+            <div class="demo-title">Animated Grid</div>
+            <div class="demo-desc">Retro-style animated grid plane. Perfect for futuristic/tech aesthetics.</div>
+            <div class="demo-code">
+              const grid = new THREE.GridHelper(10, 20, 0x00e5ff, 0x7c3aed);
+              grid.position.y = -1;
+              scene.add(grid);
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Lottie Section -->
+  <section id="lottie">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag lottie">Lottie</span>
+        <h2>Vector Animations & Icons</h2>
+        <p class="section-desc">Lottie delivers smooth, scalable animations from After Effects to the web</p>
+      </div>
+
+      <div class="demo-grid">
+
+        <!-- Lottie Demo 1: Loading -->
+        <div class="demo-card">
+          <div class="demo-preview">
+            <div id="lottie-loading-demo"
+              style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;"></div>
+          </div>
+          <div class="demo-info">
+            <div class="demo-title">Loading Spinner</div>
+            <div class="demo-desc">Smooth loading animation. Perfect for async content loading states.</div>
+            <div class="demo-code">
+              lottie.loadAnimation({
+              container: document.getElementById('loading'),
+              renderer: 'svg',
+              loop: true,
+              autoplay: true,
+              path: 'loading.json'
+              });
+            </div>
+          </div>
+        </div>
+
+        <!-- Lottie Demo 2: Success -->
+        <div class="demo-card">
+          <div class="demo-preview">
+            <div id="lottie-success-demo"
+              style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;"></div>
+          </div>
+          <div class="demo-info">
+            <div class="demo-title">Success Checkmark</div>
+            <div class="demo-desc">Animated checkmark for success states. Great for form submissions.</div>
+            <div class="demo-code">
+              lottie.loadAnimation({
+              container: document.getElementById('success'),
+              renderer: 'svg',
+              loop: false,
+              autoplay: true,
+              path: 'success.json'
+              });
+            </div>
+          </div>
+        </div>
+
+        <!-- Lottie Demo 3: Notification -->
+        <div class="demo-card">
+          <div class="demo-preview">
+            <div id="lottie-notification-demo"
+              style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;"></div>
+          </div>
+          <div class="demo-info">
+            <div class="demo-title">Notification Bell</div>
+            <div class="demo-desc">Animated notification icon. Perfect for alert indicators.</div>
+            <div class="demo-code">
+              lottie.loadAnimation({
+              container: document.getElementById('notification'),
+              renderer: 'svg',
+              loop: true,
+              autoplay: true,
+              path: 'bell.json'
+              });
+            </div>
+          </div>
+        </div>
+
+        <!-- Lottie Demo 4: Play Button -->
+        <div class="demo-card">
+          <div class="demo-preview">
+            <div id="lottie-play-demo"
+              style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;"></div>
+          </div>
+          <div class="demo-info">
+            <div class="demo-title">Play Button</div>
+            <div class="demo-desc">Interactive play button animation. Great for video thumbnails.</div>
+            <div class="demo-code">
+              lottie.loadAnimation({
+              container: document.getElementById('play'),
+              renderer: 'svg',
+              loop: true,
+              autoplay: true,
+              path: 'play.json'
+              });
+            </div>
+          </div>
+        </div>
+
+        <!-- Lottie Demo 5: Heart/Like -->
+        <div class="demo-card">
+          <div class="demo-preview">
+            <div id="lottie-heart-demo"
+              style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;"></div>
+          </div>
+          <div class="demo-info">
+            <div class="demo-title">Heart/Like Animation</div>
+            <div class="demo-desc">Animated heart for likes and favorites. Perfect for social features.</div>
+            <div class="demo-code">
+              lottie.loadAnimation({
+              container: document.getElementById('heart'),
+              renderer: 'svg',
+              loop: false,
+              autoplay: true,
+              path: 'heart.json'
+              });
+            </div>
+          </div>
+        </div>
+
+        <!-- Lottie Demo 6: Rocket -->
+        <div class="demo-card">
+          <div class="demo-preview">
+            <div id="lottie-rocket-demo"
+              style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;"></div>
+          </div>
+          <div class="demo-info">
+            <div class="demo-title">Rocket Launch</div>
+            <div class="demo-desc">Animated rocket for launches and new features. Great for CTAs.</div>
+            <div class="demo-code">
+              lottie.loadAnimation({
+              container: document.getElementById('rocket'),
+              renderer: 'svg',
+              loop: true,
+              autoplay: true,
+              path: 'rocket.json'
+              });
+            </div>
+          </div>
+        </div>
+
+        <!-- Lottie Demo 7: Email -->
+        <div class="demo-card">
+          <div class="demo-preview">
+            <div id="lottie-email-demo"
+              style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;"></div>
+          </div>
+          <div class="demo-info">
+            <div class="demo-title">Email/Send</div>
+            <div class="demo-desc">Animated envelope for email features. Perfect for VidiMail.</div>
+            <div class="demo-code">
+              lottie.loadAnimation({
+              container: document.getElementById('email'),
+              renderer: 'svg',
+              loop: true,
+              autoplay: true,
+              path: 'email.json'
+              });
+            </div>
+          </div>
+        </div>
+
+        <!-- Lottie Demo 8: Chart/Analytics -->
+        <div class="demo-card">
+          <div class="demo-preview">
+            <div id="lottie-chart-demo"
+              style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;"></div>
+          </div>
+          <div class="demo-info">
+            <div class="demo-title">Chart/Analytics</div>
+            <div class="demo-desc">Animated chart for data visualization. Great for dashboards.</div>
+            <div class="demo-code">
+              lottie.loadAnimation({
+              container: document.getElementById('chart'),
+              renderer: 'svg',
+              loop: true,
+              autoplay: true,
+              path: 'chart.json'
+              });
+            </div>
+          </div>
+        </div>
+
+        <!-- Lottie Demo 9: Star/Rating -->
+        <div class="demo-card">
+          <div class="demo-preview">
+            <div id="lottie-star-demo"
+              style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;"></div>
+          </div>
+          <div class="demo-info">
+            <div class="demo-title">Star/Rating</div>
+            <div class="demo-desc">Animated star for ratings and reviews. Perfect for testimonials.</div>
+            <div class="demo-code">
+              lottie.loadAnimation({
+              container: document.getElementById('star'),
+              renderer: 'svg',
+              loop: false,
+              autoplay: true,
+              path: 'star.json'
+              });
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer style="padding: 4rem 2rem; text-align: center; border-top: 1px solid var(--border);">
+    <p style="color: var(--muted); font-size: 0.875rem;">Animation Showcase for VidiBuzz • GSAP + Three.js + Lottie</p>
+  </footer>
+
+  <script>
+    // Register GSAP ScrollTrigger
+    gsap.registerPlugin(ScrollTrigger);
+
+    // ============================================
+    // HERO - Three.js Background
+    // ============================================
+    const heroCanvas = document.getElementById('hero-canvas');
+    const heroScene = new THREE.Scene();
+    const heroCamera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const heroRenderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+    heroRenderer.setSize(window.innerWidth, window.innerHeight);
+    heroCanvas.appendChild(heroRenderer.domElement);
+
+    // Particle system
+    const heroParticles = new THREE.BufferGeometry();
+    const heroParticleCount = 500;
+    const heroPositions = new Float32Array(heroParticleCount * 3);
+
+    for (let i = 0; i < heroParticleCount * 3; i++) {
+      heroPositions[i] = (Math.random() - 0.5) * 20;
+    }
+
+    heroParticles.setAttribute('position', new THREE.BufferAttribute(heroPositions, 3));
+    const heroMaterial = new THREE.PointsMaterial({ color: 0x00e5ff, size: 0.03, transparent: true, opacity: 0.8 });
+    const heroPoints = new THREE.Points(heroParticles, heroMaterial);
+    heroScene.add(heroPoints);
+
+    heroCamera.position.z = 5;
+
+    function animateHero() {
+      requestAnimationFrame(animateHero);
+      heroPoints.rotation.y += 0.0003;
+      heroRenderer.render(heroScene, heroCamera);
+    }
+    animateHero();
+
+    // ============================================
+    // GSAP DEMOS
+    // ============================================
+
+    // GSAP Scroll Demo - Enhanced with rotation and scale
+    gsap.from('#gsap-scroll-demo .scroll-box', {
+      scrollTrigger: {
+        trigger: '#gsap-scroll-demo',
+        start: 'top 80%',
+        toggleActions: 'play none none reverse'
+      },
+      opacity: 0,
+      y: 80,
+      scale: 0.5,
+      rotation: 180,
+      duration: 1.2,
+      ease: 'back.out(1.7)'
+    });
+
+    // GSAP Counter Demo - Enhanced with color change
+    const counterEl = document.querySelector('#gsap-counter-demo .counter');
+    let counterObj = { value: 0 };
+    gsap.to(counterObj, {
+      scrollTrigger: {
+        trigger: '#gsap-counter-demo',
+        start: 'top 80%',
+        toggleActions: 'play none none reverse'
+      },
+      value: 50000,
+      duration: 2.5,
+      ease: 'power2.out',
+      onUpdate: function () {
+        counterEl.textContent = Math.floor(counterObj.value).toLocaleString();
+      }
+    });
+
+    // GSAP Stagger Demo - Enhanced with 3D rotation
+    gsap.fromTo('#gsap-stagger-demo .stagger-box',
+      { scale: 0, opacity: 0, rotationY: -90 },
+      {
+        scale: 1,
+        opacity: 1,
+        rotationY: 0,
+        duration: 0.6,
+        stagger: 0.15,
+        repeat: -1,
+        yoyo: true,
+        ease: 'back.out(1.7)'
+      }
+    );
+
+    // GSAP Morph Demo - Enhanced with color animation
+    gsap.to('#morph-path', {
+      attr: { d: 'M75 10 Q140 75 75 140 Q10 75 75 10' },
+      stroke: '#ff1f6e',
+      duration: 2,
+      repeat: -1,
+      yoyo: true,
+      ease: 'power1.inOut'
+    });
+
+    // GSAP Text Animation Demo
+    gsap.fromTo('#gsap-text-demo .animated-text',
+      { opacity: 0, y: 20, skewY: 5 },
+      {
+        opacity: 1,
+        y: 0,
+        skewY: 0,
+        duration: 0.8,
+        stagger: 0.05,
+        repeat: -1,
+        repeatDelay: 1,
+        yoyo: true,
+        ease: 'power2.out'
+      }
+    );
+
+    // ============================================
+    // THREE.JS DEMOS
+    // ============================================
+
+    // Three.js Particles Demo - Enhanced with mouse interaction
+    const particlesContainer = document.getElementById('three-particles-demo');
+    const particlesScene = new THREE.Scene();
+    const particlesCamera = new THREE.PerspectiveCamera(75, particlesContainer.offsetWidth / particlesContainer.offsetHeight, 0.1, 1000);
+    const particlesRenderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+    particlesRenderer.setSize(particlesContainer.offsetWidth, particlesContainer.offsetHeight);
+    particlesContainer.appendChild(particlesRenderer.domElement);
+
+    const demoParticles = new THREE.BufferGeometry();
+    const demoParticleCount = 300;
+    const demoPositions = new Float32Array(demoParticleCount * 3);
+    const demoVelocities = [];
+
+    for (let i = 0; i < demoParticleCount * 3; i++) {
+      demoPositions[i] = (Math.random() - 0.5) * 6;
+      demoVelocities.push({
+        x: (Math.random() - 0.5) * 0.01,
+        y: (Math.random() - 0.5) * 0.01,
+        z: (Math.random() - 0.5) * 0.01
+      });
+    }
+
+    demoParticles.setAttribute('position', new THREE.BufferAttribute(demoPositions, 3));
+    const demoMaterial = new THREE.PointsMaterial({ color: 0x00e5ff, size: 0.04, transparent: true, opacity: 0.9 });
+    const demoPoints = new THREE.Points(demoParticles, demoMaterial);
+    particlesScene.add(demoPoints);
+
+    // Add connecting lines
+    const lineGeometry = new THREE.BufferGeometry();
+    const linePositions = new Float32Array(demoParticleCount * demoParticleCount * 6);
+    lineGeometry.setAttribute('position', new THREE.BufferAttribute(linePositions, 3));
+    const lineMaterial = new THREE.LineBasicMaterial({ color: 0x00e5ff, transparent: true, opacity: 0.15 });
+    const lines = new THREE.LineSegments(lineGeometry, lineMaterial);
+    particlesScene.add(lines);
+
+    particlesCamera.position.z = 4;
+
+    let mouseX = 0, mouseY = 0;
+    particlesContainer.addEventListener('mousemove', (e) => {
+      const rect = particlesContainer.getBoundingClientRect();
+      mouseX = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+      mouseY = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+    });
+
+    function animateParticles() {
+      requestAnimationFrame(animateParticles);
+
+      const positions = demoParticles.attributes.position.array;
+      for (let i = 0; i < demoParticleCount; i++) {
+        positions[i * 3] += demoVelocities[i].x;
+        positions[i * 3 + 1] += demoVelocities[i].y;
+        positions[i * 3 + 2] += demoVelocities[i].z;
+
+        // Bounce off edges
+        if (Math.abs(positions[i * 3]) > 3) demoVelocities[i].x *= -1;
+        if (Math.abs(positions[i * 3 + 1]) > 3) demoVelocities[i].y *= -1;
+        if (Math.abs(positions[i * 3 + 2]) > 3) demoVelocities[i].z *= -1;
+      }
+      demoParticles.attributes.position.needsUpdate = true;
+
+      demoPoints.rotation.y += 0.001 + mouseX * 0.002;
+      demoPoints.rotation.x += 0.0005 + mouseY * 0.002;
+
+      particlesRenderer.render(particlesScene, particlesCamera);
+    }
+    animateParticles();
+
+    // Three.js Shape Demo - Enhanced with pulsing glow
+    const shapeContainer = document.getElementById('three-shape-demo');
+    const shapeScene = new THREE.Scene();
+    const shapeCamera = new THREE.PerspectiveCamera(75, shapeContainer.offsetWidth / shapeContainer.offsetHeight, 0.1, 1000);
+    const shapeRenderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+    shapeRenderer.setSize(shapeContainer.offsetWidth, shapeContainer.offsetHeight);
+    shapeContainer.appendChild(shapeRenderer.domElement);
+
+    const shapeGeometry = new THREE.IcosahedronGeometry(1, 1);
+    const shapeEdges = new THREE.EdgesGeometry(shapeGeometry);
+    const shapeLine = new THREE.LineSegments(shapeEdges, new THREE.LineBasicMaterial({ color: 0x38bdf8, linewidth: 2 }));
+    shapeScene.add(shapeLine);
+
+    // Add inner glow sphere
+    const glowGeometry = new THREE.SphereGeometry(0.5, 32, 32);
+    const glowMaterial = new THREE.MeshBasicMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.2 });
+    const glowSphere = new THREE.Mesh(glowGeometry, glowMaterial);
+    shapeScene.add(glowSphere);
+
+    shapeCamera.position.z = 3;
+
+    let shapeTime = 0;
+    function animateShape() {
+      requestAnimationFrame(animateShape);
+      shapeTime += 0.02;
+
+      shapeLine.rotation.x += 0.008;
+      shapeLine.rotation.y += 0.012;
+
+      // Pulsing glow
+      const scale = 1 + Math.sin(shapeTime) * 0.1;
+      glowSphere.scale.set(scale, scale, scale);
+      glowMaterial.opacity = 0.15 + Math.sin(shapeTime) * 0.1;
+
+      shapeRenderer.render(shapeScene, shapeCamera);
+    }
+    animateShape();
+
+    // Three.js Spheres Demo - Enhanced with orbital motion
+    const spheresContainer = document.getElementById('three-spheres-demo');
+    const spheresScene = new THREE.Scene();
+    const spheresCamera = new THREE.PerspectiveCamera(75, spheresContainer.offsetWidth / spheresContainer.offsetHeight, 0.1, 1000);
+    const spheresRenderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+    spheresRenderer.setSize(spheresContainer.offsetWidth, spheresContainer.offsetHeight);
+    spheresContainer.appendChild(spheresRenderer.domElement);
+
+    const spheres = [];
+    const sphereColors = [0x00e5ff, 0x7c3aed, 0xff1f6e, 0x10d98a, 0xf472b6];
+    const sphereData = [];
+
+    for (let i = 0; i < 5; i++) {
+      const geometry = new THREE.SphereGeometry(0.15, 16, 16);
+      const material = new THREE.MeshBasicMaterial({ color: sphereColors[i], transparent: true, opacity: 0.8 });
+      const sphere = new THREE.Mesh(geometry, material);
+
+      sphereData.push({
+        angle: (i / 5) * Math.PI * 2,
+        radius: 0.8 + Math.random() * 0.4,
+        speed: 0.02 + Math.random() * 0.02,
+        yOffset: (Math.random() - 0.5) * 0.5
+      });
+
+      spheresScene.add(sphere);
+      spheres.push(sphere);
+    }
+
+    // Add central core
+    const coreGeometry = new THREE.SphereGeometry(0.2, 32, 32);
+    const coreMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.6 });
+    const core = new THREE.Mesh(coreGeometry, coreMaterial);
+    spheresScene.add(core);
+
+    spheresCamera.position.z = 3;
+
+    let spheresTime = 0;
+    function animateSpheres() {
+      requestAnimationFrame(animateSpheres);
+      spheresTime += 0.016;
+
+      spheres.forEach((sphere, i) => {
+        sphereData[i].angle += sphereData[i].speed;
+        sphere.position.x = Math.cos(sphereData[i].angle) * sphereData[i].radius;
+        sphere.position.z = Math.sin(sphereData[i].angle) * sphereData[i].radius;
+        sphere.position.y = sphereData[i].yOffset + Math.sin(spheresTime * 2 + i) * 0.1;
+
+        sphere.rotation.x += 0.02;
+        sphere.rotation.y += 0.02;
+      });
+
+      // Pulse core
+      const coreScale = 1 + Math.sin(spheresTime * 3) * 0.1;
+      core.scale.set(coreScale, coreScale, coreScale);
+
+      spheresRenderer.render(spheresScene, spheresCamera);
+    }
+    animateSpheres();
+
+    // Three.js Grid Demo - Enhanced with wave effect
+    const gridContainer = document.getElementById('three-grid-demo');
+    const gridScene = new THREE.Scene();
+    const gridCamera = new THREE.PerspectiveCamera(75, gridContainer.offsetWidth / gridContainer.offsetHeight, 0.1, 1000);
+    const gridRenderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+    gridRenderer.setSize(gridContainer.offsetWidth, gridContainer.offsetHeight);
+    gridContainer.appendChild(gridRenderer.domElement);
+
+    // Create custom grid with wave effect
+    const gridSize = 10;
+    const gridDivisions = 20;
+    const gridGeometry = new THREE.BufferGeometry();
+    const gridVertices = [];
+
+    for (let i = -gridDivisions / 2; i <= gridDivisions / 2; i++) {
+      for (let j = -gridDivisions / 2; j <= gridDivisions / 2; j++) {
+        gridVertices.push((i / gridDivisions) * gridSize, 0, (j / gridDivisions) * gridSize);
+      }
+    }
+
+    gridGeometry.setAttribute('position', new THREE.Float32BufferAttribute(gridVertices, 3));
+    const gridMaterial = new THREE.PointsMaterial({ color: 0x00e5ff, size: 0.08 });
+    const gridPoints = new THREE.Points(gridGeometry, gridMaterial);
+    gridPoints.position.y = -1;
+    gridScene.add(gridPoints);
+
+    gridCamera.position.z = 4;
+    gridCamera.position.y = 2;
+    gridCamera.lookAt(0, 0, 0);
+
+    let gridTime = 0;
+    function animateGrid() {
+      requestAnimationFrame(animateGrid);
+      gridTime += 0.02;
+
+      const positions = gridPoints.geometry.attributes.position.array;
+      for (let i = 0; i < positions.length; i += 3) {
+        const x = positions[i];
+        const z = positions[i + 2];
+        positions[i + 1] = Math.sin(x * 0.5 + gridTime) * 0.2 + Math.cos(z * 0.5 + gridTime) * 0.2;
+      }
+      gridPoints.geometry.attributes.position.needsUpdate = true;
+
+      gridRenderer.render(gridScene, gridCamera);
+    }
+    animateGrid();
+
+    // ============================================
+    // LOTTIE DEMOS WITH HOVER CONTROL
+    // ============================================
+
+    // Store Lottie animation instances for hover control
+    const lottieAnimations = {};
+
+    // Create inline SVG animations for each demo
+    // These are self-contained SVG animations that work without external dependencies
+
+    // Loading - Spinning circle with dashes
+    const loadingSvg = `<svg viewBox="0 0 100 100" style="width:80px;height:80px">
+  <circle cx="50" cy="50" r="40" stroke="rgba(255,255,255,0.1)" stroke-width="8" fill="none"/>
+  <circle cx="50" cy="50" r="40" stroke="#00e5ff" stroke-width="8" fill="none" stroke-dasharray="200" stroke-dashoffset="100" stroke-linecap="round">
+    <animateTransform attributeName="transform" type="rotate" from="0 50 50" to="360 50 50" dur="1s" repeatCount="indefinite"/>
+  </circle>
+</svg>`;
+    document.getElementById('lottie-loading-demo').innerHTML = loadingSvg;
+
+    // Success - Checkmark animation
+    const successSvg = `<svg viewBox="0 0 100 100" style="width:80px;height:80px">
+  <circle cx="50" cy="50" r="45" fill="none" stroke="#10d98a" stroke-width="3">
+    <animate attributeName="stroke-dasharray" from="0 300" to="300 300" dur="0.6s" fill="freeze"/>
+    <animate attributeName="opacity" from="0" to="1" dur="0.3s" fill="freeze"/>
+  </circle>
+  <path d="M30 50 L45 65 L70 35" fill="none" stroke="#10d98a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+    <animate attributeName="stroke-dasharray" from="0 100" to="100 100" dur="0.4s" begin="0.4s" fill="freeze"/>
+  </path>
+</svg>`;
+    document.getElementById('lottie-success-demo').innerHTML = successSvg;
+
+    // Notification - Bell
+    const notificationSvg = `<svg viewBox="0 0 100 100" style="width:80px;height:80px">
+  <g>
+    <path d="M50 15 C35 15 25 25 25 40 L25 55 L20 60 L80 60 L75 55 L75 40 C75 25 65 15 50 15 Z" fill="none" stroke="#fb923c" stroke-width="3">
+      <animateTransform attributeName="transform" type="skewX" values="-10;10;-10" dur="0.5s" repeatCount="indefinite"/>
+    </path>
+    <circle cx="50" cy="65" r="8" fill="#fb923c"/>
+  </g>
+</svg>`;
+    document.getElementById('lottie-notification-demo').innerHTML = notificationSvg;
+
+    // Play button
+    const playSvg = `<svg viewBox="0 0 100 100" style="width:80px;height:80px">
+  <circle cx="50" cy="50" r="45" fill="none" stroke="#7c3aed" stroke-width="3"/>
+  <polygon points="40,25 80,50 40,75" fill="#7c3aed">
+    <animate attributeName="opacity" values="0.7;1;0.7" dur="1s" repeatCount="indefinite"/>
+  </polygon>
+</svg>`;
+    document.getElementById('lottie-play-demo').innerHTML = playSvg;
+
+    // Heart
+    const heartSvg = `<svg viewBox="0 0 100 100" style="width:80px;height:80px">
+  <path d="M50 85 C20 60 0 45 0 25 C0 10 15 0 30 0 C40 0 50 10 50 10 C50 10 60 0 70 0 C85 0 100 10 100 25 C100 45 80 60 50 85 Z" fill="#ff1f6e">
+    <animate attributeName="transform" type="scale" values="1;1.15;1" dur="0.6s" repeatCount="indefinite"/>
+    <animateTransform attributeName="transform" type="translate" values="0 0;0 -5;0 0" dur="0.6s" repeatCount="indefinite"/>
+  </path>
+</svg>`;
+    document.getElementById('lottie-heart-demo').innerHTML = heartSvg;
+
+    // Rocket
+    const rocketSvg = `<svg viewBox="0 0 100 100" style="width:80px;height:80px">
+  <g>
+    <path d="M50 5 C30 20 20 40 20 60 L20 70 L35 65 L35 85 L65 85 L65 65 L80 70 L80 60 C80 40 70 20 50 5 Z" fill="#38bdf8"/>
+    <circle cx="50" cy="40" r="10" fill="#06060e"/>
+    <path d="M35 85 L50 100 L65 85" fill="#fb923c">
+      <animate attributeName="d" values="M35 85 L50 95 L65 85;M35 85 L50 105 L65 85;M35 85 L50 95 L65 85" dur="0.2s" repeatCount="indefinite"/>
+    </path>
+  </g>
+</svg>`;
+    document.getElementById('lottie-rocket-demo').innerHTML = rocketSvg;
+
+    // Email
+    const emailSvg = `<svg viewBox="0 0 100 100" style="width:80px;height:80px">
+  <rect x="10" y="20" width="80" height="60" rx="5" fill="none" stroke="#fb923c" stroke-width="3">
+    <animate attributeName="opacity" values="0.7;1;0.7" dur="1s" repeatCount="indefinite"/>
+  </rect>
+  <path d="M15 25 L50 55 L85 25" fill="none" stroke="#fb923c" stroke-width="3"/>
+</svg>`;
+    document.getElementById('lottie-email-demo').innerHTML = emailSvg;
+
+    // Chart
+    const chartSvg = `<svg viewBox="0 0 100 100" style="width:80px;height:80px">
+  <g stroke="#10d98a" stroke-width="3" fill="none">
+    <line x1="15" y1="80" x2="85" y2="80"/>
+    <line x1="15" y1="20" x2="15" y2="80"/>
+    <rect x="25" y="50" width="12" height="30">
+      <animate attributeName="height" values="20;30;20" dur="1s" repeatCount="indefinite"/>
+      <animate attributeName="y" values="60;50;60" dur="1s" repeatCount="indefinite"/>
+    </rect>
+    <rect x="45" y="35" width="12" height="45">
+      <animate attributeName="height" values="35;45;35" dur="1s" begin="0.2s" repeatCount="indefinite"/>
+      <animate attributeName="y" values="45;35;45" dur="1s" begin="0.2s" repeatCount="indefinite"/>
+    </rect>
+    <rect x="65" y="25" width="12" height="55">
+      <animate attributeName="height" values="45;55;45" dur="1s" begin="0.4s" repeatCount="indefinite"/>
+      <animate attributeName="y" values="35;25;35" dur="1s" begin="0.4s" repeatCount="indefinite"/>
+    </rect>
+  </g>
+</svg>`;
+    document.getElementById('lottie-chart-demo').innerHTML = chartSvg;
+
+    // Star
+    const starSvg = `<svg viewBox="0 0 100 100" style="width:80px;height:80px">
+  <polygon points="50,5 62,38 98,38 68,60 78,95 50,75 22,95 32,60 2,38 38,38" fill="#f472b6">
+    <animateTransform attributeName="transform" type="scale" values="1;1.2;1" dur="0.5s" repeatCount="indefinite"/>
+    <animateTransform attributeName="transform" type="rotate" values="0 50 50;180 50 50;0 50 50" dur="2s" repeatCount="indefinite"/>
+  </polygon>
+</svg>`;
+    document.getElementById('lottie-star-demo').innerHTML = starSvg;
+
+    // Add hover interactions to Lottie demo cards only
+    const lottieDemoCards = document.querySelectorAll('#lottie .demo-card');
+    lottieDemoCards.forEach((card) => {
+      const demoPreview = card.querySelector('.demo-preview');
+      if (demoPreview) {
+        const svgEl = demoPreview.querySelector('svg');
+        if (svgEl) {
+          demoPreview.addEventListener('mouseenter', () => {
+            svgEl.style.animationPlayState = 'paused';
+          });
+          demoPreview.addEventListener('mouseleave', () => {
+            svgEl.style.animationPlayState = 'running';
+          });
+        }
+      }
+    });
+
+
+    // Resize handler
+    window.addEventListener('resize', () => {
+      // Hero
+      heroCamera.aspect = window.innerWidth / window.innerHeight;
+      heroCamera.updateProjectionMatrix();
+      heroRenderer.setSize(window.innerWidth, window.innerHeight);
+
+      // Particles
+      particlesCamera.aspect = particlesContainer.offsetWidth / particlesContainer.offsetHeight;
+      particlesCamera.updateProjectionMatrix();
+      particlesRenderer.setSize(particlesContainer.offsetWidth, particlesContainer.offsetHeight);
+
+      // Shape
+      shapeCamera.aspect = shapeContainer.offsetWidth / shapeContainer.offsetHeight;
+      shapeCamera.updateProjectionMatrix();
+      shapeRenderer.setSize(shapeContainer.offsetWidth, shapeContainer.offsetHeight);
+
+      // Spheres
+      spheresCamera.aspect = spheresContainer.offsetWidth / spheresContainer.offsetHeight;
+      spheresCamera.updateProjectionMatrix();
+      spheresRenderer.setSize(spheresContainer.offsetWidth, spheresContainer.offsetHeight);
+
+      // Grid
+      gridCamera.aspect = gridContainer.offsetWidth / gridContainer.offsetHeight;
+      gridCamera.updateProjectionMatrix();
+      gridRenderer.setSize(gridContainer.offsetWidth, gridContainer.offsetHeight);
+    });
+  </script>
+
+</body>
+
+</html>

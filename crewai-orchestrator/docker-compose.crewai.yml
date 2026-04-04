@@ -1,0 +1,50 @@
+# VidiSmart Agent Orchestrator - Docker Compose
+# ===============================================
+# This extends the converge docker-compose.yml
+# Run: docker-compose -f docker-compose.yml -f docker-compose.crewai.yml up -d
+
+version: '3.8'
+
+services:
+  # CrewAI Orchestrator (runs locally, not in Docker)
+  # This is a reference for future Docker deployment
+  
+  # MCP Proxy (optional - routes MCP requests to Vespa)
+  mcp-proxy:
+    container_name: crewai-mcp-proxy
+    image: nginx:alpine
+    restart: unless-stopped
+    ports:
+      - '9090:80'
+    volumes:
+      - ./nginx-mcp.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - vespa
+
+  # Redis for CrewAI task queue (optional)
+  crewai-redis:
+    container_name: crewai-redis
+    image: redis:7-alpine
+    restart: unless-stopped
+    ports:
+      - '6390:6379'
+    volumes:
+      - crewai_redis_data:/data
+
+  # ComfyUI for video generation (optional)
+  comfyui:
+    container_name: crewai-comfyui
+    image: comfyanonymous/comfyui:latest
+    restart: unless-stopped
+    ports:
+      - '8188:8188'
+    volumes:
+      - comfyui_data:/workspace
+      - comfyui_models:/workspace/models
+    environment:
+      - CUDA_VISIBLE_DEVICES=0
+
+volumes:
+  crewai_redis_data:
+  comfyui_data:
+  comfyui_models:

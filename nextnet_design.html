@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NextNet Style Design | AI Brand Assistant</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;700;800&display=swap"
+        rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Outfit', 'sans-serif'],
+                    },
+                    colors: {
+                        background: '#030014',
+                        surface: '#0f0728',
+                        primary: '#a855f7',
+                        secondary: '#3b82f6',
+                        accent: '#facc15',
+                    },
+                    backgroundImage: {
+                        'hero-glow': 'radial-gradient(circle at 50% -20%, #4c1d95 0%, #030014 50%)',
+                        'card-gradient': 'linear-gradient(145deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%)',
+                        'text-gradient': 'linear-gradient(to right, #c084fc, #60a5fa)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: theme('colors.background');
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        .glass-nav {
+            background: rgba(3, 0, 20, 0.7);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .text-glow {
+            text-shadow: 0 0 40px rgba(168, 85, 247, 0.5);
+        }
+
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            z-index: -1;
+            opacity: 0.6;
+        }
+
+        .orb-1 {
+            width: 400px;
+            height: 400px;
+            background: #581c87;
+            top: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .orb-2 {
+            width: 300px;
+            height: 300px;
+            background: #1e3a8a;
+            bottom: 20%;
+            right: -50px;
+        }
+
+        .orb-3 {
+            width: 250px;
+            height: 250px;
+            background: #be185d;
+            top: 40%;
+            left: -50px;
+        }
+
+        .card-hover:hover {
+            border-color: rgba(168, 85, 247, 0.5);
+            box-shadow: 0 0 30px rgba(168, 85, 247, 0.15);
+            transform: translateY(-5px);
+        }
+
+        .mesh-grid {
+            background-size: 50px 50px;
+            background-image:
+                linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            mask-image: radial-gradient(circle at center, black 40%, transparent 100%);
+        }
+    </style>
+</head>
+
+<body class="antialiased selection:bg-primary selection:text-white">
+
+    <!-- Background Elements -->
+    <div class="fixed inset-0 pointer-events-none z-0">
+        <div class="absolute inset-0 mesh-grid"></div>
+        <div class="orb orb-1 animate-pulse" style="animation-duration: 4s;"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="fixed w-full z-50 glass-nav transition-all duration-300" id="navbar">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+            <a href="#" class="font-display font-bold text-2xl tracking-tight flex items-center gap-2">
+                <div
+                    class="w-8 h-8 rounded-lg bg-gradient-to-tr from-primary to-secondary flex items-center justify-center">
+                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                    </svg>
+                </div>
+                NextNet<span class="text-primary">.ai</span>
+            </a>
+
+            <div class="hidden md:flex items-center gap-8 text-sm font-medium text-gray-300">
+                <a href="#features" class="hover:text-white transition-colors">Features</a>
+                <a href="#solutions" class="hover:text-white transition-colors">Solutions</a>
+                <a href="#pricing" class="hover:text-white transition-colors">Pricing</a>
+                <a href="#about" class="hover:text-white transition-colors">About</a>
+            </div>
+
+            <div class="flex items-center gap-4">
+                <a href="#" class="hidden md:block text-sm font-medium hover:text-white transition-colors">Login</a>
+                <button
+                    class="px-5 py-2.5 rounded-full bg-white text-black font-semibold text-sm hover:bg-gray-100 transition-all transform hover:scale-105">
+                    Get Started
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <main class="relative z-10 pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden">
+        <div class="max-w-7xl mx-auto px-6 text-center">
+
+            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 mb-8 backdrop-blur-sm animate-fade-in-up opacity-0"
+                id="badge">
+                <span class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
+                <span class="text-xs font-semibold tracking-wide uppercase text-gray-300">AI Brand Assistant V2.0
+                    Live</span>
+            </div>
+
+            <h1 class="font-display font-bold text-5xl md:text-7xl lg:text-8xl leading-tight mb-8 tracking-tight opacity-0"
+                id="hero-title">
+                AI that puts your <br />
+                <span class="text-transparent bg-clip-text bg-text-gradient text-glow">Brand Everywhere</span>
+            </h1>
+
+            <p class="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto mb-12 leading-relaxed opacity-0"
+                id="hero-desc">
+                Amplify your visibility with the world's first autonomous AI marketing orchestrator. Precision meets
+                visibility in a single, powerful platform.
+            </p>
+
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-4 opacity-0" id="hero-cta">
+                <button
+                    class="w-full sm:w-auto px-8 py-4 rounded-full bg-gradient-to-r from-primary to-secondary text-white font-bold text-lg hover:shadow-[0_0_40px_rgba(168,85,247,0.4)] transition-all transform hover:-translate-y-1">
+                    Start Your Search
+                </button>
+                <button
+                    class="w-full sm:w-auto px-8 py-4 rounded-full bg-white/5 border border-white/10 text-white font-semibold text-lg hover:bg-white/10 hover:border-white/20 transition-all backdrop-blur-sm">
+                    View Demo
+                </button>
+            </div>
+
+            <!-- Dashboard Preview (Mockup) -->
+            <div class="mt-20 relative max-w-5xl mx-auto opacity-0" id="dashboard-preview">
+                <div class="absolute -inset-1 bg-gradient-to-r from-primary to-secondary rounded-2xl blur opacity-30">
+                </div>
+                <div
+                    class="relative bg-surface rounded-xl border border-white/10 overflow-hidden shadow-2xl aspect-[16/9] flex items-center justify-center group">
+                    <!-- Glass sheen -->
+                    <div
+                        class="absolute inset-0 bg-gradient-to-tr from-white/5 to-transparent pointer-events-none z-20">
+                    </div>
+
+                    <!-- Content -->
+                    <div class="text-center">
+                        <div
+                            class="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary to-indigo-600 mx-auto mb-6 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-500">
+                            <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z">
+                                </path>
+                            </svg>
+                        </div>
+                        <h3
+                            class="font-display text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400">
+                            Visual Factor Omni Search</h3>
+                        <p class="text-gray-500 mt-2">Initializing Multimodal Processing...</p>
+
+                        <!-- Simulated Loading Bar -->
+                        <div class="w-64 h-1 bg-gray-800 rounded-full mx-auto mt-6 overflow-hidden">
+                            <div class="h-full bg-primary animate-loading-bar" style="width: 60%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Features Section -->
+    <section class="py-24 relative z-10" id="features">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-16">
+                <h2 class="font-display font-bold text-3xl md:text-5xl mb-4">Precision Meets Visibility</h2>
+                <p class="text-gray-400 max-w-2xl mx-auto">Our AI architecture combines vector embeddings, graph RAG,
+                    and geospatial data to deliver unmatched brand presence.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Feature 1 -->
+                <div
+                    class="p-8 rounded-2xl bg-white/5 border border-white/10 hover:border-primary/50 transition-all duration-300 card-hover group cursor-pointer backdrop-blur-md">
+                    <div
+                        class="w-12 h-12 rounded-lg bg-primary/20 border border-primary/30 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                        <span class="text-2xl">🧠</span>
+                    </div>
+                    <h3 class="font-display font-bold text-xl mb-3 group-hover:text-primary transition-colors">Vidi AI
+                        Core</h3>
+                    <p class="text-sm text-gray-400 leading-relaxed">Proprietary vector database engine optimized for
+                        high-dimensional multimodal data retrieval.</p>
+                </div>
+
+                <!-- Feature 2 -->
+                <div
+                    class="p-8 rounded-2xl bg-white/5 border border-white/10 hover:border-primary/50 transition-all duration-300 card-hover group cursor-pointer backdrop-blur-md">
+                    <div
+                        class="w-12 h-12 rounded-lg bg-blue-500/20 border border-blue-500/30 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                        <span class="text-2xl">⚡</span>
+                    </div>
+                    <h3 class="font-display font-bold text-xl mb-3 group-hover:text-blue-400 transition-colors">Omni
+                        Search</h3>
+                    <p class="text-sm text-gray-400 leading-relaxed">Search across image, video, and text simultaneously
+                        with our Visual Factor search technology.</p>
+                </div>
+
+                <!-- Feature 3 -->
+                <div
+                    class="p-8 rounded-2xl bg-white/5 border border-white/10 hover:border-primary/50 transition-all duration-300 card-hover group cursor-pointer backdrop-blur-md">
+                    <div
+                        class="w-12 h-12 rounded-lg bg-pink-500/20 border border-pink-500/30 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                        <span class="text-2xl">📍</span>
+                    </div>
+                    <h3 class="font-display font-bold text-xl mb-3 group-hover:text-pink-400 transition-colors">
+                        Geospatial Fusion</h3>
+                    <p class="text-sm text-gray-400 leading-relaxed">Anchor your content to physical locations, boosting
+                        local SEO and relevance in key markets.</p>
+                </div>
+
+                <!-- Feature 4 -->
+                <div
+                    class="p-8 rounded-2xl bg-white/5 border border-white/10 hover:border-primary/50 transition-all duration-300 card-hover group cursor-pointer backdrop-blur-md">
+                    <div
+                        class="w-12 h-12 rounded-lg bg-purple-500/20 border border-purple-500/30 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                        <span class="text-2xl">🕸️</span>
+                    </div>
+                    <h3 class="font-display font-bold text-xl mb-3 group-hover:text-purple-400 transition-colors">Graph
+                        RAG</h3>
+                    <p class="text-sm text-gray-400 leading-relaxed">Context-aware retrieval augmented generation that
+                        understands the relationships between your assets.</p>
+                </div>
+
+                <!-- Feature 5 (Wide) -->
+                <div
+                    class="md:col-span-2 p-8 rounded-2xl bg-gradient-to-br from-indigo-900/40 to-purple-900/40 border border-white/10 hover:border-indigo-400/50 transition-all duration-300 card-hover group cursor-pointer backdrop-blur-md relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl -mr-16 -mt-16">
+                    </div>
+                    <div
+                        class="w-12 h-12 rounded-lg bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                        <span class="text-2xl">🚀</span>
+                    </div>
+                    <h3 class="font-display font-bold text-xl mb-3 group-hover:text-indigo-300 transition-colors">Master
+                        Orchestrator</h3>
+                    <p class="text-sm text-gray-400 leading-relaxed max-w-md">Our Master Orchestrator logic ensures
+                        every agent works in perfect harmony, managing dependencies and critical paths automatically.
+                    </p>
+                    <div
+                        class="mt-6 inline-flex text-sm font-semibold text-indigo-400 group-hover:text-white transition-colors">
+                        See the plan &rarr;</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="border-t border-white/10 bg-black py-12 relative z-10">
+        <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
+            <div class="flex items-center gap-2">
+                <div class="w-6 h-6 rounded bg-gradient-to-tr from-primary to-secondary"></div>
+                <span class="font-display font-bold text-lg">NextNet<span class="text-gray-500">.ai</span></span>
+            </div>
+            <div class="text-gray-500 text-sm">
+                &copy; 2026 NextNet AI. All rights reserved. • Tech-Powered Organic Exposure.
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Hero Animations
+        const tl = gsap.timeline();
+        tl.to('#badge', { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' })
+            .to('#hero-title', { opacity: 1, y: 0, duration: 1, ease: 'power3.out' }, "-=0.6")
+            .to('#hero-desc', { opacity: 1, y: 0, duration: 1, ease: 'power3.out' }, "-=0.8")
+            .to('#hero-cta', { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' }, "-=0.8")
+            .to('#dashboard-preview', { opacity: 1, y: 0, duration: 1.2, ease: 'power3.out' }, "-=0.6");
+
+        // Scroll Animations for Cards
+        gsap.utils.toArray('.card-hover').forEach((card, i) => {
+            gsap.from(card, {
+                scrollTrigger: {
+                    trigger: card,
+                    start: "top 85%",
+                    toggleActions: "play none none reverse"
+                },
+                y: 50,
+                opacity: 0,
+                duration: 0.6,
+                delay: i * 0.1
+            });
+        });
+
+        // Navbar Scroll Effect
+        window.addEventListener('scroll', () => {
+            const nav = document.getElementById('navbar');
+            if (window.scrollY > 50) {
+                nav.classList.add('shadow-lg', 'bg-opacity-90');
+            } else {
+                nav.classList.remove('shadow-lg', 'bg-opacity-70');
+            }
+        });
+    </script>
+</body>
+
+</html>

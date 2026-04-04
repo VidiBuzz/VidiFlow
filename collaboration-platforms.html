@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Team Collaboration Platforms | VidiSmart 2025</title>
+    <link href="https://fonts.googleapis.com/css2?family=Kumbh+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="vidi-glass-nav.css">
+    <style>
+        :root {
+            --bg-dark: #0d0a14;
+            --bg-card: rgba(25, 20, 38, 0.85);
+            --text-primary: #f0e8f8;
+            --text-secondary: #a89bb8;
+            --accent-purple: #a855f7;
+            --accent-indigo: #6366f1;
+            --accent-pink: #ec4899;
+            --border-color: rgba(168, 85, 247, 0.15);
+            --glass-bg: rgba(255, 255, 255, 0.03);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Kumbh Sans', sans-serif;
+            background: linear-gradient(135deg, #0d0a14 0%, #1a1025 50%, #0f172a 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            text-align: center;
+            padding: 3rem 0;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 3rem;
+        }
+
+        h1 {
+            font-size: 2.8rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, var(--accent-purple), var(--accent-pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+        }
+
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+
+
+        /* Comparison Table */
+        .comparison-table-wrapper {
+            overflow-x: auto;
+            margin-bottom: 4rem;
+            border-radius: 16px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1200px;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .comparison-table th {
+            background: rgba(168, 85, 247, 0.1);
+            color: var(--accent-purple);
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .comparison-table tr:hover {
+            background: var(--glass-bg);
+        }
+
+        .platform-name {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.6rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge-agpl {
+            background: rgba(168, 85, 247, 0.2);
+            color: #a855f7;
+        }
+
+        .badge-mit {
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+        }
+
+        .badge-gpl {
+            background: rgba(59, 130, 246, 0.2);
+            color: #3b82f6;
+        }
+
+        .badge-mpl {
+            background: rgba(251, 146, 60, 0.2);
+            color: #fb923c;
+        }
+
+        .badge-apache {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+
+        .check {
+            color: var(--accent-purple);
+            font-weight: bold;
+        }
+
+        .cross {
+            color: #ef4444;
+        }
+
+        .partial {
+            color: #f59e0b;
+        }
+
+        .table-links a {
+            color: var(--accent-indigo);
+            text-decoration: none;
+            margin-right: 0.75rem;
+            font-size: 0.85rem;
+        }
+
+        .table-links a:hover {
+            text-decoration: underline;
+        }
+
+        /* Platform Cards */
+        .section-title {
+            font-size: 1.8rem;
+            margin-bottom: 2rem;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 28px;
+            background: var(--accent-purple);
+            border-radius: 2px;
+        }
+
+        .platforms-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+            gap: 2rem;
+            margin-bottom: 4rem;
+        }
+
+        .platform-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            overflow: hidden;
+            transition: transform 0.3s, border-color 0.3s;
+        }
+
+        .platform-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--accent-purple);
+        }
+
+        .platform-screenshot {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            background: #1a1025;
+        }
+
+        .platform-content {
+            padding: 1.5rem;
+        }
+
+        .platform-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .platform-card h3 {
+            font-size: 1.3rem;
+            color: var(--text-primary);
+        }
+
+        .platform-card p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            margin-bottom: 1rem;
+        }
+
+        .platform-features {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-tag {
+            background: var(--glass-bg);
+            border: 1px solid var(--border-color);
+            padding: 0.25rem 0.6rem;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .platform-links {
+            display: flex;
+            gap: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .platform-links a {
+            color: var(--accent-purple);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: opacity 0.3s;
+        }
+
+        .platform-links a:hover {
+            opacity: 0.8;
+        }
+
+        /* Recommendation Section */
+        .recommendation {
+            background: linear-gradient(135deg, rgba(168, 85, 247, 0.1), rgba(99, 102, 241, 0.1));
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 4rem;
+        }
+
+        .recommendation h2 {
+            color: var(--accent-purple);
+            margin-bottom: 1.5rem;
+        }
+
+        .recommendation-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .rec-card {
+            background: var(--bg-card);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        .rec-card h4 {
+            color: var(--accent-indigo);
+            margin-bottom: 0.75rem;
+            font-size: 1.1rem;
+        }
+
+        .rec-card p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .rec-card strong {
+            color: var(--accent-purple);
+        }
+
+        /* Tech Stack Info */
+        .tech-stack {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .tech-badge {
+            background: rgba(99, 102, 241, 0.2);
+            color: var(--accent-indigo);
+            padding: 0.2rem 0.5rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            border-top: 1px solid var(--border-color);
+            color: var(--text-secondary);
+        }
+
+        footer a {
+            color: var(--accent-purple);
+            text-decoration: none;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .platforms-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Dynamic Navigation -->
+    <div id="vidi-glass-nav-root"></div>
+    <script src="vidi-glass-nav-dynamic.js"></script>
+
+    <div class="container">
+
+        <header>
+            <h1>AI Team Collaboration Platforms</h1>
+            <p class="subtitle">Open-source alternatives to Notion, Asana, and Monday.com for AI-powered project
+                management and team collaboration in 2025</p>
+        </header>
+
+        <!-- Recommendations -->
+        <section class="recommendation">
+            <h2>VidiSmart Recommendations for AI Teams</h2>
+            <div class="recommendation-grid">
+                <div class="rec-card">
+                    <h4>Best All-in-One</h4>
+                    <p><strong>Huly</strong> - Complete Slack + Asana + Notion replacement with built-in video
+                        conferencing via LiveKit. Beautiful Svelte UI, real-time collaboration.</p>
+                    <div class="tech-stack">
+                        <span class="tech-badge">Svelte</span>
+                        <span class="tech-badge">TypeScript</span>
+                        <span class="tech-badge">LiveKit</span>
+                    </div>
+                </div>
+                <div class="rec-card">
+                    <h4>Best for Agile Teams</h4>
+                    <p><strong>Plane</strong> - Modern open-source Jira alternative with cycles (sprints), modules, and
+                        beautiful UI. Next.js + Django stack.</p>
+                    <div class="tech-stack">
+                        <span class="tech-badge">Next.js</span>
+                        <span class="tech-badge">Django</span>
+                        <span class="tech-badge">PostgreSQL</span>
+                    </div>
+                </div>
+                <div class="rec-card">
+                    <h4>Best for ADHD/Accessibility</h4>
+                    <p><strong>Leantime</strong> - Neurodiversity-friendly PM designed for ADHD, autism, and dyslexia.
+                        Simple yet feature-rich with strategy tools.</p>
+                    <div class="tech-stack">
+                        <span class="tech-badge">PHP</span>
+                        <span class="tech-badge">MySQL</span>
+                        <span class="tech-badge">Docker</span>
+                    </div>
+                </div>
+                <div class="rec-card">
+                    <h4>Best Notion Alternative</h4>
+                    <p><strong>AppFlowy</strong> - Native desktop app with AI workspace. Flutter + Rust for speed. 100%
+                        data control with local-first architecture.</p>
+                    <div class="tech-stack">
+                        <span class="tech-badge">Flutter</span>
+                        <span class="tech-badge">Rust</span>
+                        <span class="tech-badge">SQLite</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Comparison Table -->
+        <h2 class="section-title">Feature Comparison Matrix</h2>
+        <div class="comparison-table-wrapper">
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Platform</th>
+                        <th>License</th>
+                        <th>Self-Hosted</th>
+                        <th>Real-time</th>
+                        <th>Video Call</th>
+                        <th>AI Features</th>
+                        <th>Kanban</th>
+                        <th>Gantt</th>
+                        <th>Docker</th>
+                        <th>Links</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="platform-name">Huly</td>
+                        <td><span class="badge badge-agpl">EPL-2.0</span></td>
+                        <td class="check">Yes</td>
+                        <td class="check">Yes</td>
+                        <td class="check">LiveKit</td>
+                        <td class="partial">Plugin</td>
+                        <td class="check">Yes</td>
+                        <td class="check">Yes</td>
+                        <td class="check">Yes</td>
+                        <td class="table-links">
+                            <a href="https://huly.io/" target="_blank">Site</a>
+                            <a href="https://github.com/hcengineering/platform" target="_blank">GitHub</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="platform-name">Plane</td>
+                        <td><span class="badge badge-agpl">AGPL-3.0</span></td>
+                        <td class="check">Yes</td>
+                        <td class="check">Yes</td>
+                        <td class="cross">No</td>
+                        <td class="check">Pages AI</td>
+                        <td class="check">Yes</td>
+                        <td class="check">Yes</td>
+                        <td class="check">Yes</td>
+                        <td class="table-links">
+                            <a href="https://plane.so/" target="_blank">Site</a>
+                            <a href="https://github.com/makeplane/plane" target="_blank">GitHub</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="platform-name">Taiga</td>
+                        <td><span class="badge badge-mpl">MPL-2.0</span></td>
+                        <td class="check">Yes</td>
+                        <td class="check">Yes</td>
+                        <td class="cross">No</td>
+                        <td class="cross">No</td>
+                        <td class="check">Yes</td>
+                        <td class="partial">Timeline</td>
+                        <td class="check">Yes</td>
+                        <td class="table-links">
+                            <a href="https://taiga.io/" target="_blank">Site</a>
+                            <a href="https://github.com/kaleidos-ventures/taiga" target="_blank">GitHub</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="platform-name">Leantime</td>
+                        <td><span class="badge badge-agpl">AGPL-3.0</span></td>
+                        <td class="check">Yes</td>
+                        <td class="partial">Limited</td>
+                        <td class="cross">No</td>
+                        <td class="partial">Plugin</td>
+                        <td class="check">Yes</td>
+                        <td class="check">Yes</td>
+                        <td class="check">Yes</td>
+                        <td class="table-links">
+                            <a href="https://leantime.io/" target="_blank">Site</a>
+                            <a href="https://github.com/Leantime/leantime" target="_blank">GitHub</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="platform-name">OpenProject</td>
+                        <td><span class="badge badge-gpl">GPL-3.0</span></td>
+                        <td class="check">Yes</td>
+                        <td class="check">Yes</td>
+                        <td class="cross">No</td>
+                        <td class="cross">No</td>
+                        <td class="check">Yes</td>
+                        <td class="check">Yes</td>
+                        <td class="check">Yes</td>
+                        <td class="table-links">
+                            <a href="https://openproject.org/" target="_blank">Site</a>
+                            <a href="https://github.com/opf/openproject" target="_blank">GitHub</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="platform-name">AppFlowy</td>
+                        <td><span class="badge badge-agpl">AGPL-3.0</span></td>
+                        <td class="check">Yes</td>
+                        <td class="check">Yes</td>
+                        <td class="cross">No</td>
+                        <td class="check">Built-in</td>
+                        <td class="check">Yes</td>
+                        <td class="cross">No</td>
+                        <td class="check">Yes</td>
+                        <td class="table-links">
+                            <a href="https://appflowy.io/" target="_blank">Site</a>
+                            <a href="https://github.com/AppFlowy-IO/AppFlowy" target="_blank">GitHub</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="platform-name">Focalboard</td>
+                        <td><span class="badge badge-mit">MIT/AGPL</span></td>
+                        <td class="check">Yes</td>
+                        <td class="partial">Limited</td>
+                        <td class="cross">No</td>
+                        <td class="cross">No</td>
+                        <td class="check">Yes</td>
+                        <td class="partial">Calendar</td>
+                        <td class="check">Yes</td>
+                        <td class="table-links">
+                            <a href="https://www.focalboard.com/" target="_blank">Site</a>
+                            <a href="https://github.com/mattermost-community/focalboard" target="_blank">GitHub</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="platform-name">Vikunja</td>
+                        <td><span class="badge badge-agpl">AGPL-3.0</span></td>
+                        <td class="check">Yes</td>
+                        <td class="check">Yes</td>
+                        <td class="cross">No</td>
+                        <td class="cross">No</td>
+                        <td class="check">Yes</td>
+                        <td class="check">Yes</td>
+                        <td class="check">Yes</td>
+                        <td class="table-links">
+                            <a href="https://vikunja.io/" target="_blank">Site</a>
+                            <a href="https://kolaente.dev/vikunja/vikunja" target="_blank">Gitea</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- All-in-One Platforms -->
+        <h2 class="section-title">All-in-One Collaboration Platforms</h2>
+        <div class="platforms-grid">
+            <!-- Huly -->
+            <div class="platform-card">
+                <img src="https://repository-images.githubusercontent.com/392073243/6d27d5cc-38cd-4d88-affe-bb88b393180c"
+                    alt="Huly Screenshot" class="platform-screenshot" loading="lazy">
+                <div class="platform-content">
+                    <div class="platform-header">
+                        <h3>Huly</h3>
+                        <span class="badge badge-agpl">EPL-2.0</span>
+                    </div>
+                    <p>Complete Slack + Asana + Notion replacement. Built-in video conferencing via LiveKit, real-time
+                        collaboration, CRM, HRM, and ATS modules. Beautiful Svelte UI.</p>
+                    <div class="platform-features">
+                        <span class="feature-tag">Video Calls</span>
+                        <span class="feature-tag">Real-time</span>
+                        <span class="feature-tag">CRM</span>
+                        <span class="feature-tag">Kanban</span>
+                        <span class="feature-tag">Svelte</span>
+                    </div>
+                    <div class="platform-links">
+                        <a href="https://huly.io/" target="_blank">Website</a>
+                        <a href="https://github.com/hcengineering/platform" target="_blank">GitHub</a>
+                        <a href="https://github.com/hcengineering/huly-selfhost" target="_blank">Self-Host</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Plane -->
+            <div class="platform-card">
+                <img src="https://media.docs.plane.so/GitHub-readme/github-top.webp" alt="Plane Screenshot"
+                    class="platform-screenshot" loading="lazy">
+                <div class="platform-content">
+                    <div class="platform-header">
+                        <h3>Plane</h3>
+                        <span class="badge badge-agpl">AGPL-3.0</span>
+                    </div>
+                    <p>Modern open-source Jira alternative. Issue tracking, cycles (sprints), modules, roadmaps, and
+                        Pages with AI. Beautiful UI built with Next.js and Django.</p>
+                    <div class="platform-features">
+                        <span class="feature-tag">Issues</span>
+                        <span class="feature-tag">Cycles</span>
+                        <span class="feature-tag">Modules</span>
+                        <span class="feature-tag">AI Pages</span>
+                        <span class="feature-tag">Analytics</span>
+                    </div>
+                    <div class="platform-links">
+                        <a href="https://plane.so/" target="_blank">Website</a>
+                        <a href="https://github.com/makeplane/plane" target="_blank">GitHub</a>
+                        <a href="https://docs.plane.so/" target="_blank">Documentation</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AppFlowy -->
+            <div class="platform-card">
+                <img src="https://appflowy.com/_next/static/media/tasks.796c753e.png" alt="AppFlowy Screenshot"
+                    class="platform-screenshot" loading="lazy">
+                <div class="platform-content">
+                    <div class="platform-header">
+                        <h3>AppFlowy</h3>
+                        <span class="badge badge-agpl">AGPL-3.0</span>
+                    </div>
+                    <p>Open-source Notion alternative. Native desktop app with AI workspace. Flutter + Rust for blazing
+                        speed. 100% data control with local-first architecture.</p>
+                    <div class="platform-features">
+                        <span class="feature-tag">AI Built-in</span>
+                        <span class="feature-tag">Local-First</span>
+                        <span class="feature-tag">Flutter</span>
+                        <span class="feature-tag">Rust</span>
+                        <span class="feature-tag">Cross-Platform</span>
+                    </div>
+                    <div class="platform-links">
+                        <a href="https://appflowy.io/" target="_blank">Website</a>
+                        <a href="https://github.com/AppFlowy-IO/AppFlowy" target="_blank">GitHub</a>
+                        <a href="https://docs.appflowy.io/" target="_blank">Documentation</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Agile Project Management -->
+        <h2 class="section-title">Agile Project Management</h2>
+        <div class="platforms-grid">
+            <!-- Taiga -->
+            <div class="platform-card">
+                <img src="https://github.com/taigaio/taiga/assets/5446186/b9dc7f21-c670-44bf-ae1f-e5a41343dffc"
+                    alt="Taiga Screenshot" class="platform-screenshot" loading="lazy">
+                <div class="platform-content">
+                    <div class="platform-header">
+                        <h3>Taiga</h3>
+                        <span class="badge badge-mpl">MPL-2.0</span>
+                    </div>
+                    <p>Beautiful agile project management for cross-functional teams. Scrum and Kanban boards, epics,
+                        user stories. By Kaleidos (same team as Penpot).</p>
+                    <div class="platform-features">
+                        <span class="feature-tag">Scrum</span>
+                        <span class="feature-tag">Kanban</span>
+                        <span class="feature-tag">Epics</span>
+                        <span class="feature-tag">Python/Django</span>
+                        <span class="feature-tag">Angular</span>
+                    </div>
+                    <div class="platform-links">
+                        <a href="https://taiga.io/" target="_blank">Website</a>
+                        <a href="https://github.com/kaleidos-ventures/taiga" target="_blank">GitHub</a>
+                        <a href="https://community.taiga.io/" target="_blank">Community</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Leantime -->
+            <div class="platform-card">
+                <img src="https://raw.githubusercontent.com/Leantime/leantime/master/public/assets/images/Screenshots/mywork-v3.5.png"
+                    alt="Leantime Screenshot" class="platform-screenshot" loading="lazy">
+                <div class="platform-content">
+                    <div class="platform-header">
+                        <h3>Leantime</h3>
+                        <span class="badge badge-agpl">AGPL-3.0</span>
+                    </div>
+                    <p>Project management for non-project managers. Built for ADHD, dyslexia, and autism. Strategy,
+                        planning, and execution combined. Trello simplicity + Jira features.</p>
+                    <div class="platform-features">
+                        <span class="feature-tag">ADHD-Friendly</span>
+                        <span class="feature-tag">Strategy Canvas</span>
+                        <span class="feature-tag">Time Tracking</span>
+                        <span class="feature-tag">Retrospectives</span>
+                        <span class="feature-tag">PHP</span>
+                    </div>
+                    <div class="platform-links">
+                        <a href="https://leantime.io/" target="_blank">Website</a>
+                        <a href="https://github.com/Leantime/leantime" target="_blank">GitHub</a>
+                        <a href="https://docs.leantime.io/" target="_blank">Documentation</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- OpenProject -->
+            <div class="platform-card">
+                <img src="https://www.openproject.org/assets/images/product-tour/overview/project-plan-gantt-chart.png"
+                    alt="OpenProject Screenshot" class="platform-screenshot" loading="lazy"
+                    onerror="this.style.background='linear-gradient(135deg, #1a8cff, #0066cc)'">
+                <div class="platform-content">
+                    <div class="platform-header">
+                        <h3>OpenProject</h3>
+                        <span class="badge badge-gpl">GPL-3.0</span>
+                    </div>
+                    <p>Enterprise project management with German engineering. Gantt charts, agile boards, time tracking,
+                        cost reporting, wikis, forums. GitHub integration built-in.</p>
+                    <div class="platform-features">
+                        <span class="feature-tag">Enterprise</span>
+                        <span class="feature-tag">Gantt</span>
+                        <span class="feature-tag">GitHub Integration</span>
+                        <span class="feature-tag">Time Tracking</span>
+                        <span class="feature-tag">Ruby</span>
+                    </div>
+                    <div class="platform-links">
+                        <a href="https://openproject.org/" target="_blank">Website</a>
+                        <a href="https://github.com/opf/openproject" target="_blank">GitHub</a>
+                        <a href="https://www.openproject.org/docs/" target="_blank">Documentation</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Vikunja -->
+            <div class="platform-card">
+                <img src="https://vikunja.io/images/kanban.png" alt="Vikunja Screenshot" class="platform-screenshot"
+                    loading="lazy" onerror="this.style.background='linear-gradient(135deg, #00c9b7, #0099aa)'">
+                <div class="platform-content">
+                    <div class="platform-header">
+                        <h3>Vikunja</h3>
+                        <span class="badge badge-agpl">AGPL-3.0</span>
+                    </div>
+                    <p>Open-source, self-hostable to-do app. Kanban, Gantt, calendar views. Lightweight Go backend,
+                        Vue.js frontend. Great for personal and team task management.</p>
+                    <div class="platform-features">
+                        <span class="feature-tag">Lightweight</span>
+                        <span class="feature-tag">Go Backend</span>
+                        <span class="feature-tag">Vue.js</span>
+                        <span class="feature-tag">CalDAV</span>
+                        <span class="feature-tag">API</span>
+                    </div>
+                    <div class="platform-links">
+                        <a href="https://vikunja.io/" target="_blank">Website</a>
+                        <a href="https://kolaente.dev/vikunja/vikunja" target="_blank">Gitea</a>
+                        <a href="https://vikunja.io/docs/" target="_blank">Documentation</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Kanban & Task Tools -->
+        <h2 class="section-title">Kanban & Task Management</h2>
+        <div class="platforms-grid">
+            <!-- Focalboard -->
+            <div class="platform-card">
+                <img src="https://raw.githubusercontent.com/mattermost-community/focalboard/main/website/site/static/img/hero.jpg"
+                    alt="Focalboard Screenshot" class="platform-screenshot" loading="lazy">
+                <div class="platform-content">
+                    <div class="platform-header">
+                        <h3>Focalboard</h3>
+                        <span class="badge badge-mit">MIT</span>
+                    </div>
+                    <p>Open-source alternative to Trello, Notion, and Asana. Desktop app available for Mac, Windows,
+                        Linux. Community-maintained since Mattermost archived it.</p>
+                    <div class="platform-features">
+                        <span class="feature-tag">Desktop App</span>
+                        <span class="feature-tag">Kanban</span>
+                        <span class="feature-tag">Table View</span>
+                        <span class="feature-tag">Go Backend</span>
+                        <span class="feature-tag">React</span>
+                    </div>
+                    <div class="platform-links">
+                        <a href="https://www.focalboard.com/" target="_blank">Website</a>
+                        <a href="https://github.com/mattermost-community/focalboard" target="_blank">GitHub</a>
+                        <a href="https://www.focalboard.com/docs/" target="_blank">Documentation</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Wekan -->
+            <div class="platform-card">
+                <img src="https://wekan.github.io/wekan-markdown.png" alt="Wekan Screenshot" class="platform-screenshot"
+                    loading="lazy" onerror="this.style.background='linear-gradient(135deg, #2980b9, #1abc9c)'">
+                <div class="platform-content">
+                    <div class="platform-header">
+                        <h3>Wekan</h3>
+                        <span class="badge badge-mit">MIT</span>
+                    </div>
+                    <p>Open-source kanban board. Meteor.js stack with real-time updates. Swimlanes, WIP limits, due
+                        dates, checklists. Simple Trello alternative.</p>
+                    <div class="platform-features">
+                        <span class="feature-tag">Kanban</span>
+                        <span class="feature-tag">Swimlanes</span>
+                        <span class="feature-tag">WIP Limits</span>
+                        <span class="feature-tag">Meteor.js</span>
+                        <span class="feature-tag">Real-time</span>
+                    </div>
+                    <div class="platform-links">
+                        <a href="https://wekan.github.io/" target="_blank">Website</a>
+                        <a href="https://github.com/wekan/wekan" target="_blank">GitHub</a>
+                        <a href="https://github.com/wekan/wekan/wiki" target="_blank">Wiki</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Planka -->
+            <div class="platform-card">
+                <img src="https://raw.githubusercontent.com/plankanban/planka/master/demo.gif" alt="Planka Screenshot"
+                    class="platform-screenshot" loading="lazy"
+                    onerror="this.style.background='linear-gradient(135deg, #6c5ce7, #a29bfe)'">
+                <div class="platform-content">
+                    <div class="platform-header">
+                        <h3>Planka</h3>
+                        <span class="badge badge-agpl">AGPL-3.0</span>
+                    </div>
+                    <p>Elegant Trello-like kanban board. Real-time updates with Socket.io. Clean React UI, Node.js
+                        backend. Focus on simplicity and speed.</p>
+                    <div class="platform-features">
+                        <span class="feature-tag">Kanban</span>
+                        <span class="feature-tag">Real-time</span>
+                        <span class="feature-tag">React</span>
+                        <span class="feature-tag">Node.js</span>
+                        <span class="feature-tag">PostgreSQL</span>
+                    </div>
+                    <div class="platform-links">
+                        <a href="https://planka.app/" target="_blank">Website</a>
+                        <a href="https://github.com/plankanban/planka" target="_blank">GitHub</a>
+                        <a href="https://docs.planka.cloud/" target="_blank">Documentation</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI Integration Guide -->
+        <section class="recommendation">
+            <h2>AI Integration Stack for Collaboration Platforms</h2>
+            <div class="recommendation-grid">
+                <div class="rec-card">
+                    <h4>n8n Workflows</h4>
+                    <p>Connect your collaboration platform to AI via <strong>n8n</strong>. Auto-create tasks from
+                        emails, generate summaries, smart categorization.</p>
+                </div>
+                <div class="rec-card">
+                    <h4>Ollama + Local LLM</h4>
+                    <p>Run <strong>Qwen 3</strong> or <strong>Llama 3</strong> locally for AI task generation, meeting
+                        summaries, and code review assistance.</p>
+                </div>
+                <div class="rec-card">
+                    <h4>MCP Servers</h4>
+                    <p>Use Claude Code's MCP protocol to connect AI directly to your project management tools via custom
+                        servers.</p>
+                </div>
+                <div class="rec-card">
+                    <h4>GitHub Integration</h4>
+                    <p>Most platforms offer GitHub integration. Link issues, PRs, and commits directly to tasks for
+                        developer workflows.</p>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            <p>VidiSmart AI Team Collaboration Platforms Comparison | Updated November 2025</p>
+            <p><a href="index.html">VidiSmart Tech Stack Planner</a> | <a href="video-platforms.html">Video
+                    Platforms</a> | Built for AI-powered team collaboration</p>
+        </footer>
+    </div>
+</body>
+
+</html>

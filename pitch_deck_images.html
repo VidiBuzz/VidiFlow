@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VidiSmart.Ai Pitch Deck Presentation</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #090a0f;
+            --card-dark: rgba(20, 22, 30, 0.6);
+            --border-glow: rgba(214, 255, 0, 0.3); /* Nano Banana Yellow Glow */
+            --accent-yellow: #d6ff00;
+            --accent-green: #00ffaa;
+            --text-main: #f0f0f5;
+            --text-muted: #a0a5b5;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            line-height: 1.6;
+            background-image: 
+                radial-gradient(circle at 15% 50%, rgba(214, 255, 0, 0.05), transparent 25%),
+                radial-gradient(circle at 85% 30%, rgba(0, 255, 170, 0.05), transparent 25%);
+            background-attachment: fixed;
+            min-height: 100vh;
+        }
+
+        h1, h2, h3 {
+            font-family: 'Outfit', sans-serif;
+            letter-spacing: -0.02em;
+        }
+
+        header {
+            text-align: center;
+            padding: 4rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(9, 10, 15, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        header h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            background: linear-gradient(90deg, var(--text-main), var(--accent-yellow), var(--accent-green));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+            animation: glowText 4s infinite alternate;
+        }
+
+        @keyframes glowText {
+            0% { text-shadow: 0 0 20px rgba(214, 255, 0, 0.2); }
+            100% { text-shadow: 0 0 40px rgba(0, 255, 170, 0.4); }
+        }
+
+        header p {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .gallery-container {
+            max-width: 1400px;
+            margin: 4rem auto;
+            padding: 0 2rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 3rem;
+        }
+
+        .slide-card {
+            background: var(--card-dark);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            overflow: hidden;
+            position: relative;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .slide-card::before {
+            content: '';
+            position: absolute;
+            top: -2px; left: -2px; right: -2px; bottom: -2px;
+            background: linear-gradient(45deg, transparent 40%, var(--border-glow) 50%, transparent 60%);
+            z-index: -1;
+            border-radius: 22px;
+            background-size: 200% 200%;
+            animation: borderGradient 4s linear infinite;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        @keyframes borderGradient {
+            0% { background-position: 0% 0%; }
+            100% { background-position: 200% 200%; }
+        }
+
+        .slide-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            border-color: rgba(214, 255, 0, 0.4);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.6), 0 0 40px rgba(214, 255, 0, 0.1);
+        }
+
+        .slide-card:hover::before {
+            opacity: 1;
+        }
+
+        .img-wrapper {
+            width: 100%;
+            padding-top: 56.25%; /* 16:9 Aspect Ratio */
+            position: relative;
+            background: #111;
+            overflow: hidden;
+        }
+
+        .slide-card img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.7s ease;
+        }
+
+        .slide-card:hover img {
+            transform: scale(1.05);
+        }
+
+        .slide-content {
+            padding: 2rem;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .slide-number {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 800;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--accent-yellow);
+            margin-bottom: 0.5rem;
+            display: inline-block;
+            background: rgba(214, 255, 0, 0.1);
+            padding: 0.3rem 0.8rem;
+            border-radius: 50px;
+            align-self: flex-start;
+        }
+
+        .slide-title {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #fff;
+        }
+
+        .slide-desc {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        /* Presentation Mode Button */
+        .btn-presentation {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 1.5rem;
+            padding: 1rem 2.5rem;
+            background: linear-gradient(135deg, var(--accent-yellow), var(--accent-green));
+            color: #000;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 800;
+            font-size: 1.1rem;
+            text-decoration: none;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 20px rgba(214, 255, 0, 0.3);
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-presentation:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 255, 170, 0.5);
+            filter: brightness(1.1);
+        }
+
+        footer {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-muted);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            margin-top: 4rem;
+        }
+
+        @media (max-width: 768px) {
+            .gallery-container {
+                grid-template-columns: 1fr;
+            }
+            header h1 {
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>VidiSmart.Ai</h1>
+        <p>The AI-First Video Community Architecture</p>
+        <button class="btn-presentation" onclick="window.scrollTo({top: document.querySelector('.gallery-container').offsetTop - 120, behavior: 'smooth'})">
+            Explore Pitch Deck
+        </button>
+    </header>
+
+    <div class="gallery-container">
+        <!-- Slide 1 -->
+        <article class="slide-card">
+            <div class="img-wrapper">
+                <img referrerpolicy="no-referrer" src="https://cdn.vidi.news/slide_01_title_1774289127059.png" alt="Slide 1: Title">
+            </div>
+            <div class="slide-content">
+                <span class="slide-number">Slide 01</span>
+                <h3 class="slide-title">VidiSmart.Ai Architecture</h3>
+                <p class="slide-desc">Futuristic conceptual art representing an AI-first video community architecture with glowing data nodes connecting in a 3D network.</p>
+            </div>
+        </article>
+
+        <!-- Slide 2 -->
+        <article class="slide-card">
+            <div class="img-wrapper">
+                <img referrerpolicy="no-referrer" src="https://cdn.vidi.news/slide_02_vision_1774289142582.png" alt="Slide 2: Vision">
+            </div>
+            <div class="slide-content">
+                <span class="slide-number">Slide 02</span>
+                <h3 class="slide-title">Interactive Vision</h3>
+                <p class="slide-desc">An interactive video player interface that reads a user's life flow, highlighting geospatial mapping and vibrant tech styling.</p>
+            </div>
+        </article>
+
+        <!-- Slide 3 -->
+        <article class="slide-card">
+            <div class="img-wrapper">
+                <img referrerpolicy="no-referrer" src="https://cdn.vidi.news/slide_03_stack_1774289159560.png" alt="Slide 3: Stack">
+            </div>
+            <div class="slide-content">
+                <span class="slide-number">Slide 03</span>
+                <h3 class="slide-title">Golden Unified Stack</h3>
+                <p class="slide-desc">The ultimate unified logic stack with FastAPI, Supabase, Mux Video, and Next.js interconnected with bright energy streams.</p>
+            </div>
+        </article>
+
+        <!-- Slide 4 -->
+        <article class="slide-card">
+            <div class="img-wrapper">
+                <img referrerpolicy="no-referrer" src="https://cdn.vidi.news/slide_04_visualrag_1774289174972.png" alt="Slide 4: Visual RAG">
+            </div>
+            <div class="slide-content">
+                <span class="slide-number">Slide 04</span>
+                <h3 class="slide-title">Visual RAG Processing</h3>
+                <p class="slide-desc">A digital AI eye scanning the glowing frames of a video showing a copper pipe being repaired, extracting precise visual context.</p>
+            </div>
+        </article>
+
+        <!-- Slide 5 -->
+        <article class="slide-card">
+            <div class="img-wrapper">
+                <img referrerpolicy="no-referrer" src="https://cdn.vidi.news/slide_05_factory_1774289191703.png" alt="Slide 5: Video Factory">
+            </div>
+            <div class="slide-content">
+                <span class="slide-number">Slide 05</span>
+                <h3 class="slide-title">The Video Factory</h3>
+                <p class="slide-desc">A high-tech movie production set where humanoid AI robots are directing and operating advanced holographic cameras in real-time.</p>
+            </div>
+        </article>
+
+        <!-- Slide 6 -->
+        <article class="slide-card">
+            <div class="img-wrapper">
+                <img referrerpolicy="no-referrer" src="https://cdn.vidi.news/slide_06_hardware_1774289205711.png" alt="Slide 6: Hardware">
+            </div>
+            <div class="slide-content">
+                <span class="slide-number">Slide 06</span>
+                <h3 class="slide-title">Unified Hardware VRAM</h3>
+                <p class="slide-desc">An ultra high-end enterprise GPU glowing intense green and blue, pulsing data streams representing 96GB of unified computing power.</p>
+            </div>
+        </article>
+
+        <!-- Slide 7 -->
+        <article class="slide-card">
+            <div class="img-wrapper">
+                <img referrerpolicy="no-referrer" src="https://cdn.vidi.news/slide_07_uistrategy_1774289221672.png" alt="Slide 7: UI Strategy">
+            </div>
+            <div class="slide-content">
+                <span class="slide-number">Slide 07</span>
+                <h3 class="slide-title">Server-Driven UI</h3>
+                <p class="slide-desc">A user interface assembling itself dynamically in mid-air with abstract glowing mapping widgets and tutorial videos over a dark void.</p>
+            </div>
+        </article>
+
+        <!-- Slide 8 -->
+        <article class="slide-card">
+            <div class="img-wrapper">
+                <img referrerpolicy="no-referrer" src="https://cdn.vidi.news/slide_08_costscaling_1774289235466.png" alt="Slide 8: Cost Scaling">
+            </div>
+            <div class="slide-content">
+                <span class="slide-number">Slide 08</span>
+                <h3 class="slide-title">SaaS to Kubernetes</h3>
+                <p class="slide-desc">A stylized neon graph scaling upwards, shifting from cloud abstractions to self-hosted server racks transitioning into high-gear infrastructure.</p>
+            </div>
+        </article>
+
+        <!-- Slide 9 -->
+        <article class="slide-card">
+            <div class="img-wrapper">
+                <img referrerpolicy="no-referrer" src="https://cdn.vidi.news/slide_09_cortex_1774289250630.png" alt="Slide 9: Cortex">
+            </div>
+            <div class="slide-content">
+                <span class="slide-number">Slide 09</span>
+                <h3 class="slide-title">The Cortex View</h3>
+                <p class="slide-desc">A glowing digital brain segmented into geospatial map networking, semantic vector relationships, and deep knowledge graphs.</p>
+            </div>
+        </article>
+
+        <!-- Slide 10 -->
+        <article class="slide-card">
+            <div class="img-wrapper">
+                <img referrerpolicy="no-referrer" src="https://cdn.vidi.news/slide_10_intelligence_1774289265460.png" alt="Slide 10: Intelligence">
+            </div>
+            <div class="slide-content">
+                <span class="slide-number">Slide 10</span>
+                <h3 class="slide-title">Real-time Intelligence</h3>
+                <p class="slide-desc">A bright burst of AI particles constructing complete, complex visual answers from minimal user keywords through elegant digital thought.</p>
+            </div>
+        </article>
+
+        <!-- Slide 11 -->
+        <article class="slide-card">
+            <div class="img-wrapper">
+                <img referrerpolicy="no-referrer" src="https://cdn.vidi.news/slide_11_roadmap_1774289282499.png" alt="Slide 11: Roadmap">
+            </div>
+            <div class="slide-content">
+                <span class="slide-number">Slide 11</span>
+                <h3 class="slide-title">Execution Roadmap</h3>
+                <p class="slide-desc">A vibrant roadmap twisting through a neon landscape marked with checkpoints, guiding execution towards the MVP and intelligence checkpoints.</p>
+            </div>
+        </article>
+
+        <!-- Slide 12 -->
+        <article class="slide-card">
+            <div class="img-wrapper">
+                <img referrerpolicy="no-referrer" src="https://cdn.vidi.news/slide_12_ready_1774289297672.png" alt="Slide 12: Ready to Build">
+            </div>
+            <div class="slide-content">
+                <span class="slide-number">Slide 12</span>
+                <h3 class="slide-title">Ready to Build</h3>
+                <p class="slide-desc">A majestic digital neon construction site overseen by a high-tech glowing Docker whale, building the framework of the VidiSmart architecture.</p>
+            </div>
+        </article>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 VidiSmart.Ai — The Future of Cinematic Intelligence</p>
+    </footer>
+
+</body>
+</html>

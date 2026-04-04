@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VidiSmart Hub - Navigate All Pages & Tools | 2026</title>
+    <meta name="description" content="Central navigation hub for VidiSmart - access SmartStack planner, Tech Guide, presentations, tools, and all 49 pages in one place.">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kumbh+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Kumbh Sans', sans-serif;
+            background-color: #0B1A33;
+            background-image: linear-gradient(to bottom, #112244, #0B1A33);
+            color: #E0E0E0;
+            min-height: 100vh;
+            font-weight: 700;
+        }
+        .nav-link {
+            transition: color 0.3s, border-color 0.3s;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-link.active, .nav-link:hover {
+            color: #F97316;
+            border-bottom-color: #F97316;
+        }
+        .card {
+            background-color: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            border-radius: 1rem;
+            transition: all 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.45);
+        }
+        .file-link {
+            display: block;
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.08);
+            transition: all 0.2s ease;
+            text-decoration: none;
+            color: #A9C1E8;
+            font-weight: 400;
+        }
+        .file-link:hover {
+            background: rgba(249, 115, 22, 0.15);
+            border-color: #F97316;
+            color: #fff;
+            transform: translateX(5px);
+        }
+        .file-link .filename {
+            font-weight: 600;
+            color: #fff;
+        }
+        .category-header {
+            background: linear-gradient(90deg, rgba(249,115,22,0.3) 0%, transparent 100%);
+            border-left: 4px solid #F97316;
+            padding: 0.75rem 1rem;
+            margin-bottom: 1rem;
+            border-radius: 0 0.5rem 0.5rem 0;
+        }
+        .category-banner {
+            position: relative;
+            height: 120px;
+            border-radius: 1rem 1rem 0 0;
+            overflow: hidden;
+            margin-bottom: -1rem;
+        }
+        .category-banner img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.4;
+            filter: blur(1px);
+        }
+        .category-banner::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 60%;
+            background: linear-gradient(to top, #112244, transparent);
+        }
+        .category-icon {
+            position: absolute;
+            bottom: 10px;
+            right: 20px;
+            font-size: 3rem;
+            opacity: 0.6;
+        }
+        .section-bg-light {
+            background-color: #112244;
+        }
+        p, .font-normal {
+            font-weight: 400;
+        }
+        .badge {
+            font-size: 0.65rem;
+            padding: 0.15rem 0.5rem;
+            border-radius: 9999px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .badge-live { background: rgba(34,197,94,0.2); color: #22c55e; }
+        .badge-dev { background: rgba(249,115,22,0.2); color: #F97316; }
+        .badge-new { background: rgba(59,130,246,0.2); color: #3b82f6; }
+        .search-input {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 0.5rem;
+            padding: 0.75rem 1rem;
+            color: #fff;
+            width: 100%;
+        }
+        .search-input:focus {
+            outline: none;
+            border-color: #F97316;
+        }
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Header & Navigation -->
+    <header class="bg-slate-900/70 backdrop-blur-md sticky top-0 z-50 shadow-lg">
+        <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <h1 class="text-2xl font-extrabold text-white">
+                            <span class="text-orange-500">Vidi</span>Smart
+                        </h1>
+                    </div>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="/" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-orange-400 border border-orange-500/30 bg-orange-500/10">Home</a>
+                        <a href="smartstack.html" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-300">SmartStack</a>
+                        <a href="vidismart.masterlist.html" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-300">Tech Guide (400+)</a>
+                        <a href="#ai-tech" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-300">AI & Tech</a>
+                        <a href="#vidismart-core" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-300">VidiSmart</a>
+                        <a href="#media-video" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-300">Media</a>
+                        <a href="#platforms" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-300">Platforms</a>
+                        <a href="#candid" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-300">Candid</a>
+                        <a href="#finance" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-300">Finance</a>
+                        <a href="#tools" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-300">Tools</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <!-- Quick Access Bar -->
+        <section class="bg-slate-800/50 border-b border-white/5">
+            <div class="container mx-auto px-4 py-3">
+                <div class="flex flex-wrap justify-center gap-3 text-sm">
+                    <a href="/" class="px-4 py-2 bg-orange-500/20 text-orange-400 rounded-full hover:bg-orange-500/30 transition flex items-center gap-2">
+                        <span>🏠</span> 2026 Home
+                    </a>
+                    <a href="smartstack.html" class="px-4 py-2 bg-blue-500/20 text-blue-400 rounded-full hover:bg-blue-500/30 transition flex items-center gap-2">
+                        <span>🚀</span> SmartStack Planner
+                    </a>
+                    <a href="vidismart.masterlist.html" class="px-4 py-2 bg-green-500/20 text-green-400 rounded-full hover:bg-green-500/30 transition flex items-center gap-2">
+                        <span>📚</span> Tech Guide (400+)
+                    </a>
+                    <a href="OmniSearch-1.html" class="px-4 py-2 bg-purple-500/20 text-purple-400 rounded-full hover:bg-purple-500/30 transition flex items-center gap-2">
+                        <span>🔍</span> OmniSearch
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Hero Section -->
+        <section id="hero" class="py-12 sm:py-16">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <h1 class="text-4xl sm:text-5xl font-extrabold text-white tracking-tight">
+                    VidiSmart Hub
+                </h1>
+                <p class="mt-4 max-w-2xl mx-auto text-lg text-gray-400 font-normal">
+                    Your central navigation for all VidiSmart content, tools, and community.
+                </p>
+                <div class="mt-6 max-w-md mx-auto">
+                    <input type="text" id="searchInput" class="search-input" placeholder="Ai Smart Search, What is your intent?" onkeyup="filterFiles()">
+                </div>
+                <div class="mt-4 flex justify-center gap-4 text-sm">
+                    <span class="badge badge-live">LIVE = In public_html</span>
+                    <span class="badge badge-dev">DEV = Root only</span>
+                    <span class="badge badge-new">NEW = Recent updates</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- AI & Tech Content -->
+        <section id="ai-tech" class="py-10 section-bg-light">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="category-banner">
+                    <img src="assets/thumbs/ai-tech.png" alt="AI & Tech">
+                    <span class="category-icon">🤖</span>
+                </div>
+                <div class="category-header">
+                    <h2 class="text-2xl font-extrabold text-white">AI & Tech Content</h2>
+                    <p class="text-gray-400 text-sm font-normal">AI tools, tech stacks, and industry analysis</p>
+                </div>
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4" data-category="ai-tech">
+                    <a href="Ai Team Project Collab.html" class="file-link">
+                        <span class="filename">AI Team Project Collab</span>
+                        <span class="badge badge-live ml-2">LIVE</span>
+                    </a>
+                    <a href="Ai.Experts_Deploying_RAG_&_VRAG.html" class="file-link">
+                        <span class="filename">AI Experts: RAG & VRAG</span>
+                        <span class="badge badge-live ml-2">LIVE</span>
+                    </a>
+                    <a href="Ai.Leaders2026.html" class="file-link">
+                        <span class="filename">AI Leaders 2026</span>
+                        <span class="badge badge-dev ml-2">DEV</span>
+                    </a>
+                    <a href="Ai_SmartStack_1.0.html" class="file-link">
+                        <span class="filename">AI SmartStack 1.0</span>
+                        <span class="badge badge-live ml-2">LIVE</span>
+                    </a>
+                    <a href="OmniSearch-1.html" class="file-link">
+                        <span class="filename">OmniSearch</span>
+                        <span class="badge badge-live ml-2">LIVE</span>
+                    </a>
+                    <a href="smartgen.html" class="file-link">
+                        <span class="filename">SmartGen</span>
+                        <span class="badge badge-live ml-2">LIVE</span>
+                    </a>
+                    <a href="smartstack.2026.html" class="file-link">
+                        <span class="filename">SmartStack 2026</span>
+                        <span class="badge badge-dev ml-2">DEV</span>
+                    </a>
+                    <a href="techstack1.html" class="file-link">
+                        <span class="filename">TechStack 1</span>
+                        <span class="badge badge-live ml-2">LIVE</span>
+                    </a>
+                    <a href="xai.html" class="file-link">
+                        <span class="filename">xAI</span>
+                        <span class="badge badge-live ml-2">LIVE</span>
+                    </a>
+                    <a href="top100.genAi.html" class="file-link">
+                        <span class="filename">Top 100 GenAI</span>
+                        <span class="badge badge-dev ml-2">DEV</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- VidiSmart Core -->
+        <section id="vidismart-core" class="py-10">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="category-banner">
+                    <img src="assets/thumbs/vidismart-core.jpg" alt="VidiSmart Core">
+                    <span class="category-icon">🎯</span>
+                </div>
+                <div class="category-header">
+                    <h2 class="text-2xl font-extrabold text-white">VidiSmart Core</h2>
+                    <p class="text-gray-400 text-sm font-normal">Main VidiSmart channel content and guides</p>
+                </div>
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4" data-category="vidismart-core">
+                    <a href="vidismart-2.html" class="file-link">
+                        <span class="filename">VidiSmart Interactive Guide</span>
+                        <span class="badge badge-live ml-2">LIVE</span>
+                        <span class="badge badge-new ml-2">FEATURED</span>
+                    </a>
+                    <a href="VidiSmart-1.html" class="file-link">
+                        <span class="filename">VidiSmart v1</span>
+                        <span class="badge badge-live ml-2">LIVE</span>
+                    </a>
+                    <a href="VidiSmart.VisualVectorKnowledgeGraph.html" class="file-link">
+                        <span class="filename">Visual Vector Knowledge Graph</span>
+                        <span class="badge badge-live ml-2">LIVE</span>
+                    </a>
+                    <a href="vidismart-visual-vector-knowledge-graph.html" class="file-link">
+                        <span class="filename">VVKG (Alt Version)</span>
+                        <span class="badge badge-live ml-2">LIVE</span>
+                    </a>
+                    <a href="vidismart.masterlist.html" class="file-link">
+                        <span class="filename">VidiSmart Master List</span>
+                        <span class="badge badge-live ml-2">LIVE</span>
+                        <span class="badge badge-new ml-2">NEW</span>
+                    </a>
+                    <a href="vidismart.master2.html" class="file-link">
+                        <span class="filename">VidiSmart Master 2</span>
+                        <span class="badge badge-dev ml-2">DEV</span>
+                        <span class="badge badge-new ml-2">NEW</span>
+                    </a>
+                    <a href="vidismartgen.html" class="file-link">
+                        <span class="filename">VidiSmart Gen</span>
+                        <span class="badge badge-live ml-2">LIVE</span>
+                    </a>
+                    <a href="vidismart.siliconarena.html" class="file-link">
+                        <span class="filename">Silicon Arena</span>
+                        <span class="badge badge-dev ml-2">DEV</span>
+                    </a>
+                    <a href="vidismart.demis.html" class="file-link">
+                        <span class="filename">Demis Hassabis</span>
+                        <span class="badge badge-dev ml-2">DEV</span>
+                    </a>
+                    <a href="vidismart.jensen.html" class="file-link">
+                        <span class="filename">Jensen Huang</span>
+                        <span class="badge badge-dev ml-2">DEV</span>
+                    </a>
+                    <a href="vidismart.lisasu.html" class="file-link">
+                        <span class="filename">Lisa Su</span>
+                        <span class="badge badge-dev ml-2">DEV</span>
+                    </a>
+                    <a href="vidismart.samaltman.html" class="file-link">
+                        <span class="filename">Sam Altman</span>
+                        <span class="badge badge-dev ml-2">DEV</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Media & Video -->
+        <section id="media-video" class="py-10 section-bg-light">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="category-banner">
+                    <img src="assets/thumbs/media-video.png" alt="Media & Video">
+                    <span class="category-icon">🎬</span>
+                </div>
+                <div class="category-header">
+                    <h2 class="text-2xl font-extrabold text-white">Media & Video</h2>
+                    <p class="text-gray-400 text-sm font-normal">Video platforms, media tools, and news</p>
+                </div>
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4" data-category="media-video">
+                    <a href="video-platforms.html" class="file-link">
+                        <span class="filename">Video Platforms Guide</span>
+                        <span class="badge badge-live ml-2">LIVE</span>
+                    </a>
+                    <a href="smartmedia.visualai.html" class="file-link">
+                        <span class="filename">SmartMedia Visual AI</span>
+                        <span class="badge badge-live ml-2">LIVE</span>
+                    </a>
+                    <a href="vectorveo.html" class="file-link">
+                        <span class="filename">VectorVeo</span>
+                        <span class="badge badge-live ml-2">LIVE</span>
+                    </a>
+                    <a href="public_html/vidi.news.platform.html" class="file-link">
+                        <span class="filename">Vidi.News Platform</span>
+                        <span class="badge badge-live ml-2">LIVE</span>
+                        <span class="badge badge-new ml-2">NEW</span>
+                    </a>
+                    <a href="vidishop_demo.html" class="file-link">
+                        <span class="filename">VidiShop Demo</span>
+                        <span class="badge badge-dev ml-2">DEV</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Platforms & Directories -->
+        <section id="platforms" class="py-10">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="category-banner">
+                    <img src="assets/thumbs/platforms.webp" alt="Platforms">
+                    <span class="category-icon">🔗</span>
+                </div>
+                <div class="category-header">
+                    <h2 class="text-2xl font-extrabold text-white">Platforms & Directories</h2>
+                    <p class="text-gray-400 text-sm font-normal">Business directories and collaboration tools</p>
+                </div>
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4" data-category="platforms">
+                    <a href="broker.html" class="file-link">
+                        <span class="filename">Broker</span>
+                        <span class="badge badge-live ml-2">LIVE</span>
+                    </a>
+                    <a href="brokerdirectory.html" class="file-link">
+                        <span class="filename">Broker Directory</span>
+                        <span class="badge badge-live ml-2">LIVE</span>
+                    </a>
+                    <a href="collaboration-platforms.html" class="file-link">
+                        <span class="filename">Collaboration Platforms</span>
+                        <span class="badge badge-live ml-2">LIVE</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Candid Studio -->
+        <section id="candid" class="py-10 section-bg-light">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="category-banner">
+                    <img src="assets/thumbs/candid.png" alt="Candid Studio">
+                    <span class="category-icon">📸</span>
+                </div>
+                <div class="category-header">
+                    <h2 class="text-2xl font-extrabold text-white">Candid Studio</h2>
+                    <p class="text-gray-400 text-sm font-normal">Photography studio content and planning</p>
+                </div>
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4" data-category="candid">
+                    <a href="candid.site.frontpage.WP.html" class="file-link">
+                        <span class="filename">Candid Frontpage (WP)</span>
+                        <span class="badge badge-live ml-2">LIVE</span>
+                    </a>
+                    <a href="candid-techglow-complete.html" class="file-link">
+                        <span class="filename">Candid TechGlow</span>
+                        <span class="badge badge-live ml-2">LIVE</span>
+                    </a>
+                    <a href="candid_techglow_slides.html" class="file-link">
+                        <span class="filename">TechGlow Slides</span>
+                        <span class="badge badge-live ml-2">LIVE</span>
+                    </a>
+                    <a href="candidplan.html" class="file-link">
+                        <span class="filename">Candid Plan</span>
+                        <span class="badge badge-live ml-2">LIVE</span>
+                    </a>
+                    <a href="candidsite.html" class="file-link">
+                        <span class="filename">Candid Site</span>
+                        <span class="badge badge-live ml-2">LIVE</span>
+                    </a>
+                    <a href="photo101.html" class="file-link">
+                        <span class="filename">Photo 101</span>
+                        <span class="badge badge-live ml-2">LIVE</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Finance -->
+        <section id="finance" class="py-10">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="category-banner">
+                    <img src="assets/thumbs/finance.jpg" alt="Finance">
+                    <span class="category-icon">💰</span>
+                </div>
+                <div class="category-header">
+                    <h2 class="text-2xl font-extrabold text-white">Finance & Health</h2>
+                    <p class="text-gray-400 text-sm font-normal">Financial tools and health content</p>
+                </div>
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4" data-category="finance">
+                    <a href="truefi.html" class="file-link">
+                        <span class="filename">TrueFi</span>
+                        <span class="badge badge-live ml-2">LIVE</span>
+                    </a>
+                    <a href="truefi.index.html" class="file-link">
+                        <span class="filename">TrueFi Index</span>
+                        <span class="badge badge-live ml-2">LIVE</span>
+                    </a>
+                    <a href="truefi2.html" class="file-link">
+                        <span class="filename">TrueFi 2</span>
+                        <span class="badge badge-live ml-2">LIVE</span>
+                    </a>
+                    <a href="keto.html" class="file-link">
+                        <span class="filename">Keto</span>
+                        <span class="badge badge-live ml-2">LIVE</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tools & Utilities -->
+        <section id="tools" class="py-10 section-bg-light">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="category-banner">
+                    <img src="assets/thumbs/tools.jpg" alt="Tools">
+                    <span class="category-icon">🛠️</span>
+                </div>
+                <div class="category-header">
+                    <h2 class="text-2xl font-extrabold text-white">Tools & Documentation</h2>
+                    <p class="text-gray-400 text-sm font-normal">Utilities, SEO tools, and documentation</p>
+                </div>
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4" data-category="tools">
+                    <a href="imagesmash.html" class="file-link">
+                        <span class="filename">ImageSmash</span>
+                        <span class="badge badge-live ml-2">LIVE</span>
+                    </a>
+                    <a href="imagesmash-simple.html" class="file-link">
+                        <span class="filename">ImageSmash Simple</span>
+                        <span class="badge badge-live ml-2">LIVE</span>
+                    </a>
+                    <a href="kc.html" class="file-link">
+                        <span class="filename">KC Tool</span>
+                        <span class="badge badge-live ml-2">LIVE</span>
+                    </a>
+                    <a href="PMax.Google.Vidi.SmartChannel1.html" class="file-link">
+                        <span class="filename">PMax Google Channel</span>
+                        <span class="badge badge-live ml-2">LIVE</span>
+                    </a>
+                    <a href="seoschemadata.html" class="file-link">
+                        <span class="filename">SEO Schema Data</span>
+                        <span class="badge badge-live ml-2">LIVE</span>
+                    </a>
+                    <a href="moderntechguidelines.html" class="file-link">
+                        <span class="filename">Modern Tech Guidelines</span>
+                        <span class="badge badge-live ml-2">LIVE</span>
+                    </a>
+                    <a href="index.html" class="file-link">
+                        <span class="filename">Current Index</span>
+                        <span class="badge badge-live ml-2">LIVE</span>
+                    </a>
+                    <a href="indexall.html" class="file-link">
+                        <span class="filename">Index All</span>
+                        <span class="badge badge-live ml-2">LIVE</span>
+                    </a>
+                    <a href="readme.html" class="file-link">
+                        <span class="filename">Readme</span>
+                        <span class="badge badge-live ml-2">LIVE</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Quick Stats -->
+        <section class="py-10">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="card p-8">
+                    <h3 class="text-xl font-bold text-white mb-4">Content Summary</h3>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+                        <div>
+                            <div class="text-3xl font-extrabold text-orange-500">43</div>
+                            <div class="text-gray-400 font-normal">Total Files</div>
+                        </div>
+                        <div>
+                            <div class="text-3xl font-extrabold text-green-500">35</div>
+                            <div class="text-gray-400 font-normal">Live on Site</div>
+                        </div>
+                        <div>
+                            <div class="text-3xl font-extrabold text-blue-500">8</div>
+                            <div class="text-gray-400 font-normal">Dev Only</div>
+                        </div>
+                        <div>
+                            <div class="text-3xl font-extrabold text-purple-500">7</div>
+                            <div class="text-gray-400 font-normal">Categories</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Deployment Notes -->
+        <section class="py-10 section-bg-light">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="card p-8">
+                    <h3 class="text-xl font-bold text-white mb-4">Next Steps: Directus + Railway</h3>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <h4 class="font-bold text-orange-400 mb-2">Content to Review</h4>
+                            <ul class="space-y-2 text-gray-300 font-normal">
+                                <li>- AI Leaders profiles (Demis, Jensen, Lisa, Sam)</li>
+                                <li>- SmartStack 2026 planning</li>
+                                <li>- Top 100 GenAI list</li>
+                                <li>- VidiShop demo for commerce</li>
+                                <li>- Silicon Arena content</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-orange-400 mb-2">Community Launch Plan</h4>
+                            <ul class="space-y-2 text-gray-300 font-normal">
+                                <li>- Set up Directus CMS on Railway</li>
+                                <li>- Configure video content collections</li>
+                                <li>- Migrate static HTML to dynamic</li>
+                                <li>- Enable community features</li>
+                                <li>- Launch with video-first approach</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-slate-900 mt-10">
+        <div class="container mx-auto py-8 px-4 sm:px-6 lg:px-8 text-center text-gray-400">
+            <p class="font-normal">&copy; 2025 VidiSmart. AI-Powered Smart Channel Platform</p>
+            <div class="flex justify-center gap-6 mt-4 text-sm">
+                <a href="index.html" class="hover:text-orange-400 transition">Site Planner</a>
+                <a href="OmniSearch-1.html" class="hover:text-orange-400 transition">Ai Search</a>
+                <a href="vidismart-2.html" class="hover:text-orange-400 transition">Guide</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        function filterFiles() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const links = document.querySelectorAll('.file-link');
+
+            links.forEach(link => {
+                const text = link.textContent.toLowerCase();
+                if (text.includes(searchTerm)) {
+                    link.classList.remove('hidden');
+                } else {
+                    link.classList.add('hidden');
+                }
+            });
+        }
+
+        // Smooth scroll for nav links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Active nav highlighting
+        const navLinks = document.querySelectorAll('.nav-link');
+        const sections = document.querySelectorAll('main section[id]');
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    navLinks.forEach(link => {
+                        link.classList.remove('active');
+                        if (link.getAttribute('href').substring(1) === entry.target.id) {
+                            link.classList.add('active');
+                        }
+                    });
+                }
+            });
+        }, { threshold: 0.3 });
+
+        sections.forEach(section => observer.observe(section));
+    </script>
+</body>
+</html>

@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VLM Arena: 96GB Optimized Models</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #f8fafc;
+            --accent-indigo: #4f46e5;
+            --accent-emerald: #10b981;
+            --accent-rose: #f43f5e;
+        }
+        body { font-family: 'Space Grotesk', sans-serif; background-color: var(--bg-primary); color: #0f172a; }
+        code { font-family: 'JetBrains Mono', monospace; }
+        
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 400px;
+            max-height: 500px;
+        }
+
+        .model-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid #e2e8f0;
+        }
+        .model-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            border-color: var(--accent-indigo);
+        }
+
+        .custom-scroll::-webkit-scrollbar { width: 4px; }
+        .custom-scroll::-webkit-scrollbar-track { background: #f1f5f9; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+    </style>
+    <!-- Chosen Palette: Slate & Professional Brights (Indigo/Emerald/Rose) -->
+    <!-- Application Structure Plan:
+         1. Vision Intelligence Header: Identifying the 96GB VRAM advantage for high-dimension inputs.
+         2. VRAM Allocation Simulator: A dynamic comparison of how different VLM sizes (8B to 72B+) occupy the 96GB window at varying quantization levels (FP16, 8-bit, 4-bit).
+         3. Model Showcase: Interactive detail cards for NVIDIA NVLM, GLM-4.6V, Qwen2.5-VL, and Llama 3.2 Vision.
+         4. Reasoning vs. Efficiency Matrix: A scatter plot visualizing the trade-off between model power and inference speed on a Pro 6000 card.
+    -->
+    <!-- Visualization & Content Choices:
+         1. Memory Occupancy -> Goal: Compare -> Viz: Grouped Bar Chart (Chart.js) -> Interaction: Hover for exact GB requirements -> Justification: Shows that 96GB allows FP16 for mid-size and 8-bit for large models.
+         2. Model Specs -> Goal: Inform -> Viz: Interactive Detail Panel -> Interaction: Click model name to update metrics -> Justification: Centralizes the technical specs for Nemotron, GLM, etc.
+         3. Intelligence Matrix -> Goal: Relationships -> Viz: Bubble/Scatter Chart (Chart.js) -> Justification: Maps parameters vs visual reasoning scores.
+         CONFIRMATION: NO SVG used. NO Mermaid JS used.
+    -->
+</head>
+<body class="antialiased">
+
+    <!-- Header -->
+    <header class="bg-white border-b border-slate-200 py-12 px-6">
+        <div class="max-w-7xl mx-auto">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                <div class="space-y-2">
+                    <span class="inline-block px-3 py-1 bg-indigo-100 text-indigo-700 text-xs font-bold rounded-full uppercase tracking-widest">Hardware Target: RTX 6000 Pro 96GB</span>
+                    <h1 class="text-4xl md:text-6xl font-bold tracking-tight text-slate-900">Vision-Language <span class="text-indigo-600">Arena</span></h1>
+                    <p class="text-slate-500 max-w-2xl text-lg">Detailed analysis of NVLM, GLM-4, and next-gen VLMs for high-dimensional SmartGen workflows.</p>
+                </div>
+                <div class="flex items-center space-x-4 bg-slate-50 p-4 rounded-2xl border border-slate-200">
+                    <div class="text-right">
+                        <p class="text-xs font-bold text-slate-400 uppercase">Available VRAM</p>
+                        <p class="text-2xl font-bold text-slate-900">96.0 <span class="text-sm font-normal text-slate-500">GB</span></p>
+                    </div>
+                    <div class="h-10 w-px bg-slate-200"></div>
+                    <div class="text-right">
+                        <p class="text-xs font-bold text-slate-400 uppercase">Bus Width</p>
+                        <p class="text-2xl font-bold text-slate-900">384 <span class="text-sm font-normal text-slate-500">bit</span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-6 py-16 space-y-24">
+
+        <!-- Section 1: Memory Occupancy Analysis -->
+        <section id="memory" class="space-y-8">
+            <div class="max-w-3xl border-l-4 border-indigo-500 pl-6">
+                <h2 class="text-3xl font-bold">VRAM Occupancy Per Quantization</h2>
+                <p class="text-slate-600 mt-2">
+                    Unlike 24GB cards that force 4-bit "extreme" quantization for 70B models, your 96GB window allows for **8-bit or FP16 (16-bit)** deployments. This preserves the subtle visual nuances required for video temporal analysis in VidiSmart.
+                </p>
+            </div>
+
+            <div class="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm">
+                <div class="chart-container">
+                    <canvas id="memoryChart"></canvas>
+                </div>
+                <div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+                    <div class="p-4 bg-slate-50 rounded-xl">
+                        <p class="text-xs font-bold text-slate-400 uppercase mb-1">4-Bit (Extreme)</p>
+                        <p class="text-sm font-medium text-slate-700">Highest TPS, Highest Loss</p>
+                    </div>
+                    <div class="p-4 bg-indigo-50 rounded-xl border border-indigo-100">
+                        <p class="text-xs font-bold text-indigo-400 uppercase mb-1">8-Bit (Optimal)</p>
+                        <p class="text-sm font-medium text-indigo-700">99% Accuracy, High Speed</p>
+                    </div>
+                    <div class="p-4 bg-emerald-50 rounded-xl border border-emerald-100">
+                        <p class="text-xs font-bold text-emerald-400 uppercase mb-1">FP16 (Master)</p>
+                        <p class="text-sm font-medium text-emerald-700">No Loss, Heavy VRAM Use</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2: Interactive Model Grid -->
+        <section id="models" class="space-y-12">
+            <div class="text-center">
+                <h2 class="text-4xl font-bold text-slate-900">Top-Tier VLM Candidates</h2>
+                <p class="text-slate-500 mt-4">Selected models that excel in OCR, Video Reasoning, and Visual Grounding.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- NVIDIA NVLM-D-72B -->
+                <div class="model-card bg-white p-6 rounded-3xl space-y-4" onclick="selectModel('nvlm')">
+                    <div class="flex justify-between items-start">
+                        <div class="w-12 h-12 bg-indigo-600 rounded-xl flex items-center justify-center text-white font-bold">NV</div>
+                        <span class="px-2 py-1 bg-slate-100 text-slate-500 text-[10px] font-bold rounded uppercase">72.1 B</span>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold">NVLM-D-72B</h3>
+                        <p class="text-xs text-slate-400 font-mono">NVIDIA Open Release</p>
+                    </div>
+                    <p class="text-sm text-slate-600 leading-relaxed">
+                        NVIDIA's flagship open-source VLM. Optimized for cross-modal reasoning. Rivaling GPT-4V performance across most visual benchmarks.
+                    </p>
+                    <div class="pt-4 border-t border-slate-100 grid grid-cols-2 gap-2 text-[11px] font-bold uppercase tracking-tighter">
+                        <div class="text-slate-400">96GB Status: <span class="text-emerald-500">Perfect (8-bit)</span></div>
+                        <div class="text-slate-400">OCR: <span class="text-indigo-600">S-Tier</span></div>
+                    </div>
+                </div>
+
+                <!-- GLM-4.6V Flash (Updated from GLM-4v) -->
+                <div class="model-card bg-white p-6 rounded-3xl space-y-4" onclick="selectModel('glm')">
+                    <div class="flex justify-between items-start">
+                        <div class="w-12 h-12 bg-emerald-600 rounded-xl flex items-center justify-center text-white font-bold">GL</div>
+                        <span class="px-2 py-1 bg-emerald-100 text-emerald-600 text-[10px] font-bold rounded uppercase">NEW v4.6</span>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold">GLM-4.6V Flash</h3>
+                        <p class="text-xs text-slate-400 font-mono">Zhipu AI (Dec 2024)</p>
+                    </div>
+                    <p class="text-sm text-slate-600 leading-relaxed">
+                        Major upgrade from GLM-4v. Native video understanding up to 1 hour, 4K image input, and free API tier. Flash variant optimized for speed.
+                    </p>
+                    <div class="pt-4 border-t border-slate-100 grid grid-cols-2 gap-2 text-[11px] font-bold uppercase tracking-tighter">
+                        <div class="text-slate-400">96GB Status: <span class="text-emerald-500">FP16 Capable</span></div>
+                        <div class="text-slate-400">Speed: <span class="text-indigo-600">Extreme</span></div>
+                    </div>
+                </div>
+
+                <!-- Qwen2.5-VL-72B -->
+                <div class="model-card bg-white p-6 rounded-3xl space-y-4" onclick="selectModel('qwen')">
+                    <div class="flex justify-between items-start">
+                        <div class="w-12 h-12 bg-rose-600 rounded-xl flex items-center justify-center text-white font-bold">QW</div>
+                        <span class="px-2 py-1 bg-rose-100 text-rose-600 text-[10px] font-bold rounded uppercase">NEW v2.5</span>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold">Qwen2.5-VL-72B</h3>
+                        <p class="text-xs text-slate-400 font-mono">Alibaba Cloud (Jan 2025)</p>
+                    </div>
+                    <p class="text-sm text-slate-600 leading-relaxed">
+                        Latest flagship VLM. Enhanced video understanding (1hr+), improved GUI agent capabilities, and structured output for automation workflows.
+                    </p>
+                    <div class="pt-4 border-t border-slate-100 grid grid-cols-2 gap-2 text-[11px] font-bold uppercase tracking-tighter">
+                        <div class="text-slate-400">96GB Status: <span class="text-emerald-500">8-bit Safe</span></div>
+                        <div class="text-slate-400">Video: <span class="text-indigo-600">Unmatched</span></div>
+                    </div>
+                </div>
+
+                <!-- Llama 3.2-Vision -->
+                <div class="model-card bg-white p-6 rounded-3xl space-y-4" onclick="selectModel('llama')">
+                    <div class="flex justify-between items-start">
+                        <div class="w-12 h-12 bg-slate-800 rounded-xl flex items-center justify-center text-white font-bold">LL</div>
+                        <span class="px-2 py-1 bg-slate-100 text-slate-500 text-[10px] font-bold rounded uppercase">11 B / 90 B</span>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold">Llama 3.2 Vision</h3>
+                        <p class="text-xs text-slate-400 font-mono">Meta AI</p>
+                    </div>
+                    <p class="text-sm text-slate-600 leading-relaxed">
+                        Uses an adapter-based architecture. The 90B version fits on your 96GB card at 4-bit, while the 11B version is highly efficient for general tasks.
+                    </p>
+                    <div class="pt-4 border-t border-slate-100 grid grid-cols-2 gap-2 text-[11px] font-bold uppercase tracking-tighter">
+                        <div class="text-slate-400">96GB Status: <span class="text-amber-500">Tight (90B 4bit)</span></div>
+                        <div class="text-slate-400">General: <span class="text-indigo-600">Stable</span></div>
+                    </div>
+                </div>
+
+                <!-- InternVL2-Llama3-76B -->
+                <div class="model-card bg-white p-6 rounded-3xl space-y-4" onclick="selectModel('intern')">
+                    <div class="flex justify-between items-start">
+                        <div class="w-12 h-12 bg-amber-500 rounded-xl flex items-center justify-center text-white font-bold">IN</div>
+                        <span class="px-2 py-1 bg-slate-100 text-slate-500 text-[10px] font-bold rounded uppercase">76 B</span>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold">InternVL2-76B</h3>
+                        <p class="text-xs text-slate-400 font-mono">OpenGVLab</p>
+                    </div>
+                    <p class="text-sm text-slate-600 leading-relaxed">
+                        A massive "Interleaved" Vision-Language model. High marks for visual document parsing and complex UI understanding.
+                    </p>
+                    <div class="pt-4 border-t border-slate-100 grid grid-cols-2 gap-2 text-[11px] font-bold uppercase tracking-tighter">
+                        <div class="text-slate-400">96GB Status: <span class="text-emerald-500">8-bit Optimal</span></div>
+                        <div class="text-slate-400">UI/Doc: <span class="text-indigo-600">Expert</span></div>
+                    </div>
+                </div>
+
+                <!-- Molmo-72B-D -->
+                <div class="model-card bg-white p-6 rounded-3xl space-y-4" onclick="selectModel('molmo')">
+                    <div class="flex justify-between items-start">
+                        <div class="w-12 h-12 bg-cyan-500 rounded-xl flex items-center justify-center text-white font-bold">MO</div>
+                        <span class="px-2 py-1 bg-slate-100 text-slate-500 text-[10px] font-bold rounded uppercase">72 B</span>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold">Molmo-72B-D</h3>
+                        <p class="text-xs text-slate-400 font-mono">Ai2 (Allen Institute)</p>
+                    </div>
+                    <p class="text-sm text-slate-600 leading-relaxed">
+                        New contender. Uses a pure Vision-Transformer approach with fewer tokens for higher accuracy. Optimized for point-and-describe tasks.
+                    </p>
+                    <div class="pt-4 border-t border-slate-100 grid grid-cols-2 gap-2 text-[11px] font-bold uppercase tracking-tighter">
+                        <div class="text-slate-400">96GB Status: <span class="text-emerald-500">8-bit Clean</span></div>
+                        <div class="text-slate-400">Precision: <span class="text-indigo-600">High</span></div>
+                    </div>
+                </div>
+
+                <!-- Qwen3-VL (NEW Flagship) -->
+                <div class="model-card bg-white p-6 rounded-3xl space-y-4" onclick="selectModel('qwen3')">
+                    <div class="flex justify-between items-start">
+                        <div class="w-12 h-12 bg-gradient-to-br from-rose-600 to-orange-500 rounded-xl flex items-center justify-center text-white font-bold">Q3</div>
+                        <span class="px-2 py-1 bg-gradient-to-r from-rose-100 to-orange-100 text-rose-600 text-[10px] font-bold rounded uppercase">NEW 2025</span>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold">Qwen3-VL</h3>
+                        <p class="text-xs text-slate-400 font-mono">Alibaba Cloud (Nov 2025)</p>
+                    </div>
+                    <p class="text-sm text-slate-600 leading-relaxed">
+                        State-of-the-art flagship. 235B parameters with Apache 2.0 license. Surpasses GPT-4o on visual reasoning benchmarks. Native 8K image and 2hr+ video understanding.
+                    </p>
+                    <div class="pt-4 border-t border-slate-100 grid grid-cols-2 gap-2 text-[11px] font-bold uppercase tracking-tighter">
+                        <div class="text-slate-400">96GB Status: <span class="text-amber-500">4-bit Required</span></div>
+                        <div class="text-slate-400">Benchmark: <span class="text-indigo-600">SOTA</span></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: Intelligence Matrix -->
+        <section id="matrix" class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div class="space-y-6">
+                <h2 class="text-4xl font-bold text-slate-900">The Intelligence Matrix</h2>
+                <p class="text-slate-600 leading-relaxed">
+                    This visualization maps model "Visual Reasoning Scores" (based on MMMU/VQA benchmarks) against "Inference Efficiency" on a single RTX 6000 Pro. 
+                    <br><br>
+                    <strong>Qwen2.5-VL</strong> and <strong>NVLM</strong> occupy the "S-Tier" zone, where high-dimensional embedding inputs from your SmartGen process meet top-tier logic.
+                </p>
+                <div id="active-model-info" class="p-6 bg-white border border-slate-200 rounded-3xl shadow-sm">
+                    <h4 class="text-sm font-black text-indigo-600 uppercase mb-2">Detailed Selection</h4>
+                    <p id="model-detail-text" class="text-slate-700 text-sm">Select a model card above to view the deep-dive metrics and local performance projections.</p>
+                </div>
+            </div>
+            <div class="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm">
+                <div class="chart-container">
+                    <canvas id="matrixChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 4: SmartChannel CX - Image & Video Generation VLMs -->
+        <section id="smartchannel" class="space-y-12">
+            <div class="text-center">
+                <span class="inline-block px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs font-bold rounded-full uppercase tracking-widest mb-4">SmartChannel CX</span>
+                <h2 class="text-4xl font-bold text-slate-900">Image & Video Generation VLMs</h2>
+                <p class="text-slate-500 mt-4 max-w-2xl mx-auto">Newcomers optimized for automated content creation workflows. These models generate, not just understand.</p>
+                <div class="mt-6 p-6 bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl border border-purple-100 max-w-3xl mx-auto">
+                    <p class="text-slate-700 text-sm leading-relaxed">
+                        <strong class="text-purple-700">True Multimodal Generation</strong> — These models don't just analyze images and video; they create them from text, images, or other videos as input. This bidirectional capability is what makes them "fully multimodal"—they understand visual context AND produce visual output. For SmartChannel CX workflows, this means a single pipeline can analyze source content, generate derivative assets (thumbnails, clips, variations), and output platform-optimized media without switching between specialized tools.
+                    </p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- CogVideoX-5B -->
+                <div class="model-card bg-gradient-to-br from-purple-50 to-white p-6 rounded-3xl space-y-4 border-purple-200">
+                    <div class="flex justify-between items-start">
+                        <div class="w-12 h-12 bg-purple-600 rounded-xl flex items-center justify-center text-white font-bold">CV</div>
+                        <span class="px-2 py-1 bg-purple-100 text-purple-600 text-[10px] font-bold rounded uppercase">Video Gen</span>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold">CogVideoX-5B</h3>
+                        <p class="text-xs text-slate-400 font-mono">Tsinghua / Zhipu AI</p>
+                    </div>
+                    <p class="text-sm text-slate-600 leading-relaxed">
+                        Open-source text-to-video. 6-second clips at 720p. 3D VAE architecture with expert transformer blocks. Ideal for short-form content automation.
+                    </p>
+                    <div class="pt-4 border-t border-purple-100 grid grid-cols-2 gap-2 text-[11px] font-bold uppercase tracking-tighter">
+                        <div class="text-slate-400">VRAM: <span class="text-purple-600">~18GB FP16</span></div>
+                        <div class="text-slate-400">Output: <span class="text-purple-600">6s @ 720p</span></div>
+                    </div>
+                </div>
+
+                <!-- Kling 1.6 -->
+                <div class="model-card bg-gradient-to-br from-pink-50 to-white p-6 rounded-3xl space-y-4 border-pink-200">
+                    <div class="flex justify-between items-start">
+                        <div class="w-12 h-12 bg-pink-600 rounded-xl flex items-center justify-center text-white font-bold">KL</div>
+                        <span class="px-2 py-1 bg-pink-100 text-pink-600 text-[10px] font-bold rounded uppercase">Video Gen</span>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold">Kling 1.6</h3>
+                        <p class="text-xs text-slate-400 font-mono">Kuaishou (Dec 2024)</p>
+                    </div>
+                    <p class="text-sm text-slate-600 leading-relaxed">
+                        Generates 1080p videos up to 3 minutes. Motion brush controls and camera movement presets. Leading Chinese video gen model.
+                    </p>
+                    <div class="pt-4 border-t border-pink-100 grid grid-cols-2 gap-2 text-[11px] font-bold uppercase tracking-tighter">
+                        <div class="text-slate-400">Quality: <span class="text-pink-600">1080p/3min</span></div>
+                        <div class="text-slate-400">API: <span class="text-pink-600">Available</span></div>
+                    </div>
+                </div>
+
+                <!-- MiniMax Hailuo -->
+                <div class="model-card bg-gradient-to-br from-cyan-50 to-white p-6 rounded-3xl space-y-4 border-cyan-200">
+                    <div class="flex justify-between items-start">
+                        <div class="w-12 h-12 bg-cyan-600 rounded-xl flex items-center justify-center text-white font-bold">HL</div>
+                        <span class="px-2 py-1 bg-cyan-100 text-cyan-600 text-[10px] font-bold rounded uppercase">Video Gen</span>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold">Hailuo AI (MiniMax)</h3>
+                        <p class="text-xs text-slate-400 font-mono">MiniMax (2024)</p>
+                    </div>
+                    <p class="text-sm text-slate-600 leading-relaxed">
+                        Free tier available. Natural motion and realistic physics. Subject reference feature for consistent characters across clips.
+                    </p>
+                    <div class="pt-4 border-t border-cyan-100 grid grid-cols-2 gap-2 text-[11px] font-bold uppercase tracking-tighter">
+                        <div class="text-slate-400">Price: <span class="text-cyan-600">Free Tier</span></div>
+                        <div class="text-slate-400">Physics: <span class="text-cyan-600">Excellent</span></div>
+                    </div>
+                </div>
+
+                <!-- Veo 2 -->
+                <div class="model-card bg-gradient-to-br from-blue-50 to-white p-6 rounded-3xl space-y-4 border-blue-200">
+                    <div class="flex justify-between items-start">
+                        <div class="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center text-white font-bold">V2</div>
+                        <span class="px-2 py-1 bg-blue-100 text-blue-600 text-[10px] font-bold rounded uppercase">Video Gen</span>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold">Veo 2</h3>
+                        <p class="text-xs text-slate-400 font-mono">Google DeepMind (Dec 2024)</p>
+                    </div>
+                    <p class="text-sm text-slate-600 leading-relaxed">
+                        4K output, 2+ minute videos. Best-in-class physics understanding. Available via VideoFX and Vertex AI. Sora competitor.
+                    </p>
+                    <div class="pt-4 border-t border-blue-100 grid grid-cols-2 gap-2 text-[11px] font-bold uppercase tracking-tighter">
+                        <div class="text-slate-400">Resolution: <span class="text-blue-600">4K</span></div>
+                        <div class="text-slate-400">Duration: <span class="text-blue-600">2+ min</span></div>
+                    </div>
+                </div>
+
+                <!-- Flux 1.1 Pro -->
+                <div class="model-card bg-gradient-to-br from-orange-50 to-white p-6 rounded-3xl space-y-4 border-orange-200">
+                    <div class="flex justify-between items-start">
+                        <div class="w-12 h-12 bg-orange-600 rounded-xl flex items-center justify-center text-white font-bold">FX</div>
+                        <span class="px-2 py-1 bg-orange-100 text-orange-600 text-[10px] font-bold rounded uppercase">Image Gen</span>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold">Flux 1.1 Pro</h3>
+                        <p class="text-xs text-slate-400 font-mono">Black Forest Labs (2024)</p>
+                    </div>
+                    <p class="text-sm text-slate-600 leading-relaxed">
+                        Current image gen leader. Exceptional text rendering and prompt adherence. 6x faster than Flux.1 Pro with superior output quality.
+                    </p>
+                    <div class="pt-4 border-t border-orange-100 grid grid-cols-2 gap-2 text-[11px] font-bold uppercase tracking-tighter">
+                        <div class="text-slate-400">Text: <span class="text-orange-600">Best-in-class</span></div>
+                        <div class="text-slate-400">Speed: <span class="text-orange-600">6x Faster</span></div>
+                    </div>
+                </div>
+
+                <!-- Sora -->
+                <div class="model-card bg-gradient-to-br from-green-50 to-white p-6 rounded-3xl space-y-4 border-green-200">
+                    <div class="flex justify-between items-start">
+                        <div class="w-12 h-12 bg-green-600 rounded-xl flex items-center justify-center text-white font-bold">SO</div>
+                        <span class="px-2 py-1 bg-green-100 text-green-600 text-[10px] font-bold rounded uppercase">Video Gen</span>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold">Sora</h3>
+                        <p class="text-xs text-slate-400 font-mono">OpenAI (Dec 2024)</p>
+                    </div>
+                    <p class="text-sm text-slate-600 leading-relaxed">
+                        OpenAI's flagship. 1080p videos up to 20 seconds. Storyboard and Remix features. ChatGPT Plus/Pro integration for workflows.
+                    </p>
+                    <div class="pt-4 border-t border-green-100 grid grid-cols-2 gap-2 text-[11px] font-bold uppercase tracking-tighter">
+                        <div class="text-slate-400">Quality: <span class="text-green-600">1080p/20s</span></div>
+                        <div class="text-slate-400">Access: <span class="text-green-600">Plus/Pro</span></div>
+                    </div>
+                </div>
+
+                <!-- Runway Gen-4 -->
+                <div class="model-card bg-gradient-to-br from-violet-50 to-white p-6 rounded-3xl space-y-4 border-violet-200">
+                    <div class="flex justify-between items-start">
+                        <div class="w-12 h-12 bg-violet-600 rounded-xl flex items-center justify-center text-white font-bold">G4</div>
+                        <span class="px-2 py-1 bg-violet-100 text-violet-600 text-[10px] font-bold rounded uppercase">Video Gen</span>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold">Runway Gen-4</h3>
+                        <p class="text-xs text-slate-400 font-mono">Runway (2025)</p>
+                    </div>
+                    <p class="text-sm text-slate-600 leading-relaxed">
+                        Industry standard for creative video. Motion brush, camera controls, and style references. Best-in-class for professional video editing workflows and character consistency.
+                    </p>
+                    <div class="pt-4 border-t border-violet-100 grid grid-cols-2 gap-2 text-[11px] font-bold uppercase tracking-tighter">
+                        <div class="text-slate-400">Pro Tool: <span class="text-violet-600">Industry Std</span></div>
+                        <div class="text-slate-400">Controls: <span class="text-violet-600">Advanced</span></div>
+                    </div>
+                </div>
+
+                <!-- Pika 2.5 -->
+                <div class="model-card bg-gradient-to-br from-rose-50 to-white p-6 rounded-3xl space-y-4 border-rose-200">
+                    <div class="flex justify-between items-start">
+                        <div class="w-12 h-12 bg-rose-500 rounded-xl flex items-center justify-center text-white font-bold">PK</div>
+                        <span class="px-2 py-1 bg-rose-100 text-rose-600 text-[10px] font-bold rounded uppercase">Video Gen</span>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold">Pika 2.5</h3>
+                        <p class="text-xs text-slate-400 font-mono">Pika Labs (2025)</p>
+                    </div>
+                    <p class="text-sm text-slate-600 leading-relaxed">
+                        Fast iteration and creative effects. Pikaffects for scene transformations (explode, crush, melt). Excellent for social media content and quick concept videos.
+                    </p>
+                    <div class="pt-4 border-t border-rose-100 grid grid-cols-2 gap-2 text-[11px] font-bold uppercase tracking-tighter">
+                        <div class="text-slate-400">Speed: <span class="text-rose-600">Very Fast</span></div>
+                        <div class="text-slate-400">Effects: <span class="text-rose-600">Pikaffects</span></div>
+                    </div>
+                </div>
+
+                <!-- Luma Ray2 -->
+                <div class="model-card bg-gradient-to-br from-indigo-50 to-white p-6 rounded-3xl space-y-4 border-indigo-200">
+                    <div class="flex justify-between items-start">
+                        <div class="w-12 h-12 bg-indigo-600 rounded-xl flex items-center justify-center text-white font-bold">LR</div>
+                        <span class="px-2 py-1 bg-indigo-100 text-indigo-600 text-[10px] font-bold rounded uppercase">Video Gen</span>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold">Luma Ray2</h3>
+                        <p class="text-xs text-slate-400 font-mono">Luma AI (2025)</p>
+                    </div>
+                    <p class="text-sm text-slate-600 leading-relaxed">
+                        Exceptional motion coherence and camera work. Native 4K output with cinematic quality. Strong performance on complex scenes with multiple moving subjects.
+                    </p>
+                    <div class="pt-4 border-t border-indigo-100 grid grid-cols-2 gap-2 text-[11px] font-bold uppercase tracking-tighter">
+                        <div class="text-slate-400">Resolution: <span class="text-indigo-600">4K Native</span></div>
+                        <div class="text-slate-400">Motion: <span class="text-indigo-600">Excellent</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SmartChannel CX VRAM Chart -->
+            <div class="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm">
+                <div class="mb-6">
+                    <h3 class="text-2xl font-bold text-slate-900">Generation Model Requirements</h3>
+                    <p class="text-slate-500 text-sm mt-2">VRAM usage at different quantization levels. Cloud-only models shown with estimated parameters. Your 96GB RTX 6000 Pro can run all local models at FP16.</p>
+                </div>
+                <div class="chart-container" style="height: 450px;">
+                    <canvas id="generationChart"></canvas>
+                </div>
+                <div class="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4 text-center text-xs">
+                    <div class="p-3 bg-emerald-50 rounded-lg">
+                        <div class="w-4 h-4 bg-emerald-500 rounded mx-auto mb-1"></div>
+                        <span class="text-slate-600">FP16 (Full Precision)</span>
+                    </div>
+                    <div class="p-3 bg-indigo-50 rounded-lg">
+                        <div class="w-4 h-4 bg-indigo-500 rounded mx-auto mb-1"></div>
+                        <span class="text-slate-600">8-bit Quantized</span>
+                    </div>
+                    <div class="p-3 bg-slate-100 rounded-lg">
+                        <div class="w-4 h-4 bg-slate-400 rounded mx-auto mb-1"></div>
+                        <span class="text-slate-600">4-bit Quantized</span>
+                    </div>
+                    <div class="p-3 bg-purple-50 rounded-lg">
+                        <div class="w-4 h-4 bg-purple-500 rounded mx-auto mb-1"></div>
+                        <span class="text-slate-600">Cloud API Only</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SmartChannel CX Use Cases -->
+            <div class="bg-gradient-to-r from-slate-900 to-slate-800 p-8 rounded-3xl text-white">
+                <h3 class="text-2xl font-bold mb-4">SmartChannel CX Automation Pipeline</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm">
+                    <div class="space-y-2">
+                        <div class="text-purple-400 font-bold uppercase text-xs">1. Content Analysis</div>
+                        <p class="text-slate-300">Use Qwen2.5-VL or GLM-4.6V to analyze source videos, extract key moments, and generate scene descriptions.</p>
+                    </div>
+                    <div class="space-y-2">
+                        <div class="text-pink-400 font-bold uppercase text-xs">2. Asset Generation</div>
+                        <p class="text-slate-300">Route to Flux for thumbnails/graphics, CogVideoX or Kling for short clips, Veo 2 for premium long-form.</p>
+                    </div>
+                    <div class="space-y-2">
+                        <div class="text-cyan-400 font-bold uppercase text-xs">3. Multi-Platform Export</div>
+                        <p class="text-slate-300">Automated aspect ratio cropping, caption generation, and scheduled publishing across channels.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 5: GLM-4.6V Demo Video -->
+        <section id="glm-demo" class="space-y-8">
+            <div class="text-center">
+                <span class="inline-block px-4 py-2 bg-emerald-500 text-white text-xs font-bold rounded-full uppercase tracking-widest mb-4">Live Demo</span>
+                <h2 class="text-4xl font-bold text-slate-900">GLM-4.6V Flash in Action</h2>
+                <p class="text-slate-500 mt-4 max-w-2xl mx-auto">See the upgraded GLM-4.6V model demonstrating native video understanding and multimodal reasoning capabilities.</p>
+            </div>
+            <div class="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm">
+                <div class="responsive-video-wrapper" style="position: relative; width: 100%; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 1rem; background: #f1f5f9;">
+                    <iframe style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;" src="https://www.youtube.com/embed/KXKXmz-105M" title="GLM-4.6V Flash Demo" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                </div>
+                <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4 text-center text-sm">
+                    <div class="p-4 bg-emerald-50 rounded-xl">
+                        <div class="text-emerald-600 font-bold">1-Hour Video Input</div>
+                        <p class="text-slate-500 text-xs mt-1">Native long-form understanding</p>
+                    </div>
+                    <div class="p-4 bg-emerald-50 rounded-xl">
+                        <div class="text-emerald-600 font-bold">4K Image Support</div>
+                        <p class="text-slate-500 text-xs mt-1">High-resolution visual analysis</p>
+                    </div>
+                    <div class="p-4 bg-emerald-50 rounded-xl">
+                        <div class="text-emerald-600 font-bold">Free API Tier</div>
+                        <p class="text-slate-500 text-xs mt-1">Get started at no cost</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-slate-900 text-white py-20 px-6 mt-20">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-12">
+            <div class="space-y-4">
+                <div class="text-2xl font-bold tracking-tighter italic">SMARTGEN VLM ARENA</div>
+                <p class="text-slate-400 text-sm max-w-sm">Quantifying the intersection of Pro-grade hardware and multi-modal intelligence.</p>
+            </div>
+            <div class="text-slate-500 text-[10px] font-mono uppercase tracking-widest">
+                Target: 96GB GDDR6 ECC • PCI-E Gen 4/5 • VidiSmart Optimized
+            </div>
+        </div>
+    </footer>
+
+    <!-- JS Logic -->
+    <script>
+        // --- Utility: Label Wrapping ---
+        function wrapLabel(label) {
+            const limit = 16;
+            if (typeof label !== 'string' || label.length <= limit) return label;
+            const words = label.split(' ');
+            const lines = [];
+            let current = words[0];
+            for(let i=1; i<words.length; i++) {
+                if((current + ' ' + words[i]).length <= limit) {
+                    current += ' ' + words[i];
+                } else {
+                    lines.push(current);
+                    current = words[i];
+                }
+            }
+            lines.push(current);
+            return lines;
+        }
+
+        const tooltipConfig = {
+            callbacks: {
+                title: function(items) {
+                    const label = items[0].chart.data.labels[items[0].dataIndex];
+                    return Array.isArray(label) ? label.join(' ') : label;
+                }
+            }
+        };
+
+        // --- Chart 1: Memory (Grouped Bar) ---
+        const memCtx = document.getElementById('memoryChart').getContext('2d');
+        const memoryChart = new Chart(memCtx, {
+            type: 'bar',
+            data: {
+                labels: ['GLM-4.6V (9B)', 'Llama 3.2 (11B)', 'Qwen2.5-VL (72B)', 'Qwen3-VL (235B)', 'NVLM (72B)', 'InternVL2 (76B)'].map(wrapLabel),
+                datasets: [
+                    {
+                        label: '4-Bit Quant (GB)',
+                        data: [6, 8, 42, 60, 42, 44],
+                        backgroundColor: '#94a3b8'
+                    },
+                    {
+                        label: '8-Bit Quant (GB)',
+                        data: [10, 12, 76, 118, 76, 80],
+                        backgroundColor: '#4f46e5'
+                    },
+                    {
+                        label: 'FP16 (GB)',
+                        data: [18, 22, 144, 470, 144, 152], // These exceed 96GB for 70B+
+                        backgroundColor: '#10b981'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    tooltip: tooltipConfig,
+                    legend: { position: 'bottom', labels: { font: { family: 'Space Grotesk' } } }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: { display: true, text: 'VRAM Usage (GB)' },
+                        grid: { color: '#f1f5f9' },
+                        max: 500,
+                        ticks: {
+                            callback: function(value) {
+                                if (value === 96) return '96GB (YOUR GPU)';
+                                return value;
+                            },
+                            stepSize: 50
+                        }
+                    },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+
+        // --- Chart 2: Matrix (Bubble/Scatter) ---
+        const matCtx = document.getElementById('matrixChart').getContext('2d');
+        new Chart(matCtx, {
+            type: 'bubble',
+            data: {
+                datasets: [
+                    {
+                        label: 'Qwen3-VL-235B',
+                        data: [{ x: 96, y: 45, r: 22 }],
+                        backgroundColor: '#e11d48'
+                    },
+                    {
+                        label: 'NVLM-D-72B',
+                        data: [{ x: 88, y: 70, r: 15 }],
+                        backgroundColor: '#4f46e5'
+                    },
+                    {
+                        label: 'Qwen2.5-VL-72B',
+                        data: [{ x: 92, y: 65, r: 15 }],
+                        backgroundColor: '#f43f5e'
+                    },
+                    {
+                        label: 'GLM-4.6V-9B',
+                        data: [{ x: 78, y: 95, r: 10 }],
+                        backgroundColor: '#10b981'
+                    },
+                    {
+                        label: 'Llama 3.2-11B',
+                        data: [{ x: 74, y: 90, r: 10 }],
+                        backgroundColor: '#0f172a'
+                    },
+                    {
+                        label: 'InternVL2-76B',
+                        data: [{ x: 90, y: 60, r: 18 }],
+                        backgroundColor: '#f59e0b'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        title: { display: true, text: 'Visual Reasoning Score (MMMU/VQA Index)' },
+                        min: 60, max: 100,
+                        grid: { color: '#f1f5f9' }
+                    },
+                    y: {
+                        title: { display: true, text: 'Inference Efficiency (Tokens/Sec Relative)' },
+                        min: 40, max: 100,
+                        grid: { color: '#f1f5f9' }
+                    }
+                },
+                plugins: {
+                    legend: { position: 'right' }
+                }
+            }
+        });
+
+        // --- Chart 3: Generation Models VRAM Requirements ---
+        const genCtx = document.getElementById('generationChart').getContext('2d');
+        new Chart(genCtx, {
+            type: 'bar',
+            data: {
+                labels: [
+                    'CogVideoX-5B',
+                    'Kling 1.6',
+                    'Hailuo AI',
+                    'Veo 2',
+                    'Flux 1.1 Pro',
+                    'Sora',
+                    'Runway Gen-4',
+                    'Pika 2.5',
+                    'Luma Ray2'
+                ].map(wrapLabel),
+                datasets: [
+                    {
+                        label: 'FP16 VRAM (GB)',
+                        data: [18, null, null, null, 24, null, null, null, null],
+                        backgroundColor: '#10b981',
+                        borderRadius: 4
+                    },
+                    {
+                        label: '8-bit VRAM (GB)',
+                        data: [10, null, null, null, 12, null, null, null, null],
+                        backgroundColor: '#4f46e5',
+                        borderRadius: 4
+                    },
+                    {
+                        label: '4-bit VRAM (GB)',
+                        data: [6, null, null, null, 8, null, null, null, null],
+                        backgroundColor: '#94a3b8',
+                        borderRadius: 4
+                    },
+                    {
+                        label: 'Cloud API (Est. Params B)',
+                        data: [null, 15, 12, 50, null, 30, 20, 10, 18],
+                        backgroundColor: '#a855f7',
+                        borderRadius: 4
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            title: function(items) {
+                                const label = items[0].chart.data.labels[items[0].dataIndex];
+                                return Array.isArray(label) ? label.join(' ') : label;
+                            },
+                            label: function(context) {
+                                if (context.dataset.label.includes('Cloud')) {
+                                    return context.dataset.label + ': ~' + context.raw + 'B params (estimated)';
+                                }
+                                return context.dataset.label + ': ' + context.raw + ' GB';
+                            }
+                        }
+                    },
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            font: { family: 'Space Grotesk', size: 11 },
+                            usePointStyle: true,
+                            padding: 20
+                        }
+                    },
+                    annotation: {
+                        annotations: {
+                            line1: {
+                                type: 'line',
+                                yMin: 96,
+                                yMax: 96,
+                                borderColor: '#ef4444',
+                                borderWidth: 2,
+                                borderDash: [6, 6],
+                                label: {
+                                    display: true,
+                                    content: '96GB VRAM Limit',
+                                    position: 'end'
+                                }
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: { display: true, text: 'VRAM (GB) / Est. Parameters (B)', font: { family: 'Space Grotesk' } },
+                        grid: { color: '#f1f5f9' },
+                        max: 60,
+                        ticks: {
+                            callback: function(value) {
+                                return value;
+                            },
+                            stepSize: 10
+                        }
+                    },
+                    x: {
+                        grid: { display: false },
+                        ticks: {
+                            font: { family: 'Space Grotesk', size: 10 }
+                        }
+                    }
+                }
+            }
+        });
+
+        // --- Interaction Logic ---
+        const modelData = {
+            nvlm: "<strong>NVLM-D-72B:</strong> NVIDIA's 72B parameter titan. Fits in 96GB at 8-bit quantization with approx 20GB headroom for KV Cache. Superior in 'Visual Context understanding'—ideal for complex SmartGen reasoning.",
+            glm: "<strong>GLM-4.6V Flash:</strong> Major upgrade from GLM-4v (Dec 2024). Native 1-hour video understanding, 4K image input support, and a free API tier. Flash variant delivers extreme speed for real-time workflows.",
+            qwen: "<strong>Qwen2.5-VL-72B:</strong> Alibaba's latest flagship VLM (Jan 2025). Enhanced video understanding (1hr+), improved GUI agent capabilities, and structured JSON output ideal for SmartChannel automation.",
+            qwen3: "<strong>Qwen3-VL (235B):</strong> State-of-the-art flagship (Nov 2025). Apache 2.0 licensed, surpasses GPT-4o on visual reasoning benchmarks. Native 8K image support, 2hr+ video understanding. Requires 4-bit quantization for 96GB deployment (~60GB VRAM).",
+            llama: "<strong>Llama 3.2-90B:</strong> A heavy lifter. At 4-bit, it will consume ~55GB, leaving 40GB for the largest possible context window. Best for high-volume text-heavy visual documents.",
+            intern: "<strong>InternVL2-76B:</strong> Known for the highest resolution processing (4K patch parsing). At 8-bit, it uses 80GB, leaving 16GB for context. Best for detailed blueprint/map analysis.",
+            molmo: "<strong>Molmo-72B:</strong> Efficiency focused. Achieves 70B-tier reasoning with a more streamlined architecture. Highly precise for 'point-and-identify' robot/UI automation tasks."
+        };
+
+        function selectModel(key) {
+            document.getElementById('model-detail-text').innerHTML = modelData[key];
+            const activeInfo = document.getElementById('active-model-info');
+            activeInfo.classList.remove('bg-white');
+            activeInfo.classList.add('bg-indigo-50');
+            setTimeout(() => {
+                activeInfo.classList.remove('bg-indigo-50');
+                activeInfo.classList.add('bg-white');
+            }, 500);
+        }
+
+    </script>
+</body>
+</html>

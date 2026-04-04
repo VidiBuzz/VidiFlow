@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>PDF to Text</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+    <script>
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+        
+        async function extractText() {
+            try {
+                const loadingTask = pdfjsLib.getDocument('Savage-Digital-Solutions-Platform-Capabilities.pdf');
+                const pdf = await loadingTask.promise;
+                const numPages = pdf.numPages;
+                let fullText = '';
+                
+                for (let i = 1; i <= numPages; i++) {
+                    const page = await pdf.getPage(i);
+                    const textContent = await page.getTextContent();
+                    const pageText = textContent.items.map(item => item.str).join(' ');
+                    fullText += `--- Page ${i} ---\n` + pageText + '\n\n';
+                }
+                
+                document.getElementById('output').textContent = fullText;
+                document.getElementById('status').textContent = 'DONE';
+            } catch(e) {
+                document.getElementById('status').textContent = 'ERROR: ' + e;
+            }
+        }
+    </script>
+</head>
+<body onload="extractText()">
+    <div id="status">Loading...</div>
+    <pre id="output"></pre>
+</body>
+</html>

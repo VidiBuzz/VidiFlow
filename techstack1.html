@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Architect's Guide to Modern Tech Stacks</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Calm Harmony -->
+    <!-- Application Structure Plan: The application is structured as a single-page dashboard with a fixed sidebar for primary navigation and a main content area. This non-linear, thematic structure allows users (technologists, architects) to bypass irrelevant sections and jump directly to their areas of interest, such as comparing front-end frameworks or understanding CI/CD. The report's dense, chapter-based format is transformed into an active exploration tool. User flow is driven by clicking navigation links, which dynamically displays the relevant content section, making discovery efficient and user-driven. This is superior to a simple long-scroll page as it caters to specific user queries and facilitates easier comparison between disparate topics. -->
+    <!-- Visualization & Content Choices: The report's comparative data is translated into interactive visualizations. For instance, 'Back-end Frameworks' are compared using a dynamic Chart.js radar chart and a filterable HTML table, allowing users to visually grasp high-level trade-offs and drill into details (Goal: Compare, Method: Chart.js/HTML, Interaction: Filtering/Highlighting). The 'UI/UX Process' is shown as an interactive HTML/CSS flowchart, where clicking a stage expands details, making a linear process digestible (Goal: Organize, Method: HTML/CSS, Interaction: Click-to-expand). The complex 'API Architecture' (REST vs. GraphQL) is visualized with animated HTML/CSS diagrams to clarify data flow concepts more effectively than text alone (Goal: Compare, Method: HTML/CSS/JS, Interaction: Toggle animation). These choices prioritize interactive learning over passive reading. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        /* General Body and Layout Styles */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+            color: #1e293b;
+            margin: 0;
+        }
+        .main-container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        #sidebar {
+            width: 100%;
+            background-color: #f1f5f9;
+            padding: 1rem;
+            border-right: 1px solid #e2e8f0;
+            flex-shrink: 0;
+            box-sizing: border-box;
+        }
+        main {
+            flex: 1;
+            padding: 1rem;
+            overflow-y: auto;
+        }
+        @media (min-width: 768px) {
+            .main-container {
+                flex-direction: row;
+            }
+            #sidebar {
+                width: 16rem;
+                padding: 1.5rem;
+            }
+            main {
+                padding: 2rem;
+            }
+        }
+        @media (min-width: 1024px) {
+            main {
+                padding: 3rem;
+            }
+        }
+        
+        /* Navigation Styles */
+        #sidebar h1 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 1.5rem;
+        }
+        #nav-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        .nav-link {
+            transition: all 0.2s ease-in-out;
+            display: block;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            color: #334155;
+            font-weight: 500;
+            text-decoration: none;
+        }
+        .nav-link.active, .nav-link:hover {
+            background-color: #e5e7eb;
+            color: #111827;
+        }
+
+        /* Content Section Styles */
+        .content-section {
+            display: none;
+        }
+        .content-section.active {
+            display: block;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .content-section h2 {
+            font-size: 1.875rem;
+            line-height: 2.25rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: #0f172a;
+        }
+        .content-section .intro-paragraph {
+            margin-bottom: 2rem;
+            font-size: 1.125rem;
+            line-height: 1.75rem;
+            color: #475569;
+        }
+        .content-grid {
+            display: grid;
+            gap: 2rem;
+        }
+        @media (min-width: 768px) {
+            .content-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        /* Card and Chart Styles */
+        .card {
+            background-color: #ffffff;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            border: 1px solid #e2e8f0;
+        }
+        .interactive-card {
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        .interactive-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+        .card h3 {
+            font-size: 1.25rem;
+            line-height: 1.75rem;
+            font-weight: 600;
+            margin-top: 0;
+            margin-bottom: 0.75rem;
+        }
+        .card .teal-text { color: #0d9488; }
+        .card .amber-text { color: #b45309; }
+        .card p {
+            color: #475569;
+            margin-bottom: 0;
+        }
+        .card .sub-heading {
+            font-weight: 500;
+            color: #334155;
+            margin-bottom: 0.5rem;
+        }
+        .card ul {
+            list-style-type: disc;
+            list-style-position: inside;
+            padding-left: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+            color: #475569;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 400px;
+        }
+        @media (max-width: 768px) {
+            .chart-container {
+                height: 300px;
+                max-height: 350px;
+            }
+        }
+        .card .chart-title {
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+        
+        .main-heading-red {
+            color: #dc2626 !important;
+            font-weight: 700;
+        }
+
+        /* API Visualization Specific Styles */
+        .api-viz-buttons {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+        .api-viz-buttons button {
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            margin-right: 1rem;
+            cursor: pointer;
+            border: none;
+            transition: background-color 0.2s;
+        }
+        #showRest { background-color: #0d9488; }
+        #showRest:hover { background-color: #0f766e; }
+        #showGraphql { background-color: #b45309; }
+        #showGraphql:hover { background-color: #92400e; }
+        #api-viz-container {
+            min-height: 300px;
+        }
+        #api-viz-content {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            height: 100%;
+            text-align: center;
+        }
+        .api-flow-box {
+            background-color: #e2e8f0;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        .api-flow-arrow {
+            font-size: 1.5rem;
+            color: #94a3b8;
+            font-family: monospace;
+        }
+        .api-flow-arrows {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            align-self: center;
+        }
+        .api-flow-note {
+            font-size: 0.875rem;
+            color: #64748b;
+        }
+        .graphql-query {
+            font-size: 0.75rem;
+            background-color: #f1f5f9;
+            padding: 0.5rem;
+            border-radius: 0.375rem;
+            margin-top: 0.5rem;
+            font-family: monospace;
+        }
+
+        /* UCD Flowchart Styles */
+        #ucd-flow {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        .flowchart-step {
+            padding: 1rem;
+            border-radius: 0.5rem;
+            background-color: white;
+            border: 1px solid #e2e8f0;
+            cursor: pointer;
+            border-left: 3px solid #6b7280;
+        }
+        .flowchart-step h4 {
+            font-weight: 600;
+            font-size: 1.125rem;
+            color: #1e293b;
+            margin: 0;
+        }
+        .flowchart-step p {
+            color: #475569;
+            margin-top: 0.5rem;
+            margin-bottom: 0;
+        }
+        .flowchart-step.active {
+            border-left: 3px solid #10b981;
+            background-color: #f0f9ff;
+        }
+        .ucd-arrow {
+            margin-left: 0.75rem;
+            font-size: 1.5rem;
+            color: #94a3b8;
+            align-self: flex-start;
+        }
+        .hidden {
+            display: none;
+        }
+
+        /* CI/CD & RAG Diagram Styles */
+        .diagram-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            align-items: center;
+            gap: 1rem;
+        }
+        .diagram-step {
+            text-align: center;
+        }
+        .diagram-icon-wrapper {
+            background-color: #e2e8f0;
+            border-radius: 9999px;
+            width: 6rem;
+            height: 6rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 0.5rem auto;
+        }
+        .diagram-icon-wrapper span {
+            font-size: 2.25rem;
+        }
+        .diagram-step .label {
+            font-weight: 600;
+        }
+        .diagram-step .sub-label {
+            font-size: 0.875rem;
+            color: #64748b;
+        }
+        .diagram-arrow {
+            font-size: 1.5rem;
+            color: #94a3b8;
+            font-family: monospace;
+        }
+        .rag-flow-step {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .rag-flow-step .diagram-icon-wrapper {
+            width: 4rem;
+            height: 4rem;
+            flex-shrink: 0;
+        }
+        .rag-flow-step .diagram-icon-wrapper span {
+            font-size: 1rem;
+        }
+        .rag-flow-step p {
+            font-weight: 600;
+            margin: 0;
+        }
+        .rag-flow-arrow {
+            margin-left: 2rem;
+            font-size: 1.5rem;
+            color: #94a3b8;
+        }
+        .rag-icon-user { background-color: #ccfbf1; color: #115e59; }
+        .rag-icon-ai { background-color: #fef3c7; color: #92400e; }
+        .rag-icon-db { background-color: #e0f2fe; color: #075985; }
+        .rag-icon-llm { background-color: #f3e8ff; color: #6b21a8; }
+        .rag-icon-ans { background-color: #d1fae5; color: #065f46; }
+
+        @media (min-width: 768px) {
+            .diagram-container {
+                flex-direction: row;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <aside id="sidebar">
+            <h1>Architect's Guide</h1>
+            <nav id="nav-menu"></nav>
+        </aside>
+
+        <main>
+            <div id="content-area"></div>
+        </main>
+    </div>
+
+    <script>
+        const appData = {
+            sections: [
+                {
+                    id: 'foundation',
+                    title: 'Core Foundations',
+                    content: `
+                        <h1 class="text-6xl md:text-7xl font-bold mb-6 text-center main-heading-red">
+                            <span class="headline-gradient">VidiSmart:</span> The Modern Ai Tech Stack
+                        </h1>
+                        <div class="text-center mb-8">
+                            <a href="index.html" class="inline-block text-lg md:text-xl font-semibold text-blue-400 hover:text-blue-300 transition-colors duration-300 underline">
+                                Interactive Configuration Guide
+                            </a>
+                            <span class="text-gray-400 mx-4">&nbsp;|</span>
+                            <a href="moderntechguidelines.html" class="inline-block text-lg md:text-xl font-semibold text-green-600 hover:text-green-500 transition-colors duration-300 underline">
+                                Modern Tech Guidelines
+                            </a>
+                        </div>
+                        <h2>The Core Foundation: Back-end and Database</h2>
+                        <p class="intro-paragraph">This section introduces the foundational components of any modern application. We explore the 'back-end,' the engine that powers everything behind the scenes, and the 'database,' the structured repository for all vital information. Understanding their symbiotic relationship is the first step in designing robust and scalable systems.</p>
+                        <div class="content-grid">
+                            <div class="card">
+                                <h3 class="teal-text">Defining the Back-end (The Engine)</h3>
+                                <p>The back-end, or server-side, is where the core logic of an application lives. It processes user requests, communicates with the database, and executes the business rules that make the application function. Think of it as the kitchen in a restaurant—it's where all the important work happens, completely hidden from the customer's view.</p>
+                            </div>
+                             <div class="card">
+                                <h3 class="amber-text">The Role of the Database (The Warehouse)</h3>
+                                <p>If the back-end is the engine, the database is its digital warehouse and fuel tank. It's a highly organized system for storing, managing, and retrieving all of an application's data, from user profiles to product inventories. The performance and structure of the database directly impact the application's speed, reliability, and overall user experience.</p>
+                            </div>
+                        </div>
+                    `
+                },
+                {
+                    id: 'backend-frameworks',
+                    title: 'Back-end Frameworks',
+                    content: `
+                        <h2>Back-end Frameworks: A Comparative Analysis</h2>
+                        <p class="intro-paragraph">Choosing a back-end framework is a critical architectural decision. These frameworks provide a foundational structure, saving developers from reinventing the wheel. Here, we compare the philosophies and ideal use cases of the leading ecosystems: JavaScript (Node.js), Python, Java, and Ruby. Use the chart to visually compare their characteristics.</p>
+                        <div class="card">
+                            <h3 class="chart-title">Framework Philosophy Comparison</h3>
+                            <div class="chart-container"><canvas id="backendFrameworksChart"></canvas></div>
+                        </div>
+                    `
+                },
+                {
+                    id: 'database-paradigms',
+                    title: 'Database Paradigms',
+                    content: `
+                        <h2>Database Paradigms: Relational vs. NoSQL</h2>
+                        <p class="intro-paragraph">Databases are not one-size-fits-all. The modern landscape is dominated by two paradigms: relational (SQL) databases that prioritize structure and consistency, and non-relational (NoSQL) databases that favor flexibility and scalability. Understanding the fundamental trade-offs between them is crucial for choosing the right tool for the job.</p>
+                        <div class="content-grid">
+                            <div class="card interactive-card">
+                                <h3 class="teal-text">Relational (SQL)</h3>
+                                <p class="sub-heading">Paradigm of Structure</p>
+                                <ul>
+                                    <li>Data stored in structured tables (rows and columns).</li>
+                                    <li>Requires a predefined schema.</li>
+                                    <li>Ensures data integrity with ACID compliance.</li>
+                                    <li>Ideal for transactional data like e-commerce or finance.</li>
+                                </ul>
+                            </div>
+                             <div class="card interactive-card">
+                                <h3 class="amber-text">Non-Relational (NoSQL)</h3>
+                                <p class="sub-heading">Paradigm of Flexibility</p>
+                                <ul>
+                                    <li>Stores varied data types (documents, key-value).</li>
+                                    <li>Flexible or dynamic schemas.</li>
+                                    <li>Designed for horizontal scalability and high availability.</li>
+                                    <li>Ideal for big data, real-time apps, and content management.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    `
+                },
+                {
+                    id: 'database-tech',
+                    title: 'Core Database Tech',
+                    content: `
+                        <h2>Deep Dive into Core Database Technologies</h2>
+                        <p class="intro-paragraph">Beyond the high-level paradigms, specific database technologies dominate the market. This section compares the two open-source relational heavyweights, PostgreSQL and MySQL, and contrasts them with the leading NoSQL document database, MongoDB. The chart below highlights their key strengths and ideal workloads.</p>
+                        <div class="card">
+                             <h3 class="chart-title">Database Technology Sweet Spots</h3>
+                            <div class="chart-container"><canvas id="databaseTechChart"></canvas></div>
+                        </div>
+                    `
+                },
+                {
+                    id: 'api-architecture',
+                    title: 'API Architecture',
+                    content: `
+                        <h2>API Architecture: REST vs. GraphQL</h2>
+                        <p class="intro-paragraph">APIs are the communication contracts of the modern web. The two dominant architectural styles, REST and GraphQL, offer fundamentally different approaches to data fetching. REST uses multiple endpoints with fixed data structures, while GraphQL uses a single endpoint that allows the client to request exactly the data it needs. Click the buttons to see a simplified visual of their data fetching models.</p>
+                        <div class="api-viz-buttons">
+                            <button id="showRest">Show REST Flow</button>
+                            <button id="showGraphql">Show GraphQL Flow</button>
+                        </div>
+                        <div id="api-viz-container" class="card">
+                            <h3 id="api-viz-title" class="chart-title">Select a flow to visualize</h3>
+                            <div id="api-viz-content"></div>
+                        </div>
+                    `
+                },
+                {
+                    id: 'frontend-frameworks',
+                    title: 'Front-end Frameworks',
+                    content: `
+                         <h2>Front-end Frameworks: A Comparative Overview</h2>
+                        <p class="intro-paragraph">Front-end frameworks are essential for building the complex, interactive user interfaces (UIs) users expect. The landscape is dominated by three giants: Angular, React, and Vue. While they all aim to simplify UI development, their philosophies differ greatly, from Angular's "all-in-one" approach to React's flexible library model. The chart below offers a visual comparison of their key characteristics.</p>
+                        <div class="card">
+                             <h3 class="chart-title">Front-end "Big Three" Comparison</h3>
+                            <div class="chart-container"><canvas id="frontendFrameworksChart"></canvas></div>
+                        </div>
+                    `
+                },
+                {
+                    id: 'ui-ux-process',
+                    title: 'UI/UX Process',
+                    content: `
+                        <h2>The User-Centered Design Process</h2>
+                        <p class="intro-paragraph">Great products are built by understanding the people who use them. User-Centered Design (UCD) is an iterative process that places the user at the heart of every decision. It's a cycle of research, ideation, prototyping, and testing that de-risks development and ensures the final product is both usable and valuable. Click on each step in the interactive flow below to learn more about its purpose and key activities.</p>
+                        <div id="ucd-flow"></div>
+                    `
+                },
+                {
+                    id: 'cms-platforms',
+                    title: 'CMS Platforms',
+                    content: `
+                        <h2>Managing Digital Content: CMS Platforms</h2>
+                        <p class="intro-paragraph">A Content Management System (CMS) allows teams to create and manage digital content without technical expertise. The key architectural choice is between a Traditional CMS, where content and presentation are tightly linked (like a website), and a Headless CMS, where content is decoupled and delivered to any channel via an API. This choice determines an organization's content flexibility and future-readiness.</p>
+                        <div class="content-grid">
+                             <div class="card interactive-card">
+                                <h3 class="teal-text">Traditional CMS (e.g., WordPress, Drupal)</h3>
+                                <p class="sub-heading">The All-in-One Website Builder</p>
+                                <ul>
+                                    <li>Content and presentation are tightly coupled.</li>
+                                    <li>Easy for non-technical users to manage a website.</li>
+                                    <li>Inflexible for delivering content to other channels (e.g., mobile apps).</li>
+                                </ul>
+                            </div>
+                             <div class="card interactive-card">
+                                <h3 class="amber-text">Headless CMS (e.g., Contentful, Strapi)</h3>
+                                <p class="sub-heading">Create Once, Publish Everywhere</p>
+                                <ul>
+                                    <li>Decouples content from presentation via an API.</li>
+                                    <li>Infinitely flexible; content can go to any website, app, or device.</li>
+                                    <li>Requires developer expertise to build the front-end "head".</li>
+                                </ul>
+                            </div>
+                        </div>
+                    `
+                },
+                {
+                    id: 'devops-cicd',
+                    title: 'DevOps & CI/CD',
+                    content: `
+                        <h2>From Code to Customer: DevOps & CI/CD</h2>
+                        <p class="intro-paragraph">DevOps is a culture of collaboration between Development and Operations teams, aimed at delivering software faster and more reliably. Its technical engine is the CI/CD pipeline, an automated workflow for building, testing, and deploying code. This process transforms risky, infrequent deployments into routine, low-risk activities.</p>
+                        
+                        <div class="content-grid">
+                            <div class="card">
+                                <h3 class="teal-text">What is CI/CD?</h3>
+                                <p><strong>CI/CD</strong> stands for <strong>Continuous Integration</strong> and <strong>Continuous Delivery/Deployment</strong>. It's a modern software development practice that automates the process of building, testing, and deploying applications.</p>
+                                
+                                <h4 class="mt-4 mb-2 text-yellow-400">Continuous Integration (CI)</h4>
+                                <p>CI is the practice of automatically building and testing code changes as soon as they are committed to the repository. This ensures that:</p>
+                                <ul class="mt-2">
+                                    <li>Code changes are integrated frequently (multiple times per day)</li>
+                                    <li>Automated tests run on every code commit</li>
+                                    <li>Build errors are detected early and fixed quickly</li>
+                                    <li>Code quality is maintained consistently</li>
+                                </ul>
+                                
+                                <h4 class="mt-4 mb-2 text-yellow-400">Continuous Delivery (CD)</h4>
+                                <p>CD ensures that code changes are automatically prepared for release to production. This means:</p>
+                                <ul class="mt-2">
+                                    <li>Code is always in a deployable state</li>
+                                    <li>Automated testing validates the entire application</li>
+                                    <li>Deployment can happen at any time with minimal risk</li>
+                                    <li>Manual approval gates can be added for critical releases</li>
+                                </ul>
+                                
+                                <h4 class="mt-4 mb-2 text-yellow-400">Continuous Deployment</h4>
+                                <p>The final step where code changes that pass all tests are automatically deployed to production without manual intervention.</p>
+                            </div>
+                            
+                            <div class="card">
+                                <h3 class="amber-text">Benefits of CI/CD</h3>
+                                <ul>
+                                    <li><strong>Faster Delivery:</strong> Automated processes reduce manual work and deployment time</li>
+                                    <li><strong>Reduced Risk:</strong> Smaller, frequent deployments are less risky than large, infrequent ones</li>
+                                    <li><strong>Better Quality:</strong> Automated testing catches bugs early in the development cycle</li>
+                                    <li><strong>Improved Collaboration:</strong> Developers and operations teams work together seamlessly</li>
+                                    <li><strong>Faster Feedback:</strong> Issues are identified and resolved quickly</li>
+                                    <li><strong>Reliable Releases:</strong> Consistent, repeatable deployment process</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="card mt-6">
+                            <h3 class="chart-title">The CI/CD Pipeline Flow</h3>
+                            <p class="text-center mb-4">A typical CI/CD pipeline consists of these automated stages:</p>
+                            <div class="diagram-container">
+                                <div class="diagram-step">
+                                    <div class="diagram-icon-wrapper"><span>💻</span></div>
+                                    <p class="label">Code Commit</p><p class="sub-label">Developer pushes changes</p>
+                                </div>
+                                <div class="diagram-arrow">&rarr;</div>
+                                <div class="diagram-step">
+                                    <div class="diagram-icon-wrapper"><span>🧱</span></div>
+                                    <p class="label">Build</p><p class="sub-label">Compile & package code</p>
+                                </div>
+                                <div class="diagram-arrow">&rarr;</div>
+                                <div class="diagram-step">
+                                    <div class="diagram-icon-wrapper"><span>🧪</span></div>
+                                    <p class="label">Test</p><p class="sub-label">Unit, integration & E2E tests</p>
+                                </div>
+                                <div class="diagram-arrow">&rarr;</div>
+                                <div class="diagram-step">
+                                    <div class="diagram-icon-wrapper"><span>🔍</span></div>
+                                    <p class="label">Code Review</p><p class="sub-label">Security & quality checks</p>
+                                </div>
+                                <div class="diagram-arrow">&rarr;</div>
+                                <div class="diagram-step">
+                                    <div class="diagram-icon-wrapper"><span>🚀</span></div>
+                                    <p class="label">Deploy</p><p class="sub-label">Release to production</p>
+                                </div>
+                            </div>
+                            <p class="text-center mt-4 text-sm text-gray-400">Popular CI/CD Tools: Jenkins, GitHub Actions, GitLab CI, CircleCI, Travis CI, Azure DevOps</p>
+                        </div>
+                    `
+                },
+                {
+                    id: 'cloud-infra',
+                    title: 'Cloud & Containers',
+                    content: `
+                        <h2>Modern Infrastructure: Cloud, Containers, and Serverless</h2>
+                        <p class="intro-paragraph">Modern applications run on infrastructure that has evolved from physical servers to highly abstract cloud services. This section explores this evolution, from the foundational cloud providers (AWS, Azure, GCP) to containerization with Docker and orchestration with Kubernetes. This progression allows teams to offload infrastructure management and focus on building features.</p>
+                         <div class="card">
+                            <h3 class="chart-title">Cloud Provider Market Share (Q1 2024 Est.)</h3>
+                            <div class="chart-container"><canvas id="cloudProviderChart"></canvas></div>
+                        </div>
+                    `
+                },
+                {
+                    id: 'ai-vector-db',
+                    title: 'AI & Vector DBs',
+                    content: `
+                        <h2>The AI Frontier: Vector Database Project Archetype</h2>
+                        <p class="intro-paragraph">The next generation of AI applications relies on understanding unstructured data (text, images). This is powered by a new archetype combining AI models and Vector Databases. AI models create 'embeddings'—numerical representations of meaning—and Vector Databases are specially designed to store and search these embeddings at incredible speed, enabling features like semantic search and recommendation engines.</p>
+                        <div class="card">
+                             <h3 class="chart-title">Simplified RAG Flow (Retrieval-Augmented Generation)</h3>
+                             <div class="diagram-container" style="flex-direction: column; gap: 0.5rem;">
+                                <div class="rag-flow-step">
+                                    <div class="diagram-icon-wrapper rag-icon-user"><span>User</span></div>
+                                    <p>User asks a question: "What is a vector database?"</p>
+                                </div>
+                                <div class="rag-flow-arrow">&darr;</div>
+                                 <div class="rag-flow-step">
+                                    <div class="diagram-icon-wrapper rag-icon-ai"><span>AI</span></div>
+                                    <p>An AI model converts the question into a vector embedding (a list of numbers representing its meaning).</p>
+                                </div>
+                                 <div class="rag-flow-arrow">&darr;</div>
+                                <div class="rag-flow-step">
+                                    <div class="diagram-icon-wrapper rag-icon-db"><span>DB</span></div>
+                                    <p>The Vector Database searches billions of document vectors to find those with the most similar meaning to the question vector.</p>
+                                </div>
+                                 <div class="rag-flow-arrow">&darr;</div>
+                                <div class="rag-flow-step">
+                                    <div class="diagram-icon-wrapper rag-icon-llm"><span>LLM</span></div>
+                                    <p>The relevant documents and the original question are sent to a Large Language Model (LLM).</p>
+                                </div>
+                                 <div class="rag-flow-arrow">&darr;</div>
+                                <div class="rag-flow-step">
+                                    <div class="diagram-icon-wrapper rag-icon-ans"><span>Ans</span></div>
+                                    <p>The LLM generates a factual, context-aware answer based on the provided documents.</p>
+                                </div>
+                             </div>
+                        </div>
+                    `
+                },
+            ]
+        };
+
+        const chartColors = {
+            teal: 'rgba(13, 148, 136, 0.6)',
+            amber: 'rgba(217, 119, 6, 0.6)',
+            sky: 'rgba(2, 132, 199, 0.6)',
+            purple: 'rgba(147, 51, 234, 0.6)',
+            emerald: 'rgba(5, 150, 105, 0.6)',
+            border: {
+                teal: 'rgb(13, 148, 136)',
+                amber: 'rgb(217, 119, 6)',
+                sky: 'rgb(2, 132, 199)',
+                purple: 'rgb(147, 51, 234)',
+                emerald: 'rgb(5, 150, 105)'
+            }
+        };
+
+        const ucdData = [
+            { 
+                title: "1. Research & Specify Context", 
+                content: "The process begins with research to understand users, their goals, and their environment. Key activities include stakeholder interviews, user surveys, and competitive analysis. The primary output is the creation of User Personas—fictional characters representing the target audience."
+            },
+            { 
+                title: "2. Specify Requirements", 
+                content: "Research insights are translated into a clear set of user needs and business requirements. This step defines what the product must do to be successful for both the user and the business, often resulting in user stories and feature lists."
+            },
+            { 
+                title: "3. Create Design Solutions", 
+                content: "This is the ideation phase where designers brainstorm and develop solutions. Artifacts like user flows, wireframes (structural blueprints), and mockups (visual designs) are created to visualize the product's structure and feel."
+            },
+            { 
+                title: "4. Evaluate & Iterate", 
+                content: "Designs are tested with real users. Prototypes (interactive models) are created and put through usability testing to identify flaws and validate assumptions. Feedback from this stage is crucial and feeds directly back into refining the design, continuing the cycle."
+            }
+        ];
+
+        let activeChart = null;
+
+        function initNav() {
+            const navMenu = document.getElementById('nav-menu');
+            const contentArea = document.getElementById('content-area');
+            navMenu.innerHTML = '';
+            contentArea.innerHTML = '';
+            appData.sections.forEach(section => {
+                const link = document.createElement('a');
+                link.href = '#';
+                link.id = `nav-${section.id}`;
+                link.className = 'nav-link';
+                link.textContent = section.title;
+                link.onclick = (e) => {
+                    e.preventDefault();
+                    showSection(section.id);
+                };
+                navMenu.appendChild(link);
+
+                const contentDiv = document.createElement('div');
+                contentDiv.id = section.id;
+                contentDiv.className = 'content-section';
+                contentDiv.innerHTML = section.content;
+                contentArea.appendChild(contentDiv);
+            });
+        }
+
+        function showSection(sectionId) {
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            
+            document.getElementById(sectionId).classList.add('active');
+            document.getElementById(`nav-${sectionId}`).classList.add('active');
+
+            if (activeChart) {
+                activeChart.destroy();
+                activeChart = null;
+            }
+            
+            if (sectionId === 'backend-frameworks') initBackendFrameworksChart();
+            if (sectionId === 'database-tech') initDatabaseTechChart();
+            if (sectionId === 'frontend-frameworks') initFrontendFrameworksChart();
+            if (sectionId === 'cloud-infra') initCloudProviderChart();
+            if (sectionId === 'api-architecture') initApiViz();
+            if (sectionId === 'ui-ux-process') initUcdFlow();
+        }
+
+        function initBackendFrameworksChart() {
+            const ctx = document.getElementById('backendFrameworksChart').getContext('2d');
+            const data = {
+                labels: ['Productivity', 'Performance', 'Flexibility', 'Learning Curve', 'Ecosystem'],
+                datasets: [
+                    {
+                        label: 'Node.js (Express)',
+                        data: [7, 9, 9, 7, 10],
+                        backgroundColor: chartColors.teal,
+                        borderColor: chartColors.border.teal,
+                        borderWidth: 2,
+                        pointBackgroundColor: chartColors.border.teal
+                    },
+                    {
+                        label: 'Python (Django)',
+                        data: [9, 7, 6, 8, 9],
+                        backgroundColor: chartColors.amber,
+                        borderColor: chartColors.border.amber,
+                        borderWidth: 2,
+                        pointBackgroundColor: chartColors.border.amber
+                    },
+                    {
+                        label: 'Java (Spring)',
+                        data: [6, 9, 7, 4, 10],
+                         backgroundColor: chartColors.sky,
+                        borderColor: chartColors.border.sky,
+                        borderWidth: 2,
+                        pointBackgroundColor: chartColors.border.sky
+                    },
+                    {
+                        label: 'Ruby (Rails)',
+                        data: [10, 6, 5, 9, 8],
+                        backgroundColor: chartColors.purple,
+                        borderColor: chartColors.border.purple,
+                        borderWidth: 2,
+                        pointBackgroundColor: chartColors.border.purple
+                    }
+                ]
+            };
+            activeChart = new Chart(ctx, {
+                type: 'radar',
+                data: data,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'top' } },
+                    scales: { r: { suggestedMin: 0, suggestedMax: 10 } }
+                }
+            });
+        }
+        
+        function initDatabaseTechChart() {
+             const ctx = document.getElementById('databaseTechChart').getContext('2d');
+             const data = {
+                labels: ['Data Integrity', 'Complex Queries', 'Read Speed', 'Write Speed', 'Flexibility'],
+                datasets: [{
+                    label: 'PostgreSQL',
+                    data: [10, 9, 7, 9, 7],
+                    backgroundColor: chartColors.sky,
+                    borderColor: chartColors.border.sky,
+                    borderWidth: 1
+                }, {
+                    label: 'MySQL',
+                    data: [8, 7, 9, 7, 5],
+                    backgroundColor: chartColors.teal,
+                    borderColor: chartColors.border.teal,
+                    borderWidth: 1
+                }, {
+                    label: 'MongoDB',
+                    data: [6, 5, 8, 8, 10],
+                    backgroundColor: chartColors.emerald,
+                    borderColor: chartColors.border.emerald,
+                    borderWidth: 1
+                }]
+             };
+             activeChart = new Chart(ctx, {
+                type: 'bar',
+                data: data,
+                options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, suggestedMax: 10 } }, plugins: { legend: { position: 'top' } } }
+             });
+        }
+
+        function initFrontendFrameworksChart() {
+             const ctx = document.getElementById('frontendFrameworksChart').getContext('2d');
+             const data = {
+                labels: ['Learning Curve', 'Performance', 'Flexibility', 'Ecosystem Size', 'Opinionated'],
+                datasets: [{
+                    label: 'React',
+                    data: [8, 9, 10, 10, 3],
+                    backgroundColor: chartColors.sky,
+                    borderColor: chartColors.border.sky,
+                    borderWidth: 1
+                }, {
+                    label: 'Angular',
+                    data: [4, 8, 5, 9, 9],
+                    backgroundColor: chartColors.purple,
+                    borderColor: chartColors.border.purple,
+                    borderWidth: 1
+                }, {
+                    label: 'Vue.js',
+                    data: [9, 9, 8, 7, 5],
+                    backgroundColor: chartColors.emerald,
+                    borderColor: chartColors.border.emerald,
+                    borderWidth: 1
+                }]
+             };
+             activeChart = new Chart(ctx, {
+                type: 'bar',
+                data: data,
+                options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, suggestedMax: 10 } }, plugins: { legend: { position: 'top' } } }
+             });
+        }
+        
+        function initCloudProviderChart() {
+            const ctx = document.getElementById('cloudProviderChart').getContext('2d');
+            const data = {
+                labels: ['AWS', 'Azure', 'GCP', 'Other'],
+                datasets: [{
+                    label: 'Market Share %',
+                    data: [31, 25, 11, 33],
+                    backgroundColor: [chartColors.amber, chartColors.sky, chartColors.emerald, 'rgba(156, 163, 175, 0.6)'],
+                    borderColor: [chartColors.border.amber, chartColors.border.sky, chartColors.border.emerald, 'rgb(156, 163, 175)'],
+                    borderWidth: 1
+                }]
+            };
+            activeChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: data,
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top' } } }
+            });
+        }
+
+        function initApiViz() {
+            const restBtn = document.getElementById('showRest');
+            const graphqlBtn = document.getElementById('showGraphql');
+            const title = document.getElementById('api-viz-title');
+            const content = document.getElementById('api-viz-content');
+
+            const restHtml = `
+                <div><div class="api-flow-box">Client</div></div>
+                <div class="api-flow-arrows">
+                    <div class="api-flow-arrow">&rarr; GET /users/123</div>
+                    <div class="api-flow-arrow">&rarr; GET /users/123/posts</div>
+                    <div class="api-flow-arrow">&rarr; GET /users/123/friends</div>
+                </div>
+                <div>
+                    <div class="api-flow-box">Server</div>
+                    <p class="api-flow-note">Multiple Endpoints</p>
+                </div>
+            `;
+
+            const graphqlHtml = `
+                <div><div class="api-flow-box">Client</div></div>
+                <div>
+                    <div class="api-flow-arrow">&rarr; POST /graphql</div>
+                    <div class="graphql-query">query { user(id:123) { name, posts, friends } }</div>
+                </div>
+                <div>
+                    <div class="api-flow-box">Server</div>
+                    <p class="api-flow-note">Single Endpoint</p>
+                </div>
+            `;
+            
+            restBtn.onclick = () => {
+                title.textContent = "REST: Multiple Requests for Multiple Resources";
+                content.innerHTML = restHtml;
+            };
+
+            graphqlBtn.onclick = () => {
+                title.textContent = "GraphQL: One Request for All Needed Data";
+                content.innerHTML = graphqlHtml;
+            };
+        }
+
+        function initUcdFlow() {
+            const container = document.getElementById('ucd-flow');
+            container.innerHTML = '';
+            ucdData.forEach((item, index) => {
+                const stepDiv = document.createElement('div');
+                stepDiv.className = "flowchart-step interactive-card";
+                stepDiv.innerHTML = `
+                    <h4>${item.title}</h4>
+                    <p class="hidden">${item.content}</p>
+                `;
+                stepDiv.onclick = () => {
+                    const allSteps = container.querySelectorAll('.flowchart-step');
+                    const wasActive = stepDiv.classList.contains('active');
+
+                    allSteps.forEach(s => {
+                        s.classList.remove('active');
+                        s.querySelector('p').classList.add('hidden');
+                    });
+                    
+                    if (!wasActive) {
+                        stepDiv.classList.add('active');
+                        stepDiv.querySelector('p').classList.remove('hidden');
+                    }
+                };
+                container.appendChild(stepDiv);
+                if(index < ucdData.length - 1) {
+                    const arrow = document.createElement('div');
+                    arrow.className = 'ucd-arrow';
+                    arrow.innerHTML = '&darr;';
+                    container.appendChild(arrow);
+                }
+            });
+        }
+        
+        window.onload = () => {
+            initNav();
+            showSection('foundation');
+        };
+    </script>
+</body>
+</html>

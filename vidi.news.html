@@ -1,0 +1,1515 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vidi.NEWS | AI Smart News - Running the world with smart stack</title>
+    <meta name="description"
+        content="Vidi.NEWS: The world's first AI-powered Smart News network. Running the world with smart stack technology.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Kumbh+Sans:wght@300;400;600;700;900&display=swap"
+        rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="vidi-nav-component.css">
+    <script src="vidi-nav-component.js"></script>
+    <style>
+        :root {
+            --bg-deep: #050505;
+            --bg-panel: #0a0a14;
+            --accent-primary: #ff3e3e;
+            /* News Red */
+            --accent-secondary: #4f46e5;
+            /* Tech Blue */
+            --text-primary: #ffffff;
+            --text-secondary: #9ca3af;
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg-deep);
+            color: var(--text-primary);
+            overflow-x: hidden;
+        }
+
+        /* Typography */
+        h1,
+        h2,
+        h3,
+        h4,
+        .font-heading {
+            font-family: 'Kumbh Sans', sans-serif;
+        }
+
+        /* Background Effects */
+        .ambient-glow {
+            position: fixed;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            background:
+                radial-gradient(circle at 20% 30%, rgba(255, 62, 62, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(79, 70, 229, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        /* Navigation Override for Logo */
+        .nav-logo {
+            font-size: 1.8rem;
+            font-weight: 900;
+            letter-spacing: -1px;
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-logo span {
+            color: var(--accent-primary);
+        }
+
+        /* Hero Section */
+        .hero-section {
+            min-height: 90vh;
+            display: flex;
+            align-items: center;
+            padding: 14rem 5% 4rem;
+            position: relative;
+        }
+
+        .hero-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            max-width: 1600px;
+            margin: 0 auto;
+            align-items: center;
+        }
+
+        .hero-content h1 {
+            font-size: clamp(3rem, 6vw, 5rem);
+            line-height: 1;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(to right, #fff, #ccc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-tag {
+            font-family: 'Kumbh Sans', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 700;
+            color: var(--accent-primary);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .hero-tag::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: var(--accent-primary);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--accent-primary);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+
+        .hero-description {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            margin-bottom: 2.5rem;
+            max-width: 600px;
+            border-left: 3px solid var(--accent-secondary);
+            padding-left: 1.5rem;
+        }
+
+        /* News Ticker */
+        .news-ticker-wrap {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(10, 10, 20, 0.95);
+            border-top: 1px solid var(--accent-primary);
+            z-index: 100;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .ticker-label {
+            background: var(--accent-primary);
+            color: white;
+            padding: 0 2rem;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            font-weight: 800;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            z-index: 2;
+        }
+
+        .ticker-track {
+            display: flex;
+            animation: scroll 30s linear infinite;
+            white-space: nowrap;
+            padding-left: 100%;
+        }
+
+        .ticker-item {
+            color: white;
+            padding: 0 3rem;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .ticker-item i {
+            color: var(--accent-secondary);
+        }
+
+        @keyframes scroll {
+            0% {
+                transform: translateX(0);
+            }
+
+            100% {
+                transform: translateX(-100%);
+            }
+        }
+
+        /* Main Visual (Anchor) */
+        .anchor-frame {
+            position: relative;
+            border-radius: 24px;
+            overflow: hidden;
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 20px 50px -20px rgba(0, 0, 0, 0.8);
+            aspect-ratio: 16/9;
+        }
+
+        .anchor-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .anchor-frame:hover .anchor-img {
+            transform: scale(1.02);
+        }
+
+        .live-overlay {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 0, 0, 0.8);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 4px;
+            font-weight: 700;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .live-overlay::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: white;
+            border-radius: 50%;
+        }
+
+        .anchor-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: linear-gradient(to top, black, transparent);
+            padding: 4rem 2rem 2rem;
+        }
+
+        .anchor-headline {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+        }
+
+        /* Bento Grid for Stories */
+        .stories-section {
+            padding: 0 5% 6rem;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        /* --- NEW PROFESSIONAL STYLES --- */
+
+        /* News Feed Styles */
+        .news-grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.5rem;
+            padding-bottom: 4rem;
+        }
+
+        .news-card {
+            position: relative;
+            border-radius: 12px;
+            overflow: hidden;
+            background: #0f172a;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            aspect-ratio: 16/9;
+        }
+
+        .news-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.2);
+            border-color: rgba(59, 130, 246, 0.4);
+        }
+
+        .news-card-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .news-card:hover .news-card-img {
+            transform: scale(1.05);
+        }
+
+        .news-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.5) 60%, transparent 100%);
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+        }
+
+        .news-tag {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(4px);
+            width: fit-content;
+        }
+
+        .news-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: white;
+            margin: 0 0 0.5rem 0;
+            line-height: 1.3;
+        }
+
+        .news-metric {
+            color: var(--accent-green);
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        /* Asset Browser Styles (SaaS Look) */
+        .asset-browser {
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            height: 600px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .asset-sidebar {
+            width: 250px;
+            background: #1e293b;
+            border-right: 1px solid #334155;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .asset-nav-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            color: #94a3b8;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+        }
+
+        .asset-nav-item:hover,
+        .asset-nav-item.active {
+            background: rgba(59, 130, 246, 0.1);
+            color: white;
+        }
+
+        .asset-main {
+            flex: 1;
+            padding: 1.5rem;
+            background: #0f172a;
+            overflow-y: auto;
+        }
+
+        .asset-toolbar {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+            align-items: center;
+        }
+
+        .asset-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .asset-file {
+            background: #1e293b;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .asset-file:hover {
+            border-color: var(--accent-blue);
+            transform: translateY(-2px);
+        }
+
+        .asset-thumb {
+            height: 120px;
+            background: #000;
+            position: relative;
+        }
+
+        .asset-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.8;
+        }
+
+        .asset-info {
+            padding: 10px;
+        }
+
+        .asset-name {
+            font-size: 0.85rem;
+            color: #e2e8f0;
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-bottom: 4px;
+        }
+
+        .asset-meta {
+            font-size: 0.7rem;
+            color: #64748b;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .format-badge {
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-size: 0.6rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .bento-card {
+            position: relative;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            min-height: 250px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+        }
+
+        .bento-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .bento-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 0;
+            opacity: 0.4;
+            transition: opacity 0.3s;
+        }
+
+        .bento-card:hover .bento-bg {
+            opacity: 0.2;
+        }
+
+        .bento-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-tag {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--accent-secondary);
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .bento-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            line-height: 1.3;
+        }
+
+        /* Gallery Section (Placeholders) */
+        .gallery-section {
+            padding: 4rem 5%;
+            background: #000;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .gallery-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .gallery-header h2 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .gallery-item {
+            aspect-ratio: 16/9;
+            background: #111;
+            border-radius: 12px;
+            border: 1px dashed rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 1rem;
+            color: #555;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .gallery-item i {
+            font-size: 2rem;
+            opacity: 0.5;
+        }
+
+        .loading-pulse {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+            animation: loading 1.5s infinite;
+        }
+
+        @keyframes loading {
+            0% {
+                transform: translateX(-100%);
+            }
+
+            100% {
+                transform: translateX(100%);
+            }
+        }
+
+        /* Button */
+        .btn-news {
+            display: inline-block;
+            background: white;
+            color: black;
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-weight: 700;
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+
+        .btn-news:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+        }
+
+        @media (max-width: 768px) {
+            .hero-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-content {
+                text-align: center;
+            }
+
+            .hero-description {
+                margin: 0 auto 2.5rem;
+                padding-left: 0;
+                border: none;
+            }
+        }
+
+        /* SmartGen Section Styles */
+        .smartgen-section {
+            padding: 6rem 5%;
+            position: relative;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            background: linear-gradient(to bottom, #0a0a14, #050505);
+        }
+
+        .smartgen-highlight {
+            color: var(--accent-secondary);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            display: block;
+            margin-bottom: 1rem;
+        }
+
+        .smartgen-title {
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+            line-height: 1.1;
+        }
+
+        .smartgen-desc {
+            font-size: 1.2rem;
+            color: #ccc;
+            margin-bottom: 2rem;
+            max-width: 500px;
+            line-height: 1.6;
+        }
+
+        .smartgen-feature {
+            display: flex;
+            gap: 1rem;
+            align-items: flex-start;
+        }
+
+        .smartgen-icon-box {
+            padding: 12px;
+            border-radius: 8px;
+        }
+
+        .smartgen-icon-box.magic {
+            background: rgba(79, 70, 229, 0.2);
+        }
+
+        .smartgen-icon-box.network {
+            background: rgba(255, 62, 62, 0.2);
+        }
+
+        .smartgen-visual {
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+            padding: 2rem;
+        }
+
+        .smartgen-interface-header {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 1rem;
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .smartgen-loading-area {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 1rem;
+            border: 1px dashed rgba(255, 255, 255, 0.2);
+        }
+
+        .smartgen-progress-bar {
+            width: 60%;
+            height: 4px;
+            background: #333;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .smartgen-progress-fill {
+            width: 75%;
+            height: 100%;
+            background: var(--accent-secondary);
+            animation: loading 2s infinite;
+        }
+
+        .smartgen-stat-box {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="ambient-glow"></div>
+
+    <!-- Navigation injected by vidi-nav-component.js -->
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="hero-grid">
+            <div class="hero-content">
+                <div class="hero-tag">Breaking Update</div>
+                <h1>Running the world<br>with Smart Stack.</h1>
+                <p class="hero-description">
+                    The first news network powered entirely by VidiSmart Intelligence. Real-time data, synthesized
+                    analysis, and AI-generated reporting delivered at the speed of thought.
+                </p>
+                <div style="display: flex; gap: 1rem; align-items: center;">
+                    <a href="vidi.news.platform.html" class="btn-news">Watch Live Coverage</a>
+                    <span style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.9rem; color: #888;">
+                        <span style="width: 8px; height: 8px; background: red; border-radius: 50%;"></span>
+                        Broadcasting to 142 Countries
+                    </span>
+                </div>
+            </div>
+
+            <div class="hero-visual">
+                <div class="anchor-frame">
+                    <div class="live-overlay">LIVE • BREAKING NEWS</div>
+                    <!-- Using high-res case study image for Hero -->
+                    <img referrerpolicy="no-referrer" src="https://cdn.vidi.news/images/vidi_news_reporter_blonde_1770779142944.png?v=4"
+                        alt="Contractor Appointments AI Success" class="anchor-img">
+                    <div class="anchor-overlay">
+                        <div class="anchor-headline">Contractor Appointments Books $134M in Revenue with VidiSmart AI
+                        </div>
+                        <p style="color: #ccc; font-size: 0.9rem;">Case Study: Professional Services Automation Scale-Up
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- VidiFlash News Grid (12 Stories) - NEW DESIGN -->
+    <style>
+        /* --- NEW PROFESSIONAL STYLES --- */
+
+        /* News Feed Styles */
+        .news-grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.5rem;
+            padding-bottom: 4rem;
+        }
+
+        .news-card {
+            position: relative;
+            border-radius: 12px;
+            overflow: hidden;
+            background: #0f172a;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            aspect-ratio: 16/9;
+            text-decoration: none;
+            display: block;
+        }
+
+        .news-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.2);
+            border-color: rgba(59, 130, 246, 0.4);
+            z-index: 10;
+        }
+
+        .news-card-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+            opacity: 0.9;
+        }
+
+        .news-card:hover .news-card-img {
+            transform: scale(1.05);
+            opacity: 1;
+        }
+
+        .news-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.95) 0%, rgba(0, 0, 0, 0.6) 60%, transparent 100%);
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+        }
+
+        .news-tag {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(4px);
+            color: white;
+            width: fit-content;
+        }
+
+        .news-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: white;
+            margin: 0 0 0.5rem 0;
+            line-height: 1.3;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .news-metric {
+            color: var(--accent-green);
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+    </style>
+
+    <section class="stories-section" style="padding: 2rem 10%;">
+        <div
+            style="margin-bottom: 2rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 1rem; display: flex; justify-content: space-between; align-items: flex-end;">
+            <div>
+                <span
+                    style="color: var(--accent-primary); font-size: 0.8rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;">Real-World
+                    Impact</span>
+                <h3 class="font-heading" style="font-size: 2rem;">VidiFlash News</h3>
+            </div>
+            <a href="vidi.news.platform.html" class="btn-news" style="padding: 10px 20px; font-size: 0.8rem;">View All
+                Case Studies</a>
+        </div>
+
+        <div class="news-grid-container">
+
+            <!-- 1. Contractor Appointments -->
+            <a href="vidi.news.platform.html" class="news-card">
+                <img referrerpolicy="no-referrer" src="https://cdn.vidi.news/images/vidi_news_reporter_1770757531883.png?v=3" class="news-card-img"
+                    alt="Contractor Appointments">
+                <div class="news-overlay">
+                    <span class="news-tag" style="background: rgba(74, 222, 128, 0.2);">Professional Services</span>
+                    <h4 class="news-title">Contractor Appointments Books $134M with AI</h4>
+                    <span class="news-metric" style="color: #4ade80;">383% ROI</span>
+                </div>
+            </a>
+
+            <!-- 2. MidWest Logistics -->
+            <a href="vidi.news.platform.html" class="news-card">
+                <img referrerpolicy="no-referrer" src="https://cdn.vidi.news/images/smartgen_simple_1770608295481.png?v=3" class="news-card-img" alt="MidWest Logistics">
+                <div class="news-overlay">
+                    <span class="news-tag" style="background: rgba(96, 165, 250, 0.2);">Logistics</span>
+                    <h4 class="news-title">MidWest Logistics Saves $1.7M</h4>
+                    <span class="news-metric" style="color: #60a5fa;">4,047% ROI</span>
+                </div>
+            </a>
+
+            <!-- 3. Cahill Construction -->
+            <a href="vidi.news.platform.html" class="news-card">
+                <img referrerpolicy="no-referrer" src="https://cdn.vidi.news/images/vidi_news_studio_wide_1770779247944.png?v=3" class="news-card-img"
+                    alt="Cahill Construction">
+                <div class="news-overlay">
+                    <span class="news-tag" style="background: rgba(52, 211, 153, 0.2);">Construction</span>
+                    <h4 class="news-title">Cahill Construction: 64 Hours Saved Monthly</h4>
+                    <span class="news-metric" style="color: #34d399;">1,114% ROI</span>
+                </div>
+            </a>
+
+            <!-- 4. Payless Kitchen & Bath -->
+            <a href="vidi.news.platform.html" class="news-card">
+                <img referrerpolicy="no-referrer" src="https://cdn.vidi.news/images/reporter_female_1_1770778899643.png?v=3" class="news-card-img" alt="Payless Kitchen">
+                <div class="news-overlay">
+                    <span class="news-tag" style="background: rgba(251, 191, 36, 0.2);">Remodeling</span>
+                    <h4 class="news-title">Payless Kitchen Books 14 More Demos/Week</h4>
+                    <span class="news-metric" style="color: #fbbf24;">8x Faster</span>
+                </div>
+            </a>
+
+            <!-- 5. INX International -->
+            <a href="vidi.news.platform.html" class="news-card">
+                <img referrerpolicy="no-referrer" src="https://cdn.vidi.news/images/smartgen_simple_1770608331585.png?v=3" class="news-card-img" alt="INX International">
+                <div class="news-overlay">
+                    <span class="news-tag" style="background: rgba(167, 139, 250, 0.2);">Manufacturing</span>
+                    <h4 class="news-title">INX International Increases Production 40%</h4>
+                    <span class="news-metric" style="color: #a78bfa;">5x ROI</span>
+                </div>
+            </a>
+
+            <!-- 6. Smith.ai -->
+            <a href="vidi.news.platform.html" class="news-card">
+                <img referrerpolicy="no-referrer" src="https://cdn.vidi.news/images/ai_answer_engine_strategy.png?v=3" class="news-card-img" alt="Smith.ai">
+                <div class="news-overlay">
+                    <span class="news-tag" style="background: rgba(244, 114, 182, 0.2);">Services</span>
+                    <h4 class="news-title">Smith.ai Saves 250+ Hours Weekly</h4>
+                    <span class="news-metric" style="color: #f472b6;">650% ROI</span>
+                </div>
+            </a>
+
+            <!-- 7. LAPP -->
+            <a href="vidi.news.platform.html" class="news-card">
+                <img referrerpolicy="no-referrer" src="https://cdn.vidi.news/images/visual_vector_architecture.png?v=3" class="news-card-img" alt="LAPP">
+                <div class="news-overlay">
+                    <span class="news-tag" style="background: rgba(254, 202, 202, 0.2);">Manufacturing</span>
+                    <h4 class="news-title">LAPP Processes 350K+ Orders Annually</h4>
+                    <span class="news-metric" style="color: #fecaca;">380% ROI</span>
+                </div>
+            </a>
+
+            <!-- 8. Healthie -->
+            <a href="vidi.news.platform.html" class="news-card">
+                <img referrerpolicy="no-referrer" src="https://cdn.vidi.news/images/reporter_female_2_1770778928052.png?v=3" class="news-card-img" alt="Healthie">
+                <div class="news-overlay">
+                    <span class="news-tag" style="background: rgba(34, 211, 238, 0.2);">Healthcare</span>
+                    <h4 class="news-title">Healthie Saves 60+ Hours Weekly via Agents</h4>
+                    <span class="news-metric" style="color: #22d3ee;">714% ROI</span>
+                </div>
+            </a>
+
+            <!-- 9. Novelis -->
+            <a href="vidi.news.platform.html" class="news-card">
+                <img referrerpolicy="no-referrer" src="https://cdn.vidi.news/images/smartgen_simple_1770608429627.png?v=3" class="news-card-img" alt="Novelis">
+                <div class="news-overlay">
+                    <span class="news-tag" style="background: rgba(199, 210, 254, 0.2);">Manufacturing</span>
+                    <h4 class="news-title">Novelis Transforms to Predictive Maintenance</h4>
+                    <span class="news-metric" style="color: #c7d2fe;">520% ROI</span>
+                </div>
+            </a>
+
+            <!-- 10. C3 AI Steel -->
+            <a href="vidi.news.platform.html" class="news-card">
+                <img referrerpolicy="no-referrer" src="https://cdn.vidi.news/images/smartgen_simple_1770608385124.png?v=3" class="news-card-img" alt="C3 AI Steel">
+                <div class="news-overlay">
+                    <span class="news-tag" style="background: rgba(251, 146, 60, 0.2);">Manufacturing</span>
+                    <h4 class="news-title">Steel Manufacturer Optimizes Supply Chain</h4>
+                    <span class="news-metric" style="color: #fb923c;">$2.5M Saved</span>
+                </div>
+            </a>
+
+            <!-- 11. US Chemicals -->
+            <a href="vidi.news.platform.html" class="news-card">
+                <img referrerpolicy="no-referrer" src="https://cdn.vidi.news/images/layout_section_4_1770679298971.png?v=3" class="news-card-img" alt="US Chemicals">
+                <div class="news-overlay">
+                    <span class="news-tag" style="background: rgba(52, 211, 153, 0.2);">Logistics</span>
+                    <h4 class="news-title">US Chemicals Protects $1.56B in Revenue</h4>
+                    <span class="news-metric" style="color: #34d399;">681% ROI</span>
+                </div>
+            </a>
+
+            <!-- 12. Grammarly -->
+            <a href="vidi.news.platform.html" class="news-card">
+                <img referrerpolicy="no-referrer" src="https://cdn.vidi.news/images/chrome_gemini_verify_1770684533999.png?v=3" class="news-card-img" alt="Grammarly">
+                <div class="news-overlay">
+                    <span class="news-tag" style="background: rgba(56, 189, 248, 0.2);">SaaS</span>
+                    <h4 class="news-title">Grammarly Scales Operations with Zapier</h4>
+                    <span class="news-metric" style="color: #38bdf8;">444% ROI</span>
+                </div>
+            </a>
+
+        </div>
+    </section>
+
+    <!-- SmartGen Content Creation Section -->
+    <section class="smartgen-section">
+        <div class="hero-grid">
+            <!-- Content -->
+            <div class="hero-content">
+                <span class="smartgen-highlight">
+                    VidiCRM Integrated
+                </span>
+                <h2 class="font-heading smartgen-title">
+                    SmartGen Video<br>Creation.
+                </h2>
+                <p class="smartgen-desc">
+                    Generate context-aware video campaigns instantly. Powered by <strong>SiteSwarm Command</strong> and
+                    fully integrated with <strong>SmartChannel CX</strong> in VidiCRM.
+                </p>
+
+                <div style="display: grid; grid-template-columns: 1fr; gap: 1.5rem;">
+                    <div class="smartgen-feature">
+                        <div class="smartgen-icon-box magic">
+                            <i class="fas fa-magic" style="color: var(--accent-secondary); font-size: 1.2rem;"></i>
+                        </div>
+                        <div>
+                            <h4 style="font-size: 1.1rem; margin-bottom: 0.3rem;">Context-Aware Campaigns</h4>
+                            <p style="font-size: 0.9rem; color: #888;">AI analyzes your VidiCRM data to generate
+                                relevant, high-conversion news segments.</p>
+                        </div>
+                    </div>
+
+                    <div class="smartgen-feature">
+                        <div class="smartgen-icon-box network">
+                            <i class="fas fa-network-wired"
+                                style="color: var(--accent-primary); font-size: 1.2rem;"></i>
+                        </div>
+                        <div>
+                            <h4 style="font-size: 1.1rem; margin-bottom: 0.3rem;">SmartChannel CX & SiteSwarm</h4>
+                            <p style="font-size: 0.9rem; color: #888;">Direct command execution from VidiCRM. Deploy
+                                swarms of content across all channels instantly.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-top: 3rem;">
+                    <a href="https://vidicrm.com" class="btn-news"
+                        style="background: linear-gradient(135deg, var(--accent-secondary), #8b5cf6); color: white; border: none;">
+                        Launch SmartGen Studio
+                    </a>
+                </div>
+            </div>
+
+            <!-- Visual -->
+            <!-- Visual -->
+            <div class="smartgen-visual">
+                <!-- Mock Interface -->
+                <div class="smartgen-interface-header">
+                    <span
+                        style="font-size: 0.8rem; text-transform: uppercase; color: #888; font-weight: 700;">VidiCRM.com
+                        Connected</span>
+                    <i class="fas fa-wifi" style="color: #4ade80;"></i>
+                </div>
+                <!-- Mock "Generating" View -->
+                <div class="smartgen-loading-area" style="position: relative; overflow: hidden;">
+                    <!-- Real Image as 'Generated Content' -->
+                    <img referrerpolicy="no-referrer" src="https://cdn.vidi.news/images/smartgen_simple_1770608087250.png?v=3"
+                        style="width: 100%; height: 100%; object-fit: cover; opacity: 0.6; filter: blur(2px);">
+
+                    <div
+                        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 2;">
+                        <i class="fas fa-magic animate-pulse"
+                            style="font-size: 3rem; color: var(--accent-secondary); margin-bottom: 1rem;"></i>
+                        <p
+                            style="font-family: monospace; color: white; background: rgba(0,0,0,0.7); padding: 5px 10px; border-radius: 4px;">
+                            Processing: Campaign_v4_Final_Render</p>
+                        <div class="smartgen-progress-bar" style="margin-top: 1rem; width: 80%;">
+                            <div class="smartgen-progress-fill"></div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Stats -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem;">
+                    <div class="smartgen-stat-box">
+                        <span style="display: block; font-size: 0.7rem; color: #888; text-transform: uppercase;">Top
+                            Asset</span>
+                        <span style="font-weight: 700;">Contractor_Appts.mp4</span>
+                    </div>
+                    <div class="smartgen-stat-box">
+                        <span
+                            style="display: block; font-size: 0.7rem; color: #888; text-transform: uppercase;">Status</span>
+                        <span style="font-weight: 700; color: #4ade80;">Rendering (94%)</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- News Ticker -->
+    <div class="news-ticker-wrap">
+        <div class="ticker-label">Vidi.NEWS Update</div>
+        <div class="ticker-track">
+            <div class="ticker-item"><i class="fas fa-bolt"></i> VidiSmart Engine V4 Released</div>
+            <div class="ticker-item"><i class="fas fa-globe"></i> Global Latency Reduced by 40%</div>
+            <div class="ticker-item"><i class="fas fa-chart-line"></i> AI Ad Revenue Up 15% Q3</div>
+            <div class="ticker-item"><i class="fas fa-robot"></i> New 'News Reporter' Agent Deploying Soon</div>
+            <div class="ticker-item"><i class="fas fa-bolt"></i> Running the world with smart stack</div>
+            <!-- Repeat for smooth loop -->
+            <div class="ticker-item"><i class="fas fa-bolt"></i> VidiSmart Engine V4 Released</div>
+            <div class="ticker-item"><i class="fas fa-globe"></i> Global Latency Reduced by 40%</div>
+            <div class="ticker-item"><i class="fas fa-chart-line"></i> AI Ad Revenue Up 15% Q3</div>
+            <div class="ticker-item"><i class="fas fa-robot"></i> New 'News Reporter' Agent Deploying Soon</div>
+            <div class="ticker-item"><i class="fas fa-bolt"></i> Running the world with smart stack</div>
+        </div>
+    </div>
+
+    <!-- SmartGen Features Gallery (Requested by User) -->
+    <section class="gallery-section" style="padding: 4rem 10%; background: #050505;">
+        <div class="gallery-header" style="margin-bottom: 3rem; text-align: center;">
+            <span
+                style="color: var(--accent-secondary); font-size: 0.8rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; display: block; margin-bottom: 0.5rem;">Visual
+                Intelligence</span>
+            <h2 class="font-heading" style="color: white; font-size: 2.5rem; margin-bottom: 1rem;">SmartGen Visual
+                Features</h2>
+            <div
+                style="width: 60px; height: 4px; background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary)); margin: 0 auto;">
+            </div>
+        </div>
+
+        <div class="gallery-grid"
+            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(600px, 1fr)); gap: 3rem;">
+            <!-- 1. Hero Section -->
+            <div class="gallery-item-full"
+                style="background: #0f172a; padding: 1rem; border-radius: 16px; border: 1px solid rgba(255,255,255,0.1);">
+                <img referrerpolicy="no-referrer" src="https://cdn.vidi.news/images/vidi_news_reporter_blonde_1770779142944.png?v=5"
+                    alt="Gemini Generated Reporter - Hero Section"
+                    style="width: 100%; height: auto; border-radius: 8px; display: block; object-fit: cover;">
+                <h4 style="margin-top: 1rem; color: white;">Context-Aware Hero Personalization</h4>
+            </div>
+
+            <!-- 2. AI Demo Modal -->
+            <div class="gallery-item-full"
+                style="background: #0f172a; padding: 1rem; border-radius: 16px; border: 1px solid rgba(255,255,255,0.1);">
+                <img referrerpolicy="no-referrer" src="https://cdn.vidi.news/images/smartgen_simple_1770608071700.png?v=3" alt="Gemini Generated Studio - AI Demo Modal"
+                    style="width: 100%; height: auto; border-radius: 8px; display: block; object-fit: cover;">
+                <h4 style="margin-top: 1rem; color: white;">Instant AI Demo Generation</h4>
+            </div>
+
+            <!-- 3. Record Once Personalize -->
+            <div class="gallery-item-full"
+                style="background: #0f172a; padding: 1rem; border-radius: 16px; border: 1px solid rgba(255,255,255,0.1);">
+                <img referrerpolicy="no-referrer" src="https://cdn.vidi.news/images/news_reporter_interview_1770756839897.png?v=3"
+                    alt="Generated Content Parade - Record Once"
+                    style="width: 100%; height: auto; border-radius: 8px; display: block; object-fit: cover;">
+                <h4 style="margin-top: 1rem; color: white;">Single-Source Automated Personalization</h4>
+            </div>
+
+            <!-- 4. Dynamic Backgrounds -->
+            <div class="gallery-item-full"
+                style="background: #0f172a; padding: 1rem; border-radius: 16px; border: 1px solid rgba(255,255,255,0.1);">
+                <img referrerpolicy="no-referrer" src="https://cdn.vidi.news/images/vidi_news_studio_wide_v2_1770779354501.png?v=3" alt="Generated Dynamic Backgrounds"
+                    style="width: 100%; height: auto; border-radius: 8px; display: block; object-fit: cover;">
+                <h4 style="margin-top: 1rem; color: white;">Dynamic Environment Processing</h4>
+            </div>
+
+            <!-- 5. Personalized Video Pages -->
+            <div class="gallery-item-full"
+                style="background: #0f172a; padding: 1rem; border-radius: 16px; border: 1px solid rgba(255,255,255,0.1);">
+                <img referrerpolicy="no-referrer" src="https://cdn.vidi.news/images/viditwin_verified_state_1770686099947.png?v=3" alt="Generated Personalized Pages"
+                    style="width: 100%; height: auto; border-radius: 8px; display: block; object-fit: cover;">
+                <h4 style="margin-top: 1rem; color: white;">Generated Landing Pages</h4>
+            </div>
+
+            <!-- 6. Edit Landing Page -->
+            <div class="gallery-item-full"
+                style="background: #0f172a; padding: 1rem; border-radius: 16px; border: 1px solid rgba(255,255,255,0.1);">
+                <img referrerpolicy="no-referrer" src="https://cdn.vidi.news/images/smartgen_simple_1770608149243.png?v=3" alt="Generated Editor Interface"
+                    style="width: 100%; height: auto; border-radius: 8px; display: block; object-fit: cover;">
+                <h4 style="margin-top: 1rem; color: white;">Real-Time Editor Interface</h4>
+            </div>
+
+            <!-- 7. Add Contacts Generate -->
+            <div class="gallery-item-full"
+                style="background: #0f172a; padding: 1rem; border-radius: 16px; border: 1px solid rgba(255,255,255,0.1);">
+                <img referrerpolicy="no-referrer" src="https://cdn.vidi.news/images/viditwin_analysis_1770588147453.png?v=3" alt="Generated Contact Synthesis"
+                    style="width: 100%; height: auto; border-radius: 8px; display: block; object-fit: cover;">
+                <h4 style="margin-top: 1rem; color: white;">Bulk Contact Synthesis</h4>
+            </div>
+
+            <!-- 8. CTA Section -->
+            <div class="gallery-item-full"
+                style="background: #0f172a; padding: 1rem; border-radius: 16px; border: 1px solid rgba(255,255,255,0.1);">
+                <img referrerpolicy="no-referrer" src="https://cdn.vidi.news/images/vidi_news_control_room_1770779170221.png?v=3" alt="Generated CTA Hooks"
+                    style="width: 100%; height: auto; border-radius: 8px; display: block; object-fit: cover;">
+                <h4 style="margin-top: 1rem; color: white;">Smart Conversion Hooks</h4>
+            </div>
+        </div>
+    </section>
+    <!-- Gallery Section (12 Real-World Case Studies) -->
+    <!-- SmartGen Media Library Section -->
+    <!-- SmartGen Media Library Section - NEW DESIGN -->
+    <style>
+        /* Asset Browser Styles (SaaS Look) */
+        .asset-browser {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            min-height: 600px;
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            overflow: hidden;
+            font-family: 'Inter', system-ui, sans-serif;
+            /* Cleaner font for tools */
+        }
+
+        .asset-sidebar {
+            background: #1e293b;
+            padding: 1.5rem;
+            border-right: 1px solid #334155;
+        }
+
+        .asset-nav-item {
+            padding: 10px 12px;
+            margin-bottom: 4px;
+            border-radius: 6px;
+            color: #94a3b8;
+            font-size: 0.9rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .asset-nav-item:hover,
+        .asset-nav-item.active {
+            background: #334155;
+            color: white;
+        }
+
+        .asset-main {
+            padding: 1.5rem;
+            background: #0f172a;
+        }
+
+        .asset-toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #334155;
+        }
+
+        .asset-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .asset-file {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            overflow: hidden;
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+        }
+
+        .asset-file:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            border-color: #64748b;
+        }
+
+        .asset-thumb {
+            height: 120px;
+            background: #000;
+            position: relative;
+        }
+
+        .asset-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.8;
+        }
+
+        .format-badge {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            font-size: 0.65rem;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 4px;
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+        }
+
+        .asset-info {
+            padding: 10px;
+        }
+
+        .asset-name {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #e2e8f0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-bottom: 4px;
+        }
+
+        .asset-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: #64748b;
+        }
+    </style>
+    <section class="gallery-section" id="media-library" style="padding: 4rem 10%; background: #0f172a;">
+        <div class="gallery-header" style="margin-bottom: 2rem;">
+            <div style="display: flex; align-items: center; justify-content: center; gap: 1rem; margin-bottom: 0.5rem;">
+                <i class="fas fa-photo-video" style="font-size: 2rem; color: var(--accent-secondary);"></i>
+                <h2 style="margin: 0; font-family: 'Outfit', sans-serif;">SmartGen Media Library</h2>
+            </div>
+            <p style="color: #64748b; font-size: 0.9rem;">Live VidiCRM Asset Feed • 8 New Assets Available</p>
+        </div>
+
+        <div class="asset-browser">
+            <!-- Sidebar -->
+            <div class="asset-sidebar">
+                <h5
+                    style="color: #64748b; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 1rem;">
+                    Library Base</h5>
+                <div class="asset-nav-item active"><i class="fas fa-layer-group"></i> All Assets</div>
+                <div class="asset-nav-item"><i class="fas fa-folder"></i> Campaigns</div>
+                <div class="asset-nav-item"><i class="fas fa-film"></i> Raw Footage</div>
+                <div class="asset-nav-item"><i class="fas fa-images"></i> Images</div>
+                <div class="asset-nav-item"><i class="fas fa-star" style="color: #fbbf24;"></i> Favorites</div>
+
+                <h5
+                    style="color: #64748b; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; margin: 1.5rem 0 1rem;">
+                    Storage</h5>
+                <div class="asset-nav-item"><i class="fas fa-cloud"></i> VidiCloud (87%)</div>
+                <div class="asset-nav-item"><i class="fas fa-hdd"></i> Local Drive</div>
+            </div>
+
+            <!-- Main Area -->
+            <div class="asset-main">
+                <!-- Toolbar -->
+                <div class="asset-toolbar">
+                    <div class="search-wrap" style="position: relative;">
+                        <i class="fas fa-search"
+                            style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: #64748b;"></i>
+                        <input type="text" placeholder="Search assets..."
+                            style="background: rgba(15, 23, 42, 0.5); border: 1px solid #334155; padding: 8px 10px 8px 35px; border-radius: 6px; color: white; width: 250px; font-size: 0.9rem;">
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <button
+                            style="background: transparent; border: 1px solid #334155; color: #94a3b8; padding: 6px 12px; border-radius: 6px; cursor: pointer;"><i
+                                class="fas fa-filter"></i> Filter</button>
+                        <button
+                            style="background: var(--accent-secondary); border: none; color: white; padding: 6px 16px; border-radius: 6px; font-weight: 600; cursor: pointer;"><i
+                                class="fas fa-cloud-upload-alt"></i> Upload</button>
+                    </div>
+                </div>
+
+                <!-- Asset Grid -->
+                <div class="asset-grid">
+                    <!-- 1. Contractor Appts -->
+                    <div class="asset-file">
+                        <div class="asset-thumb">
+                            <img referrerpolicy="no-referrer" src="https://cdn.vidi.news/images/vidi_news_reporter_1770757531883.png?v=3" alt="Contractor">
+                            <span class="format-badge">MP4</span>
+                        </div>
+                        <div class="asset-info">
+                            <div class="asset-name">contractor_promo_v2.mp4</div>
+                            <div class="asset-meta">
+                                <span>24MB</span>
+                                <span>Just Now</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 2. MidWest -->
+                    <div class="asset-file">
+                        <div class="asset-thumb">
+                            <img referrerpolicy="no-referrer" src="https://cdn.vidi.news/images/smartgen_simple_1770608295481.png?v=3" alt="MidWest">
+                            <span class="format-badge">JPG</span>
+                        </div>
+                        <div class="asset-info">
+                            <div class="asset-name">logistics_fleet_01.jpg</div>
+                            <div class="asset-meta">
+                                <span>2.4MB</span>
+                                <span>2m ago</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 3. Cahill -->
+                    <div class="asset-file">
+                        <div class="asset-thumb">
+                            <img referrerpolicy="no-referrer" src="https://cdn.vidi.news/images/vidi_news_studio_wide_1770779247944.png?v=3" alt="Cahill">
+                            <span class="format-badge">RAW</span>
+                        </div>
+                        <div class="asset-info">
+                            <div class="asset-name">site_survey_drone.raw</div>
+                            <div class="asset-meta">
+                                <span>142MB</span>
+                                <span>5m ago</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 4. Payless -->
+                    <div class="asset-file">
+                        <div class="asset-thumb">
+                            <img referrerpolicy="no-referrer" src="https://cdn.vidi.news/images/reporter_female_1_1770778899643.png?v=3" alt="Payless">
+                            <span class="format-badge">MOV</span>
+                        </div>
+                        <div class="asset-info">
+                            <div class="asset-name">kitchen_reno_timelapse.mov</div>
+                            <div class="asset-meta">
+                                <span>85MB</span>
+                                <span>10m ago</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 5. INX -->
+                    <div class="asset-file">
+                        <div class="asset-thumb">
+                            <img referrerpolicy="no-referrer" src="https://cdn.vidi.news/images/smartgen_simple_1770608331585.png?v=3" alt="INX">
+                            <span class="format-badge">MP4</span>
+                        </div>
+                        <div class="asset-info">
+                            <div class="asset-name">production_line_cam2.mp4</div>
+                            <div class="asset-meta">
+                                <span>55MB</span>
+                                <span>15m ago</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 6. Smith -->
+                    <div class="asset-file">
+                        <div class="asset-thumb">
+                            <img referrerpolicy="no-referrer" src="https://cdn.vidi.news/images/ai_answer_engine_strategy.png?v=3" alt="Smith">
+                            <span class="format-badge">JPG</span>
+                        </div>
+                        <div class="asset-info">
+                            <div class="asset-name">agent_dashboard_screen.jpg</div>
+                            <div class="asset-meta">
+                                <span>1.2MB</span>
+                                <span>20m ago</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 7. LAPP -->
+                    <div class="asset-file">
+                        <div class="asset-thumb">
+                            <img referrerpolicy="no-referrer" src="https://cdn.vidi.news/images/visual_vector_architecture.png?v=3" alt="LAPP">
+                            <span class="format-badge">MP4</span>
+                        </div>
+                        <div class="asset-info">
+                            <div class="asset-name">automation_demo_reel.mp4</div>
+                            <div class="asset-meta">
+                                <span>112MB</span>
+                                <span>1h ago</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 8. Healthie -->
+                    <div class="asset-file">
+                        <div class="asset-thumb">
+                            <img referrerpolicy="no-referrer" src="https://cdn.vidi.news/images/reporter_female_2_1770778928052.png?v=3" alt="Healthie">
+                            <span class="format-badge">PNG</span>
+                        </div>
+                        <div class="asset-info">
+                            <div class="asset-name">patient_portal_mockup.png</div>
+                            <div class="asset-meta">
+                                <span>3.1MB</span>
+                                <span>2h ago</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- nav handled by vidi-nav-component.js in head -->
+</body>
+
+</html>

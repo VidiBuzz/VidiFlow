@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Ketone & MCT Explorer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 450px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 640px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .content-section {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .active-tab {
+            background-color: #ffffff;
+            color: #059669; 
+            border-bottom: 2px solid #059669;
+        }
+        .inactive-tab {
+            background-color: #f5f5f4;
+            color: #78716c;
+            border-bottom: 2px solid transparent;
+        }
+        .toggle-arrow {
+            transition: transform 0.3s ease;
+        }
+        .toggle-open .toggle-arrow {
+            transform: rotate(90deg);
+        }
+    </style>
+    <!-- Chosen Palette: Warm Stone & Emerald -->
+    <!-- Application Structure Plan: Tab-based SPA. A persistent top navigation bar with 4 tabs: 'Key Concepts', 'MCT Deep Dive', 'Strategy & Fasting', 'Cellular Health'. Clicking a tab uses JavaScript to hide all other content sections and show only the relevant one. This structure is chosen because it logically chunks the user's research questions into thematic, digestible sections, allowing non-linear exploration. User flow is: Land on 'Key Concepts', explore, then click any other tab to deep-dive. Interactions include toggles for definitions, an interactive chart for MCT comparison, and visual diagrams made with HTML/Tailwind. -->
+    <!-- Visualization & Content Choices: 
+        - Info: Ketosis Definition. Goal: Inform. Viz: HTML/CSS toggle/card. Interaction: Click to expand/collapse. Justification: Hides complex text by default, user pulls info as needed. Method: HTML/JS.
+        - Info: MCT Metabolism Path. Goal: Compare. Viz: HTML/CSS/Tailwind diagram. Interaction: Static visual. Justification: Visually contrasts LCT vs MCT paths simply. Method: HTML/Flexbox.
+        - Info: Coconut Oil vs. MCT Oil Composition. Goal: Compare. Viz: Doughnut Chart. Interaction: Hover for tooltips, button to toggle data. Justification: Instantly shows why MCT oil is more ketogenic. Library: Chart.js (Canvas).
+        - Info: MCT Types (C8, C10, C12). Goal: Organize/Inform. Viz: HTML/CSS toggle/accordion. Interaction: Click to read about each type. Justification: Organizes 3 related topics. Method: HTML/JS.
+        - Info: 12-Hour Fasting. Goal: Show Change. Viz: HTML/CSS/Tailwind timeline. Interaction: Static visual. Justification: Simple visual representation of the fasting process. Method: HTML/Flexbox.
+        - Info: Mitochondrial Biogenesis. Goal: Inform. Viz: Text card. Interaction: Read. Justification: Complex topic, best explained with clear text. Method: HTML.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+</head>
+<body class="bg-stone-50 text-stone-800 font-sans leading-relaxed">
+
+    <div class="container mx-auto p-4 md:p-8 max-w-5xl">
+        <header class="mb-6">
+            <h1 class="text-3xl md:text-4xl font-bold text-stone-900 mb-2">The Ketone & MCT Explorer</h1>
+            <p class="text-lg text-stone-600">An interactive guide to ketosis, fats, and metabolic strategy.</p>
+        </header>
+
+        <nav class="flex flex-wrap border-b border-stone-200">
+            <button class="tab-button py-3 px-4 md:px-6 font-semibold rounded-t-lg text-sm md:text-base focus:outline-none active-tab" data-tab="concepts">Key Concepts</button>
+            <button class="tab-button py-3 px-4 md:px-6 font-semibold rounded-t-lg text-sm md:text-base focus:outline-none inactive-tab" data-tab="mct">MCT Deep Dive</button>
+            <button class="tab-button py-3 px-4 md:px-6 font-semibold rounded-t-lg text-sm md:text-base focus:outline-none inactive-tab" data-tab="strategy">Strategy & Fasting</button>
+            <button class="tab-button py-3 px-4 md:px-6 font-semibold rounded-t-lg text-sm md:text-base focus:outline-none inactive-tab" data-tab="cellular">Cellular Health</button>
+        </nav>
+
+        <main id="content-container">
+
+            <section id="concepts" class="content-section bg-white p-4 md:p-6 rounded-b-lg rounded-tr-lg shadow-md">
+                <p class="text-stone-700 mb-6">This section covers the fundamental principles of ketosis and how different fats are processed by your body. Understanding these basics is the first step in exploring metabolic strategies.</p>
+                
+                <div class="space-y-4">
+                    <div class="toggle-card bg-stone-50 border border-stone-200 rounded-lg shadow-sm overflow-hidden">
+                        <div class="toggle-header flex justify-between items-center p-4 cursor-pointer">
+                            <h3 class="text-lg font-semibold text-emerald-800">What is Nutritional Ketosis?</h3>
+                            <span class="toggle-arrow text-emerald-700 text-2xl transform transition-transform duration-300">►</span>
+                        </div>
+                        <div class="toggle-content hidden p-4 border-t border-stone-200">
+                            <p class="text-stone-700">Nutritional ketosis is a safe, natural metabolic state where your body primarily burns fat for fuel instead of glucose (sugar). When carbohydrate intake is very low, the liver converts fat (from your diet and your body stores) into molecules called <strong class="text-stone-900">ketones</strong>. These ketones are then used by the brain and body as a clean and efficient energy source.</p>
+                            <p class="text-stone-700 mt-2">This is different from diabetic ketoacidosis, which is a dangerous medical emergency related to a lack of insulin in Type 1 diabetes.</p>
+                        </div>
+                    </div>
+
+                    <div class="toggle-card bg-stone-50 border border-stone-200 rounded-lg shadow-sm overflow-hidden">
+                        <div class="toggle-header flex justify-between items-center p-4 cursor-pointer">
+                            <h3 class="text-lg font-semibold text-emerald-800">The "Caloric Bypass": Myth vs. Reality</h3>
+                            <span class="toggle-arrow text-emerald-700 text-2xl transform transition-transform duration-300">►</span>
+                        </div>
+                        <div class="toggle-content hidden p-4 border-t border-stone-200">
+                            <p class="text-stone-700">The term "caloric bypass" can be misleading. Calories don't disappear. The "bypass" refers to the unique metabolic pathway of Medium-Chain Triglycerides (MCTs).</p>
+                            <ul class="list-disc list-inside mt-2 text-stone-700 space-y-1">
+                                <li><strong class="text-stone-900">Most Fats (LCTs):</strong> Go through the lymphatic system, are circulated, and are easily stored as body fat.</li>
+                                <li><strong class="text-stone-900">MCTs:</strong> "Bypass" this route and are sent directly to the liver. In the liver, they are rapidly converted into ketones for <strong class="text-stone-900">immediate energy</strong>.</li>
+                            </ul>
+                            <p class="text-stone-700 mt-2">So, MCTs are far less likely to be stored as fat and are preferentially used for energy, which supports a ketogenic state.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-8">
+                    <h3 class="text-xl font-semibold text-stone-900 mb-4 text-center">How Your Body Processes Fats: A Comparison</h3>
+                    <div class="flex flex-col md:flex-row justify-around space-y-4 md:space-y-0 md:space-x-4">
+                        <div class="flex-1 bg-stone-50 border border-stone-200 p-4 rounded-lg shadow-sm">
+                            <h4 class="font-bold text-center text-lg text-stone-800 mb-2">Most Fats (LCTs)</h4>
+                            <div class="flex flex-col items-center space-y-2 text-sm text-center">
+                                <div class="bg-white p-2 rounded border border-stone-300 w-full">Stomach & Intestine</div>
+                                <span class="text-stone-500 text-xl">↓</span>
+                                <div class="bg-white p-2 rounded border border-stone-300 w-full">Lymphatic System</div>
+                                <span class="text-stone-500 text-xl">↓</span>
+                                <div class="bg-white p-2 rounded border border-stone-300 w-full">Circulate in Body</div>
+                                <span class="text-stone-500 text-xl">↓</span>
+                                <div class="bg-red-100 border border-red-300 text-red-800 p-2 rounded w-full">High Chance of Fat Storage</div>
+                            </div>
+                        </div>
+
+                        <div class="flex-1 bg-emerald-50 border border-emerald-200 p-4 rounded-lg shadow-sm">
+                            <h4 class="font-bold text-center text-lg text-emerald-800 mb-2">MCTs (e.g., C8, C10)</h4>
+                            <div class="flex flex-col items-center space-y-2 text-sm text-center">
+                                <div class="bg-white p-2 rounded border border-stone-300 w-full">Stomach & Intestine</div>
+                                <span class="text-emerald-500 text-xl">↓</span>
+                                <div class="bg-white p-2 rounded border border-stone-300 w-full">Direct to Liver (via Portal Vein)</div>
+                                <span class="text-emerald-500 text-xl">↓</span>
+                                <div class="bg-white p-2 rounded border border-stone-300 w-full">Rapid Ketone Conversion</div>
+                                <span class="text-emerald-500 text-xl">↓</span>
+                                <div class="bg-emerald-100 border border-emerald-300 text-emerald-800 p-2 rounded w-full">Used for Immediate Energy</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="mct" class="content-section bg-white p-4 md:p-6 rounded-b-lg rounded-tr-lg shadow-md hidden">
+                <p class="text-stone-700 mb-6">Not all MCTs are created equal. This section explores the different types, their most common food sources, and why some are more "ketogenic" than others. Use the chart to see how sources like coconut oil and MCT oil differ.</p>
+                
+                <h3 class="text-xl font-semibold text-stone-900 mb-4 text-center">MCT Oil vs. Coconut Oil: Composition</h3>
+                <div class="chart-container">
+                    <canvas id="mctChart"></canvas>
+                </div>
+                <div class="text-center mt-4">
+                    <button id="toggleChartData" class="bg-emerald-700 text-white px-4 py-2 rounded-lg font-semibold hover:bg-emerald-600 transition-colors">Show Coconut Oil Data</button>
+                </div>
+                <p class="text-sm text-stone-600 text-center mt-2">Use the button to toggle between typical MCT Oil and Coconut Oil to see the difference in C8 and C10 content.</p>
+
+                <div class="mt-8 space-y-4">
+                    <h3 class="text-xl font-semibold text-stone-900 mb-2">The MCT Family</h3>
+                    <div class="toggle-card bg-stone-50 border border-stone-200 rounded-lg shadow-sm overflow-hidden">
+                        <div class="toggle-header flex justify-between items-center p-4 cursor-pointer">
+                            <h3 class="text-lg font-semibold text-emerald-800">C8 (Caprylic Acid): The Most Ketogenic</h3>
+                            <span class="toggle-arrow text-emerald-700 text-2xl transform transition-transform duration-300">►</span>
+                        </div>
+                        <div class="toggle-content hidden p-4 border-t border-stone-200">
+                            <p class="text-stone-700">C8 is considered the gold standard. It is the fastest to be converted into ketones by the liver, providing rapid mental and physical energy. Pure C8 MCT oil is popular for this reason.</p>
+                        </div>
+                    </div>
+                    <div class="toggle-card bg-stone-50 border border-stone-200 rounded-lg shadow-sm overflow-hidden">
+                        <div class="toggle-header flex justify-between items-center p-4 cursor-pointer">
+                            <h3 class="text-lg font-semibold text-emerald-800">C10 (Capric Acid)</h3>
+                            <span class="toggle-arrow text-emerald-700 text-2xl transform transition-transform duration-300">►</span>
+                        </div>
+                        <div class="toggle-content hidden p-4 border-t border-stone-200">
+                            <p class="text-stone-700">C10 is also highly effective, just slightly slower to metabolize than C8. Most standard MCT oils are a blend of C8 and C10, offering a slightly more sustained energy release.</p>
+                        </div>
+                    </div>
+                    <div class="toggle-card bg-stone-50 border border-stone-200 rounded-lg shadow-sm overflow-hidden">
+                        <div class="toggle-header flex justify-between items-center p-4 cursor-pointer">
+                            <h3 class="text-lg font-semibold text-emerald-800">C12 (Lauric Acid): The "Outlier"</h3>
+                            <span class="toggle-arrow text-emerald-700 text-2xl transform transition-transform duration-300">►</span>
+                        </div>
+                        <div class="toggle-content hidden p-4 border-t border-stone-200">
+                            <p class="text-stone-700">C12 is the primary fat in coconut oil (around 47%). While technically an MCT, it behaves more like a long-chain fat (LCT). It's processed much more slowly and is not very ketogenic. While C12 has other health benefits (like being antimicrobial), it doesn't contribute much to ketone production.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-8">
+                    <h3 class="text-xl font-semibold text-stone-900 mb-4">Common Dietary Sources</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-stone-50 border border-stone-200 p-4 rounded-lg">
+                            <h4 class="font-bold text-lg text-stone-800">MCT Oil Supplement</h4>
+                            <p class="text-stone-700">The most concentrated source. Usually 100% C8 or a C8/C10 blend. Designed specifically for ketone production.</p>
+                        </div>
+                        <div class="bg-stone-50 border border-stone-200 p-4 rounded-lg">
+                            <h4 class="font-bold text-lg text-stone-800">Coconut Oil</h4>
+                            <p class="text-stone-700">A good whole-food source, but as the chart shows, it's mostly C12 (Lauric Acid). Only about 15% of coconut oil is the more ketogenic C8/C10.</p>
+                        </div>
+                        <div class="bg-stone-50 border border-stone-200 p-4 rounded-lg">
+                            <h4 class="font-bold text-lg text-stone-800">Goat Cheese & Dairy</h4>
+                            <p class="text-stone-700">Goat and sheep milk (and cheeses) contain C10 (Capric Acid), which is where it gets its name. Grass-fed butter also contains some MCTs. These are much less concentrated sources than oils.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="strategy" class="content-section bg-white p-4 md:p-6 rounded-b-lg rounded-tr-lg shadow-md hidden">
+                <p class="text-stone-700 mb-6">Achieving ketosis involves a multi-step strategy. MCTs are a powerful tool, but they work best when combined with carbohydrate restriction and fasting. This section outlines how these elements work together.</p>
+                
+                <h3 class="text-xl font-semibold text-stone-900 mb-4 text-center">How a 12+ Hour Fast "Forces" Ketosis</h3>
+                <div class="bg-stone-50 border border-stone-200 p-4 rounded-lg shadow-sm">
+                    <div class="flex flex-col md:flex-row md:items-center md:space-x-4">
+                        <div class="text-center p-3 flex-1">
+                            <div class="text-lg font-semibold">8:00 PM (Last Meal)</div>
+                            <div class="text-sm text-stone-600">Liver Glycogen (Sugar) Stores are Full</div>
+                        </div>
+                        <div class="text-2xl text-center text-emerald-600 md:rotate-0">→</div>
+                        <div class="text-center p-3 flex-1 bg-emerald-50 rounded-lg">
+                            <div class="text-lg font-semibold">Overnight (Sleep)</div>
+                            <div class="text-sm text-stone-600">Body Uses Glycogen for Basic Functions</div>
+                        </div>
+                        <div class="text-2xl text-center text-emerald-600 md:rotate-0">→</div>
+                        <div class="text-center p-3 flex-1">
+                            <div class="text-lg font-semibold">8:00 AM (12 Hours)</div>
+                            <div class="text-sm text-emerald-700 font-medium">Glycogen Stores are Low. Body Seeks New Fuel.</div>
+                        </div>
+                        <div class="text-2xl text-center text-emerald-600 md:rotate-0">→</div>
+                        <div class="text-center p-3 flex-1 bg-emerald-100 rounded-lg">
+                            <div class="text-lg font-semibold">12:00 PM (16 Hours)</div>
+                            <div class="text-sm text-emerald-700 font-bold">Ketone Production Ramps Up to Fuel Brain & Body</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-8">
+                    <h3 class="text-xl font-semibold text-stone-900 mb-4">The Three Pillars of a Ketogenic Strategy</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="bg-stone-50 border border-stone-200 p-4 rounded-lg">
+                            <h4 class="font-bold text-lg text-emerald-800">1. Carb Restriction</h4>
+                            <p class="text-stone-700">This is the most critical part. You must restrict carbohydrates (typically 20-50g/day) to force your body to switch from burning glucose to burning fat. Without this, ketosis won't happen.</p>
+                        </div>
+                        <div class="bg-stone-50 border border-stone-200 p-4 rounded-lg">
+                            <h4 class="font-bold text-lg text-emerald-800">2. Intermittent Fasting</h4>
+                            <p class="text-stone-700">A 12-16 hour daily fast (like the timeline above) helps deplete your liver glycogen stores more quickly, accelerating the switch to ketosis each day.</p>
+                        </div>
+                        <div class="bg-stone-50 border border-stone-200 p-4 rounded-lg">
+                            <h4 class="font-bold text-lg text-emerald-800">3. MCT Inclusion</h4>
+                            <p class="text-stone-700">Once carbs are low, adding MCTs (1-2 tbsp/day) provides a direct, fast fuel source for ketone production. This can boost energy, reduce "keto flu" symptoms, and deepen your state of ketosis.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-8">
+                    <h3 class="text-xl font-semibold text-stone-900 mb-4">A Note on Polyphenols</h3>
+                    <div class="bg-stone-50 border border-stone-200 p-4 rounded-lg">
+                        <p class="text-stone-700">Polyphenols (found in berries, green tea, olive oil, dark chocolate) are powerful antioxidants. While they don't <strong class="text-stone-900">directly</strong> generate ketones like MCTs, they are excellent for supporting overall metabolic health, reducing inflammation, and protecting your cells. They are a supportive part of a healthy diet, not a primary driver of ketosis.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="cellular" class="content-section bg-white p-4 md:p-6 rounded-b-lg rounded-tr-lg shadow-md hidden">
+                <p class="text-stone-700 mb-6">The benefits of ketosis may go deeper than just fuel. This section touches on the advanced topic of how ketones can affect your cells, specifically the mitochondria, which are the "power plants" of your cells.</p>
+                
+                <div class="bg-stone-50 border border-stone-200 p-6 rounded-lg shadow-sm">
+                    <h3 class="text-xl font-semibold text-emerald-800 mb-3">Key Question: Do Ketones Multiply Mitochondria?</h3>
+                    <p class="text-stone-700 mb-4">This is a key area of cutting-edge research. The short answer is that ketosis appears to <strong class="text-stone-900">trigger a process that builds new, more efficient mitochondria.</strong></p>
+                    <p class="text-stone-700 mb-2">This process is called <strong class="text-stone-900">mitochondrial biogenesis</strong>.</p>
+                    <p class="text-stone-700">When your body runs on ketones (a state achieved by fasting or a ketogenic diet), it acts as a mild, beneficial "stress" on your cells. This stress signals the cells to adapt by:</p>
+                    <ul class="list-disc list-inside mt-2 text-stone-700 space-y-1">
+                        <li>Building new mitochondria.</li>
+                        <li>Improving the efficiency of existing mitochondria.</li>
+                        <li>Cleaning up damaged mitochondria (autophagy).</li>
+                    </ul>
+                    <p class="text-stone-700 mt-4">More and healthier mitochondria mean your body can produce more energy more efficiently. This is a primary reason why ketosis is being studied for longevity, athletic endurance, and neurodegenerative conditions.</p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const tabs = document.querySelectorAll('.tab-button');
+            const sections = document.querySelectorAll('.content-section');
+            let mctChart = null;
+
+            const mctOilData = {
+                labels: ['C8 (Caprylic)', 'C10 (Capric)', 'C12 (Lauric)', 'Other Fats'],
+                datasets: [{
+                    label: 'MCT Oil',
+                    data: [55, 45, 0, 0],
+                    backgroundColor: ['#047857', '#059669', '#6EE7B7', '#D1FAE5'],
+                    hoverOffset: 4
+                }]
+            };
+
+            const coconutOilData = {
+                labels: ['C8 (Caprylic)', 'C10 (Capric)', 'C12 (Lauric)', 'Other Fats'],
+                datasets: [{
+                    label: 'Coconut Oil',
+                    data: [6, 9, 47, 38],
+                    backgroundColor: ['#047857', '#059669', '#6EE7B7', '#D1FAE5'],
+                    hoverOffset: 4
+                }]
+            };
+            
+            const chartConfig = {
+                type: 'doughnut',
+                data: mctOilData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed !== null) {
+                                        label += context.parsed + '%';
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            };
+
+            function initChart() {
+                const ctx = document.getElementById('mctChart').getContext('2d');
+                mctChart = new Chart(ctx, chartConfig);
+            }
+
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const targetId = tab.dataset.tab;
+
+                    sections.forEach(section => {
+                        if (section.id === targetId) {
+                            section.classList.remove('hidden');
+                        } else {
+                            section.classList.add('hidden');
+                        }
+                    });
+
+                    tabs.forEach(t => {
+                        t.classList.remove('active-tab');
+                        t.classList.add('inactive-tab');
+                    });
+
+                    tab.classList.add('active-tab');
+                    tab.classList.remove('inactive-tab');
+
+                    if (targetId === 'mct' && !mctChart) {
+                        initChart();
+                    }
+                });
+            });
+            
+            document.getElementById('toggleChartData').addEventListener('click', () => {
+                if (!mctChart) return;
+                const currentLabel = mctChart.data.datasets[0].label;
+                if (currentLabel === 'MCT Oil') {
+                    mctChart.data = coconutOilData;
+                    mctChart.update();
+                    document.getElementById('toggleChartData').innerText = 'Show MCT Oil Data';
+                } else {
+                    mctChart.data = mctOilData;
+                    mctChart.update();
+                    document.getElementById('toggleChartData').innerText = 'Show Coconut Oil Data';
+                }
+            });
+
+            document.querySelectorAll('.toggle-header').forEach(header => {
+                header.addEventListener('click', () => {
+                    const content = header.nextElementSibling;
+                    const card = header.closest('.toggle-card');
+                    content.classList.toggle('hidden');
+                    card.classList.toggle('toggle-open');
+                });
+            });
+
+        });
+    </script>
+</body>
+</html>

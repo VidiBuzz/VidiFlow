@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VidiSmart Command Center - Live Feed</title>
+    
+    <!-- Import Kumbh Sans Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kumbh+Sans:wght@400;700&display=swap" rel="stylesheet">
+    
+    <base href="https://vidismart.com/">
+    
+    <!-- Three.js for 3D Particle Background -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --accent-blue: #3b82f6;
+            --accent-purple: #8b5cf6;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --accent-orange: #f59e0b;
+        }
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            background-image: 
+                radial-gradient(circle at 20% 50%, rgba(59, 130, 246, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.08) 0%, transparent 50%);
+            color: var(--text-main);
+            margin: 0;
+            padding: 40px;
+            position: relative;
+        }
+        
+        #three-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+        
+        .content-wrapper {
+            position: relative;
+            z-index: 1;
+        }
+         header {
+            text-align: center;
+            margin-bottom: 50px;
+            border-bottom: 1px solid #334155;
+            padding-bottom: 30px;
+        }
+        h1 { 
+            font-family: 'Kumbh Sans', sans-serif; /* Applied Kumbh Sans here */
+            font-size: 3rem; 
+            margin-bottom: 10px; 
+            background: linear-gradient(to right, #60a5fa, #c084fc); 
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent; 
+        }
+        p.subtitle { color: var(--text-muted); font-size: 1.2rem; }
+        
+        .section-title {
+            margin-top: 50px;
+            margin-bottom: 25px;
+            font-size: 1.5rem;
+            color: #e2e8f0;
+            border-left: 4px solid var(--accent-blue);
+            padding-left: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 30px;
+        }
+
+        /* Special Featured Card Style for VidiSmart */
+        .featured-section .card {
+            border: 2px solid var(--accent-blue);
+            background: linear-gradient(145deg, #1e293b, #0f172a);
+            grid-column: 1 / -1; /* Spans full width */
+            flex-direction: row;
+            align-items: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .featured-section .card-media {
+            width: 400px;
+            height: 250px;
+            flex-shrink: 0;
+            background: linear-gradient(-45deg, rgba(30, 58, 138, 0.95), rgba(59, 130, 246, 0.95), rgba(96, 165, 250, 0.95), rgba(147, 197, 253, 0.95));
+            background-size: 400% 400%;
+            animation: gradientFX 15s ease infinite;
+            position: relative;
+            overflow: hidden;
+        }
+        .featured-section .card-content {
+            padding: 40px;
+        }
+        .featured-section .card-title {
+            font-family: 'Kumbh Sans', sans-serif; /* Applied Kumbh Sans here */
+            font-size: 2rem;
+            margin-bottom: 15px;
+        }
+        
+        /* Standard Card Styles */
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 16px;
+            border: 1px solid #334155;
+            overflow: hidden; /* For image clipping */
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s, box-shadow 0.3s;
+            position: relative;
+        }
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.6);
+            border-color: var(--accent-blue);
+        }
+
+        /* Thumbnail / Video Placeholder Area */
+        .card-media {
+            height: 180px;
+            background-color: #020617;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .featured-video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        @keyframes gradientFX {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        @keyframes gradientWork {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        @keyframes gradientDev {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        @keyframes gradientExp {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        /* FX Section - Red/Pink */
+        .fx-section .card-media {
+            background: linear-gradient(-45deg, rgba(127, 29, 29, 0.9), rgba(190, 18, 60, 0.9), rgba(219, 39, 119, 0.9), rgba(244, 63, 94, 0.9));
+            background-size: 400% 400%;
+            animation: gradientFX 15s ease infinite;
+        }
+        
+        /* Workspace Section - Purple/Violet */
+        .work-section .card-media {
+            background: linear-gradient(-45deg, rgba(88, 28, 135, 0.9), rgba(124, 58, 237, 0.9), rgba(168, 85, 247, 0.9), rgba(192, 132, 252, 0.9));
+            background-size: 400% 400%;
+            animation: gradientWork 15s ease infinite;
+        }
+        
+        /* Dev Section - Teal/Emerald */
+        .dev-section .card-media {
+            background: linear-gradient(-45deg, rgba(6, 78, 59, 0.9), rgba(5, 150, 105, 0.9), rgba(16, 185, 129, 0.9), rgba(52, 211, 153, 0.9));
+            background-size: 400% 400%;
+            animation: gradientDev 15s ease infinite;
+        }
+        
+        /* Experimental Section - Amber/Orange */
+        .exp-section .card-media {
+            background: linear-gradient(-45deg, rgba(120, 53, 15, 0.9), rgba(217, 119, 6, 0.9), rgba(245, 158, 11, 0.9), rgba(251, 191, 36, 0.9));
+            background-size: 400% 400%;
+            animation: gradientExp 15s ease infinite;
+        }
+        
+        .card-media img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.8;
+            transition: opacity 0.3s, transform 0.5s;
+        }
+        
+        .card:hover .card-media img {
+            opacity: 1;
+            transform: scale(1.05);
+        }
+
+        /* Play Button Overlay */
+        .play-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 50px;
+            height: 50px;
+            background: rgba(0,0,0,0.6);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid rgba(255,255,255,0.8);
+            backdrop-filter: blur(4px);
+            pointer-events: none; /* Let clicks pass through */
+        }
+        .play-overlay::after {
+            content: '';
+            display: block;
+            width: 0; 
+            height: 0; 
+            border-top: 8px solid transparent;
+            border-bottom: 8px solid transparent;
+            border-left: 14px solid white;
+            margin-left: 4px;
+        }
+
+        .card-content {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
+        .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+        .card-title { font-size: 1.25rem; font-weight: 700; color: #fff; margin: 0; }
+        .card-desc { color: var(--text-muted); font-size: 0.95rem; line-height: 1.5; flex-grow: 1; margin-bottom: 20px; }
+        
+        .tag { font-size: 0.75rem; padding: 4px 8px; border-radius: 6px; font-weight: bold; text-transform: uppercase; }
+        .tag.vid { background: rgba(59, 130, 246, 0.2); color: var(--accent-blue); }
+        .tag.fx { background: rgba(239, 68, 68, 0.2); color: var(--accent-red); }
+        .tag.work { background: rgba(139, 92, 246, 0.2); color: var(--accent-purple); }
+        .tag.dev { background: rgba(16, 185, 129, 0.2); color: var(--accent-green); }
+        .tag.exp { background: rgba(245, 158, 11, 0.2); color: var(--accent-orange); }
+
+        .btn-group { display: flex; gap: 10px; margin-top: auto; }
+        .btn {
+            flex: 1;
+            padding: 10px;
+            border-radius: 8px;
+            text-decoration: none;
+            text-align: center;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        .btn:hover { opacity: 0.9; transform: scale(1.02); }
+        .btn-primary { background-color: var(--accent-blue); color: white; }
+        .btn-secondary { background-color: #334155; color: #cbd5e1; }
+        
+        /* Responsive tweaks */
+        @media (max-width: 768px) {
+            .featured-section .card { flex-direction: column; }
+            .featured-section .card-media { width: 100%; height: 200px; }
+            .featured-section .card-content { padding: 20px; }
+            .h1 { font-size: 2rem; }
+        }
+
+    </style>
+</head>
+<body>
+    <canvas id="three-canvas"></canvas>
+    <div class="content-wrapper">
+ 
+<header>
+    <h1>VidiSmart Command Center</h1>
+    <p class="subtitle">Orchestrating the Gemini Ecosystem & Labs FX Suite</p>
+</header>
+
+<!-- FEATURED PROJECT -->
+<div class="section-title featured-section" style="border-color: var(--accent-blue);">Active Project</div>
+<div class="grid featured-section">
+     <div class="card">
+        <div class="card-media">
+            <video id="featured-video" class="featured-video" controls playsinline preload="auto">
+                <source src="https://cdn.vidi.news/The_Visual_AI_Smart_Stack.mp4?v=full_fix_02" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+        </div>
+        <div class="card-content">
+            <div class="card-header">
+                <h3 class="card-title">VidiSmart</h3>
+                <span class="tag vid">Featured App</span>
+            </div>
+            <p class="card-desc">Your central hub for automated video intelligence and site orchestration. Integrating Gemini Agents with scalable CMS deployment.</p>
+            <div class="btn-group">
+                <a href="https://vidicrm.com" target="_blank" class="btn btn-primary">Open Dashboard</a>
+                <a href="#" class="btn btn-secondary">Manage Agents</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SECTION 1: CREATIVE LABS (FX) -->
+<div class="section-title" style="border-color: var(--accent-red);">Creative Studio (Labs FX)</div>
+<div class="grid fx-section">
+    <!-- Whisk -->
+    <div class="card">
+        <div class="card-media">
+            <img src="https://img.youtube.com/vi/TnRKIISjhpw/hqdefault.jpg" alt="Whisk" onerror="this.onerror=null; this.src='https://placehold.co/600x340/171717/ef4444?text=Whisk&font=roboto';">
+            <div class="play-overlay"></div>
+        </div>
+        <div class="card-content">
+            <div class="card-header"><h3 class="card-title">Whisk</h3><span class="tag fx">Image FX</span></div>
+            <p class="card-desc">Visual remixer. Combine Subject, Style, and Scene. Includes Veo animation.</p>
+            <div class="btn-group">
+                <a href="https://labs.google/fx/tools/whisk" target="_blank" class="btn btn-primary">Launch</a>
+                <a href="https://www.youtube.com/watch?v=_gBedW_3Z4k" target="_blank" class="btn btn-secondary">Video</a>
+            </div>
+        </div>
+    </div>
+    <!-- ImageFX -->
+    <div class="card">
+        <div class="card-media">
+            <img src="https://img.youtube.com/vi/p6eVgiQ-RoQ/hqdefault.jpg" alt="ImageFX" onerror="this.onerror=null; this.src='https://placehold.co/600x340/171717/ef4444?text=ImageFX&font=roboto';">
+            <div class="play-overlay"></div>
+        </div>
+        <div class="card-content">
+            <div class="card-header"><h3 class="card-title">ImageFX</h3><span class="tag fx">Image FX</span></div>
+            <p class="card-desc">High-fidelity generation using Imagen 3 with expressive chips.</p>
+            <div class="btn-group">
+                <a href="https://aitestkitchen.withgoogle.com/tools/image-fx" target="_blank" class="btn btn-primary">Launch</a>
+                <a href="https://www.youtube.com/watch?v=p6eVgiQ-RoQ" target="_blank" class="btn btn-secondary">Video</a>
+            </div>
+        </div>
+    </div>
+    <!-- MusicFX -->
+    <div class="card">
+        <div class="card-media">
+            <img src="https://img.youtube.com/vi/F8nEVlDtoL8/hqdefault.jpg" alt="MusicFX" onerror="this.onerror=null; this.src='https://placehold.co/600x340/171717/ef4444?text=MusicFX&font=roboto';">
+            <div class="play-overlay"></div>
+        </div>
+        <div class="card-content">
+            <div class="card-header"><h3 class="card-title">MusicFX</h3><span class="tag fx">Music FX</span></div>
+            <p class="card-desc">Generate songs and loops. DJ Mode controls BPM/instruments.</p>
+            <div class="btn-group">
+                <a href="https://aitestkitchen.withgoogle.com/tools/music-fx" target="_blank" class="btn btn-primary">Launch</a>
+                <a href="https://www.youtube.com/watch?v=F8nEVlDtoL8" target="_blank" class="btn btn-secondary">Video</a>
+            </div>
+        </div>
+    </div>
+    <!-- Flow / VideoFX -->
+    <div class="card">
+        <div class="card-media">
+            <img src="https://img.youtube.com/vi/6iBc4aoiwf4/hqdefault.jpg" alt="Flow" onerror="this.onerror=null; this.src='https://placehold.co/600x340/171717/ef4444?text=Flow&font=roboto';">
+            <div class="play-overlay"></div>
+        </div>
+        <div class="card-content">
+            <div class="card-header"><h3 class="card-title">Flow (VideoFX)</h3><span class="tag fx">Video FX</span></div>
+            <p class="card-desc">AI Filmmaking studio powered by Veo 3. Cinematic clips.</p>
+            <div class="btn-group">
+                <a href="https://labs.google/fx/tools/flow" target="_blank" class="btn btn-primary">Launch</a>
+                <a href="https://www.youtube.com/watch?v=6iBc4aoiwf4" target="_blank" class="btn btn-secondary">Video</a>
+            </div>
+        </div>
+    </div>
+    <!-- TextFX -->
+    <div class="card">
+        <div class="card-media">
+            <img src="https://img.youtube.com/vi/vM3ZFPnSC1o/hqdefault.jpg" alt="TextFX" onerror="this.onerror=null; this.src='https://placehold.co/600x340/171717/ef4444?text=TextFX&font=roboto';">
+            <div class="play-overlay"></div>
+        </div>
+        <div class="card-content">
+            <div class="card-header"><h3 class="card-title">TextFX</h3><span class="tag fx">Text FX</span></div>
+            <p class="card-desc">Tools for creative writers. Generate similes and explosions.</p>
+            <div class="btn-group">
+                <a href="https://textfx.withgoogle.com/" target="_blank" class="btn btn-primary">Launch</a>
+                <a href="https://www.youtube.com/watch?v=tHm2lBfYU-k" target="_blank" class="btn btn-secondary">Video</a>
+            </div>
+        </div>
+    </div>
+    <!-- GenType -->
+    <div class="card">
+        <div class="card-media">
+            <img src="https://img.youtube.com/vi/gKj1FEnN7pk/hqdefault.jpg" alt="GenType" onerror="this.onerror=null; this.src='https://placehold.co/600x340/171717/ef4444?text=GenType&font=roboto';">
+            <div class="play-overlay"></div>
+        </div>
+        <div class="card-content">
+            <div class="card-header"><h3 class="card-title">GenType</h3><span class="tag fx">Typography</span></div>
+            <p class="card-desc">Create custom alphabets made out of anything.</p>
+            <div class="btn-group">
+                <a href="https://labs.google/gentype" target="_blank" class="btn btn-primary">Launch</a>
+                <a href="https://www.youtube.com/watch?v=BXZiHQaXaO4" target="_blank" class="btn btn-secondary">Video</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SECTION 2: WORKSPACE & PRODUCTIVITY -->
+<div class="section-title" style="border-color: var(--accent-purple);">Workspace & Productivity</div>
+<div class="grid">
+    <!-- Google Vids -->
+    <div class="card">
+        <div class="card-media">
+            <img src="https://img.youtube.com/vi/3Mlc9_czkrU/hqdefault.jpg" alt="Google Vids" onerror="this.onerror=null; this.src='https://placehold.co/600x340/171717/8b5cf6?text=Google%20Vids&font=roboto';">
+            <div class="play-overlay"></div>
+        </div>
+        <div class="card-content">
+            <div class="card-header"><h3 class="card-title">Google Vids</h3><span class="tag work">Video</span></div>
+            <p class="card-desc">AI video for business. Storyboards, voiceovers, stock footage.</p>
+            <div class="btn-group">
+                <a href="https://vids.google.com" target="_blank" class="btn btn-primary">Launch</a>
+                <a href="https://www.youtube.com/watch?v=3Mlc9_czkrU" target="_blank" class="btn btn-secondary">Video</a>
+            </div>
+        </div>
+    </div>
+    <!-- NotebookLM -->
+    <div class="card">
+        <div class="card-media">
+            <img src="https://img.youtube.com/vi/EQPmdhzhnLw/hqdefault.jpg" alt="NotebookLM" onerror="this.onerror=null; this.src='https://placehold.co/600x340/171717/8b5cf6?text=NotebookLM&font=roboto';">
+            <div class="play-overlay"></div>
+        </div>
+        <div class="card-content">
+            <div class="card-header"><h3 class="card-title">NotebookLM</h3><span class="tag work">Research</span></div>
+            <p class="card-desc">AI "Audio Overviews" (podcasts) from your PDFs/URLs.</p>
+            <div class="btn-group">
+                <a href="https://notebooklm.google" target="_blank" class="btn btn-primary">Launch</a>
+                <a href="https://www.youtube.com/watch?v=EQPmdhzhnLw" target="_blank" class="btn btn-secondary">Video</a>
+            </div>
+        </div>
+    </div>
+    <!-- Gemini Advanced -->
+     <div class="card">
+        <div class="card-media">
+            <video id="featured-video" class="featured-video" controls controlsList="nodownload" poster="https://placehold.co/800x500/1e293b/3b82f6?text=VidiSmart+Project&font=roboto">
+                <source src="The_Visual_AI_Smart_Stack.mp4" type="video/mp4">
+            </video>
+        </div>
+        <div class="card-content">
+            <div class="card-header"><h3 class="card-title">Gemini Advanced</h3><span class="tag work">Chat</span></div>
+            <p class="card-desc">Flagship chat. Deep Research, Python code execution, 2M context.</p>
+            <div class="btn-group">
+                <a href="https://gemini.google.com/app" target="_blank" class="btn btn-primary">Launch</a>
+                <a href="https://www.youtube.com/watch?v=7HuXSoDXfTY" target="_blank" class="btn btn-secondary">Video</a>
+            </div>
+        </div>
+    </div>
+    <!-- Illuminate -->
+    <div class="card">
+        <div class="card-media">
+            <img src="https://img.youtube.com/vi/tpcRsfi6UV8/hqdefault.jpg" alt="Illuminate" onerror="this.onerror=null; this.src='https://placehold.co/600x340/171717/8b5cf6?text=Illuminate&font=roboto';">
+            <div class="play-overlay"></div>
+        </div>
+        <div class="card-content">
+            <div class="card-header"><h3 class="card-title">Illuminate</h3><span class="tag work">Learning</span></div>
+            <p class="card-desc">Turns academic papers/books into AI audio discussions.</p>
+            <div class="btn-group">
+                <a href="https://illuminate.google.com/" target="_blank" class="btn btn-primary">Launch</a>
+                <a href="https://www.youtube.com/watch?v=P5VyJM5xGK0" target="_blank" class="btn btn-secondary">Video</a>
+            </div>
+        </div>
+    </div>
+    <!-- Help Me Write -->
+    <div class="card">
+        <div class="card-media">
+            <img src="https://img.youtube.com/vi/3uAlmp6jmuE/hqdefault.jpg" alt="Help Me Write" onerror="this.onerror=null; this.src='https://placehold.co/600x340/171717/8b5cf6?text=Help%20Me%20Write&font=roboto';">
+            <div class="play-overlay"></div>
+        </div>
+        <div class="card-content">
+            <div class="card-header"><h3 class="card-title">Help Me Write</h3><span class="tag work">Docs/Gmail</span></div>
+            <p class="card-desc">Drafts emails, refines tone, summarizes threads in Workspace.</p>
+            <div class="btn-group">
+                <a href="https://workspace.google.com/solutions/ai/" target="_blank" class="btn btn-primary">Info</a>
+                <a href="https://www.youtube.com/watch?v=3uAlmp6jmuE" target="_blank" class="btn btn-secondary">Video</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SECTION 3: DEVELOPER & AGENTS -->
+<div class="section-title" style="border-color: var(--accent-green);">Dev & Agentic Tools</div>
+<div class="grid">
+    <!-- AI Studio -->
+    <div class="card">
+        <div class="card-media">
+            <img src="https://img.youtube.com/vi/qsKQTmrKZMQ/hqdefault.jpg" alt="AI Studio" onerror="this.onerror=null; this.src='https://placehold.co/600x340/171717/10b981?text=AI%20Studio&font=roboto';">
+            <div class="play-overlay"></div>
+        </div>
+        <div class="card-content">
+            <div class="card-header"><h3 class="card-title">Google AI Studio</h3><span class="tag dev">Prototyping</span></div>
+            <p class="card-desc">Fastest way to build. Prompts, System Instructions, API keys.</p>
+            <div class="btn-group">
+                <a href="https://aistudio.google.com/" target="_blank" class="btn btn-primary">Launch</a>
+                <a href="https://www.youtube.com/watch?v=qsKQTmrKZMQ" target="_blank" class="btn btn-secondary">Video</a>
+            </div>
+        </div>
+    </div>
+    <!-- Vertex AI Agents -->
+    <div class="card">
+        <div class="card-media">
+            <img src="https://img.youtube.com/vi/GCmGxBl3RLY/hqdefault.jpg" alt="Vertex AI">
+            <div class="play-overlay"></div>
+        </div>
+        <div class="card-content">
+            <div class="card-header"><h3 class="card-title">Vertex AI Agent</h3><span class="tag dev">Agents</span></div>
+            <p class="card-desc">Enterprise orchestration. Build autonomous agents (RAG).</p>
+            <div class="btn-group">
+                <a href="https://cloud.google.com/products/agent-builder" target="_blank" class="btn btn-primary">Launch</a>
+                <a href="https://www.youtube.com/watch?v=GCmGxBl3RLY" target="_blank" class="btn btn-secondary">Video</a>
+            </div>
+        </div>
+    </div>
+    <!-- Project IDX -->
+    <div class="card">
+        <div class="card-media">
+            <img src="https://img.youtube.com/vi/-wlZY4tfGMY/hqdefault.jpg" alt="Project IDX" onerror="this.onerror=null; this.src='https://placehold.co/600x340/171717/10b981?text=Project%20IDX&font=roboto';">
+            <div class="play-overlay"></div>
+        </div>
+        <div class="card-content">
+            <div class="card-header"><h3 class="card-title">Project IDX</h3><span class="tag dev">IDE</span></div>
+            <p class="card-desc">AI-first code editor in browser. Full stack dev with Gemini.</p>
+            <div class="btn-group">
+                <a href="https://idx.google.com/" target="_blank" class="btn btn-primary">Launch</a>
+                <a href="https://www.youtube.com/watch?v=-wlZY4tfGMY" target="_blank" class="btn btn-secondary">Video</a>
+            </div>
+        </div>
+    </div>
+    <!-- Firebase Studio -->
+    <div class="card">
+        <div class="card-media">
+            <img src="https://img.youtube.com/vi/P7_MfPMnnxs/hqdefault.jpg" alt="Firebase Studio" onerror="this.onerror=null; this.src='https://placehold.co/600x340/171717/10b981?text=Firebase%20Studio&font=roboto';">
+            <div class="play-overlay"></div>
+        </div>
+        <div class="card-content">
+            <div class="card-header"><h3 class="card-title">Firebase Studio</h3><span class="tag dev">App Build</span></div>
+            <p class="card-desc">Build AI apps from browser. Vector search and backend logic.</p>
+            <div class="btn-group">
+                <a href="https://firebase.google.com/" target="_blank" class="btn btn-primary">Launch</a>
+                <a href="https://www.youtube.com/watch?v=YY8pgg0VKs0" target="_blank" class="btn btn-secondary">Video</a>
+            </div>
+        </div>
+    </div>
+    <!-- Colab Enterprise -->
+    <div class="card">
+        <div class="card-media">
+            <img src="https://img.youtube.com/vi/JW94vV0ZbVs/hqdefault.jpg" alt="Colab">
+            <div class="play-overlay"></div>
+        </div>
+        <div class="card-content">
+            <div class="card-header"><h3 class="card-title">Colab Enterprise</h3><span class="tag dev">Data</span></div>
+            <p class="card-desc">Python notebook environment supercharged with Gemini.</p>
+            <div class="btn-group">
+                <a href="https://colab.research.google.com/" target="_blank" class="btn btn-primary">Launch</a>
+                <a href="https://www.youtube.com/watch?v=JW94vV0ZbVs" target="_blank" class="btn btn-secondary">Video</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SECTION 4: EXPERIMENTAL & FUN -->
+<div class="section-title" style="border-color: var(--accent-orange);">Experimental & Fun</div>
+<div class="grid">
+    <!-- Say What You See -->
+    <div class="card">
+        <div class="card-media">
+            <img src="https://img.youtube.com/vi/eXbWk8LBbSE/hqdefault.jpg" alt="Game">
+            <div class="play-overlay"></div>
+        </div>
+        <div class="card-content">
+            <div class="card-header"><h3 class="card-title">Say What You See</h3><span class="tag exp">Game</span></div>
+            <p class="card-desc">Learn image prompting. AI generates, you guess the prompt.</p>
+            <div class="btn-group">
+                <a href="https://artsandculture.google.com/experiment/say-what-you-see/jRAjqd0iXnJpEw" target="_blank" class="btn btn-primary">Play</a>
+                <a href="https://www.youtube.com/watch?v=eXbWk8LBbSE" target="_blank" class="btn btn-secondary">Video</a>
+            </div>
+        </div>
+    </div>
+    <!-- Food Mood -->
+    <div class="card">
+        <div class="card-media">
+            <img src="https://img.youtube.com/vi/plVPYo976DM/hqdefault.jpg" alt="Food Mood" onerror="this.onerror=null; this.src='https://placehold.co/600x340/171717/f59e0b?text=Food%20Mood&font=roboto';">
+            <div class="play-overlay"></div>
+        </div>
+        <div class="card-content">
+            <div class="card-header"><h3 class="card-title">Food Mood</h3><span class="tag exp">Fusion</span></div>
+            <p class="card-desc">Fusion recipe generator. Combine cuisines for AI recipes.</p>
+            <div class="btn-group">
+                <a href="https://artsandculture.google.com/experiment/food-mood/HwHnGalR8v-hZa" target="_blank" class="btn btn-primary">Play</a>
+                <a href="https://www.youtube.com/watch?v=k5v7_4mYmvY" target="_blank" class="btn btn-secondary">Video</a>
+            </div>
+        </div>
+    </div>
+    <!-- Mixboard -->
+    <div class="card">
+        <div class="card-media">
+            <img src="https://img.youtube.com/vi/oj0-LXrjOW8/hqdefault.jpg" alt="Mixboard" onerror="this.onerror=null; this.src='https://placehold.co/600x340/171717/f59e0b?text=Mixboard&font=roboto';">
+            <div class="play-overlay"></div>
+        </div>
+        <div class="card-content">
+            <div class="card-header"><h3 class="card-title">Mixboard</h3><span class="tag exp">Design</span></div>
+            <p class="card-desc">AI mood boarding. Remix concepts on infinite canvas.</p>
+            <div class="btn-group">
+                <a href="https://labs.google/experiments" target="_blank" class="btn btn-primary">Launch</a>
+                <a href="https://www.youtube.com/watch?v=HlDxBgOLX5g" target="_blank" class="btn btn-secondary">Video</a>
+            </div>
+        </div>
+    </div>
+    <!-- Opal -->
+    <div class="card">
+        <div class="card-media">
+            <img src="https://img.youtube.com/vi/ur3B6BrZ9gk/hqdefault.jpg" alt="Opal" onerror="this.onerror=null; this.src='https://placehold.co/600x340/171717/f59e0b?text=Opal&font=roboto';">
+            <div class="play-overlay"></div>
+        </div>
+        <div class="card-content">
+            <div class="card-header"><h3 class="card-title">Opal</h3><span class="tag exp">No-Code</span></div>
+            <p class="card-desc">Build AI mini-apps using natural language.</p>
+            <div class="btn-group">
+                <a href="https://labs.google/" target="_blank" class="btn btn-primary">Launch</a>
+                <a href="https://medium.com/@mhuzaifaar/5-game-changing-ai-tools-by-google-labs-you-need-to-try-e01f19644376" target="_blank" class="btn btn-secondary">Read</a>
+            </div>
+        </div>
+    </div>
+     <!-- Magic Editor -->
+     <div class="card">
+        <div class="card-media">
+            <img src="https://img.youtube.com/vi/da_CbVz3uMk/hqdefault.jpg" alt="Magic Editor" onerror="this.onerror=null; this.src='https://placehold.co/600x340/171717/f59e0b?text=Magic%20Editor&font=roboto';">
+            <div class="play-overlay"></div>
+        </div>
+        <div class="card-content">
+            <div class="card-header"><h3 class="card-title">Magic Editor</h3><span class="tag exp">Photos</span></div>
+            <p class="card-desc">Move subjects, change skies, and reimagine your photos.</p>
+            <div class="btn-group">
+                <a href="https://photos.google.com/" target="_blank" class="btn btn-primary">Launch</a>
+                <a href="https://www.youtube.com/watch?v=da_CbVz3uMk" target="_blank" class="btn btn-secondary">Video</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+    </div>
+
+<script>
+    // Toggle featured video
+    function toggleFeaturedVideo() {
+        const video = document.getElementById('featured-video');
+        const overlay = document.querySelector('.featured-section .play-overlay');
+        
+        if (video.paused) {
+            video.play();
+            if(overlay) overlay.classList.add('hidden');
+        } else {
+            video.pause();
+            if(overlay) overlay.classList.remove('hidden');
+        }
+    }
+    
+    // Three.js Particle Background
+    const canvas = document.getElementById('three-canvas');
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+    const particlesGeometry = new THREE.BufferGeometry();
+    const particleCount = 1500;
+    const positions = new Float32Array(particleCount * 3);
+    const colors = new Float32Array(particleCount * 3);
+
+    const colorPrimary = new THREE.Color(0x8b5cf6);
+    const colorSecondary = new THREE.Color(0x3b82f6);
+
+    for (let i = 0; i < particleCount; i++) {
+        positions[i * 3] = (Math.random() - 0.5) * 40;
+        positions[i * 3 + 1] = (Math.random() - 0.5) * 40;
+        positions[i * 3 + 2] = (Math.random() - 0.5) * 40;
+
+        const mixRatio = Math.random();
+        const color = colorPrimary.clone().lerp(colorSecondary, mixRatio);
+        colors[i * 3] = color.r;
+        colors[i * 3 + 1] = color.g;
+        colors[i * 3 + 2] = color.b;
+    }
+
+    particlesGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    particlesGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+    const particlesMaterial = new THREE.PointsMaterial({
+        size: 0.06,
+        vertexColors: true,
+        transparent: true,
+        opacity: 0.7,
+        blending: THREE.AdditiveBlending
+    });
+
+    const particles = new THREE.Points(particlesGeometry, particlesMaterial);
+    scene.add(particles);
+
+    const linesMaterial = new THREE.LineBasicMaterial({
+        color: 0x3b82f6,
+        transparent: true,
+        opacity: 0.08
+    });
+
+    const linesGeometry = new THREE.BufferGeometry();
+    const linePositions = [];
+
+    for (let i = 0; i < 80; i++) {
+        const x1 = (Math.random() - 0.5) * 30;
+        const y1 = (Math.random() - 0.5) * 30;
+        const z1 = (Math.random() - 0.5) * 30;
+        const x2 = x1 + (Math.random() - 0.5) * 10;
+        const y2 = y1 + (Math.random() - 0.5) * 10;
+        const z2 = z1 + (Math.random() - 0.5) * 10;
+        linePositions.push(x1, y1, z1, x2, y2, z2);
+    }
+
+    linesGeometry.setAttribute('position', new THREE.Float32BufferAttribute(linePositions, 3));
+    const lines = new THREE.LineSegments(linesGeometry, linesMaterial);
+    scene.add(lines);
+
+    camera.position.z = 18;
+
+    let mouseX = 0, mouseY = 0;
+    document.addEventListener('mousemove', (e) => {
+        mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
+        mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
+    });
+
+    function animate() {
+        requestAnimationFrame(animate);
+
+        particles.rotation.y += 0.0003;
+        particles.rotation.x += 0.0001;
+        lines.rotation.y += 0.0002;
+
+        camera.position.x += (mouseX * 1.5 - camera.position.x) * 0.02;
+        camera.position.y += (-mouseY * 1.5 - camera.position.y) * 0.02;
+        camera.lookAt(scene.position);
+
+        renderer.render(scene, camera);
+    }
+    animate();
+
+    window.addEventListener('resize', () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+    
+
+</script>
+
+
+</body>
+</html>

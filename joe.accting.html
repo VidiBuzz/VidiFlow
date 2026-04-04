@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Business Stack Architect | VIDISMART</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Kumbh+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0f172a;
+            --accent: #10b981;
+            --bg: #f8f9fa;
+        }
+
+        body {
+            font-family: 'Kumbh Sans', sans-serif;
+            background-color: var(--bg);
+            color: var(--primary);
+        }
+
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 100%;
+            height: 350px;
+            margin: auto;
+        }
+
+        .glass-morphism {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+        }
+
+        .hero-gradient {
+            background: radial-gradient(circle at top right, #f1f5f9 0%, #f8f9fa 100%);
+        }
+
+        .nav-link {
+            position: relative;
+            transition: color 0.3s ease;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -4px;
+            left: 0;
+            background-color: var(--accent);
+            transition: width 0.3s ease;
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        .card-hover {
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
+        }
+
+        .card-hover:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+        }
+
+        #blueprintCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.15;
+            pointer-events: none;
+        }
+
+        .author-badge {
+            background: linear-gradient(135deg, #0f172a 0%, #334155 100%);
+        }
+    </style>
+    <!-- Chosen Palette: Modern Executive. 
+         Background: Off-white/Slate-50. 
+         Primary: Slate-900 for high contrast. 
+         Accents: Emerald-500 for success/growth signals. 
+         Secondary: Indigo-50 for subtle sectioning. -->
+</head>
+<body class="selection:bg-emerald-100">
+
+    <!-- Application Structure Plan:
+         1. Interactive Hero Header: Uses a generative Canvas "Blueprint" effect to visualize 'Architecture' and 'Stacks'. Includes author VIDISMART prominently.
+         2. Executive Summary (The Recommendation): High-impact cards with micro-interactions.
+         3. Intelligence Dashboard: Side-by-side interactive comparison tools with enhanced Chart.js themes.
+         4. Multi-Region Payroll Hub: Responsive toggle-based view for handling location-specific data.
+         5. The Resource Vault: A refined directory of links and media.
+         
+         Rationale: "Blandness" is usually caused by lack of depth and visual hierarchy. By adding a generative header, glassmorphism effects, and "Kumbh Sans", we elevate the page to a professional SaaS-dashboard feel without altering the required text content.
+    -->
+
+    <!-- Header / Hero Section -->
+    <header class="relative hero-gradient border-b border-slate-200 overflow-hidden">
+        <canvas id="blueprintCanvas"></canvas>
+        
+        <nav class="relative z-10 container mx-auto px-6 py-6 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-slate-900 rounded-xl flex items-center justify-center text-white shadow-lg">
+                    <span class="font-bold">S</span>
+                </div>
+                <h1 class="text-xl font-bold tracking-tight">Stack<span class="text-emerald-600">Architect</span></h1>
+            </div>
+            
+            <div class="hidden md:flex gap-8 text-sm font-semibold text-slate-600">
+                <button onclick="scrollToSection('recommendation')" class="nav-link hover:text-slate-900">Recommendation</button>
+                <button onclick="scrollToSection('comparison')" class="nav-link hover:text-slate-900">Intelligence</button>
+                <button onclick="scrollToSection('payroll')" class="nav-link hover:text-slate-900">Payroll</button>
+                <button onclick="scrollToSection('directory')" class="nav-link hover:text-slate-900">Resources</button>
+            </div>
+
+            <div class="author-badge px-4 py-2 rounded-full text-[10px] font-bold tracking-[0.2em] text-white uppercase shadow-sm">
+                By VIDISMART
+            </div>
+        </nav>
+
+        <div class="relative z-10 container mx-auto px-6 pt-12 pb-24 text-center">
+            <h2 class="text-5xl md:text-7xl font-bold text-slate-900 tracking-tighter mb-6">The Modern <br/><span class="text-transparent bg-clip-text bg-linear-to-r from-emerald-600 to-indigo-600">Business Stack.</span></h2>
+            <p class="max-w-2xl mx-auto text-lg text-slate-600 font-light">Efficient, low-cost architectural configurations for high-volume operations. Designed for Joe Nenoff.</p>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-6 -mt-16 relative z-20 space-y-24">
+
+        <!-- Section 1: The Recommendation -->
+        <section id="recommendation" class="space-y-12">
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- Ops Card -->
+                <div class="glass-morphism p-8 rounded-3xl card-hover border-l-4 border-emerald-500">
+                    <div class="mb-6 flex justify-between items-center">
+                        <span class="text-3xl">🚛</span>
+                        <span class="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-md uppercase tracking-widest">Operations</span>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-4">Square Appointments</h3>
+                    <p class="text-slate-500 text-sm leading-relaxed mb-6">Logistics engine for 20-30 daily loads. Best-in-class UI for cash handling and physical check-ins.</p>
+                    <div class="pt-4 border-t border-slate-100">
+                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">Key Features</p>
+                        <ul class="text-sm space-y-3 font-medium">
+                            <li class="flex items-center gap-2"><div class="w-1.5 h-1.5 rounded-full bg-emerald-500"></div> Native Cash Support</li>
+                            <li class="flex items-center gap-2"><div class="w-1.5 h-1.5 rounded-full bg-emerald-500"></div> Mobile Optimized</li>
+                            <li class="flex items-center gap-2"><div class="w-1.5 h-1.5 rounded-full bg-emerald-500"></div> Digital Receipts</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Accounting Card -->
+                <div class="glass-morphism p-8 rounded-3xl card-hover border-l-4 border-indigo-500">
+                    <div class="mb-6 flex justify-between items-center">
+                        <span class="text-3xl">📊</span>
+                        <span class="text-[10px] font-bold text-indigo-600 bg-indigo-50 px-2 py-1 rounded-md uppercase tracking-widest">Finance</span>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-4">Wave / Akaunting</h3>
+                    <p class="text-slate-500 text-sm leading-relaxed mb-6">Modern ledger system. $0 license fee while providing professional grade reporting and compliance.</p>
+                    <div class="pt-4 border-t border-slate-100">
+                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">Key Features</p>
+                        <ul class="text-sm space-y-3 font-medium">
+                            <li class="flex items-center gap-2"><div class="w-1.5 h-1.5 rounded-full bg-indigo-500"></div> API Automation</li>
+                            <li class="flex items-center gap-2"><div class="w-1.5 h-1.5 rounded-full bg-indigo-500"></div> Modern Dashboard</li>
+                            <li class="flex items-center gap-2"><div class="w-1.5 h-1.5 rounded-full bg-indigo-500"></div> Multi-User Ready</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Integration Card -->
+                <div class="glass-morphism p-8 rounded-3xl card-hover border-l-4 border-slate-900">
+                    <div class="mb-6 flex justify-between items-center">
+                        <span class="text-3xl">💻</span>
+                        <span class="text-[10px] font-bold text-slate-600 bg-slate-100 px-2 py-1 rounded-md uppercase tracking-widest">Utility</span>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-4">WebCatalog</h3>
+                    <p class="text-slate-500 text-sm leading-relaxed mb-6">Site-Specific Browser tool. Wraps web apps into native Windows executables for taskbar pinning.</p>
+                    <div class="pt-4 border-t border-slate-100">
+                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">Key Features</p>
+                        <ul class="text-sm space-y-3 font-medium">
+                            <li class="flex items-center gap-2"><div class="w-1.5 h-1.5 rounded-full bg-slate-900"></div> Native App Feel</li>
+                            <li class="flex items-center gap-2"><div class="w-1.5 h-1.5 rounded-full bg-slate-900"></div> No Browser Tabs</li>
+                            <li class="flex items-center gap-2"><div class="w-1.5 h-1.5 rounded-full bg-slate-900"></div> Performance Boost</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2: Intelligence Dashboard -->
+        <section id="comparison" class="space-y-12">
+            <div class="text-center">
+                <h2 class="text-3xl font-bold mb-4 tracking-tight">Market Intelligence</h2>
+                <div class="h-1 w-12 bg-emerald-500 mx-auto rounded-full"></div>
+            </div>
+
+            <div class="grid lg:grid-cols-2 gap-12">
+                <div class="bg-white p-10 rounded-[2.5rem] shadow-xl shadow-slate-200/50 border border-slate-100">
+                    <div class="flex justify-between items-center mb-8">
+                        <h4 class="text-lg font-bold">Value Matrix: Cost vs UX</h4>
+                        <div class="flex gap-2">
+                            <div class="flex items-center gap-1"><div class="w-3 h-3 rounded-full bg-emerald-500"></div> <span class="text-[10px] font-bold text-slate-400">PICK</span></div>
+                            <div class="flex items-center gap-1"><div class="w-3 h-3 rounded-full bg-slate-200"></div> <span class="text-[10px] font-bold text-slate-400">OTHER</span></div>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="uxCostChart"></canvas>
+                    </div>
+                    <p class="text-[10px] text-slate-400 mt-6 uppercase tracking-widest text-center">Top Left Quadrant = Maximum ROI</p>
+                </div>
+
+                <div class="bg-white p-10 rounded-[2.5rem] shadow-xl shadow-slate-200/50 border border-slate-100 flex flex-col">
+                    <div class="flex justify-between items-center mb-8">
+                        <h4 class="text-lg font-bold">Stack Capability Index</h4>
+                        <select id="softwareFilter" class="bg-slate-50 border-none text-xs font-bold rounded-full px-4 py-2 text-slate-600 focus:ring-2 focus:ring-emerald-500 transition">
+                            <option value="all">View All</option>
+                            <option value="SaaS">SaaS Only</option>
+                            <option value="OSS">Open Source</option>
+                        </select>
+                    </div>
+                    <div class="overflow-y-auto max-h-[300px] pr-2 custom-scrollbar">
+                        <table class="w-full text-sm">
+                            <tbody id="comparisonTableBody" class="divide-y divide-slate-50">
+                                <!-- Populated by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: Payroll Command -->
+        <section id="payroll" class="bg-slate-900 rounded-[3rem] p-12 text-white overflow-hidden relative">
+            <!-- Background element -->
+            <div class="absolute top-0 right-0 w-64 h-64 bg-emerald-500/10 rounded-full -mr-32 -mt-32 blur-3xl"></div>
+            
+            <div class="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-end mb-16 gap-8">
+                <div class="max-w-xl">
+                    <span class="text-emerald-400 text-xs font-bold tracking-[0.3em] uppercase">Compliance Engine</span>
+                    <h2 class="text-4xl font-bold mt-4 tracking-tight">Zero-Cost Payroll Hub</h2>
+                    <p class="text-slate-400 mt-4 leading-relaxed font-light">Calculations for 3 employees. Shift from expensive SaaS to high-accuracy manual or ad-supported systems.</p>
+                </div>
+                
+                <div class="flex p-1 bg-slate-800 rounded-2xl">
+                    <button onclick="setPayrollRegion('Ohio')" id="btnOhio" class="px-6 py-2.5 rounded-xl text-sm font-bold transition-all bg-emerald-500 text-slate-900">Ohio (Medina)</button>
+                    <button onclick="setPayrollRegion('Florida')" id="btnFlorida" class="px-6 py-2.5 rounded-xl text-sm font-bold transition-all text-slate-400 hover:text-white">Florida</button>
+                </div>
+            </div>
+
+            <div class="relative z-10 grid md:grid-cols-2 gap-12">
+                <div id="payrollContent" class="bg-slate-800/50 p-8 rounded-3xl border border-white/5 space-y-6">
+                    <!-- Dynamic JS Content -->
+                </div>
+
+                <div class="bg-white/5 p-8 rounded-3xl border border-white/5">
+                    <h4 class="text-sm font-bold text-emerald-400 uppercase tracking-widest mb-6 text-center">Software vs. DIY (Annual)</h4>
+                    <div class="chart-container" style="height: 250px;">
+                        <canvas id="payrollCostChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 4: Resource Vault -->
+        <section id="directory" class="pb-24 space-y-16">
+            <div class="text-center">
+                <h2 class="text-3xl font-bold tracking-tight">The Resource Vault</h2>
+                <p class="text-slate-500 text-sm mt-2">Essential tools, media, and references.</p>
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4" id="companyList">
+                <!-- JS Populated -->
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="group p-1 bg-slate-200 rounded-[2rem] transition hover:bg-emerald-500/50">
+                    <div class="bg-white p-8 rounded-[1.8rem] space-y-4">
+                        <div class="w-12 h-12 bg-slate-100 rounded-2xl flex items-center justify-center text-2xl group-hover:scale-110 transition">🎥</div>
+                        <h5 class="font-bold">Akaunting Setup</h5>
+                        <p class="text-xs text-slate-500 leading-relaxed">Official installation walkthrough for open-source self-hosting on Windows.</p>
+                        <a href="https://www.youtube.com/watch?v=rWhtaZU95DQ" target="_blank" class="block text-xs font-bold text-emerald-600 hover:text-emerald-700 uppercase tracking-wider">Play Video →</a>
+                    </div>
+                </div>
+                <div class="group p-1 bg-slate-200 rounded-[2rem] transition hover:bg-emerald-500/50">
+                    <div class="bg-white p-8 rounded-[1.8rem] space-y-4">
+                        <div class="w-12 h-12 bg-slate-100 rounded-2xl flex items-center justify-center text-2xl group-hover:scale-110 transition">📊</div>
+                        <h5 class="font-bold">2026 Payroll Sheet</h5>
+                        <p class="text-xs text-slate-500 leading-relaxed">Free Google Sheets template updated for new tax caps and surcharges.</p>
+                        <a href="https://docs.google.com/spreadsheets/d/14AiB7wFU9bgjuG3G_DsRK9Fwp8tteITd-49MoqybDls/edit?usp=sharing" target="_blank" class="block text-xs font-bold text-emerald-600 hover:text-emerald-700 uppercase tracking-wider">View Sheet →</a>
+                    </div>
+                </div>
+                <div class="group p-1 bg-slate-200 rounded-[2rem] transition hover:bg-emerald-500/50">
+                    <div class="bg-white p-8 rounded-[1.8rem] space-y-4">
+                        <div class="w-12 h-12 bg-slate-100 rounded-2xl flex items-center justify-center text-2xl group-hover:scale-110 transition">⛓️</div>
+                        <h5 class="font-bold">Rust Ledger Engine</h5>
+                        <p class="text-xs text-slate-500 leading-relaxed">For modern stack builds using Rust-based bookkeeping logic crates.</p>
+                        <a href="https://www.youtube.com/watch?v=qVi3vv9K8Fk" target="_blank" class="block text-xs font-bold text-emerald-600 hover:text-emerald-700 uppercase tracking-wider">Play Video →</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-slate-50 border-t border-slate-200 py-16">
+        <div class="container mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-8">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 bg-slate-900 rounded-lg flex items-center justify-center text-white text-xs">S</div>
+                <h1 class="text-sm font-bold tracking-tight">StackArchitect</h1>
+            </div>
+            
+            <div class="text-[10px] font-bold tracking-[0.3em] uppercase text-slate-400">
+                PRODUCED BY VIDISMART &copy; 2026
+            </div>
+            
+            <p class="text-xs text-slate-400 font-light max-w-xs text-center md:text-right">Data compiled for educational purposes. Verify all tax laws with a certified professional.</p>
+        </div>
+    </footer>
+
+    <!-- Visualization & Interaction Logic -->
+    <script>
+        // --- Generative Blueprint Background ---
+        function initBlueprint() {
+            const canvas = document.getElementById('blueprintCanvas');
+            const ctx = canvas.getContext('2d');
+            let w, h;
+
+            const resize = () => {
+                w = canvas.width = window.innerWidth;
+                h = canvas.height = canvas.parentElement.offsetHeight;
+            };
+
+            const draw = () => {
+                ctx.clearRect(0, 0, w, h);
+                ctx.strokeStyle = '#64748b';
+                ctx.lineWidth = 0.5;
+
+                // Grid lines
+                const step = 40;
+                for(let x = 0; x < w; x += step) {
+                    ctx.beginPath();
+                    ctx.moveTo(x, 0);
+                    ctx.lineTo(x, h);
+                    ctx.stroke();
+                }
+                for(let y = 0; y < h; y += step) {
+                    ctx.beginPath();
+                    ctx.moveTo(0, y);
+                    ctx.lineTo(w, y);
+                    ctx.stroke();
+                }
+
+                // Architectural elements (random boxes)
+                ctx.strokeStyle = '#10b981';
+                ctx.lineWidth = 1;
+                for(let i = 0; i < 5; i++) {
+                    const bw = Math.random() * 200 + 100;
+                    const bh = Math.random() * 100 + 50;
+                    const bx = Math.random() * (w - bw);
+                    const by = Math.random() * (h - bh);
+                    ctx.strokeRect(bx, by, bw, bh);
+                    ctx.beginPath();
+                    ctx.moveTo(bx, by);
+                    ctx.lineTo(bx + bw, by + bh);
+                    ctx.stroke();
+                }
+            };
+
+            window.addEventListener('resize', () => { resize(); draw(); });
+            resize();
+            draw();
+        }
+
+        // --- Data Definitions ---
+        const softwareOptions = [
+            { name: "Digits", type: "SaaS", cost: 100, uxScore: 9.5, note: "AI Native, High Fee" },
+            { name: "Puzzle", type: "SaaS", cost: 50, uxScore: 9.0, note: "SaaS for Founders" },
+            { name: "QBO", type: "SaaS", cost: 30, uxScore: 4.0, note: "Legacy Standard" },
+            { name: "Xero", type: "SaaS", cost: 20, uxScore: 6.0, note: "Clean Standard" },
+            { name: "Wave", type: "Hybrid", cost: 0, uxScore: 8.5, note: "Best Free UI" },
+            { name: "Akaunting", type: "OSS", cost: 5, uxScore: 7.5, note: "Modern Open Source" },
+            { name: "ZipBooks", type: "SaaS", cost: 15, uxScore: 8.0, note: "Minimalist Clean" },
+            { name: "Odoo", type: "OSS", cost: 0, uxScore: 5.5, note: "Full ERP Power" }
+        ];
+
+        const companies = [
+            "Directus", "Plaid", "Zapier", "Make", "LedgerSMB", "Odoo", "ERPNext", 
+            "Zoho Books", "WebCatalog", "Mercury", "Gusto", "OnPay", "SurePayroll", 
+            "TimeTrex", "Square", "Cal.com"
+        ];
+
+        const payrollData = {
+            Ohio: {
+                content: `
+                    <div class="flex items-center gap-3 mb-6"><div class="w-2 h-2 rounded-full bg-emerald-500"></div> <h5 class="font-bold text-white uppercase text-xs tracking-widest">OHIO (MEDINA) 2026 RULES</h5></div>
+                    <p class="text-slate-400 text-sm leading-relaxed">Taxable wage base increased to <span class="text-white font-bold">$9,500</span> per employee. Ohio Flat Tax at <span class="text-white font-bold">2.75%</span>. Includes new 0.15% TCSF surcharge.</p>
+                `
+            },
+            Florida: {
+                content: `
+                    <div class="flex items-center gap-3 mb-6"><div class="w-2 h-2 rounded-full bg-emerald-500"></div> <h5 class="font-bold text-white uppercase text-xs tracking-widest">FLORIDA 2026 RULES</h5></div>
+                    <p class="text-slate-400 text-sm leading-relaxed">State Income Tax remains <span class="text-white font-bold">$0</span>. Reemployment tax cap at <span class="text-white font-bold">$7,000</span>. Federal FUTA cap also at $7,000.</p>
+                `
+            }
+        };
+
+        // --- Charts Implementation ---
+        let mainChart = null;
+        let payrollChart = null;
+
+        function initCharts() {
+            // Main Intelligence Chart
+            const ctxMain = document.getElementById('uxCostChart').getContext('2d');
+            mainChart = new Chart(ctxMain, {
+                type: 'bubble',
+                data: {
+                    datasets: [{
+                        label: 'Software Landscape',
+                        data: softwareOptions.map(o => ({ x: o.cost, y: o.uxScore, r: 10 })),
+                        backgroundColor: (ctx) => {
+                            const val = softwareOptions[ctx.dataIndex];
+                            return (val.name === 'Wave' || val.name === 'Akaunting') ? '#10b981' : '#e2e8f0';
+                        },
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: { title: { display: true, text: 'Cost ($/mo)', font: { size: 10, weight: 'bold' } }, grid: { display: false } },
+                        y: { title: { display: true, text: 'UX (1-10)', font: { size: 10, weight: 'bold' } }, grid: { color: '#f1f5f9' } }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: '#0f172a',
+                            titleFont: { family: 'Kumbh Sans', weight: 'bold' },
+                            bodyFont: { family: 'Kumbh Sans' },
+                            callbacks: {
+                                label: (ctx) => {
+                                    const o = softwareOptions[ctx.dataIndex];
+                                    return `${o.name}: $${o.cost}/mo | ${o.note}`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Payroll Chart
+            const ctxPay = document.getElementById('payrollCostChart').getContext('2d');
+            payrollChart = new Chart(ctxPay, {
+                type: 'bar',
+                data: {
+                    labels: ['DIY', 'P4Free', 'SaaS'],
+                    datasets: [{
+                        data: [0, 0, 420],
+                        backgroundColor: ['#10b981', '#10b981', '#334155'],
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { ticks: { color: '#94a3b8', font: { size: 10 } }, grid: { display: false } },
+                        y: { ticks: { color: '#94a3b8', font: { size: 10 } }, grid: { display: false } }
+                    }
+                }
+            });
+        }
+
+        // --- Render Functions ---
+        function renderTable(filter = 'all') {
+            const container = document.getElementById('comparisonTableBody');
+            container.innerHTML = '';
+            
+            const filtered = filter === 'all' ? softwareOptions : softwareOptions.filter(o => o.type === filter);
+            
+            filtered.forEach(o => {
+                const row = document.createElement('tr');
+                row.className = "group hover:bg-slate-50 transition";
+                row.innerHTML = `
+                    <td class="py-4 font-bold text-slate-800 text-xs">${o.name}</td>
+                    <td class="py-4 text-[10px] text-slate-400 font-bold uppercase tracking-widest">${o.type}</td>
+                    <td class="py-4 text-xs font-bold ${o.cost === 0 ? 'text-emerald-500' : 'text-slate-600'}">${o.cost === 0 ? 'FREE' : '$' + o.cost}</td>
+                    <td class="py-4 text-[10px] text-slate-400 text-right opacity-0 group-hover:opacity-100 transition">${o.note}</td>
+                `;
+                container.appendChild(row);
+            });
+        }
+
+        function setPayrollRegion(reg) {
+            document.getElementById('payrollContent').innerHTML = payrollData[reg].content;
+            
+            const btnO = document.getElementById('btnOhio');
+            const btnF = document.getElementById('btnFlorida');
+            
+            if(reg === 'Ohio') {
+                btnO.className = "px-6 py-2.5 rounded-xl text-sm font-bold transition-all bg-emerald-500 text-slate-900";
+                btnF.className = "px-6 py-2.5 rounded-xl text-sm font-bold transition-all text-slate-400 hover:text-white";
+            } else {
+                btnF.className = "px-6 py-2.5 rounded-xl text-sm font-bold transition-all bg-emerald-500 text-slate-900";
+                btnO.className = "px-6 py-2.5 rounded-xl text-sm font-bold transition-all text-slate-400 hover:text-white";
+            }
+        }
+
+        function renderDirectory() {
+            const list = document.getElementById('companyList');
+            companies.sort().forEach(co => {
+                const badge = document.createElement('div');
+                badge.className = "bg-white border border-slate-100 p-4 rounded-2xl text-center text-[10px] font-bold text-slate-500 uppercase tracking-widest hover:border-emerald-500 hover:text-emerald-600 transition cursor-default";
+                badge.textContent = co;
+                list.appendChild(badge);
+            });
+        }
+
+        function scrollToSection(id) {
+            document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // --- Init ---
+        document.addEventListener('DOMContentLoaded', () => {
+            initBlueprint();
+            initCharts();
+            renderTable();
+            renderDirectory();
+            setPayrollRegion('Ohio');
+
+            document.getElementById('softwareFilter').addEventListener('change', (e) => {
+                renderTable(e.target.value);
+            });
+        });
+
+    </script>
+    
+    <!-- Application Structure Plan (Summary): 
+         Uses an executive dashboard layout with Kumbh Sans for a modern corporate feel. 
+         Interactive blueprint canvas in the header adds high-end visual interest without third-party images. 
+         Charts are styled with custom tooltips and a unified emerald/slate theme. 
+         Justification: Financial reporting apps require clarity but suffer from "blandness". 
+         Adding depth via shadows, glassmorphism, and custom typography transforms text-heavy data into a high-utility interface. 
+    -->
+    <!-- Visualization & Content Choices: 
+         1. Generative Background -> Use Canvas to create a dynamic 'blueprint' pattern.
+         2. Scatter/Bubble Chart -> Chart.js to compare Cost/UX. 
+         3. Bar Chart -> Chart.js for annualized cost comparison. 
+         4. Toggle Navigation -> JS state management for Ohio/Florida data views.
+         CONFIRMATION: NO SVG used. NO Mermaid JS used. All graphics are Canvas or HTML/CSS logic.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+</body>
+</html>

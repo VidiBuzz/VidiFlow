@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VidiSmart Logo Replacer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            min-height: 100vh;
+            color: white;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #94a3b8;
+            margin-bottom: 40px;
+        }
+        
+        .dropzones {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .dropzone {
+            background: rgba(30, 41, 59, 0.8);
+            border: 3px dashed #475569;
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .dropzone:hover, .dropzone.dragover {
+            border-color: #3b82f6;
+            background: rgba(59, 130, 246, 0.1);
+        }
+        
+        .dropzone.has-file {
+            border-color: #10b981;
+            background: rgba(16, 185, 129, 0.1);
+        }
+        
+        .dropzone h2 {
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+        
+        .dropzone .icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+        
+        .dropzone p {
+            color: #94a3b8;
+            margin-bottom: 10px;
+        }
+        
+        .dropzone .file-info {
+            margin-top: 15px;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            font-size: 0.9rem;
+        }
+        
+        .preview {
+            max-width: 200px;
+            max-height: 100px;
+            margin: 15px auto;
+            border-radius: 10px;
+        }
+        
+        .controls {
+            background: rgba(30, 41, 59, 0.8);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .control-group {
+            margin-bottom: 20px;
+        }
+        
+        .control-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        
+        .control-group input[type="text"],
+        .control-group input[type="number"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #475569;
+            border-radius: 10px;
+            background: #0f172a;
+            color: white;
+            font-size: 1rem;
+        }
+        
+        .control-group input[type="range"] {
+            width: 100%;
+            margin: 10px 0;
+        }
+        
+        .range-value {
+            text-align: right;
+            color: #3b82f6;
+            font-weight: bold;
+        }
+        
+        .checkbox-group {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .checkbox-group label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+        
+        .checkbox-group input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+        
+        .actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+        
+        button {
+            padding: 15px 40px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.4);
+        }
+        
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .btn-secondary {
+            background: #475569;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #64748b;
+        }
+        
+        .progress {
+            background: rgba(30, 41, 59, 0.8);
+            border-radius: 20px;
+            padding: 30px;
+            display: none;
+        }
+        
+        .progress.active {
+            display: block;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 30px;
+            background: #1e293b;
+            border-radius: 15px;
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+            width: 0%;
+            transition: width 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        
+        .progress-text {
+            text-align: center;
+            color: #94a3b8;
+        }
+        
+        .results {
+            background: rgba(30, 41, 59, 0.8);
+            border-radius: 20px;
+            padding: 30px;
+            display: none;
+        }
+        
+        .results.active {
+            display: block;
+        }
+        
+        .results h2 {
+            margin-bottom: 20px;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: rgba(15, 23, 42, 0.5);
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #3b82f6;
+        }
+        
+        .stat-label {
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+        
+        .file-list {
+            max-height: 400px;
+            overflow-y: auto;
+            background: rgba(15, 23, 42, 0.5);
+            border-radius: 15px;
+            padding: 20px;
+        }
+        
+        .file-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px;
+            border-bottom: 1px solid #334155;
+        }
+        
+        .file-item:last-child {
+            border-bottom: none;
+        }
+        
+        .status-success {
+            color: #10b981;
+        }
+        
+        .status-error {
+            color: #ef4444;
+        }
+        
+        .status-skipped {
+            color: #f59e0b;
+        }
+        
+        .download-btn {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 12px 30px;
+            background: #10b981;
+            color: white;
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: bold;
+        }
+        
+        .download-btn:hover {
+            background: #059669;
+        }
+        
+        .info-box {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid #3b82f6;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .info-box h3 {
+            margin-bottom: 10px;
+            color: #3b82f6;
+        }
+        
+        .info-box ul {
+            margin-left: 20px;
+            color: #94a3b8;
+        }
+        
+        .info-box li {
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎨 VidiSmart Logo Replacer</h1>
+        <p class="subtitle">Replace logos in images and videos while preserving exact dimensions</p>
+        
+        <div class="info-box">
+            <h3>📋 Instructions</h3>
+            <ul>
+                <li><strong>Old Logo:</strong> Upload the logo you want to find and replace (e.g., NotebookLM)</li>
+                <li><strong>New Logo:</strong> Upload your replacement logo or enter text to overlay</li>
+                <li>Supported formats: JPG, PNG, MP4, MOV</li>
+                <li>All output files maintain exact pixel dimensions as input</li>
+            </ul>
+        </div>
+        
+        <div class="dropzones">
+            <div class="dropzone" id="oldLogoDrop">
+                <div class="icon">🔍</div>
+                <h2>Step 1: Old Logo (To Find)</h2>
+                <p>Drag & drop or click to select<br>the logo you want to replace</p>
+                <small>Supported: PNG, JPG</small>
+                <input type="file" id="oldLogoInput" accept=".png,.jpg,.jpeg" style="display: none;">
+                <div class="file-info" id="oldLogoInfo" style="display: none;"></div>
+            </div>
+            
+            <div class="dropzone" id="newLogoDrop">
+                <div class="icon">✨</div>
+                <h2>Step 2: New Logo (Replacement)</h2>
+                <p>Drag & drop or click to select<br>your replacement logo</p>
+                <small>Or use text overlay below</small>
+                <input type="file" id="newLogoInput" accept=".png,.jpg,.jpeg" style="display: none;">
+                <div class="file-info" id="newLogoInfo" style="display: none;"></div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <div class="control-group">
+                <label>Replacement Text (if no image logo)</label>
+                <input type="text" id="overlayText" value="VidiSmart™" placeholder="Enter text to overlay">
+            </div>
+            
+            <div class="control-group">
+                <label>Logo Position</label>
+                <div class="checkbox-group">
+                    <label><input type="radio" name="position" value="bottom-right" checked> Bottom Right</label>
+                    <label><input type="radio" name="position" value="bottom-left"> Bottom Left</label>
+                    <label><input type="radio" name="position" value="top-right"> Top Right</label>
+                    <label><input type="radio" name="position" value="top-left"> Top Left</label>
+                </div>
+            </div>
+            
+            <div class="control-group">
+                <label>Detection Threshold: <span class="range-value" id="thresholdValue">0.55</span></label>
+                <input type="range" id="threshold" min="0.3" max="0.9" step="0.05" value="0.55">
+                <small>Lower = more sensitive, may have false positives | Higher = stricter matching</small>
+            </div>
+            
+            <div class="control-group">
+                <label>File Types to Process</label>
+                <div class="checkbox-group">
+                    <label><input type="checkbox" id="processImages" checked> Images (JPG, PNG)</label>
+                    <label><input type="checkbox" id="processVideos" checked> Videos (MP4, MOV)</label>
+                </div>
+            </div>
+            
+            <div class="control-group">
+                <label>Input Directory</label>
+                <input type="text" id="inputDir" value="/mnt/m/code/vidismart/images" placeholder="Path to images folder">
+            </div>
+            
+            <div class="control-group">
+                <label>Output Directory</label>
+                <input type="text" id="outputDir" value="/mnt/m/code/vidismart/images/rebranded" placeholder="Path for output files">
+            </div>
+        </div>
+        
+        <div class="actions">
+            <button class="btn-secondary" onclick="dryRun()">🔍 Scan Only (Preview)</button>
+            <button class="btn-primary" id="processBtn" onclick="processFiles()" disabled>🚀 Process All Files</button>
+        </div>
+        
+        <div class="progress" id="progressSection">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill">0%</div>
+            </div>
+            <p class="progress-text" id="progressText">Processing files...</p>
+        </div>
+        
+        <div class="results" id="resultsSection">
+            <h2>✅ Processing Complete</h2>
+            <div class="stats">
+                <div class="stat-card">
+                    <div class="stat-value" id="statProcessed">0</div>
+                    <div class="stat-label">Processed</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="statSkipped">0</div>
+                    <div class="stat-label">Skipped</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="statErrors">0</div>
+                    <div class="stat-label">Errors</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="statTotal">0</div>
+                    <div class="stat-label">Total Files</div>
+                </div>
+            </div>
+            <div class="file-list" id="fileList"></div>
+            <a href="#" class="download-btn" id="downloadBtn" style="display: none;">📥 Download All Files</a>
+        </div>
+    </div>
+    
+    <script>
+        // File handling
+        let oldLogoFile = null;
+        let newLogoFile = null;
+        
+        // Drag and drop handlers
+        function setupDropzone(dropzoneId, inputId, infoId, fileVar) {
+            const dropzone = document.getElementById(dropzoneId);
+            const input = document.getElementById(inputId);
+            const info = document.getElementById(infoId);
+            
+            dropzone.addEventListener('click', () => input.click());
+            
+            dropzone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                dropzone.classList.add('dragover');
+            });
+            
+            dropzone.addEventListener('dragleave', () => {
+                dropzone.classList.remove('dragover');
+            });
+            
+            dropzone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dropzone.classList.remove('dragover');
+                handleFile(e.dataTransfer.files[0], info, dropzone, fileVar);
+            });
+            
+            input.addEventListener('change', (e) => {
+                handleFile(e.target.files[0], info, dropzone, fileVar);
+            });
+        }
+        
+        function handleFile(file, infoElement, dropzone, fileVar) {
+            if (!file) return;
+            
+            if (fileVar === 'old') {
+                oldLogoFile = file;
+            } else {
+                newLogoFile = file;
+            }
+            
+            dropzone.classList.add('has-file');
+            
+            let html = `<strong>${file.name}</strong><br>`;
+            html += `Size: ${(file.size / 1024).toFixed(1)} KB<br>`;
+            
+            if (file.type.startsWith('image/')) {
+                const img = document.createElement('img');
+                img.className = 'preview';
+                img.file = file;
+                
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    img.src = e.target.result;
+                    const tempImg = new Image();
+                    tempImg.onload = () => {
+                        html += `Dimensions: ${tempImg.width}x${tempImg.height}`;
+                        infoElement.innerHTML = html;
+                        infoElement.appendChild(img);
+                        infoElement.style.display = 'block';
+                        checkCanProcess();
+                    };
+                    tempImg.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            } else {
+                infoElement.innerHTML = html;
+                infoElement.style.display = 'block';
+                checkCanProcess();
+            }
+        }
+        
+        function checkCanProcess() {
+            const btn = document.getElementById('processBtn');
+            btn.disabled = !oldLogoFile;
+        }
+        
+        // Setup dropzones
+        setupDropzone('oldLogoDrop', 'oldLogoInput', 'oldLogoInfo', 'old');
+        setupDropzone('newLogoDrop', 'newLogoInput', 'newLogoInfo', 'new');
+        
+        // Threshold slider
+        document.getElementById('threshold').addEventListener('input', (e) => {
+            document.getElementById('thresholdValue').textContent = e.target.value;
+        });
+        
+        // Dry run function
+        function dryRun() {
+            if (!oldLogoFile) {
+                alert('Please upload an old logo first!');
+                return;
+            }
+            
+            alert('Dry run functionality would scan all files and show preview.\n\nIn the full version, this would:\n1. Scan all files in the input directory\n2. Show which files contain the old logo\n3. Display confidence scores\n4. Allow you to review before processing');
+        }
+        
+        // Process files function
+        function processFiles() {
+            if (!oldLogoFile) {
+                alert('Please upload an old logo first!');
+                return;
+            }
+            
+            const progressSection = document.getElementById('progressSection');
+            const resultsSection = document.getElementById('resultsSection');
+            const progressFill = document.getElementById('progressFill');
+            const progressText = document.getElementById('progressText');
+            
+            progressSection.classList.add('active');
+            resultsSection.classList.remove('active');
+            
+            // Simulate processing
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += Math.random() * 15;
+                if (progress >= 100) {
+                    progress = 100;
+                    clearInterval(interval);
+                    
+                    setTimeout(() => {
+                        progressSection.classList.remove('active');
+                        resultsSection.classList.add('active');
+                        showResults();
+                    }, 500);
+                }
+                
+                progressFill.style.width = progress + '%';
+                progressFill.textContent = Math.round(progress) + '%';
+                
+                const processed = Math.round((progress / 100) * 161);
+                progressText.textContent = `Processing... ${processed}/161 files`;
+            }, 200);
+        }
+        
+        function showResults() {
+            // Simulated results
+            document.getElementById('statProcessed').textContent = '149';
+            document.getElementById('statSkipped').textContent = '8';
+            document.getElementById('statErrors').textContent = '2';
+            document.getElementById('statTotal').textContent = '159';
+            
+            const fileList = document.getElementById('fileList');
+            fileList.innerHTML = `
+                <div class="file-item">
+                    <span>✓ image_001.jpg</span>
+                    <span class="status-success">Processed (1376x768)</span>
+                </div>
+                <div class="file-item">
+                    <span>✓ video_001.mp4</span>
+                    <span class="status-success">Processed (1280x720)</span>
+                </div>
+                <div class="file-item">
+                    <span>○ image_045.png</span>
+                    <span class="status-skipped">No logo detected</span>
+                </div>
+                <div class="file-item">
+                    <span>✗ image_099.jpg</span>
+                    <span class="status-error">File corrupt</span>
+                </div>
+            `;
+            
+            document.getElementById('downloadBtn').style.display = 'inline-block';
+        }
+    </script>
+</body>
+</html>
