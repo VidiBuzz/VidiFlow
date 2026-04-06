@@ -7,11 +7,12 @@ const SFTP_CONFIG = {
     host: 'gtxm1044.siteground.biz',
     port: 18765,
     username: 'u2627-m33aqlpqghg3',
-    privateKey: fs.readFileSync('/mnt/c/Users/James/.ssh/vidismart-deploy'),
+    // Windows path to SSH key
+    privateKey: fs.readFileSync(path.join(process.env.USERPROFILE || 'C:/Users/James', '.ssh', 'vidismart-deploy')),
 };
 
-// Source files on your machine (WSL paths)
-const SOURCE_DIR = '/mnt/m/+Proj/VidiSmart/smart-book';
+// Source files on your machine (Windows paths)
+const SOURCE_DIR = path.join(__dirname, 'smart-book');
 
 // Remote destination on SiteGround (public_html/smart-book/)
 const REMOTE_DIR = '/home/customer/www/vidismart.com/public_html/smart-book';
