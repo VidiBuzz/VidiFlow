@@ -115,68 +115,38 @@ def detect_logo_multiscale(image_path, template_path, threshold=0.55):
     return False, best_match, None
 
 
-def create_text_overlay(width, height, text="VidiSmart™",
-                        font_name="arial.ttf", font_size_percent=0.35,
-                        text_color=(255, 255, 255, 255),
-                        bg_color=(15, 23, 42, 255),
-                        border_color=(59, 130, 246, 255),
-                        shadow=True, shadow_offset=2):
-    """Create customizable text overlay"""
-    overlay = Image.new("RGBA", (width, height), bg_color)
+def create_text_overlay(width, height, text="VidiSmart™"):
+    """Create branded text overlay"""
+    overlay = Image.new("RGBA", (width, height), (15, 23, 42, 255))
     draw = ImageDraw.Draw(overlay)
 
-    # Load font
     try:
-        font_size = int(height * font_size_percent)
-        font = ImageFont.truetype(font_name, font_size)
+        font_size = int(height * 0.35)
+        font = ImageFont.truetype("arial.ttf", font_size)
     except:
-        try:
-            # Fallback fonts
-            font = ImageFont.truetype("arial.ttf", int(height * font_size_percent))
-        except:
-            font = ImageFont.load_default()
+        font = ImageFont.load_default()
 
-    # Get text dimensions
+    # Center text
     bbox = draw.textbbox((0, 0), text, font=font)
     text_width = bbox[2] - bbox[0]
     text_height = bbox[3] - bbox[1]
 
-    # Center text
     x = (width - text_width) // 2
     y = (height - text_height) // 2 - 3
 
-    # Draw shadow if enabled
-    if shadow:
-        shadow_color = (0, 0, 0, 128)  # Semi-transparent black
-        draw.text((x + shadow_offset, y + shadow_offset), text, font=font, fill=shadow_color)
-
-    # Draw text
-    draw.text((x, y), text, font=font, fill=text_color)
-
-    # Draw border if border color provided
-    if border_color:
-        draw.rectangle([0, 0, width - 1, height - 1], outline=border_color, width=2)
+    draw.text((x, y), text, font=font, fill=(255, 255, 255, 255))
+    draw.rectangle([0, 0, width - 1, height - 1], outline=(59, 130, 246, 255), width=2)
 
     return overlay
 
 
-def replace_logo_in_image(image_path, output_path, bbox, overlay_config):
+def replace_logo_in_image(image_path, output_path, bbox, overlay_text):
     """Replace detected logo with custom overlay"""
     img = Image.open(image_path)
     x, y, w, h = bbox
 
-    # Create overlay with custom settings
-    overlay = create_text_overlay(
-        w, h,
-        text=overlay_config.get('text', 'VidiSmart™'),
-        font_name=overlay_config.get('font', 'arial.ttf'),
-        font_size_percent=overlay_config.get('font_size', 0.35),
-        text_color=overlay_config.get('text_color', (255, 255, 255, 255)),
-        bg_color=overlay_config.get('bg_color', (15, 23, 42, 255)),
-        border_color=overlay_config.get('border_color', (59, 130, 246, 255)),
-        shadow=overlay_config.get('shadow', True),
-        shadow_offset=overlay_config.get('shadow_offset', 2)
-    )
+    # Create overlay
+    overlay = create_text_overlay(w, h, overlay_text)
 
     # Paste overlay
     img.paste(overlay, (x, y), overlay)
@@ -185,7 +155,7 @@ def replace_logo_in_image(image_path, output_path, bbox, overlay_config):
     return output_path
 
 
-def process_video(video_path, output_path, template_path, overlay_config, threshold):
+def process_video(video_path, output_path, template_path, overlay_text, threshold):
     """Process video frame by frame with logo replacement"""
     cap = cv2.VideoCapture(str(video_path))
 
@@ -219,7 +189,7 @@ def process_video(video_path, output_path, template_path, overlay_config, thresh
 
         # Replace logo if detected
         if logo_bbox:
-            replace_logo_in_image(frame_path, frame_path, logo_bbox, overlay_config)
+            replace_logo_in_image(frame_path, frame_path, logo_bbox, overlay_text)
 
         frame_count += 1
 
@@ -265,41 +235,16 @@ async def health():
     return {"status": "healthy"}
 
 
-def parse_color(color_str: str) -> tuple:
-    """Parse color string like '#FF0000' or 'rgb(255,0,0)' to (R,G,B,A) tuple"""
-    try:
-        if color_str.startswith('#'):
-            # Hex color
-            color_str = color_str.lstrip('#')
-            if len(color_str) == 6:
-                return tuple(int(color_str[i:i+2], 16) for i in (0, 2, 4)) + (255,)
-        elif color_str.startswith('rgb'):
-            # RGB color
-            parts = color_str.replace('rgb(', '').replace('rgba(', '').replace(')', '').split(',')
-            return tuple(int(p.strip()) for p in parts[:3]) + (255 if len(parts) < 4 else int(parts[3]))
-    except:
-        pass
-    return (255, 255, 255, 255)  # Default white
-
-
 @app.post("/api/brandswap/process")
 async def process_brandswap(
     logo: UploadFile = File(...),
     files: List[UploadFile] = File(...),
     overlayText: str = Form("VidiSmart™"),
     threshold: float = Form(0.55),
-    position: str = Form("bottom-right"),
-    # New customization params
-    fontName: str = Form("arial.ttf"),
-    fontSize: float = Form(0.35),
-    textColor: str = Form("#FFFFFF"),
-    bgColor: str = Form("#0F172A"),
-    borderColor: str = Form("#3B82F6"),
-    enableShadow: bool = Form(True),
-    shadowOffset: int = Form(2)
+    position: str = Form("bottom-right")
 ):
     """
-    Process files with logo replacement and customizable overlay
+    Process files with logo replacement
     """
     session_id = str(uuid.uuid4())
     session_upload_dir = UPLOAD_DIR / session_id
@@ -308,18 +253,6 @@ async def process_brandswap(
     session_output_dir.mkdir(exist_ok=True)
 
     try:
-        # Build overlay configuration
-        overlay_config = {
-            'text': overlayText,
-            'font': fontName,
-            'font_size': fontSize,
-            'text_color': parse_color(textColor),
-            'bg_color': parse_color(bgColor),
-            'border_color': parse_color(borderColor) if borderColor else None,
-            'shadow': enableShadow,
-            'shadow_offset': shadowOffset
-        }
-
         # Save logo template
         template_path = session_upload_dir / f"template_{logo.filename}"
         with open(template_path, "wb") as f:
@@ -343,7 +276,7 @@ async def process_brandswap(
                 found, conf, bbox = detect_logo_multiscale(file_path, template_path, threshold)
 
                 if found:
-                    replace_logo_in_image(file_path, output_path, bbox, overlay_config)
+                    replace_logo_in_image(file_path, output_path, bbox, overlayText)
 
                     # Upload to R2
                     r2_key = f"brandswap/{session_id}/{file.filename}"
@@ -365,7 +298,7 @@ async def process_brandswap(
             elif ext in ['mp4', 'mov']:
                 # Process video
                 try:
-                    process_video(file_path, output_path, template_path, overlay_config, threshold)
+                    process_video(file_path, output_path, template_path, overlayText, threshold)
 
                     # Upload to R2
                     r2_key = f"brandswap/{session_id}/{file.filename}"
