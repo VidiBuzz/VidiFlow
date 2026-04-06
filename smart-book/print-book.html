@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Speed of Agentic Visual AI — by James May</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Kumbh+Sans:wght@700;800;900&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --primary: #FF6B35;
+            --primary-dark: #D4551F;
+            --secondary: #004E89;
+            --accent: #1A659E;
+            --gold: #C8A951;
+            --text-body: #2C2C2C;
+            --text-heading: #1A1A1A;
+            --text-muted: #6B7280;
+            --text-caption: #9CA3AF;
+            --bg-page: #FFFFFF;
+            --bg-context: #F8F6F0;
+            --bg-quote: #F0F4F8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Lora', Georgia, serif;
+            font-size: 12pt;
+            line-height: 1.75;
+            color: var(--text-body);
+            background: var(--bg-page);
+        }
+
+        /* Cover */
+        .cover-page {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: linear-gradient(160deg, #001F3F 0%, #003366 40%, #004E89 70%, #1A659E 100%);
+            color: white;
+            text-align: center;
+            padding: 3rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cover-page::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -30%;
+            width: 80%;
+            height: 200%;
+            background: radial-gradient(ellipse, rgba(255, 107, 53, 0.15) 0%, transparent 70%);
+        }
+
+        .cover-badge {
+            display: inline-block;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--gold);
+            border: 1px solid var(--gold);
+            padding: 0.5rem 1.5rem;
+            border-radius: 4px;
+            margin-bottom: 2rem;
+            z-index: 1;
+            position: relative;
+        }
+
+        .cover-title {
+            font-family: 'Kumbh Sans', sans-serif;
+            font-size: 3.5rem;
+            font-weight: 900;
+            line-height: 1.15;
+            margin-bottom: 0.5rem;
+            z-index: 1;
+            position: relative;
+        }
+
+        .cover-title .accent {
+            color: var(--primary);
+        }
+
+        .cover-subtitle {
+            font-family: 'Lora', serif;
+            font-size: 1.3rem;
+            font-style: italic;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 2rem;
+            max-width: 500px;
+            z-index: 1;
+            position: relative;
+        }
+
+        .cover-divider {
+            width: 80px;
+            height: 3px;
+            background: var(--primary);
+            margin: 1rem auto 2rem;
+            z-index: 1;
+            position: relative;
+        }
+
+        .cover-author {
+            font-family: 'Inter', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 500;
+            letter-spacing: 1px;
+            z-index: 1;
+            position: relative;
+        }
+
+        .cover-company {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.6);
+            margin-top: 0.5rem;
+            z-index: 1;
+            position: relative;
+        }
+
+        .cover-edition {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.4);
+            margin-top: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .cover-cx-note {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.6);
+            margin-top: 3.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            z-index: 1;
+            max-width: 400px;
+        }
+
+        .cover-cx-note strong {
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        /* ===== Personalization Bar ===== */
+        .personalize-bar {
+            background: linear-gradient(135deg, #1E293B, #334155);
+            color: white;
+            padding: 1.25rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+            font-family: 'Inter', sans-serif;
+            position: sticky;
+            top: 0;
+            z-index: 999;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .personalize-group,
+        .action-group {
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .personalize-group {
+            flex: 1;
+            justify-content: flex-start;
+        }
+
+        .action-group {
+            justify-content: flex-end;
+        }
+
+        .personalize-bar label {
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .personalize-bar input,
+        .personalize-bar select {
+            padding: 0.5rem 0.75rem;
+            border-radius: 6px;
+            border: 1px solid #475569;
+            background: #0F172A;
+            color: white;
+            font-size: 0.85rem;
+            font-family: 'Inter', sans-serif;
+            min-width: 150px;
+        }
+
+        .personalize-bar input::placeholder {
+            color: #64748B;
+        }
+
+        .personalize-bar button {
+            padding: 0.5rem 1.25rem;
+            border-radius: 6px;
+            border: none;
+            background: var(--primary);
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-family: 'Inter', sans-serif;
+            transition: background 0.2s;
+        }
+
+        .personalize-bar button:hover {
+            background: var(--primary-dark);
+        }
+
+        .personalize-bar .btn-dark {
+            background: #0F172A;
+            border: 1px solid #475569;
+        }
+
+        .personalize-bar .btn-dark:hover {
+            background: #1E293B;
+        }
+
+        /* TOC */
+        .toc-page {
+            padding: 3rem;
+            min-height: 80vh;
+            max-width: 750px;
+            margin: 0 auto;
+        }
+
+        .toc-page h2 {
+            font-family: 'Kumbh Sans', sans-serif;
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--secondary);
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .toc-part {
+            margin-bottom: 1.5rem;
+        }
+
+        .toc-part-label {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-transform: uppercase;
+            border-bottom: 2px solid;
+            display: inline-block;
+        }
+
+        a.toc-entry {
+            display: flex;
+            align-items: baseline;
+            gap: 0.5rem;
+            padding: 0.35rem 0;
+            font-size: 0.95rem;
+            text-decoration: none;
+            color: inherit;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        a.toc-entry:hover .toc-title {
+            color: var(--primary);
+            text-decoration: underline;
+        }
+
+        .toc-number {
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            color: var(--text-muted);
+            min-width: 2.5rem;
+        }
+
+        .toc-title {
+            flex: 1;
+        }
+
+        .toc-dots {
+            flex: 1;
+            border-bottom: 1px dotted #D1D5DB;
+            margin: 0 0.5rem;
+            min-width: 2rem;
+        }
+
+        .toc-time {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.75rem;
+            color: var(--text-caption);
+        }
+
+        .toc-hidden {
+            display: none;
+        }
+
+        /* Part Dividers */
+        .part-divider {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 40vh;
+            text-align: center;
+            padding: 3rem;
+            background: linear-gradient(135deg, var(--secondary) 0%, var(--accent) 100%);
+            color: white;
+        }
+
+        .part-divider .part-number {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 700;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: var(--gold);
+            margin-bottom: 1rem;
+        }
+
+        .part-divider h2 {
+            font-family: 'Kumbh Sans', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 800;
+        }
+
+        /* Chapter */
+        .chapter {
+            padding: 3rem;
+            max-width: 750px;
+            margin: 0 auto;
+        }
+
+        .chapter-header {
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 3px solid var(--primary);
+        }
+
+        .chapter-number-label {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .chapter h1 {
+            font-family: 'Kumbh Sans', sans-serif;
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--text-heading);
+            line-height: 1.2;
+        }
+
+        .chapter p {
+            margin-bottom: 1rem;
+            text-align: justify;
+            hyphens: auto;
+        }
+
+        .strategic-context {
+            background: var(--bg-context);
+            border-left: 4px solid var(--primary);
+            padding: 1.25rem 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .strategic-context h3 {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--primary);
+            margin-top: 0;
+            margin-bottom: 0.75rem;
+        }
+
+        .strategic-context p {
+            font-size: 0.95rem;
+        }
+
+        blockquote {
+            background: var(--bg-quote);
+            border-left: 4px solid var(--accent);
+            padding: 1rem 1.5rem;
+            margin: 1.5rem 0;
+            font-style: italic;
+            color: #374151;
+            border-radius: 0 8px 8px 0;
+            font-size: 1.05rem;
+        }
+
+        .chapter-image-container {
+            margin: 1.5rem 0;
+            text-align: center;
+        }
+
+        .chapter-image-container img {
+            max-width: 100%;
+            max-height: 350px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            object-fit: contain;
+        }
+
+        .image-caption {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.8rem;
+            color: var(--text-caption);
+            font-style: italic;
+            margin-top: 0.5rem;
+        }
+
+        .page-footer {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.7rem;
+            color: var(--text-caption);
+            text-align: center;
+            padding: 1rem 0;
+            border-top: 1px solid #E5E7EB;
+            margin-top: 2rem;
+        }
+
+        .custom-name {
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        /* ===== Dark Mode ===== */
+        body.dark {
+            background: #0F172A;
+            color: #CBD5E1;
+            --text-body: #CBD5E1;
+            --text-heading: #F1F5F9;
+            --text-muted: #94A3B8;
+            --bg-context: #1E293B;
+            --bg-quote: #1E293B;
+            --border-context: #FF6B35;
+        }
+
+        body.dark .chapter-image-container img {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        }
+
+        body.dark .page-footer {
+            border-top-color: #334155;
+        }
+
+        /* ===== Sidebar / Interactive Index ===== */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: -320px;
+            width: 320px;
+            height: 100vh;
+            background: #1E293B;
+            color: white;
+            box-shadow: 2px 0 12px rgba(0, 0, 0, 0.5);
+            transition: left 0.3s;
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .sidebar.open {
+            left: 0;
+        }
+
+        .sidebar-header {
+            padding: 1.25rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #334155;
+            background: #0F172A;
+        }
+
+        .sidebar-header h3 {
+            margin: 0;
+            font-size: 1.1rem;
+        }
+
+        .sidebar-close {
+            background: none;
+            border: none;
+            color: #94A3B8;
+            font-size: 1.25rem;
+            cursor: pointer;
+            padding: 0.25rem;
+        }
+
+        .sidebar-close:hover {
+            color: white;
+        }
+
+        .sidebar-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem 0;
+        }
+
+        .sidebar-link {
+            display: block;
+            padding: 0.5rem 1.25rem;
+            color: #CBD5E1;
+            text-decoration: none;
+            font-size: 0.85rem;
+            border-left: 3px solid transparent;
+            line-height: 1.4;
+        }
+
+        .sidebar-link:hover {
+            background: #334155;
+            color: white;
+            border-left-color: var(--primary);
+        }
+
+        .sidebar-part {
+            padding: 1rem 1.25rem 0.25rem;
+            font-weight: 700;
+            color: var(--gold);
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 1px;
+        }
+
+        .sidebar-footer {
+            padding: 1rem 1.25rem;
+            border-top: 1px solid #334155;
+            text-align: center;
+            font-size: 0.75rem;
+            color: #64748B;
+        }
+
+        .sidebar-footer .cx-logo {
+            font-weight: 800;
+            color: #94A3B8;
+            margin-bottom: 0.3rem;
+        }
+
+        body {
+            transition: margin-left 0.3s;
+            margin-left: 0;
+        }
+
+        body.sidebar-open {
+            margin-left: 320px;
+        }
+
+        /* ===== Print Styles ===== */
+        @media print {
+
+            .personalize-bar,
+            .sidebar {
+                display: none !important;
+            }
+
+            body.sidebar-open {
+                margin-left: 0 !important;
+            }
+
+            a.toc-entry {
+                text-decoration: none !important;
+                color: inherit !important;
+                pointer-events: none;
+            }
+
+            body {
+                font-size: 11pt;
+                color: #000;
+                background: white;
+            }
+
+            .cover-page,
+            .part-divider,
+            .strategic-context,
+            blockquote {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .cover-page,
+            .toc-page,
+            .part-divider {
+                page-break-after: always;
+            }
+
+            .chapter {
+                page-break-before: always;
+                padding: 1.5rem 0;
+            }
+
+            .chapter-header {
+                page-break-after: avoid;
+            }
+
+            .chapter-image-container,
+            blockquote,
+            .strategic-context {
+                page-break-inside: avoid;
+            }
+
+            img {
+                max-height: 250px;
+            }
+
+            @page {
+                margin: 2cm 2.5cm;
+                size: letter;
+            }
+
+            .toc-hidden {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Sidebar -->
+    <div id="sidebar" class="sidebar">
+        <div class="sidebar-header">
+            <h3>Book Index</h3>
+            <button class="sidebar-close" onclick="toggleSidebar()">✕</button>
+        </div>
+        <div class="sidebar-content" id="sidebar-toc"></div>
+        <div class="sidebar-footer">
+            <div class="cx-logo">SmartChannel CX</div>
+            <p>SmartGen Tools for dynamic, personalized content at scale.</p>
+        </div>
+    </div>
+
+    <!-- Personalization Bar (Top Control) -->
+    <div class="personalize-bar">
+        <div class="personalize-group">
+            <button class="btn-dark" onclick="toggleSidebar()">☰ Index</button>
+            <label>📖 Generate your custom edition:</label>
+            <input type="text" id="readerName" placeholder="Your name" />
+            <select id="personaSelect">
+                <option value="all">All Chapters (Full Book)</option>
+                <option value="consumer">Consumer Path (~45 min)</option>
+                <option value="it_professional">IT Professional Path (~75 min)</option>
+                <option value="executive_entrepreneur">Executive / Entrepreneur Path (~70 min)</option>
+            </select>
+            <button onclick="generateCustomBook()">⚡ Generate</button>
+        </div>
+        <div class="action-group">
+            <button class="btn-dark" onclick="document.body.classList.toggle('dark')">🌙 Dark Mode</button>
+            <button class="btn-print" onclick="window.print()">🖨️ Print / Save as PDF</button>
+        </div>
+    </div>
+
+    <!-- Book Content Container -->
+    <div id="book-content"></div>
+
+    <!-- Load data.js from same directory, or M:\+Proj\VidiSmart\smart-book\data.js -->
+    <script src="data.js"></script>
+    <script>
+        if (typeof BOOK_DATA === 'undefined') {
+            // Fallback: try loading from original location
+            var s = document.createElement('script');
+            s.src = 'file:///M:/+Proj/VidiSmart/smart-book/data.js';
+            document.head.appendChild(s);
+        }
+    </script>
+    <script>
+        // Try images from workspace first, then from +Proj
+        const IMAGE_BASES = [
+            '../images/',           // m:\code\vidismart\images\
+            'file:///M:/+Proj/VidiSmart/',  // original project folder
+            'file:///M:/+Proj/VidiSmart/images/',  // images subfolder
+        ];
+        const IMAGE_BASE = IMAGE_BASES[0];
+        const PROJ_IMAGE_BASE = IMAGE_BASES[1];
+
+        const PART_LABELS = {
+            0: null,
+            1: { num: 'Part I', title: 'The Landscape' },
+            2: { num: 'Part II', title: 'The Technology' },
+            3: { num: 'Part III', title: 'The Business' },
+            4: { num: 'Part IV', title: 'The Stack & The Future' },
+            5: { num: 'Part V', title: 'The Horizon' }
+        };
+
+        let currentPersona = 'all';
+        let readerName = '';
+
+        function getVisibleChapters(persona) {
+            if (persona === 'all' || !BOOK_DATA.personas[persona]) {
+                return Object.keys(BOOK_DATA.chapters);
+            }
+            const p = BOOK_DATA.personas[persona];
+            const visible = [...(p.critical || []), ...(p.high || []), ...(p.medium || [])];
+            return Object.keys(BOOK_DATA.chapters).filter(k => visible.includes(k));
+        }
+
+        function generateCustomBook() {
+            readerName = document.getElementById('readerName').value.trim();
+            currentPersona = document.getElementById('personaSelect').value;
+            buildBook();
+        }
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+            document.body.classList.toggle('sidebar-open');
+        }
+
+        function buildBook() {
+            const container = document.getElementById('book-content');
+            const chapters = BOOK_DATA.chapters;
+            const chapterKeys = Object.keys(chapters).sort((a, b) => chapters[a].order - chapters[b].order);
+            const visibleChapters = getVisibleChapters(currentPersona);
+
+            let html = '';
+            const personaLabel = currentPersona === 'all' ? '' :
+                BOOK_DATA.personas[currentPersona]?.label || '';
+            const nameDisplay = readerName || '';
+            const customLine = nameDisplay ?
+                `<p class="cover-edition">Custom Edition for <span class="custom-name">${nameDisplay}</span>${personaLabel ? ' · ' + personaLabel + ' Path' : ''}</p>` :
+                (personaLabel ? `<p class="cover-edition">${personaLabel} Edition</p>` : '');
+
+            // COVER
+            html += `
+                <div class="cover-page">
+                    <div class="cover-badge">2026 Edition</div>
+                    <h1 class="cover-title">The Speed of<br><span class="accent">Agentic Visual AI</span></h1>
+                    <p class="cover-subtitle">How the Top 1% Will Generate 500% Business Growth</p>
+                    <div class="cover-divider"></div>
+                    <p class="cover-author">James May</p>
+                    <p class="cover-company">VidiSmart · Savage Digital Solutions</p>
+                    ${customLine || '<p class="cover-edition">First Edition · 2026</p>'}
+                    <div class="cover-cx-note">
+                        <p>Powered by the <strong>SmartChannel CX</strong> suite</p>
+                        <p style="margin-top:0.25rem; color: rgba(255,255,255,0.5);">One of many SmartGen tools for creating personalized content dynamically at scale.</p>
+                    </div>
+                </div>`;
+
+            // TOC
+            let sidebarHtml = '';
+            html += `<div class="toc-page"><h2>Table of Contents</h2>`;
+            if (nameDisplay) {
+                html += `<p style="text-align:center;font-family:Inter,sans-serif;font-size:0.9rem;color:var(--text-muted);margin-bottom:1.5rem;">Prepared for <strong class="custom-name">${nameDisplay}</strong></p>`;
+            }
+            let currentPart = -1;
+            chapterKeys.forEach(key => {
+                const ch = chapters[key];
+                const isVisible = visibleChapters.includes(key);
+                if (ch.part !== currentPart) {
+                    currentPart = ch.part;
+                    const partInfo = PART_LABELS[currentPart];
+                    if (partInfo) {
+                        html += `<div class="toc-part"><div class="toc-part-label">${partInfo.num}: ${partInfo.title}</div></div>`;
+                        if (isVisible) sidebarHtml += `<div class="sidebar-part">${partInfo.num}</div>`;
+                    }
+                }
+                const displayTitle = ch.title.replace(/^Ch\d+:\s*/, '').replace(/^Foreword:\s*/, 'Foreword: ');
+                const num = ch.order === 0 ? '' : `Ch ${ch.order}`;
+                html += `<a href="#${ch.id}" class="toc-entry ${isVisible ? '' : 'toc-hidden'}">
+                    <span class="toc-number">${num}</span>
+                    <span class="toc-title">${displayTitle}</span>
+                    <span class="toc-dots"></span>
+                    <span class="toc-time">${ch.readingTime} min</span>
+                </a>`;
+
+                if (isVisible) {
+                    sidebarHtml += `<a href="#${ch.id}" class="sidebar-link" onclick="if(window.innerWidth < 768) toggleSidebar()">${num ? num + ': ' : ''}${displayTitle}</a>`;
+                }
+            });
+            html += `</div>`;
+            document.getElementById('sidebar-toc').innerHTML = sidebarHtml;
+
+            // CHAPTERS
+            currentPart = -1;
+            chapterKeys.forEach(key => {
+                const ch = chapters[key];
+                if (!visibleChapters.includes(key)) return;
+
+                if (ch.part !== currentPart && ch.part > 0) {
+                    currentPart = ch.part;
+                    const partInfo = PART_LABELS[currentPart];
+                    if (partInfo) {
+                        html += `<div class="part-divider">
+                            <div class="part-number">${partInfo.num}</div>
+                            <h2>${partInfo.title}</h2>
+                        </div>`;
+                    }
+                }
+                if (ch.part === 0) currentPart = 0;
+
+                const chLabel = ch.order === 0 ? 'FOREWORD' : `CHAPTER ${ch.order}`;
+                const chTitle = ch.title.replace(/^Ch\d+:\s*/, '').replace(/^Foreword:\s*/, '');
+
+                html += `<div class="chapter" id="${ch.id}">
+                    <div class="chapter-header">
+                        <div class="chapter-number-label">${chLabel}</div>
+                        <h1>${chTitle}</h1>
+                    </div>`;
+
+                // Hero image
+                if (ch.images && ch.images.length > 0) {
+                    const img = ch.images[0];
+                    if (img && !img.endsWith('.pdf') && !img.endsWith('.pptx')) {
+                        html += `<div class="chapter-image-container">
+                            <img src="${IMAGE_BASE}${img}" alt="${chTitle}" loading="lazy"
+                                 onerror="this.onerror=null; this.src='${PROJ_IMAGE_BASE}${img}'; this.onerror=function(){this.parentElement.style.display='none'}">
+                        </div>`;
+                    }
+                }
+
+                // Content
+                html += ch.content;
+
+                // Persona-specific AI insight banner
+                if (currentPersona !== 'all' && BOOK_DATA.personas[currentPersona]?.aiInsights?.[key]) {
+                    const insight = BOOK_DATA.personas[currentPersona].aiInsights[key];
+                    const personaInfo = BOOK_DATA.personas[currentPersona];
+                    html += `<div class="ai-insight" style="background:linear-gradient(135deg, ${personaInfo.color}15, ${personaInfo.color}08);border-left:4px solid ${personaInfo.color};padding:1.25rem 1.5rem;margin:1.5rem 0;border-radius:0 8px 8px 0;">
+                        <h3 style="font-family:'Inter',sans-serif;font-size:0.8rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:${personaInfo.color};margin-top:0;margin-bottom:0.75rem;">
+                            ${personaInfo.icon} ${personaInfo.label} Insight
+                        </h3>
+                        <p style="font-size:0.95rem;margin:0;">${insight}</p>
+                    </div>`;
+                }
+
+                // Extra images (max 2 more)
+                if (ch.images && ch.images.length > 1) {
+                    for (let i = 1; i < Math.min(ch.images.length, 3); i++) {
+                        const img = ch.images[i];
+                        if (img && !img.endsWith('.pdf') && !img.endsWith('.pptx')) {
+                            html += `<div class="chapter-image-container">
+                                <img src="${IMAGE_BASE}${img}" alt="" loading="lazy"
+                                     onerror="this.onerror=null; this.src='${PROJ_IMAGE_BASE}${img}'; this.onerror=function(){this.parentElement.style.display='none'}">
+                            </div>`;
+                        }
+                    }
+                }
+
+                html += `<div class="page-footer">
+                    The Speed of Agentic Visual AI · James May · VidiSmart / Savage Solutions
+                    ${nameDisplay ? ' · Custom Edition for ' + nameDisplay : ''}
+                </div></div>`;
+            });
+
+            container.innerHTML = html;
+            window.scrollTo(0, 0);
+        }
+
+        // Auto-build on load with URL parameter support
+        if (typeof BOOK_DATA !== 'undefined') {
+            window.addEventListener('DOMContentLoaded', () => {
+                // Read URL parameters from index.html navigation
+                const params = new URLSearchParams(window.location.search);
+                const personaParam = params.get('persona');
+                const nameParam = params.get('name');
+
+                if (personaParam && BOOK_DATA.personas[personaParam]) {
+                    document.getElementById('personaSelect').value = personaParam;
+                    currentPersona = personaParam;
+                }
+                if (nameParam) {
+                    document.getElementById('readerName').value = decodeURIComponent(nameParam);
+                    readerName = decodeURIComponent(nameParam);
+                }
+
+                buildBook();
+            });
+        }
+    </script>
+</body>
+
+</html>
