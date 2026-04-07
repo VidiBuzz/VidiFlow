@@ -2,8 +2,8 @@ const http = require('http');
 const https = require('https');
 
 // Load Supabase credentials from environment or use defaults
-const SUPABASE_URL = process.env.SUPABASE_URL || 'https://jeasmwbberfgztkxfjwr.supabase.co';
-const SUPABASE_KEY = process.env.SUPABASE_ANON_KEY || 'sbp_229e5b28acf95c33a6a6d611683962149eb327bd';
+const SUPABASE_URL = process.env.SUPABASE_URL || '';
+const SUPABASE_KEY = process.env.SUPABASE_ANON_KEY || '';
 
 console.error('[MCP Server] Supabase MCP connected to:', SUPABASE_URL);
 console.error('[MCP Server] Waiting for commands on stdin...');

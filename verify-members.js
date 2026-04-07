@@ -1,7 +1,7 @@
 const https = require('https');
 
-const supabaseUrl = 'jeasmwbberfgztkxfjwr.supabase.co';
-const anonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImplYXNtd2JiZXJmZ3p0a3hmandyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA4MzI0MTUsImV4cCI6MjA4NjQwODQxNX0.MT52N92dX57NL-iJNCq109A1BziKDehAI_-H0xMRY5M';
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
+const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
 
 function makeRequest(path) {
   return new Promise((resolve, reject) => {

@@ -9,8 +9,8 @@ const fs = require('fs');
 // =====================================================
 // CONFIGURATION
 // =====================================================
-const SUPABASE_URL = process.env.SUPABASE_URL || 'https://jeasmwbberfgztkxfjwr.supabase.co';
-const SUPABASE_KEY = process.env.SUPABASE_ANON_KEY || 'sbp_229e5b28acf95c33a6a6d611683962149eb327bd';
+const SUPABASE_URL = process.env.SUPABASE_URL || '';
+const SUPABASE_KEY = process.env.SUPABASE_ANON_KEY || '';
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 

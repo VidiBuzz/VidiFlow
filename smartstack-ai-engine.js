@@ -18,8 +18,8 @@ const { createClient } = require('@supabase/supabase-js');
 // CONFIGURATION
 // =====================================================
 const PORT = process.env.PORT || 3001;
-const SUPABASE_URL = process.env.SUPABASE_URL || 'https://jeasmwbberfgztkxfjwr.supabase.co';
-const SUPABASE_KEY = process.env.SUPABASE_ANON_KEY || 'sbp_229e5b28acf95c33a6a6d611683962149eb327bd';
+const SUPABASE_URL = process.env.SUPABASE_URL || '';
+const SUPABASE_KEY = process.env.SUPABASE_ANON_KEY || '';
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY || '';
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY || '';
 

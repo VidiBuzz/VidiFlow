@@ -7,7 +7,7 @@ const client = new Client({
   port: 5432,
   database: 'postgres',
   user: 'postgres',
-  password: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImplYXNtd2JiZXJmZ3p0a3hmandyIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MDgzMjQxNSwiZXhwIjoyMDg2NDA4NDE1fQ.eLKsolLYu16CQzJU-fc3A0ykuBw3VnmmGUb3GHGLsbU',
+  password: process.env.SUPABASE_DB_PASSWORD || '',
   ssl: {
     rejectUnauthorized: false
   }

@@ -1,7 +1,7 @@
 const https = require('https');
 
-const supabaseUrl = 'jeasmwbberfgztkxfjwr.supabase.co';
-const serviceRoleKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImplYXNtd2JiZXJmZ3p0a3hmandyIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MDgzMjQxNSwiZXhwIjoyMDg2NDA4NDE1fQ.eLKsolLYu16CQzJU-fc3A0ykuBw3VnmmGUb3GHGLsbU';
+const supabaseUrl = process.env.SUPABASE_HOST || '';
+const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
 
 // Create table SQL
 const createTableSQL = `CREATE TABLE IF NOT EXISTS member_profiles (

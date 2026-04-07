@@ -1,7 +1,7 @@
 const https = require('https');
 
-const accessToken = 'sbp_229e5b28acf95c33a6a6d611683962149eb327bd';
-const projectRef = 'jeasmwbberfgztkxfjwr';
+const accessToken = process.env.SUPABASE_ACCESS_TOKEN || '';
+const projectRef = process.env.SUPABASE_PROJECT_REF || '';
 
 function makeRequest(hostname, path, method, headers, data) {
   return new Promise((resolve, reject) => {
