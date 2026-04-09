@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="referrer" content="no-referrer">
     <title>The Speed of Agentic Visual AI — Choose Your Path</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -17,15 +18,14 @@
             --secondary: #004E89;
             --accent: #1A659E;
             --gold: #C8A951;
+            --purple: #690be5;
+            --purple-light: #8B2FF8;
             --text-body: #2C2C2C;
             --text-heading: #1A1A1A;
             --text-muted: #6B7280;
-            --bg-page: #FFFFFF;
-            --bg-card: #FFFFFF;
-            --bg-context: #F8F6F0;
-            --border: #E5E7EB;
-            --shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
-            --shadow-hover: 0 8px 40px rgba(0, 0, 0, 0.12);
+            --bg-page: #060914;
+            --bg-card: rgba(255, 255, 255, 0.04);
+            --border: rgba(255, 255, 255, 0.1);
         }
 
         * {
@@ -36,14 +36,26 @@
 
         body {
             font-family: 'Inter', sans-serif;
-            color: var(--text-body);
             background: var(--bg-page);
+            color: #E2E8F0;
             line-height: 1.6;
-            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ===== Three.js Neural Canvas ===== */
+        #neuralCanvas {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            filter: blur(0.6px);
+            opacity: 0.7;
+            pointer-events: none;
         }
 
         /* ===== Hero Section ===== */
         .hero {
+            position: relative;
+            z-index: 1;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
@@ -51,20 +63,6 @@
             justify-content: center;
             text-align: center;
             padding: 3rem 2rem;
-            background: linear-gradient(160deg, #001F3F 0%, #003366 40%, #004E89 70%, #1A659E 100%);
-            color: white;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .hero::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            right: -30%;
-            width: 80%;
-            height: 200%;
-            background: radial-gradient(ellipse, rgba(255, 107, 53, 0.15) 0%, transparent 70%);
         }
 
         .hero-badge {
@@ -156,8 +154,133 @@
             }
         }
 
+        /* ===== Hero Image Slideshow ===== */
+        .hero-image {
+            width: min(860px, 92vw);
+            height: 340px;
+            border-radius: 20px;
+            overflow: hidden;
+            margin: 2.5rem auto;
+            position: relative;
+            box-shadow:
+                0 0 0 1px rgba(255, 255, 255, 0.08),
+                0 0 40px rgba(105, 11, 229, 0.35),
+                0 40px 100px rgba(0, 0, 0, 0.6);
+        }
+
+        .hero-image::before {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            border-radius: 22px;
+            background: linear-gradient(135deg, rgba(105, 11, 229, 0.6), rgba(255, 107, 53, 0.4), rgba(105, 11, 229, 0.6));
+            z-index: -1;
+            animation: ringPulse 4s ease-in-out infinite;
+        }
+
+        @keyframes ringPulse {
+
+            0%,
+            100% {
+                opacity: 0.5;
+            }
+
+            50% {
+                opacity: 1;
+            }
+        }
+
+        .hero-slide {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            transition: opacity 1.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .hero-slide.active {
+            opacity: 1;
+        }
+
+        .hero-slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center center;
+        }
+
+        .hero-image-overlay {
+            position: absolute;
+            inset: 0;
+            background:
+                linear-gradient(to bottom, rgba(6, 9, 20, 0.15) 0%, transparent 30%, transparent 60%, rgba(6, 9, 20, 0.9) 100%),
+                linear-gradient(to right, rgba(6, 9, 20, 0.3) 0%, transparent 40%);
+            z-index: 2;
+        }
+
+        .hero-dots {
+            position: absolute;
+            bottom: 14px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 6px;
+            z-index: 3;
+        }
+
+        .hero-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transition: all 0.4s;
+            cursor: pointer;
+        }
+
+        .hero-dot.active {
+            background: var(--primary);
+            width: 20px;
+            border-radius: 3px;
+        }
+
+        .hero-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 3;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: rgba(6, 9, 20, 0.55);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(8px);
+            color: #fff;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background 0.2s, border-color 0.2s, transform 0.2s;
+            user-select: none;
+        }
+
+        .hero-arrow:hover {
+            background: rgba(255, 107, 53, 0.7);
+            border-color: rgba(255, 107, 53, 0.6);
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .hero-arrow-prev {
+            left: 14px;
+        }
+
+        .hero-arrow-next {
+            right: 14px;
+        }
+
         /* ===== Personalization Section ===== */
         .personalize-section {
+            position: relative;
+            z-index: 1;
             padding: 5rem 2rem;
             max-width: 1200px;
             margin: 0 auto;
@@ -172,13 +295,13 @@
             font-family: 'Kumbh Sans', sans-serif;
             font-size: clamp(1.8rem, 4vw, 2.5rem);
             font-weight: 800;
-            color: var(--secondary);
+            color: #fff;
             margin-bottom: 0.75rem;
         }
 
         .section-header p {
             font-size: 1.1rem;
-            color: var(--text-muted);
+            color: rgba(255, 255, 255, 0.5);
             max-width: 600px;
             margin: 0 auto;
         }
@@ -194,11 +317,14 @@
         .name-input-group input {
             flex: 1;
             padding: 1rem 1.25rem;
-            border: 2px solid var(--border);
+            border: 1px solid rgba(255, 255, 255, 0.12);
             border-radius: 12px;
             font-size: 1rem;
             font-family: 'Inter', sans-serif;
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
             transition: border-color 0.2s;
+            backdrop-filter: blur(8px);
         }
 
         .name-input-group input:focus {
@@ -207,7 +333,7 @@
         }
 
         .name-input-group input::placeholder {
-            color: #9CA3AF;
+            color: rgba(255, 255, 255, 0.3);
         }
 
         /* ===== Persona Cards ===== */
@@ -220,13 +346,14 @@
 
         .persona-card {
             background: var(--bg-card);
-            border: 2px solid var(--border);
+            border: 1px solid var(--border);
             border-radius: 16px;
             padding: 2rem;
             cursor: pointer;
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
+            backdrop-filter: blur(12px);
         }
 
         .persona-card::before {
@@ -253,7 +380,7 @@
 
         .persona-card.selected {
             border-color: var(--card-color);
-            box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 0 0 2px var(--card-color), var(--shadow-hover);
         }
 
         .persona-card.selected::before {
@@ -269,13 +396,13 @@
             font-family: 'Kumbh Sans', sans-serif;
             font-size: 1.4rem;
             font-weight: 700;
-            color: var(--text-heading);
+            color: #fff;
             margin-bottom: 0.5rem;
         }
 
         .persona-card .persona-desc {
             font-size: 0.95rem;
-            color: var(--text-muted);
+            color: rgba(255, 255, 255, 0.5);
             margin-bottom: 1.25rem;
         }
 
@@ -290,20 +417,21 @@
             flex-direction: column;
             align-items: center;
             padding: 0.5rem 0.75rem;
-            background: var(--bg-context);
+            background: rgba(255, 255, 255, 0.05);
             border-radius: 8px;
             min-width: 70px;
+            border: 1px solid rgba(255, 255, 255, 0.07);
         }
 
         .persona-stat .stat-value {
             font-weight: 700;
             font-size: 1.1rem;
-            color: var(--text-heading);
+            color: #fff;
         }
 
         .persona-stat .stat-label {
             font-size: 0.7rem;
-            color: var(--text-muted);
+            color: rgba(255, 255, 255, 0.4);
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
@@ -311,13 +439,13 @@
         .persona-chapters {
             margin-top: 1rem;
             padding-top: 1rem;
-            border-top: 1px solid var(--border);
+            border-top: 1px solid rgba(255, 255, 255, 0.07);
         }
 
         .persona-chapters h4 {
             font-size: 0.8rem;
             font-weight: 600;
-            color: var(--text-muted);
+            color: rgba(255, 255, 255, 0.4);
             text-transform: uppercase;
             letter-spacing: 1px;
             margin-bottom: 0.5rem;
@@ -333,36 +461,36 @@
             font-size: 0.7rem;
             padding: 0.25rem 0.5rem;
             border-radius: 4px;
-            background: var(--bg-context);
-            color: var(--text-muted);
+            background: rgba(255, 255, 255, 0.06);
+            color: rgba(255, 255, 255, 0.5);
             font-weight: 500;
         }
 
         .chapter-tag.critical {
-            background: rgba(255, 107, 53, 0.1);
+            background: rgba(255, 107, 53, 0.15);
             color: var(--primary);
         }
 
         .chapter-tag.high {
-            background: rgba(16, 185, 129, 0.1);
+            background: rgba(16, 185, 129, 0.15);
             color: #10B981;
         }
 
         .chapter-tag.medium {
-            background: rgba(139, 92, 246, 0.1);
+            background: rgba(139, 92, 246, 0.15);
             color: #8B5CF6;
         }
 
         .persona-takeaways {
             margin-top: 1rem;
             padding-top: 1rem;
-            border-top: 1px solid var(--border);
+            border-top: 1px solid rgba(255, 255, 255, 0.07);
         }
 
         .persona-takeaways h4 {
             font-size: 0.8rem;
             font-weight: 600;
-            color: var(--text-muted);
+            color: rgba(255, 255, 255, 0.4);
             text-transform: uppercase;
             letter-spacing: 1px;
             margin-bottom: 0.5rem;
@@ -376,7 +504,7 @@
 
         .persona-takeaways li {
             font-size: 0.8rem;
-            color: var(--text-body);
+            color: rgba(255, 255, 255, 0.6);
             padding: 0.25rem 0;
             padding-left: 1rem;
             position: relative;
@@ -394,21 +522,23 @@
         .cta-section {
             text-align: center;
             padding: 3rem 2rem;
-            background: var(--bg-context);
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 20px;
             margin-bottom: 3rem;
+            backdrop-filter: blur(12px);
         }
 
         .cta-section h3 {
             font-family: 'Kumbh Sans', sans-serif;
             font-size: 1.5rem;
             font-weight: 700;
-            color: var(--text-heading);
+            color: #fff;
             margin-bottom: 0.75rem;
         }
 
         .cta-section p {
-            color: var(--text-muted);
+            color: rgba(255, 255, 255, 0.5);
             margin-bottom: 1.5rem;
         }
 
@@ -446,25 +576,29 @@
         }
 
         .btn-primary:disabled {
-            background: #9CA3AF;
+            background: #2D3748;
+            color: #4A5568;
             cursor: not-allowed;
             transform: none;
             box-shadow: none;
         }
 
         .btn-secondary {
-            background: white;
-            color: var(--text-body);
-            border: 2px solid var(--border);
+            background: rgba(255, 255, 255, 0.06);
+            color: rgba(255, 255, 255, 0.75);
+            border: 1px solid rgba(255, 255, 255, 0.12);
         }
 
         .btn-secondary:hover {
-            border-color: var(--primary);
-            color: var(--primary);
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.25);
+            color: white;
         }
 
         /* ===== What's Inside Section ===== */
         .whats-inside {
+            position: relative;
+            z-index: 1;
             padding: 4rem 2rem;
             max-width: 1000px;
             margin: 0 auto;
@@ -479,9 +613,10 @@
 
         .part-card {
             padding: 1rem;
-            background: var(--bg-context);
+            background: rgba(255, 255, 255, 0.03);
             border-radius: 12px;
             border-left: 4px solid var(--primary);
+            border: 1px solid rgba(255, 255, 255, 0.07);
         }
 
         .part-card .part-num {
@@ -497,33 +632,36 @@
             font-family: 'Kumbh Sans', sans-serif;
             font-size: 0.95rem;
             font-weight: 700;
-            color: var(--text-heading);
+            color: #fff;
             margin-bottom: 0.25rem;
         }
 
         .part-card p {
             font-size: 0.75rem;
-            color: var(--text-muted);
+            color: rgba(255, 255, 255, 0.4);
             line-height: 1.4;
         }
 
         /* ===== Footer ===== */
         .footer {
+            position: relative;
+            z-index: 1;
             text-align: center;
             padding: 3rem 2rem;
-            background: #0F172A;
-            color: #94A3B8;
+            background: rgba(255, 255, 255, 0.02);
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
         }
 
         .footer .cx-logo {
             font-weight: 800;
             font-size: 1.2rem;
-            color: #CBD5E1;
+            color: rgba(255, 255, 255, 0.6);
             margin-bottom: 0.5rem;
         }
 
         .footer p {
             font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.3);
             max-width: 500px;
             margin: 0 auto;
         }
@@ -564,6 +702,21 @@
             .parts-grid {
                 grid-template-columns: 1fr;
             }
+
+            .hero-image {
+                height: 180px;
+                border-radius: 12px;
+            }
+
+            .hero-image img {
+                object-position: center center;
+            }
+
+            .hero-arrow {
+                width: 36px;
+                height: 36px;
+                font-size: 0.85rem;
+            }
         }
 
         /* ===== Smooth Scroll ===== */
@@ -585,7 +738,7 @@
         .spinner {
             width: 40px;
             height: 40px;
-            border: 4px solid var(--border);
+            border: 4px solid rgba(255, 255, 255, 0.1);
             border-top-color: var(--primary);
             border-radius: 50%;
             animation: spin 0.8s linear infinite;
@@ -602,6 +755,9 @@
 
 <body>
 
+    <!-- Three.js Neural Canvas -->
+    <canvas id="neuralCanvas"></canvas>
+
     <!-- Hero Section -->
     <section class="hero">
         <div class="hero-badge">2026 Edition</div>
@@ -609,6 +765,14 @@
         <p class="hero-subtitle">How the Top 1% Will Generate 500% Business Growth</p>
         <p class="hero-author">James May</p>
         <p class="hero-company">VidiSmart · Savage Digital Solutions</p>
+
+        <div class="hero-image" id="heroSlideshow">
+            <div class="hero-image-overlay"></div>
+            <button class="hero-arrow hero-arrow-prev" id="heroArrowPrev" aria-label="Previous">&#8592;</button>
+            <button class="hero-arrow hero-arrow-next" id="heroArrowNext" aria-label="Next">&#8594;</button>
+            <div class="hero-dots" id="heroDots"></div>
+        </div>
+
         <a href="#personalize" class="scroll-indicator" style="cursor:pointer;text-decoration:none;color:inherit;">
             <span>Choose your reading path</span>
             <span>↓</span>
@@ -695,15 +859,15 @@
         <div class="cx-logo">SmartChannel CX</div>
         <p>Powered by the SmartChannel CX suite — SmartGen tools for creating personalized content dynamically at scale.
         </p>
-        <p style="margin-top: 1rem; font-size: 0.75rem; color: #64748B;">© 2026 VidiSmart · Savage Digital Solutions.
-            All rights reserved.</p>
+        <p style="margin-top: 1rem; font-size: 0.75rem; color: rgba(255,255,255,0.25);">© 2026 VidiSmart · Savage
+            Digital Solutions. All rights reserved.</p>
     </footer>
 
     <!-- Load data.js -->
     <script src="data.js"></script>
 
     <script>
-        // ===== Persona Configuration (merged with BOOK_DATA) =====
+        // ===== Persona Configuration =====
         const PERSONA_DETAILS = {
             consumer: {
                 icon: '👤',
@@ -741,7 +905,7 @@
 
                 const totalChapters = [...config.critical, ...config.high, ...config.medium].length;
                 const criticalCount = config.critical.length;
-                const readingTime = Math.round(totalChapters * 12); // avg ~12 min per chapter
+                const readingTime = Math.round(totalChapters * 12);
 
                 const card = document.createElement('div');
                 card.className = 'persona-card';
@@ -749,7 +913,6 @@
                 card.dataset.persona = key;
                 card.onclick = () => selectPersona(key);
 
-                // Build chapter tags (show first 5 critical)
                 const criticalTags = config.critical.slice(0, 5).map(ch => {
                     const chData = chapters[ch];
                     const label = chData ? chData.title.replace(/^Ch\d+:\s*/, '').replace(/^Foreword:\s*/, '') : ch;
@@ -758,36 +921,35 @@
 
                 const moreCount = config.critical.length > 5 ? `+${config.critical.length - 5} more` : '';
 
-                // Build key takeaways list
                 const takeaways = (config.keyTakeaways || []).map(t => `<li>${t}</li>`).join('');
 
                 card.innerHTML = `
-                    <div class="persona-icon">${persona.icon}</div>
-                    <h3>${persona.title}</h3>
-                    <p class="persona-desc">${persona.description}</p>
-                    <div class="persona-stats">
-                        <div class="persona-stat">
-                            <span class="stat-value">${totalChapters}</span>
-                            <span class="stat-label">Chapters</span>
-                        </div>
-                        <div class="persona-stat">
-                            <span class="stat-value">~${readingTime}m</span>
-                            <span class="stat-label">Read Time</span>
-                        </div>
-                        <div class="persona-stat">
-                            <span class="stat-value">${criticalCount}</span>
-                            <span class="stat-label">Core</span>
-                        </div>
+                <div class="persona-icon">${persona.icon}</div>
+                <h3>${persona.title}</h3>
+                <p class="persona-desc">${persona.description}</p>
+                <div class="persona-stats">
+                    <div class="persona-stat">
+                        <span class="stat-value">${totalChapters}</span>
+                        <span class="stat-label">Chapters</span>
                     </div>
-                    <div class="persona-chapters">
-                        <h4>Core Chapters</h4>
-                        <div class="chapter-tags">
-                            ${criticalTags}
-                            ${moreCount ? `<span class="chapter-tag">${moreCount}</span>` : ''}
-                        </div>
+                    <div class="persona-stat">
+                        <span class="stat-value">~${readingTime}m</span>
+                        <span class="stat-label">Read Time</span>
                     </div>
-                    ${takeaways ? `<div class="persona-takeaways"><h4>You'll Learn</h4><ul>${takeaways}</ul></div>` : ''}
-                `;
+                    <div class="persona-stat">
+                        <span class="stat-value">${criticalCount}</span>
+                        <span class="stat-label">Core</span>
+                    </div>
+                </div>
+                <div class="persona-chapters">
+                    <h4>Core Chapters</h4>
+                    <div class="chapter-tags">
+                        ${criticalTags}
+                        ${moreCount ? `<span class="chapter-tag">${moreCount}</span>` : ''}
+                    </div>
+                </div>
+                ${takeaways ? `<div class="persona-takeaways"><h4>You'll Learn</h4><ul>${takeaways}</ul></div>` : ''}
+            `;
 
                 grid.appendChild(card);
             });
@@ -797,12 +959,10 @@
         function selectPersona(key) {
             selectedPersona = key;
 
-            // Update card selection
             document.querySelectorAll('.persona-card').forEach(card => {
                 card.classList.toggle('selected', card.dataset.persona === key);
             });
 
-            // Update CTA message with expanded persona data
             const persona = PERSONA_DETAILS[key];
             const config = BOOK_DATA.personas[key];
             const totalChapters = [...config.critical, ...config.high, ...config.medium].length;
@@ -811,9 +971,9 @@
             const introText = config.personaIntro || `Focus: ${persona.focus}`;
 
             document.getElementById('ctaMessage').innerHTML = `
-                <strong>${persona.title} Path</strong> — ${totalChapters} chapters, ~${readingTime} minutes reading time.<br>
-                <span style="font-size:0.9rem;color:var(--text-muted);">${introText}</span>
-            `;
+            <strong>${persona.title} Path</strong> — ${totalChapters} chapters, ~${readingTime} minutes reading time.<br>
+            <span style="font-size:0.9rem;color:rgba(255,255,255,0.4);">${introText}</span>
+        `;
 
             document.getElementById('startReadingBtn').disabled = false;
         }
@@ -825,16 +985,13 @@
             const name = document.getElementById('readerName').value.trim();
             const loading = document.getElementById('loadingState');
 
-            // Show loading
             loading.classList.add('active');
 
-            // Store preferences
             localStorage.setItem('smartbook_persona', selectedPersona);
             if (name) {
                 localStorage.setItem('smartbook_name', name);
             }
 
-            // Navigate to print book with persona parameter
             setTimeout(() => {
                 window.location.href = `print-book.html?persona=${selectedPersona}&name=${encodeURIComponent(name)}`;
             }, 800);
@@ -863,6 +1020,275 @@
             buildPersonaCards();
             restoreSession();
         });
+    </script>
+
+    <!-- Three.js Neural Network Animation -->
+    <script src="https://unpkg.com/three@0.134.0/build/three.min.js"></script>
+    <script>
+        (function initNeuralNet() {
+            if (typeof THREE === 'undefined') return;
+
+            const canvas = document.getElementById('neuralCanvas');
+            if (!canvas) return;
+
+            const W = window.innerWidth, H = window.innerHeight;
+            const isMobile = W < 768;
+
+            const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: !isMobile });
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1 : 1.5));
+            renderer.setSize(W, H);
+
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(55, W / H, 0.1, 600);
+            camera.position.set(0, 0, 140);
+
+            const N = isMobile ? 60 : 100;
+            const RADIUS = isMobile ? 45 : 65;
+            const CONN_DIST = isMobile ? 28 : 32;
+            const DRIFT_AMP = 1.8;
+
+            const basePos = new Float32Array(N * 3);
+            const energies = new Float32Array(N);
+
+            for (let i = 0; i < N; i++) {
+                const u = Math.random(), v = Math.random();
+                const theta = 2 * Math.PI * u;
+                const phi = Math.acos(2 * v - 1);
+                const r = RADIUS * Math.cbrt(Math.random());
+                basePos[i * 3] = r * Math.sin(phi) * Math.cos(theta);
+                basePos[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta) * 0.65;
+                basePos[i * 3 + 2] = r * Math.cos(phi);
+            }
+
+            const pairs = [];
+            for (let i = 0; i < N; i++) {
+                for (let j = i + 1; j < N; j++) {
+                    const dx = basePos[i * 3] - basePos[j * 3];
+                    const dy = basePos[i * 3 + 1] - basePos[j * 3 + 1];
+                    const dz = basePos[i * 3 + 2] - basePos[j * 3 + 2];
+                    if (Math.sqrt(dx * dx + dy * dy + dz * dz) < CONN_DIST) {
+                        pairs.push(i, j);
+                    }
+                }
+            }
+            const PAIR_COUNT = pairs.length >> 1;
+
+            const nodePosArr = new Float32Array(N * 3);
+            const nodeColorArr = new Float32Array(N * 3);
+            const nodeGeo = new THREE.BufferGeometry();
+            nodeGeo.setAttribute('position', new THREE.BufferAttribute(nodePosArr, 3));
+            nodeGeo.setAttribute('color', new THREE.BufferAttribute(nodeColorArr, 3));
+            const nodeMat = new THREE.PointsMaterial({
+                size: 2.8, vertexColors: true,
+                transparent: true, opacity: 0.85, sizeAttenuation: true
+            });
+            scene.add(new THREE.Points(nodeGeo, nodeMat));
+
+            const edgePosArr = new Float32Array(PAIR_COUNT * 6);
+            const edgeColorArr = new Float32Array(PAIR_COUNT * 6);
+            const edgeGeo = new THREE.BufferGeometry();
+            edgeGeo.setAttribute('position', new THREE.BufferAttribute(edgePosArr, 3));
+            edgeGeo.setAttribute('color', new THREE.BufferAttribute(edgeColorArr, 3));
+            const edgeMat = new THREE.LineBasicMaterial({
+                vertexColors: true, transparent: true, opacity: 0.55
+            });
+            scene.add(new THREE.LineSegments(edgeGeo, edgeMat));
+
+            const C_NODE_BASE = [0.22, 0.04, 0.50];
+            const C_NODE_FIRE_P = [0.55, 0.15, 1.00];
+            const C_NODE_FIRE_O = [1.00, 0.42, 0.21];
+            const C_EDGE_BASE = [0.09, 0.02, 0.22];
+            const C_EDGE_FIRE = [0.40, 0.08, 0.90];
+
+            const pulses = [];
+
+            function firePulse() {
+                if (pulses.length > (isMobile ? 5 : 9)) return;
+                const start = Math.floor(Math.random() * N);
+                energies[start] = 1.0;
+                const isOrange = Math.random() < 0.3;
+                for (let k = 0; k < pairs.length; k += 2) {
+                    if (pairs[k] === start || pairs[k + 1] === start) {
+                        const other = pairs[k] === start ? pairs[k + 1] : pairs[k];
+                        pulses.push({ a: start, b: other, t: 0, speed: 0.014 + Math.random() * 0.012, orange: isOrange });
+                        if (pulses.length >= (isMobile ? 5 : 9)) break;
+                    }
+                }
+            }
+
+            const fireInterval = setInterval(firePulse, isMobile ? 1800 : 1200);
+            firePulse();
+
+            let mx = 0, my = 0;
+            window.addEventListener('mousemove', e => {
+                mx = (e.clientX / window.innerWidth - 0.5) * 2;
+                my = (e.clientY / window.innerHeight - 0.5) * 2;
+            }, { passive: true });
+
+            window.addEventListener('resize', () => {
+                const w = window.innerWidth, h = window.innerHeight;
+                camera.aspect = w / h;
+                camera.updateProjectionMatrix();
+                renderer.setSize(w, h);
+            });
+
+            let t = 0;
+            const phaseOffsets = Array.from({ length: N }, (_, i) => i * 2.39996);
+
+            function frame() {
+                requestAnimationFrame(frame);
+                t += 0.004;
+
+                camera.position.x = Math.sin(t * 0.18) * 18 + mx * 10;
+                camera.position.y = Math.cos(t * 0.13) * 10 + my * 6;
+                camera.lookAt(0, 0, 0);
+
+                for (let i = 0; i < N; i++) {
+                    const ph = phaseOffsets[i];
+                    nodePosArr[i * 3] = basePos[i * 3] + Math.sin(t * 0.38 + ph) * DRIFT_AMP;
+                    nodePosArr[i * 3 + 1] = basePos[i * 3 + 1] + Math.cos(t * 0.31 + ph * 1.3) * DRIFT_AMP;
+                    nodePosArr[i * 3 + 2] = basePos[i * 3 + 2] + Math.sin(t * 0.27 + ph * 1.7) * DRIFT_AMP * 0.8;
+
+                    energies[i] = Math.max(0, energies[i] - 0.022);
+
+                    const e = energies[i];
+                    nodeColorArr[i * 3] = C_NODE_BASE[0] + (C_NODE_FIRE_P[0] - C_NODE_BASE[0]) * e;
+                    nodeColorArr[i * 3 + 1] = C_NODE_BASE[1] + (C_NODE_FIRE_P[1] - C_NODE_BASE[1]) * e;
+                    nodeColorArr[i * 3 + 2] = C_NODE_BASE[2] + (C_NODE_FIRE_P[2] - C_NODE_BASE[2]) * e;
+                }
+
+                for (let k = 0; k < PAIR_COUNT; k++) {
+                    const a = pairs[k * 2], b = pairs[k * 2 + 1];
+                    const e = Math.max(energies[a], energies[b]);
+
+                    edgePosArr[k * 6] = nodePosArr[a * 3];
+                    edgePosArr[k * 6 + 1] = nodePosArr[a * 3 + 1];
+                    edgePosArr[k * 6 + 2] = nodePosArr[a * 3 + 2];
+                    edgePosArr[k * 6 + 3] = nodePosArr[b * 3];
+                    edgePosArr[k * 6 + 4] = nodePosArr[b * 3 + 1];
+                    edgePosArr[k * 6 + 5] = nodePosArr[b * 3 + 2];
+
+                    const r = C_EDGE_BASE[0] + (C_EDGE_FIRE[0] - C_EDGE_BASE[0]) * e;
+                    const g = C_EDGE_BASE[1] + (C_EDGE_FIRE[1] - C_EDGE_BASE[1]) * e;
+                    const b2 = C_EDGE_BASE[2] + (C_EDGE_FIRE[2] - C_EDGE_BASE[2]) * e;
+                    edgeColorArr[k * 6] = edgeColorArr[k * 6 + 3] = r;
+                    edgeColorArr[k * 6 + 1] = edgeColorArr[k * 6 + 4] = g;
+                    edgeColorArr[k * 6 + 2] = edgeColorArr[k * 6 + 5] = b2;
+                }
+
+                for (let i = pulses.length - 1; i >= 0; i--) {
+                    const p = pulses[i];
+                    p.t += p.speed;
+                    if (p.t >= 1) {
+                        energies[p.b] = Math.min(1, energies[p.b] + 0.85);
+                        pulses.splice(i, 1);
+                    } else {
+                        energies[p.b] = Math.min(1, energies[p.b] + p.speed * 0.25);
+                    }
+                }
+
+                nodeGeo.attributes.position.needsUpdate = true;
+                nodeGeo.attributes.color.needsUpdate = true;
+                edgeGeo.attributes.position.needsUpdate = true;
+                edgeGeo.attributes.color.needsUpdate = true;
+
+                renderer.render(scene, camera);
+            }
+
+            frame();
+
+            document.addEventListener('visibilitychange', () => {
+                if (document.hidden) clearInterval(fireInterval);
+            });
+        })();
+    </script>
+
+    <!-- Hero Slideshow -->
+    <script>
+        (function initHeroSlideshow() {
+            const CDN = 'https://cdn.vidi.news/images/';
+            const HERO_IMAGES = [
+                'vidismart_header_3_1774735994194.png',
+                'vidismart_header_5_1774736021119.png',
+                'vidismart_header_7_1774736046144.png',
+                'vidismart_header_10_1774736090679.png',
+                'vidismart_header_12_1774736130743.png',
+                'vidismart_header_14_1774736158026.png',
+                'vidismart_header_16_1774736185158.png',
+                'smart_stack_cover_1774454093030.png',
+                'agentic_video_intelligence_wide.png',
+                'smart_channel_hero_wide.png',
+            ];
+
+            const container = document.getElementById('heroSlideshow');
+            if (!container) return;
+
+            const dotsWrap = document.getElementById('heroDots');
+            let current = 0;
+            let timer;
+
+            // Build slides
+            HERO_IMAGES.forEach((filename, i) => {
+                const slide = document.createElement('div');
+                slide.className = 'hero-slide' + (i === 0 ? ' active' : '');
+
+                const img = document.createElement('img');
+                img.src = CDN + filename;
+                img.alt = '';
+                img.referrerPolicy = 'no-referrer';
+                img.loading = i === 0 ? 'eager' : 'lazy';
+                img.onerror = function () {
+                    slide.style.display = 'none';
+                };
+
+                slide.appendChild(img);
+                container.insertBefore(slide, container.querySelector('.hero-image-overlay'));
+
+                // Dot
+                const dot = document.createElement('div');
+                dot.className = 'hero-dot' + (i === 0 ? ' active' : '');
+                dot.onclick = () => goTo(i);
+                dotsWrap.appendChild(dot);
+            });
+
+            const slides = container.querySelectorAll('.hero-slide');
+            const dots = dotsWrap.querySelectorAll('.hero-dot');
+
+            function goTo(n) {
+                slides[current].classList.remove('active');
+                dots[current].classList.remove('active');
+                let next = (n + slides.length) % slides.length;
+                let attempts = 0;
+                while (slides[next].style.display === 'none' && attempts++ < slides.length) {
+                    next = (next + 1) % slides.length;
+                }
+                current = next;
+                slides[current].classList.add('active');
+                dots[current].classList.add('active');
+            }
+
+            function next() { goTo(current + 1); }
+            function startTimer() { timer = setInterval(next, 4000); }
+            function stopTimer() { clearInterval(timer); }
+
+            document.getElementById('heroArrowPrev').onclick = () => { stopTimer(); goTo(current - 1); startTimer(); };
+            document.getElementById('heroArrowNext').onclick = () => { stopTimer(); goTo(current + 1); startTimer(); };
+
+            document.addEventListener('keydown', e => {
+                if (e.key === 'ArrowLeft') { stopTimer(); goTo(current - 1); startTimer(); }
+                if (e.key === 'ArrowRight') { stopTimer(); goTo(current + 1); startTimer(); }
+            });
+
+            let touchX = 0;
+            container.addEventListener('touchstart', e => { stopTimer(); touchX = e.touches[0].clientX; }, { passive: true });
+            container.addEventListener('touchend', e => {
+                const dx = e.changedTouches[0].clientX - touchX;
+                if (Math.abs(dx) > 40) { dx < 0 ? goTo(current + 1) : goTo(current - 1); }
+                startTimer();
+            }, { passive: true });
+
+            startTimer();
+        })();
     </script>
 </body>
 

@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="referrer" content="no-referrer">
     <title>The Speed of Agentic Visual AI — by James May</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -24,6 +25,8 @@
             --bg-page: #FFFFFF;
             --bg-context: #F8F6F0;
             --bg-quote: #F0F4F8;
+            --sidebar-width: 300px;
+            --text-column-width: 680px;
         }
 
         * {
@@ -38,6 +41,18 @@
             line-height: 1.75;
             color: var(--text-body);
             background: var(--bg-page);
+        }
+
+        /* ===== Reading Progress Bar ===== */
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--primary-dark));
+            z-index: 10000;
+            transition: width 0.1s ease-out;
+            width: 0%;
         }
 
         /* Cover */
@@ -343,11 +358,189 @@
             font-weight: 800;
         }
 
+        /* ===== Two-Column Reading Layout ===== */
+        .reading-layout {
+            display: grid;
+            grid-template-columns: 1fr var(--sidebar-width);
+            gap: 0;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .text-column {
+            max-width: var(--text-column-width);
+            margin: 0 auto;
+            padding: 2rem 2rem 2rem 3rem;
+        }
+
+        /* ===== Sticky Image Sidebar ===== */
+        .image-sidebar {
+            position: relative;
+            padding: 2rem 1.5rem 2rem 1rem;
+            border-left: 1px solid #E5E7EB;
+        }
+
+        body.dark .image-sidebar {
+            border-left-color: #334155;
+        }
+
+        .image-sidebar-inner {
+            position: sticky;
+            top: 80px;
+            max-height: calc(100vh - 100px);
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #475569 transparent;
+        }
+
+        .image-sidebar-inner::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .image-sidebar-inner::-webkit-scrollbar-thumb {
+            background: #475569;
+            border-radius: 2px;
+        }
+
+        .sidebar-image-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .sidebar-image-label {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.5rem;
+        }
+
+        .sidebar-image-container {
+            position: relative;
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .sidebar-image-container:hover {
+            transform: scale(1.02);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+        }
+
+        .sidebar-image-container img {
+            width: 100%;
+            height: auto;
+            display: block;
+            border-radius: 8px;
+        }
+
+        .sidebar-image-caption {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.7rem;
+            color: var(--text-caption);
+            font-style: italic;
+            margin-top: 0.35rem;
+            line-height: 1.3;
+        }
+
+        /* ===== Image Lightbox ===== */
+        .lightbox-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.92);
+            z-index: 10001;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            cursor: zoom-out;
+        }
+
+        .lightbox-overlay.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .lightbox-overlay img {
+            max-width: 90vw;
+            max-height: 90vh;
+            object-fit: contain;
+            border-radius: 8px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        .lightbox-close {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background 0.2s;
+            z-index: 10002;
+        }
+
+        .lightbox-close:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .lightbox-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            font-size: 1.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background 0.2s;
+            z-index: 10002;
+        }
+
+        .lightbox-nav:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .lightbox-prev {
+            left: 1.5rem;
+        }
+
+        .lightbox-next {
+            right: 1.5rem;
+        }
+
+        .lightbox-counter {
+            position: absolute;
+            bottom: 1.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(255, 255, 255, 0.6);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.85rem;
+        }
+
         /* Chapter */
         .chapter {
-            padding: 3rem;
-            max-width: 750px;
-            margin: 0 auto;
+            padding: 0;
+            max-width: none;
+            margin: 0;
         }
 
         .chapter-header {
@@ -414,6 +607,7 @@
             font-size: 1.05rem;
         }
 
+        /* Inline images in text (for mobile fallback) */
         .chapter-image-container {
             margin: 1.5rem 0;
             text-align: center;
@@ -425,6 +619,12 @@
             border-radius: 8px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             object-fit: contain;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .chapter-image-container img:hover {
+            transform: scale(1.02);
         }
 
         .image-caption {
@@ -532,12 +732,20 @@
             font-size: 0.85rem;
             border-left: 3px solid transparent;
             line-height: 1.4;
+            transition: all 0.2s;
         }
 
         .sidebar-link:hover {
             background: #334155;
             color: white;
             border-left-color: var(--primary);
+        }
+
+        .sidebar-link.active {
+            background: rgba(255, 107, 53, 0.15);
+            color: var(--primary);
+            border-left-color: var(--primary);
+            font-weight: 600;
         }
 
         .sidebar-part {
@@ -572,16 +780,70 @@
             margin-left: 320px;
         }
 
+        /* ===== Responsive ===== */
+        @media (max-width: 1024px) {
+            .reading-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .image-sidebar {
+                border-left: none;
+                border-top: 1px solid #E5E7EB;
+                padding: 2rem;
+            }
+
+            body.dark .image-sidebar {
+                border-top-color: #334155;
+            }
+
+            .image-sidebar-inner {
+                position: static;
+                max-height: none;
+            }
+
+            .sidebar-image-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+                gap: 1rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .text-column {
+                padding: 1.5rem 1.25rem;
+            }
+
+            .reading-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar-image-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
         /* ===== Print Styles ===== */
         @media print {
 
             .personalize-bar,
-            .sidebar {
+            .sidebar,
+            .progress-bar,
+            .image-sidebar,
+            .lightbox-overlay {
                 display: none !important;
             }
 
             body.sidebar-open {
                 margin-left: 0 !important;
+            }
+
+            .reading-layout {
+                display: block !important;
+            }
+
+            .text-column {
+                max-width: none !important;
+                padding: 0 !important;
             }
 
             a.toc-entry {
@@ -643,11 +905,23 @@
 
 <body>
 
+    <!-- Reading Progress Bar -->
+    <div class="progress-bar" id="progressBar"></div>
+
+    <!-- Image Lightbox -->
+    <div class="lightbox-overlay" id="lightboxOverlay">
+        <button class="lightbox-close" id="lightboxClose">&#10005;</button>
+        <button class="lightbox-nav lightbox-prev" id="lightboxPrev">&#8592;</button>
+        <button class="lightbox-nav lightbox-next" id="lightboxNext">&#8594;</button>
+        <img src="" alt="" id="lightboxImage" referrerpolicy="no-referrer">
+        <div class="lightbox-counter" id="lightboxCounter"></div>
+    </div>
+
     <!-- Sidebar -->
     <div id="sidebar" class="sidebar">
         <div class="sidebar-header">
             <h3>Book Index</h3>
-            <button class="sidebar-close" onclick="toggleSidebar()">✕</button>
+            <button class="sidebar-close" onclick="toggleSidebar()">&#10005;</button>
         </div>
         <div class="sidebar-content" id="sidebar-toc"></div>
         <div class="sidebar-footer">
@@ -659,8 +933,8 @@
     <!-- Personalization Bar (Top Control) -->
     <div class="personalize-bar">
         <div class="personalize-group">
-            <button class="btn-dark" onclick="toggleSidebar()">☰ Index</button>
-            <label>📖 Generate your custom edition:</label>
+            <button class="btn-dark" onclick="toggleSidebar()">&#9776; Index</button>
+            <label>&#128214; Generate your custom edition:</label>
             <input type="text" id="readerName" placeholder="Your name" />
             <select id="personaSelect">
                 <option value="all">All Chapters (Full Book)</option>
@@ -668,36 +942,22 @@
                 <option value="it_professional">IT Professional Path (~75 min)</option>
                 <option value="executive_entrepreneur">Executive / Entrepreneur Path (~70 min)</option>
             </select>
-            <button onclick="generateCustomBook()">⚡ Generate</button>
+            <button onclick="generateCustomBook()">&#9889; Generate</button>
         </div>
         <div class="action-group">
-            <button class="btn-dark" onclick="document.body.classList.toggle('dark')">🌙 Dark Mode</button>
-            <button class="btn-print" onclick="window.print()">🖨️ Print / Save as PDF</button>
+            <button class="btn-dark" onclick="document.body.classList.toggle('dark')">&#127769; Dark Mode</button>
+            <button class="btn-print" onclick="window.print()">&#128424;&#65039; Print / Save as PDF</button>
         </div>
     </div>
 
     <!-- Book Content Container -->
     <div id="book-content"></div>
 
-    <!-- Load data.js from same directory, or M:\+Proj\VidiSmart\smart-book\data.js -->
+    <!-- Load data.js from same directory -->
     <script src="data.js"></script>
     <script>
-        if (typeof BOOK_DATA === 'undefined') {
-            // Fallback: try loading from original location
-            var s = document.createElement('script');
-            s.src = 'file:///M:/+Proj/VidiSmart/smart-book/data.js';
-            document.head.appendChild(s);
-        }
-    </script>
-    <script>
-        // Try images from workspace first, then from +Proj
-        const IMAGE_BASES = [
-            '../images/',           // m:\code\vidismart\images\
-            'file:///M:/+Proj/VidiSmart/',  // original project folder
-            'file:///M:/+Proj/VidiSmart/images/',  // images subfolder
-        ];
-        const IMAGE_BASE = IMAGE_BASES[0];
-        const PROJ_IMAGE_BASE = IMAGE_BASES[1];
+        // Use CDN for all images
+        const IMAGE_BASE = 'https://cdn.vidi.news/images/';
 
         const PART_LABELS = {
             0: null,
@@ -710,6 +970,8 @@
 
         let currentPersona = 'all';
         let readerName = '';
+        let allChapterImages = []; // Track all images for lightbox
+        let currentLightboxIndex = 0;
 
         function getVisibleChapters(persona) {
             if (persona === 'all' || !BOOK_DATA.personas[persona]) {
@@ -731,7 +993,82 @@
             document.body.classList.toggle('sidebar-open');
         }
 
+        // ===== Lightbox Functions =====
+        function openLightbox(index) {
+            currentLightboxIndex = index;
+            const overlay = document.getElementById('lightboxOverlay');
+            const img = document.getElementById('lightboxImage');
+            img.src = allChapterImages[index];
+            img.alt = 'Chapter image ' + (index + 1);
+            document.getElementById('lightboxCounter').textContent = (index + 1) + ' / ' + allChapterImages.length;
+            overlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeLightbox() {
+            document.getElementById('lightboxOverlay').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        function navigateLightbox(direction) {
+            currentLightboxIndex = (currentLightboxIndex + direction + allChapterImages.length) % allChapterImages.length;
+            document.getElementById('lightboxImage').src = allChapterImages[currentLightboxIndex];
+            document.getElementById('lightboxCounter').textContent = (currentLightboxIndex + 1) + ' / ' + allChapterImages.length;
+        }
+
+        function initLightboxEvents() {
+            document.getElementById('lightboxClose').addEventListener('click', closeLightbox);
+            document.getElementById('lightboxPrev').addEventListener('click', () => navigateLightbox(-1));
+            document.getElementById('lightboxNext').addEventListener('click', () => navigateLightbox(1));
+            document.getElementById('lightboxOverlay').addEventListener('click', (e) => {
+                if (e.target === e.currentTarget) closeLightbox();
+            });
+            document.addEventListener('keydown', (e) => {
+                if (!document.getElementById('lightboxOverlay').classList.contains('active')) return;
+                if (e.key === 'Escape') closeLightbox();
+                if (e.key === 'ArrowLeft') navigateLightbox(-1);
+                if (e.key === 'ArrowRight') navigateLightbox(1);
+            });
+        }
+
+        // ===== Scroll Progress Bar =====
+        function updateProgressBar() {
+            const bar = document.getElementById('progressBar');
+            if (!bar) return;
+            const scrollTop = window.scrollY;
+            const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+            const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+            bar.style.width = progress + '%';
+        }
+
+        // ===== Scroll Spy for Active Chapter =====
+        function updateActiveChapter() {
+            const chapters = document.querySelectorAll('.chapter[id]');
+            const sidebarLinks = document.querySelectorAll('.sidebar-link');
+            if (!chapters.length || !sidebarLinks.length) return;
+
+            let currentChapter = '';
+            const scrollPos = window.scrollY + 150;
+
+            chapters.forEach(ch => {
+                if (ch.offsetTop <= scrollPos) {
+                    currentChapter = ch.id;
+                }
+            });
+
+            sidebarLinks.forEach(link => {
+                const href = link.getAttribute('href');
+                if (href === '#' + currentChapter) {
+                    link.classList.add('active');
+                } else {
+                    link.classList.remove('active');
+                }
+            });
+        }
+
+        // ===== Build Book =====
         function buildBook() {
+            allChapterImages = []; // Reset image tracking
             const container = document.getElementById('book-content');
             const chapters = BOOK_DATA.chapters;
             const chapterKeys = Object.keys(chapters).sort((a, b) => chapters[a].order - chapters[b].order);
@@ -742,7 +1079,7 @@
                 BOOK_DATA.personas[currentPersona]?.label || '';
             const nameDisplay = readerName || '';
             const customLine = nameDisplay ?
-                `<p class="cover-edition">Custom Edition for <span class="custom-name">${nameDisplay}</span>${personaLabel ? ' · ' + personaLabel + ' Path' : ''}</p>` :
+                `<p class="cover-edition">Custom Edition for <span class="custom-name">${nameDisplay}</span>${personaLabel ? ' &middot; ' + personaLabel + ' Path' : ''}</p>` :
                 (personaLabel ? `<p class="cover-edition">${personaLabel} Edition</p>` : '');
 
             // COVER
@@ -753,8 +1090,8 @@
                     <p class="cover-subtitle">How the Top 1% Will Generate 500% Business Growth</p>
                     <div class="cover-divider"></div>
                     <p class="cover-author">James May</p>
-                    <p class="cover-company">VidiSmart · Savage Digital Solutions</p>
-                    ${customLine || '<p class="cover-edition">First Edition · 2026</p>'}
+                    <p class="cover-company">VidiSmart &middot; Savage Digital Solutions</p>
+                    ${customLine || '<p class="cover-edition">First Edition &middot; 2026</p>'}
                     <div class="cover-cx-note">
                         <p>Powered by the <strong>SmartChannel CX</strong> suite</p>
                         <p style="margin-top:0.25rem; color: rgba(255,255,255,0.5);">One of many SmartGen tools for creating personalized content dynamically at scale.</p>
@@ -795,7 +1132,7 @@
             html += `</div>`;
             document.getElementById('sidebar-toc').innerHTML = sidebarHtml;
 
-            // CHAPTERS
+            // CHAPTERS - Two-column layout
             currentPart = -1;
             chapterKeys.forEach(key => {
                 const ch = chapters[key];
@@ -816,24 +1153,28 @@
                 const chLabel = ch.order === 0 ? 'FOREWORD' : `CHAPTER ${ch.order}`;
                 const chTitle = ch.title.replace(/^Ch\d+:\s*/, '').replace(/^Foreword:\s*/, '');
 
+                // Collect images for sidebar
+                const chapterImages = [];
+                if (ch.images && ch.images.length > 0) {
+                    ch.images.forEach(img => {
+                        if (img && !img.endsWith('.pdf') && !img.endsWith('.pptx')) {
+                            const fullUrl = IMAGE_BASE + img;
+                            const imgIndex = allChapterImages.length;
+                            allChapterImages.push(fullUrl);
+                            chapterImages.push({ url: fullUrl, filename: img, index: imgIndex });
+                        }
+                    });
+                }
+
+                html += `<div class="reading-layout">`;
+                html += `<div class="text-column">`;
                 html += `<div class="chapter" id="${ch.id}">
                     <div class="chapter-header">
                         <div class="chapter-number-label">${chLabel}</div>
                         <h1>${chTitle}</h1>
                     </div>`;
 
-                // Hero image
-                if (ch.images && ch.images.length > 0) {
-                    const img = ch.images[0];
-                    if (img && !img.endsWith('.pdf') && !img.endsWith('.pptx')) {
-                        html += `<div class="chapter-image-container">
-                            <img src="${IMAGE_BASE}${img}" alt="${chTitle}" loading="lazy"
-                                 onerror="this.onerror=null; this.src='${PROJ_IMAGE_BASE}${img}'; this.onerror=function(){this.parentElement.style.display='none'}">
-                        </div>`;
-                    }
-                }
-
-                // Content
+                // Content (text only)
                 html += ch.content;
 
                 // Persona-specific AI insight banner
@@ -848,27 +1189,41 @@
                     </div>`;
                 }
 
-                // Extra images (max 2 more)
-                if (ch.images && ch.images.length > 1) {
-                    for (let i = 1; i < Math.min(ch.images.length, 3); i++) {
-                        const img = ch.images[i];
-                        if (img && !img.endsWith('.pdf') && !img.endsWith('.pptx')) {
-                            html += `<div class="chapter-image-container">
-                                <img src="${IMAGE_BASE}${img}" alt="" loading="lazy"
-                                     onerror="this.onerror=null; this.src='${PROJ_IMAGE_BASE}${img}'; this.onerror=function(){this.parentElement.style.display='none'}">
-                            </div>`;
-                        }
-                    }
+                html += `<div class="page-footer">
+                    The Speed of Agentic Visual AI &middot; James May &middot; VidiSmart / Savage Solutions
+                    ${nameDisplay ? ' &middot; Custom Edition for ' + nameDisplay : ''}
+                </div></div>`;
+                html += `</div>`; // end text-column
+
+                // Image Sidebar
+                if (chapterImages.length > 0) {
+                    html += `<div class="image-sidebar">`;
+                    html += `<div class="image-sidebar-inner">`;
+                    html += `<div class="sidebar-image-grid">`;
+                    chapterImages.forEach((img, i) => {
+                        const caption = i === 0 ? chTitle : '';
+                        html += `<div class="sidebar-image-group">
+                            ${i === 0 ? `<div class="sidebar-image-label">Chapter Image</div>` : ''}
+                            <div class="sidebar-image-container" onclick="openLightbox(${img.index})">
+                                <img src="${img.url}" alt="${caption}" loading="lazy" referrerpolicy="no-referrer"
+                                     onerror="this.onerror=null; this.parentElement.parentElement.style.display='none'">
+                            </div>
+                            ${caption ? `<div class="sidebar-image-caption">${caption}</div>` : ''}
+                        </div>`;
+                    });
+                    html += `</div>`; // end grid
+                    html += `</div>`; // end inner
+                    html += `</div>`; // end sidebar
                 }
 
-                html += `<div class="page-footer">
-                    The Speed of Agentic Visual AI · James May · VidiSmart / Savage Solutions
-                    ${nameDisplay ? ' · Custom Edition for ' + nameDisplay : ''}
-                </div></div>`;
+                html += `</div>`; // end reading-layout
             });
 
             container.innerHTML = html;
             window.scrollTo(0, 0);
+
+            // Re-init lightbox events after DOM update
+            initLightboxEvents();
         }
 
         // Auto-build on load with URL parameter support
@@ -889,6 +1244,12 @@
                 }
 
                 buildBook();
+
+                // Attach scroll events
+                window.addEventListener('scroll', () => {
+                    updateProgressBar();
+                    updateActiveChapter();
+                }, { passive: true });
             });
         }
     </script>
