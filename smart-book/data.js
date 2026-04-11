@@ -141,7 +141,7 @@ const BOOK_DATA = {
       <p>The companies winning right now — Cursor replacing entire engineering sprint cycles, HeyGen localizing video content in 30 languages simultaneously, AutoGen running legal review at $0.003 per page — are not winning because of better vision. They are winning because they closed the execution gap with AI infrastructure before their competitors understood what was happening.</p>
       <p>The 30-40 agent architecture is not a vision. It is an execution model. Companies deploying it now are not running experiments. They are running production systems that are compounding in capability with every transaction.</p>
       <blockquote>"Having a vision in 2026 is table stakes. Having the execution velocity to act on it at AI speed is the only thing that matters."</blockquote>`,
-      images: ["VidiSmart.Flow.png", "SmartStack.DevOps.png"],
+      images: ["VidiSmart.Flow.png", "smart_stack_cover_1774454093030.png"],
       readingTime: 12
     },
     ch3: {
@@ -206,7 +206,7 @@ const BOOK_DATA = {
       <p>The businesses generating real advantage from AI-assisted development are using it inside a disciplined methodology — what we call CVI: Curate, Validate, Integrate. AI generates candidate solutions rapidly. Human judgment curates the right approach. Rigorous testing validates correctness in context. Careful integration deploys with full observability.</p>
       <p>The companies winning with AI development are not the ones prompting AI to build everything from scratch. They are the ones using AI to compress the ideation-to-prototype cycle from days to hours, then applying engineering rigor to everything that makes it into production. The 10x developer is not someone who replaced engineering with prompting — it is someone who uses AI to eliminate every task that doesn't require their senior judgment.</p>
       <blockquote>"Vibe coding is the fastest way to answer: should we build this? Software engineering is the only way to answer: did we build it right? Never confuse the two."</blockquote>`,
-      images: ["VidiSmart.visualvector.png", "smart_stack_final.png"],
+      images: ["VidiSmart.visualvector.png", "VidiFLOW.png"],
       readingTime: 11
     },
     ch7: {
@@ -222,7 +222,7 @@ const BOOK_DATA = {
       <p>HyperLocal Visual AI is the combination of geospatial intelligence, community-specific visual content, and AI systems that understand local context well enough to generate, optimize, and distribute relevant content automatically. A roofing contractor in Tulsa has different visual content needs, different search patterns, and different competitive dynamics than one in Phoenix — even if their services are identical.</p>
       <p>The businesses deploying hyperlocal AI content systems now are not just ranking better in local search — they are building the authoritative local knowledge bases that AI answer engines will cite when users ask about local services, local businesses, and local events. That citation advantage compounds over time in ways that a Google Ads budget cannot replicate.</p>
       <blockquote>"Geography is not a constraint — it is a data asset. The business that knows its territory better than any AI platform will always have the advantage of context that no dataset can fully replicate."</blockquote>`,
-      images: ["VidiCity.47.png", "VisualVector.LocalRanking.png"],
+      images: ["VidiCity.47.png", "VisualVector.png"],
       readingTime: 13
     },
     ch8: {
@@ -238,7 +238,7 @@ const BOOK_DATA = {
       <p>The architecture that is replacing the SaaS stack is not one custom application. It is a mesh of 30 to 40 purpose-built micro-agents, each one handling a specific vertical with full autonomy. One agent manages inbound leads — qualifying, scoring, routing, following up. One manages content production — generating articles, images, videos from a single strategic brief. One monitors competitors — tracking pricing, messaging, product launches, and summarizing changes daily. One handles AP/AR — matching invoices, flagging anomalies, processing payments. One manages compliance — scanning contracts and communications against regulatory requirements in real time.</p>
       <p>None of these agents costs $200/seat/month. None of them requires a vendor to approve a feature request. Each one learns from your specific data and improves with every transaction. Together, they constitute a proprietary intelligence layer that a competitor starting today cannot replicate next quarter.</p>
       <blockquote>"Building your own software is no longer about having a development team. It is about having a methodology — and the 30-40 agent architecture is that methodology."</blockquote>`,
-      images: ["smart_stack_final.png", "Agentic.VisualAi.png"],
+      images: ["VidiCRM7.png", "Agentic.VisualAi.png"],
       readingTime: 14
     },
     ch9: {
@@ -319,7 +319,7 @@ const BOOK_DATA = {
       <p>This shift is already affecting search traffic in measurable ways. Sites optimized for keyword density are losing organic traffic to AI answer engines. Sites with genuine semantic authority — deep, structured, expert content that AI systems can confidently cite — are gaining visibility in AI-generated answers that now appear above organic results on most commercial queries.</p>
       <p>For product search, the implications are even more dramatic. A customer searching for "comfortable work shoes for standing all day" is not looking for the words "comfortable," "work," "shoes," and "standing." They have a specific physical experience in mind. Visual AI systems that understand product images — shape, material, construction, sole thickness — can match that need semantically in ways that keyword metadata never could.</p>
       <p>The Visual Vector architecture — embedding images and video frames into high-dimensional semantic space, indexing that space for rapid similarity search, and connecting visual search to structured product and content data — is the infrastructure that powers the next generation of e-commerce, content discovery, and enterprise knowledge management.</p>`,
-      images: ["Tensor.VVOmni.png", "VidiSmart.VisualVectorSearch.png"],
+      images: ["VisualVector.LocalRanking.png", "VidiSmart.VisualVectorSearch.png"],
       readingTime: 12
     },
     ch14: {
@@ -352,7 +352,7 @@ const BOOK_DATA = {
       <p>For local businesses, the dynamic is different and more complex. Local AI search — "best HVAC contractor near me" or "which restaurant has the best outdoor seating in this neighborhood" — is actually an opportunity for businesses that have structured their local presence correctly. A business with a complete, visually rich, semantically structured local knowledge base is more likely to be cited in local AI answers than a competitor with a static website and outdated Google Business Profile.</p>
       <p>The strategy is not to fight Google Zero — it is to become the source that Google Zero cites.</p>
       <blockquote>"The era of building a business on Google traffic is over. The businesses that recognize this in 2026 will be the media brands, AI-referenced authorities, and community builders of 2028."</blockquote>`,
-      images: ["ai_search_visibility_1774910278370.png", "VisualVector.LocalRanking.png"],
+      images: ["ai_search_visibility_1774910278370.png", "VPlay.VidiSmart.png"],
       readingTime: 11
     },
     ch16: {
@@ -420,7 +420,7 @@ const BOOK_DATA = {
       <p>This is what distinguishes the AI deployments generating 10x returns from those generating 1.2x returns. The logistics company whose AI says "your Memphis distribution center has a 73% probability of a major equipment failure in the next 14 days based on these specific sensor patterns — recommended action: schedule maintenance this week, estimated downtime reduction: 11 days" is getting decision-grade output. The company whose AI says "here is a summary of your equipment sensor data" is getting information.</p>
       <p>The architecture that enables decision-grade AI is a knowledge graph — not a flat vector store, but a structured representation of your domain, your entities, your relationships, and your business rules. Decisions require context. Context requires structure. Structure requires investment. That investment is what separates the 500% performers.</p>
       <blockquote>"Information is cheap. Answers are valuable. Decisions are priceless. Know which one you're producing and what the difference costs."</blockquote>`,
-      images: ["ai_answer_engine_strategy.png", "KnowledgeGraph_17355.png"],
+      images: ["Gemini_Generated_Image_4eud6d4eud6d4eud.png", "Gemini_Generated_Image_icbzkkicbzkkicbz.png"],
       readingTime: 11
     },
     ch20: {
@@ -469,7 +469,7 @@ const BOOK_DATA = {
       <p>The practical implications for business deployment: never use a language model as the final source of truth for factual claims about your business, your products, your customers, or your operations. Use it as a synthesis and communication layer on top of a retrieval system that provides verified facts. This is the RAG architecture described in Chapter 20, and it is not optional for production deployments where accuracy matters.</p>
       <p>The Tensor Truth framework formalizes this requirement: every factual output from an AI system must be verifiable against a ground truth source before it is acted upon. The AI generates. The validation layer verifies. The output that reaches a human or downstream system has passed a confirmation step that the AI alone cannot provide.</p>
       <p>Businesses that understand this distinction deploy AI that is reliable, auditable, and improvable. Businesses that don't deploy AI that occasionally produces accurate results and frequently embarrasses them.</p>`,
-      images: ["neuralbrain.png", "Grids1.png"],
+      images: ["vvbrain.logic.jpg", "Grids1.png"],
       readingTime: 11
     },
     ch23: {
@@ -529,7 +529,7 @@ const BOOK_DATA = {
       </div>
       <p>In production: Harvey (legal AI platform) deployed at Allen & Overy handles first-pass contract review across 50+ jurisdictions, extracting key terms, flagging non-standard clauses, and generating negotiation memos. Time-to-first-review dropped from 4-6 hours to 22 minutes per contract. The critical design choice: Harvey cites the specific contract language that supports every extracted term and flags any clause it cannot confidently categorize, routing those to human review rather than generating a best guess.</p>
       <p>For in-house legal teams, the workflow is: AI agent ingests contract → extracts key terms with citation → compares against standard positions and flags deviations → generates redline with explanation of each change → routes to attorney for final review and approval. Human judgment remains on final approval. AI handles everything that doesn't require that judgment.</p>`,
-      images: ["VC.diagram.png", "Vectored.png"],
+      images: ["VidiFlow.VF.png", "SmartMedia_fdv5e7fdv5e7fdv5.png"],
       readingTime: 11
     },
     ch27: {
@@ -562,7 +562,7 @@ const BOOK_DATA = {
       <p><strong>Days 31-60: Measure Against Baseline.</strong> Define a baseline before day 1: what does the current process cost in time and money? What is the error rate? What is the cycle time? At day 60, compare. If the AI system is performing at 70% of human accuracy but at 10% of human cost, you have enough signal to know whether to continue, improve, or pivot.</p>
       <p><strong>Days 61-90: Scale or Pivot.</strong> If performance exceeds 85% accuracy at the defined task, begin scaling: add volume, add adjacent use cases, begin connecting to other agents. If performance is below threshold, identify the specific failure mode and address it — better data, tighter prompts, different model, different architecture. Do not abandon; diagnose.</p>
       <blockquote>"The 90-day playbook is your competitive weapon. While competitors plan, you deploy, measure, and iterate. Speed is the only sustainable advantage in AI right now."</blockquote>`,
-      images: ["VidiCRM8.png", "smart_stack_architecture.png"],
+      images: ["sovereign_data_vault_1772575538692.png", "smart_stack_architecture.png"],
       readingTime: 12
     },
     ch29: {
@@ -607,7 +607,7 @@ const BOOK_DATA = {
       </div>
       <p>What does the winning small business AI stack look like in 2026? A local knowledge base built from the business's own content — service descriptions, customer reviews, past quotes, FAQ responses — that powers a customer-facing AI agent handling inquiries, bookings, and follow-up. An AI content system that generates local SEO content, Google Business updates, and social posts from a weekly brief. An AI scheduling and CRM agent that manages appointments, sends reminders, and follows up after service. A simple analytics agent that summarizes weekly performance and flags anomalies.</p>
       <p>Total monthly cost for this stack, using current tools: under $200. Total time saved per week: 15-20 hours. The businesses that deploy this stack in 2026 will have a structural efficiency advantage over competitors that haven't, and that advantage compounds as the systems learn from each transaction.</p>`,
-      images: ["VidiCity.47.png", "VisualVector.LocalRanking.png"],
+      images: ["GroomersChoice.Faceting.1fyfsp1fyfsp1fyf.png", "smart_channel_processing_wide.png"],
       readingTime: 12
     },
     ch32: {
@@ -652,7 +652,7 @@ const BOOK_DATA = {
       </div>
       <p>For businesses making infrastructure decisions: the most important signal from the data center race is that compute costs will continue to drop dramatically. The H100 that costs $30,000 today will be matched in performance by a consumer GPU costing $2,000 within 24 months, based on the historical pattern of NVIDIA's hardware generational improvements. This means the ROI calculation for AI infrastructure investments made today looks significantly better in 18 months.</p>
       <p>The agentic AI architecture implications: the 30-40 micro-agent stack does not require frontier-model scale infrastructure. Most agent tasks — document processing, classification, routing, summarization, retrieval — run efficiently on smaller models (7B-13B parameter range) that can be deployed on modest hardware or at low API cost. Frontier models (100B+ parameters) are reserved for the reasoning tasks — strategic analysis, complex code generation, nuanced content creation — where their capabilities justify the cost differential.</p>`,
-      images: ["ai_hardware_gpu_1774454119210.png", "langgraph_nodes_1774455362666.png"],
+      images: ["Gemini_Generated_Image_i9xqbwi9xqbwi9xq.png", "langgraph_nodes_1774455362666.png"],
       readingTime: 12
     },
     ch35: {
@@ -670,7 +670,7 @@ const BOOK_DATA = {
       <p><strong>Categories being strengthened:</strong> Infrastructure and security (AI increases the attack surface, driving demand for security tooling), data and analytics platforms that serve as the foundation for AI knowledge bases, and vertical-specific software with deep domain integration that AI agents need as their authoritative data source.</p>
       <p>The SaaS companies that survive and thrive are those that become the authoritative data layer for AI agents — the system of record that agents query, update, and build on. The ones that don't are the ones whose value was the feature set, not the data.</p>
       <blockquote>"Slapping AI on the front does not make it smarter. Becoming the data source that AI agents need — that is the survival strategy."</blockquote>`,
-      images: ["vidismart-moe-stack.png", "SmartStack.DevOps.png"],
+      images: ["Cubist4.png", "Cubist5.png"],
       readingTime: 11
     },
     ch36: {
@@ -687,7 +687,7 @@ const BOOK_DATA = {
       <p>For organizations: the right framework is a three-category audit. Which roles in your organization are primarily executing routine, rule-based tasks that AI can now handle? Those roles need to be reimagined — either the people are reskilled toward judgment work, or the headcount is reduced. Which roles are primarily exercising judgment, creativity, or relationship management? Those roles are being amplified by AI tools and need the tools. Which roles are creating the AI systems and data infrastructure? Those roles are undersupplied and command market premiums.</p>
       <p>The organizations that handle this transition thoughtfully — reskilling where possible, being honest about where it isn't, and investing in the judgment-and-AI-direction roles that the new structure requires — will build more capable workforces than either those who ignore AI or those who deploy it recklessly.</p>
       <blockquote>"AI does not eliminate the need for human judgment. It eliminates the tolerance for average performance."</blockquote>`,
-      images: ["Gemini_Generated_Image_p7rtwjp7rtwjp7rt.png", "VidiSmart.agents.jpg"],
+      images: ["Gemini_Generated_Image_p7rtwjp7rtwjp7rt.png", "VidiSmart.a4f.jpg"],
       readingTime: 13
     },
     ch37: {
