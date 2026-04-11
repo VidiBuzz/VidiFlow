@@ -387,6 +387,29 @@
             transform: scaleX(1);
         }
 
+        .persona-card-cta {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 1.25rem;
+            padding: 0.65rem 1rem;
+            border-radius: 8px;
+            background: var(--card-color);
+            color: #fff;
+            font-size: 0.85rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            opacity: 0;
+            transform: translateY(6px);
+            transition: opacity 0.25s, transform 0.25s;
+        }
+
+        .persona-card:hover .persona-card-cta {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
         .persona-icon {
             font-size: 2.5rem;
             margin-bottom: 1rem;
@@ -799,14 +822,11 @@
 
         <!-- CTA Section -->
         <div class="cta-section">
-            <h3>Ready to Start Reading?</h3>
-            <p id="ctaMessage">Select a reading path above to begin your journey.</p>
+            <h3>Click Any Path to Begin Reading</h3>
+            <p id="ctaMessage">Each path opens a personalized edition of the book — filtered and framed for your role.</p>
             <div class="cta-buttons">
-                <button class="btn btn-primary" id="startReadingBtn" disabled onclick="startReading()">
-                    📖 Start Reading
-                </button>
                 <a href="print-book.html" class="btn btn-secondary">
-                    📄 Full Book (All Chapters)
+                    📄 Full Book — All 37 Chapters
                 </a>
             </div>
         </div>
@@ -949,6 +969,7 @@
                     </div>
                 </div>
                 ${takeaways ? `<div class="persona-takeaways"><h4>You'll Learn</h4><ul>${takeaways}</ul></div>` : ''}
+                <div class="persona-card-cta">📖 Read ${persona.title} Edition &rarr;</div>
             `;
 
                 grid.appendChild(card);
@@ -959,6 +980,7 @@
         function selectPersona(key) {
             selectedPersona = key;
 
+            // Highlight selected card
             document.querySelectorAll('.persona-card').forEach(card => {
                 card.classList.toggle('selected', card.dataset.persona === key);
             });
@@ -976,6 +998,16 @@
         `;
 
             document.getElementById('startReadingBtn').disabled = false;
+
+            // Navigate immediately after brief visual confirmation (500ms)
+            const loading = document.getElementById('loadingState');
+            loading.classList.add('active');
+            const name = document.getElementById('readerName')?.value.trim() || '';
+            localStorage.setItem('smartbook_persona', key);
+            if (name) localStorage.setItem('smartbook_name', name);
+            setTimeout(() => {
+                window.location.href = `print-book.html?persona=${key}&name=${encodeURIComponent(name)}`;
+            }, 500);
         }
 
         // ===== Start Reading =====

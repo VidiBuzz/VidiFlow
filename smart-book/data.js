@@ -106,7 +106,7 @@ const BOOK_DATA = {
       <blockquote>"The top performers who understand what is actually happening right now — not the hype, not the demos, not the press releases — will generate 500% more business than their competitors within three years."</blockquote>
       <p>But here is the critical nuance most AI conversations miss: <strong>none of this works if the AI is making things up.</strong> Reliability is not optional. The framework we call Tensor Truth — verifiable AI outputs anchored to your proprietary data, validated against ground truth, not statistical prediction alone — is what separates 500% performers from companies that deployed AI and got garbage. That framework runs through every chapter of this book.</p>
       <p>The window is open. It will not stay open. Let's go.</p>`,
-      images: ["VidiSmart.agents.jpg", "Agentic.VisualAi.png"],
+      images: ["Gemini_Generated_Image_756dem756dem756d.png", "VidiSmart.agents.jpg"],
       readingTime: 8
     },
     ch1: {
@@ -124,7 +124,7 @@ const BOOK_DATA = {
       <p>Today, access means: ask the question, receive a synthesized answer from across your entire knowledge base, with sources, in real time. The businesses winning in 2026 are not the ones with the most information — they are the ones whose information is structured intelligently enough to be queried at speed.</p>
       <p>Most organizations are still running 2010-era data architecture: structured databases holding maybe 10% of their actual intelligence, with the remaining 90% locked in PDFs, videos, emails, presentations, and conversations that no system can read. That gap is the opportunity.</p>
       <blockquote>"It is no longer about who has the best information. It is about who built the fastest pipeline from raw data to decisive action."</blockquote>`,
-      images: ["ai_answer_engine_strategy.png", "visual_vector_architecture.png"],
+      images: ["vidismart_header_9_hx.png", "ai_answer_engine_strategy.png"],
       readingTime: 15
     },
     ch2: {
@@ -141,7 +141,7 @@ const BOOK_DATA = {
       <p>The companies winning right now — Cursor replacing entire engineering sprint cycles, HeyGen localizing video content in 30 languages simultaneously, AutoGen running legal review at $0.003 per page — are not winning because of better vision. They are winning because they closed the execution gap with AI infrastructure before their competitors understood what was happening.</p>
       <p>The 30-40 agent architecture is not a vision. It is an execution model. Companies deploying it now are not running experiments. They are running production systems that are compounding in capability with every transaction.</p>
       <blockquote>"Having a vision in 2026 is table stakes. Having the execution velocity to act on it at AI speed is the only thing that matters."</blockquote>`,
-      images: ["smart_stack_architecture.png", "DoAgentAi.png"],
+      images: ["VidiSmart.Flow.png", "SmartStack.DevOps.png"],
       readingTime: 12
     },
     ch3: {
@@ -157,7 +157,7 @@ const BOOK_DATA = {
       <p>The neuroscience on this has been settled for decades: 90% of information transmitted to the brain is visual. Humans process visual information 60,000 times faster than text. The businesses that understood this first built television, cinema, and the web. The businesses that understand it now are building the AI visual layer that replaces all three.</p>
       <p>The first filter for any AI architecture decision in 2026 is not "which language model scores best on MMLU?" It is: "does this system genuinely understand images, video, and spatial context — or is it a language model with a vision plugin bolted on?" That distinction determines everything downstream.</p>
       <p>Genuinely multimodal systems — those trained end-to-end on visual, audio, and text data — include Gemini 2.0 (Google's native multimodal), GPT-4o with vision, and specialized video intelligence systems like Twelve Labs. Language-first models with vision adapters are powerful for text tasks but fundamentally limited for the visual AI workflows that define the 500% stack.</p>`,
-      images: ["VidiSmart.VisualVectorSearch.png", "neuralbrain.png"],
+      images: ["Gemini_Generated_Image_cz163kcz163kcz16.png", "Tensor.VVOmni.png"],
       readingTime: 14
     },
     ch4: {
@@ -173,7 +173,7 @@ const BOOK_DATA = {
       <p>Original AI-assisted creation builds a moat in three ways that commodity content cannot. First, it generates proprietary training data — every piece of original content you produce becomes training signal that makes your AI systems more accurate and distinctive over time. Second, it establishes semantic authority — AI citation systems like Perplexity and Google's AI Overviews preferentially surface content from sources with deep, consistent domain expertise. Third, it builds visual equity — a recognizable aesthetic built through hundreds of consistent AI-generated images cannot be replicated overnight by a competitor starting from zero.</p>
       <p>The businesses that will dominate content in 2030 are not producing more content than their competitors. They are producing smarter content — seeded by human expertise, amplified by AI, consistent in voice and visual identity, and structured to be cited by the AI answer engines that are replacing search.</p>
       <blockquote>"AI is the best imitation engine ever built. What it cannot imitate is the perspective of a specific human life, lived fully and articulated with precision. That is your moat."</blockquote>`,
-      images: ["Gemini_Generated_Image_4eud6d4eud6d4eud.png", "Gemini_Generated_Image_icbzkkicbzkkicbz.png"],
+      images: ["Gemini_Generated_Image_l7qf2el7qf2el7qf.png", "Cubist1.png"],
       readingTime: 12
     },
     ch5: {
@@ -190,7 +190,7 @@ const BOOK_DATA = {
       <p>The moats that survive this transition share three characteristics. Data moats: built on proprietary information that no AI can replicate from public sources — your customer history, your domain expertise, your operational data. Relationship moats: trust and integration so deep that switching costs are structural, not contractual. Intelligence moats: AI systems so deeply trained on a specific domain that no general-purpose competitor can match them on the vertical that matters to your customers.</p>
       <p>The businesses that build all three — proprietary data, deep relationships, domain-specific intelligence — are not just surviving the SaaSpocalypse. They are the ones writing the new software.</p>
       <blockquote>"Your moat is not your software. It is your data, your relationships, your domain expertise, and your speed."</blockquote>`,
-      images: ["DoAgentAi.png", "smart_stack_architecture.png"],
+      images: ["SmartStack.DevOps.png", "vidismart-moe-stack.png"],
       readingTime: 13
     },
     ch6: {
@@ -206,7 +206,7 @@ const BOOK_DATA = {
       <p>The businesses generating real advantage from AI-assisted development are using it inside a disciplined methodology — what we call CVI: Curate, Validate, Integrate. AI generates candidate solutions rapidly. Human judgment curates the right approach. Rigorous testing validates correctness in context. Careful integration deploys with full observability.</p>
       <p>The companies winning with AI development are not the ones prompting AI to build everything from scratch. They are the ones using AI to compress the ideation-to-prototype cycle from days to hours, then applying engineering rigor to everything that makes it into production. The 10x developer is not someone who replaced engineering with prompting — it is someone who uses AI to eliminate every task that doesn't require their senior judgment.</p>
       <blockquote>"Vibe coding is the fastest way to answer: should we build this? Software engineering is the only way to answer: did we build it right? Never confuse the two."</blockquote>`,
-      images: ["VidiSmart.VisualVectorSearch.png", "smart_stack_architecture.png"],
+      images: ["VidiSmart.visualvector.png", "smart_stack_final.png"],
       readingTime: 11
     },
     ch7: {
@@ -238,7 +238,7 @@ const BOOK_DATA = {
       <p>The architecture that is replacing the SaaS stack is not one custom application. It is a mesh of 30 to 40 purpose-built micro-agents, each one handling a specific vertical with full autonomy. One agent manages inbound leads — qualifying, scoring, routing, following up. One manages content production — generating articles, images, videos from a single strategic brief. One monitors competitors — tracking pricing, messaging, product launches, and summarizing changes daily. One handles AP/AR — matching invoices, flagging anomalies, processing payments. One manages compliance — scanning contracts and communications against regulatory requirements in real time.</p>
       <p>None of these agents costs $200/seat/month. None of them requires a vendor to approve a feature request. Each one learns from your specific data and improves with every transaction. Together, they constitute a proprietary intelligence layer that a competitor starting today cannot replicate next quarter.</p>
       <blockquote>"Building your own software is no longer about having a development team. It is about having a methodology — and the 30-40 agent architecture is that methodology."</blockquote>`,
-      images: ["smart_stack_architecture.png", "DoAgentAi.png"],
+      images: ["smart_stack_final.png", "Agentic.VisualAi.png"],
       readingTime: 14
     },
     ch9: {
@@ -254,7 +254,7 @@ const BOOK_DATA = {
       <p>The organizations that are winning right now are not waiting for AGI. They are deploying the specific capabilities that exist today — multimodal understanding, agentic orchestration, visual intelligence, real-time personalization, retrieval-augmented generation — in workflows that produce measurable bottom-line impact.</p>
       <p>A mid-sized logistics company deployed predictive maintenance agents in Q1 2025 and reduced equipment downtime by 34% within 90 days. A regional law firm deployed contract review AI and compressed first-pass review from 4 hours to 22 minutes per contract. A consumer brand deployed AI-generated product photography and eliminated a $180k annual studio budget. None of these required AGI. All of them required decision and execution speed that most organizations are still not matching.</p>
       <blockquote>"If you are waiting for AGI before you take AI seriously, your competition is already two years ahead on capabilities you have today."</blockquote>`,
-      images: ["neuralbrain.png", "ai_hardware_gpu_1774454119210.png"],
+      images: ["Gemini_Generated_Image_ppwpfappwpfappwp.png", "neuralbrain.png"],
       readingTime: 10
     },
     ch10: {
@@ -270,7 +270,7 @@ const BOOK_DATA = {
       <p>The iterative reality: no AI deployment works perfectly on day one. The organizations generating outsized results are the ones that deployed something real, measured its actual performance, identified the specific failure modes, and iterated rapidly. They are now on version seven or eight of a system that started as a rough proof of concept.</p>
       <p>The reductive reality: the temptation when deploying AI is to try to solve everything at once. The businesses that succeed start with one high-value, well-defined workflow. They make it work reliably. They measure the impact. Then they expand. The 30-40 agent architecture doesn't get built in a sprint — it gets built one agent at a time, each one proven before the next is started.</p>
       <p>The glacial reality: enterprise adoption, despite the technology moving fast, still moves through human change management, procurement cycles, and organizational inertia. The 500% performers are the ones who found ways to deploy outside the normal cycle — starting with one team, one workflow, one measurable win — and used that win to accelerate the next deployment.</p>`,
-      images: ["smart_stack_cover_1774454093030.png", "DoAgentAi.png"],
+      images: ["vidismart-tensors.jpg", "VC.diagram.png"],
       readingTime: 11
     },
     ch11: {
@@ -286,7 +286,7 @@ const BOOK_DATA = {
       <p>The AI systems that are beginning to develop genuine world models — Google DeepMind's Gemini, OpenAI's o3, Meta's V-JEPA — are not just better at answering questions. They are beginning to understand context in the way humans do: anticipating intent, inferring meaning from incomplete information, generating responses that are relevant rather than statistically probable.</p>
       <p>For business applications, this matters because the highest-value AI deployments are not the ones that answer known questions. They are the ones that detect the unknown question — the anomaly in the supply chain that isn't yet an incident, the customer behavior pattern that predicts churn before the customer knows they're leaving, the competitive move that hasn't been announced but is visible in hiring patterns and patent filings.</p>
       <blockquote>"AI has read every book ever written. It has not lived a single day. The gap between reading about the world and experiencing it is where human judgment remains irreplaceable — for now."</blockquote>`,
-      images: ["neuralbrain.png", "digital_twin_poster.png"],
+      images: ["3DD_gllaisgllaisglla.png", "viditwin-glass.png"],
       readingTime: 14
     },
     ch12: {
@@ -303,7 +303,7 @@ const BOOK_DATA = {
       <p>A manufacturing company deployed document intelligence agents across 40 years of engineering specifications, maintenance logs, and quality reports. Engineers now query that entire archive in natural language. "Show me every incident where bearing failure was preceded by this vibration signature" returns answers in seconds from documents that were previously unsearchable because they existed only as scanned PDFs and handwritten notes.</p>
       <p>The SmartChannel architecture — ingesting video, image, audio, and document assets through a unified visual AI pipeline, extracting semantic content, and indexing everything into a queryable knowledge graph — is the infrastructure that makes the 90% visible.</p>
       <blockquote>"90% of your most valuable business intelligence is sitting in unstructured data your analytics systems cannot read. Fixing that is not an IT project — it is a strategic imperative."</blockquote>`,
-      images: ["visual_vector_architecture.png", "smartchannel_asset_grid.png"],
+      images: ["unified_data_hub.png", "smartchannel_asset_grid.png"],
       readingTime: 13
     },
     ch13: {
@@ -319,7 +319,7 @@ const BOOK_DATA = {
       <p>This shift is already affecting search traffic in measurable ways. Sites optimized for keyword density are losing organic traffic to AI answer engines. Sites with genuine semantic authority — deep, structured, expert content that AI systems can confidently cite — are gaining visibility in AI-generated answers that now appear above organic results on most commercial queries.</p>
       <p>For product search, the implications are even more dramatic. A customer searching for "comfortable work shoes for standing all day" is not looking for the words "comfortable," "work," "shoes," and "standing." They have a specific physical experience in mind. Visual AI systems that understand product images — shape, material, construction, sole thickness — can match that need semantically in ways that keyword metadata never could.</p>
       <p>The Visual Vector architecture — embedding images and video frames into high-dimensional semantic space, indexing that space for rapid similarity search, and connecting visual search to structured product and content data — is the infrastructure that powers the next generation of e-commerce, content discovery, and enterprise knowledge management.</p>`,
-      images: ["VidiSmart.VisualVectorSearch.png", "ai_answer_engine_strategy.png"],
+      images: ["Tensor.VVOmni.png", "VidiSmart.VisualVectorSearch.png"],
       readingTime: 12
     },
     ch14: {
@@ -335,7 +335,7 @@ const BOOK_DATA = {
       <p>Visual AI is on the same curve, compressed by a factor of roughly three. The image generation quality that required Midjourney V4 in 2022 runs in real time on Flux or SDXL locally in 2026. Video generation that required a research team in 2023 is in production at Runway, Kling, and Sora in 2026. Frame-level video understanding that required custom ML infrastructure is now available via API from Twelve Labs and Google Gemini.</p>
       <p>The businesses investing in visual AI infrastructure now are not buying a current capability. They are securing a position on the adoption curve before the inflection point — the moment when visual AI moves from "impressive demo" to "expected baseline" for every customer interaction, every piece of content, and every business process that involves images or video.</p>
       <blockquote>"Visual AI is the next frontier of business advantage. The companies investing in visual intelligence infrastructure today are not early adopters — they are building moats that will be impossible to replicate in 18 months."</blockquote>`,
-      images: ["Agentic.VisualAi.png", "VisualVector.png"],
+      images: ["Gemini_Generated_Image_ethf9ethf9ethf9e.png", "agentic_video_intelligence_wide.png"],
       readingTime: 13
     },
     ch15: {
@@ -368,7 +368,7 @@ const BOOK_DATA = {
       <p>Second: domain-specific AI systems — not general-purpose models but AI trained and fine-tuned for specific industries. Harvey in legal, Abridge in healthcare documentation, Wayve in autonomous vehicles. The pattern is consistent: domain AI that solves a specific, high-value workflow reliably commands 10-50x more budget per user than general-purpose AI that does everything adequately.</p>
       <p>Third: visual AI and multimodal infrastructure. Enterprise budgets for video intelligence, image analysis, and multimodal search are growing at rates that language-only AI cannot match, because the use cases — quality control, asset management, training simulation, customer experience — are directly measurable in bottom-line terms.</p>
       <blockquote>"The money is in the second wave — when the technology works reliably and the use cases are proven. Being slightly late and right beats being first and wrong."</blockquote>`,
-      images: ["ai_hardware_gpu_1774454119210.png", "smart_stack_cover_1774454093030.png"],
+      images: ["ai_hardware_gpu_1774454119210.png", "private_core_hardware_1772575522555.png"],
       readingTime: 12
     },
     ch17: {
@@ -385,7 +385,7 @@ const BOOK_DATA = {
       <p>The practical implementation involves three components: private model deployment (running open-weight models like Llama 3.3 or Qwen3 on your own infrastructure, or using private API access with explicit no-training agreements), a proprietary knowledge base (your data, your embeddings, your vector store — not shared with any external system), and a Tensor Truth validation layer (ensuring every AI-generated output is verified against your ground truth before it reaches a human or downstream system).</p>
       <p>The companies that own their AI data assets in 2026 are building intelligence that compounds with every transaction. The companies leasing their AI through third-party tools are building nothing that they own.</p>
       <blockquote>"Your data is the only AI asset that cannot be commoditized. Every other component of your stack will be cheaper next year. Your proprietary data gets more valuable every month."</blockquote>`,
-      images: ["sovereign_data_vault_1772575538692.png", "local_ai_privacy_1774454160080.png"],
+      images: ["private_ai_core_hero.png", "private_core_vault.png"],
       readingTime: 11
     },
     ch18: {
@@ -402,7 +402,7 @@ const BOOK_DATA = {
       <p>A hospital that asks "how do we use AI to transcribe doctor notes faster?" gets a transcription tool. A hospital that asks "how do we use AI to detect the patterns in doctor notes that predict readmission before it happens?" gets a system that reduces preventable readmissions by 28% — which translates to $4.2 million in annual savings at a mid-sized regional hospital. Same underlying technology. Radically different question.</p>
       <p>The Five Truth Factors for AI deployment: Is the question specific enough to be answerable? Is the data available to answer it reliably? Is the answer actionable within the organization's current decision-making structure? Is the outcome measurable? And — critically — is the AI output verified against ground truth before it drives a decision?</p>
       <blockquote>"The AI tells you what the data says. You have to decide what the data means. Never confuse those two jobs."</blockquote>`,
-      images: ["5Factors.Brain.png", "neuralbrain.png"],
+      images: ["5Factors.Brain.png", "CAG_Image_z3vdu9z3vdu9z3vd.png"],
       readingTime: 12
     },
     ch19: {
@@ -436,7 +436,7 @@ const BOOK_DATA = {
       <p>The production RAG architectures that are generating real business value in 2026 share a common pattern: high-quality document ingestion (not just text extraction, but semantic chunking that preserves meaning across chunk boundaries), multimodal embedding (text, image, and video content embedded into a unified semantic space), a hybrid retrieval layer (vector similarity search combined with structured filtering for precision), and a generation layer that is explicitly instructed to cite only what was retrieved.</p>
       <p>That last point — citation discipline — is the difference between a RAG system that generates reliable business intelligence and one that confidently manufactures plausible-sounding answers. The Tensor Truth validation layer sits between retrieval and generation, confirming that every factual claim in the output can be traced to a retrieved source before the response is returned.</p>
       <blockquote>"The model is only as good as what it can see. Build the knowledge base first. The model is the easy part."</blockquote>`,
-      images: ["visual_vector_architecture.png", "VidiSmart.VisualVectorSearch.png"],
+      images: ["Vectored.png", "visual_vector_architecture.png"],
       readingTime: 13
     },
     ch21: {
@@ -469,7 +469,7 @@ const BOOK_DATA = {
       <p>The practical implications for business deployment: never use a language model as the final source of truth for factual claims about your business, your products, your customers, or your operations. Use it as a synthesis and communication layer on top of a retrieval system that provides verified facts. This is the RAG architecture described in Chapter 20, and it is not optional for production deployments where accuracy matters.</p>
       <p>The Tensor Truth framework formalizes this requirement: every factual output from an AI system must be verifiable against a ground truth source before it is acted upon. The AI generates. The validation layer verifies. The output that reaches a human or downstream system has passed a confirmation step that the AI alone cannot provide.</p>
       <p>Businesses that understand this distinction deploy AI that is reliable, auditable, and improvable. Businesses that don't deploy AI that occasionally produces accurate results and frequently embarrasses them.</p>`,
-      images: ["neuralbrain.png", "vvbrain.logic.jpg"],
+      images: ["neuralbrain.png", "Grids1.png"],
       readingTime: 11
     },
     ch23: {
@@ -529,7 +529,7 @@ const BOOK_DATA = {
       </div>
       <p>In production: Harvey (legal AI platform) deployed at Allen & Overy handles first-pass contract review across 50+ jurisdictions, extracting key terms, flagging non-standard clauses, and generating negotiation memos. Time-to-first-review dropped from 4-6 hours to 22 minutes per contract. The critical design choice: Harvey cites the specific contract language that supports every extracted term and flags any clause it cannot confidently categorize, routing those to human review rather than generating a best guess.</p>
       <p>For in-house legal teams, the workflow is: AI agent ingests contract → extracts key terms with citation → compares against standard positions and flags deviations → generates redline with explanation of each change → routes to attorney for final review and approval. Human judgment remains on final approval. AI handles everything that doesn't require that judgment.</p>`,
-      images: ["DoAgentAi.png", "ai_answer_engine_strategy.png"],
+      images: ["VC.diagram.png", "Vectored.png"],
       readingTime: 11
     },
     ch27: {
@@ -545,7 +545,7 @@ const BOOK_DATA = {
       <p>For visual AI specifically: inference-only workflows are appropriate for image generation, style transfer, upscaling, inpainting, and content analysis where general-purpose model capabilities are sufficient. Fine-tuning and LoRA training become necessary when you need consistent, brand-specific visual output — a specific face, a specific product aesthetic, a specific illustration style — that general-purpose inference cannot reliably produce.</p>
       <p>A talent-specific LoRA trained on 30-50 clean reference images can reliably reproduce a specific performer's face with production-grade consistency across any background, costume, or lighting scenario. A brand LoRA trained on your visual identity assets produces images that are recognizably yours without requiring post-processing. The commercial application is significant: a brand LoRA eliminates the inconsistency that makes AI-generated content immediately recognizable as AI-generated, which is the primary objection to AI visual content in professional contexts.</p>
       <p>The current state: VLLM for high-throughput inference serving, Unsloth for memory-efficient fine-tuning, and the Flux ecosystem for image generation LoRA training represent the production-grade toolchain for teams building visual AI infrastructure in 2026.</p>`,
-      images: ["llama_gguf_compression_1774455315150.png", "vllm_speed_pipeline_1774455342070.png"],
+      images: ["Cubist2.png", "Cubist3.png"],
       readingTime: 16
     },
     ch28: {
@@ -577,7 +577,7 @@ const BOOK_DATA = {
       </div>
       <p>A sales team at a mid-sized B2B company deployed an agentic sales support system in Q3 2025. The system monitors prospect behavior (website visits, email opens, document downloads), researches each prospect's recent news and business developments, generates personalized outreach based on current context, manages follow-up cadence, updates the CRM automatically, and routes to a human only when a prospect indicates buying intent. Sales reps went from managing 40 active prospects to managing 400. Pipeline coverage increased by 7x. Time spent on administrative tasks dropped by 80%.</p>
       <p>The agents did not close deals. The humans closed deals. The agents eliminated every activity between the human and closing — which is where most sales time was previously spent.</p>`,
-      images: ["Agent_Orchestration.png", "DoAgentAi.png"],
+      images: ["agentic_storyboard.png", "neural_agent_network_1774454134170.png"],
       readingTime: 12
     },
     ch30: {
@@ -670,7 +670,7 @@ const BOOK_DATA = {
       <p><strong>Categories being strengthened:</strong> Infrastructure and security (AI increases the attack surface, driving demand for security tooling), data and analytics platforms that serve as the foundation for AI knowledge bases, and vertical-specific software with deep domain integration that AI agents need as their authoritative data source.</p>
       <p>The SaaS companies that survive and thrive are those that become the authoritative data layer for AI agents — the system of record that agents query, update, and build on. The ones that don't are the ones whose value was the feature set, not the data.</p>
       <blockquote>"Slapping AI on the front does not make it smarter. Becoming the data source that AI agents need — that is the survival strategy."</blockquote>`,
-      images: ["DoAgentAi.png", "smart_stack_architecture.png"],
+      images: ["vidismart-moe-stack.png", "SmartStack.DevOps.png"],
       readingTime: 11
     },
     ch36: {
@@ -687,7 +687,7 @@ const BOOK_DATA = {
       <p>For organizations: the right framework is a three-category audit. Which roles in your organization are primarily executing routine, rule-based tasks that AI can now handle? Those roles need to be reimagined — either the people are reskilled toward judgment work, or the headcount is reduced. Which roles are primarily exercising judgment, creativity, or relationship management? Those roles are being amplified by AI tools and need the tools. Which roles are creating the AI systems and data infrastructure? Those roles are undersupplied and command market premiums.</p>
       <p>The organizations that handle this transition thoughtfully — reskilling where possible, being honest about where it isn't, and investing in the judgment-and-AI-direction roles that the new structure requires — will build more capable workforces than either those who ignore AI or those who deploy it recklessly.</p>
       <blockquote>"AI does not eliminate the need for human judgment. It eliminates the tolerance for average performance."</blockquote>`,
-      images: ["VidiSmart.agents.jpg", "neuralbrain.png"],
+      images: ["Gemini_Generated_Image_p7rtwjp7rtwjp7rt.png", "VidiSmart.agents.jpg"],
       readingTime: 13
     },
     ch37: {
@@ -703,7 +703,7 @@ const BOOK_DATA = {
       <p>The most significant development in robotics in 2025-2026 is not mechanical — it is the application of visual AI world models to robot perception. Figure 02, Boston Dynamics' Atlas electric, and Tesla's Optimus Gen 2 are all training on massive visual datasets to develop the contextual understanding that allows a robot to handle variation rather than just repetition.</p>
       <p>The practical business timeline: warehouse robotics for defined, repetitive tasks (pick-and-place, inventory scanning, transport in fixed environments) is deployment-ready now, with ROI positive at scale for most operations. Flexible manufacturing robotics — systems that handle variation and can be redirected to different tasks without complete reprogramming — is 2-3 years from mass commercial deployment. General physical AI — robots that can navigate and operate in arbitrary, unstructured environments — is a 5-7 year horizon at the current pace of world model development.</p>
       <blockquote>"The gap between today's robotics and general physical AI is not an engineering gap. It is a data gap — and data gaps close on the timescale of years, not decades."</blockquote>`,
-      images: ["digital_twin_poster.png", "neuralbrain.png"],
+      images: ["digital_twin_poster.png", "Gemini_Generated_Image_tvilyktvilyktvil.png"],
       readingTime: 18
     }
   },
