@@ -141,7 +141,7 @@ const BOOK_DATA = {
       <p>The companies winning right now — Cursor replacing entire engineering sprint cycles, HeyGen localizing video content in 30 languages simultaneously, AutoGen running legal review at $0.003 per page — are not winning because of better vision. They are winning because they closed the execution gap with AI infrastructure before their competitors understood what was happening.</p>
       <p>The 30-40 agent architecture is not a vision. It is an execution model. Companies deploying it now are not running experiments. They are running production systems that are compounding in capability with every transaction.</p>
       <blockquote>"Having a vision in 2026 is table stakes. Having the execution velocity to act on it at AI speed is the only thing that matters."</blockquote>`,
-      images: ["VidiSmart.Flow.png", "smart_stack_cover_1774454093030.png"],
+      images: ["VidiSmart.Flow.png", "vidismart_omni_engine.png"],
       readingTime: 12
     },
     ch3: {
