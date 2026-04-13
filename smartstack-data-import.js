@@ -1,6 +1,6 @@
 /**
  * VidiSmart SmartStack Data Import Script
- * Imports technologies from vidismart.masterlist.FINAL.html into Supabase
+ * Imports technologies from vidismart.masterlist.html into Supabase
  */
 
 const { createClient } = require('@supabase/supabase-js');

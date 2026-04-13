@@ -19,7 +19,7 @@ const s3Client = new S3Client({
 const files = [
     'viditwin.html',
     'vidismart.masterlist.v3.html',
-    'vidismart.masterlist.FINAL.html',
+    'vidismart.masterlist.html',
     'SmartGenUi.html'
 ];
 

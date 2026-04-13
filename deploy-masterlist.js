@@ -248,7 +248,7 @@ Options:
   --no-git      Skip git push to SiteGround
 
 Examples:
-  node deploy-masterlist.js vidismart.masterlist.FINAL.html
+  node deploy-masterlist.js vidismart.masterlist.html
   node deploy-masterlist.js index.html --no-media
   node deploy-masterlist.js styles.css --no-git
 `);
