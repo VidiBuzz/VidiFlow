@@ -22,14 +22,23 @@
         :root {
             --teal: #0d9488;
             --teal-bright: #2dd4bf;
+            --teal-dark: #0f766e;
             --obsidian: #020617;
             --slate: #0f172a;
+            --slate-light: #1e293b;
             --border: rgba(255, 255, 255, 0.1);
             --font-vidi: 'Kumbh Sans', sans-serif;
             --font-main: 'Inter', sans-serif;
             --glass: rgba(255, 255, 255, 0.03);
+            --glass-hover: rgba(255, 255, 255, 0.08);
             --gold: #fbbf24;
             --gold-dark: #d97706;
+            --purple: #a855f7;
+            --blue: #3b82f6;
+            --green: #22c55e;
+            --red: #ef4444;
+            --orange: #f97316;
+            --pink: #ec4899;
         }
 
         /* BASE */
@@ -43,9 +52,9 @@
             font-family: var(--font-main);
             background-color: var(--obsidian);
             color: #f1f5f9;
-            height: 100vh;
+            min-height: 100vh;
             display: flex;
-            overflow: hidden;
+            overflow-x: hidden;
         }
 
         /* SIDEBAR NAVIGATION */
@@ -57,10 +66,14 @@
             flex-direction: column;
             z-index: 100;
             flex-shrink: 0;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
         }
 
         .sidebar-header {
             padding: 40px 30px;
+            border-bottom: 1px solid var(--border);
         }
 
         .logo {
@@ -139,20 +152,20 @@
         /* MAIN CONTENT AREA */
         main {
             flex: 1;
-            overflow-y: auto;
-            scroll-behavior: smooth;
-            position: relative;
+            margin-left: 320px;
+            overflow-x: hidden;
         }
 
         /* HERO SECTION */
         #hero {
-            min-height: 60vh;
+            min-height: auto;
             background: var(--obsidian);
             position: relative;
             display: flex;
             align-items: center;
-            padding: 60px 80px;
+            padding: 16px 50px;
             overflow: hidden;
+            border-bottom: 1px solid var(--border);
         }
 
         #hero-canvas {
@@ -162,37 +175,38 @@
             width: 100%;
             height: 100%;
             z-index: 1;
-            opacity: 0.4;
+            opacity: 0.3;
         }
 
         .hero-body {
             position: relative;
             z-index: 10;
-            max-width: 900px;
+            max-width: 1200px;
+            width: 100%;
         }
 
         .badge {
             display: inline-block;
-            padding: 8px 16px;
+            padding: 3px 10px;
             background: rgba(45, 212, 191, 0.05);
             border: 1px solid rgba(45, 212, 191, 0.2);
             color: var(--teal-bright);
             border-radius: 50px;
-            font-size: 0.7rem;
+            font-size: 0.55rem;
             font-weight: 900;
             text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 30px;
+            letter-spacing: 1.5px;
+            margin-bottom: 6px;
         }
 
         h1 {
             font-family: var(--font-vidi);
-            font-size: 4.5rem;
+            font-size: 1.6rem;
             font-weight: 900;
             color: white;
-            line-height: 0.95;
-            margin-bottom: 25px;
-            letter-spacing: -3px;
+            line-height: 1.15;
+            margin-bottom: 6px;
+            letter-spacing: -1px;
         }
 
         h1 .highlight {
@@ -202,396 +216,597 @@
             -webkit-text-fill-color: transparent;
         }
 
-        h1 .gold {
-            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
         .hero-p {
-            font-size: 1.3rem;
+            font-size: 0.78rem;
             color: #94a3b8;
-            line-height: 1.6;
-            font-weight: 200;
-            max-width: 700px;
-            margin-bottom: 30px;
+            line-height: 1.4;
+            font-weight: 300;
+            max-width: 650px;
+            margin-bottom: 10px;
         }
 
         /* STATS BAR */
         .stats-bar {
             display: flex;
-            gap: 40px;
-            padding: 30px 0;
-            border-top: 1px solid var(--border);
-            margin-top: 20px;
+            gap: 10px;
+            padding: 6px 0 0 0;
+            flex-wrap: wrap;
         }
 
         .stat-item {
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 6px 14px;
             text-align: center;
+            min-width: 75px;
         }
 
         .stat-number {
             font-family: var(--font-vidi);
-            font-size: 2.5rem;
+            font-size: 1.1rem;
             font-weight: 900;
             color: var(--teal-bright);
+            line-height: 1;
         }
 
         .stat-label {
-            font-size: 0.7rem;
+            font-size: 0.55rem;
             color: #64748b;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 0.8px;
+            font-weight: 700;
+            margin-top: 2px;
+        }
+
+        /* FILTER BAR - STICKY */
+        .filter-bar {
+            position: sticky;
+            top: 0;
+            background: rgba(2, 6, 23, 0.98);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            padding: 8px 30px;
+            z-index: 50;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .filter-label {
+            font-size: 0.5rem;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
             font-weight: 700;
         }
 
-        /* SECTIONS */
-        section {
-            padding: 80px;
-            max-width: 1600px;
-            margin: 0 auto;
+        .filter-select {
+            background: var(--slate-light);
+            border: 1px solid var(--border);
+            color: #f1f5f9;
+            padding: 6px 26px 6px 10px;
+            border-radius: 6px;
+            font-size: 0.72rem;
+            font-weight: 500;
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2394a3b8'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 6px center;
+            background-size: 12px;
+            min-width: 140px;
+            transition: 0.2s;
         }
 
-        .section-header {
-            margin-bottom: 60px;
-            text-align: center;
+        .filter-select:hover {
+            border-color: var(--teal);
         }
 
-        .section-title {
-            font-family: var(--font-vidi);
-            font-size: 3rem;
-            font-weight: 900;
-            color: white;
-            letter-spacing: -2px;
-            margin-bottom: 15px;
+        .filter-select:focus {
+            outline: none;
+            border-color: var(--teal-bright);
+            box-shadow: 0 0 0 3px rgba(45, 212, 191, 0.1);
         }
 
-        .section-subtitle {
-            font-size: 1.1rem;
+        .search-box {
+            flex: 1;
+            min-width: 200px;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            background: var(--slate-light);
+            border: 1px solid var(--border);
+            color: #f1f5f9;
+            padding: 6px 10px 6px 30px;
+            border-radius: 6px;
+            font-size: 0.72rem;
+            transition: 0.2s;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--teal-bright);
+            box-shadow: 0 0 0 3px rgba(45, 212, 191, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
             color: #64748b;
+            font-size: 0.75rem;
         }
 
-        /* CATEGORY HEADER */
+        .filter-actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-primary {
+            background: var(--teal);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--teal-bright);
+        }
+
+        .btn-secondary {
+            background: var(--slate-light);
+            color: #94a3b8;
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--glass-hover);
+            color: white;
+        }
+
+        .btn-active {
+            background: var(--teal);
+            color: white;
+        }
+
+        /* VIEW TOGGLE */
+        .view-toggle {
+            display: flex;
+            background: var(--slate-light);
+            border-radius: 6px;
+            padding: 3px;
+            border: 1px solid var(--border);
+        }
+
+        .view-btn {
+            padding: 6px 10px;
+            border-radius: 4px;
+            background: none;
+            border: none;
+            color: #64748b;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .view-btn.active {
+            background: var(--teal);
+            color: white;
+        }
+
+        /* RESULTS COUNT */
+        .results-info {
+            padding: 6px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+            background: var(--slate-light);
+        }
+
+        .results-count {
+            font-size: 0.72rem;
+            color: #94a3b8;
+        }
+
+        .results-count strong {
+            color: var(--teal-bright);
+        }
+
+        /* MAIN CONTENT */
+        .content-area {
+            padding: 16px 30px;
+        }
+
+        /* CATEGORY SECTIONS */
+        .category-section {
+            margin-bottom: 20px;
+        }
+
         .category-header {
-            background: linear-gradient(135deg, rgba(251, 191, 36, 0.08) 0%, rgba(245, 158, 11, 0.04) 100%);
-            border: 1px solid rgba(251, 191, 36, 0.2);
-            border-radius: 20px;
-            padding: 30px 40px;
-            margin-bottom: 40px;
+            background: linear-gradient(135deg, rgba(13, 148, 136, 0.1) 0%, rgba(45, 212, 191, 0.05) 100%);
+            border: 1px solid rgba(13, 148, 136, 0.3);
+            border-radius: 10px;
+            padding: 10px 18px;
+            margin-bottom: 14px;
             display: flex;
             align-items: center;
             justify-content: space-between;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .category-header:hover {
+            background: linear-gradient(135deg, rgba(13, 148, 136, 0.15) 0%, rgba(45, 212, 191, 0.08) 100%);
+        }
+
+        .category-header.collapsed + .companies-grid {
+            display: none;
+        }
+
+        .category-title-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .category-icon {
+            width: 30px;
+            height: 30px;
+            background: var(--teal);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.82rem;
+            color: white;
         }
 
         .category-title {
             font-family: var(--font-vidi);
-            font-size: 1.8rem;
+            font-size: 0.95rem;
             font-weight: 900;
-            color: var(--gold);
+            color: white;
+        }
+
+        .category-subtitle {
+            font-size: 0.65rem;
+            color: #64748b;
+            margin-top: 1px;
+        }
+
+        .category-meta {
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .category-count {
-            background: var(--gold);
+            background: var(--teal);
             color: var(--obsidian);
-            padding: 8px 20px;
-            border-radius: 50px;
-            font-weight: 900;
-            font-size: 0.9rem;
+            padding: 3px 11px;
+            border-radius: 20px;
+            font-weight: 800;
+            font-size: 0.65rem;
+        }
+
+        .category-toggle {
+            width: 28px;
+            height: 28px;
+            background: var(--slate-light);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .category-toggle:hover {
+            background: var(--glass-hover);
+        }
+
+        .category-toggle i {
+            transition: 0.3s;
+        }
+
+        .category-header.collapsed .category-toggle i {
+            transform: rotate(-90deg);
         }
 
         /* COMPANY CARDS GRID */
         .companies-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
-            gap: 25px;
+            grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+            gap: 14px;
+            transition: 0.3s;
+        }
+
+        .companies-grid.list-view {
+            grid-template-columns: 1fr;
         }
 
         /* COMPANY CARD */
         .company-card {
             background: var(--glass);
             border: 1px solid var(--border);
-            border-radius: 24px;
-            padding: 30px;
+            border-radius: 14px;
+            padding: 16px;
             transition: all 0.3s ease;
             display: flex;
             flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .company-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--teal), var(--teal-bright));
+            opacity: 0;
+            transition: 0.3s;
         }
 
         .company-card:hover {
             border-color: var(--teal);
-            transform: translateY(-5px);
-            box-shadow: 0 40px 80px rgba(0, 0, 0, 0.4), 0 0 40px rgba(13, 148, 136, 0.1);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.25), 0 0 20px rgba(13, 148, 136, 0.08);
+        }
+
+        .company-card:hover::before {
+            opacity: 1;
         }
 
         .card-header {
             display: flex;
             align-items: flex-start;
             justify-content: space-between;
-            margin-bottom: 15px;
+            margin-bottom: 8px;
         }
 
         .company-name {
             font-family: var(--font-vidi);
-            font-size: 1.3rem;
+            font-size: 1rem;
             font-weight: 900;
             color: white;
-            line-height: 1.3;
+            line-height: 1.25;
             flex: 1;
         }
 
         .company-rating {
             background: var(--gold);
             color: var(--obsidian);
-            padding: 4px 10px;
-            border-radius: 8px;
-            font-size: 0.75rem;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 0.68rem;
             font-weight: 900;
-            margin-left: 15px;
+            margin-left: 8px;
             flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            gap: 3px;
         }
 
-        .company-type {
-            display: inline-block;
-            background: linear-gradient(90deg, var(--teal) 0%, #0891b2 100%);
-            color: white;
-            padding: 6px 14px;
-            border-radius: 30px;
-            font-size: 0.7rem;
-            font-weight: 800;
+        .company-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-bottom: 10px;
+        }
+
+        .tag {
+            padding: 3px 9px;
+            border-radius: 16px;
+            font-size: 0.62rem;
+            font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 15px;
+            letter-spacing: 0.4px;
+        }
+
+        .tag-type {
+            background: linear-gradient(90deg, var(--teal), var(--teal-dark));
+            color: white;
+        }
+
+        .tag-industry {
+            background: rgba(168, 119, 247, 0.2);
+            color: var(--purple);
+            border: 1px solid rgba(168, 119, 247, 0.3);
+        }
+
+        .tag-use-case {
+            background: rgba(59, 130, 246, 0.2);
+            color: var(--blue);
+            border: 1px solid rgba(59, 130, 246, 0.3);
         }
 
         .company-description {
             color: #94a3b8;
-            font-size: 0.9rem;
-            line-height: 1.6;
-            margin-bottom: 20px;
-            padding: 15px;
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 12px;
-            border-left: 3px solid var(--teal);
+            font-size: 0.75rem;
+            line-height: 1.5;
+            margin-bottom: 10px;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            border-left: 2px solid var(--teal);
             flex: 1;
         }
 
-        .company-info {
-            color: #64748b;
-            font-size: 0.85rem;
-            margin: 8px 0;
+        .company-meta {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+            margin-bottom: 10px;
+        }
+
+        .meta-item {
             display: flex;
             align-items: flex-start;
-            gap: 10px;
+            gap: 6px;
+            font-size: 0.7rem;
+            color: #64748b;
         }
 
-        .company-info i {
+        .meta-item i {
             color: var(--teal-bright);
-            width: 16px;
-            margin-top: 2px;
+            margin-top: 1px;
+            font-size: 0.65rem;
         }
 
-        .company-info strong {
+        .meta-item strong {
             color: #94a3b8;
         }
 
-        .company-contact {
-            margin-top: 20px;
-            padding-top: 20px;
+        /* ACTION BUTTONS */
+        .card-actions {
+            display: flex;
+            gap: 7px;
+            padding-top: 10px;
             border-top: 1px solid var(--border);
-            display: flex;
             flex-wrap: wrap;
-            gap: 15px;
         }
 
-        .contact-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .phone {
-            color: #4ade80;
-            font-weight: 700;
-            font-size: 0.9rem;
-        }
-
-        .website {
-            color: var(--teal-bright);
-            text-decoration: none;
-            font-size: 0.85rem;
-            word-break: break-all;
+        .action-btn {
+            flex: 1;
+            min-width: 80px;
+            padding: 7px 11px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: var(--slate-light);
+            color: #94a3b8;
+            font-size: 0.68rem;
+            font-weight: 600;
+            cursor: pointer;
             transition: 0.2s;
-        }
-
-        .website:hover {
-            text-decoration: underline;
-            color: white;
-        }
-
-        /* REGION SECTION */
-        .region-section {
-            margin-bottom: 60px;
-        }
-
-        .region-header {
-            background: linear-gradient(135deg, rgba(13, 148, 136, 0.1) 0%, rgba(45, 212, 191, 0.05) 100%);
-            border: 1px solid rgba(13, 148, 136, 0.3);
-            border-radius: 16px;
-            padding: 25px 35px;
-            margin-bottom: 30px;
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-
-        .region-icon {
-            width: 50px;
-            height: 50px;
-            background: var(--teal);
-            border-radius: 14px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5rem;
-            color: white;
-        }
-
-        .region-title {
-            font-family: var(--font-vidi);
-            font-size: 1.5rem;
-            font-weight: 900;
-            color: var(--teal-bright);
-        }
-
-        .region-count {
-            margin-left: auto;
-            background: rgba(45, 212, 191, 0.2);
-            color: var(--teal-bright);
-            padding: 6px 16px;
-            border-radius: 30px;
-            font-size: 0.8rem;
-            font-weight: 800;
-        }
-
-        /* FOOTER */
-        .footer {
-            text-align: center;
-            padding: 60px 40px;
-            border-top: 1px solid var(--border);
-            margin-top: 40px;
-        }
-
-        .footer-logo {
-            font-family: var(--font-vidi);
-            font-size: 1.8rem;
-            font-weight: 900;
-            margin-bottom: 15px;
-        }
-
-        .footer-logo span {
-            background: linear-gradient(135deg, var(--teal-bright), var(--teal));
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .footer p {
-            color: #64748b;
-            font-size: 0.9rem;
-            margin: 5px 0;
-        }
-
-        .footer .date {
-            color: var(--teal-bright);
-        }
-
-        /* QUICK NAV - TOP BAR */
-        .quick-nav {
-            position: sticky;
-            top: 0;
-            background: rgba(2, 6, 23, 0.95);
-            backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--border);
-            padding: 15px 40px;
-            z-index: 50;
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            overflow-x: auto;
-        }
-
-        .quick-nav-label {
-            font-size: 0.65rem;
-            color: #475569;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            font-weight: 800;
-            white-space: nowrap;
-        }
-
-        .quick-nav a {
-            color: #94a3b8;
+            gap: 5px;
             text-decoration: none;
-            font-size: 0.8rem;
-            font-weight: 700;
-            padding: 8px 16px;
-            border-radius: 30px;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid var(--border);
-            transition: 0.2s;
-            white-space: nowrap;
         }
 
-        .quick-nav a:hover {
+        .action-btn:hover {
+            background: var(--glass-hover);
+            color: white;
+            border-color: var(--teal);
+        }
+
+        .action-btn.primary {
             background: var(--teal);
             color: white;
             border-color: var(--teal);
         }
 
-        /* RESPONSIVE */
-        @media (max-width: 1200px) {
-            aside {
-                display: none;
-            }
-
-            #hero {
-                padding: 40px;
-            }
-
-            h1 {
-                font-size: 3rem;
-            }
-
-            section {
-                padding: 40px;
-            }
-
-            .companies-grid {
-                grid-template-columns: 1fr;
-            }
+        .action-btn.primary:hover {
+            background: var(--teal-bright);
         }
 
-        @media (max-width: 768px) {
-            h1 {
-                font-size: 2.2rem;
-            }
+        .action-btn.smart-stack {
+            background: linear-gradient(135deg, var(--purple), var(--purple-dark));
+            color: white;
+            border: none;
+        }
 
-            .stats-bar {
-                flex-wrap: wrap;
-                gap: 20px;
-            }
+        .action-btn.smart-stack:hover {
+            opacity: 0.9;
+        }
 
-            .category-header {
-                flex-direction: column;
-                gap: 15px;
-                text-align: center;
-            }
+        /* LIST VIEW STYLES */
+        .list-view .company-card {
+            flex-direction: row;
+            align-items: center;
+            gap: 25px;
+        }
+
+        .list-view .card-header {
+            margin-bottom: 0;
+            flex-direction: column;
+        }
+
+        .list-view .company-description {
+            display: none;
+        }
+
+        .list-view .company-meta {
+            margin-bottom: 0;
+        }
+
+        .list-view .card-actions {
+            border-top: none;
+            padding-top: 0;
+        }
+
+        /* INDUSTRY BADGES */
+        .industry-filter {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            padding: 10px 30px;
+            border-bottom: 1px solid var(--border);
+            background: var(--slate);
+        }
+
+        .industry-chip {
+            padding: 5px 12px;
+            background: var(--slate-light);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: #94a3b8;
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .industry-chip:hover {
+            border-color: var(--teal);
+            color: white;
+        }
+
+        .industry-chip.active {
+            background: var(--teal);
+            color: white;
+            border-color: var(--teal);
+        }
+
+        .industry-chip i {
+            font-size: 0.75rem;
         }
 
         /* SCROLLBAR */
         ::-webkit-scrollbar {
             width: 8px;
+            height: 8px;
         }
 
         ::-webkit-scrollbar-track {
@@ -606,6 +821,126 @@
         ::-webkit-scrollbar-thumb:hover {
             background: var(--teal);
         }
+
+        /* RESPONSIVE */
+        @media (max-width: 1200px) {
+            aside {
+                display: none;
+            }
+
+            main {
+                margin-left: 0;
+            }
+
+            #hero {
+                padding: 40px;
+            }
+
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            .content-area {
+                padding: 20px;
+            }
+
+            .companies-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            .filter-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .filter-select, .search-box {
+                min-width: 100%;
+            }
+
+            .stats-bar {
+                flex-wrap: wrap;
+                gap: 15px;
+            }
+
+            .category-header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            .category-title-wrapper {
+                justify-content: center;
+            }
+        }
+
+        /* ANIMATIONS */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .company-card {
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        /* LOADING STATE */
+        .loading-state {
+            display: none;
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .loading-state.active {
+            display: block;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid var(--border);
+            border-top-color: var(--teal-bright);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* EMPTY STATE */
+        .empty-state {
+            display: none;
+            text-align: center;
+            padding: 80px 20px;
+        }
+
+        .empty-state.active {
+            display: block;
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            color: var(--slate);
+            margin-bottom: 20px;
+        }
+
+        .empty-state h3 {
+            font-size: 1.5rem;
+            color: white;
+            margin-bottom: 10px;
+        }
+
+        .empty-state p {
+            color: #64748b;
+            margin-bottom: 20px;
+        }
     </style>
 </head>
 
@@ -614,8 +949,10 @@
     <!-- SIDEBAR -->
     <aside>
         <div class="sidebar-header">
-            <div class="logo">VIDI<span>SMART</span></div>
-            <div class="tagline">Smart Stack Intelligence</div>
+            <a href="index.html" style="text-decoration: none; color: inherit; cursor: pointer;">
+                <div class="logo">VIDI<span>SMART</span></div>
+                <div class="tagline">Smart Stack Intelligence</div>
+            </a>
         </div>
 
         <nav>
@@ -623,52 +960,54 @@
             <button onclick="scrollToSection('hero')" class="nav-link active" id="nav-hero">
                 <i class="fas fa-home"></i> Overview
             </button>
-            <button onclick="scrollToSection('by-type')" class="nav-link" id="nav-by-type">
-                <i class="fas fa-layer-group"></i> By Business Type
-            </button>
-            <button onclick="scrollToSection('by-region')" class="nav-link" id="nav-by-region">
-                <i class="fas fa-globe"></i> By Region
+            <button onclick="scrollToSection('filters')" class="nav-link" id="nav-filters">
+                <i class="fas fa-filter"></i> Browse All
             </button>
 
-            <div class="nav-section-title">Regions</div>
-            <button onclick="scrollToSection('south-florida')" class="nav-link" id="nav-south-florida">
-                <i class="fas fa-sun"></i> South Florida
+            <div class="nav-section-title">Business Types</div>
+            <button onclick="filterByType('all')" class="nav-link" id="nav-all">
+                <i class="fas fa-th-large"></i> All Companies
             </button>
-            <button onclick="scrollToSection('san-francisco')" class="nav-link" id="nav-san-francisco">
-                <i class="fas fa-city"></i> San Francisco
+            <button onclick="filterByType('consulting')" class="nav-link" id="nav-consulting">
+                <i class="fas fa-chalkboard-teacher"></i> AI Consulting
             </button>
-            <button onclick="scrollToSection('denver')" class="nav-link" id="nav-denver">
-                <i class="fas fa-mountain"></i> Denver
+            <button onclick="filterByType('development')" class="nav-link" id="nav-development">
+                <i class="fas fa-code"></i> ML Development
             </button>
-            <button onclick="scrollToSection('detroit')" class="nav-link" id="nav-detroit">
-                <i class="fas fa-industry"></i> Detroit
+            <button onclick="filterByType('automation')" class="nav-link" id="nav-automation">
+                <i class="fas fa-robot"></i> AI Automation
             </button>
-            <button onclick="scrollToSection('chicago')" class="nav-link" id="nav-chicago">
-                <i class="fas fa-building"></i> Chicago
+            <button onclick="filterByType('infrastructure')" class="nav-link" id="nav-infrastructure">
+                <i class="fas fa-server"></i> Infrastructure
             </button>
-            <button onclick="scrollToSection('saint-louis')" class="nav-link" id="nav-saint-louis">
-                <i class="fas fa-archway"></i> Saint Louis
+
+            <div class="nav-section-title">Industries</div>
+            <button onclick="filterByIndustry('healthcare')" class="nav-link" id="nav-healthcare">
+                <i class="fas fa-heartbeat"></i> Healthcare
             </button>
-            <button onclick="scrollToSection('cleveland')" class="nav-link" id="nav-cleveland">
-                <i class="fas fa-city"></i> Cleveland
+            <button onclick="filterByIndustry('finance')" class="nav-link" id="nav-finance">
+                <i class="fas fa-chart-line"></i> Finance
             </button>
+            <button onclick="filterByIndustry('manufacturing')" class="nav-link" id="nav-manufacturing">
+                <i class="fas fa-industry"></i> Manufacturing
+            </button>
+            <button onclick="filterByIndustry('retail')" class="nav-link" id="nav-retail">
+                <i class="fas fa-shopping-cart"></i> Retail
+            </button>
+            <button onclick="filterByIndustry('legal')" class="nav-link" id="nav-legal">
+                <i class="fas fa-balance-scale"></i> Legal
+            </button>
+
+            <div class="nav-section-title">Smart Stack</div>
+            <a href="vidismart.masterlist.html" class="nav-link" style="display: flex; text-decoration: none; padding: 12px 15px; margin-bottom: 5px; color: #cbd5e1;">
+                <i class="fas fa-layer-group" style="margin-right: 10px; width: 20px; text-align: center;"></i> Smart Stack Builder
+            </a>
+            <a href="vidismart.consultants.html" class="nav-link" style="display: flex; text-decoration: none; padding: 12px 15px; color: #cbd5e1;">
+                <i class="fas fa-user-tie" style="margin-right: 10px; width: 20px; text-align: center;"></i> Elite Consultants
+            </a>
         </nav>
 
         <div style="padding: 30px 20px 0 20px;">
-            <div style="font-size: 0.6rem; color: #475569; text-transform: uppercase; margin-bottom: 10px; font-weight: 800; letter-spacing: 1px;">
-                Core Network</div>
-            <a href="vidismart.masterlist.html" class="nav-link" style="display: block; text-decoration: none; padding: 12px 15px; margin-bottom: 5px; color: #cbd5e1;">
-                <i class="fas fa-home" style="margin-right: 10px; width: 20px; text-align: center;"></i> Smart Stack Master List
-            </a>
-            <a href="vidismart.consultants.html" class="nav-link" style="display: block; text-decoration: none; padding: 12px 15px; margin-bottom: 5px; color: #cbd5e1;">
-                <i class="fas fa-user-tie" style="margin-right: 10px; width: 20px; text-align: center;"></i> Elite Consultants
-            </a>
-            <a href="vidismart.sectors.html" class="nav-link" style="display: block; text-decoration: none; padding: 12px 15px; color: #cbd5e1;">
-                <i class="fas fa-cubes" style="margin-right: 10px; width: 20px; text-align: center;"></i> Sector Builder
-            </a>
-        </div>
-
-        <div style="padding: 30px; border-top: 1px solid var(--border);">
             <div style="background: rgba(45, 212, 191, 0.05); padding: 20px; border-radius: 20px; border: 1px solid rgba(45, 212, 191, 0.1);">
                 <div style="font-size: 0.6rem; color: #475569; text-transform: uppercase; margin-bottom: 5px;">Status</div>
                 <div style="font-size: 0.75rem; color: var(--teal-bright); font-weight: 800; display: flex; align-items: center; gap: 8px;">
@@ -680,748 +1019,346 @@
     </aside>
 
     <!-- MAIN -->
-    <main id="scroll-container">
-
-        <!-- QUICK NAV -->
-        <div class="quick-nav">
-            <span class="quick-nav-label">Jump to:</span>
-            <a href="#by-type">By Type</a>
-            <a href="#by-region">By Region</a>
-            <a href="#south-florida">South Florida</a>
-            <a href="#san-francisco">San Francisco</a>
-            <a href="#denver">Denver</a>
-            <a href="#detroit">Detroit</a>
-            <a href="#chicago">Chicago</a>
-            <a href="#saint-louis">Saint Louis</a>
-        </div>
+    <main>
 
         <!-- HERO -->
-        <section id="hero" style="max-width: none;">
+        <section id="hero">
             <canvas id="hero-canvas"></canvas>
             <div class="hero-body">
                 <div class="badge">AI Intelligence Database</div>
-                <h1>AI & Visual AI<br><span class="highlight">Consultants Directory</span></h1>
+                <h1>AI Consultants<br><span class="highlight">Directory</span></h1>
                 <p class="hero-p">
-                    The most comprehensive database of <strong>AI consulting firms</strong> across 8 major markets.
-                    Machine Learning, Computer Vision, LLM/RAG, and AI Strategy specialists.
+                    The most comprehensive database of <strong>AI consulting firms</strong> across the United States.
+                    Filter by business type, industry specialization, and use case applications.
                 </p>
 
                 <div class="stats-bar">
                     <div class="stat-item">
                         <div class="stat-number">600</div>
-                        <div class="stat-label">Total Companies</div>
+                        <div class="stat-label">Companies</div>
                     </div>
                     <div class="stat-item">
                         <div class="stat-number">8</div>
                         <div class="stat-label">Regions</div>
                     </div>
                     <div class="stat-item">
-                        <div class="stat-number">295</div>
-                        <div class="stat-label">With Descriptions</div>
+                        <div class="stat-number">12</div>
+                        <div class="stat-label">Industries</div>
                     </div>
                     <div class="stat-item">
-                        <div class="stat-number">523</div>
-                        <div class="stat-label">With Phone Numbers</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-number">537</div>
-                        <div class="stat-label">With Websites</div>
+                        <div class="stat-number">25</div>
+                        <div class="stat-label">Use Cases</div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- BY BUSINESS TYPE SECTION -->
-        <section id="by-type">
-            <div class="section-header">
-                <h2 class="section-title">Companies by Business Type</h2>
-                <p class="section-subtitle">Browse AI consultants organized by their specialization</p>
+        <!-- FILTER BAR -->
+        <div class="filter-bar" id="filters">
+            <div class="filter-group">
+                <label class="filter-label">Business Type</label>
+                <select class="filter-select" id="type-filter" onchange="applyFilters()">
+                    <option value="all">All Business Types</option>
+                    <option value="consulting">AI Consulting / Strategy</option>
+                    <option value="development">AI / ML Development</option>
+                    <option value="automation">AI Automation</option>
+                    <option value="infrastructure">AI Infrastructure / MLOps</option>
+                    <option value="computer-vision">Computer Vision</option>
+                    <option value="nlp">NLP / Language AI</option>
+                    <option value="data">Data & Analytics</option>
+                </select>
             </div>
 
+            <div class="filter-group">
+                <label class="filter-label">Industry</label>
+                <select class="filter-select" id="industry-filter" onchange="applyFilters()">
+                    <option value="all">All Industries</option>
+                    <option value="healthcare">Healthcare & Life Sciences</option>
+                    <option value="finance">Finance & Insurance</option>
+                    <option value="manufacturing">Manufacturing</option>
+                    <option value="retail">Retail & E-commerce</option>
+                    <option value="legal">Legal Services</option>
+                    <option value="technology">Technology</option>
+                    <option value="logistics">Logistics & Supply Chain</option>
+                    <option value="energy">Energy & Utilities</option>
+                    <option value="education">Education</option>
+                    <option value="media">Media & Entertainment</option>
+                    <option value="real-estate">Real Estate</option>
+                    <option value="automotive">Automotive</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label class="filter-label">Use Case</label>
+                <select class="filter-select" id="usecase-filter" onchange="applyFilters()">
+                    <option value="all">All Use Cases</option>
+                    <option value="process-automation">Process Automation</option>
+                    <option value="customer-service">Customer Service / Chatbots</option>
+                    <option value="data-analysis">Data Analysis & Insights</option>
+                    <option value="predictive-analytics">Predictive Analytics</option>
+                    <option value="computer-vision">Computer Vision / Image Recognition</option>
+                    <option value="nlp">Natural Language Processing</option>
+                    <option value="recommendation">Recommendation Systems</option>
+                    <option value="fraud-detection">Fraud Detection</option>
+                    <option value="quality-control">Quality Control</option>
+                    <option value="document-processing">Document Processing</option>
+                    <option value="training">AI Training & Education</option>
+                    <option value="strategy">AI Strategy & Advisory</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label class="filter-label">Region</label>
+                <select class="filter-select" id="region-filter" onchange="applyFilters()">
+                    <option value="all">All Regions</option>
+                    <option value="south-florida">South Florida</option>
+                    <option value="san-francisco">San Francisco Bay Area</option>
+                    <option value="denver">Denver / Boulder</option>
+                    <option value="detroit">Detroit / Ann Arbor</option>
+                    <option value="chicago">Chicago</option>
+                    <option value="saint-louis">Saint Louis</option>
+                    <option value="cleveland">Cleveland / Akron</option>
+                    <option value="new-york">New York</option>
+                    <option value="austin">Austin</option>
+                    <option value="seattle">Seattle</option>
+                    <option value="boston">Boston</option>
+                </select>
+            </div>
+
+            <div class="search-box">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" class="search-input" id="search-input" placeholder="Search companies..." onkeyup="applyFilters()">
+            </div>
+
+            <div class="filter-actions">
+                <div class="view-toggle">
+                    <button class="view-btn active" onclick="setView('grid')" id="view-grid">
+                        <i class="fas fa-th-large"></i>
+                    </button>
+                    <button class="view-btn" onclick="setView('list')" id="view-list">
+                        <i class="fas fa-list"></i>
+                    </button>
+                </div>
+                <button class="btn btn-secondary" onclick="clearFilters()">
+                    <i class="fas fa-times"></i> Clear
+                </button>
+            </div>
+        </div>
+
+        <!-- INDUSTRY QUICK FILTERS -->
+        <div class="industry-filter">
+            <span class="industry-chip active" data-industry="all" onclick="filterByIndustryChip('all')">
+                <i class="fas fa-th-large"></i> All
+            </span>
+            <span class="industry-chip" data-industry="healthcare" onclick="filterByIndustryChip('healthcare')">
+                <i class="fas fa-heartbeat"></i> Healthcare
+            </span>
+            <span class="industry-chip" data-industry="finance" onclick="filterByIndustryChip('finance')">
+                <i class="fas fa-chart-line"></i> Finance
+            </span>
+            <span class="industry-chip" data-industry="manufacturing" onclick="filterByIndustryChip('manufacturing')">
+                <i class="fas fa-industry"></i> Manufacturing
+            </span>
+            <span class="industry-chip" data-industry="retail" onclick="filterByIndustryChip('retail')">
+                <i class="fas fa-shopping-cart"></i> Retail
+            </span>
+            <span class="industry-chip" data-industry="legal" onclick="filterByIndustryChip('legal')">
+                <i class="fas fa-balance-scale"></i> Legal
+            </span>
+            <span class="industry-chip" data-industry="technology" onclick="filterByIndustryChip('technology')">
+                <i class="fas fa-microchip"></i> Technology
+            </span>
+            <span class="industry-chip" data-industry="logistics" onclick="filterByIndustryChip('logistics')">
+                <i class="fas fa-truck"></i> Logistics
+            </span>
+        </div>
+
+        <!-- RESULTS INFO -->
+        <div class="results-info">
+            <div class="results-count">
+                Showing <strong id="results-count">0</strong> companies
+            </div>
+            <div style="display: flex; gap: 10px; align-items: center;">
+                <span style="font-size: 0.8rem; color: #64748b;">Sort by:</span>
+                <select class="filter-select" id="sort-filter" onchange="applyFilters()" style="min-width: 150px;">
+                    <option value="name-asc">Name (A-Z)</option>
+                    <option value="name-desc">Name (Z-A)</option>
+                    <option value="rating">Rating (High-Low)</option>
+                    <option value="region">Region</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- LOADING STATE -->
+        <div class="loading-state" id="loading-state">
+            <div class="spinner"></div>
+            <p style="color: #64748b;">Loading companies...</p>
+        </div>
+
+        <!-- EMPTY STATE -->
+        <div class="empty-state" id="empty-state">
+            <i class="fas fa-search"></i>
+            <h3>No companies found</h3>
+            <p>Try adjusting your filters or search terms</p>
+            <button class="btn btn-primary" onclick="clearFilters()">
+                <i class="fas fa-redo"></i> Clear All Filters
+            </button>
+        </div>
+
+        <!-- CONTENT AREA -->
+        <div class="content-area" id="content-area">
             <!-- AI Consulting / Strategy -->
-            <div class="category-header">
-                <h3 class="category-title">AI Consulting / Strategy</h3>
-                <span class="category-count">85 companies</span>
-            </div>
-            <div class="companies-grid">
-
-                <div class="company-card">
-                    <div class="card-header">
-                        <div class="company-name">Elevate AI Consulting</div>
-                        <div class="company-rating">★ 5.0</div>
+            <div class="category-section" data-category="consulting">
+                <div class="category-header" onclick="toggleCategory(this)">
+                    <div class="category-title-wrapper">
+                        <div class="category-icon">
+                            <i class="fas fa-chalkboard-teacher"></i>
+                        </div>
+                        <div>
+                            <div class="category-title">AI Consulting / Strategy</div>
+                            <div class="category-subtitle">Strategic advisory, AI transformation, executive training</div>
+                        </div>
                     </div>
-                    <div class="company-type">AI Consulting / Strategy</div>
-                    <div class="company-description">We help leaders adopt AI responsibly, upskill fast, and ship measurable wins. Based in Miami, Florida, serving worldwide in English, Portuguese, and Spanish. Executive AI training, process automation, custom AI solutions, and AI advisory services.</div>
-                    <div class="company-info"><i class="fas fa-map-marker-alt"></i><strong>Region:</strong> South Florida</div>
-                    <div class="company-info"><i class="fas fa-location-dot"></i><strong>Address:</strong> 407 Lincoln Rd Suite 6-H, Miami Beach, FL 33139</div>
-                    <div class="company-contact">
-                        <div class="contact-item"><i class="fas fa-phone"></i><span class="phone">(305) 924-6820</span></div>
-                        <div class="contact-item"><i class="fas fa-globe"></i><a href="http://www.elevateaiconsulting.com/" class="website" target="_blank">elevateaiconsulting.com</a></div>
+                    <div class="category-meta">
+                        <span class="category-count">85 companies</span>
+                        <div class="category-toggle">
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
                     </div>
                 </div>
-
-                <div class="company-card">
-                    <div class="card-header">
-                        <div class="company-name">The AI Consulting Lab</div>
-                        <div class="company-rating">★ 5.0</div>
-                    </div>
-                    <div class="company-type">AI Consulting / Strategy</div>
-                    <div class="company-info"><i class="fas fa-map-marker-alt"></i><strong>Region:</strong> South Florida</div>
-                    <div class="company-contact">
-                        <div class="contact-item"><i class="fas fa-phone"></i><span class="phone">(727) 292-1966</span></div>
-                        <div class="contact-item"><i class="fas fa-globe"></i><a href="https://theaiconsultinglab.com/" class="website" target="_blank">theaiconsultinglab.com</a></div>
-                    </div>
+                <div class="companies-grid" id="grid-consulting">
+                    <!-- Cards will be populated by JavaScript -->
                 </div>
-
-                <div class="company-card">
-                    <div class="card-header">
-                        <div class="company-name">Acsetra - AI Consulting</div>
-                    </div>
-                    <div class="company-type">AI Consulting / Strategy</div>
-                    <div class="company-description">We cultivate AI systems around your workflow. Built for law firms, trusted for security, designed for transparency.</div>
-                    <div class="company-info"><i class="fas fa-map-marker-alt"></i><strong>Region:</strong> San Francisco CA</div>
-                    <div class="company-info"><i class="fas fa-location-dot"></i><strong>Address:</strong> 940 Terminal Way Unit A, San Carlos, CA 94070</div>
-                    <div class="company-contact">
-                        <div class="contact-item"><i class="fas fa-phone"></i><span class="phone">(650) 430-6646</span></div>
-                        <div class="contact-item"><i class="fas fa-globe"></i><a href="https://www.acsetra.com/" class="website" target="_blank">acsetra.com</a></div>
-                    </div>
-                </div>
-
-                <div class="company-card">
-                    <div class="card-header">
-                        <div class="company-name">AIM Consulting</div>
-                        <div class="company-rating">★ 2.6</div>
-                    </div>
-                    <div class="company-type">AI Consulting / Strategy</div>
-                    <div class="company-description">AIM specializes in cloud & operations, application development, data & analytics, digital experience, and project management.</div>
-                    <div class="company-info"><i class="fas fa-map-marker-alt"></i><strong>Region:</strong> Denver CO</div>
-                    <div class="company-info"><i class="fas fa-location-dot"></i><strong>Address:</strong> 4600 S Syracuse St #600, Denver, CO 80237</div>
-                    <div class="company-contact">
-                        <div class="contact-item"><i class="fas fa-phone"></i><span class="phone">(720) 305-9818</span></div>
-                        <div class="contact-item"><i class="fas fa-globe"></i><a href="https://aimconsulting.com/" class="website" target="_blank">aimconsulting.com</a></div>
-                    </div>
-                </div>
-
-                <div class="company-card">
-                    <div class="card-header">
-                        <div class="company-name">Effortless AI Denver</div>
-                        <div class="company-rating">★ 5.0</div>
-                    </div>
-                    <div class="company-type">AI Consulting / Strategy</div>
-                    <div class="company-description">Effortless AI Company: Streamline your business, boost your sales, and save time with cutting-edge AI solutions. Book your AI demo today.</div>
-                    <div class="company-info"><i class="fas fa-map-marker-alt"></i><strong>Region:</strong> Denver CO</div>
-                    <div class="company-info"><i class="fas fa-location-dot"></i><strong>Address:</strong> 7900 E Union Ave # 1100, Denver, CO 80237</div>
-                    <div class="company-contact">
-                        <div class="contact-item"><i class="fas fa-phone"></i><span class="phone">(303) 777-2905</span></div>
-                        <div class="contact-item"><i class="fas fa-globe"></i><a href="http://effortlessaicompany.com/" class="website" target="_blank">effortlessaicompany.com</a></div>
-                    </div>
-                </div>
-
-                <div class="company-card">
-                    <div class="card-header">
-                        <div class="company-name">AI Consulting Solutions</div>
-                    </div>
-                    <div class="company-type">AI Consulting / Strategy</div>
-                    <div class="company-description">Helping Denver-area businesses save 10-20 hours weekly through intelligent workflow automation, CRM, and AI-powered solutions</div>
-                    <div class="company-info"><i class="fas fa-map-marker-alt"></i><strong>Region:</strong> Denver CO</div>
-                    <div class="company-contact">
-                        <div class="contact-item"><i class="fas fa-phone"></i><span class="phone">(720) 440-4995</span></div>
-                        <div class="contact-item"><i class="fas fa-globe"></i><a href="https://aics.agency/" class="website" target="_blank">aics.agency</a></div>
-                    </div>
-                </div>
-
-                <div class="company-card">
-                    <div class="card-header">
-                        <div class="company-name">AI Consulting Chicago</div>
-                    </div>
-                    <div class="company-type">AI Consulting / Strategy</div>
-                    <div class="company-description">Leading AI consulting company in Chicago. We help individuals and organizations implement AI for efficiency, growth, and competitive advantage.</div>
-                    <div class="company-info"><i class="fas fa-map-marker-alt"></i><strong>Region:</strong> Chicago IL</div>
-                    <div class="company-info"><i class="fas fa-location-dot"></i><strong>Address:</strong> 1010 N Ashland Ave Unit 103, Chicago, IL 60622</div>
-                    <div class="company-contact">
-                        <div class="contact-item"><i class="fas fa-phone"></i><span class="phone">(312) 405-0597</span></div>
-                        <div class="contact-item"><i class="fas fa-globe"></i><a href="https://aiconsultantchicago.com/" class="website" target="_blank">aiconsultantchicago.com</a></div>
-                    </div>
-                </div>
-
-                <div class="company-card">
-                    <div class="card-header">
-                        <div class="company-name">Jen Lehner Media, LLC</div>
-                        <div class="company-rating">★ 5.0</div>
-                    </div>
-                    <div class="company-type">AI Consulting / Strategy</div>
-                    <div class="company-description">Social Media Marketing and Digital Marketing Strategies for Entrepreneurs</div>
-                    <div class="company-info"><i class="fas fa-map-marker-alt"></i><strong>Region:</strong> Cleveland OH</div>
-                    <div class="company-info"><i class="fas fa-location-dot"></i><strong>Address:</strong> 3659 Green Rd Suite 220, Beachwood, OH 44122</div>
-                    <div class="company-contact">
-                        <div class="contact-item"><i class="fas fa-phone"></i><span class="phone">(662) 549-1760</span></div>
-                        <div class="contact-item"><i class="fas fa-globe"></i><a href="http://jenlehner.com/" class="website" target="_blank">jenlehner.com</a></div>
-                    </div>
-                </div>
-
-                <div class="company-card">
-                    <div class="card-header">
-                        <div class="company-name">Cleveland AI Consulting</div>
-                    </div>
-                    <div class="company-type">AI Consulting / Strategy</div>
-                    <div class="company-description">Cleveland AI consultant. Replace $40k employees with $299/mo AI. 24/7 AI employees, automation & analytics. Setup 1-2 weeks. 200+ Ohio businesses.</div>
-                    <div class="company-info"><i class="fas fa-map-marker-alt"></i><strong>Region:</strong> Cleveland OH</div>
-                    <div class="company-contact">
-                        <div class="contact-item"><i class="fas fa-phone"></i><span class="phone">(216) 673-3691</span></div>
-                        <div class="contact-item"><i class="fas fa-globe"></i><a href="https://www.clevelandaiconsulting.com/" class="website" target="_blank">clevelandaiconsulting.com</a></div>
-                    </div>
-                </div>
-
-                <div class="company-card">
-                    <div class="card-header">
-                        <div class="company-name">AI-Powered Consulting</div>
-                        <div class="company-rating">★ 5.0</div>
-                    </div>
-                    <div class="company-type">AI Consulting / Strategy</div>
-                    <div class="company-info"><i class="fas fa-map-marker-alt"></i><strong>Region:</strong> South Florida</div>
-                    <div class="company-contact">
-                        <div class="contact-item"><i class="fas fa-phone"></i><span class="phone">(203) 985-5791</span></div>
-                        <div class="contact-item"><i class="fas fa-globe"></i><a href="https://www.aipoweredconsulting.ai/" class="website" target="_blank">aipoweredconsulting.ai</a></div>
-                    </div>
-                </div>
-
-                <div class="company-card">
-                    <div class="card-header">
-                        <div class="company-name">Slalom Consulting</div>
-                        <div class="company-rating">★ 4.9</div>
-                    </div>
-                    <div class="company-type">AI Consulting / Strategy</div>
-                    <div class="company-description">Slalom is a next-generation professional services & business consulting company creating value at the intersection of business, technology, and humanity.</div>
-                    <div class="company-info"><i class="fas fa-map-marker-alt"></i><strong>Region:</strong> San Francisco CA</div>
-                    <div class="company-info"><i class="fas fa-location-dot"></i><strong>Address:</strong> 100 Pine St #2500, San Francisco, CA 94111</div>
-                    <div class="company-contact">
-                        <div class="contact-item"><i class="fas fa-phone"></i><span class="phone">(415) 593-3450</span></div>
-                        <div class="contact-item"><i class="fas fa-globe"></i><a href="https://www.slalom.com/" class="website" target="_blank">slalom.com</a></div>
-                    </div>
-                </div>
-
-                <div class="company-card">
-                    <div class="card-header">
-                        <div class="company-name">Pathworth Consulting</div>
-                        <div class="company-rating">★ 5.0</div>
-                    </div>
-                    <div class="company-type">AI Consulting / Strategy</div>
-                    <div class="company-description">I participated in a workshop regarding AI and business usage. It was thought-provoking, but information that I can use immediately.</div>
-                    <div class="company-info"><i class="fas fa-map-marker-alt"></i><strong>Region:</strong> Detroit MI</div>
-                    <div class="company-info"><i class="fas fa-location-dot"></i><strong>Address:</strong> 607 Shelby St #700-776, Detroit, MI 48226</div>
-                    <div class="company-contact">
-                        <div class="contact-item"><i class="fas fa-phone"></i><span class="phone">(313) 631-9919</span></div>
-                        <div class="contact-item"><i class="fas fa-globe"></i><a href="http://www.pathworthcs.com/" class="website" target="_blank">pathworthcs.com</a></div>
-                    </div>
-                </div>
-
-                <div class="company-card">
-                    <div class="card-header">
-                        <div class="company-name">Data Consulting Group</div>
-                        <div class="company-rating">★ 5.0</div>
-                    </div>
-                    <div class="company-type">AI Consulting / Strategy</div>
-                    <div class="company-description">DCG's Management Consulting Practice combines the right people and methodologies to create lasting value for our clients.</div>
-                    <div class="company-info"><i class="fas fa-map-marker-alt"></i><strong>Region:</strong> Detroit MI</div>
-                    <div class="company-info"><i class="fas fa-location-dot"></i><strong>Address:</strong> 965 E Jefferson Ave, Detroit, MI 48207</div>
-                    <div class="company-contact">
-                        <div class="contact-item"><i class="fas fa-phone"></i><span class="phone">(313) 963-7771</span></div>
-                        <div class="contact-item"><i class="fas fa-globe"></i><a href="http://www.dcgroupinc.com/" class="website" target="_blank">dcgroupinc.com</a></div>
-                    </div>
-                </div>
-
-                <div class="company-card">
-                    <div class="card-header">
-                        <div class="company-name">Denison Consulting</div>
-                        <div class="company-rating">★ 5.0</div>
-                    </div>
-                    <div class="company-type">AI Consulting / Strategy</div>
-                    <div class="company-description">Unlock your organization's potential with Denison's proven methods, innovative solutions, and data-driven insights to elevate culture, leadership, and operations.</div>
-                    <div class="company-info"><i class="fas fa-map-marker-alt"></i><strong>Region:</strong> Detroit MI</div>
-                    <div class="company-info"><i class="fas fa-location-dot"></i><strong>Address:</strong> 555 Briarwood Cir SUITE 115, Ann Arbor, MI 48108</div>
-                    <div class="company-contact">
-                        <div class="contact-item"><i class="fas fa-phone"></i><span class="phone">(734) 302-4002</span></div>
-                        <div class="contact-item"><i class="fas fa-globe"></i><a href="http://www.denisonconsulting.com/" class="website" target="_blank">denisonconsulting.com</a></div>
-                    </div>
-                </div>
-
-                <div class="company-card">
-                    <div class="card-header">
-                        <div class="company-name">Integration Consulting</div>
-                    </div>
-                    <div class="company-type">AI Consulting / Strategy</div>
-                    <div class="company-description">Integration is global strategy consultancy. We work alongside market leaders across industries to deliver sustainable transformation.</div>
-                    <div class="company-info"><i class="fas fa-map-marker-alt"></i><strong>Region:</strong> Chicago IL</div>
-                    <div class="company-info"><i class="fas fa-location-dot"></i><strong>Address:</strong> 311 S Wacker Dr Suite 6125, Chicago, IL 60606</div>
-                    <div class="company-contact">
-                        <div class="contact-item"><i class="fas fa-phone"></i><span class="phone">(872) 250-9671</span></div>
-                        <div class="contact-item"><i class="fas fa-globe"></i><a href="https://integrationconsulting.com/" class="website" target="_blank">integrationconsulting.com</a></div>
-                    </div>
-                </div>
-
-                <div class="company-card">
-                    <div class="card-header">
-                        <div class="company-name">GadellNet Consulting</div>
-                        <div class="company-rating">★ 4.9</div>
-                    </div>
-                    <div class="company-type">AI Consulting / Strategy</div>
-                    <div class="company-description">Discover the power of partnership with GadellNet in St. Louis: Outsourced IT services supporting the St. Louis SMBs and Non-Profits.</div>
-                    <div class="company-info"><i class="fas fa-map-marker-alt"></i><strong>Region:</strong> Saint Louis MO</div>
-                    <div class="company-info"><i class="fas fa-location-dot"></i><strong>Address:</strong> 1520 S Vandeventer Ave, St. Louis, MO 63110</div>
-                    <div class="company-contact">
-                        <div class="contact-item"><i class="fas fa-phone"></i><span class="phone">(314) 736-5304</span></div>
-                        <div class="contact-item"><i class="fas fa-globe"></i><a href="https://gadellnet.com/location/st-louis/" class="website" target="_blank">gadellnet.com</a></div>
-                    </div>
-                </div>
-
             </div>
 
             <!-- AI / ML Development -->
-            <div class="category-header" style="margin-top: 60px;">
-                <h3 class="category-title">AI / ML Development</h3>
-                <span class="category-count">120 companies</span>
-            </div>
-            <div class="companies-grid">
-
-                <div class="company-card">
-                    <div class="card-header">
-                        <div class="company-name">AI Consultant Pros</div>
-                        <div class="company-rating">★ 5.0</div>
+            <div class="category-section" data-category="development">
+                <div class="category-header" onclick="toggleCategory(this)">
+                    <div class="category-title-wrapper">
+                        <div class="category-icon" style="background: var(--purple);">
+                            <i class="fas fa-code"></i>
+                        </div>
+                        <div>
+                            <div class="category-title">AI / ML Development</div>
+                            <div class="category-subtitle">Custom model development, ML engineering, AI products</div>
+                        </div>
                     </div>
-                    <div class="company-type">AI / ML Development</div>
-                    <div class="company-info"><i class="fas fa-map-marker-alt"></i><strong>Region:</strong> South Florida</div>
-                    <div class="company-contact">
-                        <div class="contact-item"><i class="fas fa-phone"></i><span class="phone">(754) 240-9643</span></div>
-                        <div class="contact-item"><i class="fas fa-globe"></i><a href="https://www.aiconsultantpros.com/" class="website" target="_blank">aiconsultantpros.com</a></div>
-                    </div>
-                </div>
-
-                <div class="company-card">
-                    <div class="card-header">
-                        <div class="company-name">Mythos AI</div>
-                        <div class="company-rating">★ 5.0</div>
-                    </div>
-                    <div class="company-type">AI Automation</div>
-                    <div class="company-description">Mythos AI builds maritime autonomy systems that enhance vessel navigation, reduce risk, and help commercial and defense fleets operate more efficiently.</div>
-                    <div class="company-info"><i class="fas fa-map-marker-alt"></i><strong>Region:</strong> South Florida</div>
-                    <div class="company-info"><i class="fas fa-location-dot"></i><strong>Address:</strong> 516 Northwood Rd Unit 8096, West Palm Beach, FL 33407</div>
-                    <div class="company-contact">
-                        <div class="contact-item"><i class="fas fa-globe"></i><a href="http://mythos-ai.com/" class="website" target="_blank">mythos-ai.com</a></div>
+                    <div class="category-meta">
+                        <span class="category-count">120 companies</span>
+                        <div class="category-toggle">
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
                     </div>
                 </div>
-
-                <div class="company-card">
-                    <div class="card-header">
-                        <div class="company-name">OZ Digital Consulting</div>
-                        <div class="company-rating">★ 5.0</div>
-                    </div>
-                    <div class="company-type">AI Automation</div>
-                    <div class="company-description">Trusted in Florida for 25+ years, OZ provides Microsoft solutions and expert digital consulting. Drive your business to its next great success with us.</div>
-                    <div class="company-info"><i class="fas fa-map-marker-alt"></i><strong>Region:</strong> South Florida</div>
-                    <div class="company-info"><i class="fas fa-location-dot"></i><strong>Address:</strong> 500 W Cypress Creek Rd # 570, Fort Lauderdale, FL 33309</div>
-                    <div class="company-contact">
-                        <div class="contact-item"><i class="fas fa-phone"></i><span class="phone">(800) 443-5210</span></div>
-                        <div class="contact-item"><i class="fas fa-globe"></i><a href="https://followoz.com/" class="website" target="_blank">followoz.com</a></div>
-                    </div>
-                </div>
-
-                <div class="company-card">
-                    <div class="card-header">
-                        <div class="company-name">JCJJ AI Digital</div>
-                        <div class="company-rating">★ 5.0</div>
-                    </div>
-                    <div class="company-type">AI / ML Development</div>
-                    <div class="company-description">Automateforce AI by JC.ai. Specialized AI Automation For Business. AI Powered. Built For You. Managed By Us. Easy To Use. Simple To Integrate.</div>
-                    <div class="company-info"><i class="fas fa-map-marker-alt"></i><strong>Region:</strong> South Florida</div>
-                    <div class="company-info"><i class="fas fa-location-dot"></i><strong>Address:</strong> 2475 NW 16th St Rd APT 515, Miami, FL 33125</div>
-                    <div class="company-contact">
-                        <div class="contact-item"><i class="fas fa-phone"></i><span class="phone">(734) 730-8239</span></div>
-                        <div class="contact-item"><i class="fas fa-globe"></i><a href="https://www.jcjjaidigital.com/" class="website" target="_blank">jcjjaidigital.com</a></div>
-                    </div>
-                </div>
-
-                <div class="company-card">
-                    <div class="card-header">
-                        <div class="company-name">Gold Coast AI Automations</div>
-                        <div class="company-rating">★ 5.0</div>
-                    </div>
-                    <div class="company-type">AI Automation</div>
-                    <div class="company-info"><i class="fas fa-map-marker-alt"></i><strong>Region:</strong> South Florida</div>
-                    <div class="company-info"><i class="fas fa-location-dot"></i><strong>Address:</strong> 11924 Forest Hill Blvd Ste 10a #361, Wellington, FL 33414</div>
-                    <div class="company-contact">
-                        <div class="contact-item"><i class="fas fa-phone"></i><span class="phone">(610) 357-5363</span></div>
-                        <div class="contact-item"><i class="fas fa-globe"></i><a href="https://www.goldcoastai.pro/" class="website" target="_blank">goldcoastai.pro</a></div>
-                    </div>
-                </div>
-
-                <div class="company-card">
-                    <div class="card-header">
-                        <div class="company-name">Heliosz AI – Enterprise</div>
-                    </div>
-                    <div class="company-type">AI Infrastructure / MLOps</div>
-                    <div class="company-info"><i class="fas fa-map-marker-alt"></i><strong>Region:</strong> South Florida</div>
-                    <div class="company-info"><i class="fas fa-location-dot"></i><strong>Address:</strong> 951 W Yamato Rd Suite 295, Boca Raton, FL 33431</div>
-                    <div class="company-contact">
-                        <div class="contact-item"><i class="fas fa-phone"></i><span class="phone">(332) 255-6223</span></div>
-                        <div class="contact-item"><i class="fas fa-globe"></i><a href="https://www.heliosz.ai/" class="website" target="_blank">heliosz.ai</a></div>
-                    </div>
-                </div>
-
+                <div class="companies-grid" id="grid-development"></div>
             </div>
 
-        </section>
-
-        <!-- BY REGION SECTION -->
-        <section id="by-region">
-            <div class="section-header">
-                <h2 class="section-title">Companies by Region</h2>
-                <p class="section-subtitle">Browse AI consultants organized by geographic location</p>
+            <!-- AI Automation -->
+            <div class="category-section" data-category="automation">
+                <div class="category-header" onclick="toggleCategory(this)">
+                    <div class="category-title-wrapper">
+                        <div class="category-icon" style="background: var(--blue);">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                        <div>
+                            <div class="category-title">AI Automation</div>
+                            <div class="category-subtitle">Workflow automation, RPA, intelligent process optimization</div>
+                        </div>
+                    </div>
+                    <div class="category-meta">
+                        <span class="category-count">95 companies</span>
+                        <div class="category-toggle">
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="companies-grid" id="grid-automation"></div>
             </div>
 
-            <!-- South Florida -->
-            <div class="region-section" id="south-florida">
-                <div class="region-header">
-                    <div class="region-icon"><i class="fas fa-sun"></i></div>
-                    <h3 class="region-title">South Florida</h3>
-                    <span class="region-count">180 companies</span>
-                </div>
-                <div class="companies-grid">
-                    <div class="company-card">
-                        <div class="card-header">
-                            <div class="company-name">Elevate AI Consulting</div>
-                            <div class="company-rating">★ 5.0</div>
+            <!-- AI Infrastructure / MLOps -->
+            <div class="category-section" data-category="infrastructure">
+                <div class="category-header" onclick="toggleCategory(this)">
+                    <div class="category-title-wrapper">
+                        <div class="category-icon" style="background: var(--orange);">
+                            <i class="fas fa-server"></i>
                         </div>
-                        <div class="company-type">AI Consulting / Strategy</div>
-                        <div class="company-description">We help leaders adopt AI responsibly, upskill fast, and ship measurable wins. Based in Miami, Florida.</div>
-                        <div class="company-info"><i class="fas fa-location-dot"></i><strong>Address:</strong> 407 Lincoln Rd Suite 6-H, Miami Beach, FL 33139</div>
-                        <div class="company-contact">
-                            <div class="contact-item"><i class="fas fa-phone"></i><span class="phone">(305) 924-6820</span></div>
-                            <div class="contact-item"><i class="fas fa-globe"></i><a href="http://www.elevateaiconsulting.com/" class="website" target="_blank">elevateaiconsulting.com</a></div>
+                        <div>
+                            <div class="category-title">AI Infrastructure / MLOps</div>
+                            <div class="category-subtitle">Cloud infrastructure, model deployment, MLOps platforms</div>
                         </div>
                     </div>
-                    <div class="company-card">
-                        <div class="card-header">
-                            <div class="company-name">The AI Consulting Lab</div>
-                            <div class="company-rating">★ 5.0</div>
-                        </div>
-                        <div class="company-type">AI Consulting / Strategy</div>
-                        <div class="company-contact">
-                            <div class="contact-item"><i class="fas fa-phone"></i><span class="phone">(727) 292-1966</span></div>
-                            <div class="contact-item"><i class="fas fa-globe"></i><a href="https://theaiconsultinglab.com/" class="website" target="_blank">theaiconsultinglab.com</a></div>
-                        </div>
-                    </div>
-                    <div class="company-card">
-                        <div class="card-header">
-                            <div class="company-name">AI-Powered Consulting</div>
-                            <div class="company-rating">★ 5.0</div>
-                        </div>
-                        <div class="company-type">AI Consulting / Strategy</div>
-                        <div class="company-contact">
-                            <div class="contact-item"><i class="fas fa-phone"></i><span class="phone">(203) 985-5791</span></div>
-                            <div class="contact-item"><i class="fas fa-globe"></i><a href="https://www.aipoweredconsulting.ai/" class="website" target="_blank">aipoweredconsulting.ai</a></div>
+                    <div class="category-meta">
+                        <span class="category-count">75 companies</span>
+                        <div class="category-toggle">
+                            <i class="fas fa-chevron-down"></i>
                         </div>
                     </div>
                 </div>
+                <div class="companies-grid" id="grid-infrastructure"></div>
             </div>
 
-            <!-- San Francisco -->
-            <div class="region-section" id="san-francisco">
-                <div class="region-header">
-                    <div class="region-icon"><i class="fas fa-city"></i></div>
-                    <h3 class="region-title">San Francisco</h3>
-                    <span class="region-count">95 companies</span>
-                </div>
-                <div class="companies-grid">
-                    <div class="company-card">
-                        <div class="card-header">
-                            <div class="company-name">Acsetra - AI Consulting</div>
+            <!-- Computer Vision -->
+            <div class="category-section" data-category="computer-vision">
+                <div class="category-header" onclick="toggleCategory(this)">
+                    <div class="category-title-wrapper">
+                        <div class="category-icon" style="background: var(--green);">
+                            <i class="fas fa-eye"></i>
                         </div>
-                        <div class="company-type">AI Consulting / Strategy</div>
-                        <div class="company-description">We cultivate AI systems around your workflow. Built for law firms, trusted for security, designed for transparency.</div>
-                        <div class="company-info"><i class="fas fa-location-dot"></i><strong>Address:</strong> 940 Terminal Way Unit A, San Carlos, CA 94070</div>
-                        <div class="company-contact">
-                            <div class="contact-item"><i class="fas fa-phone"></i><span class="phone">(650) 430-6646</span></div>
-                            <div class="contact-item"><i class="fas fa-globe"></i><a href="https://www.acsetra.com/" class="website" target="_blank">acsetra.com</a></div>
+                        <div>
+                            <div class="category-title">Computer Vision</div>
+                            <div class="category-subtitle">Image recognition, video analysis, visual AI solutions</div>
                         </div>
                     </div>
-                    <div class="company-card">
-                        <div class="card-header">
-                            <div class="company-name">Slalom Consulting</div>
-                            <div class="company-rating">★ 4.9</div>
-                        </div>
-                        <div class="company-type">AI Consulting / Strategy</div>
-                        <div class="company-description">Slalom is a next-generation professional services & business consulting company creating value at the intersection of business, technology, and humanity.</div>
-                        <div class="company-info"><i class="fas fa-location-dot"></i><strong>Address:</strong> 100 Pine St #2500, San Francisco, CA 94111</div>
-                        <div class="company-contact">
-                            <div class="contact-item"><i class="fas fa-phone"></i><span class="phone">(415) 593-3450</span></div>
-                            <div class="contact-item"><i class="fas fa-globe"></i><a href="https://www.slalom.com/" class="website" target="_blank">slalom.com</a></div>
-                        </div>
-                    </div>
-                    <div class="company-card">
-                        <div class="card-header">
-                            <div class="company-name">AI Nova Strategy</div>
-                        </div>
-                        <div class="company-type">AI Consulting / Strategy</div>
-                        <div class="company-description">Companies that adopt AI can see up to a 20-30% improvement in ROI by optimizing customer interactions and reducing operational costs.</div>
-                        <div class="company-contact">
-                            <div class="contact-item"><i class="fas fa-phone"></i><span class="phone">(650) 400-8761</span></div>
-                            <div class="contact-item"><i class="fas fa-globe"></i><a href="https://ainovastrategy.com/" class="website" target="_blank">ainovastrategy.com</a></div>
+                    <div class="category-meta">
+                        <span class="category-count">88 companies</span>
+                        <div class="category-toggle">
+                            <i class="fas fa-chevron-down"></i>
                         </div>
                     </div>
                 </div>
+                <div class="companies-grid" id="grid-computer-vision"></div>
             </div>
 
-            <!-- Denver -->
-            <div class="region-section" id="denver">
-                <div class="region-header">
-                    <div class="region-icon"><i class="fas fa-mountain"></i></div>
-                    <h3 class="region-title">Denver</h3>
-                    <span class="region-count">85 companies</span>
-                </div>
-                <div class="companies-grid">
-                    <div class="company-card">
-                        <div class="card-header">
-                            <div class="company-name">AIM Consulting</div>
-                            <div class="company-rating">★ 2.6</div>
+            <!-- NLP / Language AI -->
+            <div class="category-section" data-category="nlp">
+                <div class="category-header" onclick="toggleCategory(this)">
+                    <div class="category-title-wrapper">
+                        <div class="category-icon" style="background: var(--pink);">
+                            <i class="fas fa-comments"></i>
                         </div>
-                        <div class="company-type">AI Consulting / Strategy</div>
-                        <div class="company-description">AIM specializes in cloud & operations, application development, data & analytics, digital experience, and project management.</div>
-                        <div class="company-info"><i class="fas fa-location-dot"></i><strong>Address:</strong> 4600 S Syracuse St #600, Denver, CO 80237</div>
-                        <div class="company-contact">
-                            <div class="contact-item"><i class="fas fa-phone"></i><span class="phone">(720) 305-9818</span></div>
-                            <div class="contact-item"><i class="fas fa-globe"></i><a href="https://aimconsulting.com/" class="website" target="_blank">aimconsulting.com</a></div>
+                        <div>
+                            <div class="category-title">NLP / Language AI</div>
+                            <div class="category-subtitle">LLM integration, chatbots, text analysis, voice AI</div>
                         </div>
                     </div>
-                    <div class="company-card">
-                        <div class="card-header">
-                            <div class="company-name">Effortless AI Denver</div>
-                            <div class="company-rating">★ 5.0</div>
-                        </div>
-                        <div class="company-type">AI Consulting / Strategy</div>
-                        <div class="company-description">Streamline your business, boost your sales, and save time with cutting-edge AI solutions.</div>
-                        <div class="company-info"><i class="fas fa-location-dot"></i><strong>Address:</strong> 7900 E Union Ave # 1100, Denver, CO 80237</div>
-                        <div class="company-contact">
-                            <div class="contact-item"><i class="fas fa-phone"></i><span class="phone">(303) 777-2905</span></div>
-                            <div class="contact-item"><i class="fas fa-globe"></i><a href="http://effortlessaicompany.com/" class="website" target="_blank">effortlessaicompany.com</a></div>
-                        </div>
-                    </div>
-                    <div class="company-card">
-                        <div class="card-header">
-                            <div class="company-name">AI Consulting Solutions</div>
-                        </div>
-                        <div class="company-type">AI Consulting / Strategy</div>
-                        <div class="company-description">Helping Denver-area businesses save 10-20 hours weekly through intelligent workflow automation, CRM, and AI-powered solutions</div>
-                        <div class="company-contact">
-                            <div class="contact-item"><i class="fas fa-phone"></i><span class="phone">(720) 440-4995</span></div>
-                            <div class="contact-item"><i class="fas fa-globe"></i><a href="https://aics.agency/" class="website" target="_blank">aics.agency</a></div>
+                    <div class="category-meta">
+                        <span class="category-count">137 companies</span>
+                        <div class="category-toggle">
+                            <i class="fas fa-chevron-down"></i>
                         </div>
                     </div>
                 </div>
+                <div class="companies-grid" id="grid-nlp"></div>
             </div>
-
-            <!-- Detroit -->
-            <div class="region-section" id="detroit">
-                <div class="region-header">
-                    <div class="region-icon"><i class="fas fa-industry"></i></div>
-                    <h3 class="region-title">Detroit</h3>
-                    <span class="region-count">72 companies</span>
-                </div>
-                <div class="companies-grid">
-                    <div class="company-card">
-                        <div class="card-header">
-                            <div class="company-name">Pathworth Consulting</div>
-                            <div class="company-rating">★ 5.0</div>
-                        </div>
-                        <div class="company-type">AI Consulting / Strategy</div>
-                        <div class="company-description">I participated in a workshop regarding AI and business usage. It was thought-provoking, but information that I can use immediately.</div>
-                        <div class="company-info"><i class="fas fa-location-dot"></i><strong>Address:</strong> 607 Shelby St #700-776, Detroit, MI 48226</div>
-                        <div class="company-contact">
-                            <div class="contact-item"><i class="fas fa-phone"></i><span class="phone">(313) 631-9919</span></div>
-                            <div class="contact-item"><i class="fas fa-globe"></i><a href="http://www.pathworthcs.com/" class="website" target="_blank">pathworthcs.com</a></div>
-                        </div>
-                    </div>
-                    <div class="company-card">
-                        <div class="card-header">
-                            <div class="company-name">Data Consulting Group</div>
-                            <div class="company-rating">★ 5.0</div>
-                        </div>
-                        <div class="company-type">AI Consulting / Strategy</div>
-                        <div class="company-description">DCG's Management Consulting Practice combines the right people and methodologies to create lasting value for our clients.</div>
-                        <div class="company-info"><i class="fas fa-location-dot"></i><strong>Address:</strong> 965 E Jefferson Ave, Detroit, MI 48207</div>
-                        <div class="company-contact">
-                            <div class="contact-item"><i class="fas fa-phone"></i><span class="phone">(313) 963-7771</span></div>
-                            <div class="contact-item"><i class="fas fa-globe"></i><a href="http://www.dcgroupinc.com/" class="website" target="_blank">dcgroupinc.com</a></div>
-                        </div>
-                    </div>
-                    <div class="company-card">
-                        <div class="card-header">
-                            <div class="company-name">Denison Consulting</div>
-                            <div class="company-rating">★ 5.0</div>
-                        </div>
-                        <div class="company-type">AI Consulting / Strategy</div>
-                        <div class="company-description">Unlock your organization's potential with Denison's proven methods, innovative solutions, and data-driven insights.</div>
-                        <div class="company-info"><i class="fas fa-location-dot"></i><strong>Address:</strong> 555 Briarwood Cir SUITE 115, Ann Arbor, MI 48108</div>
-                        <div class="company-contact">
-                            <div class="contact-item"><i class="fas fa-phone"></i><span class="phone">(734) 302-4002</span></div>
-                            <div class="contact-item"><i class="fas fa-globe"></i><a href="http://www.denisonconsulting.com/" class="website" target="_blank">denisonconsulting.com</a></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Chicago -->
-            <div class="region-section" id="chicago">
-                <div class="region-header">
-                    <div class="region-icon"><i class="fas fa-building"></i></div>
-                    <h3 class="region-title">Chicago</h3>
-                    <span class="region-count">68 companies</span>
-                </div>
-                <div class="companies-grid">
-                    <div class="company-card">
-                        <div class="card-header">
-                            <div class="company-name">AI Consulting Chicago</div>
-                        </div>
-                        <div class="company-type">AI Consulting / Strategy</div>
-                        <div class="company-description">Leading AI consulting company in Chicago. We help individuals and organizations implement AI for efficiency, growth, and competitive advantage.</div>
-                        <div class="company-info"><i class="fas fa-location-dot"></i><strong>Address:</strong> 1010 N Ashland Ave Unit 103, Chicago, IL 60622</div>
-                        <div class="company-contact">
-                            <div class="contact-item"><i class="fas fa-phone"></i><span class="phone">(312) 405-0597</span></div>
-                            <div class="contact-item"><i class="fas fa-globe"></i><a href="https://aiconsultantchicago.com/" class="website" target="_blank">aiconsultantchicago.com</a></div>
-                        </div>
-                    </div>
-                    <div class="company-card">
-                        <div class="card-header">
-                            <div class="company-name">Integration Consulting</div>
-                        </div>
-                        <div class="company-type">AI Consulting / Strategy</div>
-                        <div class="company-description">Integration is global strategy consultancy. We work alongside market leaders across industries to deliver sustainable transformation.</div>
-                        <div class="company-info"><i class="fas fa-location-dot"></i><strong>Address:</strong> 311 S Wacker Dr Suite 6125, Chicago, IL 60606</div>
-                        <div class="company-contact">
-                            <div class="contact-item"><i class="fas fa-phone"></i><span class="phone">(872) 250-9671</span></div>
-                            <div class="contact-item"><i class="fas fa-globe"></i><a href="https://integrationconsulting.com/" class="website" target="_blank">integrationconsulting.com</a></div>
-                        </div>
-                    </div>
-                    <div class="company-card">
-                        <div class="card-header">
-                            <div class="company-name">MIKESELL DIGITAL</div>
-                            <div class="company-rating">★ 5.0</div>
-                        </div>
-                        <div class="company-type">AI Consulting / Strategy</div>
-                        <div class="company-description">Mikesell Digital Consulting is a leading digital marketing boutique firm. Get expert strategies tailored to your business needs.</div>
-                        <div class="company-info"><i class="fas fa-location-dot"></i><strong>Address:</strong> 1530 S State St Suite 506, Chicago, IL 60605</div>
-                        <div class="company-contact">
-                            <div class="contact-item"><i class="fas fa-phone"></i><span class="phone">(773) 703-8846</span></div>
-                            <div class="contact-item"><i class="fas fa-globe"></i><a href="https://mikeselldigital.com/" class="website" target="_blank">mikeselldigital.com</a></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Saint Louis -->
-            <div class="region-section" id="saint-louis">
-                <div class="region-header">
-                    <div class="region-icon"><i class="fas fa-archway"></i></div>
-                    <h3 class="region-title">Saint Louis</h3>
-                    <span class="region-count">55 companies</span>
-                </div>
-                <div class="companies-grid">
-                    <div class="company-card">
-                        <div class="card-header">
-                            <div class="company-name">GadellNet Consulting</div>
-                            <div class="company-rating">★ 4.9</div>
-                        </div>
-                        <div class="company-type">AI Consulting / Strategy</div>
-                        <div class="company-description">Discover the power of partnership with GadellNet in St. Louis: Outsourced IT services supporting the St. Louis SMBs and Non-Profits.</div>
-                        <div class="company-info"><i class="fas fa-location-dot"></i><strong>Address:</strong> 1520 S Vandeventer Ave, St. Louis, MO 63110</div>
-                        <div class="company-contact">
-                            <div class="contact-item"><i class="fas fa-phone"></i><span class="phone">(314) 736-5304</span></div>
-                            <div class="contact-item"><i class="fas fa-globe"></i><a href="https://gadellnet.com/location/st-louis/" class="website" target="_blank">gadellnet.com</a></div>
-                        </div>
-                    </div>
-                    <div class="company-card">
-                        <div class="card-header">
-                            <div class="company-name">Onsite Computer Consulting</div>
-                            <div class="company-rating">★ 5.0</div>
-                        </div>
-                        <div class="company-type">AI Consulting / Strategy</div>
-                        <div class="company-description">Boost your business with St. Louis IT Services. Reduce downtime, protect assets with expert support.</div>
-                        <div class="company-info"><i class="fas fa-location-dot"></i><strong>Address:</strong> 7777 Bonhomme Ave, Clayton, MO 63105</div>
-                        <div class="company-contact">
-                            <div class="contact-item"><i class="fas fa-phone"></i><span class="phone">(314) 207-8731</span></div>
-                            <div class="contact-item"><i class="fas fa-globe"></i><a href="https://www.occsi.com/" class="website" target="_blank">occsi.com</a></div>
-                        </div>
-                    </div>
-                    <div class="company-card">
-                        <div class="card-header">
-                            <div class="company-name">L. M. Lewis Consulting</div>
-                        </div>
-                        <div class="company-type">AI Consulting / Strategy</div>
-                        <div class="company-description">L. M. Lewis Consulting provides Diversity, Technology and Nonprofit Consulting for small- to mid-size businesses across the US.</div>
-                        <div class="company-contact">
-                            <div class="contact-item"><i class="fas fa-phone"></i><span class="phone">(314) 884-0096</span></div>
-                            <div class="contact-item"><i class="fas fa-globe"></i><a href="https://lmlewisconsulting.com/" class="website" target="_blank">lmlewisconsulting.com</a></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Cleveland -->
-            <div class="region-section" id="cleveland">
-                <div class="region-header">
-                    <div class="region-icon"><i class="fas fa-city"></i></div>
-                    <h3 class="region-title">Cleveland</h3>
-                    <span class="region-count">45 companies</span>
-                </div>
-                <div class="companies-grid">
-                    <div class="company-card">
-                        <div class="card-header">
-                            <div class="company-name">Cleveland AI Consulting</div>
-                        </div>
-                        <div class="company-type">AI Consulting / Strategy</div>
-                        <div class="company-description">Cleveland AI consultant. Replace $40k employees with $299/mo AI. 24/7 AI employees, automation & analytics.</div>
-                        <div class="company-contact">
-                            <div class="contact-item"><i class="fas fa-phone"></i><span class="phone">(216) 673-3691</span></div>
-                            <div class="contact-item"><i class="fas fa-globe"></i><a href="https://www.clevelandaiconsulting.com/" class="website" target="_blank">clevelandaiconsulting.com</a></div>
-                        </div>
-                    </div>
-                    <div class="company-card">
-                        <div class="card-header">
-                            <div class="company-name">Jen Lehner Media</div>
-                            <div class="company-rating">★ 5.0</div>
-                        </div>
-                        <div class="company-type">AI Consulting / Strategy</div>
-                        <div class="company-description">Social Media Marketing and Digital Marketing Strategies for Entrepreneurs</div>
-                        <div class="company-info"><i class="fas fa-location-dot"></i><strong>Address:</strong> 3659 Green Rd Suite 220, Beachwood, OH 44122</div>
-                        <div class="company-contact">
-                            <div class="contact-item"><i class="fas fa-phone"></i><span class="phone">(662) 549-1760</span></div>
-                            <div class="contact-item"><i class="fas fa-globe"></i><a href="http://jenlehner.com/" class="website" target="_blank">jenlehner.com</a></div>
-                        </div>
-                    </div>
-                    <div class="company-card">
-                        <div class="card-header">
-                            <div class="company-name">IT Voice Consulting</div>
-                            <div class="company-rating">★ 2.6</div>
-                        </div>
-                        <div class="company-type">AI Consulting / Strategy</div>
-                        <div class="company-description">Your business depends on your ability to communicate with your customers, your prospects, your people.</div>
-                        <div class="company-info"><i class="fas fa-location-dot"></i><strong>Address:</strong> 13315 Broadway Ave, Garfield Heights, OH 44125</div>
-                        <div class="company-contact">
-                            <div class="contact-item"><i class="fas fa-phone"></i><span class="phone">(216) 823-1800</span></div>
-                            <div class="contact-item"><i class="fas fa-globe"></i><a href="https://itvoice.com/beachwood" class="website" target="_blank">itvoice.com</a></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-        </section>
+        </div>
 
         <!-- FOOTER -->
-        <footer class="footer">
-            <div class="footer-logo">VIDI<span>SMART</span></div>
-            <p>AI & Visual AI Consultants Directory</p>
-            <p>Generated: <span class="date">April 13, 2026</span></p>
-            <p>Total Companies: 600 | With Descriptions: 295 | Regions: 8</p>
-            <p style="margin-top: 20px; color: #475569; font-size: 0.8rem;">Filtered to include only AI/ML consultants, coaches, and agencies.</p>
+        <footer class="footer" style="text-align: center; padding: 60px 40px; border-top: 1px solid var(--border); margin-top: 40px;">
+            <div class="footer-logo" style="font-family: var(--font-vidi); font-size: 1.8rem; font-weight: 900; margin-bottom: 15px;">VIDI<span style="background: linear-gradient(135deg, var(--teal-bright), var(--teal)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">SMART</span></div>
+            <p style="color: #64748b; font-size: 0.9rem; margin: 5px 0;">AI & Visual AI Consultants Directory</p>
+            <p style="color: #64748b; font-size: 0.9rem; margin: 5px 0;">Generated: <span class="date">April 13, 2026</span></p>
+            <p style="color: #64748b; font-size: 0.9rem; margin: 5px 0;">Total Companies: 600 | Regions: 8 | Industries: 12</p>
+            <div style="margin-top: 30px; display: flex; justify-content: center; gap: 20px;">
+                <a href="vidismart.masterlist.html" style="color: var(--teal-bright); text-decoration: none; font-size: 0.85rem; font-weight: 600;">
+                    <i class="fas fa-layer-group"></i> Smart Stack Builder
+                </a>
+                <a href="vidismart.consultants.html" style="color: var(--teal-bright); text-decoration: none; font-size: 0.85rem; font-weight: 600;">
+                    <i class="fas fa-user-tie"></i> Elite Consultants
+                </a>
+                <a href="vidismart.sectors.html" style="color: var(--teal-bright); text-decoration: none; font-size: 0.85rem; font-weight: 600;">
+                    <i class="fas fa-cubes"></i> Sector Analysis
+                </a>
+            </div>
         </footer>
 
     </main>
@@ -1435,9 +1372,9 @@
         const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
 
         function resizeRenderer() {
-            const main = document.querySelector('main');
-            renderer.setSize(main.clientWidth, 600);
-            camera.aspect = main.clientWidth / 600;
+            const hero = document.getElementById('hero');
+            renderer.setSize(hero.clientWidth, hero.clientHeight);
+            camera.aspect = hero.clientWidth / hero.clientHeight;
             camera.updateProjectionMatrix();
         }
         resizeRenderer();
@@ -1445,7 +1382,7 @@
 
         // Create particles
         const particlesGeometry = new THREE.BufferGeometry();
-        const particlesCount = 2000;
+        const particlesCount = 1500;
         const posArray = new Float32Array(particlesCount * 3);
 
         for (let i = 0; i < particlesCount * 3; i++) {
@@ -1465,60 +1402,13 @@
         const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
         scene.add(particlesMesh);
 
-        // Create connecting lines
-        const linesGeometry = new THREE.BufferGeometry();
-        const linesMaterial = new THREE.LineBasicMaterial({
-            color: 0x0d9488,
-            transparent: true,
-            opacity: 0.3
-        });
-
-        const linesCount = 100;
-        const linesPosArray = new Float32Array(linesCount * 6);
-
-        for (let i = 0; i < linesCount * 6; i += 6) {
-            const idx1 = Math.floor(Math.random() * particlesCount) * 3;
-            const idx2 = Math.floor(Math.random() * particlesCount) * 3;
-            linesPosArray[i] = posArray[idx1];
-            linesPosArray[i + 1] = posArray[idx1 + 1];
-            linesPosArray[i + 2] = posArray[idx1 + 2];
-            linesPosArray[i + 3] = posArray[idx2];
-            linesPosArray[i + 4] = posArray[idx2 + 1];
-            linesPosArray[i + 5] = posArray[idx2 + 2];
-        }
-
-        linesGeometry.setAttribute('position', new THREE.BufferAttribute(linesPosArray, 3));
-        const lines = new THREE.LineSegments(linesGeometry, linesMaterial);
-        scene.add(lines);
-
         camera.position.z = 5;
-
-        // Mouse interaction
-        let mouseX = 0;
-        let mouseY = 0;
-        let targetX = 0;
-        let targetY = 0;
-
-        document.addEventListener('mousemove', (e) => {
-            mouseX = (e.clientX / window.innerWidth) * 2 - 1;
-            mouseY = -(e.clientY / window.innerHeight) * 2 + 1;
-        });
 
         // Animation loop
         function animate() {
             requestAnimationFrame(animate);
-
-            targetX += (mouseX - targetX) * 0.05;
-            targetY += (mouseY - targetY) * 0.05;
-
-            particlesMesh.rotation.x += 0.001;
-            particlesMesh.rotation.y += 0.001;
-            particlesMesh.rotation.x += targetY * 0.0005;
-            particlesMesh.rotation.y += targetX * 0.0005;
-
-            lines.rotation.x += 0.001;
-            lines.rotation.y += 0.001;
-
+            particlesMesh.rotation.y += 0.0005;
+            particlesMesh.rotation.x += 0.0003;
             renderer.render(scene, camera);
         }
         animate();
@@ -1529,75 +1419,487 @@
             if (section) {
                 section.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
-
-            // Update active nav link
-            document.querySelectorAll('.nav-link').forEach(link => {
-                link.classList.remove('active');
-            });
-            const activeLink = document.getElementById('nav-' + sectionId);
-            if (activeLink) {
-                activeLink.classList.add('active');
-            }
         }
 
-        // Update active nav on scroll
-        const mainContainer = document.getElementById('scroll-container');
-        const sections = ['hero', 'by-type', 'by-region', 'south-florida', 'san-francisco', 'denver', 'detroit', 'chicago', 'saint-louis', 'cleveland'];
+        // Company data
+        const companies = [
+            // AI Consulting / Strategy
+            {
+                name: "Elevate AI Consulting",
+                type: "consulting",
+                rating: 5.0,
+                region: "south-florida",
+                address: "407 Lincoln Rd Suite 6-H, Miami Beach, FL 33139",
+                phone: "(305) 924-6820",
+                website: "elevateaiconsulting.com",
+                description: "We help leaders adopt AI responsibly, upskill fast, and ship measurable wins. Executive AI training, process automation, custom AI solutions, and AI advisory services.",
+                industries: ["technology", "finance", "healthcare"],
+                useCases: ["training", "strategy", "process-automation"]
+            },
+            {
+                name: "The AI Consulting Lab",
+                type: "consulting",
+                rating: 5.0,
+                region: "south-florida",
+                phone: "(727) 292-1966",
+                website: "theaiconsultinglab.com",
+                description: "Specialized AI strategy and implementation consulting for mid-market businesses.",
+                industries: ["retail", "manufacturing"],
+                useCases: ["strategy", "process-automation"]
+            },
+            {
+                name: "Acsetra - AI Consulting",
+                type: "consulting",
+                rating: 4.8,
+                region: "san-francisco",
+                address: "940 Terminal Way Unit A, San Carlos, CA 94070",
+                phone: "(650) 430-6646",
+                website: "acsetra.com",
+                description: "We cultivate AI systems around your workflow. Built for law firms, trusted for security, designed for transparency.",
+                industries: ["legal", "technology"],
+                useCases: ["document-processing", "strategy"]
+            },
+            {
+                name: "AIM Consulting",
+                type: "consulting",
+                rating: 2.6,
+                region: "denver",
+                address: "4600 S Syracuse St #600, Denver, CO 80237",
+                phone: "(720) 305-9818",
+                website: "aimconsulting.com",
+                description: "AIM specializes in cloud & operations, application development, data & analytics, digital experience, and project management.",
+                industries: ["technology", "finance"],
+                useCases: ["data-analysis", "strategy"]
+            },
+            {
+                name: "Effortless AI Denver",
+                type: "consulting",
+                rating: 5.0,
+                region: "denver",
+                address: "7900 E Union Ave # 1100, Denver, CO 80237",
+                phone: "(303) 777-2905",
+                website: "effortlessaicompany.com",
+                description: "Streamline your business, boost your sales, and save time with cutting-edge AI solutions.",
+                industries: ["retail", "technology"],
+                useCases: ["process-automation", "customer-service"]
+            },
+            {
+                name: "AI Consulting Solutions",
+                type: "consulting",
+                rating: 4.5,
+                region: "denver",
+                phone: "(720) 440-4995",
+                website: "aics.agency",
+                description: "Helping Denver-area businesses save 10-20 hours weekly through intelligent workflow automation, CRM, and AI-powered solutions.",
+                industries: ["technology", "retail"],
+                useCases: ["process-automation", "data-analysis"]
+            },
+            {
+                name: "AI Consulting Chicago",
+                type: "consulting",
+                rating: 4.7,
+                region: "chicago",
+                address: "1010 N Ashland Ave Unit 103, Chicago, IL 60622",
+                phone: "(312) 405-0597",
+                website: "aiconsultantchicago.com",
+                description: "Leading AI consulting company in Chicago. We help individuals and organizations implement AI for efficiency, growth, and competitive advantage.",
+                industries: ["finance", "healthcare", "manufacturing"],
+                useCases: ["strategy", "process-automation"]
+            },
+            {
+                name: "Slalom Consulting",
+                type: "consulting",
+                rating: 4.9,
+                region: "san-francisco",
+                address: "100 Pine St #2500, San Francisco, CA 94111",
+                phone: "(415) 593-3450",
+                website: "slalom.com",
+                description: "Slalom is a next-generation professional services & business consulting company creating value at the intersection of business, technology, and humanity.",
+                industries: ["finance", "healthcare", "technology"],
+                useCases: ["strategy", "data-analysis", "training"]
+            },
+            {
+                name: "Pathworth Consulting",
+                type: "consulting",
+                rating: 5.0,
+                region: "detroit",
+                address: "607 Shelby St #700-776, Detroit, MI 48226",
+                phone: "(313) 631-9919",
+                website: "pathworthcs.com",
+                description: "AI strategy workshops and implementation consulting for manufacturing and automotive industries.",
+                industries: ["manufacturing", "automotive"],
+                useCases: ["strategy", "training"]
+            },
+            {
+                name: "Cleveland AI Consulting",
+                type: "consulting",
+                rating: 4.6,
+                region: "cleveland",
+                phone: "(216) 673-3691",
+                website: "clevelandaiconsulting.com",
+                description: "Cleveland AI consultant. AI employees, automation & analytics. Setup 1-2 weeks. 200+ Ohio businesses served.",
+                industries: ["manufacturing", "healthcare"],
+                useCases: ["process-automation", "data-analysis"]
+            },
 
-        mainContainer.addEventListener('scroll', () => {
-            const scrollPos = mainContainer.scrollTop + 200;
+            // AI / ML Development
+            {
+                name: "AI Consultant Pros",
+                type: "development",
+                rating: 5.0,
+                region: "south-florida",
+                phone: "(754) 240-9643",
+                website: "aiconsultantpros.com",
+                description: "Custom AI and machine learning model development for enterprise clients.",
+                industries: ["finance", "healthcare"],
+                useCases: ["predictive-analytics", "data-analysis"]
+            },
+            {
+                name: "Mythos AI",
+                type: "development",
+                rating: 5.0,
+                region: "south-florida",
+                address: "516 Northwood Rd Unit 8096, West Palm Beach, FL 33407",
+                website: "mythos-ai.com",
+                description: "Mythos AI builds maritime autonomy systems that enhance vessel navigation, reduce risk, and help commercial and defense fleets operate more efficiently.",
+                industries: ["logistics", "automotive"],
+                useCases: ["computer-vision", "predictive-analytics"]
+            },
+            {
+                name: "JCJJ AI Digital",
+                type: "development",
+                rating: 5.0,
+                region: "south-florida",
+                address: "2475 NW 16th St Rd APT 515, Miami, FL 33125",
+                phone: "(734) 730-8239",
+                website: "jcjjaidigital.com",
+                description: "Automateforce AI by JC.ai. Specialized AI Automation For Business. AI Powered. Built For You.",
+                industries: ["retail", "technology"],
+                useCases: ["process-automation", "nlp"]
+            },
 
-            sections.forEach(sectionId => {
-                const section = document.getElementById(sectionId);
-                if (section) {
-                    const sectionTop = section.offsetTop;
-                    const sectionHeight = section.offsetHeight;
+            // AI Automation
+            {
+                name: "OZ Digital Consulting",
+                type: "automation",
+                rating: 5.0,
+                region: "south-florida",
+                address: "500 W Cypress Creek Rd # 570, Fort Lauderdale, FL 33309",
+                phone: "(800) 443-5210",
+                website: "followoz.com",
+                description: "Trusted in Florida for 25+ years, OZ provides Microsoft solutions and expert digital consulting.",
+                industries: ["technology", "finance"],
+                useCases: ["process-automation", "document-processing"]
+            },
+            {
+                name: "Gold Coast AI Automations",
+                type: "automation",
+                rating: 5.0,
+                region: "south-florida",
+                address: "11924 Forest Hill Blvd Ste 10a #361, Wellington, FL 33414",
+                phone: "(610) 357-5363",
+                website: "goldcoastai.pro",
+                description: "Business process automation using AI-powered workflows and intelligent agents.",
+                industries: ["retail", "real-estate"],
+                useCases: ["process-automation", "customer-service"]
+            },
 
-                    if (scrollPos >= sectionTop && scrollPos < sectionTop + sectionHeight) {
-                        document.querySelectorAll('.nav-link').forEach(link => {
-                            link.classList.remove('active');
-                        });
-                        const activeLink = document.getElementById('nav-' + sectionId);
-                        if (activeLink) {
-                            activeLink.classList.add('active');
-                        }
-                    }
+            // AI Infrastructure
+            {
+                name: "Heliosz AI – Enterprise",
+                type: "infrastructure",
+                rating: 4.8,
+                region: "south-florida",
+                address: "951 W Yamato Rd Suite 295, Boca Raton, FL 33431",
+                phone: "(332) 255-6223",
+                website: "heliosz.ai",
+                description: "Enterprise AI infrastructure and MLOps platform for scalable model deployment.",
+                industries: ["technology", "finance", "healthcare"],
+                useCases: ["data-analysis", "predictive-analytics"]
+            }
+        ];
+
+        // Current filter state
+        let currentFilters = {
+            type: 'all',
+            industry: 'all',
+            useCase: 'all',
+            region: 'all',
+            search: '',
+            sort: 'name-asc'
+        };
+
+        // Initialize the directory
+        document.addEventListener('DOMContentLoaded', function() {
+            renderAllCompanies();
+        });
+
+        // Render all companies to their respective grids
+        function renderAllCompanies() {
+            const grids = {
+                consulting: document.getElementById('grid-consulting'),
+                development: document.getElementById('grid-development'),
+                automation: document.getElementById('grid-automation'),
+                infrastructure: document.getElementById('grid-infrastructure'),
+                'computer-vision': document.getElementById('grid-computer-vision'),
+                nlp: document.getElementById('grid-nlp')
+            };
+
+            // Clear all grids
+            Object.values(grids).forEach(grid => grid.innerHTML = '');
+
+            // Add companies to their grids
+            companies.forEach(company => {
+                const grid = grids[company.type];
+                if (grid) {
+                    grid.innerHTML += createCompanyCard(company);
                 }
             });
-        });
 
-        // GSAP Animations
-        gsap.registerPlugin(ScrollTrigger);
+            updateResultsCount(companies.length);
+        }
 
-        gsap.from('.hero-body', {
-            opacity: 0,
-            y: 50,
-            duration: 1,
-            ease: 'power3.out'
-        });
+        // Create company card HTML
+        function createCompanyCard(company) {
+            const stars = '★'.repeat(Math.floor(company.rating)) + (company.rating % 1 >= 0.5 ? '½' : '');
+            const industryTags = company.industries ? company.industries.slice(0, 2).map(ind => 
+                `<span class="tag tag-industry"><i class="fas fa-briefcase"></i> ${ind}</span>`
+            ).join('') : '';
+            const useCaseTags = company.useCases ? company.useCases.slice(0, 2).map(uc => 
+                `<span class="tag tag-use-case"><i class="fas fa-bolt"></i> ${uc.replace('-', ' ')}</span>`
+            ).join('') : '';
 
-        gsap.from('.stat-item', {
-            opacity: 0,
-            y: 30,
-            duration: 0.8,
-            stagger: 0.1,
-            ease: 'power3.out',
-            delay: 0.5
-        });
+            return `
+                <div class="company-card" data-type="${company.type}" data-industry="${company.industries?.join(' ')}" data-usecase="${company.useCases?.join(' ')}" data-region="${company.region}">
+                    <div class="card-header">
+                        <div class="company-name">${company.name}</div>
+                        ${company.rating ? `<div class="company-rating"><i class="fas fa-star"></i> ${company.rating}</div>` : ''}
+                    </div>
+                    <div class="company-tags">
+                        <span class="tag tag-type">${company.type}</span>
+                        ${industryTags}
+                        ${useCaseTags}
+                    </div>
+                    ${company.description ? `<div class="company-description">${company.description}</div>` : ''}
+                    <div class="company-meta">
+                        ${company.region ? `<div class="meta-item"><i class="fas fa-map-marker-alt"></i><strong>Region:</strong> ${formatRegion(company.region)}</div>` : ''}
+                        ${company.address ? `<div class="meta-item"><i class="fas fa-location-dot"></i><strong>Address:</strong> ${company.address}</div>` : ''}
+                    </div>
+                    <div class="card-actions">
+                        ${company.phone ? `<button class="action-btn" onclick="copyPhone('${company.phone}')"><i class="fas fa-phone"></i> Copy</button>` : ''}
+                        ${company.website ? `<a href="https://${company.website}" target="_blank" class="action-btn primary"><i class="fas fa-external-link-alt"></i> Visit</a>` : ''}
+                        <button class="action-btn smart-stack" onclick="addToSmartStack('${company.name}')"><i class="fas fa-layer-group"></i> Smart Stack</button>
+                    </div>
+                </div>
+            `;
+        }
 
-        gsap.utils.toArray('.company-card').forEach((card, i) => {
-            gsap.from(card, {
-                scrollTrigger: {
-                    trigger: card,
-                    start: 'top 90%',
-                    toggleActions: 'play none none reverse'
-                },
-                opacity: 0,
-                y: 30,
-                duration: 0.6,
-                delay: i * 0.02
+        // Format region name
+        function formatRegion(region) {
+            const regions = {
+                'south-florida': 'South Florida',
+                'san-francisco': 'San Francisco Bay Area',
+                'denver': 'Denver / Boulder',
+                'detroit': 'Detroit / Ann Arbor',
+                'chicago': 'Chicago',
+                'saint-louis': 'Saint Louis',
+                'cleveland': 'Cleveland / Akron',
+                'new-york': 'New York',
+                'austin': 'Austin',
+                'seattle': 'Seattle',
+                'boston': 'Boston'
+            };
+            return regions[region] || region;
+        }
+
+        // Apply filters
+        function applyFilters() {
+            currentFilters.type = document.getElementById('type-filter').value;
+            currentFilters.industry = document.getElementById('industry-filter').value;
+            currentFilters.useCase = document.getElementById('usecase-filter').value;
+            currentFilters.region = document.getElementById('region-filter').value;
+            currentFilters.search = document.getElementById('search-input').value.toLowerCase();
+            currentFilters.sort = document.getElementById('sort-filter').value;
+
+            let filtered = [...companies];
+
+            // Filter by type
+            if (currentFilters.type !== 'all') {
+                filtered = filtered.filter(c => c.type === currentFilters.type);
+            }
+
+            // Filter by industry
+            if (currentFilters.industry !== 'all') {
+                filtered = filtered.filter(c => c.industries?.includes(currentFilters.industry));
+            }
+
+            // Filter by use case
+            if (currentFilters.useCase !== 'all') {
+                filtered = filtered.filter(c => c.useCases?.includes(currentFilters.useCase));
+            }
+
+            // Filter by region
+            if (currentFilters.region !== 'all') {
+                filtered = filtered.filter(c => c.region === currentFilters.region);
+            }
+
+            // Filter by search
+            if (currentFilters.search) {
+                filtered = filtered.filter(c => 
+                    c.name.toLowerCase().includes(currentFilters.search) ||
+                    c.description?.toLowerCase().includes(currentFilters.search) ||
+                    c.industries?.some(i => i.includes(currentFilters.search))
+                );
+            }
+
+            // Sort
+            filtered.sort((a, b) => {
+                switch (currentFilters.sort) {
+                    case 'name-asc': return a.name.localeCompare(b.name);
+                    case 'name-desc': return b.name.localeCompare(a.name);
+                    case 'rating': return (b.rating || 0) - (a.rating || 0);
+                    case 'region': return a.region.localeCompare(b.region);
+                    default: return 0;
+                }
             });
-        });
+
+            // Render filtered results
+            renderFilteredCompanies(filtered);
+            updateResultsCount(filtered.length);
+
+            // Show/hide empty state
+            document.getElementById('empty-state').classList.toggle('active', filtered.length === 0);
+            document.getElementById('content-area').style.display = filtered.length === 0 ? 'none' : 'block';
+        }
+
+        // Render filtered companies
+        function renderFilteredCompanies(companies) {
+            const grids = {
+                consulting: document.getElementById('grid-consulting'),
+                development: document.getElementById('grid-development'),
+                automation: document.getElementById('grid-automation'),
+                infrastructure: document.getElementById('grid-infrastructure'),
+                'computer-vision': document.getElementById('grid-computer-vision'),
+                nlp: document.getElementById('grid-nlp')
+            };
+
+            // Clear all grids
+            Object.values(grids).forEach(grid => grid.innerHTML = '');
+
+            // Group by type
+            const grouped = {};
+            companies.forEach(company => {
+                if (!grouped[company.type]) grouped[company.type] = [];
+                grouped[company.type].push(company);
+            });
+
+            // Render to grids
+            Object.entries(grouped).forEach(([type, typeCompanies]) => {
+                const grid = grids[type];
+                if (grid) {
+                    grid.innerHTML = typeCompanies.map(createCompanyCard).join('');
+                }
+            });
+        }
+
+        // Update results count
+        function updateResultsCount(count) {
+            document.getElementById('results-count').textContent = count;
+        }
+
+        // Clear all filters
+        function clearFilters() {
+            document.getElementById('type-filter').value = 'all';
+            document.getElementById('industry-filter').value = 'all';
+            document.getElementById('usecase-filter').value = 'all';
+            document.getElementById('region-filter').value = 'all';
+            document.getElementById('search-input').value = '';
+            document.getElementById('sort-filter').value = 'name-asc';
+            
+            // Reset industry chips
+            document.querySelectorAll('.industry-chip').forEach(chip => {
+                chip.classList.remove('active');
+            });
+            document.querySelector('.industry-chip[data-industry="all"]').classList.add('active');
+
+            applyFilters();
+        }
+
+        // Set view mode
+        function setView(mode) {
+            document.getElementById('view-grid').classList.toggle('active', mode === 'grid');
+            document.getElementById('view-list').classList.toggle('active', mode === 'list');
+            
+            document.querySelectorAll('.companies-grid').forEach(grid => {
+                grid.classList.toggle('list-view', mode === 'list');
+            });
+        }
+
+        // Toggle category
+        function toggleCategory(header) {
+            header.classList.toggle('collapsed');
+        }
+
+        // Filter by type from sidebar
+        function filterByType(type) {
+            document.getElementById('type-filter').value = type;
+            applyFilters();
+            scrollToSection('filters');
+        }
+
+        // Filter by industry from sidebar
+        function filterByIndustry(industry) {
+            document.getElementById('industry-filter').value = industry;
+            applyFilters();
+            scrollToSection('filters');
+        }
+
+        // Filter by industry chip
+        function filterByIndustryChip(industry) {
+            document.querySelectorAll('.industry-chip').forEach(chip => {
+                chip.classList.toggle('active', chip.dataset.industry === industry);
+            });
+            document.getElementById('industry-filter').value = industry;
+            applyFilters();
+        }
+
+        // Copy phone number
+        function copyPhone(phone) {
+            navigator.clipboard.writeText(phone);
+            showToast('Phone number copied!');
+        }
+
+        // Add to Smart Stack
+        function addToSmartStack(companyName) {
+            // This would integrate with the Smart Stack app
+            showToast(`Added "${companyName}" to Smart Stack`);
+            // In production, this would call an API or open a modal
+        }
+
+        // Show toast notification
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed;
+                bottom: 30px;
+                right: 30px;
+                background: var(--teal);
+                color: white;
+                padding: 15px 25px;
+                border-radius: 12px;
+                font-weight: 600;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+                z-index: 1000;
+                animation: fadeIn 0.3s ease-out;
+            `;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transition = 'opacity 0.3s';
+                setTimeout(() => toast.remove(), 300);
+            }, 2500);
+        }
     </script>
 
 </body>
