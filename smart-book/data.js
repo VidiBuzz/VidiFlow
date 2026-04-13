@@ -14,7 +14,7 @@ const BOOK_DATA = {
       description: "Personal productivity, learning, creativity",
       color: "#3B82F6",
       critical: ["foreword", "ch1", "ch4", "ch6", "ch14", "ch18", "ch22", "ch30", "ch32", "ch36"],
-      high: ["ch3", "ch13", "ch15", "ch19", "ch33"],
+      high: ["ch3", "ch13", "ch15", "ch19", "ch33", "ch33v"],
       medium: ["ch7", "ch12", "ch21"],
       hide: ["ch5", "ch8", "ch10", "ch11", "ch16", "ch20", "ch23", "ch24", "ch25", "ch26", "ch27", "ch28", "ch29", "ch31", "ch34", "ch35", "ch37"],
       reasoning: "Consumers need practical, immediately applicable AI knowledge without deep technical infrastructure. Focus on personal productivity (ch6 vibe coding), creativity (ch4 original creation), understanding AI limits (ch22 text models only predict), and the job impact (ch36). Skip enterprise architecture chapters.",
@@ -65,7 +65,7 @@ const BOOK_DATA = {
       description: "Leading AI strategy, building businesses, and making strategic decisions",
       color: "#8B5CF6",
       critical: ["foreword", "ch1", "ch2", "ch4", "ch5", "ch6", "ch7", "ch8", "ch9", "ch10", "ch12", "ch13", "ch15", "ch16", "ch17", "ch18", "ch19", "ch28", "ch31", "ch32", "ch35", "ch36"],
-      high: ["ch3", "ch11", "ch14", "ch20", "ch21", "ch22", "ch23", "ch24", "ch27", "ch29", "ch30", "ch33", "ch34"],
+      high: ["ch3", "ch11", "ch14", "ch20", "ch21", "ch22", "ch23", "ch24", "ch27", "ch29", "ch30", "ch33", "ch33v", "ch34"],
       medium: ["ch25", "ch26"],
       hide: ["ch37"],
       reasoning: "Executives and entrepreneurs share the same need: strategic context for making decisions that compound. This merged path covers competitive dynamics (ch2, ch5), investment decisions (ch16), organizational thinking (ch18, ch19), the 90-day playbook (ch28), small business opportunity (ch31), SaaS disruption (ch35), workforce impact (ch36), and content creation at scale (ch32). Skip only robotics (ch37) as it's less immediately actionable for business leaders.",
@@ -628,17 +628,39 @@ const BOOK_DATA = {
     },
     ch33: {
       id: "ch33",
-      title: "Ch33: Voice & Video Agents",
+      title: "Ch33: Voice Agents — The End of the Chatbot Era",
       part: 5,
       order: 33,
       content: `<div class="strategic-context">
         <h3>Strategic Context</h3>
-        <p>Voice and video agents are the new face of business interaction — literally. The technology has matured from simple chatbots to sophisticated conversational agents that maintain personality, handle complex multi-turn conversations, understand emotional context, and integrate with backend systems to take real actions. The combination of real-time voice AI, personalized video generation, and agentic backend integration creates customer interaction experiences that are fundamentally different from anything available even two years ago.</p>
+        <p>The chatbot era is over. Not because chatbots failed — they succeeded at what they were designed to do: answer simple, structured questions with pre-scripted responses. They failed at everything else. The frustration of typing a question, reading a misunderstood response, rephrasing, trying again, hitting a dead end, and abandoning the interaction is a near-universal consumer experience. Typing back and forth with a text-based chatbot is the digital equivalent of filling out a form — it is a transaction, not a conversation.</p>
+        <p>Voice agents are a fundamentally different category. When AI gets a voice — a natural, responsive, contextually intelligent voice — the entire dynamic of human-machine interaction shifts. You are no longer operating a tool. You are having a conversation. And conversation is how humans have communicated, negotiated, built trust, and made decisions for our entire existence as a species. That difference is not cosmetic. It changes everything about how people engage, how much they share, how problems get resolved, and how brands are perceived.</p>
       </div>
-      <p>In production: Tavus personalizes video content at scale — a single video template becomes 10,000 personalized videos, each one addressing a specific recipient by name, referencing their specific situation, and delivering content tailored to their context. ElevenLabs voice cloning enables a brand voice that is consistent across every customer touchpoint, in every language, at any hour. LiveKit provides the real-time communication infrastructure that connects voice AI to backend systems with latency under 200ms — the threshold below which human perception registers a response as natural rather than delayed.</p>
-      <p>The business applications where voice and video agents are generating immediate ROI: outbound sales prospecting (personalized video outreach at scale achieves 3-5x higher response rates than text email), customer onboarding (video walkthroughs personalized to each customer's specific product configuration), collections and payment reminders (voice agents achieve 40% higher payment rates than automated text reminders on overdue accounts), and technical support for structured troubleshooting workflows where the AI can resolve 70-80% of issues without human escalation.</p>`,
+      <p>The technology enabling this shift arrived in 2024-2025 and matured rapidly. ElevenLabs voice synthesis crossed the threshold where synthesized voices are indistinguishable from human recordings in blind tests. Retell AI, VAPI, and Bland.ai built the orchestration infrastructure that connects voice synthesis to LLMs with sub-200ms latency — below the threshold where human perception registers a pause as unnatural. LiveKit provides the real-time communication backbone. Eleven Labs Flash brings voice latency to under 75ms. Together, these systems make it possible to deploy a voice agent that sounds human, responds instantly, understands context across a multi-turn conversation, and integrates with backend systems to take real actions — book appointments, process payments, update records, escalate to humans when appropriate.</p>
+      <p>The shift from text to voice changes what AI can actually DO. Text chatbots struggle with ambiguity — a user typing "that didn't work" gives the system almost no signal about what failed, why, or what to try next. A voice conversation gives the AI tone, pacing, emotional context, and the natural clarifying questions that a human would ask. "I tried that, nothing happened, I'm looking at the screen right now" is information a text chatbot misses and a voice agent captures. That additional context is the difference between resolving the issue and sending the customer to a human.</p>
+      <p>Real production results in 2025-2026: AI voice agents handling inbound customer support achieve first-call resolution rates of 65-75% for Tier 1 issues — comparable to well-trained human agents. Outbound voice AI for appointment reminders achieves 3x the confirmation rate of SMS reminders. Collections voice agents achieve 40% higher payment rates than automated text or robocall alternatives, because the conversational format allows payment plan negotiation and objection handling in real time. Healthcare AI voice agents handling post-visit follow-up achieve 89% patient satisfaction scores in pilot programs — higher than the industry average for human follow-up calls.</p>
+      <p>The voice agent stack for a business deploying today: VAPI or Retell AI as the orchestration layer, ElevenLabs Flash for voice synthesis (with a custom cloned brand voice), GPT-4o or Claude Sonnet as the reasoning engine, a function-calling layer connected to your CRM and calendar, and escalation routing when the agent detects confusion or high-stakes decisions. Setup time: 2-3 weeks for a production-ready voice agent. Monthly cost: $300-800 for a system handling 1,000-3,000 calls per month — compared to $8,000-15,000/month for equivalent human staffing.</p>
+      <blockquote>"The chatbot taught people to lower their expectations. The voice agent is resetting them. When customers realize they can just talk — and be understood — the bar for every other interaction rises with it."</blockquote>`,
       images: ["VoiceAi.png", "vidi_news_reporter_1770757008633.png"],
-      readingTime: 12
+      readingTime: 16
+    },
+    ch33v: {
+      id: "ch33v",
+      title: "Ch33+: Video Agents — Story at Scale",
+      part: 5,
+      order: 33.5,
+      content: `<div class="strategic-context">
+        <h3>Strategic Context</h3>
+        <p>There is a gap between what you can say and what you can show. Every marketer, every sales leader, every educator knows this. Video is the highest-bandwidth communication channel humans have. We read body language, tone, facial expression, and visual context simultaneously. We remember what we see and hear together far better than what we read alone. And we trust people we can see — or think we can see — at a fundamentally different level than words on a screen.</p>
+        <p>For the last decade, video communication at scale was impossible for most organizations. You could film one CEO delivering one message. You could not film one CEO delivering 50,000 personalized messages — one for each client, each referencing their specific situation, their name, their most recent transaction, their geography. That was not a creative or strategic limit. It was a physical one. Video agents eliminate it.</p>
+      </div>
+      <p>The paradigm shift is personalization at scale. Tavus, HeyGen, and D-ID have built systems that turn a single recorded video into thousands — or millions — of unique, personalized videos. A financial advisor records a quarterly update once. The video agent generates 800 personalized versions: each one addressing the specific client by name, referencing their specific portfolio performance, mentioning their upcoming review date. The client receives what appears to be a personal video from their advisor — because it is. The content is their content. The voice is the advisor's voice. The face is the advisor's face. The message is personally crafted from their account data. Production time for all 800 videos: under 20 minutes.</p>
+      <p>The business applications generating immediate ROI: outbound sales prospecting (personalized video email achieves 5-8x higher reply rates than text email in multiple studies), customer onboarding (video walkthroughs personalized to each customer's specific product configuration reduce support tickets by 60%), retention campaigns (personalized "we noticed you haven't used X feature" video messages increase feature adoption by 35-50%), and executive communication (leaders can communicate individually with thousands of stakeholders at a cadence that was previously physically impossible).</p>
+      <p>The deeper strategic shift is brand communication at scale. Until 2025, a brand's video presence was limited by production capacity. Now, a VidiSmart SmartGen pipeline can take a weekly brief — key message, target audience, campaign objective — and produce: a 90-second hero video, 12 social cuts, 6 personalized video variants for different audience segments, and 400 personalized outreach videos for the sales team. From brief to deployed in under 4 hours. The brands deploying this capability are not just producing more content — they are producing content that is visually and verbally tailored to each audience, at a cadence their competitors cannot match without the same infrastructure.</p>
+      <p>The convergence of voice agents and video agents is where the next major shift happens. A video agent that can listen, respond, adapt its message based on viewer behavior, and follow up with a personalized call from the voice agent creates a communication loop that no human sales or service team can replicate at scale. A viewer watches a personalized product video. The system notes which sections they rewatched. The voice agent follows up with a call that references exactly what they spent the most time on. The close rate on that call is 4x the industry average because the conversation is already context-rich before it starts.</p>
+      <blockquote>"Broadcasting is dead. Every person now expects to receive a message that was made for them. Video agents make that expectation the baseline — for every brand, at any scale, starting now."</blockquote>`,
+      images: ["visual_ai_video_gen_1771112635057.png", "vidiblast_voice_avatar_ui.png"],
+      readingTime: 15
     },
     ch34: {
       id: "ch34",

@@ -662,126 +662,147 @@
 
 <!-- ── Persona Logic ──────────────────────────────────── -->
 <script>
-(function() {
-    const PERSONAS = {
-        consumer: {
-            icon: '👤',
-            color: '#3B82F6',
-            glow: 'rgba(59,130,246,0.12)',
-            name: 'Consumer',
-            tagline: 'Personal productivity, creativity, and everyday AI tools.',
-            promise: 'How to use AI to amplify your personal output — tools, creativity, and protecting yourself in the AI economy.',
-            btnLabel: 'Read Consumer Edition'
-        },
-        it_professional: {
-            icon: '💻',
-            color: '#10B981',
-            glow: 'rgba(16,185,129,0.12)',
-            name: 'IT Professional',
-            tagline: 'Building, deploying, and managing AI systems in production.',
-            promise: 'Model selection, data pipelines, RAG, local deployment, agentic orchestration — every technical layer of the stack.',
-            btnLabel: 'Read IT Pro Edition'
-        },
-        executive_entrepreneur: {
-            icon: '🚀',
-            color: '#FF6B35',
-            glow: 'rgba(255,107,53,0.12)',
-            name: 'Executive',
-            tagline: 'Strategic AI bets, competitive advantage, and execution velocity.',
-            promise: 'Where to invest, what the competitive map looks like, and how to move 18 months faster than the market.',
-            btnLabel: 'Read Executive Edition'
-        }
-    };
-
-    function buildCards() {
-        const grid = document.getElementById('personaGrid');
-        if (!grid || typeof BOOK_DATA === 'undefined') return;
-
-        Object.entries(PERSONAS).forEach(([key, p]) => {
-            const config = BOOK_DATA.personas[key];
-            if (!config) return;
-
-            const totalChapters = [...(config.critical||[]), ...(config.high||[]), ...(config.medium||[])].length;
-            const readTime = Math.round(totalChapters * 12);
-
-            const card = document.createElement('div');
-            card.className = 'persona-card';
-            card.style.setProperty('--card-color', p.color);
-            card.style.setProperty('--card-glow', p.glow);
-            card.dataset.persona = key;
-
-            card.innerHTML = `
-                <div class="card-accent-bar"></div>
-                <div class="card-icon">${p.icon}</div>
-                <div class="card-persona-name">${p.name}</div>
-                <div class="card-tagline">${p.tagline}</div>
-                <div class="card-meta">
-                    <span class="card-pill highlight">${totalChapters} chapters</span>
-                    <span class="card-pill">~${readTime} min</span>
-                    <span class="card-pill">${config.critical.length} core</span>
-                </div>
-                <div class="card-promise">
-                    <strong>What you'll take away</strong>
-                    ${p.promise}
-                </div>
-                <button class="card-cta-btn" onclick="goRead('${key}')">
-                    ${p.btnLabel} <span class="arrow">→</span>
-                </button>
-            `;
-
-            // Clicking anywhere on card also works
-            card.addEventListener('click', function(e) {
-                if (e.target.closest('.card-cta-btn')) return; // button handles it
-                goRead(key);
-            });
-
-            grid.appendChild(card);
-        });
+var PERSONAS = {
+    consumer: {
+        icon: '👤', color: '#3B82F6', glow: 'rgba(59,130,246,0.12)',
+        name: 'Consumer',
+        tagline: 'Personal productivity, creativity, and everyday AI tools.',
+        promise: 'How to use AI to amplify your personal output — tools, creativity, and protecting yourself in the AI economy.',
+        btnLabel: 'Read Consumer Edition'
+    },
+    it_professional: {
+        icon: '💻', color: '#10B981', glow: 'rgba(16,185,129,0.12)',
+        name: 'IT Professional',
+        tagline: 'Building, deploying, and managing AI systems in production.',
+        promise: 'Model selection, data pipelines, RAG, local deployment, agentic orchestration — every technical layer of the stack.',
+        btnLabel: 'Read IT Pro Edition'
+    },
+    executive_entrepreneur: {
+        icon: '🚀', color: '#FF6B35', glow: 'rgba(255,107,53,0.12)',
+        name: 'Executive',
+        tagline: 'Strategic AI bets, competitive advantage, and execution velocity.',
+        promise: 'Where to invest, what the competitive map looks like, and how to move 18 months faster than the market.',
+        btnLabel: 'Read Executive Edition'
     }
+};
 
-    window.goRead = function(key) {
-        const name = (document.getElementById('readerName')?.value || '').trim();
+function navigateToBook(key) {
+    var nameEl = document.getElementById('readerName');
+    var name = nameEl ? nameEl.value.trim() : '';
 
-        // Mark card active
-        document.querySelectorAll('.persona-card').forEach(c => c.classList.toggle('active', c.dataset.persona === key));
-
-        // Save session
-        try {
-            localStorage.setItem('smartbook_persona', key);
-            if (name) localStorage.setItem('smartbook_name', name);
-        } catch(e) {}
-
-        // Show loading
-        const overlay = document.getElementById('loadingOverlay');
-        const title = document.getElementById('loadingTitle');
-        if (overlay) {
-            if (title) title.textContent = 'Building ' + (PERSONAS[key]?.name || '') + ' Edition';
-            overlay.classList.add('active');
-        }
-
-        setTimeout(() => {
-            window.location.href = 'print-book.html?persona=' + key + '&name=' + encodeURIComponent(name);
-        }, 650);
-    };
-
-    function restoreSession() {
-        const savedName = localStorage.getItem('smartbook_name');
-        if (savedName) {
-            const input = document.getElementById('readerName');
-            if (input) input.value = savedName;
-        }
-        // Do NOT auto-navigate — let the user choose their path again
-    }
-
-    document.addEventListener('DOMContentLoaded', function() {
-        if (typeof BOOK_DATA === 'undefined') {
-            console.error('BOOK_DATA not loaded');
-            return;
-        }
-        buildCards();
-        restoreSession();
+    document.querySelectorAll('.persona-card').forEach(function(c) {
+        c.classList.toggle('active', c.getAttribute('data-persona') === key);
     });
-})();
+
+    try {
+        localStorage.setItem('smartbook_persona', key);
+        if (name) localStorage.setItem('smartbook_name', name);
+    } catch(e) {}
+
+    var overlay = document.getElementById('loadingOverlay');
+    var titleEl = document.getElementById('loadingTitle');
+    if (overlay) {
+        if (titleEl) titleEl.textContent = 'Building ' + (PERSONAS[key] ? PERSONAS[key].name : '') + ' Edition';
+        overlay.classList.add('active');
+    }
+
+    setTimeout(function() {
+        window.location.href = 'print-book.html?persona=' + key + '&name=' + encodeURIComponent(name);
+    }, 650);
+}
+
+function buildPersonaCards() {
+    var grid = document.getElementById('personaGrid');
+    if (!grid) return;
+    if (typeof BOOK_DATA === 'undefined') {
+        grid.innerHTML = '<p style="color:rgba(255,255,255,0.4);text-align:center;">Loading book data…</p>';
+        return;
+    }
+
+    Object.keys(PERSONAS).forEach(function(key) {
+        var p = PERSONAS[key];
+        var config = BOOK_DATA.personas[key];
+        if (!config) return;
+
+        var total = (config.critical||[]).length + (config.high||[]).length + (config.medium||[]).length;
+        var readTime = Math.round(total * 12);
+
+        var card = document.createElement('div');
+        card.className = 'persona-card';
+        card.setAttribute('data-persona', key);
+        card.style.setProperty('--card-color', p.color);
+        card.style.setProperty('--card-glow', p.glow);
+
+        var bar = document.createElement('div');
+        bar.className = 'card-accent-bar';
+
+        var icon = document.createElement('div');
+        icon.className = 'card-icon';
+        icon.textContent = p.icon;
+
+        var pName = document.createElement('div');
+        pName.className = 'card-persona-name';
+        pName.textContent = p.name;
+
+        var tagline = document.createElement('div');
+        tagline.className = 'card-tagline';
+        tagline.textContent = p.tagline;
+
+        var meta = document.createElement('div');
+        meta.className = 'card-meta';
+        meta.innerHTML =
+            '<span class="card-pill highlight">' + total + ' chapters</span>' +
+            '<span class="card-pill">~' + readTime + ' min</span>' +
+            '<span class="card-pill">' + (config.critical||[]).length + ' core</span>';
+
+        var promise = document.createElement('div');
+        promise.className = 'card-promise';
+        promise.innerHTML = '<strong>What you\'ll take away</strong>' + p.promise;
+
+        var btn = document.createElement('button');
+        btn.className = 'card-cta-btn';
+        btn.innerHTML = p.btnLabel + ' <span class="arrow">\u2192</span>';
+        btn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            navigateToBook(key);
+        });
+
+        card.appendChild(bar);
+        card.appendChild(icon);
+        card.appendChild(pName);
+        card.appendChild(tagline);
+        card.appendChild(meta);
+        card.appendChild(promise);
+        card.appendChild(btn);
+
+        card.addEventListener('click', function() {
+            navigateToBook(key);
+        });
+
+        grid.appendChild(card);
+    });
+}
+
+function restoreReaderName() {
+    try {
+        var saved = localStorage.getItem('smartbook_name');
+        if (saved) {
+            var el = document.getElementById('readerName');
+            if (el) el.value = saved;
+        }
+    } catch(e) {}
+}
+
+// Init — works whether DOM is ready or not
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() {
+        buildPersonaCards();
+        restoreReaderName();
+    });
+} else {
+    buildPersonaCards();
+    restoreReaderName();
+}
 </script>
 
 <!-- Three.js Neural Network -->
