@@ -714,7 +714,8 @@ function navigateToBook(key) {
     }
 
     setTimeout(function() {
-        window.location.href = 'print-book.html?persona=' + key + '&name=' + encodeURIComponent(name) + (company ? '&company=' + encodeURIComponent(company) : '');
+        var companyParam = (key !== 'consumer' && company) ? '&company=' + encodeURIComponent(company) : '';
+        window.location.href = 'print-book.html?persona=' + key + '&name=' + encodeURIComponent(name) + companyParam;
     }, 650);
 }
 
@@ -784,6 +785,18 @@ function buildPersonaCards() {
 
         card.addEventListener('click', function() {
             navigateToBook(key);
+        });
+
+        // Show/hide company field on hover
+        card.addEventListener('mouseenter', function() {
+            var cf = document.getElementById('readerCompany');
+            if (cf) cf.style.display = (key === 'consumer') ? 'none' : '';
+        });
+        card.addEventListener('mouseleave', function() {
+            // Restore based on currently-active card (if any)
+            var active = document.querySelector('.persona-card.active');
+            var cf = document.getElementById('readerCompany');
+            if (cf) cf.style.display = (active && active.getAttribute('data-persona') === 'consumer') ? 'none' : '';
         });
 
         grid.appendChild(card);

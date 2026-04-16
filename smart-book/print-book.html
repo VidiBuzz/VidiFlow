@@ -1194,13 +1194,17 @@
             void pill.offsetWidth; // force reflow
             pill.classList.add('persona-mode-pill');
 
+            const companyField = document.getElementById('readerCompany');
             if (meta) {
                 document.body.classList.add(meta.cls);
                 pill.classList.remove('pill-all');
                 pill.innerHTML = '<span class="pill-icon">' + meta.icon + '</span>' + meta.label;
+                // Company field: hide for consumer, show for IT Pro / Executive
+                if (companyField) companyField.style.display = (key === 'consumer') ? 'none' : '';
             } else {
                 pill.classList.add('pill-all');
                 pill.innerHTML = '&#128214; Full Book';
+                if (companyField) companyField.style.display = '';
             }
         }
 
@@ -1331,7 +1335,7 @@
             const personaData  = currentPersona !== 'all' ? BOOK_DATA.personas[currentPersona] : null;
             const personaLabel = personaData?.label || '';
             const nameDisplay  = readerName || '';
-            const companyDisplay = (document.getElementById('readerCompany')?.value || '').trim();
+            const companyDisplay = currentPersona === 'consumer' ? '' : (document.getElementById('readerCompany')?.value || '').trim();
 
             // Cover personalization line
             let coverLine = '';
