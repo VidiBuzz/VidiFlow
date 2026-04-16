@@ -252,17 +252,19 @@
             margin-left: auto; margin-right: auto;
         }
 
-        /* Name input */
+        /* Name / Company inputs */
         .name-row {
-            max-width: 400px;
+            max-width: 520px;
             margin: 0 auto 2.5rem;
+            display: flex;
+            gap: 0.75rem;
         }
         .name-row input {
-            width: 100%;
-            padding: 0.9rem 1.25rem;
+            flex: 1;
+            padding: 0.9rem 1.1rem;
             border: 1px solid var(--border-bright);
             border-radius: 6px;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             font-family: 'DM Sans', sans-serif;
             background: rgba(255,255,255,0.05);
             color: #fff;
@@ -276,6 +278,7 @@
             box-shadow: 0 0 0 3px rgba(255,107,53,0.15);
         }
         .name-row input::placeholder { color: rgba(255,255,255,0.25); }
+        @media (max-width: 600px) { .name-row { flex-direction: column; max-width: 340px; } }
 
         /* Persona cards */
         .persona-grid {
@@ -603,7 +606,8 @@
     <p class="section-sub">The book adapts to your role. Each path filters and frames 37 chapters for what matters most to you.</p>
 
     <div class="name-row">
-        <input type="text" id="readerName" placeholder="Enter your name for a personalized edition" autocomplete="off">
+        <input type="text" id="readerName" placeholder="Your name" autocomplete="off">
+        <input type="text" id="readerCompany" placeholder="Your company (optional)" autocomplete="off">
     </div>
 
     <div class="persona-grid" id="personaGrid">
@@ -687,8 +691,10 @@ var PERSONAS = {
 };
 
 function navigateToBook(key) {
-    var nameEl = document.getElementById('readerName');
-    var name = nameEl ? nameEl.value.trim() : '';
+    var nameEl    = document.getElementById('readerName');
+    var companyEl = document.getElementById('readerCompany');
+    var name    = nameEl    ? nameEl.value.trim()    : '';
+    var company = companyEl ? companyEl.value.trim() : '';
 
     document.querySelectorAll('.persona-card').forEach(function(c) {
         c.classList.toggle('active', c.getAttribute('data-persona') === key);
@@ -696,7 +702,8 @@ function navigateToBook(key) {
 
     try {
         localStorage.setItem('smartbook_persona', key);
-        if (name) localStorage.setItem('smartbook_name', name);
+        if (name)    localStorage.setItem('smartbook_name',    name);
+        if (company) localStorage.setItem('smartbook_company', company);
     } catch(e) {}
 
     var overlay = document.getElementById('loadingOverlay');
@@ -707,7 +714,7 @@ function navigateToBook(key) {
     }
 
     setTimeout(function() {
-        window.location.href = 'print-book.html?persona=' + key + '&name=' + encodeURIComponent(name);
+        window.location.href = 'print-book.html?persona=' + key + '&name=' + encodeURIComponent(name) + (company ? '&company=' + encodeURIComponent(company) : '');
     }, 650);
 }
 
@@ -785,10 +792,15 @@ function buildPersonaCards() {
 
 function restoreReaderName() {
     try {
-        var saved = localStorage.getItem('smartbook_name');
-        if (saved) {
+        var savedName    = localStorage.getItem('smartbook_name');
+        var savedCompany = localStorage.getItem('smartbook_company');
+        if (savedName) {
             var el = document.getElementById('readerName');
-            if (el) el.value = saved;
+            if (el) el.value = savedName;
+        }
+        if (savedCompany) {
+            var elC = document.getElementById('readerCompany');
+            if (elC) elC.value = savedCompany;
         }
     } catch(e) {}
 }

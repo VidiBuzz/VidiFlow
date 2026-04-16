@@ -43,15 +43,21 @@
             background: var(--bg-page);
         }
 
+        /* ===== Persona Theming ===== */
+        :root { --persona-color: #FF6B35; --persona-glow: rgba(255,107,53,0.2); }
+        body.persona-consumer              { --persona-color: #3B82F6; --persona-glow: rgba(59,130,246,0.2); }
+        body.persona-it_professional       { --persona-color: #10B981; --persona-glow: rgba(16,185,129,0.2); }
+        body.persona-executive_entrepreneur{ --persona-color: #8B5CF6; --persona-glow: rgba(139,92,246,0.2); }
+
         /* ===== Reading Progress Bar ===== */
         .progress-bar {
             position: fixed;
             top: 0;
             left: 0;
             height: 3px;
-            background: linear-gradient(90deg, var(--primary), var(--primary-dark));
+            background: linear-gradient(90deg, var(--persona-color), var(--primary-dark));
             z-index: 10000;
-            transition: width 0.1s ease-out;
+            transition: width 0.1s ease-out, background 0.4s ease;
             width: 0%;
         }
 
@@ -292,6 +298,119 @@
                 transform: scale(1);
                 opacity: 1;
             }
+        }
+
+        /* ===== Persona Mode Pill ===== */
+        .persona-mode-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            padding: 0.4rem 1rem;
+            border-radius: 6px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            color: var(--persona-color);
+            border: 1.5px solid var(--persona-color);
+            background: var(--persona-glow);
+            box-shadow: 0 0 14px var(--persona-glow);
+            transition: all 0.35s ease;
+            white-space: nowrap;
+            animation: pillPop 0.35s ease;
+        }
+        .persona-mode-pill.pill-all {
+            color: #64748B;
+            border-color: #475569;
+            border-style: dashed;
+            background: transparent;
+            box-shadow: none;
+        }
+        .persona-mode-pill .pill-icon { font-size: 1rem; line-height: 1; }
+        @keyframes pillPop {
+            0%   { transform: scale(0.85); opacity: 0; }
+            100% { transform: scale(1);    opacity: 1; }
+        }
+
+        /* ===== Persona Intro Panel ===== */
+        .persona-intro-panel {
+            max-width: 760px;
+            margin: 3rem auto 2rem;
+            padding: 2.25rem 2.5rem;
+            border-radius: 12px;
+            border-left: 5px solid var(--persona-color);
+            background: linear-gradient(135deg, var(--persona-glow) 0%, rgba(255,255,255,0) 100%);
+            box-shadow: 0 2px 24px rgba(0,0,0,0.07);
+            font-family: 'Inter', sans-serif;
+            transition: border-color 0.4s ease, background 0.4s ease;
+        }
+        .pip-eyebrow {
+            font-size: 0.68rem;
+            font-weight: 700;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--persona-color);
+            margin-bottom: 0.6rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .pip-heading {
+            font-family: 'Kumbh Sans', sans-serif;
+            font-size: 1.45rem;
+            font-weight: 800;
+            color: var(--text-heading);
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+        .pip-intro {
+            font-family: 'Lora', serif;
+            font-size: 0.98rem;
+            line-height: 1.78;
+            color: var(--text-body);
+            margin-bottom: 1.5rem;
+        }
+        .pip-takeaways-label {
+            font-size: 0.68rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 0.65rem;
+        }
+        .pip-takeaways {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .pip-takeaways li {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.6rem;
+            font-size: 0.88rem;
+            line-height: 1.55;
+            color: var(--text-body);
+            padding: 0.42rem 0;
+            border-bottom: 1px solid rgba(0,0,0,0.06);
+        }
+        .pip-takeaways li:last-child { border-bottom: none; }
+        .pip-takeaways li::before {
+            content: '✓';
+            color: var(--persona-color);
+            font-weight: 700;
+            flex-shrink: 0;
+            margin-top: 0.05rem;
+        }
+        body.dark .persona-intro-panel { background: linear-gradient(135deg, var(--persona-glow) 0%, rgba(15,23,42,0) 100%); }
+        body.dark .pip-heading { color: #F1F5F9; }
+        body.dark .pip-intro, body.dark .pip-takeaways li { color: #CBD5E1; }
+        body.dark .pip-takeaways li { border-bottom-color: rgba(255,255,255,0.07); }
+
+        /* Personalize bar left accent */
+        .personalize-bar {
+            border-left: 4px solid var(--persona-color);
+            transition: border-color 0.4s ease;
         }
 
         /* Toast Notification */
@@ -1004,20 +1123,20 @@
     <div class="personalize-bar">
         <div class="personalize-group">
             <button class="btn-dark" onclick="toggleSidebar()">&#9776; Index</button>
-            <label>&#128214; Generate your custom edition:</label>
-            <input type="text" id="readerName" placeholder="Your name" />
+            <span id="personaModePill" class="persona-mode-pill pill-all">&#128214; Full Book</span>
+            <input type="text" id="readerName" placeholder="Your name" style="max-width:130px;" />
+            <input type="text" id="readerCompany" placeholder="Company (optional)" style="max-width:150px;" />
             <select id="personaSelect" onchange="onPersonaChange()">
                 <option value="all">All Chapters (Full Book)</option>
-                <option value="consumer">Consumer Path (~45 min)</option>
-                <option value="it_professional">IT Professional Path (~75 min)</option>
-                <option value="executive_entrepreneur">Executive / Entrepreneur Path (~70 min)</option>
+                <option value="consumer">&#128100; Consumer</option>
+                <option value="it_professional">&#128187; IT Professional</option>
+                <option value="executive_entrepreneur">&#128640; Executive</option>
             </select>
             <button id="generateBtn" onclick="generateCustomBook()">&#9889; Generate</button>
-            <span id="editionBadge" class="edition-badge" style="display:none;"></span>
         </div>
         <div class="action-group">
             <button class="btn-dark" onclick="document.body.classList.toggle('dark')">&#127769; Dark Mode</button>
-            <button class="btn-print" onclick="window.print()">&#128424;&#65039; Print / Save as PDF</button>
+            <button class="btn-print" onclick="window.print()">&#128424;&#65039; Print / Save PDF</button>
         </div>
     </div>
 
@@ -1056,15 +1175,32 @@
             return Object.keys(BOOK_DATA.chapters).filter(k => visible.includes(k));
         }
 
+        const PERSONA_META = {
+            consumer:               { icon: '👤', label: 'Consumer Edition',    cls: 'persona-consumer' },
+            it_professional:        { icon: '💻', label: 'IT Pro Edition',       cls: 'persona-it_professional' },
+            executive_entrepreneur: { icon: '🚀', label: 'Executive Edition',    cls: 'persona-executive_entrepreneur' }
+        };
+
         function onPersonaChange() {
-            const sel = document.getElementById('personaSelect');
-            const badge = document.getElementById('editionBadge');
-            if (sel.value !== 'all') {
-                const label = sel.options[sel.selectedIndex].text;
-                badge.textContent = '\u2713 ' + label;
-                badge.style.display = 'inline-flex';
+            const sel  = document.getElementById('personaSelect');
+            const pill = document.getElementById('personaModePill');
+            const key  = sel.value;
+            const meta = PERSONA_META[key];
+
+            document.body.classList.remove('persona-consumer', 'persona-it_professional', 'persona-executive_entrepreneur');
+
+            // Restart animation by removing + re-adding class
+            pill.classList.remove('persona-mode-pill');
+            void pill.offsetWidth; // force reflow
+            pill.classList.add('persona-mode-pill');
+
+            if (meta) {
+                document.body.classList.add(meta.cls);
+                pill.classList.remove('pill-all');
+                pill.innerHTML = '<span class="pill-icon">' + meta.icon + '</span>' + meta.label;
             } else {
-                badge.style.display = 'none';
+                pill.classList.add('pill-all');
+                pill.innerHTML = '&#128214; Full Book';
             }
         }
 
@@ -1192,12 +1328,20 @@
             const visibleChapters = getVisibleChapters(currentPersona);
 
             let html = '';
-            const personaLabel = currentPersona === 'all' ? '' :
-                BOOK_DATA.personas[currentPersona]?.label || '';
-            const nameDisplay = readerName || '';
-            const customLine = nameDisplay ?
-                `<p class="cover-edition">Custom Edition for <span class="custom-name">${nameDisplay}</span>${personaLabel ? ' &middot; ' + personaLabel + ' Path' : ''}</p>` :
-                (personaLabel ? `<p class="cover-edition">${personaLabel} Edition</p>` : '');
+            const personaData  = currentPersona !== 'all' ? BOOK_DATA.personas[currentPersona] : null;
+            const personaLabel = personaData?.label || '';
+            const nameDisplay  = readerName || '';
+            const companyDisplay = (document.getElementById('readerCompany')?.value || '').trim();
+
+            // Cover personalization line
+            let coverLine = '';
+            if (nameDisplay && personaLabel) {
+                coverLine = `<p class="cover-edition">Custom Edition for <span class="custom-name">${nameDisplay}</span>${companyDisplay ? ' &middot; ' + companyDisplay : ''} &middot; ${personaLabel} Path</p>`;
+            } else if (nameDisplay) {
+                coverLine = `<p class="cover-edition">Edition for <span class="custom-name">${nameDisplay}</span>${companyDisplay ? ' &middot; ' + companyDisplay : ''}</p>`;
+            } else if (personaLabel) {
+                coverLine = `<p class="cover-edition">${personaLabel} Edition</p>`;
+            }
 
             // COVER
             html += `
@@ -1211,10 +1355,10 @@
                     <div class="cover-divider"></div>
                     <p class="cover-author">James May</p>
                     <p class="cover-company">VidiSmart &middot; Savage Digital Solutions</p>
-                    ${customLine || '<p class="cover-edition">First Edition &middot; 2026</p>'}
+                    ${coverLine || '<p class="cover-edition">First Edition &middot; 2026</p>'}
                     <div class="cover-cx-note">
                         <p>Powered by the <strong>SmartChannel CX</strong> suite</p>
-                        <p style="margin-top:0.25rem; color: rgba(255,255,255,0.5);">One of many SmartGen tools for creating personalized content dynamically at scale.</p>
+                        <p style="margin-top:0.25rem; color: rgba(255,255,255,0.5);">SmartGen tools for creating personalized content dynamically at scale.</p>
                     </div>
                 </div>`;
 
@@ -1222,7 +1366,10 @@
             let sidebarHtml = '';
             html += `<div class="toc-page"><h2>Table of Contents</h2>`;
             if (nameDisplay) {
-                html += `<p style="text-align:center;font-family:Inter,sans-serif;font-size:0.9rem;color:var(--text-muted);margin-bottom:1.5rem;">Prepared for <strong class="custom-name">${nameDisplay}</strong></p>`;
+                const forLine = companyDisplay
+                    ? `<strong class="custom-name">${nameDisplay}</strong> &middot; ${companyDisplay}`
+                    : `<strong class="custom-name">${nameDisplay}</strong>`;
+                html += `<p style="text-align:center;font-family:Inter,sans-serif;font-size:0.9rem;color:var(--text-muted);margin-bottom:1.5rem;">Prepared for ${forLine}</p>`;
             }
             let currentPart = -1;
             chapterKeys.forEach(key => {
@@ -1251,6 +1398,26 @@
             });
             html += `</div>`;
             document.getElementById('sidebar-toc').innerHTML = sidebarHtml;
+
+            // PERSONA INTRO PANEL
+            if (personaData && personaData.personaIntro) {
+                const meta = PERSONA_META[currentPersona];
+                const greeting = nameDisplay
+                    ? `Welcome${companyDisplay ? ', ' + nameDisplay + ' from ' + companyDisplay : ', ' + nameDisplay}`
+                    : 'Your Reading Path';
+                const takeawaysHtml = (personaData.keyTakeaways || [])
+                    .map(t => `<li>${t}</li>`).join('');
+                html += `
+                <div class="persona-intro-panel">
+                    <div class="pip-eyebrow">
+                        <span>${meta ? meta.icon : '📖'}</span>
+                        ${personaLabel} Edition
+                    </div>
+                    <h2 class="pip-heading">${greeting}</h2>
+                    <p class="pip-intro">${personaData.personaIntro}</p>
+                    ${takeawaysHtml ? `<div class="pip-takeaways-label">What you'll take away</div><ul class="pip-takeaways">${takeawaysHtml}</ul>` : ''}
+                </div>`;
+            }
 
             // CHAPTERS - Two-column layout
             currentPart = -1;
@@ -1311,7 +1478,8 @@
 
                 html += `<div class="page-footer">
                     The Speed of Agentic Visual AI &middot; James May &middot; VidiSmart / Savage Solutions
-                    ${nameDisplay ? ' &middot; Custom Edition for ' + nameDisplay : ''}
+                    ${nameDisplay ? ' &middot; ' + nameDisplay + (companyDisplay ? ' / ' + companyDisplay : '') : ''}
+                    ${personaLabel ? ' &middot; ' + personaLabel + ' Edition' : ''}
                 </div></div>`;
                 html += `</div>`; // end text-column
 
@@ -1368,6 +1536,10 @@
                 if (nameParam) {
                     document.getElementById('readerName').value = decodeURIComponent(nameParam);
                     readerName = decodeURIComponent(nameParam);
+                }
+                const companyParam = params.get('company');
+                if (companyParam) {
+                    document.getElementById('readerCompany').value = decodeURIComponent(companyParam);
                 }
 
                 buildBook();
