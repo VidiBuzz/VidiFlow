@@ -10,7 +10,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Kumbh+Sans:wght@700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="vidi-nav-component.css">
     <script src="vidi-nav-component.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         * {
             font-family: 'Inter', sans-serif;
@@ -313,12 +312,9 @@
     </footer>
 
     <script>
-        // Supabase Configuration
-        // NOTE: Replace with your actual Supabase credentials from vidiflow/.env
-        const SUPABASE_URL = ''; // Configure via environment variables
-        const SUPABASE_KEY = ''; // Configure via environment variables
-        
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        // VidiSmart API Configuration
+        const API_URL = 'http://localhost:3001';
+        const WAITLIST_ENDPOINT = `${API_URL}/api/waitlist`;
 
         // Form handling
         document.getElementById('waitlistForm').addEventListener('submit', async function(e) {
@@ -340,13 +336,13 @@
                     interests.push(cb.value);
                 });
                 
-                // Prepare data for Supabase
+                // Prepare data for API
                 const waitlistData = {
                     email: formData.get('email'),
                     name: formData.get('name'),
                     company: formData.get('company') || null,
                     business_type: formData.get('business_type'),
-                    interests: interests,
+                    interests: interests.join(','),
                     source: 'vidismart-website',
                     referrer_url: document.referrer || null,
                     // UTM parameters if present
@@ -355,21 +351,29 @@
                     utm_campaign: new URLSearchParams(window.location.search).get('utm_campaign')
                 };
                 
-                // Submit to Supabase
-                const { data, error } = await supabase
-                    .from('waitlist_leads')
-                    .insert([waitlistData]);
+                // Submit to VidiSmart API
+                const response = await fetch(WAITLIST_ENDPOINT, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(waitlistData)
+                });
                 
-                if (error) {
-                    // Check if it's a duplicate email
-                    if (error.message && error.message.includes('duplicate')) {
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    // Check for duplicate email (409 Conflict)
+                    if (response.status === 409) {
                         alert('This email is already on the waitlist! We\'ll notify you when we launch.');
                         form.reset();
                     } else {
-                        throw error;
+                        throw new Error(errorData.error || 'Submission failed');
                     }
                 } else {
                     // Success - show success message
+                    const result = await response.json();
+                    console.log('Waitlist submission successful:', result);
+                    
                     const successMessage = document.getElementById('successMessage');
                     form.style.display = 'none';
                     successMessage.classList.add('active');
