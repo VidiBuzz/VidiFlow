@@ -254,6 +254,76 @@
             background: #1E293B;
         }
 
+        .personalize-bar .btn-print {
+            background: var(--secondary);
+            border: none;
+            color: white;
+        }
+
+        .personalize-bar .btn-print:hover {
+            background: var(--accent);
+        }
+
+        /* Edition Badge */
+        .edition-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.35rem 0.85rem;
+            border-radius: 20px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            background: rgba(255, 107, 53, 0.15);
+            color: var(--primary);
+            border: 1px solid rgba(255, 107, 53, 0.3);
+            animation: badgePop 0.3s ease;
+        }
+
+        @keyframes badgePop {
+            0% {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        /* Toast Notification */
+        .toast-notification {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            background: #1E293B;
+            color: white;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 500;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+            z-index: 10003;
+            animation: toastSlide 0.3s ease;
+            border-left: 4px solid var(--primary);
+        }
+
+        @keyframes toastSlide {
+            0% {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+
+            100% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
         /* TOC */
         .toc-page {
             padding: 3rem;
@@ -936,19 +1006,23 @@
             <button class="btn-dark" onclick="toggleSidebar()">&#9776; Index</button>
             <label>&#128214; Generate your custom edition:</label>
             <input type="text" id="readerName" placeholder="Your name" />
-            <select id="personaSelect">
+            <select id="personaSelect" onchange="onPersonaChange()">
                 <option value="all">All Chapters (Full Book)</option>
                 <option value="consumer">Consumer Path (~45 min)</option>
                 <option value="it_professional">IT Professional Path (~75 min)</option>
                 <option value="executive_entrepreneur">Executive / Entrepreneur Path (~70 min)</option>
             </select>
-            <button onclick="generateCustomBook()">&#9889; Generate</button>
+            <button id="generateBtn" onclick="generateCustomBook()">&#9889; Generate</button>
+            <span id="editionBadge" class="edition-badge" style="display:none;"></span>
         </div>
         <div class="action-group">
             <button class="btn-dark" onclick="document.body.classList.toggle('dark')">&#127769; Dark Mode</button>
             <button class="btn-print" onclick="window.print()">&#128424;&#65039; Print / Save as PDF</button>
         </div>
     </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast-notification" style="display:none;"></div>
 
     <!-- Book Content Container -->
     <div id="book-content"></div>
@@ -982,10 +1056,53 @@
             return Object.keys(BOOK_DATA.chapters).filter(k => visible.includes(k));
         }
 
+        function onPersonaChange() {
+            const sel = document.getElementById('personaSelect');
+            const badge = document.getElementById('editionBadge');
+            if (sel.value !== 'all') {
+                const label = sel.options[sel.selectedIndex].text;
+                badge.textContent = '\u2713 ' + label;
+                badge.style.display = 'inline-flex';
+            } else {
+                badge.style.display = 'none';
+            }
+        }
+
+        function showToast(message, duration) {
+            duration = duration || 3000;
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.style.display = 'block';
+            setTimeout(function () { toast.style.display = 'none'; }, duration);
+        }
+
         function generateCustomBook() {
+            var btn = document.getElementById('generateBtn');
             readerName = document.getElementById('readerName').value.trim();
             currentPersona = document.getElementById('personaSelect').value;
-            buildBook();
+
+            // Visual feedback: disable button, show loading
+            btn.disabled = true;
+            btn.innerHTML = '\u23F3 Building...';
+
+            // Update edition badge
+            onPersonaChange();
+
+            // Small delay for visual feedback
+            setTimeout(function () {
+                try {
+                    buildBook();
+                    var personaLabel = currentPersona === 'all' ? 'Full Book' :
+                        (BOOK_DATA.personas[currentPersona] ? BOOK_DATA.personas[currentPersona].label : currentPersona);
+                    var nameStr = readerName ? ' for ' + readerName : '';
+                    showToast('\u2705 ' + personaLabel + ' Edition generated' + nameStr);
+                } catch (e) {
+                    showToast('\u274C Error: ' + e.message);
+                    console.error('generateCustomBook error:', e);
+                }
+                btn.disabled = false;
+                btn.innerHTML = '\u26A1 Generate';
+            }, 200);
         }
 
         function toggleSidebar() {
@@ -1230,8 +1347,14 @@
         }
 
         // Auto-build on load with URL parameter support
-        if (typeof BOOK_DATA !== 'undefined') {
-            window.addEventListener('DOMContentLoaded', () => {
+        function initBook() {
+            if (typeof BOOK_DATA === 'undefined') {
+                document.getElementById('book-content').innerHTML = '<div style="padding:4rem;text-align:center;color:#ef4444;font-family:Inter,sans-serif;"><h2>Error: Book data failed to load</h2><p>data.js could not be loaded. Please refresh the page.</p></div>';
+                console.error('BOOK_DATA is undefined — data.js failed to load');
+                return;
+            }
+
+            try {
                 // Read URL parameters from index.html navigation
                 const params = new URLSearchParams(window.location.search);
                 const personaParam = params.get('persona');
@@ -1240,6 +1363,7 @@
                 if (personaParam && BOOK_DATA.personas[personaParam]) {
                     document.getElementById('personaSelect').value = personaParam;
                     currentPersona = personaParam;
+                    onPersonaChange();
                 }
                 if (nameParam) {
                     document.getElementById('readerName').value = decodeURIComponent(nameParam);
@@ -1248,12 +1372,29 @@
 
                 buildBook();
 
+                // Show toast for persona navigation from index.html
+                if (personaParam && personaParam !== 'all') {
+                    var pLabel = BOOK_DATA.personas[personaParam] ? BOOK_DATA.personas[personaParam].label : personaParam;
+                    var nStr = nameParam ? ' for ' + decodeURIComponent(nameParam) : '';
+                    setTimeout(function () { showToast('\u2705 ' + pLabel + ' Edition loaded' + nStr); }, 500);
+                }
+
                 // Attach scroll events
                 window.addEventListener('scroll', () => {
                     updateProgressBar();
                     updateActiveChapter();
                 }, { passive: true });
-            });
+            } catch (err) {
+                document.getElementById('book-content').innerHTML = '<div style="padding:4rem;text-align:center;color:#ef4444;font-family:Inter,sans-serif;"><h2>Error building book</h2><pre>' + err.message + '</pre></div>';
+                console.error('initBook error:', err);
+            }
+        }
+
+        // DOMContentLoaded may have already fired if script is at end of body
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initBook);
+        } else {
+            initBook();
         }
     </script>
 </body>
