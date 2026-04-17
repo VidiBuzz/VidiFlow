@@ -21,6 +21,8 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:15
 .l-csharp{--lc:#9b4f96;--lb:rgba(155,79,150,0.1);}
 .l-kotlin{--lc:#7f52ff;--lb:rgba(127,82,255,0.1);}
 .l-c{--lc:#a8b9cc;--lb:rgba(168,185,204,0.1);}
+.l-elixir{--lc:#6e4a7e;--lb:rgba(110,74,126,0.1);}
+.l-cpp{--lc:#00599c;--lb:rgba(0,89,156,0.1);}
 
 /* ── Top Nav ── */
 .topnav{background:#0a0c10;border-bottom:1px solid rgba(255,255,255,0.07);padding:0 40px;display:flex;align-items:center;height:50px;gap:0;}
@@ -84,8 +86,8 @@ input[type=search]::placeholder{color:var(--muted);}
 
 /* Icon */
 .icon-wrap{position:relative;width:40px;height:40px;margin-bottom:10px;}
-.app-img{width:40px;height:40px;border-radius:9px;object-fit:contain;display:none;background:var(--surface2);}
-.app-icon{width:40px;height:40px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;font-family:var(--mono);letter-spacing:-0.02em;text-transform:uppercase;}
+.app-img{width:40px;height:40px;border-radius:9px;object-fit:contain;visibility:hidden;position:absolute;top:0;left:0;background:var(--surface2);}
+.app-icon{width:40px;height:40px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;font-family:var(--mono);letter-spacing:-0.02em;text-transform:uppercase;position:relative;z-index:1;}
 
 .card-top-row{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px;}
 .cdot{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:2px;}
@@ -127,7 +129,7 @@ input[type=search]::placeholder{color:var(--muted);}
       <span class="logo-name">Self-Host Stack</span>
     </div>
     <h1>Cloudron <strong>App Store</strong></h1>
-    <p class="subtitle">170+ self-hosted apps · stack badges, Directus compatibility, and direct links to every app's website</p>
+    <p class="subtitle" id="subtitle">Loading apps...</p>
     <div class="toolbar">
       <div class="search-wrap">
         <span class="search-icon"><svg viewBox="0 0 16 16"><circle cx="6.5" cy="6.5" r="4.5"/><line x1="10.5" y1="10.5" x2="14" y2="14"/></svg></span>
@@ -167,6 +169,10 @@ const APPS=[
   {id:'ai.librechat.cloudronapp',name:'LibreChat',tag:'Multi-model AI chat UI',cat:'ai',lang:'node',stack:'Node/React',compat:'great',site:'librechat.ai'},
   {id:'com.ollama.cloudronapp',name:'Ollama',tag:'Local LLM inference server',cat:'ai',lang:'go',stack:'Go',compat:'good',site:'ollama.com'},
   {id:'com.openwebui.cloudronapp',name:'Open WebUI',tag:'Web UI for local AI models',cat:'ai',lang:'python',stack:'Python/Svelte',compat:'good',site:'openwebui.com'},
+  {id:'com.anythingllm.cloudronapp',name:'AnythingLLM',tag:'Full RAG + agent pipeline',cat:'ai',lang:'node',stack:'Node/Express',compat:'great',site:'anythingllm.com'},
+  {id:'io.supabase.cloudronapp',name:'Supabase',tag:'Firebase alternative with Postgres',cat:'database',lang:'node',stack:'Node/TypeScript',compat:'great',site:'supabase.com'},
+  {id:'io.appwrite.cloudronapp',name:'Appwrite',tag:'Backend server for web/mobile',cat:'database',lang:'php',stack:'PHP',compat:'php',site:'appwrite.io'},
+  {id:'io.pocketbase.cloudronapp',name:'PocketBase',tag:'Open source backend in one file',cat:'database',lang:'go',stack:'Go',compat:'good',site:'pocketbase.io'},
   {id:'io.directus9.cloudronapp',name:'Directus',tag:'Headless CMS & data platform',cat:'cms',lang:'node',stack:'Node/TypeScript',compat:'great',site:'directus.io'},
   {id:'org.wordpress.cloudronapp',name:'WordPress',tag:"World's most popular CMS",cat:'cms',lang:'php',stack:'PHP',compat:'php',site:'wordpress.org'},
   {id:'org.ghost.cloudronapp2',name:'Ghost',tag:'Professional publishing platform',cat:'cms',lang:'node',stack:'Node/Ember',compat:'great',site:'ghost.org'},
@@ -190,6 +196,7 @@ const APPS=[
   {id:'com.documize.cloudronapp',name:'Documize',tag:'Structured document collab',cat:'doc',lang:'go',stack:'Go/Vue',compat:'good',site:'documize.com'},
   {id:'chat.rocket.cloudronapp',name:'Rocket.Chat',tag:'Open-source team messaging',cat:'comm',lang:'node',stack:'Node/Meteor/React',compat:'great',site:'rocket.chat'},
   {id:'org.mattermost.cloudronapp2',name:'Mattermost',tag:'Secure team messaging',cat:'comm',lang:'go',stack:'Go/React',compat:'good',site:'mattermost.com'},
+  {id:'com.zulip.cloudronapp',name:'Zulip',tag:'Threaded team chat',cat:'comm',lang:'python',stack:'Python/Django',compat:'good',site:'zulip.com'},
   {id:'im.riot.cloudronapp',name:'Element',tag:'Secure Matrix messaging client',cat:'comm',lang:'node',stack:'React/TypeScript',compat:'great',site:'element.io'},
   {id:'org.matrix.synapse',name:'Matrix Synapse',tag:'Matrix homeserver',cat:'comm',lang:'python',stack:'Python',compat:'good',site:'matrix.org'},
   {id:'org.nodebb.cloudronapp',name:'NodeBB',tag:'Next-gen community forum',cat:'comm',lang:'node',stack:'Node.js',compat:'great',site:'nodebb.com'},
@@ -247,6 +254,7 @@ const APPS=[
   {id:'app.xbackbone.cloudronapp',name:'XBackBone',tag:'Lightweight screenshot sharing',cat:'file',lang:'php',stack:'PHP',compat:'php',site:'xbackbone.app'},
   {id:'net.pairdrop.cloudronapp',name:'Pairdrop',tag:'Local browser file transfer',cat:'file',lang:'node',stack:'Node.js',compat:'great',site:'pairdrop.net'},
   {id:'pizza.file.cloudronapp',name:'File Pizza',tag:'Browser-to-browser file transfer',cat:'file',lang:'node',stack:'Node.js',compat:'great',site:'file.pizza'},
+  {id:'com.seafile.cloudronapp',name:'Seafile',tag:'Team file sync & share',cat:'file',lang:'c',stack:'C/Python',compat:'ok',site:'seafile.com'},
   {id:'app.immich.cloudronapp',name:'Immich',tag:'Self-hosted Google Photos alt',cat:'media',lang:'node',stack:'Node/TypeScript',compat:'great',site:'immich.app'},
   {id:'org.jellyfin.cloudronapp',name:'Jellyfin',tag:'Free software media server',cat:'media',lang:'csharp',stack:'C#/.NET',compat:'ok',site:'jellyfin.org'},
   {id:'media.emby.cloudronapp',name:'Emby',tag:'Personal media server',cat:'media',lang:'csharp',stack:'C#/.NET',compat:'ok',site:'emby.media'},
@@ -265,6 +273,8 @@ const APPS=[
   {id:'org.pixelfed.cloudronapp',name:'Pixelfed',tag:'Ethical photo sharing platform',cat:'social',lang:'php',stack:'PHP/Laravel',compat:'php',site:'pixelfed.org'},
   {id:'org.castopod.cloudronapp',name:'Castopod',tag:'Self-hosted podcasting platform',cat:'social',lang:'php',stack:'PHP/Laravel',compat:'php',site:'castopod.org'},
   {id:'io.taiga.cloudronapp',name:'Taiga',tag:'Open source project management',cat:'pm',lang:'python',stack:'Python/Angular',compat:'good',site:'taiga.io'},
+  {id:'com.plane.cloudronapp',name:'Plane',tag:'Jira/Linear alternative with sprints',cat:'pm',lang:'python',stack:'Python/React',compat:'good',site:'plane.so'},
+  {id:'com.focalboard.cloudronapp',name:'Focalboard',tag:'Trello/Notion alternative',cat:'pm',lang:'node',stack:'Node/React',compat:'great',site:'focalboard.com'},
   {id:'org.openproject.cloudronapp',name:'OpenProject',tag:'Powerful project management',cat:'pm',lang:'ruby',stack:'Ruby on Rails',compat:'ok',site:'openproject.org'},
   {id:'io.vikunja.cloudronapp',name:'Vikunja',tag:'Self-hosted to-do & project app',cat:'pm',lang:'go',stack:'Go/Vue',compat:'good',site:'vikunja.io'},
   {id:'io.wekan.cloudronapp',name:'Wekan',tag:'Open-source Kanban board',cat:'pm',lang:'node',stack:'Node/Meteor',compat:'great',site:'wekan.team'},
@@ -274,6 +284,8 @@ const APPS=[
   {id:'com.github.bitwardenrs',name:'Vaultwarden',tag:'Bitwarden-compatible password server',cat:'sec',lang:'rust',stack:'Rust',compat:'good',site:'bitwarden.com'},
   {id:'app.twofauth.cloudronapp',name:'2FAuth',tag:'Self-hosted 2FA management',cat:'sec',lang:'php',stack:'PHP/Laravel',compat:'php',site:'2fauth.app'},
   {id:'org.keycloak.cloudronapp',name:'Keycloak',tag:'Enterprise IAM & SSO',cat:'sec',lang:'java',stack:'Java/Quarkus',compat:'good',site:'keycloak.org'},
+  {id:'goauthentik.cloudronapp',name:'Authentik',tag:'Modern identity provider',cat:'sec',lang:'python',stack:'Python/React',compat:'good',site:'goauthentik.io'},
+  {id:'zitadel.cloudronapp',name:'Zitadel',tag:'Cloud-native identity management',cat:'sec',lang:'go',stack:'Go',compat:'good',site:'zitadel.com'},
   {id:'io.cloudron.openvpn',name:'VPN',tag:'OpenVPN + WireGuard server',cat:'sec',lang:'c',stack:'C/Go',compat:'ok',site:'openvpn.net'},
   {id:'com.adguard.home.cloudronapp',name:'AdGuard Home',tag:'Network-wide ad & tracker blocker',cat:'sec',lang:'go',stack:'Go/React',compat:'good',site:'adguard.com'},
   {id:'info.privatebin.cloudronapp',name:'PrivateBin',tag:'Zero-knowledge encrypted pastebin',cat:'sec',lang:'php',stack:'PHP',compat:'php',site:'privatebin.info'},
@@ -282,7 +294,6 @@ const APPS=[
   {id:'com.nocodb.cloudronapp',name:'NocoDB',tag:'Airtable alternative with REST API',cat:'tools',lang:'node',stack:'Node/TypeScript',compat:'great',site:'nocodb.com'},
   {id:'io.baserow.cloudronapp',name:'Baserow',tag:'Open source no-code database',cat:'tools',lang:'python',stack:'Python/Vue',compat:'good',site:'baserow.io'},
   {id:'com.getgrist.cloudronapp',name:'Grist',tag:'Spreadsheet meets database',cat:'tools',lang:'node',stack:'Node/TypeScript',compat:'great',site:'getgrist.com'},
-  {id:'io.pocketbase.cloudronapp',name:'PocketBase',tag:'Open source backend in one file',cat:'tools',lang:'go',stack:'Go',compat:'good',site:'pocketbase.io'},
   {id:'io.typebot.cloudronapp',name:'Typebot',tag:'Conversational form & chatbot builder',cat:'tools',lang:'next',stack:'Next.js/TypeScript',compat:'great',site:'typebot.io'},
   {id:'com.formbricks.cloudronapp',name:'Formbricks',tag:'Open source survey platform',cat:'tools',lang:'next',stack:'Next.js/TypeScript',compat:'great',site:'formbricks.com'},
   {id:'com.cal.cloudronapp',name:'Cal.com',tag:'Open source scheduling platform',cat:'tools',lang:'next',stack:'Next.js/TypeScript',compat:'great',site:'cal.com'},
@@ -293,6 +304,8 @@ const APPS=[
   {id:'app.dawarich.cloudronapp',name:'Dawarich',tag:'Self-hosted location history',cat:'tools',lang:'ruby',stack:'Ruby on Rails',compat:'ok',site:'dawarich.app'},
   {id:'org.apache.guacamole.cloudronapp',name:'Guacamole',tag:'Clientless remote desktop',cat:'tools',lang:'java',stack:'Java',compat:'ok',site:'guacamole.apache.org'},
   {id:'io.github.ascimoo.searx',name:'SearXNG',tag:'Privacy-respecting metasearch',cat:'tools',lang:'python',stack:'Python/Flask',compat:'ok',site:'searxng.org'},
+  {id:'meilisearch.cloudronapp',name:'Meilisearch',tag:'Fast search engine',cat:'tools',lang:'rust',stack:'Rust',compat:'good',site:'meilisearch.com'},
+  {id:'typesense.cloudronapp',name:'Typesense',tag:'Typo-tolerant search engine',cat:'tools',lang:'cpp',stack:'C++',compat:'ok',site:'typesense.org'},
   {id:'com.hastebin.cloudronapp',name:'Hastebin',tag:'Simple pastebin alternative',cat:'tools',lang:'node',stack:'Node.js',compat:'great',site:'hastebin.com'},
   {id:'dev.ophir.wbo.cloudronapp',name:'WBO',tag:'Online collaborative whiteboard',cat:'tools',lang:'node',stack:'Node.js',compat:'great',site:'wbo.ophir.dev'},
   {id:'stirlingpdf.frooodle.cloudronapp1',name:'Stirling PDF',tag:'Self-hosted PDF toolkit',cat:'tools',lang:'java',stack:'Java/Spring',compat:'ok',site:'stirlingtools.com'},
@@ -318,6 +331,8 @@ const APPS=[
   {id:'it.kutt.cloudronapp',name:'Kutt',tag:'Modern open source URL shortener',cat:'tools',lang:'node',stack:'Node/TypeScript',compat:'great',site:'kutt.it'},
   {id:'org.yourls.cloudronapp',name:'YOURLS',tag:'Your own URL shortener',cat:'tools',lang:'php',stack:'PHP',compat:'php',site:'yourls.org'},
   {id:'io.cloudron.builtin.appproxy',name:'App Proxy',tag:'Reverse proxy for external apps',cat:'tools',lang:'node',stack:'Node.js',compat:'great',site:'cloudron.io'},
+  {id:'traefik.cloudronapp',name:'Traefik',tag:'Cloud-native reverse proxy',cat:'tools',lang:'go',stack:'Go',compat:'good',site:'traefik.io'},
+  {id:'nginxproxymanager.cloudronapp',name:'Nginx Proxy Manager',tag:'Web proxy manager with SSL',cat:'tools',lang:'node',stack:'Node/Docker',compat:'good',site:'nginxproxymanager.com'},
   {id:'sh.ntfy.cloudronapp',name:'ntfy',tag:'Push notifications via HTTP',cat:'tools',lang:'go',stack:'Go',compat:'good',site:'ntfy.sh'},
   {id:'org.languagetool.cloudronapp',name:'LanguageTool',tag:'Multilingual grammar checker',cat:'tools',lang:'java',stack:'Java',compat:'ok',site:'languagetool.org'},
   {id:'io.cloudron.geoip',name:'IP2Location',tag:'GeoIP database integration',cat:'tools',lang:'go',stack:'Go',compat:'good',site:'ip2location.com'},
@@ -329,54 +344,72 @@ const APPS=[
   {id:'org.easyappointments.cloudronapp',name:'Easy!Appointments',tag:'Self-hosted booking system',cat:'tools',lang:'php',stack:'PHP',compat:'php',site:'easyappointments.org'},
   {id:'eu.pretix.cloudronapp',name:'Pretix',tag:'Event ticketing software',cat:'tools',lang:'python',stack:'Python/Vue',compat:'ok',site:'pretix.eu'},
   {id:'org.fireflyiii.cloudronapp',name:'Firefly III',tag:'Personal finance manager',cat:'finance',lang:'php',stack:'PHP/Laravel',compat:'php',site:'firefly-iii.org'},
+  {id:'medusa.cloudronapp',name:'Medusa',tag:'Headless commerce platform',cat:'ecommerce',lang:'node',stack:'Node/TypeScript',compat:'great',site:'medusajs.com'},
+  {id:'saleor.cloudronapp',name:'Saleor',tag:'Headless e-commerce platform',cat:'ecommerce',lang:'python',stack:'Python/GraphQL',compat:'good',site:'saleor.io'},
+  {id:'spree.cloudronapp',name:'Spree',tag:'Open source e-commerce',cat:'ecommerce',lang:'ruby',stack:'Ruby on Rails',compat:'ok',site:'spreecommerce.org'},
   {id:'org.actualbudget.cloudronapp',name:'Actual Budget',tag:'Privacy-first local budgeting',cat:'finance',lang:'node',stack:'Node/React',compat:'great',site:'actualbudget.org'},
   {id:'com.invoiceninja.cloudronapp2',name:'Invoice Ninja',tag:'Open source invoicing platform',cat:'finance',lang:'php',stack:'PHP/Laravel',compat:'php',site:'invoiceninja.com'},
   {id:'com.wallosapp.cloudronapp',name:'Wallos',tag:'Personal subscription tracker',cat:'finance',lang:'php',stack:'PHP',compat:'php',site:'wallosapp.com'},
   {id:'org.dolibarr.cloudronapp',name:'Dolibarr',tag:'ERP & CRM for small businesses',cat:'finance',lang:'php',stack:'PHP',compat:'php',site:'dolibarr.org'},
   {id:'com.espocrm.cloudronapp',name:'Espo CRM',tag:'Open source CRM platform',cat:'finance',lang:'php',stack:'PHP',compat:'php',site:'espocrm.com'},
   {id:'net.minecraft.cloudronapp',name:'Minecraft',tag:'Java edition game server',cat:'game',lang:'java',stack:'Java',compat:'ok',site:'minecraft.net'},
+  {id:'plausible.cloudronapp',name:'Plausible',tag:'Lightweight web analytics',cat:'analytics',lang:'elixir',stack:'Elixir/React',compat:'good',site:'plausible.io'},
   {id:'net.minecraft.bedrock.cloudronapp',name:'Minecraft Bedrock',tag:'Bedrock edition game server',cat:'game',lang:'c',stack:'C++',compat:'ok',site:'minecraft.net'},
   {id:'com.valheim.cloudronapp',name:'Valheim Server',tag:'Viking survival game server',cat:'game',lang:'c',stack:'C# Unity',compat:'ok',site:'valheimgame.com'},
 ];
 
-const LANGS={next:{label:'Next.js',cls:'l-next'},node:{label:'Node/TS',cls:'l-node'},go:{label:'Go',cls:'l-go'},rust:{label:'Rust',cls:'l-rust'},python:{label:'Python',cls:'l-python'},ruby:{label:'Ruby',cls:'l-ruby'},php:{label:'PHP',cls:'l-php'},java:{label:'Java/JVM',cls:'l-java'},csharp:{label:'C#/.NET',cls:'l-csharp'},kotlin:{label:'Kotlin',cls:'l-kotlin'},c:{label:'C/C++',cls:'l-c'}};
-const CATS={all:'All',ai:'AI',cms:'CMS',comm:'Comms',dev:'Dev',doc:'Docs',email:'Email',file:'Files',finance:'Finance',game:'Gaming',media:'Media',monitor:'Monitoring',pm:'Projects',sec:'Security',social:'Social',tools:'Tools'};
-const CC={ai:['#1a2744','#4f7fff'],cms:['#1e2118','#5cb85c'],comm:['#211a30','#9b59b6'],dev:['#201e14','#e67e22'],doc:['#1a2532','#3498db'],email:['#22181e','#e91e8c'],file:['#1a2520','#1abc9c'],finance:['#1e2210','#8bc34a'],game:['#141e14','#61c04a'],media:['#201428','#e040fb'],monitor:['#14201e','#00bcd4'],pm:['#1e1a14','#ff7043'],sec:['#1c1424','#7c5cfc'],social:['#1a2018','#4caf50'],tools:['#201a14','#ff5722']};
+const LANGS={next:{label:'Next.js',cls:'l-next'},node:{label:'Node/TS',cls:'l-node'},go:{label:'Go',cls:'l-go'},rust:{label:'Rust',cls:'l-rust'},python:{label:'Python',cls:'l-python'},ruby:{label:'Ruby',cls:'l-ruby'},php:{label:'PHP',cls:'l-php'},java:{label:'Java/JVM',cls:'l-java'},csharp:{label:'C#/.NET',cls:'l-csharp'},kotlin:{label:'Kotlin',cls:'l-kotlin'},c:{label:'C/C++',cls:'l-c'},elixir:{label:'Elixir',cls:'l-elixir'},cpp:{label:'C++',cls:'l-cpp'}};
+const CATS={all:'All',ai:'AI',analytics:'Analytics',cms:'CMS',comm:'Comms',database:'Database',dev:'Dev',doc:'Docs',ecommerce:'E-commerce',email:'Email',file:'Files',finance:'Finance',game:'Gaming',media:'Media',monitor:'Monitoring',pm:'Projects',sec:'Security',social:'Social',tools:'Tools'};
+const CC={ai:['#1a2744','#4f7fff'],analytics:['#14201e','#00bcd4'],cms:['#1e2118','#5cb85c'],comm:['#211a30','#9b59b6'],database:['#1a2532','#3498db'],dev:['#201e14','#e67e22'],doc:['#1a2532','#3498db'],ecommerce:['#1e2210','#8bc34a'],email:['#22181e','#e91e8c'],file:['#1a2520','#1abc9c'],finance:['#1e2210','#8bc34a'],game:['#141e14','#61c04a'],media:['#201428','#e040fb'],monitor:['#14201e','#00bcd4'],pm:['#1e1a14','#ff7043'],sec:['#1c1424','#7c5cfc'],social:['#1a2018','#4caf50'],tools:['#201a14','#ff5722']};
 
 let curCat='all',curLang='all',hidePhp=false,dirOnly=false,sq='';
 function ini(n){return n.split(/\s+/).slice(0,2).map(w=>w[0]).join('').toUpperCase().slice(0,2);}
 
-function render(){
-  const cp=document.getElementById('catPills');
-  cp.innerHTML=Object.entries(CATS).map(([k,v])=>`<button class="pill${k===curCat?' active':''}" data-cat="${k}">${v}</button>`).join('');
-  cp.querySelectorAll('.pill').forEach(b=>b.addEventListener('click',()=>{curCat=b.dataset.cat;render();}));
-  const lp=document.getElementById('langPills');
-  lp.innerHTML=`<button class="pill${curLang==='all'?' active':''}" data-lang="all">All</button>`+
-    Object.entries(LANGS).map(([k,v])=>`<button class="pill ${v.cls}${k===curLang?' active':''}" data-lang="${k}">${v.label}</button>`).join('');
-  lp.querySelectorAll('.pill').forEach(b=>b.addEventListener('click',()=>{curLang=b.dataset.lang;render();}));
+function filtered(overrideCat, overrideLang){
   const q=sq.toLowerCase();
+  const cat=overrideCat!==undefined?overrideCat:curCat;
+  const lang=overrideLang!==undefined?overrideLang:curLang;
   const seen=new Set();
-  const f=APPS.filter(a=>{
+  return APPS.filter(a=>{
     if(seen.has(a.id))return false;seen.add(a.id);
     if(hidePhp&&a.lang==='php')return false;
     if(dirOnly&&(a.lang==='php'||a.compat==='ok'||a.compat==='php'))return false;
-    if(curCat!=='all'&&a.cat!==curCat)return false;
-    if(curLang!=='all'&&a.lang!==curLang)return false;
+    if(cat!=='all'&&a.cat!==cat)return false;
+    if(lang!=='all'&&a.lang!==lang)return false;
     if(q&&!a.name.toLowerCase().includes(q)&&!a.tag.toLowerCase().includes(q)&&!a.stack.toLowerCase().includes(q)&&!(a.site||'').includes(q))return false;
     return true;
   });
+}
+
+function render(){
+  const f=filtered();
+  const cp=document.getElementById('catPills');
+  cp.innerHTML=Object.entries(CATS).map(([k,v])=>{
+    const n=k==='all'?filtered('all',curLang).length:filtered(k,curLang).length;
+    return `<button class="pill${k===curCat?' active':''}" data-cat="${k}">${v} <small style="opacity:.5;font-size:10px">${n}</small></button>`;
+  }).join('');
+  cp.querySelectorAll('.pill').forEach(b=>b.addEventListener('click',()=>{curCat=b.dataset.cat;render();}));
+  const lp=document.getElementById('langPills');
+  lp.innerHTML=`<button class="pill${curLang==='all'?' active':''}" data-lang="all">All <small style="opacity:.5;font-size:10px">${filtered(curCat,'all').length}</small></button>`+
+    Object.entries(LANGS).map(([k,v])=>{
+      const n=filtered(curCat,k).length;
+      return `<button class="pill ${v.cls}${k===curLang?' active':''}" data-lang="${k}">${v.label} <small style="opacity:.5;font-size:10px">${n}</small></button>`;
+    }).join('');
+  lp.querySelectorAll('.pill').forEach(b=>b.addEventListener('click',()=>{curLang=b.dataset.lang;render();}));
   document.getElementById('countBadge').textContent=f.length+' apps';
+  document.getElementById('subtitle').textContent=f.length+' free self-hosted apps · stack badges, Directus compatibility, and direct links to every app\'s website';
   if(!f.length){document.getElementById('grid').innerHTML='<div class="empty">No apps match your filters</div>';return;}
   document.getElementById('grid').innerHTML=f.map(a=>{
     const[bg,fg]=CC[a.cat]||CC.tools;
     const li=LANGS[a.lang]||LANGS.node;
     const storeHref=`https://www.cloudron.io/store/app.${a.id}.html`;
     const siteHref=a.site?`https://${a.site}`:storeHref;
-    const imgSrc=a.site?`https://logo.clearbit.com/${a.site}`:'';
+    // Use Google Favicons directly - Clearbit is blocked
+    const imgSrc=a.site?`https://www.google.com/s2/favicons?domain=${a.site}&sz=64`:'';
     const iconBlock=a.site
-      ?`<img class="app-img" src="${imgSrc}" loading="lazy" alt=""
-          onload="this.style.display='block';this.nextElementSibling.style.display='none';"
-          onerror="if(!this.dataset.fb){this.dataset.fb=1;this.src='https://www.google.com/s2/favicons?domain=${a.site}&sz=64';}else{this.style.display='none';this.nextElementSibling.style.display='flex';}">
+      ?`<img class="app-img" src="${imgSrc}" alt=""
+          onload="this.style.visibility='visible';this.style.position='relative';this.nextElementSibling.style.visibility='hidden';this.nextElementSibling.style.position='absolute';"
+          onerror="this.style.visibility='hidden';this.style.position='absolute';this.nextElementSibling.style.visibility='visible';this.nextElementSibling.style.position='relative';">
         <div class="app-icon" style="background:${bg};color:${fg}">${ini(a.name)}</div>`
       :`<div class="app-icon" style="background:${bg};color:${fg}">${ini(a.name)}</div>`;
     return `<a class="app-card${a.lang==='php'?' php-dim':''}${a.compat==='great'?' cn':''}" href="${siteHref}" target="_blank" rel="noopener">
