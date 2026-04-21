@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VidiSmart Server Cleanup Checklist</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0f1117; color: #e2e8f0; min-height: 100vh; }
+
+  .header { background: #1a1d2e; border-bottom: 1px solid #2d3748; padding: 24px 32px; position: sticky; top: 0; z-index: 100; }
+  .header h1 { font-size: 1.4rem; font-weight: 700; color: #fff; }
+  .header p { color: #94a3b8; font-size: 0.85rem; margin-top: 4px; }
+
+  .toolbar { display: flex; gap: 12px; margin-top: 16px; flex-wrap: wrap; align-items: center; }
+  .btn { padding: 8px 16px; border-radius: 6px; border: none; cursor: pointer; font-size: 0.8rem; font-weight: 600; transition: all 0.15s; }
+  .btn-red { background: #ef4444; color: white; }
+  .btn-red:hover { background: #dc2626; }
+  .btn-green { background: #22c55e; color: white; }
+  .btn-green:hover { background: #16a34a; }
+  .btn-gray { background: #374151; color: #d1d5db; }
+  .btn-gray:hover { background: #4b5563; }
+  .btn-blue { background: #3b82f6; color: white; }
+  .btn-blue:hover { background: #2563eb; }
+
+  .stats { margin-left: auto; display: flex; gap: 16px; font-size: 0.8rem; }
+  .stat { background: #1e2235; padding: 6px 12px; border-radius: 6px; border: 1px solid #2d3748; }
+  .stat span { font-weight: 700; }
+  .stat .del { color: #f87171; }
+  .stat .keep { color: #4ade80; }
+  .stat .total { color: #60a5fa; }
+
+  .container { max-width: 1100px; margin: 0 auto; padding: 24px 32px; }
+
+  .section { margin-bottom: 32px; background: #1a1d2e; border-radius: 12px; border: 1px solid #2d3748; overflow: hidden; }
+  .section-header { padding: 16px 20px; background: #1e2235; border-bottom: 1px solid #2d3748; display: flex; align-items: center; gap: 12px; }
+  .section-title { font-size: 0.95rem; font-weight: 700; color: #fff; flex: 1; }
+  .section-badge { font-size: 0.7rem; padding: 3px 8px; border-radius: 20px; font-weight: 600; }
+  .badge-delete { background: #7f1d1d; color: #fca5a5; }
+  .badge-keep { background: #14532d; color: #86efac; }
+  .section-actions { display: flex; gap: 8px; }
+  .section-btn { padding: 4px 10px; border-radius: 4px; border: 1px solid #374151; background: transparent; color: #94a3b8; font-size: 0.72rem; cursor: pointer; }
+  .section-btn:hover { background: #374151; color: #e2e8f0; }
+
+  .file-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 0; }
+  .file-item { display: flex; align-items: center; gap: 10px; padding: 9px 20px; border-bottom: 1px solid #1e2235; transition: background 0.1s; }
+  .file-item:hover { background: #1e2235; }
+  .file-item:last-child { border-bottom: none; }
+
+  input[type="checkbox"] { width: 16px; height: 16px; accent-color: #ef4444; cursor: pointer; flex-shrink: 0; }
+  input[type="checkbox"].keep-cb { accent-color: #22c55e; }
+
+  .filename { font-size: 0.8rem; font-family: 'Courier New', monospace; color: #cbd5e1; word-break: break-all; }
+  .file-item.unchecked .filename { color: #4ade80; text-decoration: underline; }
+
+  .note { background: #1e2235; border: 1px solid #f59e0b44; border-radius: 8px; padding: 12px 16px; margin-bottom: 20px; font-size: 0.82rem; color: #fbbf24; }
+  .note strong { color: #f59e0b; }
+
+  .export-area { margin-top: 24px; background: #1a1d2e; border-radius: 12px; border: 1px solid #2d3748; padding: 20px; }
+  .export-area h3 { font-size: 0.9rem; font-weight: 700; margin-bottom: 12px; color: #fff; }
+  #keepList { width: 100%; height: 160px; background: #0f1117; border: 1px solid #374151; border-radius: 6px; color: #4ade80; font-family: monospace; font-size: 0.75rem; padding: 10px; resize: vertical; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>VidiSmart Server Cleanup Checklist</h1>
+  <p>Files marked <span style="color:#f87171">✓ checked = DELETE</span> &nbsp;|&nbsp; <span style="color:#4ade80">unchecked = KEEP</span> &nbsp;|&nbsp; Generated: April 13, 2026</p>
+  <div class="toolbar">
+    <button class="btn btn-red" onclick="checkAll()">Check All (Mark Delete)</button>
+    <button class="btn btn-green" onclick="uncheckAll()">Uncheck All (Mark Keep)</button>
+    <button class="btn btn-gray" onclick="resetAll()">Reset to Default</button>
+    <button class="btn btn-blue" onclick="generateKeepList()">Generate Keep List</button>
+    <div class="stats">
+      <div class="stat">To Delete: <span class="del" id="delCount">0</span></div>
+      <div class="stat">To Keep: <span class="keep" id="keepCount">0</span></div>
+      <div class="stat">Total: <span class="total" id="totalCount">0</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+  <div class="note">
+    <strong>Instructions:</strong> All items below are pre-checked (marked for deletion). <strong>Uncheck any file you want to KEEP.</strong> Unchecked files will turn green. Use the "Generate Keep List" button to export a list of files to keep.
+  </div>
+
+  <!-- ===== MARKDOWN FILES ===== -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-title">Markdown Files (.md) — 160 files</div>
+      <span class="section-badge badge-delete">DELETE</span>
+      <div class="section-actions">
+        <button class="section-btn" onclick="sectionCheck(this, true)">Check All</button>
+        <button class="section-btn" onclick="sectionCheck(this, false)">Uncheck All</button>
+      </div>
+    </div>
+    <div class="file-grid" id="section-md">
+    </div>
+  </div>
+
+  <!-- ===== PYTHON FILES ===== -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-title">Python Files (.py) — 70+ files</div>
+      <span class="section-badge badge-delete">DELETE</span>
+      <div class="section-actions">
+        <button class="section-btn" onclick="sectionCheck(this, true)">Check All</button>
+        <button class="section-btn" onclick="sectionCheck(this, false)">Uncheck All</button>
+      </div>
+    </div>
+    <div class="file-grid" id="section-py">
+    </div>
+  </div>
+
+  <!-- ===== JSON FILES ===== -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-title">JSON Files (.json) — 30+ files</div>
+      <span class="section-badge badge-delete">DELETE</span>
+      <div class="section-actions">
+        <button class="section-btn" onclick="sectionCheck(this, true)">Check All</button>
+        <button class="section-btn" onclick="sectionCheck(this, false)">Uncheck All</button>
+      </div>
+    </div>
+    <div class="file-grid" id="section-json">
+    </div>
+  </div>
+
+  <!-- ===== JS/TS FILES ===== -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-title">JavaScript / TypeScript Scripts — ~80 files</div>
+      <span class="section-badge badge-delete">DELETE</span>
+      <div class="section-actions">
+        <button class="section-btn" onclick="sectionCheck(this, true)">Check All</button>
+        <button class="section-btn" onclick="sectionCheck(this, false)">Uncheck All</button>
+      </div>
+    </div>
+    <div class="file-grid" id="section-js">
+    </div>
+  </div>
+
+  <!-- ===== CONFIG FILES ===== -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-title">Config / Docker / Other Files — 11 files</div>
+      <span class="section-badge badge-delete">DELETE</span>
+      <div class="section-actions">
+        <button class="section-btn" onclick="sectionCheck(this, true)">Check All</button>
+        <button class="section-btn" onclick="sectionCheck(this, false)">Uncheck All</button>
+      </div>
+    </div>
+    <div class="file-grid" id="section-config">
+    </div>
+  </div>
+
+  <!-- ===== EXPORT ===== -->
+  <div class="export-area">
+    <h3>Files to KEEP (unchecked items)</h3>
+    <textarea id="keepList" placeholder="Click 'Generate Keep List' above to see which files you've marked to keep..."></textarea>
+  </div>
+
+</div>
+
+<script>
+const files = {
+  md: [
+    "2000Line.Claude.VisualVector.SmartChanel.md",
+    "2026_WordPress_ACF_Landing_Page-aa680fd4-ef1a-5605-ae11-c09a704c6de9.md",
+    "3DVisualVector.KnowledgeGraph.md",
+    "AGENT_AUTOMATION_PLAN.md",
+    "ALTERNATIVES-TO-CONTINUE.md",
+    "APPFLOWY-NO-WEBSEARCH-EXPLANATION.md",
+    "APPFLOWY-WEBSEARCH-COMPLETE.md",
+    "APPFLOWY-WEBSEARCH-IMPLEMENTATION.md",
+    "APPFLOWY_GOTENBERG_FIX.md",
+    "BATCH_PROCESS_NOTEBOOKLM.md",
+    "BOOK_IMAGE_INSERTER_README.md",
+    "BRANDSWAP_AGENT_ASSIGNMENTS.md",
+    "BRANDSWAP_ANALYSIS.md",
+    "BRANDSWAP_BATCH_READY.md",
+    "BRANDSWAP_CHANGES.md",
+    "BRANDSWAP_COMPLETE_PLAN.md",
+    "BRANDSWAP_COMPLETE_SUMMARY.md",
+    "BRANDSWAP_DEPLOYMENT.md",
+    "BRANDSWAP_DEPLOYMENT_TESTING.md",
+    "BRANDSWAP_LOGO_ALIGNMENT_FIXED.md",
+    "BRANDSWAP_QUICK_START.md",
+    "BRANDSWAP_SUMMARY.md",
+    "BRANDSWAP_TEST_STATUS.md",
+    "BrandSwap.md",
+    "CANDID_PROFILES_CHANGELOG.md",
+    "CLAUDE.md",
+    "CODEGPT-INSTALLATION-WALKTHROUGH.md",
+    "COMPLETE_SYSTEM_ANALYSIS.md",
+    "CONTINUE-SETUP-GUIDE.md",
+    "Candid-Studios-Media-Asset-Management-Plan.md",
+    "CandidStudios_280_Landing_Pages_Report.md",
+    "Candid_Studios_Master_Plan.md",
+    "DEPLOYMENT_MANIFEST.md",
+    "DEPLOYMENT_PLAN.md",
+    "DEPLOY_NOW.md",
+    "DEPLOY_VIDICITY_THEME.md",
+    "DESIGN_SYSTEM_2026.md",
+    "DESIGN_TOOLS_SETUP.md",
+    "FORTUNATRADE_COMPLETE_PLAN.md",
+    "FRAMEIO_UI_REFERENCE.md",
+    "GOOGLE-DRIVE-MCP-SETUP.md",
+    "GOOGLE_DRIVE_MCP_SETUP.md",
+    "Gemini_MCP_fix.md",
+    "ICON_GEN_66_SMARTCHANNEL_CX_CONSOLE_PLAN.md",
+    "IMAGE_LINKS.md",
+    "KIMI_K2_5_VSCODE_SETUP.md",
+    "Kimi.MasterListUpdates-ses_3a26.md",
+    "Kimi.OpenCode.Manual.md",
+    "LESSONS_LEARNED.md",
+    "LLM_UPDATE_REPORT.md",
+    "LM-STUDIO-VSCODE-SETUP.md",
+    "LMSTUDIO_CHATML_SETUP.md",
+    "LOGO_AGENTS_README.md",
+    "LOGO_ENHANCEMENT_README.md",
+    "MCP_CONFIG_GUIDE.md",
+    "NAVIGATION_GUIDE.md",
+    "NOTEBOOKLM-ANYTHINGLLM-GUIDE.md",
+    "NVIDIA_NIM_VSCODE_SETUP.md",
+    "OPENCODE_GEMINI_SETUP.md",
+    "OPENCODE_Kimi_MANUAL.md",
+    "OPENWEBUI-WEBSEARCH-GUIDE.md",
+    "PAPERLESS_NGX_ANYTHINGLLM_SETUP.md",
+    "PORT-REGISTRY.md",
+    "PROJECT_REQUIREMENTS.md",
+    "Patent2.md",
+    "PatentWork.md",
+    "Qwen-Image-Wan2.2-ComfyUI-System.md",
+    "R2_PUBLIC_ACCESS_SETUP.md",
+    "R2_UPLOAD_QUICKREF.md",
+    "RAILWAY_SETUP.md",
+    "README.md",
+    "REMOTE_EXPLORER_SETUP.md",
+    "REPO_SEPARATION_PLAN.md",
+    "Rust.VidiFlow.Compile.md",
+    "SIMPLE_TAVILY_SETUP.md",
+    "SITEGROUND_MALWARE_CLEANUP_2026-03-19.md",
+    "SITE_GROUND_SFTP_SETUP.md",
+    "SMARTCHANNEL_UI_IMPLEMENTATION_PLAN.md",
+    "SMARTDECK_INTEGRATION_GUIDE.md",
+    "SMARTDECK_PRODUCTION_UPGRADE_PLAN.md",
+    "SMARTGEN_MEDIA_API_KEYS_GUIDE.md",
+    "SMARTSTACK_README.md",
+    "SUPABASE_SETUP_GUIDE.md",
+    "ScienceReligionAi.md",
+    "Sess.VidiSmart.VidiFlow_3bb6.md",
+    "SmartChannel_CX_Chat_History.md",
+    "SmartChannel_CX_Comprehensive_Documentation.md",
+    "SmartChannel_CX_Quick_Start_Guide.md",
+    "SmartChannel_CX_VidiCRM_Integration_Guide.md",
+    "Smart_Stack_Builder_App.md",
+    "TAVILY_INTEGRATION_PLAN.md",
+    "TAVILY_SETUP_GUIDE.md",
+    "TEMPLATE_COMPARISON_GUIDE.md",
+    "TEST_BEFORE_BATCH.md",
+    "TechGlow-Design-Specs.md",
+    "VCRMVIDICRM.md",
+    "VIDICRM_LOGO_RECOVERY_GUIDE.md",
+    "VIDIFLOW_MASTER_PLAN.md",
+    "VIDIFLOW_PROXY_PLAN.md",
+    "VIDIFUND_MEDIA_PLAN.md",
+    "VIDIMAIL_AGENTIC_ARCHITECTURE.md",
+    "VIDIMAIL_BUILD_PLAN.md",
+    "VIDIMAIL_COMPETITIVE_ANALYSIS_REPORT.md",
+    "VIDIMAIL_IMPLEMENTATION_ROADMAP.md",
+    "VIDIMAIL_PORT_CONFIG.md",
+    "VIDISMART-HTML-FILES.md",
+    "VIDISMART.Directus.Converge.md",
+    "VIDISMART_APP_PITCH.md",
+    "VIDISMART_COMMUNITY_SITE_PLAN.md",
+    "VIDISMART_DATA_DISCOVERY.md",
+    "VIDISMART_DEPLOYMENT_SYSTEM.md",
+    "VIDISMART_RAILWAY_DEPLOYMENT.md",
+    "VIDISMART_SITE_SCAN_REPORT.md",
+    "VIDISMART_STATUS_PLAN.md",
+    "VIDISMART_VISUAL_VECTOR_OMNI_SEARCH_CONFIG.md",
+    "VIDI_AI_ANYTHINGLLM_REBRAND_GUIDE.md",
+    "VIDI_AI_REBRANDING_COMPLETE.md",
+    "VIDI_AI_REBRANDING_SUMMARY.md",
+    "VLM_Model_Comparison_2026.md",
+    "VS_CODE_REMOTE_STEPS.md",
+    "VectorDatabase_text_markdown.md",
+    "Vespa-Vector-Database-Guide.md",
+    "VidiSmart_Progress.md",
+    "VisualVector.PRD1.md",
+    "WORKAROUND-GUIDE.md",
+    "anth.chat-1.md",
+    "appflowy-fixes.md",
+    "appflowy-qwen-web-search-solution.md",
+    "audit_complete_2026.md",
+    "audit_complete_2026_final.md",
+    "audit_complete_2026_round2.md",
+    "brand.swap.NotebookLM_39c3.md",
+    "browser-automation-chat-session.md",
+    "cloudflare_cdn_guide.md",
+    "current_page.md",
+    "ftp_creds.md",
+    "gemini-dash-worklog.md",
+    "graphics_tasks_breakdown.md",
+    "implementation_plan.md",
+    "kimi.openc.session-ses_3bc7.md",
+    "kimi.tools.md",
+    "masterlist-ses_3a26.md",
+    "mini-mini-buzz-redesign.md",
+    "ollama-web-search-config.md",
+    "openwebui-web-search-fix.md",
+    "screenshot-capture-session.md",
+    "siteground.cachedump.md",
+    "smartchannel.dashbuild-ses_397e.md",
+    "smartgen-stack.md",
+    "vidi-snapshot.md",
+    "vidi.news.deployR2.ses_3a19.md",
+    "vidibrand.md",
+    "vidismart.R2.md",
+    "convert_png_to_svg_guide.md"
+  ],
+  py: [
+    "ABSOLUTE_FINAL_NO_DUPS.py",
+    "add_logo_overlay.py",
+    "ai_companies_scraper_v2.py",
+    "ai_visual_rag_scraper.py",
+    "appflowy-date-integration.py",
+    "apply_techglow_style.py",
+    "book_image_inserter.py",
+    "build_gallery.py",
+    "capture_agent_platforms.py",
+    "capture_vlm_screenshots.py",
+    "check_g.py",
+    "comprehensive_scraper.py",
+    "convert_report_to_pdf.py",
+    "convert_to_pdf_docx.py",
+    "convert_vidi_png_to_svg.py",
+    "copy_images.py",
+    "copy_images_to_v7.py",
+    "create_candid_ppt.py",
+    "create_final_presentation.py",
+    "create_google_slides_techglow.py",
+    "create_presentation_fresh.py",
+    "create_v8.py",
+    "create_vidi_ai_logos.py",
+    "create_vidismart_presentation.py",
+    "create_vidismart_presentation_restructured.py",
+    "detect_notebooklm_logo.py",
+    "download_assets.py",
+    "download_real_assets.py",
+    "download_stock_logos.py",
+    "download_stock_logos_v2.py",
+    "duplicate_techglow_slides.py",
+    "enhanced_scraper.py",
+    "extract_ai_consultants.py",
+    "extract_and_apply_pptx.py",
+    "extract_pptx_design.py",
+    "fetch3500.py",
+    "fetch_vlm_page.py",
+    "fetch_zeus.py",
+    "find_and_copy_images.py",
+    "find_frameio_images.py",
+    "fix_15TechPillars_bullets.py",
+    "fix_missing_captures.py",
+    "fix_moderntechguidelines.py",
+    "fix_svg_colors.py",
+    "generate_ai_directory.py",
+    "generate_ai_directory_optimized.py",
+    "generate_ai_directory_v2.py",
+    "generate_ai_directory_v3.py",
+    "generate_capabilities_report.py",
+    "generate_complete_directory.py",
+    "generate_complete_docs.py",
+    "insert_FINAL_NO_DUPS.py",
+    "insert_all_images_NO_DUPLICATES.py",
+    "insert_images_ch33.py",
+    "kratom_kava_scraper.py",
+    "lmstudio-chat-auto-date.py",
+    "logo_downloader_agent.py",
+    "mcp-date-time-server.py",
+    "merge_presentations.py",
+    "move_artifacts.py",
+    "notebooklm-anythingllm-bridge.py",
+    "notebooklm-mcp-http.py",
+    "notebooklm-mcp-server.py",
+    "notebooklm-mcp-simple.py",
+    "png_to_svg_converter.py",
+    "rebrand_notebooklm.py",
+    "remove_notebooklm_logo.py",
+    "scrape_company_descriptions.py",
+    "scrape_descriptions_improved.py",
+    "search_html.py",
+    "simple_png_to_svg.py",
+    "smartgen-mcp-server.py",
+    "temp_extract.py",
+    "test-tavily.py",
+    "test_mcp.py",
+    "update_vscode_settings.py",
+    "verify_links.py",
+    "verify_nav_links_agent.py",
+    "vidismartdeck.py"
+  ],
+  json: [
+    "BRANDSWAP_CONFIG.json",
+    "FIXED-tavily-mcp-servers.json",
+    "ai_companies_v2_20260216_133614.json",
+    "ai_consultants_data.json",
+    "ai_visual_rag_companies_20260214_165715.json",
+    "branding-config.json",
+    "company_descriptions.json",
+    "config.json",
+    "continue-original-fixed.json",
+    "cors.json",
+    "figma-mcp-config.json",
+    "generation_config.json",
+    "google-drive-mcp.json",
+    "google_slides_structure.json",
+    "huggingface_qwen35_models.json",
+    "kapture-mcp-config.json",
+    "kratom_kava_complete_20260214_140628.json",
+    "kratom_kava_comprehensive_20260213_133443.json",
+    "kratom_kava_results_20260213_123237.json",
+    "lmstudio-mcp-config.json",
+    "mcp-config-combined.json",
+    "mcp-config.json",
+    "notebooklm-mcp-config.json",
+    "payload.json",
+    "processor_config.json",
+    "railway.json",
+    "tokenizer_config.json",
+    "vercel.json"
+  ],
+  js: [
+    "add-fallback.js",
+    "ai_consultants_static.ts",
+    "appflowy-ai-mcp-proxy.js",
+    "apply-cors.js",
+    "check-actual-buckets.js",
+    "check-images.js",
+    "check-recent-files.js",
+    "check-supabase-config.js",
+    "check-table.js",
+    "create-table-api.js",
+    "deploy-all-fixed.js",
+    "deploy-flowchart.js",
+    "deploy-gemini-dash.js",
+    "deploy-masterlist.js",
+    "deploy-qwen-hardware.js",
+    "deploy-qwen-quick.js",
+    "deploy-single.js",
+    "deploy-smartgen.js",
+    "deploy-smartstack.js",
+    "deploy-universal.js",
+    "deploy-vidi-all.js",
+    "deploy-vidibuzz-new.js",
+    "deploy-vidibuzz.js",
+    "deploy-vidiflow.js",
+    "deploy-with-public-access.js",
+    "deploy.js",
+    "deploy_vidishop_campaign.js",
+    "execute-sql.js",
+    "execute-supabase-ipv4.js",
+    "execute-supabase-pooler.js",
+    "execute-supabase-sql.js",
+    "fetch-company-logos.js",
+    "final-fix-videos.js",
+    "find-account.js",
+    "fix-all-videos.js",
+    "fix-broken-images.js",
+    "fix-remaining-8.js",
+    "fix-video-links.js",
+    "fix-videos-clean.js",
+    "get-anon-key.js",
+    "list-buckets-vidi1.js",
+    "list-buckets.js",
+    "list-cf-zones.js",
+    "list-r2-files.js",
+    "make-r2-public.js",
+    "migrate-r2-bucket.js",
+    "mm-nav-component.js",
+    "notebooklm-mcp-wrapper.js",
+    "pics.js",
+    "purge-cf-cache.js",
+    "run-sql-management-api.js",
+    "run-supabase-sql.js",
+    "smartstack-data-import.js",
+    "supabase-mcp-server.js",
+    "sync.js",
+    "sync_v2.js",
+    "sync_v3.js",
+    "test-nvidia-nim.js",
+    "upload-all-vidimail-files.js",
+    "upload-assets.js",
+    "upload-brand-swap-images.js",
+    "upload-brandswap-images.js",
+    "upload-competitive-analysis.js",
+    "upload-cx-premium.js",
+    "upload-cx.js",
+    "upload-frameio-update.js",
+    "upload-hero-video.js",
+    "upload-image-to-r2.js",
+    "upload-local-video.js",
+    "upload-nav-update.js",
+    "upload-network-page.js",
+    "upload-poster.js",
+    "upload-r2.js",
+    "upload-smartbook.js",
+    "upload-smartchannel-lowercase.js",
+    "upload-smartstack-assets.js",
+    "upload-solar.js",
+    "upload-stack-images.js",
+    "upload-tech-assets.js",
+    "upload-tech-update.js",
+    "upload-to-cdn.js",
+    "upload-to-vidi1.js",
+    "upload-video-to-r2.js",
+    "upload-vidibuzz-images.js",
+    "upload-vidimail-html.js",
+    "upload-vidinews-images.js",
+    "upload-vidismart-com.js",
+    "upload-viditwin-complete.js",
+    "upload_generated.js",
+    "validate-site.js",
+    "verify-member-profiles.js",
+    "verify-members.js",
+    "verify_nav_links_agent.js"
+  ],
+  config: [
+    "analysis_options.yaml",
+    "deploy-smartbook.bat",
+    "docker-compose.paperless.yml",
+    "docker-compose.yml",
+    "livekit-config.yaml",
+    "package-lock.json",
+    "package.json",
+    "tsconfig.json"
+  ]
+};
+
+const sectionMap = {
+  md: 'section-md',
+  py: 'section-py',
+  json: 'section-json',
+  js: 'section-js',
+  config: 'section-config'
+};
+
+// Build checkboxes
+Object.entries(files).forEach(([type, list]) => {
+  const container = document.getElementById(sectionMap[type]);
+  list.forEach((f, i) => {
+    const id = `cb-${type}-${i}`;
+    const div = document.createElement('div');
+    div.className = 'file-item';
+    div.id = `item-${type}-${i}`;
+    div.innerHTML = `
+      <input type="checkbox" id="${id}" checked onchange="onToggle(this, '${type}', ${i})">
+      <label for="${id}" class="filename">${f}</label>
+    `;
+    container.appendChild(div);
+  });
+});
+
+function onToggle(cb, type, i) {
+  const item = document.getElementById(`item-${type}-${i}`);
+  item.classList.toggle('unchecked', !cb.checked);
+  updateStats();
+}
+
+function updateStats() {
+  const all = document.querySelectorAll('input[type=checkbox]');
+  let del = 0, keep = 0;
+  all.forEach(cb => cb.checked ? del++ : keep++);
+  document.getElementById('delCount').textContent = del;
+  document.getElementById('keepCount').textContent = keep;
+  document.getElementById('totalCount').textContent = all.length;
+}
+
+function checkAll() {
+  document.querySelectorAll('input[type=checkbox]').forEach(cb => {
+    cb.checked = true;
+    cb.closest('.file-item').classList.remove('unchecked');
+  });
+  updateStats();
+}
+
+function uncheckAll() {
+  document.querySelectorAll('input[type=checkbox]').forEach(cb => {
+    cb.checked = false;
+    cb.closest('.file-item').classList.add('unchecked');
+  });
+  updateStats();
+}
+
+function resetAll() { checkAll(); }
+
+function sectionCheck(btn, checked) {
+  const section = btn.closest('.section');
+  section.querySelectorAll('input[type=checkbox]').forEach(cb => {
+    cb.checked = checked;
+    cb.closest('.file-item').classList.toggle('unchecked', !checked);
+  });
+  updateStats();
+}
+
+function generateKeepList() {
+  const kept = [];
+  document.querySelectorAll('input[type=checkbox]').forEach(cb => {
+    if (!cb.checked) {
+      kept.push(cb.nextElementSibling.textContent);
+    }
+  });
+  const ta = document.getElementById('keepList');
+  if (kept.length === 0) {
+    ta.value = '(No files marked to keep — all will be deleted)';
+  } else {
+    ta.value = kept.join('\n');
+  }
+  ta.scrollIntoView({ behavior: 'smooth' });
+}
+
+// Init
+updateStats();
+</script>
+</body>
+</html>

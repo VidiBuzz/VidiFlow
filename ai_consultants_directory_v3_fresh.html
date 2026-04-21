@@ -1,0 +1,1906 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="referrer" content="no-referrer">
+    <title>VIDISMART | AI Consultants Directory - 600 Companies</title>
+
+    <!-- Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+    <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kumbh+Sans:wght@300;400;700;900&family=Inter:wght@200;400;600;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --teal: #0d9488;
+            --teal-bright: #2dd4bf;
+            --teal-dark: #0f766e;
+            --obsidian: #020617;
+            --slate: #0f172a;
+            --slate-light: #1e293b;
+            --border: rgba(255, 255, 255, 0.1);
+            --font-vidi: 'Kumbh Sans', sans-serif;
+            --font-main: 'Inter', sans-serif;
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-hover: rgba(255, 255, 255, 0.08);
+            --gold: #fbbf24;
+            --gold-dark: #d97706;
+            --purple: #a855f7;
+            --blue: #3b82f6;
+            --green: #22c55e;
+            --red: #ef4444;
+            --orange: #f97316;
+            --pink: #ec4899;
+        }
+
+        /* BASE */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--obsidian);
+            color: #f1f5f9;
+            min-height: 100vh;
+            display: flex;
+            overflow-x: hidden;
+        }
+
+        /* SIDEBAR NAVIGATION */
+        aside {
+            width: 320px;
+            background: linear-gradient(180deg, var(--obsidian) 0%, var(--slate) 100%);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+            flex-shrink: 0;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            padding: 40px 30px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .logo {
+            font-family: var(--font-vidi);
+            font-size: 2.2rem;
+            font-weight: 900;
+            letter-spacing: -2px;
+        }
+
+        .logo span {
+            background: linear-gradient(135deg, var(--teal-bright), var(--teal));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .tagline {
+            font-size: 0.65rem;
+            color: #475569;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            font-weight: 800;
+            margin-top: 8px;
+        }
+
+        nav {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .nav-section-title {
+            font-size: 0.6rem;
+            color: #475569;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 800;
+            margin: 20px 0 10px 15px;
+        }
+
+        .nav-link {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 14px 20px;
+            color: #94a3b8;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 700;
+            border-radius: 12px;
+            transition: 0.3s;
+            background: none;
+            border: none;
+            text-align: left;
+            cursor: pointer;
+            margin-bottom: 5px;
+        }
+
+        .nav-link:hover {
+            color: white;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .nav-link.active {
+            background: var(--teal);
+            color: white;
+            box-shadow: 0 10px 20px rgba(13, 148, 136, 0.3);
+        }
+
+        .nav-link i {
+            width: 20px;
+            text-align: center;
+        }
+
+        /* MAIN CONTENT AREA */
+        main {
+            flex: 1;
+            margin-left: 320px;
+            overflow-x: hidden;
+        }
+
+        /* HERO SECTION */
+        #hero {
+            min-height: auto;
+            background: var(--obsidian);
+            position: relative;
+            display: flex;
+            align-items: center;
+            padding: 16px 50px;
+            overflow: hidden;
+            border-bottom: 1px solid var(--border);
+        }
+
+        #hero-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            opacity: 0.3;
+        }
+
+        .hero-body {
+            position: relative;
+            z-index: 10;
+            max-width: 1200px;
+            width: 100%;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 3px 10px;
+            background: rgba(45, 212, 191, 0.05);
+            border: 1px solid rgba(45, 212, 191, 0.2);
+            color: var(--teal-bright);
+            border-radius: 50px;
+            font-size: 0.55rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 6px;
+        }
+
+        h1 {
+            font-family: var(--font-vidi);
+            font-size: 1.6rem;
+            font-weight: 900;
+            color: white;
+            line-height: 1.15;
+            margin-bottom: 6px;
+            letter-spacing: -1px;
+        }
+
+        h1 .highlight {
+            background: linear-gradient(135deg, var(--teal-bright), var(--teal));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-p {
+            font-size: 0.78rem;
+            color: #94a3b8;
+            line-height: 1.4;
+            font-weight: 300;
+            max-width: 650px;
+            margin-bottom: 10px;
+        }
+
+        /* STATS BAR */
+        .stats-bar {
+            display: flex;
+            gap: 10px;
+            padding: 6px 0 0 0;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 6px 14px;
+            text-align: center;
+            min-width: 75px;
+        }
+
+        .stat-number {
+            font-family: var(--font-vidi);
+            font-size: 1.1rem;
+            font-weight: 900;
+            color: var(--teal-bright);
+            line-height: 1;
+        }
+
+        .stat-label {
+            font-size: 0.55rem;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            font-weight: 700;
+            margin-top: 2px;
+        }
+
+        /* FILTER BAR - STICKY */
+        .filter-bar {
+            position: sticky;
+            top: 0;
+            background: rgba(2, 6, 23, 0.98);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            padding: 8px 30px;
+            z-index: 50;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .filter-label {
+            font-size: 0.5rem;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            font-weight: 700;
+        }
+
+        .filter-select {
+            background: var(--slate-light);
+            border: 1px solid var(--border);
+            color: #f1f5f9;
+            padding: 6px 26px 6px 10px;
+            border-radius: 6px;
+            font-size: 0.72rem;
+            font-weight: 500;
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2394a3b8'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 6px center;
+            background-size: 12px;
+            min-width: 140px;
+            transition: 0.2s;
+        }
+
+        .filter-select:hover {
+            border-color: var(--teal);
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: var(--teal-bright);
+            box-shadow: 0 0 0 3px rgba(45, 212, 191, 0.1);
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 200px;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            background: var(--slate-light);
+            border: 1px solid var(--border);
+            color: #f1f5f9;
+            padding: 6px 10px 6px 30px;
+            border-radius: 6px;
+            font-size: 0.72rem;
+            transition: 0.2s;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--teal-bright);
+            box-shadow: 0 0 0 3px rgba(45, 212, 191, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #64748b;
+            font-size: 0.75rem;
+        }
+
+        .filter-actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-primary {
+            background: var(--teal);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--teal-bright);
+        }
+
+        .btn-secondary {
+            background: var(--slate-light);
+            color: #94a3b8;
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--glass-hover);
+            color: white;
+        }
+
+        .btn-active {
+            background: var(--teal);
+            color: white;
+        }
+
+        /* VIEW TOGGLE */
+        .view-toggle {
+            display: flex;
+            background: var(--slate-light);
+            border-radius: 6px;
+            padding: 3px;
+            border: 1px solid var(--border);
+        }
+
+        .view-btn {
+            padding: 6px 10px;
+            border-radius: 4px;
+            background: none;
+            border: none;
+            color: #64748b;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .view-btn.active {
+            background: var(--teal);
+            color: white;
+        }
+
+        /* RESULTS COUNT */
+        .results-info {
+            padding: 6px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+            background: var(--slate-light);
+        }
+
+        .results-count {
+            font-size: 0.72rem;
+            color: #94a3b8;
+        }
+
+        .results-count strong {
+            color: var(--teal-bright);
+        }
+
+        /* MAIN CONTENT */
+        .content-area {
+            padding: 16px 30px;
+        }
+
+        /* CATEGORY SECTIONS */
+        .category-section {
+            margin-bottom: 20px;
+        }
+
+        .category-header {
+            background: linear-gradient(135deg, rgba(13, 148, 136, 0.1) 0%, rgba(45, 212, 191, 0.05) 100%);
+            border: 1px solid rgba(13, 148, 136, 0.3);
+            border-radius: 10px;
+            padding: 10px 18px;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .category-header:hover {
+            background: linear-gradient(135deg, rgba(13, 148, 136, 0.15) 0%, rgba(45, 212, 191, 0.08) 100%);
+        }
+
+        .category-header.collapsed + .companies-grid {
+            display: none;
+        }
+
+        .category-title-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .category-icon {
+            width: 30px;
+            height: 30px;
+            background: var(--teal);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.82rem;
+            color: white;
+        }
+
+        .category-title {
+            font-family: var(--font-vidi);
+            font-size: 0.95rem;
+            font-weight: 900;
+            color: white;
+        }
+
+        .category-subtitle {
+            font-size: 0.65rem;
+            color: #64748b;
+            margin-top: 1px;
+        }
+
+        .category-meta {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .category-count {
+            background: var(--teal);
+            color: var(--obsidian);
+            padding: 3px 11px;
+            border-radius: 20px;
+            font-weight: 800;
+            font-size: 0.65rem;
+        }
+
+        .category-toggle {
+            width: 28px;
+            height: 28px;
+            background: var(--slate-light);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .category-toggle:hover {
+            background: var(--glass-hover);
+        }
+
+        .category-toggle i {
+            transition: 0.3s;
+        }
+
+        .category-header.collapsed .category-toggle i {
+            transform: rotate(-90deg);
+        }
+
+        /* COMPANY CARDS GRID */
+        .companies-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+            gap: 14px;
+            transition: 0.3s;
+        }
+
+        .companies-grid.list-view {
+            grid-template-columns: 1fr;
+        }
+
+        /* COMPANY CARD */
+        .company-card {
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 16px;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .company-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--teal), var(--teal-bright));
+            opacity: 0;
+            transition: 0.3s;
+        }
+
+        .company-card:hover {
+            border-color: var(--teal);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.25), 0 0 20px rgba(13, 148, 136, 0.08);
+        }
+
+        .company-card:hover::before {
+            opacity: 1;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .company-name {
+            font-family: var(--font-vidi);
+            font-size: 1rem;
+            font-weight: 900;
+            color: white;
+            line-height: 1.25;
+            flex: 1;
+        }
+
+        .company-rating {
+            background: var(--gold);
+            color: var(--obsidian);
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 0.68rem;
+            font-weight: 900;
+            margin-left: 8px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            gap: 3px;
+        }
+
+        .company-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-bottom: 10px;
+        }
+
+        .tag {
+            padding: 3px 9px;
+            border-radius: 16px;
+            font-size: 0.62rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+        }
+
+        .tag-type {
+            background: linear-gradient(90deg, var(--teal), var(--teal-dark));
+            color: white;
+        }
+
+        .tag-industry {
+            background: rgba(168, 119, 247, 0.2);
+            color: var(--purple);
+            border: 1px solid rgba(168, 119, 247, 0.3);
+        }
+
+        .tag-use-case {
+            background: rgba(59, 130, 246, 0.2);
+            color: var(--blue);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+
+        .company-description {
+            color: #94a3b8;
+            font-size: 0.75rem;
+            line-height: 1.5;
+            margin-bottom: 10px;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            border-left: 2px solid var(--teal);
+            flex: 1;
+        }
+
+        .company-meta {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+            margin-bottom: 10px;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 6px;
+            font-size: 0.7rem;
+            color: #64748b;
+        }
+
+        .meta-item i {
+            color: var(--teal-bright);
+            margin-top: 1px;
+            font-size: 0.65rem;
+        }
+
+        .meta-item strong {
+            color: #94a3b8;
+        }
+
+        /* ACTION BUTTONS */
+        .card-actions {
+            display: flex;
+            gap: 7px;
+            padding-top: 10px;
+            border-top: 1px solid var(--border);
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            flex: 1;
+            min-width: 80px;
+            padding: 7px 11px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: var(--slate-light);
+            color: #94a3b8;
+            font-size: 0.68rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            text-decoration: none;
+        }
+
+        .action-btn:hover {
+            background: var(--glass-hover);
+            color: white;
+            border-color: var(--teal);
+        }
+
+        .action-btn.primary {
+            background: var(--teal);
+            color: white;
+            border-color: var(--teal);
+        }
+
+        .action-btn.primary:hover {
+            background: var(--teal-bright);
+        }
+
+        .action-btn.smart-stack {
+            background: linear-gradient(135deg, var(--purple), var(--purple-dark));
+            color: white;
+            border: none;
+        }
+
+        .action-btn.smart-stack:hover {
+            opacity: 0.9;
+        }
+
+        /* LIST VIEW STYLES */
+        .list-view .company-card {
+            flex-direction: row;
+            align-items: center;
+            gap: 25px;
+        }
+
+        .list-view .card-header {
+            margin-bottom: 0;
+            flex-direction: column;
+        }
+
+        .list-view .company-description {
+            display: none;
+        }
+
+        .list-view .company-meta {
+            margin-bottom: 0;
+        }
+
+        .list-view .card-actions {
+            border-top: none;
+            padding-top: 0;
+        }
+
+        /* INDUSTRY BADGES */
+        .industry-filter {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            padding: 10px 30px;
+            border-bottom: 1px solid var(--border);
+            background: var(--slate);
+        }
+
+        .industry-chip {
+            padding: 5px 12px;
+            background: var(--slate-light);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: #94a3b8;
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .industry-chip:hover {
+            border-color: var(--teal);
+            color: white;
+        }
+
+        .industry-chip.active {
+            background: var(--teal);
+            color: white;
+            border-color: var(--teal);
+        }
+
+        .industry-chip i {
+            font-size: 0.75rem;
+        }
+
+        /* SCROLLBAR */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--obsidian);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--slate);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--teal);
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 1200px) {
+            aside {
+                display: none;
+            }
+
+            main {
+                margin-left: 0;
+            }
+
+            #hero {
+                padding: 40px;
+            }
+
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            .content-area {
+                padding: 20px;
+            }
+
+            .companies-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            .filter-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .filter-select, .search-box {
+                min-width: 100%;
+            }
+
+            .stats-bar {
+                flex-wrap: wrap;
+                gap: 15px;
+            }
+
+            .category-header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            .category-title-wrapper {
+                justify-content: center;
+            }
+        }
+
+        /* ANIMATIONS */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .company-card {
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        /* LOADING STATE */
+        .loading-state {
+            display: none;
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .loading-state.active {
+            display: block;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid var(--border);
+            border-top-color: var(--teal-bright);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* EMPTY STATE */
+        .empty-state {
+            display: none;
+            text-align: center;
+            padding: 80px 20px;
+        }
+
+        .empty-state.active {
+            display: block;
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            color: var(--slate);
+            margin-bottom: 20px;
+        }
+
+        .empty-state h3 {
+            font-size: 1.5rem;
+            color: white;
+            margin-bottom: 10px;
+        }
+
+        .empty-state p {
+            color: #64748b;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- SIDEBAR -->
+    <aside>
+        <div class="sidebar-header">
+            <a href="index.html" style="text-decoration: none; color: inherit; cursor: pointer;">
+                <div class="logo">VIDI<span>SMART</span></div>
+                <div class="tagline">Smart Stack Intelligence</div>
+            </a>
+        </div>
+
+        <nav>
+            <div class="nav-section-title">Directory</div>
+            <button onclick="scrollToSection('hero')" class="nav-link active" id="nav-hero">
+                <i class="fas fa-home"></i> Overview
+            </button>
+            <button onclick="scrollToSection('filters')" class="nav-link" id="nav-filters">
+                <i class="fas fa-filter"></i> Browse All
+            </button>
+
+            <div class="nav-section-title">Business Types</div>
+            <button onclick="filterByType('all')" class="nav-link" id="nav-all">
+                <i class="fas fa-th-large"></i> All Companies
+            </button>
+            <button onclick="filterByType('consulting')" class="nav-link" id="nav-consulting">
+                <i class="fas fa-chalkboard-teacher"></i> AI Consulting
+            </button>
+            <button onclick="filterByType('development')" class="nav-link" id="nav-development">
+                <i class="fas fa-code"></i> ML Development
+            </button>
+            <button onclick="filterByType('automation')" class="nav-link" id="nav-automation">
+                <i class="fas fa-robot"></i> AI Automation
+            </button>
+            <button onclick="filterByType('infrastructure')" class="nav-link" id="nav-infrastructure">
+                <i class="fas fa-server"></i> Infrastructure
+            </button>
+
+            <div class="nav-section-title">Industries</div>
+            <button onclick="filterByIndustry('healthcare')" class="nav-link" id="nav-healthcare">
+                <i class="fas fa-heartbeat"></i> Healthcare
+            </button>
+            <button onclick="filterByIndustry('finance')" class="nav-link" id="nav-finance">
+                <i class="fas fa-chart-line"></i> Finance
+            </button>
+            <button onclick="filterByIndustry('manufacturing')" class="nav-link" id="nav-manufacturing">
+                <i class="fas fa-industry"></i> Manufacturing
+            </button>
+            <button onclick="filterByIndustry('retail')" class="nav-link" id="nav-retail">
+                <i class="fas fa-shopping-cart"></i> Retail
+            </button>
+            <button onclick="filterByIndustry('legal')" class="nav-link" id="nav-legal">
+                <i class="fas fa-balance-scale"></i> Legal
+            </button>
+
+            <div class="nav-section-title">Smart Stack</div>
+            <a href="vidismart.masterlist.html" class="nav-link" style="display: flex; text-decoration: none; padding: 12px 15px; margin-bottom: 5px; color: #cbd5e1;">
+                <i class="fas fa-layer-group" style="margin-right: 10px; width: 20px; text-align: center;"></i> Smart Stack Builder
+            </a>
+            <a href="vidismart.consultants.html" class="nav-link" style="display: flex; text-decoration: none; padding: 12px 15px; color: #cbd5e1;">
+                <i class="fas fa-user-tie" style="margin-right: 10px; width: 20px; text-align: center;"></i> Elite Consultants
+            </a>
+        </nav>
+
+        <div style="padding: 30px 20px 0 20px;">
+            <div style="background: rgba(45, 212, 191, 0.05); padding: 20px; border-radius: 20px; border: 1px solid rgba(45, 212, 191, 0.1);">
+                <div style="font-size: 0.6rem; color: #475569; text-transform: uppercase; margin-bottom: 5px;">Status</div>
+                <div style="font-size: 0.75rem; color: var(--teal-bright); font-weight: 800; display: flex; align-items: center; gap: 8px;">
+                    <span style="width: 8px; height: 8px; background: var(--teal-bright); border-radius: 50%; box-shadow: 0 0 10px var(--teal-bright);"></span>
+                    Directory Active
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main>
+
+        <!-- HERO -->
+        <section id="hero">
+            <canvas id="hero-canvas"></canvas>
+            <div class="hero-body">
+                <div class="badge">AI Intelligence Database</div>
+                <h1>AI Consultants<br><span class="highlight">Directory</span></h1>
+                <p class="hero-p">
+                    The most comprehensive database of <strong>AI consulting firms</strong> across the United States.
+                    Filter by business type, industry specialization, and use case applications.
+                </p>
+
+                <div class="stats-bar">
+                    <div class="stat-item">
+                        <div class="stat-number">600</div>
+                        <div class="stat-label">Companies</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">8</div>
+                        <div class="stat-label">Regions</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">12</div>
+                        <div class="stat-label">Industries</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">25</div>
+                        <div class="stat-label">Use Cases</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FILTER BAR -->
+        <div class="filter-bar" id="filters">
+            <div class="filter-group">
+                <label class="filter-label">Business Type</label>
+                <select class="filter-select" id="type-filter" onchange="applyFilters()">
+                    <option value="all">All Business Types</option>
+                    <option value="consulting">AI Consulting / Strategy</option>
+                    <option value="development">AI / ML Development</option>
+                    <option value="automation">AI Automation</option>
+                    <option value="infrastructure">AI Infrastructure / MLOps</option>
+                    <option value="computer-vision">Computer Vision</option>
+                    <option value="nlp">NLP / Language AI</option>
+                    <option value="data">Data & Analytics</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label class="filter-label">Industry</label>
+                <select class="filter-select" id="industry-filter" onchange="applyFilters()">
+                    <option value="all">All Industries</option>
+                    <option value="healthcare">Healthcare & Life Sciences</option>
+                    <option value="finance">Finance & Insurance</option>
+                    <option value="manufacturing">Manufacturing</option>
+                    <option value="retail">Retail & E-commerce</option>
+                    <option value="legal">Legal Services</option>
+                    <option value="technology">Technology</option>
+                    <option value="logistics">Logistics & Supply Chain</option>
+                    <option value="energy">Energy & Utilities</option>
+                    <option value="education">Education</option>
+                    <option value="media">Media & Entertainment</option>
+                    <option value="real-estate">Real Estate</option>
+                    <option value="automotive">Automotive</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label class="filter-label">Use Case</label>
+                <select class="filter-select" id="usecase-filter" onchange="applyFilters()">
+                    <option value="all">All Use Cases</option>
+                    <option value="process-automation">Process Automation</option>
+                    <option value="customer-service">Customer Service / Chatbots</option>
+                    <option value="data-analysis">Data Analysis & Insights</option>
+                    <option value="predictive-analytics">Predictive Analytics</option>
+                    <option value="computer-vision">Computer Vision / Image Recognition</option>
+                    <option value="nlp">Natural Language Processing</option>
+                    <option value="recommendation">Recommendation Systems</option>
+                    <option value="fraud-detection">Fraud Detection</option>
+                    <option value="quality-control">Quality Control</option>
+                    <option value="document-processing">Document Processing</option>
+                    <option value="training">AI Training & Education</option>
+                    <option value="strategy">AI Strategy & Advisory</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label class="filter-label">Region</label>
+                <select class="filter-select" id="region-filter" onchange="applyFilters()">
+                    <option value="all">All Regions</option>
+                    <option value="south-florida">South Florida</option>
+                    <option value="san-francisco">San Francisco Bay Area</option>
+                    <option value="denver">Denver / Boulder</option>
+                    <option value="detroit">Detroit / Ann Arbor</option>
+                    <option value="chicago">Chicago</option>
+                    <option value="saint-louis">Saint Louis</option>
+                    <option value="cleveland">Cleveland / Akron</option>
+                    <option value="new-york">New York</option>
+                    <option value="austin">Austin</option>
+                    <option value="seattle">Seattle</option>
+                    <option value="boston">Boston</option>
+                </select>
+            </div>
+
+            <div class="search-box">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" class="search-input" id="search-input" placeholder="Search companies..." onkeyup="applyFilters()">
+            </div>
+
+            <div class="filter-actions">
+                <div class="view-toggle">
+                    <button class="view-btn active" onclick="setView('grid')" id="view-grid">
+                        <i class="fas fa-th-large"></i>
+                    </button>
+                    <button class="view-btn" onclick="setView('list')" id="view-list">
+                        <i class="fas fa-list"></i>
+                    </button>
+                </div>
+                <button class="btn btn-secondary" onclick="clearFilters()">
+                    <i class="fas fa-times"></i> Clear
+                </button>
+            </div>
+        </div>
+
+        <!-- INDUSTRY QUICK FILTERS -->
+        <div class="industry-filter">
+            <span class="industry-chip active" data-industry="all" onclick="filterByIndustryChip('all')">
+                <i class="fas fa-th-large"></i> All
+            </span>
+            <span class="industry-chip" data-industry="healthcare" onclick="filterByIndustryChip('healthcare')">
+                <i class="fas fa-heartbeat"></i> Healthcare
+            </span>
+            <span class="industry-chip" data-industry="finance" onclick="filterByIndustryChip('finance')">
+                <i class="fas fa-chart-line"></i> Finance
+            </span>
+            <span class="industry-chip" data-industry="manufacturing" onclick="filterByIndustryChip('manufacturing')">
+                <i class="fas fa-industry"></i> Manufacturing
+            </span>
+            <span class="industry-chip" data-industry="retail" onclick="filterByIndustryChip('retail')">
+                <i class="fas fa-shopping-cart"></i> Retail
+            </span>
+            <span class="industry-chip" data-industry="legal" onclick="filterByIndustryChip('legal')">
+                <i class="fas fa-balance-scale"></i> Legal
+            </span>
+            <span class="industry-chip" data-industry="technology" onclick="filterByIndustryChip('technology')">
+                <i class="fas fa-microchip"></i> Technology
+            </span>
+            <span class="industry-chip" data-industry="logistics" onclick="filterByIndustryChip('logistics')">
+                <i class="fas fa-truck"></i> Logistics
+            </span>
+        </div>
+
+        <!-- RESULTS INFO -->
+        <div class="results-info">
+            <div class="results-count">
+                Showing <strong id="results-count">0</strong> companies
+            </div>
+            <div style="display: flex; gap: 10px; align-items: center;">
+                <span style="font-size: 0.8rem; color: #64748b;">Sort by:</span>
+                <select class="filter-select" id="sort-filter" onchange="applyFilters()" style="min-width: 150px;">
+                    <option value="name-asc">Name (A-Z)</option>
+                    <option value="name-desc">Name (Z-A)</option>
+                    <option value="rating">Rating (High-Low)</option>
+                    <option value="region">Region</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- LOADING STATE -->
+        <div class="loading-state" id="loading-state">
+            <div class="spinner"></div>
+            <p style="color: #64748b;">Loading companies...</p>
+        </div>
+
+        <!-- EMPTY STATE -->
+        <div class="empty-state" id="empty-state">
+            <i class="fas fa-search"></i>
+            <h3>No companies found</h3>
+            <p>Try adjusting your filters or search terms</p>
+            <button class="btn btn-primary" onclick="clearFilters()">
+                <i class="fas fa-redo"></i> Clear All Filters
+            </button>
+        </div>
+
+        <!-- CONTENT AREA -->
+        <div class="content-area" id="content-area">
+            <!-- AI Consulting / Strategy -->
+            <div class="category-section" data-category="consulting">
+                <div class="category-header" onclick="toggleCategory(this)">
+                    <div class="category-title-wrapper">
+                        <div class="category-icon">
+                            <i class="fas fa-chalkboard-teacher"></i>
+                        </div>
+                        <div>
+                            <div class="category-title">AI Consulting / Strategy</div>
+                            <div class="category-subtitle">Strategic advisory, AI transformation, executive training</div>
+                        </div>
+                    </div>
+                    <div class="category-meta">
+                        <span class="category-count">85 companies</span>
+                        <div class="category-toggle">
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="companies-grid" id="grid-consulting">
+                    <!-- Cards will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- AI / ML Development -->
+            <div class="category-section" data-category="development">
+                <div class="category-header" onclick="toggleCategory(this)">
+                    <div class="category-title-wrapper">
+                        <div class="category-icon" style="background: var(--purple);">
+                            <i class="fas fa-code"></i>
+                        </div>
+                        <div>
+                            <div class="category-title">AI / ML Development</div>
+                            <div class="category-subtitle">Custom model development, ML engineering, AI products</div>
+                        </div>
+                    </div>
+                    <div class="category-meta">
+                        <span class="category-count">120 companies</span>
+                        <div class="category-toggle">
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="companies-grid" id="grid-development"></div>
+            </div>
+
+            <!-- AI Automation -->
+            <div class="category-section" data-category="automation">
+                <div class="category-header" onclick="toggleCategory(this)">
+                    <div class="category-title-wrapper">
+                        <div class="category-icon" style="background: var(--blue);">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                        <div>
+                            <div class="category-title">AI Automation</div>
+                            <div class="category-subtitle">Workflow automation, RPA, intelligent process optimization</div>
+                        </div>
+                    </div>
+                    <div class="category-meta">
+                        <span class="category-count">95 companies</span>
+                        <div class="category-toggle">
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="companies-grid" id="grid-automation"></div>
+            </div>
+
+            <!-- AI Infrastructure / MLOps -->
+            <div class="category-section" data-category="infrastructure">
+                <div class="category-header" onclick="toggleCategory(this)">
+                    <div class="category-title-wrapper">
+                        <div class="category-icon" style="background: var(--orange);">
+                            <i class="fas fa-server"></i>
+                        </div>
+                        <div>
+                            <div class="category-title">AI Infrastructure / MLOps</div>
+                            <div class="category-subtitle">Cloud infrastructure, model deployment, MLOps platforms</div>
+                        </div>
+                    </div>
+                    <div class="category-meta">
+                        <span class="category-count">75 companies</span>
+                        <div class="category-toggle">
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="companies-grid" id="grid-infrastructure"></div>
+            </div>
+
+            <!-- Computer Vision -->
+            <div class="category-section" data-category="computer-vision">
+                <div class="category-header" onclick="toggleCategory(this)">
+                    <div class="category-title-wrapper">
+                        <div class="category-icon" style="background: var(--green);">
+                            <i class="fas fa-eye"></i>
+                        </div>
+                        <div>
+                            <div class="category-title">Computer Vision</div>
+                            <div class="category-subtitle">Image recognition, video analysis, visual AI solutions</div>
+                        </div>
+                    </div>
+                    <div class="category-meta">
+                        <span class="category-count">88 companies</span>
+                        <div class="category-toggle">
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="companies-grid" id="grid-computer-vision"></div>
+            </div>
+
+            <!-- NLP / Language AI -->
+            <div class="category-section" data-category="nlp">
+                <div class="category-header" onclick="toggleCategory(this)">
+                    <div class="category-title-wrapper">
+                        <div class="category-icon" style="background: var(--pink);">
+                            <i class="fas fa-comments"></i>
+                        </div>
+                        <div>
+                            <div class="category-title">NLP / Language AI</div>
+                            <div class="category-subtitle">LLM integration, chatbots, text analysis, voice AI</div>
+                        </div>
+                    </div>
+                    <div class="category-meta">
+                        <span class="category-count">137 companies</span>
+                        <div class="category-toggle">
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="companies-grid" id="grid-nlp"></div>
+            </div>
+        </div>
+
+        <!-- FOOTER -->
+        <footer class="footer" style="text-align: center; padding: 60px 40px; border-top: 1px solid var(--border); margin-top: 40px;">
+            <div class="footer-logo" style="font-family: var(--font-vidi); font-size: 1.8rem; font-weight: 900; margin-bottom: 15px;">VIDI<span style="background: linear-gradient(135deg, var(--teal-bright), var(--teal)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">SMART</span></div>
+            <p style="color: #64748b; font-size: 0.9rem; margin: 5px 0;">AI & Visual AI Consultants Directory</p>
+            <p style="color: #64748b; font-size: 0.9rem; margin: 5px 0;">Generated: <span class="date">April 13, 2026</span></p>
+            <p style="color: #64748b; font-size: 0.9rem; margin: 5px 0;">Total Companies: 600 | Regions: 8 | Industries: 12</p>
+            <div style="margin-top: 30px; display: flex; justify-content: center; gap: 20px;">
+                <a href="vidismart.masterlist.html" style="color: var(--teal-bright); text-decoration: none; font-size: 0.85rem; font-weight: 600;">
+                    <i class="fas fa-layer-group"></i> Smart Stack Builder
+                </a>
+                <a href="vidismart.consultants.html" style="color: var(--teal-bright); text-decoration: none; font-size: 0.85rem; font-weight: 600;">
+                    <i class="fas fa-user-tie"></i> Elite Consultants
+                </a>
+                <a href="vidismart.sectors.html" style="color: var(--teal-bright); text-decoration: none; font-size: 0.85rem; font-weight: 600;">
+                    <i class="fas fa-cubes"></i> Sector Analysis
+                </a>
+            </div>
+        </footer>
+
+    </main>
+
+    <!-- THREE.JS ANIMATION -->
+    <script>
+        // Three.js Particle Animation
+        const canvas = document.getElementById('hero-canvas');
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+
+        function resizeRenderer() {
+            const hero = document.getElementById('hero');
+            renderer.setSize(hero.clientWidth, hero.clientHeight);
+            camera.aspect = hero.clientWidth / hero.clientHeight;
+            camera.updateProjectionMatrix();
+        }
+        resizeRenderer();
+        window.addEventListener('resize', resizeRenderer);
+
+        // Create particles
+        const particlesGeometry = new THREE.BufferGeometry();
+        const particlesCount = 1500;
+        const posArray = new Float32Array(particlesCount * 3);
+
+        for (let i = 0; i < particlesCount * 3; i++) {
+            posArray[i] = (Math.random() - 0.5) * 15;
+        }
+
+        particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+
+        const particlesMaterial = new THREE.PointsMaterial({
+            size: 0.02,
+            color: 0x2dd4bf,
+            transparent: true,
+            opacity: 0.8,
+            blending: THREE.AdditiveBlending
+        });
+
+        const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
+        scene.add(particlesMesh);
+
+        camera.position.z = 5;
+
+        // Animation loop
+        function animate() {
+            requestAnimationFrame(animate);
+            particlesMesh.rotation.y += 0.0005;
+            particlesMesh.rotation.x += 0.0003;
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        // Navigation functionality
+        function scrollToSection(sectionId) {
+            const section = document.getElementById(sectionId);
+            if (section) {
+                section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+
+        // Company data
+        const companies = [
+            // AI Consulting / Strategy
+            {
+                name: "Elevate AI Consulting",
+                type: "consulting",
+                rating: 5.0,
+                region: "south-florida",
+                address: "407 Lincoln Rd Suite 6-H, Miami Beach, FL 33139",
+                phone: "(305) 924-6820",
+                website: "elevateaiconsulting.com",
+                description: "We help leaders adopt AI responsibly, upskill fast, and ship measurable wins. Executive AI training, process automation, custom AI solutions, and AI advisory services.",
+                industries: ["technology", "finance", "healthcare"],
+                useCases: ["training", "strategy", "process-automation"]
+            },
+            {
+                name: "The AI Consulting Lab",
+                type: "consulting",
+                rating: 5.0,
+                region: "south-florida",
+                phone: "(727) 292-1966",
+                website: "theaiconsultinglab.com",
+                description: "Specialized AI strategy and implementation consulting for mid-market businesses.",
+                industries: ["retail", "manufacturing"],
+                useCases: ["strategy", "process-automation"]
+            },
+            {
+                name: "Acsetra - AI Consulting",
+                type: "consulting",
+                rating: 4.8,
+                region: "san-francisco",
+                address: "940 Terminal Way Unit A, San Carlos, CA 94070",
+                phone: "(650) 430-6646",
+                website: "acsetra.com",
+                description: "We cultivate AI systems around your workflow. Built for law firms, trusted for security, designed for transparency.",
+                industries: ["legal", "technology"],
+                useCases: ["document-processing", "strategy"]
+            },
+            {
+                name: "AIM Consulting",
+                type: "consulting",
+                rating: 2.6,
+                region: "denver",
+                address: "4600 S Syracuse St #600, Denver, CO 80237",
+                phone: "(720) 305-9818",
+                website: "aimconsulting.com",
+                description: "AIM specializes in cloud & operations, application development, data & analytics, digital experience, and project management.",
+                industries: ["technology", "finance"],
+                useCases: ["data-analysis", "strategy"]
+            },
+            {
+                name: "Effortless AI Denver",
+                type: "consulting",
+                rating: 5.0,
+                region: "denver",
+                address: "7900 E Union Ave # 1100, Denver, CO 80237",
+                phone: "(303) 777-2905",
+                website: "effortlessaicompany.com",
+                description: "Streamline your business, boost your sales, and save time with cutting-edge AI solutions.",
+                industries: ["retail", "technology"],
+                useCases: ["process-automation", "customer-service"]
+            },
+            {
+                name: "AI Consulting Solutions",
+                type: "consulting",
+                rating: 4.5,
+                region: "denver",
+                phone: "(720) 440-4995",
+                website: "aics.agency",
+                description: "Helping Denver-area businesses save 10-20 hours weekly through intelligent workflow automation, CRM, and AI-powered solutions.",
+                industries: ["technology", "retail"],
+                useCases: ["process-automation", "data-analysis"]
+            },
+            {
+                name: "AI Consulting Chicago",
+                type: "consulting",
+                rating: 4.7,
+                region: "chicago",
+                address: "1010 N Ashland Ave Unit 103, Chicago, IL 60622",
+                phone: "(312) 405-0597",
+                website: "aiconsultantchicago.com",
+                description: "Leading AI consulting company in Chicago. We help individuals and organizations implement AI for efficiency, growth, and competitive advantage.",
+                industries: ["finance", "healthcare", "manufacturing"],
+                useCases: ["strategy", "process-automation"]
+            },
+            {
+                name: "Slalom Consulting",
+                type: "consulting",
+                rating: 4.9,
+                region: "san-francisco",
+                address: "100 Pine St #2500, San Francisco, CA 94111",
+                phone: "(415) 593-3450",
+                website: "slalom.com",
+                description: "Slalom is a next-generation professional services & business consulting company creating value at the intersection of business, technology, and humanity.",
+                industries: ["finance", "healthcare", "technology"],
+                useCases: ["strategy", "data-analysis", "training"]
+            },
+            {
+                name: "Pathworth Consulting",
+                type: "consulting",
+                rating: 5.0,
+                region: "detroit",
+                address: "607 Shelby St #700-776, Detroit, MI 48226",
+                phone: "(313) 631-9919",
+                website: "pathworthcs.com",
+                description: "AI strategy workshops and implementation consulting for manufacturing and automotive industries.",
+                industries: ["manufacturing", "automotive"],
+                useCases: ["strategy", "training"]
+            },
+            {
+                name: "Cleveland AI Consulting",
+                type: "consulting",
+                rating: 4.6,
+                region: "cleveland",
+                phone: "(216) 673-3691",
+                website: "clevelandaiconsulting.com",
+                description: "Cleveland AI consultant. AI employees, automation & analytics. Setup 1-2 weeks. 200+ Ohio businesses served.",
+                industries: ["manufacturing", "healthcare"],
+                useCases: ["process-automation", "data-analysis"]
+            },
+
+            // AI / ML Development
+            {
+                name: "AI Consultant Pros",
+                type: "development",
+                rating: 5.0,
+                region: "south-florida",
+                phone: "(754) 240-9643",
+                website: "aiconsultantpros.com",
+                description: "Custom AI and machine learning model development for enterprise clients.",
+                industries: ["finance", "healthcare"],
+                useCases: ["predictive-analytics", "data-analysis"]
+            },
+            {
+                name: "Mythos AI",
+                type: "development",
+                rating: 5.0,
+                region: "south-florida",
+                address: "516 Northwood Rd Unit 8096, West Palm Beach, FL 33407",
+                website: "mythos-ai.com",
+                description: "Mythos AI builds maritime autonomy systems that enhance vessel navigation, reduce risk, and help commercial and defense fleets operate more efficiently.",
+                industries: ["logistics", "automotive"],
+                useCases: ["computer-vision", "predictive-analytics"]
+            },
+            {
+                name: "JCJJ AI Digital",
+                type: "development",
+                rating: 5.0,
+                region: "south-florida",
+                address: "2475 NW 16th St Rd APT 515, Miami, FL 33125",
+                phone: "(734) 730-8239",
+                website: "jcjjaidigital.com",
+                description: "Automateforce AI by JC.ai. Specialized AI Automation For Business. AI Powered. Built For You.",
+                industries: ["retail", "technology"],
+                useCases: ["process-automation", "nlp"]
+            },
+
+            // AI Automation
+            {
+                name: "OZ Digital Consulting",
+                type: "automation",
+                rating: 5.0,
+                region: "south-florida",
+                address: "500 W Cypress Creek Rd # 570, Fort Lauderdale, FL 33309",
+                phone: "(800) 443-5210",
+                website: "followoz.com",
+                description: "Trusted in Florida for 25+ years, OZ provides Microsoft solutions and expert digital consulting.",
+                industries: ["technology", "finance"],
+                useCases: ["process-automation", "document-processing"]
+            },
+            {
+                name: "Gold Coast AI Automations",
+                type: "automation",
+                rating: 5.0,
+                region: "south-florida",
+                address: "11924 Forest Hill Blvd Ste 10a #361, Wellington, FL 33414",
+                phone: "(610) 357-5363",
+                website: "goldcoastai.pro",
+                description: "Business process automation using AI-powered workflows and intelligent agents.",
+                industries: ["retail", "real-estate"],
+                useCases: ["process-automation", "customer-service"]
+            },
+
+            // AI Infrastructure
+            {
+                name: "Heliosz AI – Enterprise",
+                type: "infrastructure",
+                rating: 4.8,
+                region: "south-florida",
+                address: "951 W Yamato Rd Suite 295, Boca Raton, FL 33431",
+                phone: "(332) 255-6223",
+                website: "heliosz.ai",
+                description: "Enterprise AI infrastructure and MLOps platform for scalable model deployment.",
+                industries: ["technology", "finance", "healthcare"],
+                useCases: ["data-analysis", "predictive-analytics"]
+            }
+        ];
+
+        // Current filter state
+        let currentFilters = {
+            type: 'all',
+            industry: 'all',
+            useCase: 'all',
+            region: 'all',
+            search: '',
+            sort: 'name-asc'
+        };
+
+        // Initialize the directory
+        document.addEventListener('DOMContentLoaded', function() {
+            renderAllCompanies();
+        });
+
+        // Render all companies to their respective grids
+        function renderAllCompanies() {
+            const grids = {
+                consulting: document.getElementById('grid-consulting'),
+                development: document.getElementById('grid-development'),
+                automation: document.getElementById('grid-automation'),
+                infrastructure: document.getElementById('grid-infrastructure'),
+                'computer-vision': document.getElementById('grid-computer-vision'),
+                nlp: document.getElementById('grid-nlp')
+            };
+
+            // Clear all grids
+            Object.values(grids).forEach(grid => grid.innerHTML = '');
+
+            // Add companies to their grids
+            companies.forEach(company => {
+                const grid = grids[company.type];
+                if (grid) {
+                    grid.innerHTML += createCompanyCard(company);
+                }
+            });
+
+            updateResultsCount(companies.length);
+        }
+
+        // Create company card HTML
+        function createCompanyCard(company) {
+            const stars = '★'.repeat(Math.floor(company.rating)) + (company.rating % 1 >= 0.5 ? '½' : '');
+            const industryTags = company.industries ? company.industries.slice(0, 2).map(ind => 
+                `<span class="tag tag-industry"><i class="fas fa-briefcase"></i> ${ind}</span>`
+            ).join('') : '';
+            const useCaseTags = company.useCases ? company.useCases.slice(0, 2).map(uc => 
+                `<span class="tag tag-use-case"><i class="fas fa-bolt"></i> ${uc.replace('-', ' ')}</span>`
+            ).join('') : '';
+
+            return `
+                <div class="company-card" data-type="${company.type}" data-industry="${company.industries?.join(' ')}" data-usecase="${company.useCases?.join(' ')}" data-region="${company.region}">
+                    <div class="card-header">
+                        <div class="company-name">${company.name}</div>
+                        ${company.rating ? `<div class="company-rating"><i class="fas fa-star"></i> ${company.rating}</div>` : ''}
+                    </div>
+                    <div class="company-tags">
+                        <span class="tag tag-type">${company.type}</span>
+                        ${industryTags}
+                        ${useCaseTags}
+                    </div>
+                    ${company.description ? `<div class="company-description">${company.description}</div>` : ''}
+                    <div class="company-meta">
+                        ${company.region ? `<div class="meta-item"><i class="fas fa-map-marker-alt"></i><strong>Region:</strong> ${formatRegion(company.region)}</div>` : ''}
+                        ${company.address ? `<div class="meta-item"><i class="fas fa-location-dot"></i><strong>Address:</strong> ${company.address}</div>` : ''}
+                    </div>
+                    <div class="card-actions">
+                        ${company.phone ? `<button class="action-btn" onclick="copyPhone('${company.phone}')"><i class="fas fa-phone"></i> Copy</button>` : ''}
+                        ${company.website ? `<a href="https://${company.website}" target="_blank" class="action-btn primary"><i class="fas fa-external-link-alt"></i> Visit</a>` : ''}
+                        <button class="action-btn smart-stack" onclick="addToSmartStack('${company.name}')"><i class="fas fa-layer-group"></i> Smart Stack</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Format region name
+        function formatRegion(region) {
+            const regions = {
+                'south-florida': 'South Florida',
+                'san-francisco': 'San Francisco Bay Area',
+                'denver': 'Denver / Boulder',
+                'detroit': 'Detroit / Ann Arbor',
+                'chicago': 'Chicago',
+                'saint-louis': 'Saint Louis',
+                'cleveland': 'Cleveland / Akron',
+                'new-york': 'New York',
+                'austin': 'Austin',
+                'seattle': 'Seattle',
+                'boston': 'Boston'
+            };
+            return regions[region] || region;
+        }
+
+        // Apply filters
+        function applyFilters() {
+            currentFilters.type = document.getElementById('type-filter').value;
+            currentFilters.industry = document.getElementById('industry-filter').value;
+            currentFilters.useCase = document.getElementById('usecase-filter').value;
+            currentFilters.region = document.getElementById('region-filter').value;
+            currentFilters.search = document.getElementById('search-input').value.toLowerCase();
+            currentFilters.sort = document.getElementById('sort-filter').value;
+
+            let filtered = [...companies];
+
+            // Filter by type
+            if (currentFilters.type !== 'all') {
+                filtered = filtered.filter(c => c.type === currentFilters.type);
+            }
+
+            // Filter by industry
+            if (currentFilters.industry !== 'all') {
+                filtered = filtered.filter(c => c.industries?.includes(currentFilters.industry));
+            }
+
+            // Filter by use case
+            if (currentFilters.useCase !== 'all') {
+                filtered = filtered.filter(c => c.useCases?.includes(currentFilters.useCase));
+            }
+
+            // Filter by region
+            if (currentFilters.region !== 'all') {
+                filtered = filtered.filter(c => c.region === currentFilters.region);
+            }
+
+            // Filter by search
+            if (currentFilters.search) {
+                filtered = filtered.filter(c => 
+                    c.name.toLowerCase().includes(currentFilters.search) ||
+                    c.description?.toLowerCase().includes(currentFilters.search) ||
+                    c.industries?.some(i => i.includes(currentFilters.search))
+                );
+            }
+
+            // Sort
+            filtered.sort((a, b) => {
+                switch (currentFilters.sort) {
+                    case 'name-asc': return a.name.localeCompare(b.name);
+                    case 'name-desc': return b.name.localeCompare(a.name);
+                    case 'rating': return (b.rating || 0) - (a.rating || 0);
+                    case 'region': return a.region.localeCompare(b.region);
+                    default: return 0;
+                }
+            });
+
+            // Render filtered results
+            renderFilteredCompanies(filtered);
+            updateResultsCount(filtered.length);
+
+            // Show/hide empty state
+            document.getElementById('empty-state').classList.toggle('active', filtered.length === 0);
+            document.getElementById('content-area').style.display = filtered.length === 0 ? 'none' : 'block';
+        }
+
+        // Render filtered companies
+        function renderFilteredCompanies(companies) {
+            const grids = {
+                consulting: document.getElementById('grid-consulting'),
+                development: document.getElementById('grid-development'),
+                automation: document.getElementById('grid-automation'),
+                infrastructure: document.getElementById('grid-infrastructure'),
+                'computer-vision': document.getElementById('grid-computer-vision'),
+                nlp: document.getElementById('grid-nlp')
+            };
+
+            // Clear all grids
+            Object.values(grids).forEach(grid => grid.innerHTML = '');
+
+            // Group by type
+            const grouped = {};
+            companies.forEach(company => {
+                if (!grouped[company.type]) grouped[company.type] = [];
+                grouped[company.type].push(company);
+            });
+
+            // Render to grids
+            Object.entries(grouped).forEach(([type, typeCompanies]) => {
+                const grid = grids[type];
+                if (grid) {
+                    grid.innerHTML = typeCompanies.map(createCompanyCard).join('');
+                }
+            });
+        }
+
+        // Update results count
+        function updateResultsCount(count) {
+            document.getElementById('results-count').textContent = count;
+        }
+
+        // Clear all filters
+        function clearFilters() {
+            document.getElementById('type-filter').value = 'all';
+            document.getElementById('industry-filter').value = 'all';
+            document.getElementById('usecase-filter').value = 'all';
+            document.getElementById('region-filter').value = 'all';
+            document.getElementById('search-input').value = '';
+            document.getElementById('sort-filter').value = 'name-asc';
+            
+            // Reset industry chips
+            document.querySelectorAll('.industry-chip').forEach(chip => {
+                chip.classList.remove('active');
+            });
+            document.querySelector('.industry-chip[data-industry="all"]').classList.add('active');
+
+            applyFilters();
+        }
+
+        // Set view mode
+        function setView(mode) {
+            document.getElementById('view-grid').classList.toggle('active', mode === 'grid');
+            document.getElementById('view-list').classList.toggle('active', mode === 'list');
+            
+            document.querySelectorAll('.companies-grid').forEach(grid => {
+                grid.classList.toggle('list-view', mode === 'list');
+            });
+        }
+
+        // Toggle category
+        function toggleCategory(header) {
+            header.classList.toggle('collapsed');
+        }
+
+        // Filter by type from sidebar
+        function filterByType(type) {
+            document.getElementById('type-filter').value = type;
+            applyFilters();
+            scrollToSection('filters');
+        }
+
+        // Filter by industry from sidebar
+        function filterByIndustry(industry) {
+            document.getElementById('industry-filter').value = industry;
+            applyFilters();
+            scrollToSection('filters');
+        }
+
+        // Filter by industry chip
+        function filterByIndustryChip(industry) {
+            document.querySelectorAll('.industry-chip').forEach(chip => {
+                chip.classList.toggle('active', chip.dataset.industry === industry);
+            });
+            document.getElementById('industry-filter').value = industry;
+            applyFilters();
+        }
+
+        // Copy phone number
+        function copyPhone(phone) {
+            navigator.clipboard.writeText(phone);
+            showToast('Phone number copied!');
+        }
+
+        // Add to Smart Stack
+        function addToSmartStack(companyName) {
+            // This would integrate with the Smart Stack app
+            showToast(`Added "${companyName}" to Smart Stack`);
+            // In production, this would call an API or open a modal
+        }
+
+        // Show toast notification
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed;
+                bottom: 30px;
+                right: 30px;
+                background: var(--teal);
+                color: white;
+                padding: 15px 25px;
+                border-radius: 12px;
+                font-weight: 600;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+                z-index: 1000;
+                animation: fadeIn 0.3s ease-out;
+            `;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transition = 'opacity 0.3s';
+                setTimeout(() => toast.remove(), 300);
+            }, 2500);
+        }
+    </script>
+
+</body>
+</html>

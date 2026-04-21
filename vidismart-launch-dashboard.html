@@ -1,0 +1,1991 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VidiSmart Launch Dashboard v2.0</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap"
+        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0e1a;
+            --bg-secondary: #111827;
+            --bg-card: #1a2035;
+            --bg-card-hover: #1f2847;
+            --border: #2a3352;
+            --border-bright: #3b4d73;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --accent-fire: #FF6B35;
+            --accent-gold: #C8A951;
+            --accent-teal: #10B981;
+            --accent-blue: #3B82F6;
+            --accent-purple: #8B5CF6;
+            --accent-red: #EF4444;
+            --accent-pink: #EC4899;
+            --gradient-primary: linear-gradient(135deg, #FF6B35 0%, #C8A951 100%);
+            --gradient-teal: linear-gradient(135deg, #10B981 0%, #3B82F6 100%);
+            --gradient-purple: linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%);
+            --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.3);
+            --shadow-glow: 0 0 30px rgba(255, 107, 53, 0.15);
+            --radius: 12px;
+            --radius-lg: 16px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ── HEADER ─────────────────────────────────────── */
+        .dashboard-header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(10, 14, 26, 0.92);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+        }
+
+        .header-inner {
+            max-width: 1440px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .header-brand {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .header-logo {
+            width: 40px;
+            height: 40px;
+            background: var(--gradient-primary);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-size: 1.1rem;
+            color: #fff;
+        }
+
+        .header-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header-version {
+            font-size: 0.7rem;
+            font-weight: 600;
+            background: var(--accent-teal);
+            color: #fff;
+            padding: 2px 8px;
+            border-radius: 20px;
+        }
+
+        .header-date {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        /* ── TAB NAVIGATION ─────────────────────────────── */
+        .tab-nav {
+            display: flex;
+            gap: 0.25rem;
+            background: var(--bg-secondary);
+            border-radius: 10px;
+            padding: 4px;
+        }
+
+        .tab-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.6rem 1.2rem;
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            font-family: inherit;
+            font-size: 0.85rem;
+            font-weight: 500;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .tab-btn:hover {
+            color: var(--text-primary);
+            background: var(--bg-card);
+        }
+
+        .tab-btn.active {
+            background: var(--gradient-primary);
+            color: #fff;
+            font-weight: 600;
+        }
+
+        .tab-btn .material-icons-outlined {
+            font-size: 1.1rem;
+        }
+
+        /* ── MAIN CONTENT ───────────────────────────────── */
+        .main-content {
+            max-width: 1440px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .tab-page {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .tab-page.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ── SECTION HEADERS ────────────────────────────── */
+        .section-header {
+            margin-bottom: 1.5rem;
+        }
+
+        .section-header h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .section-header p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        /* ── STAT CARDS ─────────────────────────────────── */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.25rem;
+            transition: all 0.2s ease;
+        }
+
+        .stat-card:hover {
+            border-color: var(--border-bright);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-card);
+        }
+
+        .stat-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 0.75rem;
+        }
+
+        .stat-icon.fire {
+            background: rgba(255, 107, 53, 0.15);
+            color: var(--accent-fire);
+        }
+
+        .stat-icon.teal {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--accent-teal);
+        }
+
+        .stat-icon.blue {
+            background: rgba(59, 130, 246, 0.15);
+            color: var(--accent-blue);
+        }
+
+        .stat-icon.purple {
+            background: rgba(139, 92, 246, 0.15);
+            color: var(--accent-purple);
+        }
+
+        .stat-icon.gold {
+            background: rgba(200, 169, 81, 0.15);
+            color: var(--accent-gold);
+        }
+
+        .stat-value {
+            font-size: 1.75rem;
+            font-weight: 800;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+        }
+
+        /* ── ARCHITECTURE DIAGRAM ───────────────────────── */
+        .arch-diagram {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .arch-diagram h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .arch-diagram h3 .material-icons-outlined {
+            color: var(--accent-fire);
+        }
+
+        .arch-layers {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+        }
+
+        .arch-layer {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.25rem;
+            position: relative;
+            transition: all 0.2s ease;
+        }
+
+        .arch-layer:hover {
+            border-color: var(--border-bright);
+        }
+
+        .arch-layer-label {
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .arch-layer-label.cms {
+            color: var(--accent-fire);
+        }
+
+        .arch-layer-label.community {
+            color: var(--accent-teal);
+        }
+
+        .arch-layer-label.intelligence {
+            color: var(--accent-purple);
+        }
+
+        .arch-items {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .arch-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 0.75rem;
+            background: var(--bg-card);
+            border-radius: 8px;
+            font-size: 0.8rem;
+            transition: all 0.15s ease;
+        }
+
+        .arch-item:hover {
+            background: var(--bg-card-hover);
+        }
+
+        .arch-item .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .arch-item .dot.green {
+            background: var(--accent-teal);
+        }
+
+        .arch-item .dot.orange {
+            background: var(--accent-fire);
+        }
+
+        .arch-item .dot.purple {
+            background: var(--accent-purple);
+        }
+
+        .arch-item .dot.blue {
+            background: var(--accent-blue);
+        }
+
+        /* ── TIMELINE ───────────────────────────────────── */
+        .timeline-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .timeline-section h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .timeline-section h3 .material-icons-outlined {
+            color: var(--accent-gold);
+        }
+
+        .timeline-bars {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .timeline-row {
+            display: grid;
+            grid-template-columns: 140px 1fr 80px;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .timeline-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .timeline-bar-container {
+            background: var(--bg-secondary);
+            border-radius: 6px;
+            height: 28px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .timeline-bar {
+            height: 100%;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            padding: 0 0.75rem;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: #fff;
+            transition: width 0.5s ease;
+        }
+
+        .timeline-bar.phase1 {
+            background: var(--gradient-primary);
+            width: 8%;
+        }
+
+        .timeline-bar.phase15 {
+            background: var(--gradient-primary);
+            width: 8%;
+        }
+
+        .timeline-bar.phase2 {
+            background: var(--gradient-teal);
+            width: 25%;
+        }
+
+        .timeline-bar.phase3 {
+            background: var(--gradient-purple);
+            width: 25%;
+        }
+
+        .timeline-bar.phase4 {
+            background: linear-gradient(135deg, #EF4444, #F59E0B);
+            width: 25%;
+        }
+
+        .timeline-duration {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-align: right;
+        }
+
+        /* ── PHASE STATUS ───────────────────────────────── */
+        .phase-status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .phase-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.25rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            transition: all 0.2s ease;
+        }
+
+        .phase-card:hover {
+            border-color: var(--border-bright);
+        }
+
+        .phase-status-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .phase-status-icon.done {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--accent-teal);
+        }
+
+        .phase-status-icon.progress {
+            background: rgba(255, 107, 53, 0.15);
+            color: var(--accent-fire);
+        }
+
+        .phase-status-icon.pending {
+            background: rgba(100, 116, 139, 0.15);
+            color: var(--text-muted);
+        }
+
+        .phase-info h4 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .phase-info p {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .phase-badge {
+            font-size: 0.65rem;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 20px;
+            margin-top: 0.5rem;
+            display: inline-block;
+        }
+
+        .phase-badge.done {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--accent-teal);
+        }
+
+        .phase-badge.progress {
+            background: rgba(255, 107, 53, 0.2);
+            color: var(--accent-fire);
+        }
+
+        .phase-badge.pending {
+            background: rgba(100, 116, 139, 0.2);
+            color: var(--text-muted);
+        }
+
+        /* ── SAFETY CHECKLIST ───────────────────────────── */
+        .safety-checklist {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+        }
+
+        .safety-checklist h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .safety-checklist h3 .material-icons-outlined {
+            color: var(--accent-teal);
+        }
+
+        .checklist-items {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .check-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            font-size: 0.85rem;
+        }
+
+        .check-item .check-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+        }
+
+        .check-item .check-icon.checked {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--accent-teal);
+        }
+
+        .check-item .check-icon.unchecked {
+            background: rgba(100, 116, 139, 0.2);
+            color: var(--text-muted);
+        }
+
+        .check-item.checked {
+            opacity: 0.7;
+        }
+
+        /* ── SOFTWARE PROFILE CARDS ─────────────────────── */
+        .software-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .software-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            transition: all 0.25s ease;
+        }
+
+        .software-card:hover {
+            border-color: var(--border-bright);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-card);
+        }
+
+        .software-card.chosen {
+            border-color: var(--accent-teal);
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.15);
+        }
+
+        .software-header {
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .software-logo {
+            width: 56px;
+            height: 56px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #fff;
+            flex-shrink: 0;
+        }
+
+        .software-logo.directus {
+            background: linear-gradient(135deg, #263238, #607D8B);
+        }
+
+        .software-logo.nodebb {
+            background: linear-gradient(135deg, #00897B, #26A69A);
+        }
+
+        .software-logo.discourse {
+            background: linear-gradient(135deg, #1565C0, #42A5F5);
+        }
+
+        .software-logo.buddypress {
+            background: linear-gradient(135deg, #D84315, #FF7043);
+        }
+
+        .software-logo.pgvector {
+            background: linear-gradient(135deg, #336791, #5B9BD5);
+        }
+
+        .software-logo.supabase {
+            background: linear-gradient(135deg, #1B1B2F, #3ECF8E);
+        }
+
+        .software-logo.pinecone {
+            background: linear-gradient(135deg, #7B2FF7, #C084FC);
+        }
+
+        .software-logo.openai {
+            background: linear-gradient(135deg, #10A37F, #1DD1A1);
+        }
+
+        .software-info h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+
+        .software-info .software-type {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .chosen-badge {
+            font-size: 0.65rem;
+            font-weight: 600;
+            background: var(--accent-teal);
+            color: #fff;
+            padding: 3px 10px;
+            border-radius: 20px;
+            margin-left: auto;
+        }
+
+        .software-screenshot {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-bottom: 1px solid var(--border);
+            background: var(--bg-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        .software-screenshot img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .software-body {
+            padding: 1.25rem;
+        }
+
+        .software-body p {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        .software-features {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-tag {
+            font-size: 0.7rem;
+            font-weight: 500;
+            padding: 3px 10px;
+            border-radius: 20px;
+            background: var(--bg-secondary);
+            color: var(--text-secondary);
+            border: 1px solid var(--border);
+        }
+
+        .software-stats {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .software-stat {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .software-stat .material-icons-outlined {
+            font-size: 1rem;
+        }
+
+        .software-links {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .software-link {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            font-size: 0.8rem;
+            color: var(--accent-blue);
+            text-decoration: none;
+            transition: color 0.15s ease;
+        }
+
+        .software-link:hover {
+            color: var(--accent-fire);
+        }
+
+        .software-link .material-icons-outlined {
+            font-size: 1rem;
+        }
+
+        /* ── REVIEWS ────────────────────────────────────── */
+        .reviews-section {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .reviews-section h4 {
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .review-item {
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.5rem;
+            font-size: 0.8rem;
+        }
+
+        .review-item .review-source {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .review-item .review-text {
+            color: var(--text-secondary);
+            margin-top: 0.25rem;
+        }
+
+        .review-stars {
+            color: var(--accent-gold);
+            font-size: 0.75rem;
+        }
+
+        /* ── COMPARISON TABLE ───────────────────────────── */
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.85rem;
+        }
+
+        .comparison-table th {
+            background: var(--bg-secondary);
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .comparison-table td {
+            color: var(--text-secondary);
+        }
+
+        .comparison-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .comparison-table .winner {
+            color: var(--accent-teal);
+            font-weight: 600;
+        }
+
+        /* ── RESEARCH AGENTS ────────────────────────────── */
+        .agents-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .agent-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.25rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        .agent-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+
+        .agent-avatar.cms {
+            background: rgba(255, 107, 53, 0.15);
+        }
+
+        .agent-avatar.community {
+            background: rgba(16, 185, 129, 0.15);
+        }
+
+        .agent-avatar.intelligence {
+            background: rgba(139, 92, 246, 0.15);
+        }
+
+        .agent-avatar.chat {
+            background: rgba(59, 130, 246, 0.15);
+        }
+
+        .agent-info h4 {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .agent-info p {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .agent-status {
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 20px;
+            margin-top: 0.5rem;
+            display: inline-block;
+        }
+
+        .agent-status.ready {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--accent-teal);
+        }
+
+        .agent-status.queued {
+            background: rgba(200, 169, 81, 0.2);
+            color: var(--accent-gold);
+        }
+
+        /* ── RESPONSIVE ─────────────────────────────────── */
+        @media (max-width: 768px) {
+            .header-inner {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+
+            .tab-nav {
+                flex-wrap: wrap;
+            }
+
+            .arch-layers {
+                grid-template-columns: 1fr;
+            }
+
+            .software-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .timeline-row {
+                grid-template-columns: 100px 1fr 60px;
+            }
+
+            .main-content {
+                padding: 1rem;
+            }
+        }
+
+        /* ── SCROLLBAR ──────────────────────────────────── */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-primary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--border-bright);
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- HEADER -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <header class="dashboard-header">
+        <div class="header-inner">
+            <div class="header-brand">
+                <div class="header-logo">VS</div>
+                <div>
+                    <div class="header-title">VidiSmart Launch Dashboard</div>
+                    <div class="header-date">Last updated: April 13, 2026</div>
+                </div>
+                <span class="header-version">v2.0</span>
+            </div>
+            <nav class="tab-nav">
+                <button class="tab-btn active" data-tab="overview">
+                    <span class="material-icons-outlined">dashboard</span>
+                    Overview
+                </button>
+                <button class="tab-btn" data-tab="cms">
+                    <span class="material-icons-outlined">storage</span>
+                    CMS Layer
+                </button>
+                <button class="tab-btn" data-tab="community">
+                    <span class="material-icons-outlined">groups</span>
+                    Community
+                </button>
+                <button class="tab-btn" data-tab="intelligence">
+                    <span class="material-icons-outlined">psychology</span>
+                    Intelligence
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- MAIN CONTENT -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <main class="main-content">
+
+        <!-- ─────────────────────────────────────────────────── -->
+        <!-- PAGE 1: OVERVIEW -->
+        <!-- ─────────────────────────────────────────────────── -->
+        <div class="tab-page active" id="tab-overview">
+            <div class="section-header">
+                <h2>📊 Project Overview</h2>
+                <p>VidiSmart Launch Plan — Directus CMS + NodeBB Community + Smart Content Pipeline</p>
+            </div>
+
+            <!-- Stats -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon fire"><span class="material-icons-outlined">web</span></div>
+                    <div class="stat-value">50</div>
+                    <div class="stat-label">Existing site_pages in Directus</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon teal"><span class="material-icons-outlined">add_circle</span></div>
+                    <div class="stat-value">7</div>
+                    <div class="stat-label">New smart-book pages to import</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon blue"><span class="material-icons-outlined">people</span></div>
+                    <div class="stat-value">5</div>
+                    <div class="stat-label">Member types in community</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon purple"><span class="material-icons-outlined">psychology</span></div>
+                    <div class="stat-value">3</div>
+                    <div class="stat-label">Personas per chapter</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon gold"><span class="material-icons-outlined">calendar_today</span></div>
+                    <div class="stat-value">7-10</div>
+                    <div class="stat-label">Days to full launch</div>
+                </div>
+            </div>
+
+            <!-- Architecture Diagram -->
+            <div class="arch-diagram">
+                <h3><span class="material-icons-outlined">account_tree</span> Platform Architecture</h3>
+                <div class="arch-layers">
+                    <div class="arch-layer">
+                        <div class="arch-layer-label cms"><span class="material-icons-outlined"
+                                style="font-size:1rem">storage</span> Content Layer</div>
+                        <div class="arch-items">
+                            <div class="arch-item"><span class="dot orange"></span> Directus (CMS)</div>
+                            <div class="arch-item"><span class="dot orange"></span> Pages / Smart Channel CX</div>
+                            <div class="arch-item"><span class="dot orange"></span> Media Library</div>
+                            <div class="arch-item"><span class="dot orange"></span> Admin UI</div>
+                        </div>
+                    </div>
+                    <div class="arch-layer">
+                        <div class="arch-layer-label community"><span class="material-icons-outlined"
+                                style="font-size:1rem">groups</span> Community Layer</div>
+                        <div class="arch-items">
+                            <div class="arch-item"><span class="dot green"></span> NodeBB (Forums + Chat)</div>
+                            <div class="arch-item"><span class="dot green"></span> Member Groups (5 types)</div>
+                            <div class="arch-item"><span class="dot green"></span> SSO via Directus JWT</div>
+                            <div class="arch-item"><span class="dot green"></span> Activity Feeds</div>
+                        </div>
+                    </div>
+                    <div class="arch-layer">
+                        <div class="arch-layer-label intelligence"><span class="material-icons-outlined"
+                                style="font-size:1rem">psychology</span> Intelligence Layer</div>
+                        <div class="arch-items">
+                            <div class="arch-item"><span class="dot purple"></span> pgvector (PostgreSQL)</div>
+                            <div class="arch-item"><span class="dot purple"></span> Vector Embeddings</div>
+                            <div class="arch-item"><span class="dot purple"></span> Knowledge Graph</div>
+                            <div class="arch-item"><span class="dot purple"></span> Semantic Search</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Timeline -->
+            <div class="timeline-section">
+                <h3><span class="material-icons-outlined">timeline</span> Project Timeline</h3>
+                <div class="timeline-bars">
+                    <div class="timeline-row">
+                        <div class="timeline-label">Phase 1</div>
+                        <div class="timeline-bar-container">
+                            <div class="timeline-bar phase1">Import 2 entries</div>
+                        </div>
+                        <div class="timeline-duration">0.5-1 day</div>
+                    </div>
+                    <div class="timeline-row">
+                        <div class="timeline-label">Phase 1.5</div>
+                        <div class="timeline-bar-container">
+                            <div class="timeline-bar phase15">Import 5 parts</div>
+                        </div>
+                        <div class="timeline-duration">0.5 day</div>
+                    </div>
+                    <div class="timeline-row">
+                        <div class="timeline-label">Phase 2</div>
+                        <div class="timeline-bar-container">
+                            <div class="timeline-bar phase2">NodeBB + SSO + Groups</div>
+                        </div>
+                        <div class="timeline-duration">2-3 days</div>
+                    </div>
+                    <div class="timeline-row">
+                        <div class="timeline-label">Phase 3</div>
+                        <div class="timeline-bar-container">
+                            <div class="timeline-bar phase3">pgvector + Smart Content</div>
+                        </div>
+                        <div class="timeline-duration">2-3 days</div>
+                    </div>
+                    <div class="timeline-row">
+                        <div class="timeline-label">Phase 4</div>
+                        <div class="timeline-bar-container">
+                            <div class="timeline-bar phase4">Production Migration</div>
+                        </div>
+                        <div class="timeline-duration">2-3 days</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Phase Status -->
+            <div class="section-header">
+                <h2>📋 Phase Status</h2>
+            </div>
+            <div class="phase-status-grid">
+                <div class="phase-card">
+                    <div class="phase-status-icon done"><span class="material-icons-outlined">check_circle</span></div>
+                    <div class="phase-info">
+                        <h4>Phase 1: Smart-Book Import</h4>
+                        <p>Import 7 smart-book pages into Directus site_pages</p>
+                        <span class="phase-badge progress">IN PROGRESS</span>
+                    </div>
+                </div>
+                <div class="phase-card">
+                    <div class="phase-status-icon pending"><span class="material-icons-outlined">pending</span></div>
+                    <div class="phase-info">
+                        <h4>Phase 2: Community Platform</h4>
+                        <p>Deploy NodeBB, configure SSO, set up 5 member groups</p>
+                        <span class="phase-badge pending">PENDING</span>
+                    </div>
+                </div>
+                <div class="phase-card">
+                    <div class="phase-status-icon pending"><span class="material-icons-outlined">pending</span></div>
+                    <div class="phase-info">
+                        <h4>Phase 3: Smart Content Pipeline</h4>
+                        <p>Enable pgvector, build vectorization service, semantic search</p>
+                        <span class="phase-badge pending">PENDING</span>
+                    </div>
+                </div>
+                <div class="phase-card">
+                    <div class="phase-status-icon pending"><span class="material-icons-outlined">pending</span></div>
+                    <div class="phase-info">
+                        <h4>Phase 4: Production Migration</h4>
+                        <p>Migrate to VidiCRM.com, DNS cutover, validation</p>
+                        <span class="phase-badge pending">PENDING</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Safety Checklist -->
+            <div class="safety-checklist">
+                <h3><span class="material-icons-outlined">shield</span> Safety Checklist</h3>
+                <div class="checklist-items">
+                    <div class="check-item checked">
+                        <div class="check-icon checked"><span class="material-icons-outlined">check</span></div>
+                        <span>Analyzed existing Directus schema (50 items verified)</span>
+                    </div>
+                    <div class="check-item checked">
+                        <div class="check-icon checked"><span class="material-icons-outlined">check</span></div>
+                        <span>Inventoried smart-book files (data.js V11, 37 chapters, 3 personas)</span>
+                    </div>
+                    <div class="check-item checked">
+                        <div class="check-icon checked"><span class="material-icons-outlined">check</span></div>
+                        <span>Wrote and reviewed integration plan (v1.0 → v1.1 → v2.0)</span>
+                    </div>
+                    <div class="check-item checked">
+                        <div class="check-icon checked"><span class="material-icons-outlined">check</span></div>
+                        <span>Selected NodeBB as community platform</span>
+                    </div>
+                    <div class="check-item">
+                        <div class="check-icon unchecked"><span class="material-icons-outlined">hourglass_empty</span>
+                        </div>
+                        <span>Create 3 new fields on site_pages (source_file, render_type, live_url)</span>
+                    </div>
+                    <div class="check-item">
+                        <div class="check-icon unchecked"><span class="material-icons-outlined">hourglass_empty</span>
+                        </div>
+                        <span>Run backup script — export all 50 existing items to JSON</span>
+                    </div>
+                    <div class="check-item">
+                        <div class="check-icon unchecked"><span class="material-icons-outlined">hourglass_empty</span>
+                        </div>
+                        <span>Import 1 test entry (landing page, status: draft)</span>
+                    </div>
+                    <div class="check-item">
+                        <div class="check-icon unchecked"><span class="material-icons-outlined">hourglass_empty</span>
+                        </div>
+                        <span>Browser-verify preview URL renders correctly</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ─────────────────────────────────────────────────── -->
+        <!-- PAGE 2: CMS LAYER -->
+        <!-- ─────────────────────────────────────────────────── -->
+        <div class="tab-page" id="tab-cms">
+            <div class="section-header">
+                <h2>🗄️ CMS & Content Layer</h2>
+                <p>Directus — our headless CMS for pages, Smart Channel CX, and content management</p>
+            </div>
+
+            <div class="software-grid">
+                <!-- Directus -->
+                <div class="software-card chosen">
+                    <div class="software-header">
+                        <div class="software-logo directus">
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="white">
+                                <path
+                                    d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z" />
+                            </svg>
+                        </div>
+                        <div class="software-info">
+                            <h3>Directus</h3>
+                            <div class="software-type">Headless CMS — Open Source (GPL-3)</div>
+                        </div>
+                        <span class="chosen-badge">✓ CHOSEN</span>
+                    </div>
+                    <div class="software-screenshot">
+                        <img src="https://directus.io/assets/img/home/hero-dashboard.png" alt="Directus Admin Dashboard"
+                            onerror="this.parentElement.innerHTML='<div style=\'text-align:center;padding:2rem\'><span class=\'material-icons-outlined\' style=\'font-size:3rem;opacity:0.3\'>storage</span><br>Directus Admin UI<br><small>directus.io</small></div>'">
+                    </div>
+                    <div class="software-body">
+                        <p>Directus is an open-source headless CMS that wraps any SQL database with a real-time API and
+                            an intuitive admin app. We use it to manage all VidiSmart HTML pages, Smart Channel CX
+                            content, media assets, and user accounts. It serves as the single source of truth for
+                            content across VIDIpitch and VidiSmart.</p>
+                        <div class="software-features">
+                            <span class="feature-tag">Headless CMS</span>
+                            <span class="feature-tag">REST + GraphQL API</span>
+                            <span class="feature-tag">Real-time</span>
+                            <span class="feature-tag">Role-based Access</span>
+                            <span class="feature-tag">File Management</span>
+                            <span class="feature-tag">Webhook Flows</span>
+                            <span class="feature-tag">PostgreSQL</span>
+                        </div>
+                        <div class="software-stats">
+                            <div class="software-stat"><span class="material-icons-outlined">star</span> 27k+ GitHub
+                                stars</div>
+                            <div class="software-stat"><span class="material-icons-outlined">code</span> TypeScript /
+                                Vue.js</div>
+                            <div class="software-stat"><span class="material-icons-outlined">cloud</span> Self-hosted /
+                                Cloud</div>
+                        </div>
+                        <div class="software-links">
+                            <a href="https://directus.io" target="_blank" class="software-link"><span
+                                    class="material-icons-outlined">open_in_new</span> Website</a>
+                            <a href="https://docs.directus.io" target="_blank" class="software-link"><span
+                                    class="material-icons-outlined">menu_book</span> Docs</a>
+                            <a href="https://github.com/directus/directus" target="_blank" class="software-link"><span
+                                    class="material-icons-outlined">code</span> GitHub</a>
+                            <a href="https://directus.io/pricing" target="_blank" class="software-link"><span
+                                    class="material-icons-outlined">attach_money</span> Pricing</a>
+                        </div>
+                        <div class="reviews-section">
+                            <h4><span class="material-icons-outlined" style="font-size:1rem">format_quote</span> What
+                                People Say</h4>
+                            <div class="review-item">
+                                <div class="review-source">G2 Review <span class="review-stars">★★★★★</span></div>
+                                <div class="review-text">"Directus is incredibly flexible. The admin UI is clean and
+                                    intuitive, and the API generation is instant. Perfect for teams that need a CMS
+                                    without vendor lock-in."</div>
+                            </div>
+                            <div class="review-item">
+                                <div class="review-source">GitHub Community <span class="review-stars">★★★★★</span>
+                                </div>
+                                <div class="review-text">"The fact that it wraps your existing database instead of
+                                    replacing it is a game-changer. No migration headaches, no data lock-in."</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PostgreSQL + pgvector -->
+                <div class="software-card">
+                    <div class="software-header">
+                        <div class="software-logo pgvector">
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="white">
+                                <path
+                                    d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z" />
+                            </svg>
+                        </div>
+                        <div class="software-info">
+                            <h3>PostgreSQL + pgvector</h3>
+                            <div class="software-type">Database + Vector Extension</div>
+                        </div>
+                    </div>
+                    <div class="software-screenshot">
+                        <img src="https://www.postgresql.org/media/img/about/press/elephant.png" alt="PostgreSQL"
+                            onerror="this.parentElement.innerHTML='<div style=\'text-align:center;padding:2rem\'><span class=\'material-icons-outlined\' style=\'font-size:3rem;opacity:0.3\'>database</span><br>PostgreSQL + pgvector<br><small>postgresql.org</small></div>'">
+                    </div>
+                    <div class="software-body">
+                        <p>PostgreSQL is the world's most advanced open-source relational database. The pgvector
+                            extension adds native vector similarity search — enabling semantic search, recommendation
+                            engines, and AI-powered content discovery directly within our Directus database.</p>
+                        <div class="software-features">
+                            <span class="feature-tag">ACID Compliant</span>
+                            <span class="feature-tag">Vector Search</span>
+                            <span class="feature-tag">Cosine Similarity</span>
+                            <span class="feature-tag">IVFFlat Index</span>
+                            <span class="feature-tag">HNSW Index</span>
+                            <span class="feature-tag">SQL Native</span>
+                        </div>
+                        <div class="software-stats">
+                            <div class="software-stat"><span class="material-icons-outlined">star</span> 15k+ GitHub
+                                stars (pgvector)</div>
+                            <div class="software-stat"><span class="material-icons-outlined">code</span> C Extension
+                            </div>
+                            <div class="software-stat"><span class="material-icons-outlined">cloud</span> Railway /
+                                Supabase</div>
+                        </div>
+                        <div class="software-links">
+                            <a href="https://www.postgresql.org" target="_blank" class="software-link"><span
+                                    class="material-icons-outlined">open_in_new</span> PostgreSQL</a>
+                            <a href="https://github.com/pgvector/pgvector" target="_blank" class="software-link"><span
+                                    class="material-icons-outlined">code</span> pgvector GitHub</a>
+                            <a href="https://supabase.com/docs/guides/database/extensions/pgvector" target="_blank"
+                                class="software-link"><span class="material-icons-outlined">menu_book</span> Supabase
+                                Docs</a>
+                        </div>
+                        <div class="reviews-section">
+                            <h4><span class="material-icons-outlined" style="font-size:1rem">format_quote</span> What
+                                People Say</h4>
+                            <div class="review-item">
+                                <div class="review-source">Supabase Blog <span class="review-stars">★★★★★</span></div>
+                                <div class="review-text">"pgvector turns PostgreSQL into a full-featured vector
+                                    database. For advanced hybrid search, we use Qdrant + Vespa AI (Vidi AI)."</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ─────────────────────────────────────────────────── -->
+        <!-- PAGE 3: COMMUNITY -->
+        <!-- ─────────────────────────────────────────────────── -->
+        <div class="tab-page" id="tab-community">
+            <div class="section-header">
+                <h2>👥 Community Platform Showdown</h2>
+                <p>Comparing the top 3 open-source community platforms — NodeBB is our chosen platform</p>
+            </div>
+
+            <!-- Comparison Table -->
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>NodeBB ⭐</th>
+                        <th>Discourse</th>
+                        <th>BuddyPress</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Stack</strong></td>
+                        <td class="winner">Node.js + MongoDB</td>
+                        <td>Ruby on Rails + PostgreSQL</td>
+                        <td>PHP + MySQL (WordPress)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Real-time Chat</strong></td>
+                        <td class="winner">✅ Built-in (Socket.io)</td>
+                        <td>✅ Built-in</td>
+                        <td>⚠️ Needs plugin</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Groups / Member Types</strong></td>
+                        <td class="winner">✅ Native groups</td>
+                        <td>✅ Trust levels</td>
+                        <td>✅ Best-in-class</td>
+                    </tr>
+                    <tr>
+                        <td><strong>SSO Integration</strong></td>
+                        <td class="winner">✅ JWT (easy with Directus)</td>
+                        <td>✅ SSO plugin</td>
+                        <td>⚠️ WordPress auth only</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Same Stack as VidiSmart</strong></td>
+                        <td class="winner">✅ Yes (Node.js)</td>
+                        <td>❌ No (Ruby)</td>
+                        <td>❌ No (PHP)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>GitHub Stars</strong></td>
+                        <td>13k+</td>
+                        <td class="winner">40k+</td>
+                        <td>10k+ (WordPress)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Railway Deployment</strong></td>
+                        <td class="winner">✅ Easy (Docker)</td>
+                        <td>⚠️ Possible (heavier)</td>
+                        <td>⚠️ PHP hosting needed</td>
+                    </tr>
+                    <tr>
+                        <td><strong>License</strong></td>
+                        <td>GPL-3</td>
+                        <td>GPL-2</td>
+                        <td>GPL-2</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="software-grid">
+                <!-- NodeBB -->
+                <div class="software-card chosen">
+                    <div class="software-header">
+                        <div class="software-logo nodebb">
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="white">
+                                <path
+                                    d="M21 6h-2v9H6v2c0 .55.45 1 1 1h11l4 4V7c0-.55-.45-1-1-1zm-4 6V3c0-.55-.45-1-1-1H3c-.55 0-1 .45-1 1v14l4-4h10c.55 0 1-.45 1-1z" />
+                            </svg>
+                        </div>
+                        <div class="software-info">
+                            <h3>NodeBB</h3>
+                            <div class="software-type">Forum Software — Open Source (GPL-3)</div>
+                        </div>
+                        <span class="chosen-badge">✓ CHOSEN</span>
+                    </div>
+                    <div class="software-screenshot">
+                        <img src="https://nodebb.org/assets/img/screenshot.png" alt="NodeBB Forum Screenshot"
+                            onerror="this.parentElement.innerHTML='<div style=\'text-align:center;padding:2rem\'><span class=\'material-icons-outlined\' style=\'font-size:3rem;opacity:0.3\'>forum</span><br>NodeBB Forum UI<br><small>nodebb.org</small></div>'">
+                    </div>
+                    <div class="software-body">
+                        <p>NodeBB is a next-generation forum software built on Node.js with real-time Socket.io
+                            communication. It features built-in chat, groups, user profiles, and a rich plugin
+                            ecosystem. Perfect for our VidiSmart community with 5 member types and real-time messaging
+                            needs.</p>
+                        <div class="software-features">
+                            <span class="feature-tag">Real-time Forum</span>
+                            <span class="feature-tag">Built-in Chat</span>
+                            <span class="feature-tag">Groups</span>
+                            <span class="feature-tag">JWT SSO</span>
+                            <span class="feature-tag">Node.js</span>
+                            <span class="feature-tag">Socket.io</span>
+                            <span class="feature-tag">Plugins</span>
+                        </div>
+                        <div class="software-stats">
+                            <div class="software-stat"><span class="material-icons-outlined">star</span> 13k+ GitHub
+                                stars</div>
+                            <div class="software-stat"><span class="material-icons-outlined">code</span> Node.js +
+                                MongoDB</div>
+                            <div class="software-stat"><span class="material-icons-outlined">cloud</span> Railway /
+                                Docker</div>
+                        </div>
+                        <div class="software-links">
+                            <a href="https://nodebb.org" target="_blank" class="software-link"><span
+                                    class="material-icons-outlined">open_in_new</span> Website</a>
+                            <a href="https://docs.nodebb.org" target="_blank" class="software-link"><span
+                                    class="material-icons-outlined">menu_book</span> Docs</a>
+                            <a href="https://github.com/NodeBB/NodeBB" target="_blank" class="software-link"><span
+                                    class="material-icons-outlined">code</span> GitHub</a>
+                            <a href="https://community.nodebb.org" target="_blank" class="software-link"><span
+                                    class="material-icons-outlined">groups</span> Live Demo</a>
+                        </div>
+                        <div class="reviews-section">
+                            <h4><span class="material-icons-outlined" style="font-size:1rem">format_quote</span> What
+                                People Say</h4>
+                            <div class="review-item">
+                                <div class="review-source">Reddit r/selfhosted <span class="review-stars">★★★★★</span>
+                                </div>
+                                <div class="review-text">"NodeBB is the best self-hosted forum software I've tried.
+                                    Real-time updates, clean UI, and the chat feature means you don't need a separate
+                                    Discord."</div>
+                            </div>
+                            <div class="review-item">
+                                <div class="review-source">GitHub Issues <span class="review-stars">★★★★☆</span></div>
+                                <div class="review-text">"Great plugin ecosystem. JWT SSO works flawlessly. The only
+                                    downside is the MongoDB requirement, but Redis caching makes it fast."</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Discourse -->
+                <div class="software-card">
+                    <div class="software-header">
+                        <div class="software-logo discourse">
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="white">
+                                <path
+                                    d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z" />
+                            </svg>
+                        </div>
+                        <div class="software-info">
+                            <h3>Discourse</h3>
+                            <div class="software-type">Forum Platform — Open Source (GPL-2)</div>
+                        </div>
+                    </div>
+                    <div class="software-screenshot">
+                        <img src="https://www.discourse.org/assets/discourse-home.png" alt="Discourse Forum Screenshot"
+                            onerror="this.parentElement.innerHTML='<div style=\'text-align:center;padding:2rem\'><span class=\'material-icons-outlined\' style=\'font-size:3rem;opacity:0.3\'>forum</span><br>Discourse Forum UI<br><small>discourse.org</small></div>'">
+                    </div>
+                    <div class="software-body">
+                        <p>Discourse is the most widely used open-source forum platform, powering communities for React,
+                            Docker, Rust, NASA, and Twitter engineering. It features built-in chat, trust levels,
+                            badges, and a massive plugin ecosystem. The Ruby stack is different from ours, but the
+                            feature set is unmatched.</p>
+                        <div class="software-features">
+                            <span class="feature-tag">Forums</span>
+                            <span class="feature-tag">Built-in Chat</span>
+                            <span class="feature-tag">Trust Levels (0-4)</span>
+                            <span class="feature-tag">Badges</span>
+                            <span class="feature-tag">SSO/LDAP</span>
+                            <span class="feature-tag">Wiki</span>
+                            <span class="feature-tag">Polls</span>
+                        </div>
+                        <div class="software-stats">
+                            <div class="software-stat"><span class="material-icons-outlined">star</span> 40k+ GitHub
+                                stars</div>
+                            <div class="software-stat"><span class="material-icons-outlined">code</span> Ruby on Rails +
+                                PostgreSQL</div>
+                            <div class="software-stat"><span class="material-icons-outlined">cloud</span> Docker /
+                                Managed</div>
+                        </div>
+                        <div class="software-links">
+                            <a href="https://www.discourse.org" target="_blank" class="software-link"><span
+                                    class="material-icons-outlined">open_in_new</span> Website</a>
+                            <a href="https://meta.discourse.org" target="_blank" class="software-link"><span
+                                    class="material-icons-outlined">groups</span> Live Demo</a>
+                            <a href="https://github.com/discourse/discourse" target="_blank" class="software-link"><span
+                                    class="material-icons-outlined">code</span> GitHub</a>
+                        </div>
+                        <div class="reviews-section">
+                            <h4><span class="material-icons-outlined" style="font-size:1rem">format_quote</span> What
+                                People Say</h4>
+                            <div class="review-item">
+                                <div class="review-source">G2 Review <span class="review-stars">★★★★★</span></div>
+                                <div class="review-text">"Discourse is the gold standard for community forums. The trust
+                                    level system is brilliant for auto-moderation. Chat is a great built-in feature."
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BuddyPress -->
+                <div class="software-card">
+                    <div class="software-header">
+                        <div class="software-logo buddypress">
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="white">
+                                <path
+                                    d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z" />
+                            </svg>
+                        </div>
+                        <div class="software-info">
+                            <h3>BuddyPress</h3>
+                            <div class="software-type">Social Network Plugin — WordPress (GPL-2)</div>
+                        </div>
+                    </div>
+                    <div class="software-screenshot">
+                        <img src="https://buddypress.org/files/bporg-banner1.png" alt="BuddyPress Screenshot"
+                            onerror="this.parentElement.innerHTML='<div style=\'text-align:center;padding:2rem\'><span class=\'material-icons-outlined\' style=\'font-size:3rem;opacity:0.3\'>people</span><br>BuddyPress Social Network<br><small>buddypress.org</small></div>'">
+                    </div>
+                    <div class="software-body">
+                        <p>BuddyPress transforms WordPress into a full social network with member profiles, activity
+                            feeds, groups, private messaging, and friend connections. It has the best member type system
+                            of any platform, but requires WordPress and PHP — a different stack from our Node.js
+                            ecosystem.</p>
+                        <div class="software-features">
+                            <span class="feature-tag">Activity Feeds</span>
+                            <span class="feature-tag">Member Profiles</span>
+                            <span class="feature-tag">Groups</span>
+                            <span class="feature-tag">Private Messaging</span>
+                            <span class="feature-tag">Member Types</span>
+                            <span class="feature-tag">WordPress Plugin</span>
+                        </div>
+                        <div class="software-stats">
+                            <div class="software-stat"><span class="material-icons-outlined">star</span> 10k+ (WordPress
+                                ecosystem)</div>
+                            <div class="software-stat"><span class="material-icons-outlined">code</span> PHP + MySQL
+                            </div>
+                            <div class="software-stat"><span class="material-icons-outlined">cloud</span> Any PHP
+                                hosting</div>
+                        </div>
+                        <div class="software-links">
+                            <a href="https://buddypress.org" target="_blank" class="software-link"><span
+                                    class="material-icons-outlined">open_in_new</span> Website</a>
+                            <a href="https://codex.buddypress.org" target="_blank" class="software-link"><span
+                                    class="material-icons-outlined">menu_book</span> Docs</a>
+                            <a href="https://github.com/buddypress/BuddyPress" target="_blank"
+                                class="software-link"><span class="material-icons-outlined">code</span> GitHub</a>
+                        </div>
+                        <div class="reviews-section">
+                            <h4><span class="material-icons-outlined" style="font-size:1rem">format_quote</span> What
+                                People Say</h4>
+                            <div class="review-item">
+                                <div class="review-source">WordPress.org Reviews <span class="review-stars">★★★★☆</span>
+                                </div>
+                                <div class="review-text">"Best member type system of any community platform. But it's
+                                    tied to WordPress, which adds complexity if you're not already on WP."</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ─────────────────────────────────────────────────── -->
+        <!-- PAGE 4: INTELLIGENCE -->
+        <!-- ─────────────────────────────────────────────────── -->
+        <div class="tab-page" id="tab-intelligence">
+            <div class="section-header">
+                <h2>🧠 Intelligence Layer</h2>
+                <p>Vector databases, embedding models, and the smart content pipeline for AI-powered semantic search</p>
+            </div>
+
+            <div class="software-grid">
+                <!-- OpenAI Embeddings -->
+                <div class="software-card chosen">
+                    <div class="software-header">
+                        <div class="software-logo openai">
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="white">
+                                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+                            </svg>
+                        </div>
+                        <div class="software-info">
+                            <h3>OpenAI Embeddings</h3>
+                            <div class="software-type">text-embedding-3-small / large</div>
+                        </div>
+                        <span class="chosen-badge">✓ CHOSEN</span>
+                    </div>
+                    <div class="software-screenshot">
+                        <img src="https://platform.openai.com/docs/images/embeddings.png" alt="OpenAI Embeddings"
+                            onerror="this.parentElement.innerHTML='<div style=\'text-align:center;padding:2rem\'><span class=\'material-icons-outlined\' style=\'font-size:3rem;opacity:0.3\'>psychology</span><br>OpenAI Embeddings API<br><small>platform.openai.com</small></div>'">
+                    </div>
+                    <div class="software-body">
+                        <p>OpenAI's embedding models convert text into 1536-dimensional vectors that capture semantic
+                            meaning. We use these to vectorize all content uploaded to Directus, enabling semantic
+                            search, content recommendations, and AI agent queries across our knowledge graph.</p>
+                        <div class="software-features">
+                            <span class="feature-tag">1536-dim vectors</span>
+                            <span class="feature-tag">$0.02/1M tokens</span>
+                            <span class="feature-tag">text-embedding-3-small</span>
+                            <span class="feature-tag">text-embedding-3-large</span>
+                            <span class="feature-tag">REST API</span>
+                        </div>
+                        <div class="software-stats">
+                            <div class="software-stat"><span class="material-icons-outlined">star</span> Industry
+                                standard</div>
+                            <div class="software-stat"><span class="material-icons-outlined">code</span> REST API</div>
+                            <div class="software-stat"><span class="material-icons-outlined">attach_money</span> Pay per
+                                use</div>
+                        </div>
+                        <div class="software-links">
+                            <a href="https://platform.openai.com/docs/guides/embeddings" target="_blank"
+                                class="software-link"><span class="material-icons-outlined">open_in_new</span> Docs</a>
+                            <a href="https://platform.openai.com/docs/pricing" target="_blank"
+                                class="software-link"><span class="material-icons-outlined">attach_money</span>
+                                Pricing</a>
+                        </div>
+                        <div class="reviews-section">
+                            <h4><span class="material-icons-outlined" style="font-size:1rem">format_quote</span> What
+                                People Say</h4>
+                            <div class="review-item">
+                                <div class="review-source">AI Engineering Blog <span class="review-stars">★★★★★</span>
+                                </div>
+                                <div class="review-text">"text-embedding-3-small is the best price/performance ratio for
+                                    semantic search. 1536 dimensions capture rich semantic meaning."</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Supabase -->
+                <div class="software-card">
+                    <div class="software-header">
+                        <div class="software-logo supabase">
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="white">
+                                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+                            </svg>
+                        </div>
+                        <div class="software-info">
+                            <h3>Supabase</h3>
+                            <div class="software-type">Backend-as-a-Service with pgvector</div>
+                        </div>
+                    </div>
+                    <div class="software-screenshot">
+                        <img src="https://supabase.com/dashboard/images/screenshot.png" alt="Supabase Dashboard"
+                            onerror="this.parentElement.innerHTML='<div style=\'text-align:center;padding:2rem\'><span class=\'material-icons-outlined\' style=\'font-size:3rem;opacity:0.3\'>cloud</span><br>Supabase Dashboard<br><small>supabase.com</small></div>'">
+                    </div>
+                    <div class="software-body">
+                        <p>Supabase is an open-source Firebase alternative built on PostgreSQL. It includes native
+                            pgvector support, making it a perfect fit for our vector embedding pipeline. We already use
+                            Supabase in the VidiSmart ecosystem, so this is a natural extension.</p>
+                        <div class="software-features">
+                            <span class="feature-tag">PostgreSQL</span>
+                            <span class="feature-tag">pgvector Native</span>
+                            <span class="feature-tag">Real-time</span>
+                            <span class="feature-tag">Auth</span>
+                            <span class="feature-tag">Storage</span>
+                            <span class="feature-tag">Edge Functions</span>
+                        </div>
+                        <div class="software-stats">
+                            <div class="software-stat"><span class="material-icons-outlined">star</span> 65k+ GitHub
+                                stars</div>
+                            <div class="software-stat"><span class="material-icons-outlined">code</span> TypeScript /
+                                PostgreSQL</div>
+                            <div class="software-stat"><span class="material-icons-outlined">cloud</span> Managed /
+                                Self-hosted</div>
+                        </div>
+                        <div class="software-links">
+                            <a href="https://supabase.com" target="_blank" class="software-link"><span
+                                    class="material-icons-outlined">open_in_new</span> Website</a>
+                            <a href="https://supabase.com/docs/guides/database/extensions/pgvector" target="_blank"
+                                class="software-link"><span class="material-icons-outlined">menu_book</span> pgvector
+                                Docs</a>
+                            <a href="https://github.com/supabase/supabase" target="_blank" class="software-link"><span
+                                    class="material-icons-outlined">code</span> GitHub</a>
+                        </div>
+                        <div class="reviews-section">
+                            <h4><span class="material-icons-outlined" style="font-size:1rem">format_quote</span> What
+                                People Say</h4>
+                            <div class="review-item">
+                                <div class="review-source">Hacker News <span class="review-stars">★★★★★</span></div>
+                                <div class="review-text">"Supabase + pgvector is the easiest way to add semantic search
+                                    to your app. No need for a separate vector database."</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Qdrant (Primary Vector DB) -->
+                <div class="software-card chosen">
+                    <div class="software-header">
+                        <div class="software-logo qdrant" style="background:linear-gradient(135deg,#0055FF,#00D4FF)">
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="white">
+                                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+                            </svg>
+                        </div>
+                        <div class="software-info">
+                            <h3>Qdrant <span class="chosen-badge">✓ CHOSEN</span></h3>
+                            <div class="software-type">Vector Database (Rust-based)</div>
+                        </div>
+                    </div>
+                    <div class="software-screenshot">
+                        <img src="https://qdrant.tech/images/dashboard.png" alt="Qdrant Dashboard"
+                            onerror="this.parentElement.innerHTML='<div style=\'text-align:center;padding:2rem\'><span class=\'material-icons-outlined\' style=\'font-size:3rem;opacity:0.3\'>storage</span><br>Qdrant Vector DB<br><small>qdrant.tech</small></div>'">
+                    </div>
+                    <div class="software-body">
+                        <p>Qdrant is a high-performance, Rust-based vector database. It's self-hostable, fast, and
+                            provides excellent hybrid search capabilities. Our primary vector store for the VidiSmart
+                            platform.</p>
+                        <div class="software-features">
+                            <span class="feature-tag">Self-Hostable</span>
+                            <span class="feature-tag">Rust-Powered</span>
+                            <span class="feature-tag">Hybrid Search</span>
+                            <span class="feature-tag">Filtering</span>
+                            <span class="feature-tag">gRPC Support</span>
+                        </div>
+                        <div class="software-stats">
+                            <div class="software-stat"><span class="material-icons-outlined">star</span> 20k+ GitHub
+                                stars</div>
+                            <div class="software-stat"><span class="material-icons-outlined">code</span> Rust / Python /
+                                Go</div>
+                            <div class="software-stat"><span class="material-icons-outlined">attach_money</span> Open
+                                Source</div>
+                        </div>
+                        <div class="software-links">
+                            <a href="https://qdrant.tech" target="_blank" class="software-link"><span
+                                    class="material-icons-outlined">open_in_new</span> Website</a>
+                            <a href="https://qdrant.tech/documentation" target="_blank" class="software-link"><span
+                                    class="material-icons-outlined">menu_book</span> Docs</a>
+                            <a href="https://github.com/qdrant/qdrant" target="_blank" class="software-link"><span
+                                    class="material-icons-outlined">code</span> GitHub</a>
+                        </div>
+                        <div class="reviews-section">
+                            <h4><span class="material-icons-outlined" style="font-size:1rem">format_quote</span> What
+                                People Say</h4>
+                            <div class="review-item">
+                                <div class="review-source">Vector DB Benchmarks <span class="review-stars">★★★★★</span>
+                                </div>
+                                <div class="review-text">"Qdrant consistently ranks among the fastest vector databases.
+                                    Its Rust foundation gives it a significant performance edge."</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Vespa AI (Vidi AI) -->
+                <div class="software-card chosen">
+                    <div class="software-header">
+                        <div class="software-logo vespa" style="background:linear-gradient(135deg,#FF6B35,#C8A951)">
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="white">
+                                <path
+                                    d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
+                            </svg>
+                        </div>
+                        <div class="software-info">
+                            <h3>Vespa AI (Vidi AI) <span class="chosen-badge">✓ PRIMARY AI ENGINE</span></h3>
+                            <div class="software-type">Forked AI Search Engine</div>
+                        </div>
+                    </div>
+                    <div class="software-screenshot">
+                        <img src="https://vespa.ai/assets/vespa-ai-logo.png" alt="Vespa AI Dashboard"
+                            onerror="this.parentElement.innerHTML='<div style=\'text-align:center;padding:2rem\'><span class=\'material-icons-outlined\' style=\'font-size:3rem;opacity:0.3\'>psychology</span><br>Vespa AI (Vidi AI)<br><small>vespa.ai</small></div>'">
+                    </div>
+                    <div class="software-body">
+                        <p>Our forked Vespa AI powers the Visual Vector Omni Search Engine. It provides hybrid search
+                            combining BM25, vector similarity, knowledge graphs, and geospatial queries — all in one
+                            engine.</p>
+                        <div class="software-features">
+                            <span class="feature-tag">Hybrid Search</span>
+                            <span class="feature-tag">BM25 + Vector</span>
+                            <span class="feature-tag">Knowledge Graph</span>
+                            <span class="feature-tag">Geospatial</span>
+                            <span class="feature-tag">Real-time</span>
+                        </div>
+                        <div class="software-stats">
+                            <div class="software-stat"><span class="material-icons-outlined">star</span> Yahoo/Vespa
+                                heritage</div>
+                            <div class="software-stat"><span class="material-icons-outlined">code</span> Java / C++
+                            </div>
+                            <div class="software-stat"><span class="material-icons-outlined">attach_money</span> Apache
+                                2.0</div>
+                        </div>
+                        <div class="software-links">
+                            <a href="https://vespa.ai" target="_blank" class="software-link"><span
+                                    class="material-icons-outlined">open_in_new</span> Website</a>
+                            <a href="https://docs.vespa.ai" target="_blank" class="software-link"><span
+                                    class="material-icons-outlined">menu_book</span> Docs</a>
+                            <a href="https://github.com/vespa-engine/vespa" target="_blank" class="software-link"><span
+                                    class="material-icons-outlined">code</span> GitHub</a>
+                        </div>
+                        <div class="reviews-section">
+                            <h4><span class="material-icons-outlined" style="font-size:1rem">format_quote</span> What
+                                People Say</h4>
+                            <div class="review-item">
+                                <div class="review-source">AI Search Review <span class="review-stars">★★★★★</span>
+                                </div>
+                                <div class="review-text">"Vespa is the most comprehensive search engine for hybrid
+                                    workloads. Combining it with Qdrant gives us the best of both worlds."</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Research Agents -->
+            <div class="section-header" style="margin-top:2rem">
+                <h2>🤖 Research Agents</h2>
+                <p>4 agents gathering screenshots, reviews, and data for every software product in this plan</p>
+            </div>
+            <div class="agents-grid">
+                <div class="agent-card">
+                    <div class="agent-avatar cms">🔍</div>
+                    <div class="agent-info">
+                        <h4>Agent 1: Directus Researcher</h4>
+                        <p>Screenshots of admin UI, GitHub stats, reviews, logo, deployment info</p>
+                        <span class="agent-status ready">READY</span>
+                    </div>
+                </div>
+                <div class="agent-card">
+                    <div class="agent-avatar community">🔍</div>
+                    <div class="agent-info">
+                        <h4>Agent 2: Community Platform Researcher</h4>
+                        <p>NodeBB, Discourse, BuddyPress — screenshots, GitHub stats, comparison articles</p>
+                        <span class="agent-status ready">READY</span>
+                    </div>
+                </div>
+                <div class="agent-card">
+                    <div class="agent-avatar intelligence">🔍</div>
+                    <div class="agent-info">
+                        <h4>Agent 3: Intelligence Layer Researcher</h4>
+                        <p>Qdrant, Vespa AI (Vidi AI), pgvector, OpenAI embeddings — all with visuals</p>
+                        <span class="agent-status ready">READY</span>
+                    </div>
+                </div>
+                <div class="agent-card">
+                    <div class="agent-avatar chat">🔍</div>
+                    <div class="agent-info">
+                        <h4>Agent 4: Chat Server Researcher</h4>
+                        <p>Rocket.Chat, Matrix/Element, LiveKit — feature comparison, screenshots</p>
+                        <span class="agent-status queued">QUEUED</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- JAVASCRIPT -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <script>
+        // Tab Navigation
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Remove active from all buttons and pages
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-page').forEach(p => p.classList.remove('active'));
+
+                // Activate clicked tab
+                btn.classList.add('active');
+                const tabId = 'tab-' + btn.dataset.tab;
+                document.getElementById(tabId).classList.add('active');
+            });
+        });
+
+        // Animate stats on page load
+        function animateValue(element, start, end, duration) {
+            const range = end - start;
+            const startTime = performance.now();
+
+            function update(currentTime) {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                const value = Math.floor(start + range * progress);
+                element.textContent = value;
+                if (progress < 1) requestAnimationFrame(update);
+            }
+            requestAnimationFrame(update);
+        }
+
+        // Animate stat values when they come into view
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const statValue = entry.target.querySelector('.stat-value');
+                    if (statValue && !statValue.dataset.animated) {
+                        const text = statValue.textContent;
+                        const num = parseInt(text);
+                        if (!isNaN(num) && num > 0) {
+                            statValue.dataset.animated = 'true';
+                            animateValue(statValue, 0, num, 1000);
+                        }
+                    }
+                }
+            });
+        }, { threshold: 0.5 });
+
+        document.querySelectorAll('.stat-card').forEach(card => observer.observe(card));
+    </script>
+
+</body>
+
+</html>

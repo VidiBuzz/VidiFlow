@@ -37,10 +37,13 @@
 
         body {
             font-family: 'Lora', Georgia, serif;
-            font-size: 12pt;
-            line-height: 1.75;
+            font-size: 12.5pt;
+            line-height: 1.85;
             color: var(--text-body);
             background: var(--bg-page);
+            text-rendering: optimizeLegibility;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
 
         /* ===== Persona Theming ===== */
@@ -559,18 +562,23 @@
         .text-column {
             max-width: var(--text-column-width);
             margin: 0 auto;
-            padding: 2rem 2rem 2rem 3rem;
+            padding: 3rem 3rem 4rem 1rem;
         }
 
         /* ===== Sticky Image Sidebar ===== */
         .image-sidebar {
             position: relative;
-            padding: 2rem 1.5rem 2rem 1rem;
-            border-left: 1px solid #E5E7EB;
+            padding: 2.5rem 2rem;
+            background: rgba(248, 246, 240, 0.4);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-left: 1px solid rgba(0,0,0,0.05);
+            box-shadow: -4px 0 24px rgba(0,0,0,0.01);
         }
 
         body.dark .image-sidebar {
-            border-left-color: #334155;
+            background: rgba(15, 23, 42, 0.4);
+            border-left-color: rgba(255,255,255,0.05);
         }
 
         .image-sidebar-inner {
@@ -733,7 +741,7 @@
         }
 
         .chapter-header {
-            margin-bottom: 2rem;
+            margin-bottom: 2.5rem;
             padding-bottom: 1.5rem;
             border-bottom: 3px solid var(--primary);
         }
@@ -750,16 +758,32 @@
 
         .chapter h1 {
             font-family: 'Kumbh Sans', sans-serif;
-            font-size: 2rem;
-            font-weight: 800;
+            font-size: 2.75rem;
+            font-weight: 900;
+            letter-spacing: -0.02em;
             color: var(--text-heading);
-            line-height: 1.2;
+            line-height: 1.15;
+            margin-bottom: 1.5rem;
         }
 
         .chapter p {
-            margin-bottom: 1rem;
-            text-align: justify;
-            hyphens: auto;
+            margin-bottom: 1.4rem;
+            text-align: left;
+            font-size: 1.15rem;
+            color: var(--text-body);
+        }
+
+        /* Beautiful Drop Cap for the first paragraph of a chapter content section */
+        .chapter-content > p:first-of-type::first-letter {
+            float: left;
+            font-size: 4.8rem;
+            line-height: 0.8;
+            padding-top: 0.2rem;
+            padding-right: 0.5rem;
+            padding-left: 0.1rem;
+            font-family: 'Kumbh Sans', sans-serif;
+            font-weight: 800;
+            color: var(--primary);
         }
 
         .strategic-context {
@@ -786,14 +810,28 @@
         }
 
         blockquote {
-            background: var(--bg-quote);
+            background: rgba(26, 101, 158, 0.04);
             border-left: 4px solid var(--accent);
-            padding: 1rem 1.5rem;
-            margin: 1.5rem 0;
+            padding: 1.5rem 2rem 1.5rem 3.5rem;
+            margin: 2.5rem 0;
             font-style: italic;
-            color: #374151;
-            border-radius: 0 8px 8px 0;
-            font-size: 1.05rem;
+            color: #334155;
+            border-radius: 0 12px 12px 0;
+            font-size: 1.25rem;
+            line-height: 1.6;
+            position: relative;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+        }
+
+        blockquote::before {
+            content: '\201C';
+            position: absolute;
+            left: 0.75rem;
+            top: -0.25rem;
+            font-size: 5rem;
+            color: rgba(26, 101, 158, 0.15);
+            font-family: Georgia, serif;
+            line-height: 1;
         }
 
         /* Inline images in text (for mobile fallback) */
@@ -1574,5 +1612,30 @@
         }
     </script>
 </body>
+
+<!-- Qwen AI Agent — Smart Book Companion (Reader Page) -->
+<script src="qwen-agent.js"></script>
+<script>
+// Initialize Qwen Agent for the book reader page
+(function() {
+    if (typeof window.QwenAgent !== 'undefined') {
+        window.QwenAgent.init({
+            position: 'bottom-left',       // Left side to avoid overlapping sidebar
+            theme: 'dark',
+            primaryColor: '#FF6B35',
+            accentColor: '#C8A951',
+            showWelcome: true,
+            draggable: true,
+            // Set your DashScope or OpenRouter API key here:
+            // apiKey: 'sk-...',
+        });
+        console.log('[SmartBook] Qwen Agent loaded on reader page');
+    } else {
+        console.warn('[SmartBook] QwenAgent not found — check qwen-agent.js path');
+    }
+})();
+</script>
+
+</html>
 
 </html>
