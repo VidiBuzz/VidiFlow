@@ -91,39 +91,39 @@ const BOOK_DATA = {
   chapters: {
     foreword: {
       id: "foreword",
-      title: "Foreword: The 500% Lead",
+      title: "Foreword: The 500% Lead & The 500-App Breaking Point",
       part: 0,
       order: 0,
       content: `<div class="strategic-context">
         <h3>Strategic Context</h3>
-        <p>We are not at the beginning of the AI era. We are at the inflection point — the moment where most businesses still can't see what's coming, and the ones who can are quietly building leads that will be impossible to close in 18 months.</p>
-        <p>In 2000, the question was: <em>do you have a website?</em> Companies that answered no were invisible. By 2010, having a website was table stakes — the question became: <em>what is your digital strategy?</em> That era produced the SaaS explosion. Salesforce, HubSpot, Slack, Zoom, Asana — the entire subscription software industry was built on digitizing business processes and charging monthly for access.</p>
-        <p>In 2026, that SaaS era is ending. Not declining. Ending. The question is no longer <em>which software do you use?</em> It is: <em>which agents are running your business?</em></p>
+        <p>We are not at the beginning of the AI era. We are at the inflection point — the moment where most businesses are suffocating under the weight of their own software, while a select few are breaking free to build insurmountable leads.</p>
+        <p>In 2000, the question was: <em>do you have a website?</em> By 2010, that evolved into: <em>what is your digital strategy?</em> This era produced the "SaaS Explosion." Businesses subscribed to Salesforce for CRM, Slack for chat, Asana for projects, Zendesk for tickets, and on and on. The goal was efficiency. The reality was chaos.</p>
+        <p>By 2026, the average enterprise is tangled in a web of <strong>over 500 different SaaS applications</strong>. This is the breaking point in the modern customer journey. Teams spend more time moving data between disconnected apps, managing subscriptions, and fighting integration errors than they do creating actual value.</p>
       </div>
-      <p>I have watched this pattern play out before. In 1999, I built VidiChannel — one of the first companies to deliver interactive video commercially over the internet, years before streaming was infrastructure. The market wasn't ready. The infrastructure wasn't there. But the direction was unmistakable.</p>
-      <p>What is happening now is not an upgrade. It is a replacement. Within five years, the businesses that dominate every industry will not be running websites supported by SaaS stacks. They will be running meshes of 30 to 40 purpose-built AI agents — each one owning a vertical, each one learning from proprietary data, each one operating autonomously without a subscription fee or a product roadmap owned by someone else.</p>
-      <p>Customer support. Content creation. Sales intelligence. Legal review. Inventory management. Competitive monitoring. Compliance auditing. Each of these is currently a SaaS subscription or a human headcount. Each of these will be an agent within three years for the companies that move now.</p>
+      <p>I have watched this pattern play out before. In 1999, I built VidiChannel — delivering interactive video before broadband was ubiquitous. We built for where the world was going. Today, the world is moving away from the 500-app SaaS pile and toward <strong>Agentic Orchestration</strong>.</p>
+      <p>What is happening now is not an upgrade. It is a demolition. Within five years, the businesses that dominate will not be running 500 disjointed apps. They will be running a tightly choreographed mesh of 30 to 40 purpose-built AI agents. These agents don't require API keys or Zapier glue—they communicate natively, own entire verticals, and learn from your proprietary data.</p>
+      <p>Customer support. Content creation. Sales intelligence. Legal review. The 500-app landscape is collapsing into single, intelligent agents that actually talk to each other. The companies that navigate this customer journey—from the chaos of 500 apps to the clarity of agentic structure—will move with terrifying velocity.</p>
       <blockquote>"The top performers who understand what is actually happening right now — not the hype, not the demos, not the press releases — will generate 500% more business than their competitors within three years."</blockquote>
-      <p>But here is the critical nuance most AI conversations miss: <strong>none of this works if the AI is making things up.</strong> Reliability is not optional. The framework we call Tensor Truth — verifiable AI outputs anchored to your proprietary data, validated against ground truth, not statistical prediction alone — is what separates 500% performers from companies that deployed AI and got garbage. That framework runs through every chapter of this book.</p>
-      <p>The window is open. It will not stay open. Let's go.</p>`,
+      <p>But here is the critical nuance most AI conversations miss: <strong>none of this works if the AI is making things up.</strong> Reliability is not optional. The framework we call Tensor Truth — verifiable AI outputs anchored to your proprietary data, validated against ground truth — is the only way to replace 500 apps with agents you actually trust. That framework runs through every chapter of this book.</p>
+      <p>The window is open. The 500-app era is ending. Let's go.</p>`,
       images: ["ai_plan_people_1775340669016.png", "exec_overview_people_1775340634776.png"],
       readingTime: 8
     },
     ch1: {
       id: "ch1",
-      title: "Ch1: Access to Information Is Accelerating",
+      title: "Ch1: The Customer Journey Out of App Chaos",
       part: 1,
       order: 1,
       content: `<div class="strategic-context">
         <h3>Strategic Context</h3>
-        <p>In 1999, I built VidiChannel on a simple conviction: interactive video over the internet would change everything. The problem was that 56k modems and early broadband couldn't carry the experience. The infrastructure wasn't there yet. So we built for where the infrastructure was going, not where it was.</p>
-        <p>By 2005, broadband crossed 50% penetration in the US. By 2010, YouTube had 2 billion views per day. The infrastructure caught up, and the companies that had positioned early captured the market.</p>
-        <p>We are in an identical moment right now — except the infrastructure that is arriving is not bandwidth. It is intelligence.</p>
+        <p>Every founder, IT director, and consumer is currently trapped in the same nightmare: a digital landscape fragmented across dozens, sometimes hundreds, of disparate tools. The customer journey has devolved into a frantic series of copy-pastes, Zapier workarounds, and lost browser tabs.</p>
+        <p>In 1999, I built VidiChannel on a simple conviction: interactive video over the internet would change everything. The infrastructure wasn't there yet. Today, the infrastructure is intelligence, and it's finally ready to solve the 500-app chaos.</p>
+        <p>We are watching the rapid collapse of application complexity into a unified, agentic layer.</p>
       </div>
-      <p>The speed at which humans can access information has never been faster, and it is still accelerating. But the nature of what "access" means has fundamentally changed. For 25 years, access meant: find the document, read the document, extract the insight yourself. That model is over.</p>
-      <p>Today, access means: ask the question, receive a synthesized answer from across your entire knowledge base, with sources, in real time. The businesses winning in 2026 are not the ones with the most information — they are the ones whose information is structured intelligently enough to be queried at speed.</p>
-      <p>Most organizations are still running 2010-era data architecture: structured databases holding maybe 10% of their actual intelligence, with the remaining 90% locked in PDFs, videos, emails, presentations, and conversations that no system can read. That gap is the opportunity.</p>
-      <blockquote>"It is no longer about who has the best information. It is about who built the fastest pipeline from raw data to decisive action."</blockquote>`,
+      <p>The speed at which humans can access information has never been faster, but the friction of the 500-app stack has made acting on that information agonizingly slow. For 25 years, "digital transformation" meant adding more apps. That model is over.</p>
+      <p>Today, the customer journey is being radically simplified. Instead of logging into a CRM, exporting a CSV, moving it to a marketing platform, and generating reports in a third tool, a user simply speaks to their orchestrator agent. The mesh of 30-40 agents operates cohesively as a single intelligence engine.</p>
+      <p>Most organizations are still suffering through "app fatigue" while maintaining a 2010-era structure. They are paralyzed by choice, paying redundant subscriptions, and wondering why 90% of their valuable data is invisible to their systems. The businesses winning in 2026 aren't buying more apps — they are tearing them down and replacing them with autonomous agents.</p>
+      <blockquote>"It is no longer about who has the best applications. It is about who escapes the 500-app chaos first by rebuilding their business on a unified agentic foundation."</blockquote>`,
       images: ["hero_tech_professional_1775089047994.png", "ai_answer_engine_strategy.png"],
       readingTime: 15
     },
