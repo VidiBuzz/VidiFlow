@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>U.S. Tariff Timeline (2025-2027)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --card-border: rgba(255, 255, 255, 0.1);
+            --ieepa-color: #f43f5e;
+            --ieepa-bg: rgba(244, 63, 94, 0.15);
+            --sec122-color: #f59e0b;
+            --sec122-bg: rgba(245, 158, 11, 0.15);
+            --sec232-color: #38bdf8;
+            --sec232-bg: rgba(56, 189, 248, 0.15);
+            --multi-color: #a855f7;
+            --multi-bg: rgba(168, 85, 247, 0.15);
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(56, 189, 248, 0.1) 0px, transparent 50%),
+                radial-gradient(at 100% 0%, rgba(168, 85, 247, 0.1) 0px, transparent 50%);
+            background-attachment: fixed;
+        }
+
+        .header {
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--card-border);
+            padding: 2rem 5%;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header h1 {
+            margin: 0 0 0.5rem 0;
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(90deg, #38bdf8, #818cf8, #a855f7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.02em;
+        }
+
+        .header p {
+            color: var(--text-muted);
+            margin: 0 0 1.5rem 0;
+            font-size: 1.1rem;
+            max-width: 800px;
+            line-height: 1.5;
+        }
+
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .status-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        .status-card h3 {
+            margin: 0;
+            font-size: 1rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .status-card .status {
+            font-size: 1.25rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .status.terminated { color: var(--ieepa-color); }
+        .status.active { color: var(--sec232-color); }
+        .status.active-122 { color: var(--sec122-color); }
+
+        .filter-bar {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .filter-label {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-right: 0.5rem;
+        }
+
+        .filter-btn {
+            background: transparent;
+            border: 1px solid var(--card-border);
+            color: var(--text-muted);
+            padding: 0.4rem 1rem;
+            border-radius: 999px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .filter-btn:hover {
+            border-color: rgba(255, 255, 255, 0.3);
+            color: white;
+        }
+
+        .filter-btn.active {
+            background: var(--text-main);
+            color: var(--bg-color);
+            border-color: var(--text-main);
+        }
+
+        .timeline-container {
+            max-width: 1200px;
+            margin: 3rem auto;
+            position: relative;
+            padding: 0 2rem;
+        }
+
+        .timeline-container::before {
+            content: '';
+            position: absolute;
+            width: 2px;
+            background: linear-gradient(to bottom, transparent, var(--card-border) 5%, var(--card-border) 95%, transparent);
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            margin-left: -1px;
+        }
+
+        .timeline-item {
+            padding: 20px 50px;
+            position: relative;
+            width: 50%;
+            box-sizing: border-box;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.5s forwards ease-out;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .timeline-item.left { left: 0; }
+        .timeline-item.right { left: 50%; }
+
+        .timeline-item::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            right: -10px;
+            background-color: var(--bg-color);
+            border: 4px solid var(--sec232-color);
+            top: 32px;
+            border-radius: 50%;
+            z-index: 1;
+            transition: transform 0.2s;
+        }
+
+        .timeline-item.auth-ieepa::after { border-color: var(--ieepa-color); }
+        .timeline-item.auth-sec122::after { border-color: var(--sec122-color); }
+        .timeline-item.auth-multiple::after { border-color: var(--multi-color); }
+
+        .timeline-item:hover::after {
+            transform: scale(1.2);
+        }
+
+        .timeline-item.right::after {
+            left: -10px;
+        }
+
+        .content {
+            padding: 1.5rem;
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            position: relative;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        .content:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .date-badge {
+            font-weight: 800;
+            color: var(--text-main);
+            font-size: 1.1rem;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .authority {
+            padding: 0.3rem 0.8rem;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .auth-ieepa .authority { background: var(--ieepa-bg); color: #fda4af; border: 1px solid rgba(244, 63, 94, 0.3); }
+        .auth-sec122 .authority { background: var(--sec122-bg); color: #fcd34d; border: 1px solid rgba(245, 158, 11, 0.3); }
+        .auth-sec232 .authority { background: var(--sec232-bg); color: #7dd3fc; border: 1px solid rgba(56, 189, 248, 0.3); }
+        .auth-multiple .authority { background: var(--multi-bg); color: #d8b4fe; border: 1px solid rgba(168, 85, 247, 0.3); }
+
+        .meta {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .meta-row {
+            display: flex;
+            align-items: baseline;
+            gap: 0.5rem;
+        }
+
+        .meta-label {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            width: 80px;
+        }
+
+        .country { font-weight: 600; color: #e2e8f0; }
+        .commodity { color: #cbd5e1; font-weight: 500; }
+        
+        .desc {
+            color: #94a3b8;
+            line-height: 1.6;
+            font-size: 0.95rem;
+            margin: 0;
+        }
+
+        .timeline-img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            border: 1px solid var(--card-border);
+            opacity: 0.9;
+            transition: opacity 0.3s;
+        }
+        
+        .timeline-img:hover {
+            opacity: 1;
+        }
+
+        /* Responsive Design */
+        @media screen and (max-width: 900px) {
+            .timeline-container::before {
+                left: 30px;
+            }
+            .timeline-item {
+                width: 100%;
+                padding-left: 70px;
+                padding-right: 0;
+            }
+            .timeline-item.right {
+                left: 0;
+            }
+            .timeline-item.left::after, 
+            .timeline-item.right::after {
+                left: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="header">
+        <h1>U.S. Tariff Timeline</h1>
+        <p>Follow the evolving trade landscape with confidence. Key changes are highlighted as they unfold to grasp the bigger picture at a glance. (Last updated: April 3, 2026)</p>
+        
+        <div class="status-grid">
+            <div class="status-card">
+                <h3>IEEPA (Intl. Emergency Economic Powers Act)</h3>
+                <div class="status terminated">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    Terminated (Feb 24, 2026)
+                </div>
+                <div style="font-size: 0.85rem; color: var(--text-muted);">Terminated following Supreme Court ruling. Remaining for historical reference.</div>
+            </div>
+            <div class="status-card">
+                <h3>Section 122 (Trade Expansion Act)</h3>
+                <div class="status active-122">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    In Effect (Feb 24, 2026)
+                </div>
+                <div style="font-size: 0.85rem; color: var(--text-muted);">Global 10% tariff on most imports for 150 days.</div>
+            </div>
+            <div class="status-card">
+                <h3>Section 232 (Trade Expansion Act)</h3>
+                <div class="status active">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    In Effect
+                </div>
+                <div style="font-size: 0.85rem; color: var(--text-muted);">Steel, aluminum, auto, lumber, semis, copper.</div>
+            </div>
+        </div>
+
+        <div class="filter-bar">
+            <span class="filter-label">Filter by Authority:</span>
+            <button class="filter-btn active" data-filter="all">All Authorities</button>
+            <button class="filter-btn" data-filter="ieepa">IEEPA</button>
+            <button class="filter-btn" data-filter="sec232">Section 232</button>
+            <button class="filter-btn" data-filter="sec122">Section 122</button>
+        </div>
+    </header>
+
+    <div class="timeline-container" id="timeline">
+        <!-- Injected via JS -->
+    </div>
+
+    <script>
+        const events = [
+            { date: "2025-02-01", auth: "IEEPA", type: "fentanyl", country: "Canada", commodity: "All goods; energy products", desc: "Executive order issued imposing a 25% tariff on imports from Canada, 10% tariff on energy products, effective February 4, 2025." },
+            { date: "2025-02-01", auth: "IEEPA", type: "fentanyl", country: "China", commodity: "All goods", desc: "Executive order issued imposing a 10% tariff on all goods from China, effective February 4, 2025. De minimis treatment will not be allowed." },
+            { date: "2025-02-01", auth: "IEEPA", type: "fentanyl", country: "Mexico", commodity: "All goods", desc: "Executive order issued imposing a 25% tariff on imports from Mexico, effective February 4, 2025." },
+            { date: "2025-02-03", auth: "IEEPA", type: "fentanyl", country: "Canada, Mexico", commodity: "All goods", desc: "30-day pause announced on tariff increase for imports from Canada and Mexico (until March 4, 2025)." },
+            { date: "2025-02-04", auth: "IEEPA", type: "fentanyl", country: "China", commodity: "All goods", desc: "10% tariff on goods from China goes into effect. De minimis treatment for low-value shipments from China ends." },
+            { date: "2025-02-05", auth: "IEEPA", type: "fentanyl", country: "China", commodity: "All goods", desc: "De minimis treatment temporarily restored for low-value shipments from China." },
+            { date: "2025-02-10", auth: "Section 232", type: "steel & aluminum", country: "All", commodity: "Steel and aluminum", desc: "Proclamations issued extending the 25% tariff on steel to all countries and increasing the 10% tariff to 25% on aluminum." },
+            { date: "2025-03-04", auth: "IEEPA", type: "fentanyl", country: "Canada, Mexico", commodity: "All goods", desc: "30-day pause ends. 25% tariff goes into effect for imports from Canada and Mexico." },
+            { date: "2025-03-04", auth: "IEEPA", type: "fentanyl", country: "China", commodity: "All goods", desc: "10% tariff on all goods from China increased to 20%." },
+            { date: "2025-03-07", auth: "IEEPA", type: "fentanyl", country: "Canada, Mexico", commodity: "USMCA-qualifying goods", desc: "Amended executive order exempting USMCA-qualifying goods from Canada and Mexico." },
+            { date: "2025-03-12", auth: "Section 232", type: "steel & aluminum", country: "All", commodity: "Steel and aluminum", desc: "25% tariffs on steel and aluminum imported from all countries go in effect." },
+            { date: "2025-03-26", auth: "Section 232", type: "auto & auto parts", country: "All", commodity: "Automobiles and auto parts", desc: "Proclamation imposing 25% tariff on automobiles and auto parts, effective April 3 for autos and May 3 for parts." },
+            { date: "2025-04-02", auth: "IEEPA", type: "fentanyl", country: "China", commodity: "All goods", desc: "Ends de minimis treatment for low-value shipments from China, effective May 2." },
+            { date: "2025-04-02", auth: "IEEPA", type: "reciprocal", country: "All (except CA & MX)", commodity: "Most goods", desc: "10% baseline tariff announced for most countries, effective April 5." },
+            { date: "2025-04-03", auth: "Section 232", type: "auto", country: "All", commodity: "Automobiles", desc: "25% tariff on automobiles in effect." },
+            { date: "2025-04-04", auth: "Section 232", type: "steel & aluminum", country: "All", commodity: "Beer & empty aluminum cans", desc: "25% tariff in effect for beer and empty aluminum cans." },
+            { date: "2025-04-05", auth: "IEEPA", type: "reciprocal", country: "All (except CA & MX)", commodity: "Most goods", desc: "10% baseline tariff in effect." },
+            { date: "2025-04-08", auth: "IEEPA", type: "reciprocal", country: "China", commodity: "All goods", desc: "34% country-specific tariff increased to 84% on all goods from China, effective April 9." },
+            { date: "2025-04-09", auth: "IEEPA", type: "reciprocal", country: "All (except CA & MX)", commodity: "All goods", desc: "Country-specific tariffs paused for 90 days. 84% tariff on China increased to 125%, effective April 10." },
+            { date: "2025-04-10", auth: "IEEPA", type: "reciprocal", country: "China", commodity: "All goods", desc: "125% country-specific tariff on all goods from China in effect. Total: 145%." },
+            { date: "2025-04-11", auth: "IEEPA", type: "reciprocal", country: "All", commodity: "Semiconductors; smartphones; electronics", desc: "Memorandum excluding certain electronics from April 2 tariffs." },
+            { date: "2025-04-29", auth: "Multiple", type: "general", country: "All", commodity: "All goods", desc: "Executive order revising cumulative application of tariffs." },
+            { date: "2025-05-02", auth: "IEEPA", type: "fentanyl", country: "China", commodity: "All goods", desc: "De minimis treatment for all low-value shipments imported from China ends." },
+            { date: "2025-05-03", auth: "Section 232", type: "auto & parts", country: "All", commodity: "Auto parts", desc: "25% tariff on auto parts in effect." },
+            { date: "2025-05-12", auth: "IEEPA", type: "reciprocal", country: "China", commodity: "All goods", desc: "125% tariff lowered to 10% for a 90-day period. Total: 30%." },
+            { date: "2025-06-04", auth: "Section 232", type: "steel & aluminum", country: "All; UK", commodity: "Steel & aluminum", desc: "25% tariffs increased to 50% for imports from all countries except UK (remains 25%)." },
+            { date: "2025-06-23", auth: "Section 232", type: "steel & aluminum", country: "All", commodity: "Steel derivative products", desc: "50% tariffs in effect for additional steel derivative products." },
+            { date: "2025-07-07", auth: "IEEPA", type: "reciprocal", country: "All (except CA & MX)", commodity: "All goods", desc: "90-day pause extended to August 1 on country-specific reciprocal tariffs." },
+            { date: "2025-07-30", auth: "IEEPA", type: "trade deficit", country: "All", commodity: "All goods", desc: "Suspends de minimis treatment for shipments from all countries, effective August 29." },
+            { date: "2025-07-30", auth: "IEEPA", type: "Brazil", country: "Brazil", commodity: "All goods", desc: "40% IEEPA tariff on imports from Brazil, effective August 6." },
+            { date: "2025-07-30", auth: "Section 232", type: "copper", country: "All", commodity: "Copper derivatives", desc: "50% tariffs on semi-finished copper and derivatives, effective August 1." },
+            { date: "2025-07-31", auth: "IEEPA", type: "fentanyl", country: "Canada", commodity: "All goods", desc: "25% tariff increased to 35% for non-qualifying USMCA goods from Canada, effective August 1." },
+            { date: "2025-07-31", auth: "IEEPA", type: "reciprocal", country: "All", commodity: "All goods", desc: "Country-specific tariff rates adjusted for most countries, effective August 7." },
+            { date: "2025-08-01", auth: "IEEPA & Section 232", type: "general", country: "Canada / All", commodity: "All / Copper", desc: "35% tariff on Canada goes into effect. 50% tariff on copper goes into effect." },
+            { date: "2025-08-06", auth: "IEEPA", type: "Russian oil", country: "Brazil / India", commodity: "All goods", desc: "40% tariff on Brazil in effect. 25% tariff on India announced, effective August 27." },
+            { date: "2025-08-07", auth: "IEEPA", type: "reciprocal", country: "All", commodity: "All goods", desc: "Country-specific tariff rates go into effect. Tariffs go into effect for EU and Japan." },
+            { date: "2025-08-11", auth: "IEEPA", type: "reciprocal", country: "China", commodity: "All goods", desc: "10% reciprocal tariff extended an additional 90 days." },
+            { date: "2025-08-18", auth: "Section 232", type: "steel & aluminum", country: "All", commodity: "Steel & aluminum", desc: "407 additional HTSUS codes added for 50% tariff." },
+            { date: "2025-08-27", auth: "IEEPA", type: "Russian oil", country: "India", commodity: "All goods", desc: "25% tariff goes into effect for imports from India." },
+            { date: "2025-08-29", auth: "IEEPA", type: "trade deficit", country: "All", commodity: "All goods", desc: "De minimis exemption suspended for imports from all countries." },
+            { date: "2025-09-29", auth: "Section 232", type: "timber & lumber", country: "All (except EU & Japan)", commodity: "Timber, lumber", desc: "Tariffs imposed on timber/lumber beginning October 14." },
+            { date: "2025-10-14", auth: "Section 232", type: "timber & lumber", country: "All", commodity: "Timber, lumber", desc: "Tariffs on timber and lumber products go into effect." },
+            { date: "2025-10-17", auth: "Section 232", type: "vehicles", country: "All", commodity: "Medium/heavy-duty vehicles", desc: "25% tariff on medium/heavy-duty vehicles and 10% on buses, effective Nov 1." },
+            { date: "2025-11-01", auth: "Section 232", type: "vehicles", country: "All", commodity: "Vehicles", desc: "Tariffs on medium/heavy-duty vehicles go into effect." },
+            { date: "2025-11-04", auth: "IEEPA", type: "fentanyl", country: "China", commodity: "All goods", desc: "Fentanyl tariff lowered to 10%. Reciprocal tariff suspension extended to Nov 10, 2026." },
+            { date: "2025-11-10", auth: "IEEPA", type: "fentanyl", country: "China", commodity: "All goods", desc: "10% fentanyl tariff goes into effect." },
+            { date: "2025-11-20", auth: "IEEPA", type: "Brazil", country: "Brazil", commodity: "Certain goods", desc: "Exempting 238 agricultural products from the 40% tariff." },
+            { date: "2025-12-03", auth: "IEEPA & Section 232", type: "general", country: "South Korea", commodity: "All / Timber & Auto", desc: "Tariff cuts confirmed retroactive to November." },
+            { date: "2025-12-18", auth: "IEEPA", type: "reciprocal", country: "Switzerland, Liechtenstein", commodity: "All goods", desc: "Modifying reciprocal rates retroactive to Nov 14." },
+            { date: "2025-12-31", auth: "Section 232", type: "timber & lumber", country: "All", commodity: "Furniture, cabinets", desc: "Delaying tariff increases on furniture until Jan 1, 2027." },
+            { date: "2026-01-15", auth: "Section 232", type: "semiconductors", country: "All", commodity: "Semiconductors", desc: "25% tariff on certain semiconductors." },
+            { date: "2026-02-24", auth: "Section 122", type: "general", country: "All", commodity: "All", desc: "Global 10% tariff imposed for 150 days." },
+            { date: "2026-02-24", auth: "IEEPA", type: "terminated", country: "All", commodity: "All", desc: "All IEEPA tariffs terminate following Supreme Court ruling." },
+            { date: "2026-04-02", auth: "Section 232", type: "pharmaceuticals", country: "All", commodity: "Pharmaceuticals", desc: "100% tariff on patented pharmaceuticals, effective July 31/Sept 29." },
+            { date: "2026-04-06", auth: "Section 232", type: "copper/steel/aluminum", country: "All", commodity: "Copper, Steel, Aluminum", desc: "25% tariff for derivatives, 50% for certain goods." },
+            { date: "2026-07-31", auth: "Section 232", type: "pharmaceuticals", country: "All", commodity: "Pharmaceuticals", desc: "100% tariff goes into effect for large companies." },
+            { date: "2026-09-29", auth: "Section 232", type: "pharmaceuticals", country: "All", commodity: "Pharmaceuticals", desc: "100% tariff goes into effect for small companies." },
+            { date: "2027-01-01", auth: "Section 232", type: "timber & lumber", country: "All", commodity: "Furniture", desc: "25% tariff on furniture increases to 30%, cabinets to 50%." }
+        ];
+
+        function formatDate(dateStr) {
+            const options = { year: 'numeric', month: 'short', day: 'numeric' };
+            // parse manual to prevent timezone shifts
+            const parts = dateStr.split('-');
+            const date = new Date(parts[0], parts[1] - 1, parts[2]);
+            return date.toLocaleDateString('en-US', options);
+        }
+
+        function renderTimeline(filter = 'all') {
+            const container = document.getElementById('timeline');
+            container.innerHTML = '';
+
+            let filteredEvents = events;
+            if (filter !== 'all') {
+                filteredEvents = events.filter(e => {
+                    const authStr = e.auth.toLowerCase();
+                    if (filter === 'ieepa') return authStr.includes('ieepa');
+                    if (filter === 'sec232') return authStr.includes('232');
+                    if (filter === 'sec122') return authStr.includes('122');
+                    return false;
+                });
+            }
+
+            filteredEvents.forEach((event, index) => {
+                const sideClass = index % 2 === 0 ? 'left' : 'right';
+                
+                let authClass = 'auth-multiple';
+                if (event.auth.includes('IEEPA')) authClass = 'auth-ieepa';
+                if (event.auth.includes('122')) authClass = 'auth-sec122';
+                if (event.auth.includes('232')) authClass = 'auth-sec232';
+
+                let imgSrc = '';
+                if (event.country.includes('China')) imgSrc = 'https://cdn.video.news/images/tariff_china.png';
+                else if (event.country.includes('Canada') || event.country.includes('Mexico') || event.country.includes('USMCA')) imgSrc = 'https://cdn.video.news/images/tariff_nafta.png';
+                else if (event.auth.includes('232')) imgSrc = 'https://cdn.video.news/images/tariff_metals.png';
+                else imgSrc = 'https://cdn.video.news/images/tariff_global.png';
+
+                const imgHtml = imgSrc ? `<img src="${imgSrc}" class="timeline-img" alt="${event.country} trade visualization">` : '';
+
+                const item = document.createElement('div');
+                item.className = `timeline-item ${sideClass} ${authClass}`;
+                item.style.animationDelay = `${index * 0.05}s`;
+
+                item.innerHTML = `
+                    <div class="content">
+                        ${imgHtml}
+                        <div class="date-badge">
+                            <span>${formatDate(event.date)}</span>
+                            <span class="authority">${event.auth} ${event.type && event.type !== 'general' && event.type !== 'terminated' ? `(${event.type})` : ''}</span>
+                        </div>
+                        <div class="meta">
+                            <div class="meta-row">
+                                <span class="meta-label">Country</span>
+                                <span class="country">${event.country}</span>
+                            </div>
+                            <div class="meta-row">
+                                <span class="meta-label">Goods</span>
+                                <span class="commodity">${event.commodity}</span>
+                            </div>
+                        </div>
+                        <p class="desc">${event.desc}</p>
+                    </div>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        // Initialize
+        renderTimeline();
+
+        // Filters
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                e.target.classList.add('active');
+                renderTimeline(e.target.dataset.filter);
+            });
+        });
+    </script>
+</body>
+</html>
