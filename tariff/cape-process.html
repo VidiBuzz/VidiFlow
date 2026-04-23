@@ -106,6 +106,32 @@
         .timeline-node .label { font-size: 12px; font-family: Arial, sans-serif; color: var(--gray); }
         .timeline-node .date { font-size: 14px; font-weight: bold; color: var(--navy); }
         .timeline-arrow { font-size: 24px; color: var(--gold); }
+        .journey-timeline { position: relative; margin: 40px 0; padding-left: 40px; }
+        .journey-timeline::before { content: ''; position: absolute; left: 15px; top: 0; bottom: 0; width: 4px; background: linear-gradient(to bottom, var(--green), var(--gold), var(--red)); border-radius: 2px; }
+        .journey-step { position: relative; margin-bottom: 30px; padding: 20px 25px; background: var(--white); border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); }
+        .journey-step::before { content: ''; position: absolute; left: -33px; top: 24px; width: 16px; height: 16px; border-radius: 50%; background: var(--gold); border: 3px solid var(--white); box-shadow: 0 0 0 3px var(--gold); }
+        .journey-step.step-green::before { background: var(--green); box-shadow: 0 0 0 3px var(--green); }
+        .journey-step.step-red::before { background: var(--red); box-shadow: 0 0 0 3px var(--red); }
+        .journey-step.step-navy::before { background: var(--navy); box-shadow: 0 0 0 3px var(--navy); }
+        .journey-step .step-when { font-size: 13px; font-family: Arial, sans-serif; color: var(--gray); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; }
+        .journey-step .step-what { font-size: 20px; font-weight: bold; color: var(--navy); margin-bottom: 8px; }
+        .journey-step .step-detail { color: var(--gray); font-size: 15px; line-height: 1.6; }
+        .journey-step .step-detail strong { color: var(--navy); }
+        .month-bar { display: flex; background: var(--navy); color: var(--white); border-radius: 8px; overflow: hidden; margin: 20px 0; font-family: Arial, sans-serif; }
+        .month-bar .month { flex: 1; text-align: center; padding: 10px 5px; font-size: 12px; border-right: 1px solid rgba(255,255,255,0.2); }
+        .month-bar .month:last-child { border-right: none; }
+        .month-bar .month.highlight { background: var(--gold); color: var(--navy); font-weight: bold; }
+        .month-bar .month.danger { background: var(--red); }
+        .month-bar .month.safe { background: var(--green); }
+        .example-box { background: var(--white); border: 2px solid var(--navy); border-radius: 8px; padding: 25px; margin: 25px 0; }
+        .example-box h4 { color: var(--navy); font-size: 20px; margin-bottom: 15px; }
+        .example-box p { color: var(--gray); font-size: 15px; margin-bottom: 10px; }
+        .answer-box { background: #dcfce7; border-left: 5px solid var(--green); padding: 20px; margin: 20px 0; border-radius: 0 8px 8px 0; }
+        .answer-box h4 { color: var(--green); font-size: 18px; margin-bottom: 8px; }
+        .answer-box p { color: var(--navy); font-size: 15px; }
+        .warning-box-dark { background: #fee2e2; border-left: 5px solid var(--red); padding: 20px; margin: 20px 0; border-radius: 0 8px 8px 0; }
+        .warning-box-dark h4 { color: var(--red); font-size: 18px; margin-bottom: 8px; }
+        .warning-box-dark p { color: var(--navy); font-size: 15px; }
         @media (max-width: 768px) {
             .hero h1 { font-size: 32px; }
             nav .container { flex-wrap: wrap; }
@@ -188,64 +214,94 @@
     </div>
 </section>
 
-<!-- What is Liquidation -->
+<!-- What is Liquidation: Real-World Example -->
 <section class="section section-alt" id="liquidation">
     <div class="container">
         <h2>What the Heck Is a <span>Liquidation Date</span>?</h2>
-        <p class="text-center mb-20" style="max-width: 800px; margin: 0 auto 30px; color: var(--gray); font-size: 18px;">CBP intentionally uses confusing terminology. Here's what "liquidation" actually means in plain English.</p>
+        <p class="text-center mb-20" style="max-width: 900px; margin: 0 auto 30px; color: var(--gray); font-size: 18px;">CBP uses intentionally confusing terminology. Here's the full story of what actually happens to your shipment — from the factory in China to the day CBP finally closes your file.</p>
 
-        <div class="definition-box">
-            <h4>&#128227; Simple Definition</h4>
-            <p style="font-size: 18px; color: var(--navy);"><strong>Liquidation</strong> is the moment when Customs & Border Protection <em>finalizes</em> your import entry. It's not when you paid. It's not when the ship docked. It's the date CBP officially closes your file and says "this entry is done." Until then, your entry is "unliquidated" and still open.</p>
+        <div class="example-box">
+            <h4>&#128674; Real Example: Your Container from China</h4>
+            <p>You ordered $500,000 worth of electronics from a factory in Shenzhen, China. The goods were loaded into a 40-foot container, put on a cargo ship, and sailed across the Pacific Ocean to the Port of Long Beach, California. CBP charged you a <strong>40% IEEPA tariff</strong> — that's $200,000 in extra duties you paid. You want that money back. Here's exactly what happened, step by step.</p>
         </div>
 
-        <div class="card-grid" style="margin-top: 40px;">
-            <div class="card">
-                <h3>&#128197; When Did I Import?</h3>
-                <p>This is the date your goods physically entered the U.S. and your broker filed the entry summary (CBP Form 7501). You probably paid the IEEPA tariff around this time. <strong>This is NOT the liquidation date.</strong></p>
+        <h3 class="mt-40" style="text-align: center;">Your Shipment's Journey: Start to Finish</h3>
+
+        <div class="journey-timeline">
+            <div class="journey-step step-green">
+                <div class="step-when">Month 0 — January 2025</div>
+                <div class="step-what">&#128674; Container Leaves China</div>
+                <div class="step-detail">Your goods are loaded onto a cargo ship in Shenzhen. The ship departs and begins the ~30-day voyage across the Pacific Ocean to Long Beach, California. <strong>You haven't paid any tariffs yet.</strong> This is just shipping.</div>
             </div>
-            <div class="card">
-                <h3>&#9989; What Is Liquidation?</h3>
-                <p>CBP reviews your entry, verifies duties were paid correctly, checks for compliance issues, and then "liquidates" it. Think of it like a tax audit closing. The liquidation date is the official date CBP stamps your file as "final."</p>
+
+            <div class="journey-step step-green">
+                <div class="step-when">Month 1 — February 2025</div>
+                <div class="step-what">&#128739; Ship Arrives at Port of Long Beach</div>
+                <div class="step-detail">The container ship docks at Long Beach. Your customs broker files the <strong>Entry Summary (CBP Form 7501)</strong> with CBP. The broker also pays the estimated duties, including the 40% IEEPA tariff ($200,000). <strong>This is when you paid the tariff. This is NOT liquidation.</strong></div>
             </div>
-            <div class="card">
-                <h3>&#9200; How Long Does It Take?</h3>
-                <p>By law, CBP has <strong>314 days</strong> (about 10 months) from the date of entry to liquidate. Most entries liquidate automatically within that window. You typically receive a CBP Form 4333-A (Notice of Liquidation) in the mail.</p>
+
+            <div class="journey-step step-green">
+                <div class="step-when">Month 1 — February 2025 (Days 1-5)</div>
+                <div class="step-what">&#9989; CBP "Releases" Your Goods (Customs Clearance)</div>
+                <div class="step-detail">CBP reviews the paperwork, runs security checks, and decides your container is okay to enter the country. They <strong>"release"</strong> the goods. The container is loaded onto a truck and driven to your warehouse. <strong>This is customs clearance. This is STILL NOT liquidation.</strong> Your goods are now in your possession, but CBP has NOT finalized your entry yet.</div>
+            </div>
+
+            <div class="journey-step">
+                <div class="step-when">Month 1-10 — February to November 2025</div>
+                <div class="step-what">&#9200; The Waiting Period (Why Does This Take So Long?)</div>
+                <div class="step-detail">Your goods are sitting in your warehouse. You're selling them. Life goes on. But in CBP's computer system, your entry is still <strong>"open"</strong> or <strong>"unliquidated."</strong> Why? Because CBP has up to <strong>314 days</strong> (about 10 months) by law to review your entry, verify the duties were calculated correctly, check for compliance issues, and make sure nothing was misclassified. Most of the time, CBP does nothing during this period — the entry just sits in the system. Liquidation is triggered automatically by a computer when the 314-day window approaches.</div>
+            </div>
+
+            <div class="journey-step step-red">
+                <div class="step-when">Month 10 — November 2025</div>
+                <div class="step-what">&#128308; LIQUIDATION: CBP Finalizes Your Entry</div>
+                <div class="step-detail">CBP's computer system automatically "liquidates" your entry. This means CBP officially stamps your file as <strong>"final."</strong> They send you a <strong>CBP Form 4333-A (Notice of Liquidation)</strong> in the mail. <strong>This is the liquidation date: November 2025.</strong> This is the date that matters for your refund. NOT when you imported. NOT when you paid. This one.</div>
+            </div>
+
+            <div class="journey-step step-navy">
+                <div class="step-when">Month 10-16 — November 2025 to May 2026</div>
+                <div class="step-what">&#9201; The 180-Day Protest Window</div>
+                <div class="step-detail">Starting from the liquidation date (November 2025), you have exactly <strong>180 days</strong> to file a protest if you disagree with anything CBP did. For IEEPA refunds, this is your safety net. If you miss this window, your entry becomes <strong>"finally liquidated"</strong> and CBP considers the matter closed forever.</div>
             </div>
         </div>
 
-        <div class="timeline-visual mt-40">
-            <div class="timeline-node">
-                <div class="dot"></div>
-                <div class="label">Goods Arrive</div>
-                <div class="date">Day 0</div>
+        <div class="month-bar">
+            <div class="month safe">Jan<br>Ship</div>
+            <div class="month safe">Feb<br>Arrive</div>
+            <div class="month safe">Mar<br>Wait</div>
+            <div class="month safe">Apr<br>Wait</div>
+            <div class="month safe">May<br>Wait</div>
+            <div class="month safe">Jun<br>Wait</div>
+            <div class="month safe">Jul<br>Wait</div>
+            <div class="month safe">Aug<br>Wait</div>
+            <div class="month safe">Sep<br>Wait</div>
+            <div class="month safe">Oct<br>Wait</div>
+            <div class="month highlight">Nov<br>Liquidate</div>
+            <div class="month danger">May<br>180d End</div>
+        </div>
+        <p class="text-center" style="font-size: 13px; color: var(--gray); margin-top: 5px;">Visual timeline: Your container ships in January, arrives in February, clears customs in days, then sits for ~10 months while CBP's computer waits. Liquidation happens automatically around month 10. The 180-day protest clock starts then.</p>
+
+        <div class="definition-box mt-40">
+            <h4>&#128227; The One-Sentence Definition</h4>
+            <p style="font-size: 18px; color: var(--navy);"><strong>Liquidation</strong> is the date CBP's computer automatically finalizes your import entry — typically about 10 months after your goods arrived — and it's the date that starts your 180-day deadline to claim a refund.</p>
+        </div>
+
+        <h3 class="mt-40" style="text-align: center;">The #1 Thing That Confuses Everyone</h3>
+
+        <div class="two-col" style="margin-top: 30px;">
+            <div class="card" style="border-top-color: var(--green);">
+                <h3 style="color: var(--green);">&#9989; Customs Clearance</h3>
+                <p><strong>When:</strong> Within hours to days of arrival</p>
+                <p class="mt-20"><strong>What happens:</strong> CBP checks your paperwork, decides your goods are safe to enter, and releases the container. Your truck picks it up and drives to your warehouse.</p>
+                <p class="mt-20"><strong>Does this mean you're liquidated?</strong> <strong>NO.</strong> This is just CBP letting your goods into the country. Your entry is still open.</p>
             </div>
-            <div class="timeline-arrow">&rarr;</div>
-            <div class="timeline-node">
-                <div class="dot"></div>
-                <div class="label">You Pay Tariffs</div>
-                <div class="date">Day 0-10</div>
-            </div>
-            <div class="timeline-arrow">&rarr;</div>
-            <div class="timeline-node">
-                <div class="dot" style="background: var(--red);"></div>
-                <div class="label">LIQUIDATION</div>
-                <div class="date">Day 0-314</div>
-            </div>
-            <div class="timeline-arrow">&rarr;</div>
-            <div class="timeline-node">
-                <div class="dot" style="background: var(--green);"></div>
-                <div class="label">180-Day Protest</div>
-                <div class="date">Liquidation +180d</div>
-            </div>
-            <div class="timeline-arrow">&rarr;</div>
-            <div class="timeline-node">
-                <div class="dot" style="background: var(--navy);"></div>
-                <div class="label">Final & Binding</div>
-                <div class="date">After +180d</div>
+            <div class="card" style="border-top-color: var(--red);">
+                <h3 style="color: var(--red);">&#128308; Liquidation</h3>
+                <p><strong>When:</strong> ~10 months later (up to 314 days by law)</p>
+                <p class="mt-20"><strong>What happens:</strong> CBP's computer automatically closes your file. You get a Notice of Liquidation in the mail. Your entry is now "final."</p>
+                <p class="mt-20"><strong>Why so long?</strong> CBP uses this time to audit entries, check for fraud, verify classifications, and catch errors. Most entries are never actually audited — they just auto-liquidate when the timer runs out.</p>
             </div>
         </div>
-        <p class="text-center" style="font-size: 13px; color: var(--gray); margin-top: 10px;">Timeline: Goods arrive &rarr; You pay &rarr; CBP liquidates (finalizes) &rarr; You have 180 days to protest &rarr; After 180 days, the entry is "finally liquidated" and extremely hard to challenge.</p>
 
         <h3 class="mt-40" style="text-align: center;">Top 5 Questions About Liquidation</h3>
 
@@ -260,38 +316,49 @@
         </div>
 
         <div class="faq-item">
-            <h4>Does liquidation have anything to do with my business going bankrupt or closing?</h4>
-            <p><strong>No.</strong> "Liquidation" in customs has nothing to do with bankruptcy, going out of business, or selling assets. It's purely a CBP administrative term for finalizing an import entry. CBP chose this confusing word decades ago, and it's designed to make the process opaque.</p>
+            <h4>Does liquidation have anything to do with my business going bankrupt?</h4>
+            <p><strong>No.</strong> "Liquidation" in customs has nothing to do with bankruptcy, going out of business, or selling assets. It's purely a CBP administrative term for finalizing an import entry. CBP chose this confusing word decades ago on purpose.</p>
         </div>
 
         <div class="faq-item">
             <h4>I paid the tariff six months ago. Was that liquidation?</h4>
-            <p><strong>No.</strong> Paying the tariff is just paying the tariff. Liquidation is a separate event that happens later, when CBP formally closes your entry. Many importers paid IEEPA tariffs in February, March, or April 2026, but their entries won't liquidate until late 2026 or early 2027. You need to check.</p>
+            <p><strong>No.</strong> Paying the tariff is just paying the tariff. Liquidation is a separate event that happens ~10 months later, when CBP formally closes your entry. Many importers paid IEEPA tariffs in February, March, or April 2026, but their entries won't liquidate until late 2026 or early 2027. You need to check.</p>
         </div>
 
         <div class="faq-item">
-            <h4>What happens if I miss the 180-day protest deadline?</h4>
-            <p>After 180 days from liquidation, your entry becomes "finally liquidated." This means CBP considers the matter closed and legally binding. You lose the right to file a protest. Your remaining options are: (1) Wait for CAPE Phase 2 (timeline unknown), or (2) File a lawsuit in the Court of International Trade, which is expensive and complex. <strong>Don't miss the deadline.</strong></p>
+            <h4>What triggers liquidation? Why does it take 10 months?</h4>
+            <p>By law, CBP has <strong>314 days</strong> to review every import entry. For most entries, nothing happens during this time — it's just a waiting period. Liquidation is triggered automatically by CBP's computer when the 314-day window is about to expire. CBP uses this time to spot-check entries for fraud, misclassification, or duty errors. The vast majority of entries are never manually reviewed; they just auto-liquidate.</p>
         </div>
     </div>
 </section>
 
-<!-- I Imported 6 Months Ago: What Do I Do? -->
+<!-- I Imported 6-12 Months Ago: What Do I Do? -->
 <section class="section">
     <div class="container">
-        <h2>I Imported 6 Months Ago.<br><span>What Do I Do Now?</span></h2>
-        <p class="text-center mb-20" style="max-width: 800px; margin: 0 auto 30px; color: var(--gray); font-size: 18px;">The answer depends on your <strong>liquidation status</strong>, not when you paid or when the goods arrived. Here's every scenario explained.</p>
+        <h2>I Imported 6-12 Months Ago.<br><span>What Do I Do Now?</span></h2>
+        <p class="text-center mb-20" style="max-width: 900px; margin: 0 auto 30px; color: var(--gray); font-size: 18px;">The answer depends on your <strong>liquidation date</strong> — which is typically ~10 months AFTER your goods arrived. Here's every scenario explained with real dates.</p>
+
+        <div class="example-box">
+            <h4>&#128198; Let's Use a Real Example</h4>
+            <p>You imported goods from China that arrived at Long Beach in <strong>April 2025</strong>. You paid the 40% IEEPA tariff at that time. CBP liquidated the entry in <strong>February 2026</strong> (10 months later). Today is <strong>April 2026</strong>. Where do you stand?</p>
+            <p class="mt-20"><strong>Liquidation date:</strong> February 2026<br>
+            <strong>180-day protest deadline:</strong> August 2026<br>
+            <strong>Today's date:</strong> April 2026<br>
+            <strong>Result:</strong> You still have ~4 months to file a protest. But CAPE Phase 1 does NOT cover this entry because it liquidated more than 80 days ago.</p>
+        </div>
 
         <div class="scenario-card scenario-green">
             <h4>&#10003; Scenario 1: Entry is Still Unliquidated (MOST COMMON)</h4>
             <p style="color: var(--gray);">If your entry hasn't been liquidated yet, you are in the best possible position. <strong>No deadline pressure.</strong> Unliquidated entries are automatically covered by CAPE Phase 1.</p>
+            <p class="mt-20"><strong>Real-world example:</strong> You imported goods in <strong>July 2025</strong>. CBP has not liquidated the entry yet (it's only been 9 months; CBP has up to 314 days). Your entry is still open.</p>
             <p class="mt-20"><strong>Action:</strong> Set up your ACE Portal account, enroll in ACH, and file a CAPE Declaration when ready. You have plenty of time. Focus on getting your ACE account set up correctly.</p>
             <p class="mt-20" style="font-size: 13px; color: var(--gray);"><strong>How to check:</strong> Look at your ES-701 report. If there's no liquidation date listed, or the status says "unliquidated," "suspended," or "extended," you're in this category.</p>
         </div>
 
         <div class="scenario-card scenario-gold">
             <h4 style="color: #92400e;">&#9888; Scenario 2: Entry Liquidated Within the Last 80 Days</h4>
-            <p style="color: var(--gray);">If your entry was liquidated in the last 80 days (approximately between January 30, 2026 and April 19, 2026), you are covered by CAPE Phase 1.</p>
+            <p style="color: var(--gray);">If your entry was liquidated in the last 80 days (approximately between <strong>January 30, 2026 and April 19, 2026</strong>), you are covered by CAPE Phase 1.</p>
+            <p class="mt-20"><strong>Real-world example:</strong> You imported goods in <strong>March 2025</strong>. CBP liquidated the entry in <strong>February 2026</strong>. That's within the last 80 days.</p>
             <p class="mt-20"><strong>Action:</strong> File a CAPE Declaration IMMEDIATELY. Set up ACE Portal and ACH enrollment as fast as possible. Your entry is eligible, but the sooner you file, the sooner you get your refund.</p>
             <p class="mt-20" style="font-size: 13px; color: var(--gray);"><strong>How to check:</strong> Look at the "Liquidation Date" on your ES-701 report. If it's between Jan 30 and Apr 19, 2026, you're here.</p>
         </div>
@@ -299,14 +366,15 @@
         <div class="scenario-card scenario-red">
             <h4>&#9888; Scenario 3: Entry Liquidated 80-180 Days Ago (THE DANGER ZONE)</h4>
             <p style="color: var(--gray);">This is the <strong>most dangerous scenario.</strong> Your entry was liquidated more than 80 days ago (before January 30, 2026), so it's <strong>NOT covered by CAPE Phase 1.</strong> But the 180-day protest window <em>may still be open.</em></p>
+            <p class="mt-20"><strong>Real-world example:</strong> You imported goods in <strong>April 2025</strong>. CBP liquidated the entry in <strong>January 2026</strong>. That's more than 80 days ago, so CAPE Phase 1 won't cover it. But the 180-day protest deadline is <strong>July 2026</strong> — so you still have time to file a protest.</p>
             <p class="mt-20"><strong>Action (URGENT):</strong> Calculate your protest deadline immediately. If you're still within 180 days of liquidation, file a <strong>CBP Form 19 Protest</strong> right now to preserve your rights. Even if you plan to use CAPE later, filing a protest protects you.</p>
-            <p class="mt-20"><strong>Example:</strong> If your entry liquidated on December 1, 2025, your 180-day deadline is May 30, 2026. You must file a protest before May 30 or you lose your right to a refund.</p>
             <p class="mt-20" style="font-size: 13px; color: var(--gray);"><strong>Important:</strong> If you file a protest, that entry is EXCLUDED from CAPE Phase 1. But that's okay — a protest preserves your rights, and you can still get your refund through the protest process or CAPE Phase 2.</p>
         </div>
 
         <div class="scenario-card scenario-navy">
             <h4>Scenario 4: Entry Liquidated More Than 180 Days Ago</h4>
             <p style="color: var(--gray);">If your entry liquidated more than 180 days ago, the protest deadline has expired. Your entry is "finally liquidated." This is the hardest position to be in.</p>
+            <p class="mt-20"><strong>Real-world example:</strong> You imported goods in <strong>March 2024</strong>. CBP liquidated the entry in <strong>January 2025</strong>. The 180-day protest deadline was <strong>July 2025</strong>. That was 9 months ago. You missed the deadline.</p>
             <p class="mt-20"><strong>Your Options:</strong></p>
             <ul style="color: var(--gray); margin-left: 20px; margin-top: 10px;">
                 <li><strong>Option 1:</strong> Wait for CAPE Phase 2. CBP has said they "expect to develop" functionality for finally liquidated entries, but there is no timeline.</li>
@@ -316,9 +384,21 @@
             <p class="mt-20"><strong>Bottom line:</strong> For entries in this category, your best hope is CAPE Phase 2. The CIT's March 27 order technically covers these entries, but CBP hasn't built the system to process them yet.</p>
         </div>
 
-        <div class="quote-block mt-40">
-            <strong>How do I know which scenario I'm in?</strong><br><br>
-            Pull your <strong>ES-701 or ES-702 report</strong> from the ACE Portal (or ask your broker). Look at the "Liquidation Date" column for every entry that had IEEPA tariffs. Compare those dates to today. If any entry is in Scenario 3 (liquidated 80-180 days ago), you need to act immediately to file a protest before the deadline expires.
+        <div class="answer-box mt-40">
+            <h4>&#10003; So Can I Get a Refund on Tariffs I Paid a Year Ago?</h4>
+            <p><strong>It depends on when the entry was LIQUIDATED, not when you paid.</strong></p>
+            <p class="mt-20">If you paid tariffs in <strong>April 2025</strong> but the entry didn't liquidate until <strong>February 2026</strong>, your 180-day protest deadline is <strong>August 2026</strong>. You can still file a protest and get your refund.</p>
+            <p class="mt-20">If you paid tariffs in <strong>April 2024</strong> and the entry liquidated in <strong>February 2025</strong>, your 180-day deadline was <strong>August 2025</strong>. That deadline is gone. Your only hope is CAPE Phase 2 or a lawsuit.</p>
+            <p class="mt-20"><strong>The only way to know for sure is to check your ES-701 report and find the liquidation date for each entry.</strong></p>
+        </div>
+
+        <div class="warning-box-dark mt-20">
+            <h4>&#9888; What You Need to Do Right Now</h4>
+            <p>1. <strong>Call your customs broker TODAY.</strong> Ask them to pull your ES-701 report for all entries with IEEPA tariffs.</p>
+            <p class="mt-20">2. <strong>Find the "Liquidation Date" column.</strong> For each entry, write down the liquidation date.</p>
+            <p class="mt-20">3. <strong>Calculate the 180-day deadline.</strong> Add 180 days to each liquidation date. If any deadline is in the future, you need to file a protest BEFORE that date.</p>
+            <p class="mt-20">4. <strong>If the entry is unliquidated,</strong> relax — you're covered by CAPE Phase 1. Focus on setting up your ACE Portal.</p>
+            <p class="mt-20">5. <strong>If the 180-day deadline has already passed,</strong> your options are limited. Register with us and we'll track CAPE Phase 2 developments for you.</p>
         </div>
     </div>
 </section>
