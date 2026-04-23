@@ -140,176 +140,180 @@
         }
 
         .timeline-container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 3rem auto;
             position: relative;
-            padding: 0 2rem;
+            padding: 0 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
         }
 
-        .timeline-container::before {
-            content: '';
+        /* The 3 Vertical Rails */
+        .timeline-tracks {
             position: absolute;
-            width: 2px;
-            background: linear-gradient(to bottom, transparent, var(--card-border) 5%, var(--card-border) 95%, transparent);
             top: 0;
             bottom: 0;
             left: 50%;
-            margin-left: -1px;
+            transform: translateX(-50%);
+            width: 800px; /* Width encompassing all 3 rails */
+            display: flex;
+            justify-content: space-between;
+            pointer-events: none;
+            z-index: 0;
         }
 
-        .timeline-item {
-            padding: 20px 50px;
+        .rail {
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(to bottom, transparent, rgba(255,255,255,0.05) 5%, rgba(255,255,255,0.05) 95%, transparent);
             position: relative;
-            width: 50%;
-            box-sizing: border-box;
-            opacity: 0;
-            transform: translateY(20px);
-            animation: fadeInUp 0.5s forwards ease-out;
         }
 
-        @keyframes fadeInUp {
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .timeline-item.left { left: 0; }
-        .timeline-item.right { left: 50%; }
-
-        .timeline-item::after {
+        .rail::after {
             content: '';
             position: absolute;
-            width: 20px;
-            height: 20px;
-            right: -10px;
-            background-color: var(--bg-color);
-            border: 4px solid var(--sec232-color);
-            top: 32px;
-            border-radius: 50%;
-            z-index: 1;
-            transition: transform 0.2s;
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 2px;
+            background: rgba(255,255,255,0.1);
         }
 
-        .timeline-item.auth-ieepa::after { border-color: var(--ieepa-color); }
-        .timeline-item.auth-sec122::after { border-color: var(--sec122-color); }
-        .timeline-item.auth-multiple::after { border-color: var(--multi-color); }
+        .rail-ieepa::after { background: linear-gradient(to bottom, var(--ieepa-color), transparent); opacity: 0.3; }
+        .rail-sec232::after { background: linear-gradient(to bottom, var(--sec232-color), transparent); opacity: 0.3; }
+        .rail-sec122::after { background: linear-gradient(to bottom, var(--sec122-color), transparent); opacity: 0.3; }
 
-        .timeline-item:hover::after {
-            transform: scale(1.2);
+        /* Month Markers */
+        .month-marker {
+            width: 100%;
+            text-align: center;
+            position: sticky;
+            top: 100px;
+            z-index: 10;
+            margin: 4rem 0 2rem;
+            pointer-events: none;
         }
 
-        .timeline-item.right::after {
-            left: -10px;
+        .month-marker span {
+            background: rgba(30, 41, 59, 0.9);
+            backdrop-filter: blur(8px);
+            padding: 0.5rem 2rem;
+            border-radius: 999px;
+            border: 1px solid var(--card-border);
+            color: white;
+            font-weight: 800;
+            font-size: 1.2rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
         }
 
-        .content {
-            padding: 1.5rem;
+        /* Event Grid Layout */
+        .event-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 2rem;
+            position: relative;
+            min-height: 150px;
+        }
+
+        .timeline-card {
             background: var(--card-bg);
             backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
             border: 1px solid var(--card-border);
             border-radius: 16px;
+            padding: 1.2rem;
             position: relative;
-            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            z-index: 1;
         }
 
-        .content:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
-            border-color: rgba(255, 255, 255, 0.2);
+        .timeline-card:hover {
+            transform: translateY(-5px) scale(1.02);
+            border-color: rgba(255,255,255,0.3);
+            box-shadow: 0 20px 30px rgba(0,0,0,0.4);
+            z-index: 2;
         }
+
+        /* Track Positioning */
+        .track-ieepa { grid-column: 1; }
+        .track-sec232 { grid-column: 2; }
+        .track-sec122 { grid-column: 3; }
+        .track-multiple { grid-column: 1 / span 3; max-width: 800px; margin: 0 auto; }
+
+        /* Connectors to Rails */
+        .timeline-card::before {
+            content: '';
+            position: absolute;
+            top: 30px;
+            width: 20px;
+            height: 2px;
+            background: var(--card-border);
+        }
+
+        .track-ieepa::before { right: -20px; background: var(--ieepa-color); opacity: 0.5; }
+        .track-sec232::before { left: 50%; transform: translateX(-50%); top: -20px; width: 2px; height: 20px; background: var(--sec232-color); opacity: 0.5; }
+        .track-sec122::before { left: -20px; background: var(--sec122-color); opacity: 0.5; }
 
         .date-badge {
+            font-size: 0.9rem;
             font-weight: 800;
-            color: var(--text-main);
-            font-size: 1.1rem;
-            margin-bottom: 0.75rem;
+            color: white;
+            margin-bottom: 0.5rem;
             display: flex;
             align-items: center;
             justify-content: space-between;
         }
 
-        .authority {
-            padding: 0.3rem 0.8rem;
-            border-radius: 999px;
-            font-size: 0.75rem;
-            font-weight: 800;
+        .authority-tag {
+            font-size: 0.65rem;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
             text-transform: uppercase;
-            letter-spacing: 0.05em;
+            background: rgba(255,255,255,0.1);
         }
 
-        .auth-ieepa .authority { background: var(--ieepa-bg); color: #fda4af; border: 1px solid rgba(244, 63, 94, 0.3); }
-        .auth-sec122 .authority { background: var(--sec122-bg); color: #fcd34d; border: 1px solid rgba(245, 158, 11, 0.3); }
-        .auth-sec232 .authority { background: var(--sec232-bg); color: #7dd3fc; border: 1px solid rgba(56, 189, 248, 0.3); }
-        .auth-multiple .authority { background: var(--multi-bg); color: #d8b4fe; border: 1px solid rgba(168, 85, 247, 0.3); }
-
-        .meta {
-            display: flex;
-            flex-direction: column;
-            gap: 0.4rem;
-            margin-bottom: 1rem;
-            padding-bottom: 1rem;
-            border-bottom: 1px solid var(--card-border);
+        .card-content h4 {
+            margin: 0 0 0.5rem 0;
+            font-size: 1rem;
+            color: #e2e8f0;
         }
 
-        .meta-row {
-            display: flex;
-            align-items: baseline;
-            gap: 0.5rem;
-        }
-
-        .meta-label {
-            color: var(--text-muted);
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            width: 80px;
-        }
-
-        .country { font-weight: 600; color: #e2e8f0; }
-        .commodity { color: #cbd5e1; font-weight: 500; }
-        
-        .desc {
-            color: #94a3b8;
-            line-height: 1.6;
-            font-size: 0.95rem;
+        .card-content p {
             margin: 0;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            line-height: 1.4;
         }
 
-        .timeline-img {
+        .card-img {
             width: 100%;
-            height: 180px;
+            height: 120px;
             object-fit: cover;
-            border-radius: 12px;
-            margin-bottom: 1rem;
-            border: 1px solid var(--card-border);
-            opacity: 0.9;
-            transition: opacity 0.3s;
-        }
-        
-        .timeline-img:hover {
-            opacity: 1;
+            border-radius: 8px;
+            margin-bottom: 0.8rem;
+            border: 1px solid rgba(255,255,255,0.05);
         }
 
-        /* Responsive Design */
-        @media screen and (max-width: 900px) {
-            .timeline-container::before {
-                left: 30px;
-            }
-            .timeline-item {
-                width: 100%;
-                padding-left: 70px;
-                padding-right: 0;
-            }
-            .timeline-item.right {
-                left: 0;
-            }
-            .timeline-item.left::after, 
-            .timeline-item.right::after {
-                left: 20px;
-            }
+        .day-marker {
+            position: absolute;
+            left: -60px;
+            top: 30px;
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: rgba(255,255,255,0.1);
+            user-select: none;
+        }
+
+        /* Responsive */
+        @media (max-width: 1100px) {
+            .timeline-tracks { display: none; }
+            .event-row { display: flex; flex-direction: column; }
+            .track-multiple { max-width: 100%; }
+            .timeline-card::before { display: none; }
         }
     </style>
 </head>
@@ -433,6 +437,16 @@
             const container = document.getElementById('timeline');
             container.innerHTML = '';
 
+            // Add background tracks
+            const tracks = document.createElement('div');
+            tracks.className = 'timeline-tracks';
+            tracks.innerHTML = `
+                <div class="rail rail-ieepa"></div>
+                <div class="rail rail-sec232"></div>
+                <div class="rail rail-sec122"></div>
+            `;
+            container.appendChild(tracks);
+
             let filteredEvents = events;
             if (filter !== 'all') {
                 filteredEvents = events.filter(e => {
@@ -444,48 +458,59 @@
                 });
             }
 
-            filteredEvents.forEach((event, index) => {
-                const sideClass = index % 2 === 0 ? 'left' : 'right';
+            // Group events by Month-Year
+            const groups = {};
+            filteredEvents.forEach(event => {
+                const date = new Date(event.date);
+                const key = `${date.getFullYear()}-${date.getMonth()}`;
+                if (!groups[key]) groups[key] = [];
+                groups[key].push(event);
+            });
+
+            // Render Groups
+            Object.keys(groups).sort().forEach(key => {
+                const [year, month] = key.split('-');
+                const monthName = new Date(year, month).toLocaleString('en-US', { month: 'long', year: 'numeric' });
                 
-                let authClass = 'auth-multiple';
-                if (event.auth.includes('IEEPA')) authClass = 'auth-ieepa';
-                if (event.auth.includes('122')) authClass = 'auth-sec122';
-                if (event.auth.includes('232')) authClass = 'auth-sec232';
+                const marker = document.createElement('div');
+                marker.className = 'month-marker';
+                marker.innerHTML = `<span>${monthName}</span>`;
+                container.appendChild(marker);
 
-                const CDN_BASE = '../images/';
-                let imgSrc = '';
-                if (event.country.includes('China')) imgSrc = CDN_BASE + 'tariff_china.png';
-                else if (event.country.includes('Canada') || event.country.includes('Mexico') || event.country.includes('USMCA')) imgSrc = CDN_BASE + 'tariff_nafta.png';
-                else if (event.auth.includes('232')) imgSrc = CDN_BASE + 'tariff_metals.png';
-                else imgSrc = CDN_BASE + 'tariff_global.png';
+                groups[key].forEach((event, idx) => {
+                    const row = document.createElement('div');
+                    row.className = 'event-row';
+                    
+                    let trackClass = 'track-multiple';
+                    if (event.auth === 'IEEPA') trackClass = 'track-ieepa';
+                    else if (event.auth === 'Section 232') trackClass = 'track-sec232';
+                    else if (event.auth === 'Section 122') trackClass = 'track-sec122';
 
-                const imgHtml = imgSrc ? `<img src="${imgSrc}" class="timeline-img" alt="${event.country} trade visualization">` : '';
+                    const CDN_BASE = '../images/';
+                    let imgSrc = '';
+                    if (event.country.includes('China')) imgSrc = CDN_BASE + 'tariff_china.png';
+                    else if (event.country.includes('Canada') || event.country.includes('Mexico') || event.country.includes('USMCA')) imgSrc = CDN_BASE + 'tariff_nafta.png';
+                    else if (event.auth.includes('232')) imgSrc = CDN_BASE + 'tariff_metals.png';
+                    else imgSrc = CDN_BASE + 'tariff_global.png';
 
-                const item = document.createElement('div');
-                item.className = `timeline-item ${sideClass} ${authClass}`;
-                item.style.animationDelay = `${index * 0.05}s`;
-
-                item.innerHTML = `
-                    <div class="content">
-                        ${imgHtml}
-                        <div class="date-badge">
-                            <span>${formatDate(event.date)}</span>
-                            <span class="authority">${event.auth} ${event.type && event.type !== 'general' && event.type !== 'terminated' ? `(${event.type})` : ''}</span>
-                        </div>
-                        <div class="meta">
-                            <div class="meta-row">
-                                <span class="meta-label">Country</span>
-                                <span class="country">${event.country}</span>
+                    const day = event.date.split('-')[2];
+                    
+                    row.innerHTML = `
+                        <div class="timeline-card ${trackClass}" style="animation-delay: ${idx * 0.1}s">
+                            <div class="day-marker">${day}</div>
+                            ${imgSrc ? `<img src="${imgSrc}" class="card-img" alt="Visualization">` : ''}
+                            <div class="card-content">
+                                <div class="date-badge">
+                                    <span>${formatDate(event.date)}</span>
+                                    <span class="authority-tag">${event.auth}</span>
+                                </div>
+                                <h4>${event.country}: ${event.commodity}</h4>
+                                <p>${event.desc}</p>
                             </div>
-                            <div class="meta-row">
-                                <span class="meta-label">Goods</span>
-                                <span class="commodity">${event.commodity}</span>
-                            </div>
                         </div>
-                        <p class="desc">${event.desc}</p>
-                    </div>
-                `;
-                container.appendChild(item);
+                    `;
+                    container.appendChild(row);
+                });
             });
         }
 
