@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>U.S. Tariff Timeline (2025-2027)</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <style>
         :root {
             --bg-color: #0f172a;
@@ -23,140 +24,88 @@
         }
 
         body {
-            background-color: var(--bg-color);
+            background-color: #020617;
             color: var(--text-main);
             font-family: 'Inter', sans-serif;
             margin: 0;
             padding: 0;
             overflow-x: hidden;
-            background-image: 
-                radial-gradient(at 0% 0%, rgba(56, 189, 248, 0.1) 0px, transparent 50%),
-                radial-gradient(at 100% 0%, rgba(168, 85, 247, 0.1) 0px, transparent 50%);
-            background-attachment: fixed;
+        }
+
+        #canvas-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
         }
 
         .header {
-            background: rgba(15, 23, 42, 0.85);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
+            background: linear-gradient(to bottom, rgba(2, 6, 23, 0.95), transparent);
+            backdrop-filter: blur(12px);
             border-bottom: 1px solid var(--card-border);
-            padding: 2rem 5%;
-            position: sticky;
-            top: 0;
+            padding: 4rem 2rem;
+            text-align: center;
+            position: relative;
             z-index: 100;
         }
 
         .header h1 {
-            margin: 0 0 0.5rem 0;
-            font-size: 2.5rem;
-            font-weight: 800;
-            background: linear-gradient(90deg, #38bdf8, #818cf8, #a855f7);
+            margin: 0 0 1rem 0;
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(2rem, 8vw, 4rem);
+            font-weight: 900;
+            background: linear-gradient(90deg, #fff, #38bdf8, #a855f7);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            letter-spacing: -0.02em;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
         }
 
         .header p {
             color: var(--text-muted);
-            margin: 0 0 1.5rem 0;
+            margin: 0 auto 2rem;
             font-size: 1.1rem;
             max-width: 800px;
-            line-height: 1.5;
+            line-height: 1.6;
         }
 
         .status-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 1rem;
-            margin-bottom: 1.5rem;
+            gap: 2rem;
+            max-width: 1400px;
+            margin: 0 auto 3rem;
         }
 
         .status-card {
-            background: var(--card-bg);
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(8px);
             border: 1px solid var(--card-border);
-            border-radius: 12px;
-            padding: 1.5rem;
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            border-radius: 16px;
+            padding: 2rem;
+            transition: transform 0.3s ease;
         }
 
-        .status-card h3 {
-            margin: 0;
-            font-size: 1rem;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
-        .status-card .status {
-            font-size: 1.25rem;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .status.terminated { color: var(--ieepa-color); }
-        .status.active { color: var(--sec232-color); }
-        .status.active-122 { color: var(--sec122-color); }
-
-        .filter-bar {
-            display: flex;
-            gap: 0.5rem;
-            flex-wrap: wrap;
-            align-items: center;
-        }
-
-        .filter-label {
-            color: var(--text-muted);
-            font-size: 0.9rem;
-            margin-right: 0.5rem;
-        }
-
-        .filter-btn {
-            background: transparent;
-            border: 1px solid var(--card-border);
-            color: var(--text-muted);
-            padding: 0.4rem 1rem;
-            border-radius: 999px;
-            cursor: pointer;
-            font-family: inherit;
-            font-size: 0.9rem;
-            font-weight: 600;
-            transition: all 0.2s ease;
-        }
-
-        .filter-btn:hover {
-            border-color: rgba(255, 255, 255, 0.3);
-            color: white;
-        }
-
-        .filter-btn.active {
-            background: var(--text-main);
-            color: var(--bg-color);
-            border-color: var(--text-main);
-        }
+        .status-card:hover { transform: translateY(-5px); border-color: rgba(255,255,255,0.2); }
 
         .timeline-container {
             max-width: 1400px;
-            margin: 3rem auto;
+            margin: 4rem auto;
             position: relative;
-            padding: 0 1rem;
-            display: flex;
-            flex-direction: column;
-            gap: 2rem;
+            padding: 0 2rem;
+            z-index: 1;
         }
 
-        /* The 3 Vertical Rails */
+        /* The 3 Vertical Rails - Centered in the container */
         .timeline-tracks {
             position: absolute;
             top: 0;
             bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 800px; /* Width encompassing all 3 rails */
+            left: 2rem;
+            right: 2rem;
             display: flex;
             justify-content: space-between;
             pointer-events: none;
@@ -164,9 +113,9 @@
         }
 
         .rail {
-            width: 4px;
+            width: 2px;
             height: 100%;
-            background: linear-gradient(to bottom, transparent, rgba(255,255,255,0.05) 5%, rgba(255,255,255,0.05) 95%, transparent);
+            background: linear-gradient(to bottom, transparent, rgba(255,255,255,0.1) 10%, rgba(255,255,255,0.1) 90%, transparent);
             position: relative;
         }
 
@@ -174,196 +123,167 @@
             content: '';
             position: absolute;
             top: 0;
-            bottom: 0;
             left: 50%;
             transform: translateX(-50%);
-            width: 2px;
-            background: rgba(255,255,255,0.1);
+            width: 4px;
+            height: 100%;
+            background: inherit;
+            filter: blur(4px);
+            opacity: 0.5;
         }
 
-        .rail-ieepa::after { background: linear-gradient(to bottom, var(--ieepa-color), transparent); opacity: 0.3; }
-        .rail-sec232::after { background: linear-gradient(to bottom, var(--sec232-color), transparent); opacity: 0.3; }
-        .rail-sec122::after { background: linear-gradient(to bottom, var(--sec122-color), transparent); opacity: 0.3; }
+        .rail-ieepa::after { background: var(--ieepa-color); box-shadow: 0 0 15px var(--ieepa-color); }
+        .rail-sec232::after { background: var(--sec232-color); box-shadow: 0 0 15px var(--sec232-color); }
+        .rail-sec122::after { background: var(--sec122-color); box-shadow: 0 0 15px var(--sec122-color); }
 
-        /* Month Markers */
+        .event-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 3rem;
+            margin-bottom: 4rem;
+            position: relative;
+            min-height: 120px;
+        }
+
+        .timeline-card {
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            position: relative;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5);
+            z-index: 1;
+        }
+
+        .timeline-card:hover {
+            transform: translateY(-10px) scale(1.03);
+            border-color: rgba(56, 189, 248, 0.4);
+            box-shadow: 0 20px 50px -10px rgba(0,0,0,0.7);
+            z-index: 10;
+        }
+
         .month-marker {
             width: 100%;
             text-align: center;
             position: sticky;
-            top: 100px;
+            top: 20px;
             z-index: 10;
             margin: 4rem 0 2rem;
             pointer-events: none;
         }
 
         .month-marker span {
-            background: rgba(30, 41, 59, 0.9);
-            backdrop-filter: blur(8px);
-            padding: 0.5rem 2rem;
+            background: rgba(15, 23, 42, 0.9);
+            backdrop-filter: blur(12px);
+            padding: 0.8rem 2.5rem;
             border-radius: 999px;
             border: 1px solid var(--card-border);
-            color: white;
-            font-weight: 800;
-            font-size: 1.2rem;
-            letter-spacing: 0.1em;
+            color: #fff;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            font-size: 1.1rem;
+            letter-spacing: 0.15em;
             text-transform: uppercase;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
         }
 
-        /* Event Grid Layout */
-        .event-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 2rem;
-            position: relative;
-            min-height: 150px;
-        }
-
-        .timeline-card {
-            background: var(--card-bg);
-            backdrop-filter: blur(12px);
-            border: 1px solid var(--card-border);
-            border-radius: 16px;
-            padding: 1.2rem;
-            position: relative;
-            transition: all 0.3s ease;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-            z-index: 1;
-        }
-
-        .timeline-card:hover {
-            transform: translateY(-5px) scale(1.02);
-            border-color: rgba(255,255,255,0.3);
-            box-shadow: 0 20px 30px rgba(0,0,0,0.4);
-            z-index: 2;
-        }
-
-        /* Track Positioning */
         .track-ieepa { grid-column: 1; }
         .track-sec232 { grid-column: 2; }
         .track-sec122 { grid-column: 3; }
-        .track-multiple { grid-column: 1 / span 3; max-width: 800px; margin: 0 auto; }
-
-        /* Connectors to Rails */
-        .timeline-card::before {
-            content: '';
-            position: absolute;
-            top: 30px;
-            width: 20px;
-            height: 2px;
-            background: var(--card-border);
-        }
-
-        .track-ieepa::before { right: -20px; background: var(--ieepa-color); opacity: 0.5; }
-        .track-sec232::before { left: 50%; transform: translateX(-50%); top: -20px; width: 2px; height: 20px; background: var(--sec232-color); opacity: 0.5; }
-        .track-sec122::before { left: -20px; background: var(--sec122-color); opacity: 0.5; }
-
-        .date-badge {
-            font-size: 0.9rem;
-            font-weight: 800;
-            color: white;
-            margin-bottom: 0.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .authority-tag {
-            font-size: 0.65rem;
-            padding: 0.2rem 0.5rem;
-            border-radius: 4px;
-            text-transform: uppercase;
-            background: rgba(255,255,255,0.1);
-        }
-
-        .card-content h4 {
-            margin: 0 0 0.5rem 0;
-            font-size: 1rem;
-            color: #e2e8f0;
-        }
-
-        .card-content p {
-            margin: 0;
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            line-height: 1.4;
-        }
+        .track-multiple { grid-column: 1 / span 3; max-width: 1000px; margin: 0 auto; }
 
         .card-img {
             width: 100%;
-            height: 120px;
+            height: 160px;
             object-fit: cover;
-            border-radius: 8px;
-            margin-bottom: 0.8rem;
-            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 12px;
+            margin-bottom: 1.2rem;
+            border: 1px solid rgba(255,255,255,0.1);
         }
 
         .day-marker {
             position: absolute;
-            left: -60px;
-            top: 30px;
-            font-size: 1.5rem;
-            font-weight: 800;
-            color: rgba(255,255,255,0.1);
-            user-select: none;
+            left: -1rem;
+            top: -1rem;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 4rem;
+            font-weight: 900;
+            color: rgba(255,255,255,0.03);
+            pointer-events: none;
+            z-index: -1;
         }
 
-        /* Responsive */
         @media (max-width: 1100px) {
             .timeline-tracks { display: none; }
-            .event-row { display: flex; flex-direction: column; }
+            .event-row { grid-template-columns: 1fr; gap: 2rem; }
             .track-multiple { max-width: 100%; }
-            .timeline-card::before { display: none; }
         }
     </style>
 </head>
 <body>
-
-    <header class="header">
+    <canvas id="canvas-bg"></canvas>
+    <div class="header">
         <h1>U.S. Tariff Timeline</h1>
-        <p>Follow the evolving trade landscape with confidence. Key changes are highlighted as they unfold to grasp the bigger picture at a glance. (Last updated: April 3, 2026)</p>
+        <p>Strategic trade landscape analysis (2025-2027). Each authority tracked on its own chronological rail.</p>
         
         <div class="status-grid">
             <div class="status-card">
-                <h3>IEEPA (Intl. Emergency Economic Powers Act)</h3>
-                <div class="status terminated">
-                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                    Terminated (Feb 24, 2026)
-                </div>
-                <div style="font-size: 0.85rem; color: var(--text-muted);">Terminated following Supreme Court ruling. Remaining for historical reference.</div>
+                <h3>IEEPA (National Emergency)</h3>
+                <div class="status terminated">TERMINATED</div>
+                <div style="font-size: 0.8rem; color: #94a3b8;">Halted by Supreme Court (Feb 2026)</div>
             </div>
             <div class="status-card">
-                <h3>Section 122 (Trade Expansion Act)</h3>
-                <div class="status active-122">
-                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                    In Effect (Feb 24, 2026)
-                </div>
-                <div style="font-size: 0.85rem; color: var(--text-muted);">Global 10% tariff on most imports for 150 days.</div>
+                <h3>Section 232 (National Security)</h3>
+                <div class="status active">ACTIVE</div>
+                <div style="font-size: 0.8rem; color: #94a3b8;">Steel, Aluminum, Autos, Medical</div>
             </div>
             <div class="status-card">
-                <h3>Section 232 (Trade Expansion Act)</h3>
-                <div class="status active">
-                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                    In Effect
-                </div>
-                <div style="font-size: 0.85rem; color: var(--text-muted);">Steel, aluminum, auto, lumber, semis, copper.</div>
+                <h3>Section 122 (Trade Balance)</h3>
+                <div class="status active-122">PENDING</div>
+                <div style="font-size: 0.8rem; color: #94a3b8;">Global 10% Baseline (March 2026)</div>
             </div>
         </div>
 
         <div class="filter-bar">
-            <span class="filter-label">Filter by Authority:</span>
             <button class="filter-btn active" data-filter="all">All Authorities</button>
             <button class="filter-btn" data-filter="ieepa">IEEPA</button>
             <button class="filter-btn" data-filter="sec232">Section 232</button>
             <button class="filter-btn" data-filter="sec122">Section 122</button>
         </div>
-    </header>
+    </div>
 
     <div class="timeline-container" id="timeline">
         <!-- Injected via JS -->
     </div>
 
     <script>
+        const events = [
+            { date: "2025-02-01", auth: "IEEPA", type: "fentanyl", country: "Canada", commodity: "All goods; energy products", desc: "Executive order issued imposing a 25% tariff on imports from Canada, 10% tariff on energy products, effective February 4, 2025." },
+            { date: "2025-02-01", auth: "IEEPA", type: "fentanyl", country: "China", commodity: "All goods", desc: "Executive order issued imposing a 10% tariff on all goods from China, effective February 4, 2025. De minimis treatment will not be allowed." },
+            { date: "2025-02-01", auth: "IEEPA", type: "fentanyl", country: "Mexico", commodity: "All goods", desc: "Executive order issued imposing a 25% tariff on imports from Mexico, effective February 4, 2025." },
+            { date: "2025-02-03", auth: "IEEPA", type: "fentanyl", country: "Canada, Mexico", commodity: "All goods", desc: "30-day pause announced on tariff increase for imports from Canada and Mexico (until March 4, 2025)." },
+            { date: "2025-02-04", auth: "IEEPA", type: "fentanyl", country: "China", commodity: "All goods", desc: "10% tariff on goods from China goes into effect. De minimis treatment for low-value shipments from China ends." },
+            { date: "2025-02-05", auth: "IEEPA", type: "fentanyl", country: "China", commodity: "All goods", desc: "De minimis treatment temporarily restored for low-value shipments from China." },
+            { date: "2025-02-10", auth: "Section 232", type: "steel & aluminum", country: "All", commodity: "Steel and aluminum", desc: "Proclamations issued extending the 25% tariff on steel to all countries and increasing the 10% tariff to 25% on aluminum." },
+            { date: "2025-03-04", auth: "IEEPA", type: "fentanyl", country: "Canada, Mexico", commodity: "All goods", desc: "30-day pause ends. 25% tariff goes into effect for imports from Canada and Mexico." },
+            { date: "2025-03-04", auth: "IEEPA", type: "fentanyl", country: "China", commodity: "All goods", desc: "10% tariff on all goods from China increased to 20%." },
+            { date: "2025-03-07", auth: "IEEPA", type: "fentanyl", country: "Canada, Mexico", commodity: "USMCA-qualifying goods", desc: "Amended executive order exempting USMCA-qualifying goods from Canada and Mexico." },
+            { date: "2025-03-12", auth: "Section 232", type: "steel & aluminum", country: "All", commodity: "Steel and aluminum", desc: "25% tariffs on steel and aluminum imported from all countries go in effect." },
+            { date: "2025-03-26", auth: "Section 232", type: "auto & auto parts", country: "All", commodity: "Automobiles and auto parts", desc: "Proclamation imposing 25% tariff on automobiles and auto parts, effective April 3 for autos and May 3 for parts." },
+            { date: "2025-04-02", auth: "IEEPA", type: "fentanyl", country: "China", commodity: "All goods", desc: "Ends de minimis treatment for low-value shipments from China, effective May 2." },
+            { date: "2025-04-02", auth: "IEEPA", type: "reciprocal", country: "All (except CA & MX)", commodity: "Most goods", desc: "10% baseline tariff announced for most countries, effective April 5." },
+            { date: "2025-04-03", auth: "Section 232", type: "auto", country: "All", commodity: "Automobiles", desc: "25% tariff on automobiles in effect." },
+            { date: "2025-04-04", auth: "Section 232", type: "steel & aluminum", country: "All", commodity: "Beer & empty aluminum cans", desc: "25% tariff in effect for beer and empty aluminum cans." },
+            { date: "2025-04-05", auth: "IEEPA", type: "reciprocal", country: "All (except CA & MX)", commodity: "Most goods", desc: "10% baseline tariff in effect." },
+            { date: "2025-04-08", auth: "IEEPA", type: "reciprocal", country: "China", commodity: "All goods", desc: "34% country-specific tariff increased to 84% on all goods from China, effective April 9." },
+            { date: "2025-04-09", auth: "IEEPA", type: "reciprocal", country: "All (except CA & MX)", commodity: "All goods", desc: "Country-specific tariffs paused for 90 days. 84% tariff on China increased to 125%, effective April 10." },
+            { date: "2025-04-10", auth: "IEEPA", type: "reciprocal", country: "China", commodity: "All goods", desc: "125% country-specific tariff on all goods from China in effect. Total: 145%." },
+            { date: "2025-04-11", auth: "IEEPA", type: "reciprocal", country: "All", commodity: "Semiconductors; smartphones; electronics", desc: "Memorandum excluding certain electronics from April 2 tariffs." },
+            { date: "2025-04-29", auth: "Multiple", type: "general", country: "All", commodity: "All goods", desc: "Executive order revising cumulative application of tariffs." },
+            { date: "2025-05-02", auth: "IEEPA", type: "fentanyl", country: "China", commodity: "All goods", desc: "De minimis treatment for all low-value shipments imported from China ends." },
+            { date: "2025-05-03", auth: "Section 232", type: "auto & parts", country: "All", commodity: "Auto parts", desc: "25% tariff on auto parts in effect." },
         const events = [
             { date: "2025-02-01", auth: "IEEPA", type: "fentanyl", country: "Canada", commodity: "All goods; energy products", desc: "Executive order issued imposing a 25% tariff on imports from Canada, 10% tariff on energy products, effective February 4, 2025." },
             { date: "2025-02-01", auth: "IEEPA", type: "fentanyl", country: "China", commodity: "All goods", desc: "Executive order issued imposing a 10% tariff on all goods from China, effective February 4, 2025. De minimis treatment will not be allowed." },
@@ -398,7 +318,7 @@
             { date: "2025-07-30", auth: "Section 232", type: "copper", country: "All", commodity: "Copper derivatives", desc: "50% tariffs on semi-finished copper and derivatives, effective August 1." },
             { date: "2025-07-31", auth: "IEEPA", type: "fentanyl", country: "Canada", commodity: "All goods", desc: "25% tariff increased to 35% for non-qualifying USMCA goods from Canada, effective August 1." },
             { date: "2025-07-31", auth: "IEEPA", type: "reciprocal", country: "All", commodity: "All goods", desc: "Country-specific tariff rates adjusted for most countries, effective August 7." },
-            { date: "2025-08-01", auth: "IEEPA & Section 232", type: "general", country: "Canada / All", commodity: "All / Copper", desc: "35% tariff on Canada goes into effect. 50% tariff on copper goes into effect." },
+            { date: "2025-08-01", auth: "Multiple", type: "general", country: "Canada / All", commodity: "All / Copper", desc: "35% tariff on Canada goes into effect. 50% tariff on copper goes into effect." },
             { date: "2025-08-06", auth: "IEEPA", type: "Russian oil", country: "Brazil / India", commodity: "All goods", desc: "40% tariff on Brazil in effect. 25% tariff on India announced, effective August 27." },
             { date: "2025-08-07", auth: "IEEPA", type: "reciprocal", country: "All", commodity: "All goods", desc: "Country-specific tariff rates go into effect. Tariffs go into effect for EU and Japan." },
             { date: "2025-08-11", auth: "IEEPA", type: "reciprocal", country: "China", commodity: "All goods", desc: "10% reciprocal tariff extended an additional 90 days." },
@@ -412,7 +332,7 @@
             { date: "2025-11-04", auth: "IEEPA", type: "fentanyl", country: "China", commodity: "All goods", desc: "Fentanyl tariff lowered to 10%. Reciprocal tariff suspension extended to Nov 10, 2026." },
             { date: "2025-11-10", auth: "IEEPA", type: "fentanyl", country: "China", commodity: "All goods", desc: "10% fentanyl tariff goes into effect." },
             { date: "2025-11-20", auth: "IEEPA", type: "Brazil", country: "Brazil", commodity: "Certain goods", desc: "Exempting 238 agricultural products from the 40% tariff." },
-            { date: "2025-12-03", auth: "IEEPA & Section 232", type: "general", country: "South Korea", commodity: "All / Timber & Auto", desc: "Tariff cuts confirmed retroactive to November." },
+            { date: "2025-12-03", auth: "Multiple", type: "general", country: "South Korea", commodity: "All / Timber & Auto", desc: "Tariff cuts confirmed retroactive to November." },
             { date: "2025-12-18", auth: "IEEPA", type: "reciprocal", country: "Switzerland, Liechtenstein", commodity: "All goods", desc: "Modifying reciprocal rates retroactive to Nov 14." },
             { date: "2025-12-31", auth: "Section 232", type: "timber & lumber", country: "All", commodity: "Furniture, cabinets", desc: "Delaying tariff increases on furniture until Jan 1, 2027." },
             { date: "2026-01-15", auth: "Section 232", type: "semiconductors", country: "All", commodity: "Semiconductors", desc: "25% tariff on certain semiconductors." },
@@ -525,6 +445,59 @@
                 renderTimeline(e.target.dataset.filter);
             });
         });
+
+        // --- Three.js Background Particles ---
+        function initParticles() {
+            const canvas = document.getElementById('canvas-bg');
+            const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.z = 5;
+
+            const particlesGeometry = new THREE.BufferGeometry();
+            const count = 1500;
+            const positions = new Float32Array(count * 3);
+            const colors = new Float32Array(count * 3);
+
+            for (let i = 0; i < count * 3; i++) {
+                positions[i] = (Math.random() - 0.5) * 15;
+                colors[i] = Math.random();
+            }
+
+            particlesGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            particlesGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+            const particlesMaterial = new THREE.PointsMaterial({
+                size: 0.02,
+                vertexColors: true,
+                transparent: true,
+                opacity: 0.6,
+                blending: THREE.AdditiveBlending
+            });
+
+            const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
+            scene.add(particlesMesh);
+
+            function animate() {
+                requestAnimationFrame(animate);
+                particlesMesh.rotation.y += 0.001;
+                particlesMesh.rotation.x += 0.0005;
+                renderer.render(scene, camera);
+            }
+
+            window.addEventListener('resize', () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
+
+            animate();
+        }
+
+        initParticles();
     </script>
 </body>
 </html>
