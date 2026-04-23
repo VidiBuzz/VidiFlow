@@ -63,6 +63,13 @@
         .auth-tag.multi { background: rgba(168,85,247,0.2); color: var(--multi); }
         .card h4 { font-size: 0.9rem; color: #e2e8f0; margin-bottom: 0.3rem; line-height: 1.3; }
         .card p { font-size: 0.8rem; color: #94a3b8; line-height: 1.5; margin: 0; }
+        .rate-badge { font-family: 'Orbitron', sans-serif; font-size: 2.4rem; font-weight: 900; line-height: 1; margin-bottom: 0.3rem; }
+        .rate-badge.ieepa { color: var(--ieepa); text-shadow: 0 0 20px rgba(244,63,94,0.4); }
+        .rate-badge.sec232 { color: var(--sec232); text-shadow: 0 0 20px rgba(56,189,248,0.4); }
+        .rate-badge.sec122 { color: var(--sec122); text-shadow: 0 0 20px rgba(245,158,11,0.4); }
+        .rate-badge.multi { color: var(--multi); text-shadow: 0 0 20px rgba(168,85,247,0.4); }
+        .rate-badge.none { font-size: 1.2rem; color: #475569; }
+        .card-country { font-size: 1rem; font-weight: 800; color: #fff; margin-bottom: 0.3rem; }
 
         @media (max-width: 700px) {
             .status-grid { grid-template-columns: 1fr; }
@@ -105,7 +112,7 @@
 <div class="timeline" id="timeline"></div>
 
 <script>
-const CDN = '../images/';
+const CDN = 'https://cdn.vidi.news/images/';
 const events = [
     { date:"2025-02-01", auth:"IEEPA", country:"Canada", commodity:"All goods; energy products", desc:"25% tariff on Canada, 10% on energy, eff. Feb 4.", img:"tariff_nafta.png" },
     { date:"2025-02-01", auth:"IEEPA", country:"China", commodity:"All goods", desc:"10% tariff on all goods from China, eff. Feb 4. No de minimis.", img:"tariff_china.png" },
@@ -207,13 +214,17 @@ function render(filter) {
         list.className = 'event-list';
         groups[key].forEach(e => {
             const cls = authClass(e.auth);
+            const rateMatch = e.desc.match(/(\d+)%/);
+            const rate = rateMatch ? rateMatch[1] + '%' : '';
             const card = document.createElement('div');
             card.className = `card ${cls}`;
             card.innerHTML = `
                 <img src="${CDN}${e.img}" alt="${e.country}" loading="lazy">
                 <div class="card-body">
                     <div class="card-date"><span>${fmtDate(e.date)}</span><span class="auth-tag ${cls}">${e.auth}</span></div>
-                    <h4>${e.country}: ${e.commodity}</h4>
+                    ${rate ? `<div class="rate-badge ${cls}">${rate}</div>` : '<div class="rate-badge none">—</div>'}
+                    <div class="card-country">${e.country}</div>
+                    <h4>${e.commodity}</h4>
                     <p>${e.desc}</p>
                 </div>`;
             list.appendChild(card);
