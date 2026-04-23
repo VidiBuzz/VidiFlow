@@ -1,11 +1,11 @@
 /**
- * Qwen Agent — Smart Book AI Companion
+ * Vidi AI — Smart Book AI Companion
  * Powered by Qwen3 (Alibaba Cloud / DashScope)
- * 
+ *
  * Provides an intelligent chat assistant that knows the full book content,
  * can answer questions about chapters, personas, and topics, and guides
  * readers through "The Speed of Agentic Visual AI".
- * 
+ *
  * Usage: <script src="qwen-agent.js"></script> then call QwenAgent.init()
  * 
  * Config: Set window.QWEN_API_KEY or pass it to init({ apiKey: '...' })
@@ -61,11 +61,11 @@
     // ─── Utility Functions ───────────────────────────────────
 
     function log(msg, data) {
-        console.log(`[QwenAgent] ${msg}`, data || '');
+        console.log(`[VidiAI] ${msg}`, data || '');
     }
 
     function error(msg, err) {
-        console.error(`[QwenAgent ERROR] ${msg}`, err || '');
+        console.error(`[VidiAI ERROR] ${msg}`, err || '');
     }
 
     function escapeHtml(str) {
@@ -168,7 +168,7 @@
     function buildSystemPrompt() {
         const ctx = bookContext || buildBookContext();
 
-        return `You are Qwen Agent, an AI companion for the digital book "${ctx.title || 'The Speed of Agentic Visual AI'}" by ${ctx.author || 'James May'}.
+        return `You are Vidi AI, an AI companion for the digital book "${ctx.title || 'The Speed of Agentic Visual AI'}" by ${ctx.author || 'James May'}.
 
 Your role is to help readers understand, navigate, and get the most value from this book. You have deep knowledge of every chapter and can provide personalized guidance.
 
@@ -401,7 +401,7 @@ ${(ctx.personas || []).map(p => `- ${p.label}: ${p.description}`).join('\n')}
             return {
                 text: "Here's what I can do for you:",
                 html: `<div class="qa-help-list">
-<strong>🤖 Qwen Agent Commands:</strong>
+<strong>🤖 Vidi AI Commands:</strong>
 <ul>
 <li><strong>Ask about any chapter</strong> — "Tell me about Chapter 3"</li>
 <li><strong>Get recommendations</strong> — "What should I read first?"</li>
@@ -531,7 +531,7 @@ ${(ctx.personas || []).map(p => `- ${p.label}: ${p.description}`).join('\n')}
             </svg>
           </div>
           <div class="qa-header-text">
-            <div class="qa-title">Qwen Agent <span class="qa-badge">AI</span></div>
+            <div class="qa-title">Vidi AI <span class="qa-badge">AI</span></div>
             <div class="qa-status" id="qaStatus">● Ready</div>
           </div>
         </div>
@@ -548,7 +548,7 @@ ${(ctx.personas || []).map(p => `- ${p.label}: ${p.description}`).join('\n')}
       <div class="qa-welcome" id="qaWelcome">
         <div class="qa-welcome-icon">🧠</div>
         <div class="qa-welcome-title">Smart Book AI Companion</div>
-        <div class="qa-welcome-sub">Powered by Qwen3 • Knows every chapter</div>
+        <div class="qa-welcome-sub">Powered by Vidi AI • Knows every chapter</div>
         <div class="qa-suggestions" id="qaSuggestions"></div>
       </div>
 
@@ -569,13 +569,13 @@ ${(ctx.personas || []).map(p => `- ${p.label}: ${p.description}`).join('\n')}
           <button class="qa-stop-btn" id="qaStopBtn" style="display:none;">■ Stop</button>
         </div>
         <div class="qa-footer">
-          <span class="qa-footer-text">Qwen may make mistakes. Verify important info.</span>
+          <span class="qa-footer-text">Vidi AI may make mistakes. Verify important info.</span>
         </div>
       </div>
     </div>
 
     <!-- Toggle Button -->
-    <button class="qa-toggle" id="qaToggle" title="Open Qwen Agent">
+    <button class="qa-toggle" id="qaToggle" title="Open Vidi AI">
       <div class="qa-toggle-inner">
         <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="white" stroke-width="1.8">
           <path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2Z"/>
@@ -817,7 +817,7 @@ ${(ctx.personas || []).map(p => `- ${p.label}: ${p.description}`).join('\n')}
             startY = e.clientY;
             startLeft = rect.left;
             startTop = rect.top;
-            widgetContainer.classList('qa-dragging');
+            widgetContainer.classList.add('qa-dragging');
             e.preventDefault();
         });
 
@@ -844,7 +844,7 @@ ${(ctx.personas || []).map(p => `- ${p.label}: ${p.description}`).join('\n')}
 
         const css = `
 /* ═══════════════════════════════════════════
-   Qwen Agent Widget Styles
+   Vidi AI Widget Styles
    ═══════════════════════════════════════════ */
 .qa-widget {
   font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -1352,7 +1352,7 @@ ${(ctx.personas || []).map(p => `- ${p.label}: ${p.description}`).join('\n')}
     // ─── Public API ─────────────────────────────────────────
 
     /**
-     * Initialize the Qwen Agent widget
+     * Initialize the Vidi AI widget
      * @param {Object} opts - Configuration options
      * @param {string} opts.apiKey - DashScope/OpenRouter API key
      * @param {string} opts.apiUrl - Custom API endpoint
@@ -1394,7 +1394,7 @@ ${(ctx.personas || []).map(p => `- ${p.label}: ${p.description}`).join('\n')}
             createWidget();
         }
 
-        log(`Qwen Agent initialized (model: ${config.model})`);
+        log(`Vidi AI initialized (model: ${config.model})`);
         return QwenAgent;
     }
 
@@ -1411,7 +1411,7 @@ ${(ctx.personas || []).map(p => `- ${p.label}: ${p.description}`).join('\n')}
     /** Programmatically send a message */
     function ask(question) {
         if (!widgetContainer) {
-            console.warn('[QwenAgent] Call init() before ask()');
+            console.warn('[VidiAI] Call init() before ask()');
             return Promise.resolve(null);
         }
         if (!isOpen) togglePanel();
@@ -1460,7 +1460,8 @@ ${(ctx.personas || []).map(p => `- ${p.label}: ${p.description}`).join('\n')}
     };
 
     // Global export
-    window.QwenAgent = QwenAgent;
+    window.QwenAgent = QwenAgent; // Keep for backward compatibility
+    window.VidiAI = QwenAgent;    // New name
 
     // Auto-init if data attribute present on script tag
     // Or if window.QWEN_AUTO_INIT is set
