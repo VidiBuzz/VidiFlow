@@ -25,11 +25,11 @@ const BOOK_DATA = {
         "AI tools for creativity, learning, and everyday problem solving",
         "How the AI revolution affects your career and what skills to develop"
       ],
-      personaIntro: "As a consumer, you're experiencing the AI revolution firsthand — through chatbots, image generators, and smart assistants. This path focuses on what matters most to your daily life: using AI effectively, understanding its limits, and preparing for the changes ahead. You'll skip the enterprise architecture deep-dives and focus on practical knowledge that makes you smarter about AI today.",
+      personaIntro: "Hey [NAME] — you're experiencing the AI revolution firsthand through chatbots, image generators, and smart assistants. This path focuses on what matters most to your daily life: using AI effectively, understanding its limits, and preparing for the changes ahead. No enterprise architecture deep-dives — just practical knowledge that makes you smarter about AI today.",
       aiInsights: {
-        foreword: "Your 30-year perspective gives consumers something rare: context. Most people are experiencing AI as a sudden shock. You're showing them it's a wave that's been building for decades.",
-        ch4: "For consumers, the moat concept translates directly: your personal creative voice, amplified by AI, is something no one else can replicate. This is the most empowering chapter in the book for individuals.",
-        ch36: "The job question isn't abstract for consumers — it's personal. This chapter gives them the framework to understand which skills to develop and which to automate."
+        foreword: "This 30-year perspective gives [NAME] something rare: context. Most people are experiencing AI as a sudden shock. You're getting the wave explained — from someone who saw it building for decades.",
+        ch4: "For [NAME], the moat concept is personal: your creative voice, amplified by AI, is something no one else can replicate. This is the most empowering chapter in the book.",
+        ch36: "The job question isn't abstract for [NAME] — it's personal. This chapter gives you the framework to understand which skills to develop, which to automate, and what to do before Monday."
       }
     },
     it_professional: {
@@ -50,12 +50,12 @@ const BOOK_DATA = {
         "Agentic orchestration patterns with AutoGen, CrewAI, and Vertex AI",
         "Infrastructure decisions: custom silicon, GPU selection, and build vs buy"
       ],
-      personaIntro: "As an IT professional, you're the one who has to make AI work in production. This path gives you the technical depth you need: model architectures, data pipelines, deployment patterns, and infrastructure decisions. You'll get every technical chapter plus the strategic context to make decisions that matter.",
+      personaIntro: "Hey [NAME] — you're the one at [COMPANY] who has to make AI actually work in production. This path gives you the technical depth you need: model architectures, data pipelines, deployment patterns, and infrastructure decisions. Every technical chapter, plus the strategic context to make calls that matter.",
       aiInsights: {
-        ch3: "The LLM ranking chapter is your buying guide. Understanding which models are genuinely multimodal vs language models with an image plugin is the first filter for every architecture decision you'll make.",
-        ch12: "The 90% Problem is your biggest opportunity. Most organizations have no idea that 90% of their valuable data is invisible to their systems. You're the one who can fix this.",
-        ch27: "Inference, fine-tuning, and LoRAs — this is where you go from using AI to owning AI. A talent-specific LoRA is the difference between generic output and production-grade consistency.",
-        ch30: "Local AI with 96GB VRAM changes the privacy equation entirely. Running multiple large models on a single RTX 5090 is no longer a research project — it's a deployment option."
+        ch3: "For [NAME] at [COMPANY], this is your buying guide. Which models are genuinely multimodal vs language models with an image plugin — that's the first filter for every architecture decision you'll make.",
+        ch12: "The 90% Problem is [COMPANY]'s biggest opportunity. Most organizations have no idea that 90% of their valuable data is invisible to their AI systems. [NAME], you're the one who can fix this.",
+        ch27: "Inference, fine-tuning, and LoRAs — this is where [COMPANY] goes from using AI to owning AI. A domain-specific LoRA trained on [COMPANY]'s data is the difference between generic output and production-grade consistency.",
+        ch30: "Local AI with 96GB VRAM changes the privacy equation for [COMPANY] entirely. Running multiple large models on a single RTX 5090 is no longer a research project — it's [NAME]'s next deployment option."
       }
     },
     executive_entrepreneur: {
@@ -76,15 +76,15 @@ const BOOK_DATA = {
         "The 90-day velocity framework for rapid AI deployment and organizational learning",
         "Content and growth at scale with SmartGen — producing what competitors can't match"
       ],
-      personaIntro: "Whether you're leading an established organization or building something new, your job is the same: make the right strategic bets at the right time and execute faster than anyone else. This path gives you the complete landscape — competitive dynamics, investment frameworks, organizational playbooks, and the execution tools to move at AI speed. You'll see the full picture without getting lost in implementation details.",
+      personaIntro: "Hey [NAME] — whether you're leading [COMPANY] or building something new, your job is the same: make the right strategic bets at the right time and execute faster than anyone else. This path gives you the complete landscape — competitive dynamics, investment frameworks, organizational playbooks, and the tools to move at AI speed. Full picture, no implementation rabbit holes.",
       aiInsights: {
-        ch2: "Vision vs execution is the leader's dilemma. The companies winning in 2026 aren't the ones with the best AI strategy — they're the ones with the execution velocity to act on it. This chapter gives you the framework.",
-        ch4: "Original AI-assisted creation is your moat. While competitors use the same models to generate commodity content, your proprietary training data and visual equity become impossible to replicate. This is the chapter that changes everything.",
-        ch5: "The SaaSpocalypse isn't just a threat — it's a map of where competitive moats are forming and where they're dissolving. Every leader needs to know which side of the line their business is on.",
-        ch16: "Follow the money, not the hype. This chapter shows you where enterprise AI budgets are actually going — infrastructure, domain-specific systems, and visual AI — so you can align your investments with market reality.",
-        ch28: "The 90-day playbook is your competitive weapon. While competitors are still planning, you'll have deployed, measured, and iterated. Speed is the only sustainable advantage in AI right now.",
-        ch31: "36 million small business owners is your market. The ones who figure out how to be both hyperlocal and AI-accelerated simultaneously will dominate their territories.",
-        ch32: "SmartGen is your content weapon. From a single seed — a keyword, a business objective, a local market — you can produce articles, images, videos, and social content at a scale no competitor can match without the same system."
+        ch2: "[NAME], vision vs execution is your central dilemma. The companies outpacing [COMPANY]'s competitors in 2026 aren't the ones with the best AI strategy — they're the ones with the execution velocity to act on it. This chapter gives you the framework.",
+        ch4: "Original AI-assisted creation is [COMPANY]'s moat. While competitors use the same models to generate commodity content, [COMPANY]'s proprietary training data and visual equity become impossible to replicate. [NAME], this is the chapter that changes everything.",
+        ch5: "The SaaSpocalypse isn't just a threat to [COMPANY] — it's a map of where competitive moats are forming and where they're dissolving. [NAME], you need to know which side of that line [COMPANY] is on right now.",
+        ch16: "Follow the money, not the hype. This chapter shows you where enterprise AI budgets are actually going — so [COMPANY] can align investments with market reality, not vendor roadmaps.",
+        ch28: "The 90-day playbook is [COMPANY]'s competitive weapon. While competitors are still planning, [NAME] will have deployed, measured, and iterated. Speed is the only sustainable advantage in AI right now.",
+        ch31: "36 million small business owners is your market. [COMPANY] can dominate its territory by being simultaneously hyperlocal and AI-accelerated — before competitors understand the move.",
+        ch32: "SmartGen is [COMPANY]'s content weapon. From a single seed — a keyword, a business objective, a local market — [NAME] can produce articles, images, videos, and social content at a scale no competitor can match."
       }
     }
   },

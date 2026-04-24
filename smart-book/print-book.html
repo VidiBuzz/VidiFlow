@@ -1375,6 +1375,18 @@
             const nameDisplay  = readerName || '';
             const companyDisplay = currentPersona === 'consumer' ? '' : (document.getElementById('readerCompany')?.value || '').trim();
 
+            function personalize(str) {
+                if (!str) return str;
+                const n = nameDisplay || 'you';
+                const c = companyDisplay || 'your organization';
+                const cposs = companyDisplay ? companyDisplay + "'s" : 'your';
+                return str
+                    .replace(/\[NAME\]'s/g, nameDisplay ? nameDisplay + "'s" : 'your')
+                    .replace(/\[COMPANY\]'s/g, cposs)
+                    .replace(/\[NAME\]/g, n)
+                    .replace(/\[COMPANY\]/g, c);
+            }
+
             // Cover personalization line
             let coverLine = '';
             if (nameDisplay && personaLabel) {
@@ -1456,7 +1468,7 @@
                         ${personaLabel} Edition
                     </div>
                     <h2 class="pip-heading">${greeting}</h2>
-                    <p class="pip-intro">${personaData.personaIntro}</p>
+                    <p class="pip-intro">${personalize(personaData.personaIntro)}</p>
                     ${takeawaysHtml ? `<div class="pip-takeaways-label">What you'll take away</div><ul class="pip-takeaways">${takeawaysHtml}</ul>` : ''}
                 </div>`;
             }
@@ -1514,7 +1526,7 @@
                         <h3 style="font-family:'Inter',sans-serif;font-size:0.8rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:${personaInfo.color};margin-top:0;margin-bottom:0.75rem;">
                             ${personaInfo.icon} ${personaInfo.label} Insight
                         </h3>
-                        <p style="font-size:0.95rem;margin:0;">${insight}</p>
+                        <p style="font-size:0.95rem;margin:0;">${personalize(insight)}</p>
                     </div>`;
                 }
 
