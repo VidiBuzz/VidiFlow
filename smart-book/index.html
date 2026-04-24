@@ -280,6 +280,56 @@
         .name-row input::placeholder { color: rgba(255,255,255,0.25); }
         @media (max-width: 600px) { .name-row { flex-direction: column; max-width: 340px; } }
 
+        /* Email row */
+        .email-row {
+            max-width: 520px;
+            margin: 0 auto 0.75rem;
+        }
+        .email-row input {
+            width: 100%;
+            padding: 0.9rem 1.1rem;
+            border: 1px solid var(--border-bright);
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-family: 'DM Sans', sans-serif;
+            background: rgba(255,255,255,0.05);
+            color: #fff;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            backdrop-filter: blur(8px);
+            text-align: center;
+            box-sizing: border-box;
+        }
+        .email-row input:focus { outline: none; border-color: var(--fire); box-shadow: 0 0 0 3px rgba(255,107,53,0.15); }
+        .email-row input::placeholder { color: rgba(255,255,255,0.25); }
+
+        /* Tariff opt-in */
+        .tariff-optin {
+            max-width: 520px;
+            margin: 0 auto 2rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            padding: 0.9rem 1.1rem;
+            background: rgba(200,169,81,0.07);
+            border: 1px solid rgba(200,169,81,0.25);
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        .tariff-optin input[type="checkbox"] {
+            width: 18px; height: 18px;
+            accent-color: var(--gold);
+            margin-top: 2px;
+            flex-shrink: 0;
+            cursor: pointer;
+        }
+        .tariff-optin label {
+            font-size: 0.82rem;
+            line-height: 1.5;
+            color: rgba(255,255,255,0.75);
+            cursor: pointer;
+        }
+        .tariff-optin label strong { color: var(--gold); }
+
         /* Persona cards */
         .persona-grid {
             display: grid;
@@ -900,6 +950,17 @@ body { padding-top: 56px; }
         <input type="text" id="readerCompany" placeholder="Enter your company name" autocomplete="off">
     </div>
 
+    <div class="email-row">
+        <input type="email" id="readerEmail" placeholder="Your work email (for your personalized edition)" autocomplete="email">
+    </div>
+
+    <div class="tariff-optin">
+        <input type="checkbox" id="tariffOptIn" checked>
+        <label for="tariffOptIn">
+            <strong>Get my personalized tariff refund assessment</strong> — we'll analyze your imports and send a custom recovery plan via the VidiPitch Tariff Recovery Program (<a href="https://vidipitch.com/tariff" target="_blank" rel="noopener" style="color:var(--gold)">vidipitch.com/tariff</a>)
+        </label>
+    </div>
+
     <div class="persona-grid" id="personaGrid">
         <!-- Injected by JS -->
     </div>
@@ -1455,8 +1516,12 @@ var PERSONAS = {
 function navigateToBook(key) {
     var nameEl    = document.getElementById('readerName');
     var companyEl = document.getElementById('readerCompany');
+    var emailEl   = document.getElementById('readerEmail');
+    var optInEl   = document.getElementById('tariffOptIn');
     var name    = nameEl    ? nameEl.value.trim()    : '';
     var company = companyEl ? companyEl.value.trim() : '';
+    var email   = emailEl   ? emailEl.value.trim()   : '';
+    var tariff_opt_in = optInEl ? optInEl.checked : false;
 
     document.querySelectorAll('.persona-card').forEach(function(c) {
         c.classList.toggle('active', c.getAttribute('data-persona') === key);
@@ -1466,7 +1531,17 @@ function navigateToBook(key) {
         localStorage.setItem('smartbook_persona', key);
         if (name)    localStorage.setItem('smartbook_name',    name);
         if (company) localStorage.setItem('smartbook_company', company);
+        if (email)   localStorage.setItem('smartbook_email',   email);
     } catch(e) {}
+
+    // Fire-and-forget: capture lead to VidiPitch Railway DB
+    if (email) {
+        fetch('https://vidipitch.com/api/book-subscribe', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name: name, company: company, email: email, persona: key, tariff_opt_in: tariff_opt_in, source: 'smart-book' })
+        }).catch(function() {});
+    }
 
     var overlay = document.getElementById('loadingOverlay');
     var titleEl = document.getElementById('loadingTitle');
@@ -1569,6 +1644,7 @@ function restoreReaderName() {
     try {
         var savedName    = localStorage.getItem('smartbook_name');
         var savedCompany = localStorage.getItem('smartbook_company');
+        var savedEmail   = localStorage.getItem('smartbook_email');
         if (savedName) {
             var el = document.getElementById('readerName');
             if (el) el.value = savedName;
@@ -1576,6 +1652,10 @@ function restoreReaderName() {
         if (savedCompany) {
             var elC = document.getElementById('readerCompany');
             if (elC) elC.value = savedCompany;
+        }
+        if (savedEmail) {
+            var elE = document.getElementById('readerEmail');
+            if (elE) elE.value = savedEmail;
         }
     } catch(e) {}
 }
