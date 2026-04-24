@@ -534,18 +534,26 @@
 <div id="podBar" class="pod-bar">
     <div class="pod-bar-art">
         <svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" width="40" height="40">
-            <rect width="40" height="40" rx="6" fill="#0d1120"/>
-            <ellipse cx="12" cy="13" rx="4" ry="5" fill="#C8A951" opacity="0.9"/>
-            <path d="M4 28 Q4 20 12 20 Q20 20 20 28 Z" fill="#C8A951" opacity="0.7"/>
-            <ellipse cx="28" cy="13" rx="4" ry="5" fill="#FF6B35" opacity="0.9"/>
-            <path d="M20 28 Q20 20 28 20 Q36 20 36 28 Z" fill="#FF6B35" opacity="0.7"/>
-            <rect x="9" y="21" width="6" height="9" rx="3" fill="rgba(255,255,255,0.7)"/>
-            <rect x="25" y="21" width="6" height="9" rx="3" fill="rgba(255,255,255,0.7)"/>
+            <defs>
+                <radialGradient id="pbArtBg" cx="50%" cy="50%" r="50%">
+                    <stop offset="0%" stop-color="#1e0d00"/>
+                    <stop offset="100%" stop-color="#060914"/>
+                </radialGradient>
+            </defs>
+            <rect width="40" height="40" rx="6" fill="url(#pbArtBg)"/>
+            <ellipse cx="12" cy="13" rx="4" ry="5" fill="#C8A951" opacity="0.95"/>
+            <path d="M4 28 Q4 20 12 20 Q20 20 20 28 Z" fill="#C8A951" opacity="0.75"/>
+            <ellipse cx="28" cy="13" rx="4" ry="5" fill="#FF6B35" opacity="0.95"/>
+            <path d="M20 28 Q20 20 28 20 Q36 20 36 28 Z" fill="#FF6B35" opacity="0.75"/>
+            <rect x="9" y="21" width="6" height="9" rx="3" fill="rgba(255,255,255,0.85)"/>
+            <rect x="25" y="21" width="6" height="9" rx="3" fill="rgba(255,255,255,0.85)"/>
+            <!-- gloss -->
+            <rect x="0" y="0" width="40" height="18" rx="6" fill="rgba(255,255,255,0.04)"/>
         </svg>
     </div>
     <div class="pod-bar-info">
         <span class="pod-bar-label">VIDI.NEWS AI PODCAST</span>
-        <span class="pod-bar-title">Visual Agentic AI &amp; the SaaSpocalypse</span>
+        <span class="pod-bar-chapter" id="pbChapter">Visual Agentic AI &amp; the SaaSpocalypse</span>
     </div>
     <div class="pod-bar-controls">
         <button class="pod-bar-skip" id="pbSkipBack" title="−30s">
@@ -560,8 +568,9 @@
         </button>
     </div>
     <div class="pod-bar-progress-wrap" id="pbProgressWrap">
-        <div class="pod-bar-progress-bg">
+        <div class="pod-bar-progress-bg" id="pbProgressBg">
             <div class="pod-bar-fill" id="pbFill"></div>
+            <!-- chapter markers injected by JS -->
         </div>
     </div>
     <div class="pod-bar-time" id="pbTime">0:00 / —</div>
@@ -572,100 +581,211 @@
 </div>
 
 <style>
+/* ── POD BAR ─────────────────────────────────────────── */
 .pod-bar {
     position: fixed; top: 0; left: 0; right: 0; z-index: 999;
-    height: 52px;
-    background: rgba(6,9,20,0.96);
-    backdrop-filter: blur(16px);
-    border-bottom: 1px solid rgba(255,107,53,0.25);
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 0 1rem;
-    box-shadow: 0 2px 20px rgba(0,0,0,0.6);
+    height: 56px;
+    background: linear-gradient(180deg, rgba(14,8,28,0.98) 0%, rgba(6,9,20,0.97) 100%);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(255,107,53,0.3);
+    display: flex; align-items: center; gap: 0.75rem; padding: 0 1rem;
+    box-shadow: 0 1px 0 rgba(255,255,255,0.04), 0 4px 30px rgba(0,0,0,0.7);
 }
-.pod-bar-art { flex-shrink:0; opacity:0.9; line-height:0; }
-.pod-bar-info {
-    display: flex; flex-direction: column; gap: 1px;
-    flex-shrink: 0;
-    min-width: 0;
+/* inner gloss line */
+.pod-bar::before {
+    content:''; position:absolute; top:0; left:0; right:0; height:1px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.12), rgba(200,169,81,0.3), rgba(255,255,255,0.12), transparent);
 }
+.pod-bar-art { flex-shrink:0; opacity:0.95; line-height:0; filter: drop-shadow(0 0 6px rgba(255,107,53,0.4)); }
+.pod-bar-info { display:flex; flex-direction:column; gap:2px; flex-shrink:0; min-width:0; }
 .pod-bar-label {
-    font-size: 0.55rem; font-weight: 700; letter-spacing: 2px;
+    font-size: 0.5rem; font-weight: 800; letter-spacing: 2.5px;
     color: var(--gold); text-transform: uppercase; line-height: 1;
+    text-shadow: 0 0 8px rgba(200,169,81,0.6);
 }
-.pod-bar-title {
-    font-size: 0.78rem; color: rgba(255,255,255,0.8);
+.pod-bar-chapter {
+    font-size: 0.78rem; color: rgba(255,255,255,0.9);
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-    max-width: 260px;
+    max-width: 280px; line-height: 1;
+    transition: opacity 0.3s;
+}
+.pod-bar-chapter.flash { animation: chFlash 0.5s ease-out; }
+@keyframes chFlash {
+    0%  { opacity:0; transform: translateY(4px); }
+    100%{ opacity:1; transform: translateY(0); }
 }
 .pod-bar-controls { display:flex; align-items:center; gap:0.5rem; flex-shrink:0; }
 .pod-bar-play {
-    width: 34px; height: 34px; border-radius: 50%;
-    background: var(--fire); border: none; cursor: pointer;
-    color: #fff; display:flex; align-items:center; justify-content:center;
+    width: 36px; height: 36px; border-radius: 50%;
+    background: linear-gradient(135deg, #FF6B35 0%, #e05525 100%);
+    border: none; cursor: pointer; color: #fff;
+    display:flex; align-items:center; justify-content:center;
     transition: transform 0.15s, box-shadow 0.15s;
-    box-shadow: 0 0 12px rgba(255,107,53,0.5);
+    box-shadow: 0 0 14px rgba(255,107,53,0.55), inset 0 1px 0 rgba(255,255,255,0.2);
     flex-shrink: 0;
 }
-.pod-bar-play:hover { transform:scale(1.1); box-shadow:0 0 20px rgba(255,107,53,0.7); }
+.pod-bar-play:hover { transform:scale(1.1); box-shadow:0 0 24px rgba(255,107,53,0.8), inset 0 1px 0 rgba(255,255,255,0.2); }
 .pod-bar-skip {
     background:none; border:none; cursor:pointer;
-    color:rgba(255,255,255,0.5); transition:color 0.2s; padding:0;
+    color:rgba(255,255,255,0.45); transition:color 0.2s; padding:0;
     display:flex; align-items:center;
 }
 .pod-bar-skip:hover { color:#fff; }
-.pod-bar-progress-wrap {
-    flex: 1; cursor: pointer; padding: 10px 0; min-width: 60px;
-}
+.pod-bar-progress-wrap { flex:1; cursor:pointer; padding:10px 0; min-width:80px; }
 .pod-bar-progress-bg {
-    height: 3px; background: rgba(255,255,255,0.12); border-radius: 2px; position:relative;
+    height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; position:relative;
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.4);
 }
 .pod-bar-fill {
     position:absolute; left:0; top:0; height:100%; width:0%;
-    background: linear-gradient(90deg, var(--fire), var(--gold));
+    background: linear-gradient(90deg, #FF6B35, #e8b84b);
     border-radius: 2px; transition: width 0.1s linear;
+    box-shadow: 0 0 6px rgba(255,107,53,0.5);
 }
+/* chapter tick marks */
+.pb-tick {
+    position: absolute; top: -4px; width: 2px; height: 12px;
+    background: rgba(255,255,255,0.5);
+    border-radius: 1px; transform: translateX(-50%);
+    cursor: pointer; transition: background 0.2s, height 0.2s;
+    z-index: 2;
+}
+.pb-tick:hover { background: #fff; height: 16px; top: -6px; }
+.pb-tick.passed { background: rgba(200,169,81,0.7); }
+/* chapter tooltip on hover */
+.pb-tick::after {
+    content: attr(data-title);
+    position: absolute; bottom: 18px; left: 50%; transform: translateX(-50%);
+    background: rgba(6,9,20,0.95); border: 1px solid rgba(255,255,255,0.15);
+    color: #fff; font-size: 0.6rem; white-space: nowrap;
+    padding: 3px 7px; border-radius: 3px; pointer-events:none;
+    opacity: 0; transition: opacity 0.2s;
+}
+.pb-tick:hover::after { opacity: 1; }
 .pod-bar-time {
-    font-size: 0.65rem; color: rgba(255,255,255,0.35);
-    white-space: nowrap; flex-shrink: 0;
+    font-size: 0.62rem; color: rgba(255,255,255,0.3);
+    white-space: nowrap; flex-shrink: 0; font-variant-numeric: tabular-nums;
 }
 .pod-bar-autoplay {
-    font-size: 0.6rem; font-weight: 800; letter-spacing: 2px;
+    font-size: 0.58rem; font-weight: 800; letter-spacing: 2px;
     color: var(--fire); flex-shrink: 0;
     animation: pbPulse 1.5s ease-in-out infinite;
+    text-shadow: 0 0 8px rgba(255,107,53,0.7);
 }
 .pod-bar-autoplay.hidden { display:none; }
-@keyframes pbPulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
-/* push page content down so hero isn't hidden behind bar */
-body { padding-top: 52px; }
+@keyframes pbPulse { 0%,100%{opacity:1} 50%{opacity:0.25} }
+body { padding-top: 56px; }
+/* ── GLOSS POLISH ──────────────────────────────────────── */
+@keyframes shimmer {
+    0%   { background-position: -200% center; }
+    100% { background-position:  200% center; }
+}
+.section-title {
+    background: linear-gradient(90deg, #fff 0%, #fff 40%, rgba(200,169,81,0.9) 50%, #fff 60%, #fff 100%);
+    background-size: 200% auto;
+    -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shimmer 6s linear infinite;
+}
+.pod-bar-play, .pod-play {
+    background: linear-gradient(135deg, #FF7A45 0%, #e05525 60%, #c94410 100%) !important;
+    box-shadow: 0 0 16px rgba(255,107,53,0.6), 0 2px 8px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.25) !important;
+}
+.card-cta-btn {
+    background: linear-gradient(135deg, var(--card-color, #FF6B35) 0%, color-mix(in srgb, var(--card-color, #FF6B35) 70%, #000) 100%) !important;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.15) !important;
+}
+.hero-image::before { animation: ringPulse 3s ease-in-out infinite !important; }
 @media(max-width:600px){
-    .pod-bar-title { max-width:100px; }
+    .pod-bar-chapter { max-width:110px; }
     .pod-bar-time { display:none; }
 }
 </style>
 
 <script>
 (function(){
-    var audio    = document.getElementById('pbAudio');
-    var playBtn  = document.getElementById('pbPlay');
-    var playIcon = document.getElementById('pbPlayIcon');
-    var pauseIcon= document.getElementById('pbPauseIcon');
-    var fill     = document.getElementById('pbFill');
-    var timeEl   = document.getElementById('pbTime');
-    var hint     = document.getElementById('pbAutoplayHint');
-    var progWrap = document.getElementById('pbProgressWrap');
+    var DURATION = 1426; // 23:46 — update if actual differs
+    var CHAPTERS = [
+        { t: 0,    title: "Intro: The SaaSpocalypse" },
+        { t: 105,  title: "500-App Breaking Point" },
+        { t: 228,  title: "What Agentic AI Actually Is" },
+        { t: 358,  title: "Visual Intelligence & World Models" },
+        { t: 487,  title: "The Speed Mandate" },
+        { t: 612,  title: "SmartStack Architecture" },
+        { t: 748,  title: "RAG & Visual Search" },
+        { t: 876,  title: "Local AI Deployment" },
+        { t: 988,  title: "The 90-Day Playbook" },
+        { t: 1092, title: "SmartGen Content Engine" },
+        { t: 1210, title: "The Job Question" },
+        { t: 1320, title: "What To Do Monday Morning" }
+    ];
+
+    var audio     = document.getElementById('pbAudio');
+    var playBtn   = document.getElementById('pbPlay');
+    var playIcon  = document.getElementById('pbPlayIcon');
+    var pauseIcon = document.getElementById('pbPauseIcon');
+    var fill      = document.getElementById('pbFill');
+    var timeEl    = document.getElementById('pbTime');
+    var hint      = document.getElementById('pbAutoplayHint');
+    var progWrap  = document.getElementById('pbProgressWrap');
+    var progBg    = document.getElementById('pbProgressBg');
+    var chapterEl = document.getElementById('pbChapter');
+    var lastChIdx = 0;
 
     function fmt(s){ s=Math.floor(s||0); return Math.floor(s/60)+':'+ ('0'+s%60).slice(-2); }
 
+    // Build tick marks after metadata loads so we know duration
+    function buildTicks(dur){
+        CHAPTERS.forEach(function(ch, i){
+            if(ch.t === 0) return; // skip 0 — that's the title
+            var pct = (ch.t / dur) * 100;
+            var tick = document.createElement('div');
+            tick.className = 'pb-tick';
+            tick.style.left = pct + '%';
+            tick.setAttribute('data-title', ch.title);
+            tick.setAttribute('data-idx', i);
+            tick.addEventListener('click', function(e){
+                e.stopPropagation();
+                audio.currentTime = ch.t;
+                if(audio.paused) audio.play();
+            });
+            progBg.appendChild(tick);
+        });
+    }
+
     audio.addEventListener('loadedmetadata', function(){
-        timeEl.textContent = '0:00 / ' + fmt(audio.duration);
+        var dur = audio.duration || DURATION;
+        timeEl.textContent = '0:00 / ' + fmt(dur);
+        buildTicks(dur);
     });
+
     audio.addEventListener('timeupdate', function(){
-        var pct = audio.duration ? (audio.currentTime/audio.duration)*100 : 0;
-        fill.style.width = pct+'%';
-        timeEl.textContent = fmt(audio.currentTime) + ' / ' + fmt(audio.duration);
+        var cur = audio.currentTime;
+        var dur = audio.duration || DURATION;
+        var pct = (cur / dur) * 100;
+        fill.style.width = pct + '%';
+        timeEl.textContent = fmt(cur) + ' / ' + fmt(dur);
+
+        // Update passed ticks
+        progBg.querySelectorAll('.pb-tick').forEach(function(tick){
+            var idx = parseInt(tick.getAttribute('data-idx'));
+            tick.classList.toggle('passed', CHAPTERS[idx] && cur >= CHAPTERS[idx].t);
+        });
+
+        // Find current chapter
+        var chIdx = 0;
+        for(var i = CHAPTERS.length - 1; i >= 0; i--){
+            if(cur >= CHAPTERS[i].t){ chIdx = i; break; }
+        }
+        if(chIdx !== lastChIdx){
+            lastChIdx = chIdx;
+            chapterEl.classList.remove('flash');
+            void chapterEl.offsetWidth; // reflow
+            chapterEl.textContent = CHAPTERS[chIdx].title;
+            chapterEl.classList.add('flash');
+        }
     });
+
     function setPlaying(playing){
         playIcon.style.display  = playing ? 'none' : '';
         pauseIcon.style.display = playing ? '' : 'none';
@@ -675,31 +795,26 @@ body { padding-top: 52px; }
     audio.addEventListener('pause', function(){ setPlaying(false); });
     audio.addEventListener('ended', function(){ setPlaying(false); });
 
-    playBtn.addEventListener('click', function(){
-        audio.paused ? audio.play() : audio.pause();
-    });
+    playBtn.addEventListener('click', function(){ audio.paused ? audio.play() : audio.pause(); });
     document.getElementById('pbSkipBack').addEventListener('click', function(){ audio.currentTime=Math.max(0,audio.currentTime-30); });
-    document.getElementById('pbSkipFwd').addEventListener('click',  function(){ audio.currentTime=Math.min(audio.duration||0,audio.currentTime+30); });
+    document.getElementById('pbSkipFwd').addEventListener('click',  function(){ audio.currentTime=Math.min(audio.duration||DURATION,audio.currentTime+30); });
+
     progWrap.addEventListener('click', function(e){
-        var rect = progWrap.querySelector('.pod-bar-progress-bg').getBoundingClientRect();
+        // Ignore if click was on a tick
+        if(e.target.classList.contains('pb-tick')) return;
+        var rect = progBg.getBoundingClientRect();
         var pct  = Math.min(1,Math.max(0,(e.clientX-rect.left)/rect.width));
         if(audio.duration) audio.currentTime = pct*audio.duration;
     });
 
-    // Sync with the full podcast player in the Listen section (if present)
     var bigAudio = document.getElementById('podAudio');
     if(bigAudio){
         audio.addEventListener('play', function(){ if(!bigAudio.paused) bigAudio.pause(); });
         bigAudio.addEventListener('play', function(){ if(!audio.paused) audio.pause(); });
     }
 
-    // Attempt autoplay — browsers will block it on first visit, we handle gracefully
     window.addEventListener('load', function(){
-        audio.play().then(function(){
-            hint.classList.add('hidden');
-        }).catch(function(){
-            // Browser blocked — pulsing hint stays visible
-        });
+        audio.play().then(function(){ hint.classList.add('hidden'); }).catch(function(){});
     });
 })();
 </script>
