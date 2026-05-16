@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sovereign Medical AI Node Blueprint</title>
+    <style>
+        :root {
+            --bg-color: #06080b;
+            --card-bg: #0b0e14;
+            --border-color: rgba(255, 255, 255, 0.12);
+            --text-primary: #ffffff; /* Brighter white for better contrast */
+            --text-secondary: #cbd5e1; /* Light slate for subtext */
+            --text-muted: #94a3b8;
+            --text-dark: #0f172a; /* For light background cards */
+            --accent-blue: #3b82f6;
+            --accent-emerald: #10b981;
+            --accent-amber: #f59e0b;
+            --accent-red: #ef4444;
+            --font-family: 'Noto Sans', system-ui, -apple-system, sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            font-family: var(--font-family);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Utility Classes */
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 2rem; }
+        .flex { display: flex; }
+        .grid { display: grid; }
+        .items-center { align-items: center; }
+        .justify-between { justify-content: space-between; }
+        .text-center { text-align: center; }
+
+        /* Header & Nav */
+        header {
+            position: sticky;
+            top: 0;
+            background: rgba(6, 8, 11, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-color);
+            z-index: 1000;
+            padding: 1.25rem 0;
+        }
+
+        .logo-area { display: flex; align-items: center; gap: 1rem; }
+        .logo-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #1d4ed8, #4f46e5);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 25px rgba(59, 130, 246, 0.4);
+        }
+
+        .nav-pills {
+            background: rgba(255, 255, 255, 0.08);
+            padding: 0.35rem;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+        }
+
+        .nav-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            padding: 0.75rem 1.5rem;
+            font-size: 0.8rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            cursor: pointer;
+            border-radius: 12px;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .nav-btn.active {
+            background: #ffffff;
+            color: var(--text-dark);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        /* Section Layouts */
+        section { padding: 5rem 0; opacity: 0; transform: translateY(30px); transition: all 0.5s ease; display: none; }
+        section.active { display: block; opacity: 1; transform: translateY(0); }
+
+        /* Typography */
+        h1, h2, h3, h4, h5 { 
+            font-weight: 900; 
+            letter-spacing: -0.03em; 
+            text-transform: uppercase; 
+            color: var(--text-primary);
+        }
+        .title-large { font-size: 4rem; line-height: 0.9; margin-bottom: 1.5rem; }
+        .accent-text { color: var(--accent-blue); }
+
+        /* Hardware Matrix */
+        .hardware-grid { grid-template-columns: 1fr 1.6fr; gap: 4rem; }
+        .tier-btn {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border-color);
+            padding: 1.75rem;
+            border-radius: 24px;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 1.25rem;
+            position: relative;
+        }
+
+        .tier-btn:hover { background: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.3); }
+        .tier-btn.active[data-color="emerald"] { border-color: var(--accent-emerald); background: rgba(16, 185, 129, 0.12); }
+        .tier-btn.active[data-color="amber"] { border-color: var(--accent-amber); background: rgba(245, 158, 11, 0.12); }
+        .tier-btn.active[data-color="red"] { border-color: var(--accent-red); background: rgba(239, 68, 68, 0.12); }
+
+        .visual-lane-card {
+            background: var(--card-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 32px;
+            padding: 3rem;
+            box-shadow: 0 40px 80px -20px rgba(0, 0, 0, 0.7);
+        }
+
+        .slot-row {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            padding: 1.5rem;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-color);
+            border-radius: 18px;
+            margin-bottom: 1rem;
+        }
+
+        .slot-label { font-size: 11px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; width: 70px; }
+        .slot-speed { font-family: monospace; font-weight: 900; margin-left: auto; font-size: 1.1rem; }
+
+        /* Ecosystem & Comfy */
+        .ecosystem-banner {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            border-radius: 48px;
+            padding: 5rem;
+            display: flex;
+            align-items: center;
+            gap: 5rem;
+            border: 1px solid var(--border-color);
+            box-shadow: inset 0 2px 20px rgba(255,255,255,0.05);
+        }
+
+        .comfy-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 1.75rem;
+            margin-top: 4rem;
+        }
+
+        .comfy-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            padding: 2.25rem;
+            border-radius: 28px;
+            transition: all 0.3s;
+        }
+
+        .comfy-card:hover { border-color: var(--accent-blue); transform: translateY(-8px); background: rgba(59, 130, 246, 0.05); }
+        .vram-badge { font-size: 10px; font-weight: 900; background: var(--accent-blue); color: white; padding: 4px 8px; border-radius: 6px; text-transform: uppercase; }
+
+        /* Agents */
+        .agent-list { display: flex; flex-direction: column; gap: 1.5rem; }
+        .agent-card {
+            background: #ffffff;
+            color: var(--text-dark);
+            padding: 2.5rem;
+            border-radius: 36px;
+            display: flex;
+            align-items: center;
+            gap: 2.5rem;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+        }
+
+        .agent-card h4 { color: var(--text-dark); } /* Fix for dark text on white */
+        .agent-card p { color: #475569; }
+
+        .agent-icon-box {
+            width: 72px;
+            height: 72px;
+            background: #f1f5f9;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        /* Pricing Table */
+        .price-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2.5rem; }
+        .price-card {
+            background: var(--card-bg);
+            border: 2px solid var(--border-color);
+            padding: 3.5rem;
+            border-radius: 44px;
+            text-align: center;
+        }
+
+        .price-card.featured {
+            background: #ffffff;
+            color: var(--text-dark);
+            transform: scale(1.08);
+            box-shadow: 0 40px 90px -15px rgba(59, 130, 246, 0.4);
+            border: none;
+        }
+
+        .price-card.featured h3, .price-card.featured p, .price-card.featured li {
+            color: var(--text-dark);
+        }
+
+        .manifest-table {
+            background: var(--card-bg);
+            border-radius: 40px;
+            padding: 4rem;
+            margin-top: 5rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .manifest-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 1.25rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        /* SVG Icons */
+        .icon { width: 28px; height: 28px; stroke: currentColor; stroke-width: 2.5; fill: none; }
+
+        @media (max-width: 1024px) {
+            .hardware-grid, .ecosystem-banner, .price-grid { grid-template-columns: 1fr; }
+            .container { padding: 0 1.5rem; }
+            .title-large { font-size: 3rem; }
+            .ecosystem-banner { padding: 3rem; gap: 3rem; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="container flex justify-between items-center">
+        <div class="logo-area">
+            <div class="logo-icon">
+                <svg class="icon" viewBox="0 0 24 24" style="color: white;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>
+            </div>
+            <div>
+                <h1 style="font-size: 1.2rem; color: white; letter-spacing: 0;">Sovereign Node</h1>
+                <p style="font-size: 11px; font-weight: 900; color: var(--accent-emerald); text-transform: uppercase; letter-spacing: 0.15em;">High-Integrity XMX Array</p>
+            </div>
+        </div>
+        <nav class="nav-pills">
+            <button class="nav-btn active" onclick="switchTab('hardware')">Hardware</button>
+            <button class="nav-btn" onclick="switchTab('ecosystem')">Ecosystem</button>
+            <button class="nav-btn" onclick="switchTab('agents')">Agent OS</button>
+            <button class="nav-btn" onclick="switchTab('pricing')">Pricing</button>
+        </nav>
+    </div>
+</header>
+
+<main class="container" style="padding: 5rem 0;">
+
+    <!-- HARDWARE SECTION -->
+    <section id="hardware" class="active">
+        <div class="hardware-grid grid">
+            <div style="display: flex; flex-direction: column; gap: 2.5rem;">
+                <div>
+                    <h2 class="title-large">THE LANE <br><span class="accent-text">BATTLE</span></h2>
+                    <p style="color: var(--text-secondary); font-size: 1.25rem; font-weight: 500;">PCIe Topology Comparison. We prioritize Professional boards to maintain 100% throughput across the 72B model cluster.</p>
+                </div>
+
+                <div id="tier-list">
+                    <!-- JS will populate -->
+                </div>
+
+                <div style="background: linear-gradient(135deg, #1e3a8a, #1e1b4b); padding: 2.5rem; border-radius: 36px; border: 1px solid rgba(255,255,255,0.1);">
+                    <h5 style="margin-bottom: 0.75rem; font-size: 1.3rem; color: #fff;">Blower-Style Priority</h5>
+                    <p style="font-size: 0.95rem; color: #cbd5e1; font-weight: 500; line-height: 1.5;">In high-density 4U chassis like the RM44, cards must exhaust directly. Consumer open-air fans will cause immediate thermal throttling on card 2 and 3.</p>
+                </div>
+            </div>
+
+            <div id="lane-visualizer">
+                <!-- JS will populate -->
+            </div>
+        </div>
+    </section>
+
+    <!-- ECOSYSTEM SECTION -->
+    <section id="ecosystem">
+        <div class="ecosystem-banner">
+            <div style="flex: 1;">
+                <h2 style="font-size: 6rem; margin-bottom: 1.5rem; letter-spacing: -0.05em;">LTX <br><span class="accent-text">HUB</span></h2>
+                <p style="color: var(--text-secondary); font-size: 1.35rem; margin-bottom: 2.5rem; font-weight: 500;">Your central mission control. Monitor Battlemage thermals, manage 256k-1M context slices, and live-audit agent outputs.</p>
+                <div class="flex gap-4">
+                    <span style="background: rgba(255,255,255,0.12); padding: 0.75rem 1.25rem; border-radius: 14px; font-size: 11px; font-weight: 900; letter-spacing: 0.05em;">XMX CORE OPTIMIZED</span>
+                    <span style="background: rgba(255,255,255,0.12); padding: 0.75rem 1.25rem; border-radius: 14px; font-size: 11px; font-weight: 900; letter-spacing: 0.05em;">AGENTIC OS V1.2</span>
+                </div>
+            </div>
+            <div style="width: 440px; height: 440px; background: #000; border-radius: 40px; border: 12px solid #1e293b; display: flex; align-items: center; justify-content: center; box-shadow: 0 30px 60px rgba(0,0,0,0.5);">
+                <svg width="80" height="80" viewBox="0 0 24 24" stroke="#475569" fill="none" stroke-width="0.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
+            </div>
+        </div>
+
+        <div style="margin-top: 8rem;">
+            <h3 style="font-size: 3rem; text-align: center; margin-bottom: 4rem;">COMFYUI POWER STATION <span style="font-size: 0.35em; vertical-align: middle; padding: 6px 12px; border: 2px solid var(--accent-blue); border-radius: 8px; color: var(--accent-blue); margin-left: 15px; font-weight: 900;">HIGH-VRAM STACK</span></h3>
+            <div class="comfy-grid" id="comfy-list">
+                <!-- JS will populate -->
+            </div>
+        </div>
+    </section>
+
+    <!-- AGENT OS SECTION -->
+    <section id="agents">
+        <div class="grid" style="grid-template-columns: 2fr 1fr; gap: 4rem;">
+            <div class="agent-list">
+                <div style="display: flex; align-items: center; gap: 2rem; margin-bottom: 3rem;">
+                    <div style="background: #4f46e5; width: 72px; height: 72px; border-radius: 24px; display: flex; align-items: center; justify-content: center; shadow: 0 10px 25px rgba(79,70,229,0.4);">
+                        <svg class="icon" style="color: white;" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                    </div>
+                    <h2 style="font-size: 3.5rem; letter-spacing: -0.04em;">CREWAI <span class="accent-text">ARMY</span></h2>
+                </div>
+                
+                <div class="agent-card">
+                    <div class="agent-icon-box">
+                        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#4f46e5" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 16a4 4 0 1 0 0-8 4 4 0 0 0 0 8z"/><path d="M12 8v8"/><path d="M8 12h8"/></svg>
+                    </div>
+                    <div style="flex: 1;">
+                        <h4 style="font-size: 1.75rem; margin-bottom: 0.25rem;">Hermes Lead</h4>
+                        <p style="font-size: 11px; font-weight: 900; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em;">Strategic Planning & Large Context Memory</p>
+                    </div>
+                    <span style="font-family: monospace; font-weight: 900; color: #4f46e5; background: #e0e7ff; padding: 6px 12px; border-radius: 8px; font-size: 0.8rem;">QWEN 72B</span>
+                </div>
+
+                <div class="agent-card">
+                    <div class="agent-icon-box" style="background: #ecfdf5;">
+                        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                    </div>
+                    <div style="flex: 1;">
+                        <h4 style="font-size: 1.75rem; margin-bottom: 0.25rem;">HIPAA Auditor</h4>
+                        <p style="font-size: 11px; font-weight: 900; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em;">Pydantic Verification & PII Scrubbing</p>
+                    </div>
+                    <span style="font-family: monospace; font-weight: 900; color: #059669; background: #d1fae5; padding: 6px 12px; border-radius: 8px; font-size: 0.8rem;">SECURE</span>
+                </div>
+
+                <div class="agent-card">
+                    <div class="agent-icon-box" style="background: #eff6ff;">
+                        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2.5"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+                    </div>
+                    <div style="flex: 1;">
+                        <h4 style="font-size: 1.75rem; margin-bottom: 0.25rem;">Code Architect</h4>
+                        <p style="font-size: 11px; font-weight: 900; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em;">Module Synthesis & Autonomous Testing</p>
+                    </div>
+                    <span style="font-family: monospace; font-weight: 900; color: #2563eb; background: #dbeafe; padding: 6px 12px; border-radius: 8px; font-size: 0.8rem;">QWEN 27B</span>
+                </div>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 2rem;">
+                <div style="background: linear-gradient(180deg, #4f46e5 0%, #312e81 100%); padding: 4rem; border-radius: 48px; color: white; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 30px 60px -15px rgba(79,70,229,0.3);">
+                    <h5 style="font-size: 2.5rem; margin-bottom: 2rem; color: #fff;">LANGGRAPH</h5>
+                    <p style="font-size: 1.05rem; opacity: 0.9; margin-bottom: 3rem; font-weight: 500; line-height: 1.5;">"The deterministic engine that ensures medical agents follow the map exactly. No hallucination loops allowed."</p>
+                    <div style="display: flex; flex-direction: column; gap: 1.25rem;">
+                        <div style="background: rgba(255,255,255,0.15); padding: 1.25rem; border-radius: 16px; font-size: 12px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.1em; border: 1px solid rgba(255,255,255,0.1);">01. INTAKE (Pydantic Check)</div>
+                        <div style="background: rgba(255,255,255,0.15); padding: 1.25rem; border-radius: 16px; font-size: 12px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.1em; border: 1px solid rgba(255,255,255,0.1);">02. ANALYSIS (Expert Reasoning)</div>
+                        <div style="background: rgba(255,255,255,0.15); padding: 1.25rem; border-radius: 16px; font-size: 12px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.1em; border: 1px solid rgba(255,255,255,0.1);">03. VERIFY (Final Compliance)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- PRICING SECTION -->
+    <section id="pricing">
+        <h2 style="font-size: 5rem; text-align: center; margin-bottom: 6rem; letter-spacing: -0.04em;">SOVEREIGN <span class="accent-text">CAPEX</span></h2>
+        
+        <div class="price-grid">
+            <div class="price-card">
+                <p style="font-size: 11px; font-weight: 900; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em;">Essential Node</p>
+                <h3 style="font-size: 3.5rem; margin: 1.5rem 0; color: #fff;">$5,800</h3>
+                <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 2.5rem; font-weight: 500;">96GB VRAM. Solid base for 72B medical inference.</p>
+                <ul style="list-style: none; font-size: 12px; font-weight: 900; display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 2.5rem; text-align: left; border-top: 1px solid var(--border-color); padding-top: 1.5rem; color: #fff;">
+                    <li>✓ 3x INTEL ARC PRO B70</li>
+                    <li>✓ ASUS WRX90 SAGE BOARD</li>
+                    <li>✓ 128GB DDR5 ECC RAM</li>
+                </ul>
+            </div>
+            <div class="price-card featured">
+                <p style="font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.2em; color: var(--accent-blue);">PRO PRODUCTION</p>
+                <h3 style="font-size: 4.5rem; margin: 1.5rem 0; letter-spacing: -0.05em;">$6,850</h3>
+                <p style="font-size: 0.95rem; margin-bottom: 2.5rem; font-weight: 600; color: #475569;">128GB VRAM. Strategic air-gap layout in 4U RM44 chassis.</p>
+                <ul style="list-style: none; font-size: 12px; font-weight: 900; display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 3rem; text-align: left; border-top: 1px solid #e2e8f0; padding-top: 2rem;">
+                    <li>✓ 4x INTEL ARC PRO B70</li>
+                    <li>✓ ASUS WRX90 SAGE (Slot 1,3,5,7)</li>
+                    <li>✓ 4TB ENTERPRISE GEN5 NVMe</li>
+                </ul>
+                <button style="width: 100%; padding: 1.25rem; border-radius: 16px; border: none; background: var(--accent-blue); color: white; font-weight: 900; text-transform: uppercase; cursor: pointer; font-size: 0.8rem; letter-spacing: 0.1em; box-shadow: 0 10px 25px rgba(59,130,246,0.4);">Select Build</button>
+            </div>
+            <div class="price-card">
+                <p style="font-size: 11px; font-weight: 900; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em;">Medical Agency</p>
+                <h3 style="font-size: 3.5rem; margin: 1.5rem 0; color: #fff;">$7,900</h3>
+                <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 2.5rem; font-weight: 500;">160GB VRAM. Maximum dense context cluster.</p>
+                <ul style="list-style: none; font-size: 12px; font-weight: 900; display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 2.5rem; text-align: left; border-top: 1px solid var(--border-color); padding-top: 1.5rem; color: #fff;">
+                    <li>✓ 5x INTEL ARC PRO B70</li>
+                    <li>✓ ASUS WRX90 SAGE BOARD</li>
+                    <li>✓ 2050W HELA POWER UNIT</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="manifest-table">
+            <h4 style="margin-bottom: 2.5rem; font-size: 1.5rem; color: #fff;">Itemized Bill of Materials (4-Card Rig)</h4>
+            <div id="manifest-content">
+                <!-- JS will populate -->
+            </div>
+        </div>
+    </section>
+
+</main>
+
+<footer style="text-align: center; padding: 8rem 0; border-top: 1px solid var(--border-color); color: var(--text-muted);">
+    <div style="display: inline-flex; align-items: center; gap: 10px; margin-bottom: 2rem; background: rgba(255,255,255,0.05); padding: 8px 16px; border-radius: 30px; border: 1px solid var(--border-color);">
+        <span style="width: 8px; height: 8px; background: #10b981; border-radius: 50%; animate: pulse 2s infinite;"></span>
+        <span style="font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.1em; color: #fff;">Node Status: Ready for Deployment</span>
+    </div>
+    <p style="font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.4em;">Privacy First :: Locally Hosted :: Sovereign &copy; 2026</p>
+</footer>
+
+<script>
+    const HARDWARE_TIERS = [
+        {
+            id: 'pro',
+            type: "Professional (PRO-GRADE)",
+            name: "Asus Pro WS WRX90E-SAGE SE",
+            lanes: "128 PCIe 5.0 Lanes",
+            slots: [
+                { id: 1, speed: "x16 Gen 5", status: "Full Bandwidth", quality: "optimal" },
+                { id: 2, speed: "x16 Gen 5", status: "Full Bandwidth", quality: "optimal" },
+                { id: 3, speed: "x16 Gen 5", status: "Full Bandwidth", quality: "optimal" },
+                { id: 4, speed: "x16 Gen 5", status: "Full Bandwidth", quality: "optimal" },
+                { id: 5, speed: "x16 Gen 5", status: "Full Bandwidth", quality: "optimal" },
+                { id: 6, speed: "x16 Gen 5", status: "Full Bandwidth", quality: "optimal" },
+                { id: 7, speed: "x16 Gen 5", status: "Full Bandwidth", quality: "optimal" },
+            ],
+            price: "$1,300",
+            summary: "Native support for 7 GPUs at x16. Essential for multi-user medical AI clusters.",
+            color: "emerald"
+        },
+        {
+            id: 'enthusiast',
+            id_val: 'mid',
+            type: "Enthusiast (TRX)",
+            name: "Asus Pro WS TRX50-SAGE WIFI",
+            lanes: "92 PCIe 5.0 Lanes",
+            slots: [
+                { id: 1, speed: "x16 Gen 5", status: "Full Bandwidth", quality: "optimal" },
+                { id: 2, speed: "x16 Gen 5", status: "Full Bandwidth", quality: "optimal" },
+                { id: 3, speed: "x16 Gen 5", status: "Full Bandwidth", quality: "optimal" },
+                { id: 4, speed: "x8 Gen 4", status: "Shared Bus", quality: "warning" },
+                { id: 5, speed: "x4 Gen 4", status: "Chipset Link", quality: "danger" },
+            ],
+            price: "$820",
+            summary: "Lanes drop after card 3. Causes severe stutter in large context pre-filling.",
+            color: "amber"
+        },
+        {
+            id: 'consumer',
+            type: "Consumer (AM5/LGA1700)",
+            name: "Standard X670E / Z790 High-End",
+            lanes: "24-28 PCIe 5.0 Lanes",
+            slots: [
+                { id: 1, speed: "x16 Gen 5", status: "Full Bandwidth", quality: "optimal" },
+                { id: 2, speed: "x4 Gen 4", status: "Bottleneck", quality: "danger" },
+                { id: 3, speed: "x1 Gen 4", status: "Limp Mode", quality: "danger" },
+            ],
+            price: "$350",
+            summary: "Bandwidth starvation kills performance. Multicard setups will fail for AI.",
+            color: "red"
+        }
+    ];
+
+    const COMFY_TOP_10 = [
+        { id: 1, name: "SUPIR Expert Upscale", vram: "32GB+", desc: "The gold standard for medical scan restoration. Enhances 2D MRI data to 4K." },
+        { id: 2, name: "FLUX.1 [dev] Native", vram: "24GB+", desc: "Current SOTA for prompt following and medical diagram generation." },
+        { id: 3, name: "AnimateDiff V3 Lab", vram: "24GB", desc: "Complex motion study generation from static medical data points." },
+        { id: 4, name: "Stable Video Diffusion", vram: "18GB+", desc: "Anatomical rotational studies for surgical pre-planning." },
+        { id: 5, name: "Segment Anything 2", vram: "12GB", desc: "Zero-latency organ and tumor segmentation in real-time." },
+        { id: 6, name: "IP-Adapter FaceID", vram: "8GB", desc: "Digital twin generation for telehealth privacy masking." },
+        { id: 7, name: "ControlNet Stacked", vram: "22GB+", desc: "Applying 10+ spatial constraints for high-fidelity clinical output." },
+        { id: 8, name: "LivePortrait Local", vram: "12GB", desc: "Interactive AI teaching avatars for patient education." },
+        { id: 9, name: "Layered Diffusion", vram: "16GB", desc: "Complex multi-layer medical UI design automation." },
+        { id: 10, name: "SDXL Lightning 8-Step", vram: "12GB", desc: "Instant visual results for up to 50 simultaneous web users." }
+    ];
+
+    const MANIFEST = [
+        { label: "GPUs (4x Arc Pro B70 32GB Blower Cluster)", cost: "$3,800" },
+        { label: "Motherboard (Asus Pro WRX90 SAGE SE)", cost: "$1,300" },
+        { label: "CPU (AMD Threadripper Pro 7845WX - 12 Core)", cost: "$650" },
+        { label: "Memory (128GB DDR5-5600 ECC Server Memory)", cost: "$450" },
+        { label: "Storage (4TB Enterprise NVMe PCIe 5.0)", cost: "$300" },
+        { label: "Chassis (SilverStone RM44 Professional 4U)", cost: "$200" },
+        { label: "Cooling (3x Noctua Industrial PPC 3000RPM)", cost: "$90" },
+        { label: "Power (SilverStone 2050W HELA Cybenetics Titanium)", cost: "$410" }
+    ];
+
+    let currentTier = HARDWARE_TIERS[0];
+
+    function switchTab(tabId) {
+        document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(tabId).classList.add('active');
+        event.target.classList.add('active');
+    }
+
+    function renderTiers() {
+        const list = document.getElementById('tier-list');
+        list.innerHTML = '';
+        HARDWARE_TIERS.forEach(tier => {
+            const btn = document.createElement('button');
+            btn.className = `tier-btn ${currentTier.id === tier.id ? 'active' : ''}`;
+            btn.dataset.color = tier.color;
+            btn.onclick = () => {
+                currentTier = tier;
+                renderTiers();
+                renderVisualizer();
+            };
+            
+            const accentHex = tier.color === 'emerald' ? '#10b981' : tier.color === 'amber' ? '#f59e0b' : '#ef4444';
+
+            btn.innerHTML = `
+                <div style="display: flex; justify-content: space-between; font-size: 10px; font-weight: 900; text-transform: uppercase; margin-bottom: 0.75rem; letter-spacing: 0.05em;">
+                    <span style="color: ${currentTier.id === tier.id ? accentHex : '#64748b'}">${tier.type}</span>
+                    <span style="opacity: 0.6; color: #fff;">${tier.price}</span>
+                </div>
+                <h4 style="margin-bottom: 0.75rem; font-size: 1.25rem; color: #fff;">${tier.name}</h4>
+                <p style="font-size: 12px; color: var(--text-secondary); font-weight: 500;">${tier.summary}</p>
+            `;
+            list.appendChild(btn);
+        });
+    }
+
+    function renderVisualizer() {
+        const viz = document.getElementById('lane-visualizer');
+        const colorMap = { emerald: '#10b981', amber: '#f59e0b', red: '#ef4444' };
+        const accent = colorMap[currentTier.color];
+        
+        let slotsHtml = currentTier.slots.map(s => `
+            <div class="slot-row" style="border-color: ${s.quality === 'optimal' ? 'rgba(16,185,129,0.3)' : s.quality === 'warning' ? 'rgba(245,158,11,0.3)' : 'rgba(239,68,68,0.3)'}; background: ${s.quality === 'optimal' ? 'rgba(16,185,129,0.05)' : 'rgba(255,255,255,0.02)'}">
+                <div class="slot-label">PCIe Slot ${s.id}</div>
+                <div style="display: flex; align-items: center; gap: 0.75rem; font-size: 14px; font-weight: 800;">
+                    <span style="color: ${colorMap[s.quality === 'optimal' ? 'emerald' : s.quality === 'warning' ? 'amber' : 'red']}">${s.status}</span>
+                </div>
+                <div class="slot-speed" style="color: #fff;">${s.speed}</div>
+            </div>
+        `).join('');
+
+        viz.innerHTML = `
+            <div class="visual-lane-card">
+                <div class="flex justify-between items-center" style="margin-bottom: 3rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1.5rem;">
+                    <div>
+                        <h4 style="font-size: 11px; color: var(--accent-blue); font-weight: 900; letter-spacing: 0.1em; text-transform: uppercase;">Topology Blueprint</h4>
+                        <p style="font-size: 1.75rem; font-weight: 900; color: #fff; letter-spacing: -0.02em;">${currentTier.name}</p>
+                    </div>
+                    <div style="padding: 6px 16px; border: 2px solid ${accent}; border-radius: 12px; color: ${accent}; font-size: 11px; font-weight: 900;">${currentTier.lanes} TOTAL</div>
+                </div>
+                ${slotsHtml}
+                <div style="margin-top: 2.5rem; padding: 2rem; background: rgba(0,0,0,0.4); border-radius: 24px; border: 1px solid var(--border-color); font-size: 12px; color: #cbd5e1; font-weight: 500; line-height: 1.6;">
+                    <strong style="color: #fff; text-transform: uppercase; font-size: 10px; display: block; margin-bottom: 5px; letter-spacing: 0.1em;">Architect Analysis:</strong> 
+                    ${currentTier.id === 'pro' 
+                        ? 'This board provides direct CPU pathways for every card. Essential for a 50-user medical web node where response latency must be consistent.' 
+                        : 'Warning: Bandwidth contention will occur. Multi-user loads will suffer from intermittent lag as cards fight for access to the chipset lanes.'}
+                </div>
+            </div>
+        `;
+    }
+
+    function renderComfy() {
+        const list = document.getElementById('comfy-list');
+        COMFY_TOP_10.forEach(app => {
+            const card = document.createElement('div');
+            card.className = 'comfy-card';
+            card.innerHTML = `
+                <div class="flex justify-between items-start" style="margin-bottom: 2rem;">
+                    <span style="font-size: 2.5rem; font-weight: 900; color: #fff; opacity: 0.1;">0${app.id}</span>
+                    <span class="vram-badge">${app.vram}</span>
+                </div>
+                <h5 style="font-size: 1.15rem; margin-bottom: 0.75rem; color: #fff; letter-spacing: -0.01em;">${app.name}</h5>
+                <p style="font-size: 12px; color: #94a3b8; font-weight: 500; line-height: 1.5;">${app.desc}</p>
+            `;
+            list.appendChild(card);
+        });
+    }
+
+    function renderManifest() {
+        const target = document.getElementById('manifest-content');
+        MANIFEST.forEach(item => {
+            const row = document.createElement('div');
+            row.className = 'manifest-row';
+            row.innerHTML = `
+                <span style="font-size: 12px; font-weight: 900; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em;">${item.label}</span>
+                <span style="font-size: 15px; font-weight: 900; color: #fff; letter-spacing: -0.01em;">${item.cost}</span>
+            `;
+            target.appendChild(row);
+        });
+    }
+
+    // Initialize all visual components
+    window.onload = () => {
+        renderTiers();
+        renderVisualizer();
+        renderComfy();
+        renderManifest();
+    };
+</script>
+
+</body>
+</html>
