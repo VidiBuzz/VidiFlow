@@ -1,0 +1,2163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vidi Ai - Sovereign AI Node Platform</title>
+    <style>
+        :root {
+            --bg-color: #06080b;
+            --card-bg: #0b0e14;
+            --card-bg2: #111827;
+            --border-color: rgba(255, 255, 255, 0.08);
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-tertiary: #64748b;
+            --accent-blue: #3b82f6;
+            --accent-blue2: #2563eb;
+            --accent-emerald: #10b981;
+            --accent-amber: #f59e0b;
+            --accent-red: #ef4444;
+            --accent-purple: #7c3aed;
+            --font-family: system-ui, -apple-system, sans-serif;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            font-family: var(--font-family);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 2rem; }
+        .hidden { display: none !important; }
+        .flex { display: flex; }
+        .grid { display: grid; }
+        .items-center { align-items: center; }
+        .justify-between { justify-content: space-between; }
+        .text-center { text-align: center; }
+        .gap-2 { gap: 0.5rem; }
+        .gap-4 { gap: 1rem; }
+
+        /* Header & Nav */
+        header {
+            position: sticky;
+            top: 0;
+            background: rgba(6, 8, 11, 0.95);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border-color);
+            z-index: 1000;
+            padding: 1rem 0;
+        }
+
+        .logo-area { display: flex; align-items: center; gap: 1rem; }
+        .logo-icon {
+            width: 44px;
+            height: 44px;
+            background: linear-gradient(135deg, #1d4ed8, #7c3aed);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 20px rgba(59, 130, 246, 0.3);
+        }
+
+        .nav-pills {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 0.25rem;
+            border-radius: 14px;
+            border: 1px solid var(--border-color);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.15rem;
+        }
+
+        .nav-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            padding: 0.6rem 1.2rem;
+            font-size: 0.75rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            cursor: pointer;
+            border-radius: 10px;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .nav-btn.active {
+            background: #fff;
+            color: #000;
+        }
+
+        .nav-btn:hover:not(.active) {
+            color: #fff;
+            background: rgba(255,255,255,0.05);
+        }
+
+        /* Reference Index Dropdown */
+        .ref-dropdown { position: relative; display: inline-block; }
+        .ref-dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: var(--card-bg2);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 1rem;
+            min-width: 280px;
+            max-height: 70vh;
+            overflow-y: auto;
+            z-index: 1001;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            margin-top: 0.5rem;
+        }
+        .ref-dropdown-menu.open { display: block; }
+        .ref-dropdown-cat {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            padding: 0.5rem 0.75rem;
+            margin-top: 0.5rem;
+        }
+        .ref-dropdown-cat:first-child { margin-top: 0; }
+        .ref-dropdown-item {
+            display: block;
+            padding: 0.5rem 0.75rem;
+            border-radius: 8px;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.15s;
+            text-decoration: none;
+        }
+        .ref-dropdown-item:hover { background: rgba(59,130,246,0.1); color: var(--accent-blue); }
+
+        /* Section Layouts */
+        section { padding: 4rem 0; opacity: 0; transform: translateY(20px); transition: all 0.6s ease-out; display: none; }
+        section.active { display: block; opacity: 1; transform: translateY(0); }
+
+        /* Typography */
+        h1, h2, h3, h4, h5 { font-weight: 900; letter-spacing: -0.02em; }
+        .title-large { font-size: 3.5rem; line-height: 0.9; margin-bottom: 1rem; }
+        .accent-text { color: var(--accent-blue); }
+
+        /* Configurator */
+        .configurator-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2.5rem; }
+        .selector-group {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            transition: all 0.3s;
+            position: relative;
+        }
+        .selector-group:hover { border-color: rgba(255,255,255,0.15); }
+        .selector-label {
+            font-size: 9px;
+            font-weight: 900;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.5rem;
+        }
+        .selector-row { display: flex; align-items: center; gap: 1rem; }
+        .selector-row select {
+            flex: 1;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 0.75rem 1rem;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            cursor: pointer;
+            outline: none;
+            transition: all 0.2s;
+            font-family: var(--font-family);
+        }
+        .selector-row select:focus { border-color: var(--accent-blue); box-shadow: 0 0 0 3px rgba(59,130,246,0.15); }
+        .gpu-count {
+            display: flex; align-items: center; gap: 0.5rem;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 0.25rem;
+        }
+        .gpu-count button {
+            width: 32px; height: 32px; border: none;
+            background: rgba(255,255,255,0.08);
+            color: var(--text-primary);
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: 800;
+            transition: all 0.2s;
+        }
+        .gpu-count button:hover { background: var(--accent-blue); }
+        .gpu-count button:disabled { opacity: 0.3; cursor: not-allowed; }
+        .gpu-count span { min-width: 28px; text-align: center; font-weight: 900; font-size: 1.1rem; }
+        .selector-info { font-size: 10px; color: var(--text-secondary); margin-top: 0.5rem; font-weight: 600; }
+
+        /* Selector Thumbnail */
+        .selector-thumb {
+            width: 60px;
+            height: 45px;
+            border-radius: 8px;
+            object-fit: cover;
+            border: 1px solid var(--border-color);
+            flex-shrink: 0;
+            background: var(--card-bg2);
+        }
+        .selector-thumb-placeholder {
+            width: 60px;
+            height: 45px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            flex-shrink: 0;
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: var(--text-tertiary);
+        }
+
+        /* Selector Actions Row */
+        .selector-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 0.75rem;
+            flex-wrap: wrap;
+        }
+        .btn-selector-learn {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            padding: 0.4rem 0.8rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            transition: all 0.2s;
+            font-family: var(--font-family);
+        }
+        .btn-selector-learn:hover { border-color: var(--accent-blue); color: var(--accent-blue); }
+        .btn-selector-learn.active { border-color: var(--accent-blue); color: var(--accent-blue); background: rgba(59,130,246,0.1); }
+        .btn-selector-buy {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            padding: 0.4rem 0.8rem;
+            border-radius: 8px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            cursor: pointer;
+            border: 1px solid var(--accent-blue);
+            color: var(--accent-blue);
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+        .btn-selector-buy:hover { background: var(--accent-blue); color: #fff; }
+        .btn-selector-buy svg { width: 12px; height: 12px; flex-shrink: 0; }
+
+        /* Selector Learn-More Panel */
+        .selector-learn-panel {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease, padding 0.3s ease, margin 0.3s ease;
+        }
+        .selector-learn-panel.open {
+            max-height: 2000px;
+            padding-top: 1rem;
+            margin-top: 0.5rem;
+            border-top: 1px solid var(--border-color);
+        }
+        .learn-content {
+            background: var(--card-bg2);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
+        .learn-content img {
+            width: 100%;
+            max-width: 300px;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+        }
+        .learn-content h5 { color: var(--accent-blue); margin: 1rem 0 0.5rem; font-size: 0.9rem; }
+        .learn-content p { font-size: 0.85rem; color: var(--text-secondary); line-height: 1.7; }
+
+        /* Summary Panel */
+        .summary-panel {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 28px;
+            padding: 2.5rem;
+            position: sticky;
+            top: 100px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+        .summary-title {
+            font-size: 10px;
+            font-weight: 900;
+            color: var(--accent-blue);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 1rem;
+        }
+        .total-price {
+            font-size: 3.5rem;
+            font-weight: 900;
+            letter-spacing: -0.03em;
+            line-height: 1;
+            margin-bottom: 0.5rem;
+        }
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .stat-label { font-size: 10px; font-weight: 800; color: var(--text-tertiary); text-transform: uppercase; }
+        .stat-value { font-size: 1.1rem; font-weight: 900; font-family: monospace; }
+        .stat-value.green { color: var(--accent-emerald); }
+        .stat-value.amber { color: var(--accent-amber); }
+        .stat-value.red { color: var(--accent-red); }
+
+        /* Power Bar */
+        .power-bar-container { margin-top: 1rem; }
+        .power-bar-label {
+            display: flex; justify-content: space-between;
+            font-size: 10px; font-weight: 800; color: var(--text-tertiary); text-transform: uppercase; margin-bottom: 0.5rem;
+        }
+        .power-bar { height: 8px; background: rgba(255,255,255,0.05); border-radius: 4px; overflow: hidden; }
+        .power-bar-fill { height: 100%; border-radius: 4px; transition: all 0.5s ease; }
+        .power-bar-fill.safe { background: var(--accent-emerald); }
+        .power-bar-fill.warning { background: var(--accent-amber); }
+        .power-bar-fill.danger { background: var(--accent-red); }
+
+        /* Compatibility */
+        .compat-section { margin-top: 1.5rem; padding: 1.25rem; background: rgba(0,0,0,0.3); border-radius: 16px; border: 1px solid var(--border-color); }
+        .compat-title { font-size: 9px; font-weight: 900; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.75rem; }
+        .compat-item { display: flex; align-items: center; gap: 0.5rem; padding: 0.4rem 0; font-size: 11px; font-weight: 700; }
+        .compat-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+        .compat-dot.ok { background: var(--accent-emerald); }
+        .compat-dot.warn { background: var(--accent-amber); }
+        .compat-dot.err { background: var(--accent-red); }
+
+        /* Buy Links */
+        .buy-link-item {
+            display: flex; align-items: center; gap: 0.5rem;
+            padding: 0.5rem 0.75rem;
+            margin: 0.25rem 0;
+            border-radius: 8px;
+            background: rgba(59,130,246,0.05);
+            border: 1px solid rgba(59,130,246,0.15);
+            text-decoration: none;
+            color: var(--accent-blue);
+            font-size: 11px;
+            font-weight: 700;
+            transition: all 0.2s;
+        }
+        .buy-link-item:hover { background: rgba(59,130,246,0.15); border-color: var(--accent-blue); }
+        .buy-link-item svg { width: 14px; height: 14px; flex-shrink: 0; }
+
+        /* Buttons */
+        .btn-export {
+            width: 100%; padding: 1rem; border-radius: 12px; border: none;
+            background: linear-gradient(135deg, #1d4ed8, #7c3aed);
+            color: white; font-weight: 900; font-size: 0.85rem; text-transform: uppercase;
+            letter-spacing: 0.05em; cursor: pointer; margin-top: 1.5rem; transition: all 0.3s;
+        }
+        .btn-export:hover { box-shadow: 0 8px 30px rgba(59,130,246,0.3); transform: translateY(-2px); }
+        .btn-share {
+            width: 100%; padding: 0.75rem; border-radius: 12px;
+            border: 1px solid var(--border-color); background: transparent;
+            color: var(--text-secondary); font-weight: 800; font-size: 0.8rem;
+            text-transform: uppercase; letter-spacing: 0.05em; cursor: pointer;
+            margin-top: 0.5rem; transition: all 0.3s;
+        }
+        .btn-share:hover { border-color: rgba(255,255,255,0.3); color: #fff; }
+        .btn-reset {
+            width: 100%; padding: 0.6rem; border-radius: 12px;
+            border: 1px solid rgba(239,68,68,0.3); background: transparent;
+            color: #ef4444; font-weight: 800; font-size: 0.7rem;
+            text-transform: uppercase; letter-spacing: 0.05em; cursor: pointer;
+            margin-top: 0.5rem; transition: all 0.3s;
+        }
+        .btn-reset:hover { border-color: #ef4444; background: rgba(239,68,68,0.1); }
+
+        /* Configuration Wizard */
+        .wizard-section-box {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2.5rem;
+        }
+        .wizard-title {
+            font-size: 0.7rem;
+            font-weight: 900;
+            color: var(--accent-blue);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 1rem;
+        }
+        .wizard-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .wizard-card {
+            background: var(--card-bg2);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+        .wizard-card:hover { border-color: rgba(59,130,246,0.3); }
+        .wizard-card.selected { border-color: var(--accent-blue); background: rgba(59,130,246,0.08); }
+        .wizard-card h4 {
+            font-size: 0.95rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+        .wizard-card p {
+            font-size: 0.75rem;
+            color: var(--text-tertiary);
+            margin: 0;
+            line-height: 1.5;
+        }
+        .wizard-icon {
+            font-size: 2rem;
+            margin-bottom: 0.75rem;
+            display: block;
+        }
+        .wizard-result {
+            background: var(--card-bg2);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 2rem;
+            display: none;
+        }
+        .wizard-result.show { display: block; }
+        .wizard-result h3 { color: var(--accent-blue); margin-bottom: 1rem; }
+        .wizard-apply-btn {
+            padding: 0.6rem 1.5rem;
+            border-radius: 10px;
+            border: none;
+            background: var(--accent-blue);
+            color: #fff;
+            font-weight: 800;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 1rem;
+        }
+        .wizard-apply-btn:hover { background: var(--accent-blue2); }
+
+        /* Compare Tab */
+        .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2.5rem; }
+        .compare-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 28px;
+            padding: 2.5rem;
+        }
+        .bar-chart-group { margin-bottom: 2rem; }
+        .bar-chart-title {
+            font-size: 10px; font-weight: 900; color: var(--text-tertiary);
+            text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1rem;
+        }
+        .bar-row { display: flex; align-items: center; gap: 1rem; margin-bottom: 0.75rem; }
+        .bar-label {
+            width: 100px; font-size: 10px; font-weight: 800; color: var(--text-secondary);
+            text-transform: uppercase; text-align: right; flex-shrink: 0;
+        }
+        .bar-track {
+            flex: 1; height: 28px; background: rgba(255,255,255,0.03);
+            border-radius: 6px; overflow: hidden; position: relative;
+        }
+        .bar-fill {
+            height: 100%; border-radius: 6px; transition: width 1s ease;
+            display: flex; align-items: center; padding-left: 0.75rem;
+            font-size: 10px; font-weight: 900; color: #fff;
+        }
+        .bar-fill.vidi { background: linear-gradient(90deg, #1d4ed8, #7c3aed); }
+        .bar-fill.m3 { background: linear-gradient(90deg, #6366f1, #a78bfa); }
+        .bar-fill.m4 { background: linear-gradient(90deg, #8b5cf6, #c4b5fd); }
+        .bar-value { font-size: 11px; font-weight: 900; color: var(--text-primary); min-width: 60px; text-align: right; }
+        .recommendation-box {
+            background: rgba(0,0,0,0.3); border: 1px solid var(--border-color);
+            border-radius: 20px; padding: 2rem;
+        }
+        .rec-title {
+            font-size: 10px; font-weight: 900; color: var(--accent-blue);
+            text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1rem;
+        }
+        .rec-list { list-style: none; display: flex; flex-direction: column; gap: 0.75rem; }
+        .rec-list li {
+            font-size: 12px; font-weight: 700; color: var(--text-secondary);
+            padding-left: 1.5rem; position: relative;
+        }
+        .rec-list li::before { content: '▸'; position: absolute; left: 0; color: var(--accent-blue); }
+        .rec-list li.apple::before { color: #a78bfa; }
+
+        /* Hardware Tab */
+        .hardware-grid { grid-template-columns: 1fr 1.5fr; gap: 3rem; }
+        .tier-btn {
+            width: 100%; background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-color); padding: 1.5rem;
+            border-radius: 20px; text-align: left; cursor: pointer;
+            transition: all 0.3s; margin-bottom: 1rem; position: relative;
+            color: var(--text-primary); font-family: var(--font-family);
+        }
+        .tier-btn:hover { border-color: rgba(255, 255, 255, 0.2); }
+        .tier-btn.active[data-color="emerald"] { border-color: var(--accent-emerald); background: rgba(16, 185, 129, 0.05); }
+        .tier-btn.active[data-color="amber"] { border-color: var(--accent-amber); background: rgba(245, 158, 11, 0.05); }
+        .tier-btn.active[data-color="red"] { border-color: var(--accent-red); background: rgba(239, 68, 68, 0.05); }
+        .visual-lane-card {
+            background: var(--card-bg); border: 1px solid var(--border-color);
+            border-radius: 28px; padding: 2.5rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+        .slot-row {
+            display: flex; align-items: center; gap: 1.5rem; padding: 1.25rem;
+            background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color);
+            border-radius: 16px; margin-bottom: 0.75rem;
+        }
+        .slot-label { font-size: 10px; font-weight: 800; color: var(--text-tertiary); text-transform: uppercase; width: 60px; }
+        .slot-speed { font-family: monospace; font-weight: 700; margin-left: auto; }
+
+        /* Ecosystem Tab */
+        .ecosystem-banner {
+            background: linear-gradient(90deg, #0f172a, #1e293b);
+            border-radius: 40px; padding: 4rem; display: flex; align-items: center;
+            gap: 4rem; border: 1px solid var(--border-color);
+        }
+        .comfy-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 1.5rem; margin-top: 3rem;
+        }
+        .comfy-card {
+            background: var(--card-bg); border: 1px solid var(--border-color);
+            padding: 2rem; border-radius: 24px; transition: all 0.3s;
+        }
+        .comfy-card:hover { border-color: var(--accent-blue); transform: translateY(-5px); }
+        .vram-badge { font-size: 9px; font-weight: 900; background: rgba(59, 130, 246, 0.1); color: var(--accent-blue); padding: 2px 6px; border-radius: 4px; }
+
+        /* Agents Tab */
+        .agent-list { display: flex; flex-direction: column; gap: 1.5rem; }
+        .agent-card {
+            background: #fff; color: #0f172a; padding: 2rem;
+            border-radius: 32px; display: flex; align-items: center; gap: 2rem;
+        }
+        .agent-icon-box {
+            width: 64px; height: 64px; background: #f1f5f9;
+            border-radius: 16px; display: flex; align-items: center; justify-content: center;
+        }
+
+        /* Pricing Tab */
+        .price-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; }
+        .price-card {
+            background: var(--card-bg); border: 1px solid var(--border-color);
+            padding: 3rem; border-radius: 36px; text-align: center;
+        }
+        .price-card.featured {
+            background: #fff; color: #000; transform: scale(1.05);
+            box-shadow: 0 30px 60px -12px rgba(59, 130, 246, 0.3);
+        }
+        .manifest-table {
+            background: var(--card-bg); border-radius: 32px;
+            padding: 3rem; margin-top: 4rem;
+        }
+        .manifest-row {
+            display: flex; justify-content: space-between; padding: 1rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        /* Reference Tab */
+        .ref-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; margin-top: 2rem; }
+        .ref-card {
+            background: var(--card-bg); border: 1px solid var(--border-color);
+            border-radius: 20px; padding: 2rem; transition: all 0.3s;
+        }
+        .ref-card:hover { border-color: rgba(59,130,246,0.3); transform: translateY(-4px); }
+        .ref-card h4 { font-size: 1.1rem; margin-bottom: 0.5rem; }
+        .ref-card p { font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.75rem; }
+        .ref-card img { width: 100%; height: 140px; object-fit: cover; border-radius: 12px; margin-bottom: 1rem; }
+        .ref-placeholder {
+            width: 100%; height: 140px; border-radius: 12px; margin-bottom: 1rem;
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 2rem; color: var(--text-tertiary);
+        }
+        .badge {
+            display: inline-block; padding: 4px 10px; border-radius: 8px;
+            font-size: 11px; font-weight: 700; text-transform: uppercase;
+        }
+        .badge-blue { background: rgba(59,130,246,0.15); color: var(--accent-blue); }
+        .badge-emerald { background: rgba(16,185,129,0.15); color: var(--accent-emerald); }
+        .badge-amber { background: rgba(245,158,11,0.15); color: var(--accent-amber); }
+        .badge-red { background: rgba(239,68,68,0.15); color: var(--accent-red); }
+        .badge-purple { background: rgba(139,92,246,0.15); color: var(--accent-purple); }
+        .spec-table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+        .spec-table th, .spec-table td {
+            padding: 0.6rem 0.75rem; text-align: left;
+            border-bottom: 1px solid var(--border-color); font-size: 0.85rem;
+        }
+        .spec-table th { color: var(--text-tertiary); font-weight: 600; text-transform: uppercase; font-size: 0.7rem; letter-spacing: 0.05em; background: var(--card-bg2); }
+        .spec-table td { color: var(--text-secondary); }
+        .spec-table tr:hover td { background: rgba(59,130,246,0.05); }
+        .collapsible { max-height: 0; overflow: hidden; transition: max-height 0.5s ease, padding 0.3s ease; }
+        .collapsible.open { max-height: 2000px; padding-top: 1rem; }
+        .toggle-btn {
+            background: transparent; border: 1px solid var(--border-color);
+            color: var(--text-secondary); padding: 0.5rem 1rem; border-radius: 8px;
+            cursor: pointer; font-size: 0.8rem; font-weight: 600; transition: all 0.2s;
+            margin-top: 0.75rem;
+        }
+        .toggle-btn:hover { border-color: var(--accent-blue); color: var(--accent-blue); }
+        .ref-panel { background: var(--card-bg2); border-radius: 12px; padding: 1.5rem; margin-top: 0.5rem; }
+        .ref-panel h5 { color: var(--accent-blue); margin: 1rem 0 0.5rem; font-size: 0.9rem; }
+        .ref-panel p { font-size: 0.85rem; line-height: 1.7; }
+        .ref-panel img { max-width: 100%; border-radius: 12px; margin-bottom: 1rem; }
+
+        /* Assembly Tab */
+        .assembly-controls { text-align: center; margin-bottom: 2rem; }
+        .assembly-controls button {
+            padding: 0.75rem 1.5rem; border-radius: 12px; font-weight: 700;
+            font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em;
+            cursor: pointer; border: none; transition: all 0.25s; margin: 0 0.25rem;
+        }
+        .btn-assembly-start { background: var(--accent-blue); color: #fff; box-shadow: 0 4px 20px rgba(59,130,246,0.3); }
+        .btn-assembly-start:hover { background: var(--accent-blue2); }
+        .btn-assembly-reset { background: transparent; border: 1px solid var(--border-color); color: var(--text-secondary); }
+        .btn-assembly-reset:hover { border-color: var(--accent-blue); color: var(--accent-blue); }
+        .assembly-svg { width: 100%; max-width: 800px; margin: 0 auto; display: block; }
+
+        /* Air Gap SVG (Hardware tab) */
+        .airgap-svg-container { margin-top: 2rem; text-align: center; }
+        .airgap-svg { width: 100%; max-width: 700px; margin: 0 auto; display: block; }
+
+        /* FAQ Tab */
+        .faq-item { border-bottom: 1px solid var(--border-color); padding: 1.5rem 0; }
+        .faq-q {
+            font-weight: 700; color: var(--text-primary); cursor: pointer;
+            display: flex; justify-content: space-between; align-items: center;
+            font-size: 1.1rem;
+        }
+        .faq-q::after { content: '+'; font-size: 1.5rem; color: var(--accent-blue); transition: transform 0.3s; }
+        .faq-item.open .faq-q::after { transform: rotate(45deg); }
+        .faq-a { max-height: 0; overflow: hidden; transition: max-height 0.4s ease; }
+        .faq-item.open .faq-a { max-height: 500px; padding-top: 1rem; }
+        .faq-a p { font-size: 0.9rem; color: var(--text-secondary); line-height: 1.7; }
+
+        /* SVG Icons */
+        .icon { width: 24px; height: 24px; stroke: currentColor; stroke-width: 2; fill: none; }
+
+        /* Toast */
+        .toast {
+            position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%);
+            background: var(--accent-emerald); color: #000; padding: 1rem 2rem;
+            border-radius: 12px; font-weight: 900; font-size: 0.85rem;
+            text-transform: uppercase; z-index: 9999; opacity: 0;
+            transition: opacity 0.3s; pointer-events: none;
+        }
+        .toast.show { opacity: 1; }
+
+        /* Air Gap Strategy Card */
+        .strategy-card {
+            background: linear-gradient(135deg, rgba(59,130,246,0.1), rgba(16,185,129,0.1));
+            border: 1px solid rgba(59,130,246,0.3);
+            border-radius: 24px;
+            padding: 2.5rem;
+            margin-top: 3rem;
+        }
+        .strategy-card h3 { margin-bottom: 1rem; }
+
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+
+        @media (max-width: 900px) {
+            .configurator-grid, .compare-grid, .hardware-grid, .ecosystem-banner,
+            .price-grid, .ref-grid, .wizard-grid { grid-template-columns: 1fr; }
+            .container { padding: 0 1rem; }
+            .title-large { font-size: 2.5rem; }
+            .summary-panel { position: static; }
+            .nav-pills { overflow-x: auto; flex-wrap: nowrap; }
+            .price-card.featured { transform: none; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="container flex justify-between items-center">
+        <div class="logo-area">
+            <div class="logo-icon">
+                <svg class="icon" viewBox="0 0 24 24" style="color: white;"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+            </div>
+            <div>
+                <h1 style="font-size: 1.1rem; color: white;">Vidi Ai</h1>
+                <p style="font-size: 10px; font-weight: 800; color: #4ade80; text-transform: uppercase; letter-spacing: 0.1em;">Sovereign AI Node</p>
+            </div>
+        </div>
+        <div class="flex items-center gap-2">
+            <div class="ref-dropdown">
+                <button class="nav-btn" onclick="toggleRefDropdown(event)" style="font-size:0.7rem;padding:0.5rem 0.9rem">Ref Index ▾</button>
+                <div class="ref-dropdown-menu" id="refDropdown">
+                    <div class="ref-dropdown-cat">GPUs</div>
+                    <a class="ref-dropdown-item" onclick="scrollToProduct('gpu-section-tab')">Intel Arc Pro B70 (Blower)</a>
+                    <a class="ref-dropdown-item" onclick="scrollToProduct('gpu-section-tab')">Intel Arc Pro B70 (Open-Air)</a>
+                    <a class="ref-dropdown-item" onclick="scrollToProduct('gpu-section-tab')">RTX 4090</a>
+                    <a class="ref-dropdown-item" onclick="scrollToProduct('gpu-section-tab')">RTX 6000 Ada</a>
+                    <div class="ref-dropdown-cat">Motherboards</div>
+                    <a class="ref-dropdown-item" onclick="scrollToProduct('mobo-section-tab')">WRX90E-SAGE</a>
+                    <a class="ref-dropdown-item" onclick="scrollToProduct('mobo-section-tab')">TRX50-SAGE</a>
+                    <a class="ref-dropdown-item" onclick="scrollToProduct('mobo-section-tab')">W790E-SAGE</a>
+                    <div class="ref-dropdown-cat">Chassis</div>
+                    <a class="ref-dropdown-item" onclick="scrollToProduct('chassis-section-tab')">SilverStone RM44</a>
+                    <a class="ref-dropdown-item" onclick="scrollToProduct('chassis-section-tab')">SilverStone RM51</a>
+                    <div class="ref-dropdown-cat">Quick Nav</div>
+                    <a class="ref-dropdown-item" onclick="switchTab('wizard');closeRefDropdown()">Configuration Wizard</a>
+                    <a class="ref-dropdown-item" onclick="switchTab('faq');closeRefDropdown()">FAQ</a>
+                </div>
+            </div>
+            <nav class="nav-pills">
+                <button class="nav-btn active" onclick="switchTab('configurator')">Configurator</button>
+                <button class="nav-btn" onclick="switchTab('wizard')">Wizard</button>
+                <button class="nav-btn" onclick="switchTab('compare')">Compare</button>
+                <button class="nav-btn" onclick="switchTab('hardware')">Hardware</button>
+                <button class="nav-btn" onclick="switchTab('reference')">Reference</button>
+                <button class="nav-btn" onclick="switchTab('assembly')">Assembly</button>
+                <button class="nav-btn" onclick="switchTab('ecosystem')">Ecosystem</button>
+                <button class="nav-btn" onclick="switchTab('agents')">Agent OS</button>
+                <button class="nav-btn" onclick="switchTab('pricing')">Pricing</button>
+                <button class="nav-btn" onclick="switchTab('faq')">FAQ</button>
+            </nav>
+        </div>
+    </div>
+</header>
+
+<main class="container" style="padding: 4rem 0;">
+
+    <!-- ==================== CONFIGURATOR TAB ==================== -->
+    <section id="configurator" class="active">
+        <div style="margin-bottom: 3rem;">
+            <h2 class="title-large">VIDI AI <br><span class="accent-text">RIG BUILDER</span></h2>
+            <p style="color: var(--text-secondary); font-size: 1.1rem;">Configure your AI compute platform. Live pricing, VRAM tracking, and compatibility validation. Click <strong>Learn More</strong> on any component for detailed specs and product images.</p>
+        </div>
+        <div class="configurator-grid">
+            <div id="selector-column"></div>
+            <div><div class="summary-panel" id="summary-panel"></div></div>
+        </div>
+    </section>
+
+    <!-- ==================== WIZARD TAB ==================== -->
+    <section id="wizard">
+        <div style="margin-bottom: 3rem;">
+            <h2 class="title-large">BUILD <br><span class="accent-text">WIZARD</span></h2>
+            <p style="color: var(--text-secondary); font-size: 1.1rem;">Tell us what you're building, and we'll recommend the perfect configuration. Then apply it to the Rig Builder with one click.</p>
+        </div>
+        <div class="wizard-section-box">
+            <div class="wizard-title">What Are You Building?</div>
+            <div class="wizard-grid">
+                <div class="wizard-card" onclick="selectWizard(this, 'medical')">
+                    <span class="wizard-icon">🏥</span>
+                    <h4>Medical Website</h4>
+                    <p>50+ concurrent users, HIPAA-compliant AI consultations</p>
+                </div>
+                <div class="wizard-card" onclick="selectWizard(this, 'coding')">
+                    <span class="wizard-icon">💻</span>
+                    <h4>Coding Projects</h4>
+                    <p>1-3 developers, AI pair programming, code review</p>
+                </div>
+                <div class="wizard-card" onclick="selectWizard(this, 'creative')">
+                    <span class="wizard-icon">🎨</span>
+                    <h4>Creative / ComfyUI</h4>
+                    <p>Image generation, video, upscaling workflows</p>
+                </div>
+                <div class="wizard-card" onclick="selectWizard(this, 'mixed')">
+                    <span class="wizard-icon">⚡</span>
+                    <h4>Mixed Use</h4>
+                    <p>Medical + Coding + Creative, dual model setup</p>
+                </div>
+            </div>
+            <div class="wizard-result" id="wizardResult">
+                <div id="wizardContent"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== COMPARE TAB ==================== -->
+    <section id="compare">
+        <div style="margin-bottom: 3rem;">
+            <h2 class="title-large">VIDI AI vs <br><span class="accent-text">APPLE SILICON</span></h2>
+            <p style="color: var(--text-secondary); font-size: 1.1rem;">Compare your configured Vidi Ai rig against Apple Mac Studio M3 Ultra and Mac Pro M4 Ultra.</p>
+        </div>
+        <div class="compare-grid">
+            <div class="compare-card">
+                <h4 style="font-size: 1.2rem; margin-bottom: 2rem;">Performance Comparison</h4>
+                <div class="bar-chart-group">
+                    <div class="bar-chart-title">GPU Compute (TFLOPS est.)</div>
+                    <div class="bar-row"><span class="bar-label">Vidi Ai</span><div class="bar-track"><div class="bar-fill vidi" id="bar-vidi-tflops" style="width: 0%;">48</div></div><span class="bar-value" id="val-vidi-tflops">48</span></div>
+                    <div class="bar-row"><span class="bar-label">M3 Ultra</span><div class="bar-track"><div class="bar-fill m3" style="width: 73%;">35</div></div><span class="bar-value">35</span></div>
+                    <div class="bar-row"><span class="bar-label">M4 Ultra</span><div class="bar-track"><div class="bar-fill m4" style="width: 88%;">42</div></div><span class="bar-value">42</span></div>
+                </div>
+                <div class="bar-chart-group">
+                    <div class="bar-chart-title">Total VRAM / Unified Memory (GB)</div>
+                    <div class="bar-row"><span class="bar-label">Vidi Ai</span><div class="bar-track"><div class="bar-fill vidi" id="bar-vidi-vram" style="width: 0%;">128</div></div><span class="bar-value" id="val-vidi-vram">128</span></div>
+                    <div class="bar-row"><span class="bar-label">M3 Ultra</span><div class="bar-track"><div class="bar-fill m3" style="width: 100%;">192</div></div><span class="bar-value">192</span></div>
+                    <div class="bar-row"><span class="bar-label">M4 Ultra</span><div class="bar-track"><div class="bar-fill m4" style="width: 100%;">192</div></div><span class="bar-value">192</span></div>
+                </div>
+                <div class="bar-chart-group">
+                    <div class="bar-chart-title">Price (USD)</div>
+                    <div class="bar-row"><span class="bar-label">Vidi Ai</span><div class="bar-track"><div class="bar-fill vidi" id="bar-vidi-price" style="width: 0%;">$6,850</div></div><span class="bar-value" id="val-vidi-price">$6,850</span></div>
+                    <div class="bar-row"><span class="bar-label">M3 Ultra</span><div class="bar-track"><div class="bar-fill m3" style="width: 85%;">$7,199</div></div><span class="bar-value">$7,199</span></div>
+                    <div class="bar-row"><span class="bar-label">M4 Ultra</span><div class="bar-track"><div class="bar-fill m4" style="width: 100%;">$8,499</div></div><span class="bar-value">$8,499</span></div>
+                </div>
+            </div>
+            <div>
+                <div class="recommendation-box" style="margin-bottom: 1.5rem;">
+                    <div class="rec-title">Choose Vidi Ai if:</div>
+                    <ul class="rec-list">
+                        <li>You need multi-user concurrent access (50+)</li>
+                        <li>You want upgradeable, modular hardware</li>
+                        <li>You need CUDA / OpenVINO / ROCm compatibility</li>
+                        <li>You run heavy batch inference workloads</li>
+                        <li>You require ECC memory for data integrity</li>
+                    </ul>
+                </div>
+                <div class="recommendation-box">
+                    <div class="rec-title">Choose Apple if:</div>
+                    <ul class="rec-list">
+                        <li class="apple">You prioritize power efficiency (~200W)</li>
+                        <li class="apple">You work solo or with small teams (10-20)</li>
+                        <li class="apple">You prefer the macOS ecosystem</li>
+                        <li class="apple">You need unified memory for 120B+ models</li>
+                        <li class="apple">You want a quiet, compact desktop</li>
+                    </ul>
+                </div>
+                <div style="background: linear-gradient(135deg, #1e3a8a, #1e1b4b); padding: 2rem; border-radius: 24px; margin-top: 1.5rem;">
+                    <h5 style="margin-bottom: 0.75rem; font-size: 1rem;">Key Insight</h5>
+                    <p style="font-size: 0.85rem; opacity: 0.85;">Vidi Ai delivers 37% more GPU compute at a lower price point than M4 Ultra, with the flexibility to upgrade individual components over time.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== HARDWARE TAB ==================== -->
+    <section id="hardware">
+        <div class="hardware-grid grid">
+            <div style="display: flex; flex-direction: column; gap: 2rem;">
+                <div>
+                    <h2 class="title-large">THE LANE <br><span class="accent-text">BATTLE</span></h2>
+                    <p style="color: var(--text-secondary); font-size: 1.1rem;">Visual lane mapping. Professional boards guarantee x16 speed on all slots, eliminating data traffic jams.</p>
+                </div>
+                <div id="tier-list"></div>
+                <div class="strategy-card">
+                    <h3>Air Gap <span class="accent-text">Strategy</span> - Slots 1, 3, 5, 7</h3>
+                    <p style="font-size:0.9rem;color:var(--text-secondary)">When installing 4 GPUs in a 7-slot chassis, use slots 1, 3, 5, and 7. This leaves one empty slot between each card, creating an air gap that prevents heat from one GPU from being sucked into the next card's intake.</p>
+                    <div class="airgap-svg-container">
+                        <svg viewBox="0 0 700 120" class="airgap-svg">
+                            <rect x="10" y="30" width="80" height="60" rx="4" fill="var(--accent-blue)" opacity="0.8"/><text x="50" y="65" text-anchor="middle" fill="#fff" font-size="12" font-weight="700">GPU 1</text>
+                            <rect x="100" y="30" width="80" height="60" rx="4" fill="var(--card-bg)" stroke="var(--border-color)" stroke-width="1" stroke-dasharray="4"/><text x="140" y="65" text-anchor="middle" fill="var(--text-tertiary)" font-size="10">Air Gap</text>
+                            <rect x="190" y="30" width="80" height="60" rx="4" fill="var(--accent-blue)" opacity="0.8"/><text x="230" y="65" text-anchor="middle" fill="#fff" font-size="12" font-weight="700">GPU 2</text>
+                            <rect x="280" y="30" width="80" height="60" rx="4" fill="var(--card-bg)" stroke="var(--border-color)" stroke-width="1" stroke-dasharray="4"/><text x="320" y="65" text-anchor="middle" fill="var(--text-tertiary)" font-size="10">Air Gap</text>
+                            <rect x="370" y="30" width="80" height="60" rx="4" fill="var(--accent-blue)" opacity="0.8"/><text x="410" y="65" text-anchor="middle" fill="#fff" font-size="12" font-weight="700">GPU 3</text>
+                            <rect x="460" y="30" width="80" height="60" rx="4" fill="var(--card-bg)" stroke="var(--border-color)" stroke-width="1" stroke-dasharray="4"/><text x="500" y="65" text-anchor="middle" fill="var(--text-tertiary)" font-size="10">Air Gap</text>
+                            <rect x="550" y="30" width="80" height="60" rx="4" fill="var(--accent-blue)" opacity="0.8"/><text x="590" y="65" text-anchor="middle" fill="#fff" font-size="12" font-weight="700">GPU 4</text>
+                            <line x1="50" y1="100" x2="630" y2="100" stroke="var(--accent-emerald)" stroke-width="2" stroke-dasharray="8,4"/>
+                            <text x="340" y="115" text-anchor="middle" fill="var(--accent-emerald)" font-size="10" font-weight="700">AIRFLOW - EXHAUST</text>
+                        </svg>
+                    </div>
+                    <p style="font-size:0.85rem;color:var(--text-tertiary);text-align:center;margin-top:1rem">Blower cards pull air from the front and exhaust it directly out the rear. Air gaps prevent heat recirculation between adjacent cards.</p>
+                </div>
+            </div>
+            <div id="lane-visualizer"></div>
+        </div>
+    </section>
+
+    <!-- ==================== REFERENCE TAB ==================== -->
+    <section id="reference">
+        <div style="margin-bottom: 3rem;">
+            <h2 class="title-large">PRODUCT <br><span class="accent-text">REFERENCE</span></h2>
+            <p style="color: var(--text-secondary); font-size: 1.1rem;">Detailed specs, educational content, and direct purchase links for every component.</p>
+        </div>
+
+        <h3 style="font-size: 1.5rem; margin-bottom: 1rem;" id="gpu-section-tab"><span class="accent-text">GPUs</span></h3>
+        <div class="ref-grid">
+            <div class="ref-card">
+                <img class="img-card" src="hardware-images/intel-arc-pro-b70.png" alt="Intel Arc Pro B70" style="width:100%;height:140px;object-fit:cover;border-radius:12px;margin-bottom:1rem">
+                <span class="badge badge-blue">Blower</span>
+                <h4>Intel Arc Pro B70</h4>
+                <p>32GB GDDR6 | Blower Cooler | $950</p>
+                <button class="toggle-btn" onclick="toggleRef('ref-gpu-b70')">Learn More</button>
+                <div class="collapsible" id="ref-gpu-b70">
+                    <div class="ref-panel">
+                        <img src="hardware-images/intel-arc-pro-b70.png" alt="Intel Arc Pro B70">
+                        <h5>What Is It?</h5>
+                        <p>Intel's professional workstation GPU with 32GB GDDR6 and blower-style cooler for multi-GPU server deployments. Uses Xe2 architecture with XMX engines for AI inference.</p>
+                        <h5>What Is It Used For?</h5>
+                        <p>Multi-GPU AI inference servers running large language models (LLMs) like Qwen 72B at Q8_0 precision. The blower cooler design allows cards to be stacked in 1-3-5-7 slot configurations inside 4U chassis without thermal throttling.</p>
+                        <h5>Why It Matters</h5>
+                        <p>At $950 for 32GB VRAM ($29.70/GB), it's the most cost-effective professional AI GPU. Four B70s give 128GB VRAM for $3,800 - less than a single RTX 6000 Ada. Native XMX acceleration means Q8_0 quantized models run at full speed.</p>
+                        <table class="spec-table">
+                            <tr><th>Spec</th><th>Value</th></tr>
+                            <tr><td>VRAM</td><td>32GB GDDR6</td></tr>
+                            <tr><td>Bandwidth</td><td>576 GB/s</td></tr>
+                            <tr><td>XMX Engines</td><td>512 units</td></tr>
+                            <tr><td>TDP</td><td>225W</td></tr>
+                            <tr><td>Cooling</td><td>Blower (rear exhaust)</td></tr>
+                            <tr><td>Slot Width</td><td>2-slot</td></tr>
+                            <tr><td>PCIe</td><td>5.0 x16</td></tr>
+                        </table>
+                        <a class="buy-link-item" href="https://www.intel.com/content/www/us/en/products/sku/236775/intel-arc-pro-b70-graphics/specifications.html" target="_blank" rel="noopener">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3h6v6"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                            Buy Intel Arc Pro B70
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ref-card">
+                <img src="hardware-images/intel-arc-pro-b70-openair.png" alt="Intel Arc Pro B70 Open-Air" style="width:100%;height:140px;object-fit:cover;border-radius:12px;margin-bottom:1rem">
+                <span class="badge badge-emerald">Open-Air</span>
+                <h4>Intel Arc Pro B70 (Open-Air)</h4>
+                <p>32GB GDDR6 | Triple Fan | $950</p>
+                <button class="toggle-btn" onclick="toggleRef('ref-gpu-b70oa')">Learn More</button>
+                <div class="collapsible" id="ref-gpu-b70oa">
+                    <div class="ref-panel">
+                        <img src="hardware-images/intel-arc-pro-b70-openair.png" alt="Intel Arc Pro B70 Open-Air">
+                        <h5>What Is It?</h5>
+                        <p>The open-air variant of the Arc Pro B70 uses a triple-fan cooling design. Identical 32GB VRAM and XMX engines, designed for workstations with good case airflow.</p>
+                        <h5>What Is It Used For?</h5>
+                        <p>Single-GPU or dual-GPU workstation setups where thermal density isn't a concern. Ideal for development, testing, and smaller AI deployments.</p>
+                        <h5>Why It Matters</h5>
+                        <p>Runs cooler and quieter than the blower version in open chassis. For multi-GPU server builds (3+ cards), the blower version is strongly recommended.</p>
+                        <a class="buy-link-item" href="https://www.intel.com/content/www/us/en/products/sku/236775/intel-arc-pro-b70-graphics/specifications.html" target="_blank" rel="noopener">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3h6v6"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                            Buy Intel Arc Pro B70 (Open-Air)
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ref-card">
+                <img src="hardware-images/nvidia-rtx-4090.png" alt="NVIDIA RTX 4090" style="width:100%;height:140px;object-fit:cover;border-radius:12px;margin-bottom:1rem">
+                <span class="badge badge-red">Consumer</span>
+                <h4>RTX 4090</h4>
+                <p>24GB GDDR6X | Open-Air | $1,600</p>
+                <button class="toggle-btn" onclick="toggleRef('ref-gpu-4090')">Learn More</button>
+                <div class="collapsible" id="ref-gpu-4090">
+                    <div class="ref-panel">
+                        <img src="hardware-images/nvidia-rtx-4090.png" alt="NVIDIA RTX 4090">
+                        <h5>What Is It?</h5>
+                        <p>NVIDIA's flagship consumer GPU with 24GB GDDR6X and powerful CUDA/Tensor cores. Dominant choice for enthusiast AI builds.</p>
+                        <h5>What Is It Used For?</h5>
+                        <p>Single-GPU AI inference, creative workloads (ComfyUI, Stable Diffusion), and development. Popular for hobbyist LLM serving with llama.cpp.</p>
+                        <h5>Why It Matters</h5>
+                        <p>Excellent performance per dollar for single-card setups, but limited to 24GB VRAM. Consumer boards can't support 4+ cards at full bandwidth. Not recommended for production multi-GPU servers.</p>
+                        <a class="buy-link-item" href="https://www.nvidia.com/en-us/geforce/graphics-cards/rtx-40-series/rtx-4090/" target="_blank" rel="noopener">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3h6v6"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                            Buy RTX 4090
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ref-card">
+                <img src="hardware-images/nvidia-rtx-6000-ada.png" alt="NVIDIA RTX 6000 Ada" style="width:100%;height:140px;object-fit:cover;border-radius:12px;margin-bottom:1rem">
+                <span class="badge badge-purple">Enterprise</span>
+                <h4>RTX 6000 Ada</h4>
+                <p>48GB GDDR6 | Blower | $6,800</p>
+                <button class="toggle-btn" onclick="toggleRef('ref-gpu-6000')">Learn More</button>
+                <div class="collapsible" id="ref-gpu-6000">
+                    <div class="ref-panel">
+                        <img src="hardware-images/nvidia-rtx-6000-ada.png" alt="NVIDIA RTX 6000 Ada">
+                        <h5>What Is It?</h5>
+                        <p>NVIDIA's enterprise GPU with 48GB VRAM and blower cooling. The premium alternative to Intel B70 for organizations already invested in CUDA.</p>
+                        <h5>Why It Matters</h5>
+                        <p>At $141.70/GB, it's 4.8x more expensive than B70. Four cards cost $27,200 vs $3,800 for B70. Only choose if CUDA ecosystem is mandatory.</p>
+                        <a class="buy-link-item" href="https://www.nvidia.com/en-us/design-visualization/rtx-6000/" target="_blank" rel="noopener">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3h6v6"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                            Buy RTX 6000 Ada
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <h3 style="font-size: 1.5rem; margin: 3rem 0 1rem;" id="mobo-section-tab"><span class="accent-text">Motherboards</span></h3>
+        <div class="ref-grid">
+            <div class="ref-card">
+                <img src="hardware-images/asus-wrx90e-sage.png" alt="ASUS WRX90E-SAGE" style="width:100%;height:140px;object-fit:cover;border-radius:12px;margin-bottom:1rem">
+                <span class="badge badge-emerald">Recommended</span>
+                <h4>ASUS Pro WS WRX90E-SAGE SE</h4>
+                <p>128 PCIe 5.0 Lanes | sWRX8 | $1,300</p>
+                <button class="toggle-btn" onclick="toggleRef('ref-mobo-wrx90')">Learn More</button>
+                <div class="collapsible" id="ref-mobo-wrx90">
+                    <div class="ref-panel">
+                        <img src="hardware-images/asus-wrx90e-sage.png" alt="ASUS WRX90E-SAGE">
+                        <h5>What Is It?</h5>
+                        <p>Workstation motherboard for AMD Threadripper Pro 7000WX. Provides 128 PCIe 5.0 lanes enabling up to 7 GPUs at full x16 bandwidth.</p>
+                        <h5>What Is It Used For?</h5>
+                        <p>Multi-GPU AI inference servers, rendering workstations, and scientific computing. Every GPU slot runs at full PCIe 5.0 x16 speed.</p>
+                        <h5>Why It Matters</h5>
+                        <p>The only motherboard supporting 4+ GPUs at full x16 bandwidth. For AI inference, PCIe bandwidth directly impacts token generation speed.</p>
+                        <a class="buy-link-item" href="https://www.asus.com/us/motherboards-components/motherboards/pro-ws/pro-ws-wrx90e-sage-se-wifi/" target="_blank" rel="noopener">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3h6v6"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                            Buy WRX90E-SAGE
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ref-card">
+                <img src="hardware-images/asus-trx50-sage.png" alt="ASUS TRX50-SAGE" style="width:100%;height:140px;object-fit:cover;border-radius:12px;margin-bottom:1rem">
+                <span class="badge badge-amber">Mid-Range</span>
+                <h4>ASUS Pro WS TRX50-SAGE</h4>
+                <p>92 PCIe 5.0 Lanes | sTR5 | $820</p>
+                <button class="toggle-btn" onclick="toggleRef('ref-mobo-trx50')">Learn More</button>
+                <div class="collapsible" id="ref-mobo-trx50">
+                    <div class="ref-panel">
+                        <img src="hardware-images/asus-trx50-sage.png" alt="ASUS TRX50-SAGE">
+                        <h5>What Is It?</h5>
+                        <p>Enthusiast Threadripper motherboard with 92 PCIe 5.0 lanes. Supports up to 3 GPUs at full x16, with reduced speeds on slots 4-5.</p>
+                        <h5>Why It Matters</h5>
+                        <p>Solid for 2-3 GPU builds, but lanes drop significantly after slot 3. Not ideal for 4+ GPU AI servers.</p>
+                        <a class="buy-link-item" href="https://www.asus.com/us/motherboards-components/motherboards/pro-ws/pro-ws-trx50-sage-wifi/" target="_blank" rel="noopener">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3h6v6"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                            Buy TRX50-SAGE
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ref-card">
+                <img src="hardware-images/asus-w790e-sage.png" alt="ASUS W790E-SAGE" style="width:100%;height:140px;object-fit:cover;border-radius:12px;margin-bottom:1rem">
+                <span class="badge badge-red">Intel Xeon</span>
+                <h4>ASUS Pro WS W790E-SAGE</h4>
+                <p>112 PCIe 5.0 Lanes | LGA4677 | $1,100</p>
+                <button class="toggle-btn" onclick="toggleRef('ref-mobo-w790')">Learn More</button>
+                <div class="collapsible" id="ref-mobo-w790">
+                    <div class="ref-panel">
+                        <img src="hardware-images/asus-w790e-sage.png" alt="ASUS W790E-SAGE">
+                        <h5>What Is It?</h5>
+                        <p>Intel Xeon W-3400 series motherboard with 112 PCIe 5.0 lanes. Alternative to AMD Threadripper for Intel-based AI workstations.</p>
+                        <h5>Why It Matters</h5>
+                        <p>112 lanes is close to WRX90's 128, but Intel's platform has higher CPU costs and less mature multi-GPU AI driver support.</p>
+                        <a class="buy-link-item" href="https://www.asus.com/us/motherboards-components/motherboards/pro-ws/pro-ws-w790e-sage-se/" target="_blank" rel="noopener">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3h6v6"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                            Buy W790E-SAGE
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <h3 style="font-size: 1.5rem; margin: 3rem 0 1rem;" id="chassis-section-tab"><span class="accent-text">Chassis</span></h3>
+        <div class="ref-grid">
+            <div class="ref-card">
+                <img src="hardware-images/silverstone-rm44.png" alt="SilverStone RM44" style="width:100%;height:140px;object-fit:cover;border-radius:12px;margin-bottom:1rem">
+                <span class="badge badge-blue">4U Rackmount</span>
+                <h4>SilverStone RM44</h4>
+                <p>7 expansion slots | $200</p>
+                <button class="toggle-btn" onclick="toggleRef('ref-chassis-rm44')">Learn More</button>
+                <div class="collapsible" id="ref-chassis-rm44">
+                    <div class="ref-panel">
+                        <img src="hardware-images/silverstone-rm44.png" alt="SilverStone RM44">
+                        <h5>What Is It?</h5>
+                        <p>4U rackmount chassis for high-density server builds. 7 expansion slots support up to 7 dual-slot GPUs in 1-3-5-7 configuration with air gaps between each card.</p>
+                        <h5>What Is It Used For?</h5>
+                        <p>Multi-GPU AI inference servers, rendering farms, and HPC workstations. Fits standard 19-inch server racks.</p>
+                        <h5>Why It Matters</h5>
+                        <p>The 1-3-5-7 slot strategy creates air gaps between GPUs, preventing heat recirculation. Combined with blower cards, this creates an efficient thermal solution for 4-5 GPU AI nodes.</p>
+                        <table class="spec-table">
+                            <tr><th>Spec</th><th>Value</th></tr>
+                            <tr><td>Form Factor</td><td>4U Rackmount</td></tr>
+                            <tr><td>Expansion Slots</td><td>7</td></tr>
+                            <tr><td>GPU Support</td><td>Up to 7x dual-slot</td></tr>
+                            <tr><td>PSU Support</td><td>ATX up to 2050W</td></tr>
+                            <tr><td>Front Fans</td><td>3x 80mm hot-swap</td></tr>
+                        </table>
+                        <a class="buy-link-item" href="https://www.silverstonetek.com/en/product/rm44/" target="_blank" rel="noopener">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3h6v6"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                            Buy SilverStone RM44
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ref-card">
+                <img src="hardware-images/silverstone-rm51.png" alt="SilverStone RM51" style="width:100%;height:140px;object-fit:cover;border-radius:12px;margin-bottom:1rem">
+                <span class="badge badge-amber">5U Rackmount</span>
+                <h4>SilverStone RM51</h4>
+                <p>8 expansion slots | $350</p>
+                <button class="toggle-btn" onclick="toggleRef('ref-chassis-rm51')">Learn More</button>
+                <div class="collapsible" id="ref-chassis-rm51">
+                    <div class="ref-panel">
+                        <img src="hardware-images/silverstone-rm51.png" alt="SilverStone RM51">
+                        <h5>What Is It?</h5>
+                        <p>5U rackmount chassis with 8 expansion slots, offering more GPU capacity and better airflow than the RM44.</p>
+                        <h5>Why It Matters</h5>
+                        <p>Extra 1U provides better thermal headroom for 5+ GPU configurations. Worth the upgrade for larger builds.</p>
+                        <a class="buy-link-item" href="https://www.silverstonetek.com/en/product/rm51/" target="_blank" rel="noopener">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3h6v6"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                            Buy SilverStone RM51
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ref-card">
+                <img src="hardware-images/threadripper-7845wx.png" alt="AMD Threadripper Pro 7000WX" style="width:100%;height:140px;object-fit:cover;border-radius:12px;margin-bottom:1rem">
+                <span class="badge badge-emerald">Processor</span>
+                <h4>AMD Threadripper Pro 7000WX</h4>
+                <p>Up to 96 cores | sWRX8 | From $650</p>
+                <button class="toggle-btn" onclick="toggleRef('ref-cpu-tr')">Learn More</button>
+                <div class="collapsible" id="ref-cpu-tr">
+                    <div class="ref-panel">
+                        <img src="hardware-images/threadripper-7845wx.png" alt="AMD Threadripper Pro 7845WX">
+                        <h5>What Is It?</h5>
+                        <p>AMD's workstation CPU line with up to 96 cores and 128 PCIe 5.0 lanes. The 7845WX (24-core) is the sweet spot for AI inference servers.</p>
+                        <h5>Why It Matters</h5>
+                        <p>The 7845WX at $650 provides excellent value with 24 cores and full PCIe 5.0 lane support for multi-GPU configurations.</p>
+                        <a class="buy-link-item" href="https://www.amd.com/en/product/12482" target="_blank" rel="noopener">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3h6v6"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                            Buy Threadripper Pro
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- GPU Comparison Table -->
+        <div style="margin-top: 3rem;">
+            <h3 style="font-size: 1.5rem; margin-bottom: 1rem;">GPU <span class="accent-text">Comparison Table</span></h3>
+            <table class="spec-table">
+                <thead><tr><th>GPU</th><th>VRAM</th><th>Bandwidth</th><th>Price</th><th>Cooling</th><th>$/GB</th></tr></thead>
+                <tbody>
+                    <tr><td style="color:var(--accent-blue);font-weight:700">Arc Pro B70</td><td>32GB</td><td>576 GB/s</td><td>$950</td><td>Blower</td><td style="color:var(--accent-emerald);font-weight:700">$29.7</td></tr>
+                    <tr><td>RTX 4090</td><td>24GB</td><td>1,008 GB/s</td><td>$1,600</td><td>Open-air</td><td>$66.7</td></tr>
+                    <tr><td>RTX 6000 Ada</td><td>48GB</td><td>960 GB/s</td><td>$6,800</td><td>Blower</td><td>$141.7</td></tr>
+                    <tr><td>H100</td><td>80GB</td><td>3,350 GB/s</td><td>$25,000+</td><td>Active</td><td>$312.5</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- ==================== ASSEMBLY TAB ==================== -->
+    <section id="assembly">
+        <div style="margin-bottom: 3rem;">
+            <h2 class="title-large">INTERACTIVE <br><span class="accent-text">ASSEMBLY</span></h2>
+            <p style="color: var(--text-secondary); font-size: 1.1rem;">Watch GPUs slide into their slots with air gap visualization.</p>
+        </div>
+        <div class="assembly-controls">
+            <button class="btn-assembly-start" onclick="startAssembly()">Initialize Assembly</button>
+            <button class="btn-assembly-reset" onclick="resetAssembly()">Reset</button>
+        </div>
+        <svg id="assemblySvg" class="assembly-svg" viewBox="0 0 800 400">
+            <rect x="100" y="50" width="600" height="300" rx="8" fill="var(--card-bg)" stroke="var(--border-color)" stroke-width="2"/>
+            <text x="400" y="80" text-anchor="middle" fill="var(--text-secondary)" font-size="14" font-weight="700">ASUS Pro WS WRX90E-SAGE SE</text>
+            <rect x="340" y="100" width="120" height="80" rx="4" fill="var(--card-bg2)" stroke="var(--border-color)" stroke-width="1"/>
+            <text x="400" y="145" text-anchor="middle" fill="var(--text-secondary)" font-size="10">Threadripper Pro</text>
+            <rect x="200" y="100" width="12" height="80" rx="2" fill="var(--accent-blue)" opacity="0.3"/>
+            <rect x="216" y="100" width="12" height="80" rx="2" fill="var(--accent-blue)" opacity="0.3"/>
+            <rect x="232" y="100" width="12" height="80" rx="2" fill="var(--accent-blue)" opacity="0.3"/>
+            <rect x="248" y="100" width="12" height="80" rx="2" fill="var(--accent-blue)" opacity="0.3"/>
+            <g id="slot1"><rect x="140" y="200" width="80" height="20" rx="3" fill="var(--card-bg2)" stroke="var(--border-color)" stroke-width="1"/><text x="180" y="214" text-anchor="middle" fill="var(--text-secondary)" font-size="8">Slot 1</text></g>
+            <g id="slot2"><rect x="240" y="200" width="80" height="20" rx="3" fill="var(--card-bg2)" stroke="var(--border-color)" stroke-width="1"/><text x="280" y="214" text-anchor="middle" fill="var(--text-secondary)" font-size="8">Slot 2</text></g>
+            <g id="slot3"><rect x="340" y="200" width="80" height="20" rx="3" fill="var(--card-bg2)" stroke="var(--border-color)" stroke-width="1"/><text x="380" y="214" text-anchor="middle" fill="var(--text-secondary)" font-size="8">Slot 3</text></g>
+            <g id="slot4"><rect x="440" y="200" width="80" height="20" rx="3" fill="var(--card-bg2)" stroke="var(--border-color)" stroke-width="1"/><text x="480" y="214" text-anchor="middle" fill="var(--text-secondary)" font-size="8">Slot 4</text></g>
+            <g id="slot5"><rect x="540" y="200" width="80" height="20" rx="3" fill="var(--card-bg2)" stroke="var(--border-color)" stroke-width="1"/><text x="580" y="214" text-anchor="middle" fill="var(--text-secondary)" font-size="8">Slot 5</text></g>
+            <g id="slot6"><rect x="240" y="240" width="80" height="20" rx="3" fill="var(--card-bg2)" stroke="var(--border-color)" stroke-width="1"/><text x="280" y="254" text-anchor="middle" fill="var(--text-secondary)" font-size="8">Slot 6</text></g>
+            <g id="slot7"><rect x="540" y="240" width="80" height="20" rx="3" fill="var(--card-bg2)" stroke="var(--border-color)" stroke-width="1"/><text x="580" y="254" text-anchor="middle" fill="var(--text-secondary)" font-size="8">Slot 7</text></g>
+            <g id="gpu1" opacity="0"><rect x="140" y="260" width="80" height="60" rx="4" fill="var(--accent-blue)" opacity="0.8"/><text x="180" y="295" text-anchor="middle" fill="#fff" font-size="9" font-weight="700">B70 #1</text><text x="180" y="310" text-anchor="middle" fill="rgba(255,255,255,0.7)" font-size="7">x16 Gen5</text></g>
+            <g id="gpu2" opacity="0"><rect x="340" y="260" width="80" height="60" rx="4" fill="var(--accent-blue)" opacity="0.8"/><text x="380" y="295" text-anchor="middle" fill="#fff" font-size="9" font-weight="700">B70 #2</text><text x="380" y="310" text-anchor="middle" fill="rgba(255,255,255,0.7)" font-size="7">x16 Gen5</text></g>
+            <g id="gpu3" opacity="0"><rect x="540" y="260" width="80" height="60" rx="4" fill="var(--accent-blue)" opacity="0.8"/><text x="580" y="295" text-anchor="middle" fill="#fff" font-size="9" font-weight="700">B70 #3</text><text x="580" y="310" text-anchor="middle" fill="rgba(255,255,255,0.7)" font-size="7">x16 Gen5</text></g>
+            <g id="gpu4" opacity="0"><rect x="540" y="325" width="80" height="60" rx="4" fill="var(--accent-blue)" opacity="0.8"/><text x="580" y="360" text-anchor="middle" fill="#fff" font-size="9" font-weight="700">B70 #4</text><text x="580" y="375" text-anchor="middle" fill="rgba(255,255,255,0.7)" font-size="7">x16 Gen5</text></g>
+            <g id="airgaps" opacity="0">
+                <rect x="225" y="260" width="110" height="60" rx="4" fill="none" stroke="var(--accent-emerald)" stroke-width="1" stroke-dasharray="4"/>
+                <text x="280" y="295" text-anchor="middle" fill="var(--accent-emerald)" font-size="8">Air Gap</text>
+                <rect x="425" y="260" width="110" height="60" rx="4" fill="none" stroke="var(--accent-emerald)" stroke-width="1" stroke-dasharray="4"/>
+                <text x="480" y="295" text-anchor="middle" fill="var(--accent-emerald)" font-size="8">Air Gap</text>
+            </g>
+            <text id="assemblyStatus" x="400" y="380" text-anchor="middle" fill="var(--text-secondary)" font-size="12">Click "Initialize Assembly" to begin</text>
+        </svg>
+    </section>
+
+    <!-- ==================== ECOSYSTEM TAB ==================== -->
+    <section id="ecosystem">
+        <div class="ecosystem-banner">
+            <div style="flex: 1;">
+                <h2 style="font-size: 5rem; margin-bottom: 1rem;">LTX <br><span class="accent-text">DESKTOP</span></h2>
+                <p style="color: var(--text-secondary); font-size: 1.2rem; margin-bottom: 2rem;">The visual hub for your Vidi Ai node. Monitor XMX core heat, toggle 1M context windows, and manage agent pools.</p>
+                <div class="flex gap-4">
+                    <span style="background: rgba(255,255,255,0.05); padding: 0.5rem 1rem; border-radius: 12px; font-size: 10px; font-weight: 800;">XMX ENGINE v4.0</span>
+                    <span style="background: rgba(255,255,255,0.05); padding: 0.5rem 1rem; border-radius: 12px; font-size: 10px; font-weight: 800;">MODEL SWAPPER PRO</span>
+                </div>
+            </div>
+            <div style="width: 400px; height: 400px; background: #000; border-radius: 30px; border: 8px solid #1e293b; display: flex; align-items: center; justify-content: center;">
+                <svg width="60" height="60" viewBox="0 0 24 24" stroke="#334155" fill="none" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
+            </div>
+        </div>
+        <div style="margin-top: 6rem;">
+            <h3 style="font-size: 2.5rem; text-align: center; margin-bottom: 3rem;">COMFYUI POWER STATION <span style="font-size: 0.4em; vertical-align: middle; padding: 4px 8px; border: 1px solid var(--accent-blue); border-radius: 6px; color: var(--accent-blue); margin-left: 10px;">VRAM TUNED</span></h3>
+            <div class="comfy-grid" id="comfy-list"></div>
+        </div>
+    </section>
+
+    <!-- ==================== AGENT OS TAB ==================== -->
+    <section id="agents">
+        <div class="grid" style="grid-template-columns: 2fr 1fr; gap: 3rem;">
+            <div class="agent-list">
+                <div style="display: flex; align-items: center; gap: 1.5rem; margin-bottom: 2rem;">
+                    <div style="background: #4f46e5; width: 60px; height: 60px; border-radius: 20px; display: flex; align-items: center; justify-content: center;">
+                        <svg class="icon" style="color: white;" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                    </div>
+                    <h2 style="font-size: 3rem;">CREWAI ARMY</h2>
+                </div>
+                <div class="agent-card">
+                    <div class="agent-icon-box">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#4f46e5" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16a4 4 0 1 0 0-8 4 4 0 0 0 0 8z"/><path d="M12 8v8"/><path d="M8 12h8"/></svg>
+                    </div>
+                    <div style="flex: 1;">
+                        <h4 style="font-size: 1.5rem;">Hermes Lead Agent</h4>
+                        <p style="font-size: 10px; font-weight: 800; color: #64748b; text-transform: uppercase;">Planning & 1M Context Management</p>
+                    </div>
+                    <span style="font-family: monospace; font-weight: 800; color: #4f46e5;">QWEN 72B</span>
+                </div>
+                <div class="agent-card" style="background: #f8fafc;">
+                    <div class="agent-icon-box">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                    </div>
+                    <div style="flex: 1;">
+                        <h4 style="font-size: 1.5rem;">Compliance Auditor</h4>
+                        <p style="font-size: 10px; font-weight: 800; color: #64748b; text-transform: uppercase;">Pydantic Schema & HIPAA Checks</p>
+                    </div>
+                    <span style="font-family: monospace; font-weight: 800; color: #10b981;">DETERMINISTIC</span>
+                </div>
+                <div class="agent-card">
+                    <div class="agent-icon-box">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+                    </div>
+                    <div style="flex: 1;">
+                        <h4 style="font-size: 1.5rem;">Coding Specialist</h4>
+                        <p style="font-size: 10px; font-weight: 800; color: #64748b; text-transform: uppercase;">Web App Refactoring & Test Loops</p>
+                    </div>
+                    <span style="font-family: monospace; font-weight: 800; color: #3b82f6;">QWEN 27B</span>
+                </div>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                <div style="background: linear-gradient(180deg, #4f46e5, #312e81); padding: 3rem; border-radius: 40px; color: white;">
+                    <h5 style="font-size: 2rem; margin-bottom: 1.5rem;">LANGGRAPH</h5>
+                    <p style="font-size: 0.9rem; opacity: 0.8; margin-bottom: 2rem;">"The rigid skeleton for autonomous agents. Ensures clinical logic flows never deviate."</p>
+                    <div style="display: flex; flex-direction: column; gap: 1rem;">
+                        <div style="background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 12px; font-size: 11px; font-weight: 700;">INTAKE NODE (Verification)</div>
+                        <div style="background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 12px; font-size: 11px; font-weight: 700;">REASONING NODE (Analysis)</div>
+                        <div style="background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 12px; font-size: 11px; font-weight: 700;">AUDIT NODE (Final Gate)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== PRICING TAB ==================== -->
+    <section id="pricing">
+        <h2 style="font-size: 4rem; text-align: center; margin-bottom: 4rem;">CAPEX <span class="accent-text">BLUEPRINT</span></h2>
+        <div class="price-grid">
+            <div class="price-card">
+                <p style="font-size: 10px; font-weight: 900; color: #64748b; text-transform: uppercase;">3-Card Cluster</p>
+                <h3 style="font-size: 3rem; margin: 1rem 0;">$5,800</h3>
+                <p style="color: #64748b; font-size: 0.8rem; margin-bottom: 2rem;">96GB VRAM total. Good for baseline 72B hosting.</p>
+                <ul style="list-style: none; font-size: 11px; font-weight: 800; display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 2rem;">
+                    <li>3x Vidi Ai Arc Pro B70</li>
+                    <li>WRX90 PRO BOARD</li>
+                    <li>128GB ECC RAM</li>
+                </ul>
+            </div>
+            <div class="price-card featured">
+                <p style="font-size: 10px; font-weight: 900; text-transform: uppercase;">4-Card Cluster</p>
+                <h3 style="font-size: 4rem; margin: 1rem 0;">$6,850</h3>
+                <p style="font-size: 0.8rem; margin-bottom: 2rem;">128GB VRAM total. Perfect air-gap cooling in RM44.</p>
+                <ul style="list-style: none; font-size: 11px; font-weight: 800; display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 2rem;">
+                    <li>4x Vidi Ai Arc Pro B70</li>
+                    <li>WRX90 PRO BOARD</li>
+                    <li>ECC RAM + GEN5 NVMe</li>
+                </ul>
+                <button style="width: 100%; padding: 1rem; border-radius: 12px; border: none; background: #3b82f6; color: white; font-weight: 900; text-transform: uppercase;">Production Gold</button>
+            </div>
+            <div class="price-card">
+                <p style="font-size: 10px; font-weight: 900; color: #64748b; text-transform: uppercase;">5-Card Cluster</p>
+                <h3 style="font-size: 3rem; margin: 1rem 0;">$7,900</h3>
+                <p style="color: #64748b; font-size: 0.8rem; margin-bottom: 2rem;">160GB VRAM total. Maximum dense agency setup.</p>
+                <ul style="list-style: none; font-size: 11px; font-weight: 800; display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 2rem;">
+                    <li>5x Vidi Ai Arc Pro B70</li>
+                    <li>WRX90 PRO BOARD</li>
+                    <li>2000W HELA PSU</li>
+                </ul>
+            </div>
+        </div>
+        <div class="manifest-table">
+            <h4 style="margin-bottom: 2rem;">Component Manifest (4-Card Rig)</h4>
+            <div id="manifest-content"></div>
+        </div>
+    </section>
+
+    <!-- ==================== FAQ TAB ==================== -->
+    <section id="faq">
+        <div style="margin-bottom: 3rem;">
+            <h2 class="title-large">FREQUENTLY <br><span class="accent-text">ASKED</span></h2>
+            <p style="color: var(--text-secondary); font-size: 1.1rem;">Quick-start answers for building your sovereign AI node.</p>
+        </div>
+        <div style="max-width: 800px; margin: 0 auto;">
+            <div class="faq-item" onclick="toggleFaq(this)">
+                <div class="faq-q">I have $5K, what do I buy?</div>
+                <div class="faq-a"><p>Start with the 3-card B70 build ($5,800). You'll get 96GB VRAM - enough to run Qwen 72B at Q4_K_M quantization. If budget is tight, start with 2 cards ($1,900) and add more later. The WRX90 board supports up to 7 GPUs, so you can scale incrementally.</p></div>
+            </div>
+            <div class="faq-item" onclick="toggleFaq(this)">
+                <div class="faq-q">I have $10K, what do I buy?</div>
+                <div class="faq-a"><p>Go for the 5-card B70 build ($7,900) and use the remaining $2,100 for upgrades: add more RAM (256GB DDR5 ECC ~$900), larger NVMe (8TB ~$600), or better cooling (Noctua industrial fans ~$150). You'll have 160GB VRAM for maximum model capacity.</p></div>
+            </div>
+            <div class="faq-item" onclick="toggleFaq(this)">
+                <div class="faq-q">I have $30K, what do I buy?</div>
+                <div class="faq-a"><p>Build the 5-card B70 ($7,900) and invest the rest in: dual-node setup (two 4-card builds for redundancy), enterprise networking (10GbE switches), UPS backup, or a 4x RTX 6000 Ada setup if you need NVIDIA-specific features.</p></div>
+            </div>
+            <div class="faq-item" onclick="toggleFaq(this)">
+                <div class="faq-q">What model should I run for medical use?</div>
+                <div class="faq-a"><p>Qwen 72B at Q8_0 quantization is the best choice. It has exceptional medical knowledge, strong reasoning capabilities, and fits in 72GB VRAM (4-card B70 setup). For higher throughput, run Qwen 32B at Q8_0 (32GB) for faster responses on simpler queries.</p></div>
+            </div>
+            <div class="faq-item" onclick="toggleFaq(this)">
+                <div class="faq-q">How do I set up llama-server on WSL?</div>
+                <div class="faq-a"><p>1. Install WSL2 with Ubuntu. 2. Install Intel GPU drivers for WSL. 3. Build llama.cpp from source with IPEX-LLM support: cmake -DGGML_SYCL=ON .. 4. Download your GGUF model. 5. Run: llama-server -m model.gguf -c 8192 --host 0.0.0.0 --port 8080. 6. Access via browser at http://localhost:8080.</p></div>
+            </div>
+            <div class="faq-item" onclick="toggleFaq(this)">
+                <div class="faq-q">How do I connect Hermes Agent?</div>
+                <div class="faq-a"><p>1. Install Hermes Agent via pip: pip install hermes-agent. 2. Configure it to point to your llama-server: set LLM_URL=http://localhost:8080/v1. 3. Enable Mem0 for persistent memory: mem0 init. 4. Define skills (tools) in the Hermes config. 5. Start the agent: hermes start. 6. Connect LTX Desktop to the Hermes API at http://localhost:8000.</p></div>
+            </div>
+            <div class="faq-item" onclick="toggleFaq(this)">
+                <div class="faq-q">Why blower-style GPUs for multi-GPU?</div>
+                <div class="faq-a"><p>Blower cards pull air from the front and exhaust it directly out the rear of the chassis. In a 4U rackmount with 4+ GPUs, open-air cards would recirculate hot air between cards, causing thermal throttling. Blower cards ensure each card gets cool intake air.</p></div>
+            </div>
+            <div class="faq-item" onclick="toggleFaq(this)">
+                <div class="faq-q">What is the 1-3-5-7 slot strategy?</div>
+                <div class="faq-a"><p>When installing 4 GPUs in a 7-slot chassis, use slots 1, 3, 5, and 7. This leaves one empty slot between each card, creating an air gap that prevents heat from one GPU from being sucked into the next card's intake. Combined with blower cooling, this is the optimal thermal solution.</p></div>
+            </div>
+        </div>
+    </section>
+
+</main>
+
+<footer style="text-align: center; padding: 6rem 0; border-top: 1px solid var(--border-color); color: #475569;">
+    <div class="container">
+        <div style="display:inline-flex;align-items:center;gap:10px;margin-bottom:2rem;background:rgba(255,255,255,0.05);padding:8px 16px;border-radius:30px;border:1px solid var(--border-color);">
+            <span style="width:8px;height:8px;background:var(--accent-emerald);border-radius:50%;animation:pulse 2s infinite"></span>
+            <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-primary)">Node Status: Ready for Deployment</span>
+        </div>
+        <p style="font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.3em;">Vidi Ai Systems &copy; 2026 :: Privacy First :: Locally Hosted :: Sovereign</p>
+    </div>
+</footer>
+
+<div class="toast" id="toast">Configuration copied!</div>
+
+<script>
+// ==================== COMPONENT DATABASE ====================
+const GPU_OPTIONS = [
+    {
+        id: 'arc-b70',
+        name: 'Intel Arc Pro B70 (Blower)',
+        vram: 32,
+        tdp: 150,
+        formFactor: 'Blower, Dual-Slot',
+        price: 950,
+        image: 'hardware-images/intel-arc-pro-b70.png',
+        buyUrl: 'https://www.intel.com/content/www/us/en/products/sku/236775/intel-arc-pro-b70-graphics/specifications.html',
+        shortDesc: '32GB GDDR6 blower GPU with 512 XMX engines for AI inference.',
+        whatIsIt: "Intel's professional workstation GPU, featuring 32GB of GDDR6 memory and a blower-style cooler designed for multi-GPU server deployments. It uses Intel's Xe2 architecture with dedicated XMX (Xe Matrix Extensions) engines optimized for AI inference workloads.",
+        whatIsItUsedFor: "Multi-GPU AI inference servers running large language models (LLMs) like Qwen 72B at Q8_0 precision. The blower cooler design allows cards to be stacked in 1-3-5-7 slot configurations inside 4U chassis without thermal throttling.",
+        whyItMatters: "At $950 for 32GB VRAM ($29.70/GB), it's the most cost-effective professional AI GPU. Four B70s give 128GB VRAM for $3,800 - less than a single RTX 6000 Ada. Native XMX acceleration means Q8_0 quantized models run at full speed without accuracy loss.",
+        specs: [
+            ['VRAM', '32GB GDDR6'],
+            ['Memory Bandwidth', '576 GB/s'],
+            ['XMX Engines', '512 units'],
+            ['TDP', '225W'],
+            ['Cooling', 'Blower (rear exhaust)'],
+            ['Slot Width', '2-slot'],
+            ['PCIe', '5.0 x16']
+        ]
+    },
+    {
+        id: 'arc-b70-oa',
+        name: 'Intel Arc Pro B70 (Open-Air)',
+        vram: 32,
+        tdp: 150,
+        formFactor: 'Open-Air, Triple Fan',
+        price: 950,
+        image: 'hardware-images/intel-arc-pro-b70-openair.png',
+        buyUrl: 'https://www.intel.com/content/www/us/en/products/sku/236775/intel-arc-pro-b70-graphics/specifications.html',
+        shortDesc: '32GB GDDR6 triple-fan GPU for workstation builds with good airflow.',
+        whatIsIt: "The open-air variant of the Arc Pro B70 uses a triple-fan cooling design instead of a blower. Identical performance and 32GB VRAM but designed for workstations with good case airflow rather than dense server configurations.",
+        whatIsItUsedFor: "Single-GPU or dual-GPU workstation setups where thermal density isn't a concern. Ideal for development, testing, and smaller AI deployments that don't require 4+ cards in a single chassis.",
+        whyItMatters: "Runs cooler and quieter than the blower version in open chassis scenarios. For multi-GPU server builds (3+ cards), the blower version is strongly recommended to avoid heat recirculation between cards.",
+        specs: [
+            ['VRAM', '32GB GDDR6'],
+            ['Bandwidth', '576 GB/s'],
+            ['XMX Engines', '512 units'],
+            ['TDP', '225W'],
+            ['Cooling', 'Triple Fan (Open-Air)']
+        ]
+    },
+    {
+        id: 'nvidia-4090',
+        name: 'NVIDIA RTX 4090',
+        vram: 24,
+        tdp: 450,
+        formFactor: 'Open-Air, 3-4 Slot',
+        price: 1600,
+        image: 'hardware-images/nvidia-rtx-4090.png',
+        buyUrl: 'https://www.nvidia.com/en-us/geforce/graphics-cards/rtx-40-series/rtx-4090/',
+        shortDesc: 'NVIDIA flagship consumer GPU with 24GB GDDR6X and CUDA/Tensor cores.',
+        whatIsIt: "NVIDIA's flagship consumer GPU with 24GB GDDR6X memory and powerful CUDA/Tensor cores. The dominant choice for enthusiast AI builds.",
+        whatIsItUsedFor: "Single-GPU AI inference, creative workloads (ComfyUI, Stable Diffusion), and development. Popular for hobbyist LLM serving with llama.cpp.",
+        whyItMatters: "Excellent performance per dollar for single-card setups, but limited to 24GB VRAM. Consumer boards can't support 4+ cards at full bandwidth. Not recommended for production multi-GPU servers.",
+        specs: [
+            ['VRAM', '24GB GDDR6X'],
+            ['Bandwidth', '1,008 GB/s'],
+            ['CUDA Cores', '16,384'],
+            ['TDP', '450W'],
+            ['Cooling', 'Open-Air'],
+            ['Slot Width', '3-4 slot']
+        ]
+    },
+    {
+        id: 'amd-w7900',
+        name: 'AMD Radeon Pro W7900',
+        vram: 48,
+        tdp: 300,
+        formFactor: 'Blower, Dual-Slot',
+        price: 3200,
+        image: 'hardware-images/amd-radeon-pro-w7900.png',
+        buyUrl: 'https://www.amd.com/en/product/11491',
+        shortDesc: '48GB GDDR6 workstation GPU, blower design for multi-GPU builds.',
+        whatIsIt: "AMD's professional workstation GPU with 48GB of GDDR6 memory and blower-style cooling. Offers the highest VRAM per card in the mid-range segment.",
+        whatIsItUsedFor: "Multi-GPU AI inference where AMD ROCm compatibility is available. Good alternative for organizations with AMD software ecosystem investments.",
+        whyItMatters: "At 48GB per card, it offers more VRAM than B70 but at a higher price ($66.70/GB). ROCm support for LLM inference is improving but lags behind Intel's IPEX-LLM.",
+        specs: [
+            ['VRAM', '48GB GDDR6'],
+            ['Bandwidth', '864 GB/s'],
+            ['TDP', '300W'],
+            ['Cooling', 'Blower'],
+            ['Slot Width', '2-slot']
+        ]
+    }
+];
+
+const MOTHERBOARD_OPTIONS = [
+    {
+        id: 'wrx90-sage',
+        name: 'Asus Pro WS WRX90E-SAGE SE',
+        pcieLanes: '128 PCIe 5.0',
+        maxGpus: 7,
+        socket: 'sTR5',
+        price: 1300,
+        image: 'hardware-images/asus-wrx90e-sage.png',
+        buyUrl: 'https://www.asus.com/us/motherboards-components/motherboards/pro-ws/pro-ws-wrx90e-sage-se-wifi/',
+        shortDesc: '128 PCIe 5.0 lanes. Up to 7 GPUs at full x16 bandwidth.',
+        whatIsIt: "Built for AMD Threadripper Pro 7000WX series processors. It provides 128 PCIe 5.0 lanes directly from the CPU, enabling up to 7 GPUs at full x16 bandwidth simultaneously.",
+        whatIsItUsedFor: "Multi-GPU AI inference servers, rendering workstations, and scientific computing. The 128-lane topology means every GPU slot runs at full PCIe 5.0 x16 speed - no bottlenecks.",
+        whyItMatters: "This is the only motherboard that supports 4+ GPUs at full x16 bandwidth. For AI inference with large models, PCIe bandwidth directly impacts token generation speed during context pre-filling.",
+        specs: [
+            ['PCIe Lanes', '128 PCIe 5.0'],
+            ['GPU Support', 'Up to 7 at x16'],
+            ['Socket', 'sWRX8 (Threadripper Pro)'],
+            ['RAM', '8x DDR5 ECC RDIMM (up to 2TB)'],
+            ['Form Factor', 'SSI-EEB']
+        ]
+    },
+    {
+        id: 'trx50-sage',
+        name: 'Asus Pro WS TRX50-SAGE WIFI',
+        pcieLanes: '92 PCIe 5.0',
+        maxGpus: 5,
+        socket: 'sTR5',
+        price: 820,
+        image: 'hardware-images/asus-trx50-sage.png',
+        buyUrl: 'https://www.asus.com/us/motherboards-components/motherboards/pro-ws/pro-ws-trx50-sage-wifi/',
+        shortDesc: '92 PCIe 5.0 lanes. Supports up to 3 GPUs at full x16.',
+        whatIsIt: "Enthusiast Threadripper motherboard with 92 PCIe 5.0 lanes. Supports up to 3 GPUs at full x16, with additional slots running at reduced speeds through the chipset.",
+        whatIsItUsedFor: "2-3 GPU workstations where full bandwidth on all slots isn't critical. Good for development and smaller production deployments.",
+        whyItMatters: "Solid for 2-3 GPU builds, but lanes drop significantly after slot 3. Slots 4-5 run at x8/x4 speeds, causing bandwidth contention during large model pre-filling.",
+        specs: [
+            ['PCIe Lanes', '92 PCIe 5.0'],
+            ['GPU Support', 'Up to 3 at x16 (5 total)'],
+            ['Socket', 'sTR5 (Threadripper)'],
+            ['RAM', '4x DDR5 ECC RDIMM'],
+            ['Form Factor', 'E-ATX']
+        ]
+    },
+    {
+        id: 'w790e-sage',
+        name: 'Asus Pro WS W790E-SAGE SE',
+        pcieLanes: '112 PCIe 5.0',
+        maxGpus: 7,
+        socket: 'LGA4677',
+        price: 1100,
+        image: 'hardware-images/asus-w790e-sage.png',
+        buyUrl: 'https://www.asus.com/us/motherboards-components/motherboards/pro-ws/pro-ws-w790e-sage-se/',
+        shortDesc: '112 PCIe 5.0 lanes. Intel Xeon alternative to WRX90.',
+        whatIsIt: "Intel Xeon W-3400 series motherboard with 112 PCIe 5.0 lanes. Alternative to AMD Threadripper for Intel-based AI workstations.",
+        whatIsItUsedFor: "Multi-GPU workloads on Intel platform. Good AVX-512 performance for certain inference workloads.",
+        whyItMatters: "112 lanes is close to WRX90's 128, but Intel's platform has higher CPU costs and less mature multi-GPU AI driver support compared to AMD + Intel GPU combinations.",
+        specs: [
+            ['PCIe Lanes', '112 PCIe 5.0'],
+            ['GPU Support', 'Up to 7 slots'],
+            ['Socket', 'LGA4677 (Xeon W-3400)'],
+            ['RAM', '8x DDR5 ECC RDIMM'],
+            ['Form Factor', 'SSI-EEB']
+        ]
+    },
+    {
+        id: 'x670e-standard',
+        name: 'Standard X670E Board',
+        pcieLanes: '28 PCIe 5.0',
+        maxGpus: 2,
+        socket: 'AM5',
+        price: 350,
+        image: '',
+        buyUrl: 'https://www.asus.com/us/motherboards-components/motherboards/tuf-gaming/tuf-gaming-x670e-plus-wifi/',
+        shortDesc: 'Budget consumer board. Only 2 GPUs at reduced bandwidth.',
+        whatIsIt: "Standard consumer motherboard with limited PCIe lanes. Only the first slot runs at full x16 speed; additional slots are severely bandwidth-limited.",
+        whatIsItUsedFor: "Single-GPU builds or basic desktop use. Not suitable for multi-GPU AI inference servers.",
+        whyItMatters: "Avoid for any multi-GPU AI build. The second slot runs at x4 Gen 4 speeds, causing 90%+ performance loss on the second card.",
+        specs: [
+            ['PCIe Lanes', '28 PCIe 5.0'],
+            ['GPU Support', '1 at x16 + 1 at x4'],
+            ['Socket', 'AM5 (Ryzen 7000/9000)'],
+            ['RAM', '4x DDR5 (non-ECC)'],
+            ['Form Factor', 'ATX']
+        ]
+    }
+];
+
+const CPU_OPTIONS = [
+    {
+        id: '7980x', name: 'AMD Threadripper Pro 7980X (64-Core)', cores: 64, tdp: 350, socket: 'sTR5', price: 5500,
+        image: '', buyUrl: 'https://www.amd.com/en/product/12480',
+        shortDesc: '64 cores, 350W TDP. Maximum compute for HPC and heavy multi-tasking.',
+        whatIsIt: "AMD's top-tier Threadripper Pro with 64 Zen 4 cores. Extreme multi-threaded performance for the most demanding workloads.",
+        whatIsItUsedFor: "HPC, scientific computing, and massive parallel workloads alongside GPU inference.",
+        whyItMatters: "Overkill for pure AI inference servers. The 7845WX offers better value, freeing budget for more GPUs."
+    },
+    {
+        id: '7970x', name: 'AMD Threadripper Pro 7970X (32-Core)', cores: 32, tdp: 300, socket: 'sTR5', price: 2500,
+        image: '', buyUrl: 'https://www.amd.com/en/product/12481',
+        shortDesc: '32 cores, 300W TDP. Balanced compute for mixed workloads.',
+        whatIsIt: "Mid-range Threadripper Pro with 32 cores. Good balance of compute power and cost.",
+        whatIsItUsedFor: "Mixed AI + compute workloads, rendering farms, and multi-user AI serving with preprocessing needs.",
+        whyItMatters: "Solid choice if you need CPU compute alongside GPU inference, but the 7845WX at $650 is better value."
+    },
+    {
+        id: '7845wx', name: 'AMD Threadripper Pro 7845WX (24-Core)', cores: 24, tdp: 250, socket: 'sTR5', price: 650,
+        image: 'hardware-images/threadripper-7845wx.png', buyUrl: 'https://www.amd.com/en/product/12482',
+        shortDesc: '24 cores, 250W TDP. The sweet spot for AI inference servers.',
+        whatIsIt: "AMD's value-optimized Threadripper Pro with 24 cores and full 128 PCIe 5.0 lane support.",
+        whatIsItUsedFor: "AI inference servers where GPU is the primary compute and CPU handles request routing, tokenization, and lightweight preprocessing.",
+        whyItMatters: "At $650, it provides the best price/performance for AI inference. Full PCIe 5.0 lane support enables maximum GPU density without bottlenecking."
+    },
+    {
+        id: '7950x', name: 'AMD Ryzen 9 7950X (16-Core)', cores: 16, tdp: 170, socket: 'AM5', price: 550,
+        image: '', buyUrl: 'https://www.amd.com/en/products/processors/desktops/ryzen/7000-series/ryzen-9-7950x',
+        shortDesc: '16 cores, 170W TDP. Consumer platform with limited PCIe lanes.',
+        whatIsIt: "AMD's consumer flagship on the AM5 platform. Great CPU but limited to 28 PCIe lanes - severely constraining multi-GPU builds.",
+        whatIsItUsedFor: "Single-GPU builds only. Pairs with X670E boards for basic AI workstations.",
+        whyItMatters: "Only use with a single GPU. The platform's 28 PCIe lanes cannot support multiple GPUs at full bandwidth."
+    }
+];
+
+const RAM_OPTIONS = [
+    { id: '256gb-ecc', name: '256GB DDR5-5600 ECC RDIMM', capacity: 256, speed: '5600MHz', ecc: true, price: 1200, image: 'hardware-images/kingston-ddr5-ecc.png', buyUrl: 'https://www.kingston.com/en/memory/server-memory/ddr5-server/ksm56rdm48bkm-32h', shortDesc: 'Maximum memory for large context windows and agent memory.' },
+    { id: '128gb-ecc', name: '128GB DDR5-5600 ECC RDIMM', capacity: 128, speed: '5600MHz', ecc: true, price: 450, image: 'hardware-images/kingston-ddr5-ecc.png', buyUrl: 'https://www.kingston.com/en/memory/server-memory/ddr5-server/ksm56rdm48bkm-32h', shortDesc: 'Recommended for production. ECC protects against bit-flip errors.' },
+    { id: '64gb-ecc', name: '64GB DDR5-5600 ECC RDIMM', capacity: 64, speed: '5600MHz', ecc: true, price: 220, image: 'hardware-images/kingston-ddr5-ecc.png', buyUrl: 'https://www.kingston.com/en/memory/server-memory/ddr5-server/ksm56rdm48bkm-32h', shortDesc: 'Minimum recommended for 50+ user inference servers.' },
+    { id: '64gb-non-ecc', name: '64GB DDR5-5600 Non-ECC', capacity: 64, speed: '5600MHz', ecc: false, price: 150, image: 'hardware-images/kingston-ddr5-ecc.png', buyUrl: 'https://www.kingston.com/en/memory/desktop-memory/ddr5-desktop/kf556c36bbek2-64', shortDesc: 'Budget option. Not recommended for production medical AI.' }
+];
+
+const STORAGE_OPTIONS = [
+    { id: '8tb-nvme', name: '8TB Enterprise NVMe Gen5', capacity: '8TB', type: 'NVMe Gen5', price: 600, image: 'hardware-images/samsung-nvme-990-pro.png', buyUrl: 'https://www.samsung.com/us/computing/memory-storage/internal-solid-state-drives/990-pro-8tb-mz-v9p8t0b-am/', shortDesc: 'Maximum storage for model libraries and datasets.' },
+    { id: '4tb-nvme', name: '4TB Enterprise NVMe Gen5', capacity: '4TB', type: 'NVMe Gen5', price: 300, image: 'hardware-images/samsung-nvme-990-pro.png', buyUrl: 'https://www.samsung.com/us/computing/memory-storage/internal-solid-state-drives/990-pro-4tb-mz-v9p4t0b-am/', shortDesc: 'Recommended. Plenty of space for GGUF models and datasets.' },
+    { id: '2tb-nvme', name: '2TB NVMe Gen4', capacity: '2TB', type: 'NVMe Gen4', price: 150, image: 'hardware-images/samsung-nvme-990-pro.png', buyUrl: 'https://www.samsung.com/us/computing/memory-storage/internal-solid-state-drives/990-pro-2tb-mz-v9p2t0b-am/', shortDesc: 'Budget option. Enough for 2-3 large models.' }
+];
+
+const CHASSIS_OPTIONS = [
+    {
+        id: 'rm44', name: 'SilverStone RM44 4U', formFactor: '4U Rackmount', maxGpuLength: 330, maxGpuCount: 7, price: 200,
+        image: 'hardware-images/silverstone-rm44.png',
+        buyUrl: 'https://www.silverstonetek.com/en/product/rm44/',
+        shortDesc: '7 expansion slots. 1-3-5-7 air gap strategy for 4 GPUs.',
+        whatIsIt: "4U rackmount chassis designed for high-density server builds. With 7 expansion slots, it supports up to 7 dual-slot GPUs in a 1-3-5-7 configuration with air gaps between each card.",
+        whatIsItUsedFor: "Multi-GPU AI inference servers, rendering farms, and HPC workstations. The 4U form factor fits standard 19-inch server racks.",
+        whyItMatters: "The 1-3-5-7 slot strategy creates air gaps between GPUs, preventing heat recirculation. Combined with blower-style cards that exhaust directly out the rear, this creates an efficient thermal solution.",
+        specs: [
+            ['Form Factor', '4U Rackmount'],
+            ['Expansion Slots', '7'],
+            ['GPU Support', 'Up to 7x dual-slot'],
+            ['PSU Support', 'ATX up to 2050W'],
+            ['Front Fans', '3x 80mm hot-swap']
+        ]
+    },
+    { id: 'rm43', name: 'SilverStone RM43 4U', formFactor: '4U Rackmount', maxGpuLength: 300, maxGpuCount: 5, price: 180, image: 'hardware-images/silverstone-rm51.png', buyUrl: 'https://www.silverstonetek.com/en/product/rm43/', shortDesc: 'Compact 4U chassis. 5 expansion slots.' },
+    { id: 'tower-case', name: 'Fractal Design Define 7 XL', formFactor: 'Mid-Tower', maxGpuLength: 470, maxGpuCount: 4, price: 180, image: '', buyUrl: 'https://www.fractal-design.com/products/cases/define/define-7-xl/', shortDesc: 'Quiet tower case. Good for 2-3 GPU workstations.' }
+];
+
+const COOLING_OPTIONS = [
+    { id: 'noctua-3x', name: '3x Noctua 3000RPM', type: 'Case Fans', noise: 'High', price: 90, image: 'hardware-images/noctua-nh-u14s-tr5.png', buyUrl: 'https://noctua.at/en/nf-a12x25-industrialppc', shortDesc: 'Industrial-grade fans for dense rackmount builds.' },
+    { id: 'noctua-5x', name: '5x Noctua 3000RPM', type: 'Case Fans', noise: 'High', price: 150, image: 'hardware-images/noctua-nh-u14s-tr5.png', buyUrl: 'https://noctua.at/en/nf-a12x25-industrialppc', shortDesc: 'Maximum airflow for 4+ GPU configurations.' },
+    { id: 'delta-3x', name: '3x Delta 5000RPM', type: 'Case Fans', noise: 'Very High', price: 120, image: 'hardware-images/noctua-nh-u14s-tr5.png', buyUrl: 'https://www.deltaww.com/en-US/products/Fans-and-Thermal-Management/Server-Fan', shortDesc: 'Extreme airflow for maximum thermal load. Loud.' }
+];
+
+const PSU_OPTIONS = [
+    { id: '2050w-hela', name: 'SilverStone 2050W HELA', wattage: 2050, efficiency: '80+ Titanium', price: 410, image: 'hardware-images/silverstone-hela-psu.png', buyUrl: 'https://www.silverstonetek.com/en/product/hela-2050/', shortDesc: 'Maximum power for 5+ GPU builds. 80+ Titanium efficiency.' },
+    { id: '1600w', name: 'Corsair HX1600i', wattage: 1600, efficiency: '80+ Platinum', price: 350, image: 'hardware-images/corsair-hx1500i.png', buyUrl: 'https://www.corsair.com/us/en/p/psu/cp-9020224-na-hxi-series-hx1600i-fully-modular-atx-power-supply', shortDesc: 'Solid for 3-4 GPU builds with headroom.' },
+    { id: '1200w', name: 'Corsair HX1200', wattage: 1200, efficiency: '80+ Platinum', price: 250, image: 'hardware-images/corsair-hx1500i.png', buyUrl: 'https://www.corsair.com/us/en/p/psu/cp-9020222-na-hxi-series-hx1200i-fully-modular-atx-power-supply', shortDesc: 'Entry-level. Only suitable for 1-2 GPU configurations.' }
+];
+
+// ==================== STATE ====================
+let config = {
+    gpu: GPU_OPTIONS[0], gpuCount: 4, motherboard: MOTHERBOARD_OPTIONS[0],
+    cpu: CPU_OPTIONS[2], ram: RAM_OPTIONS[1], storage: STORAGE_OPTIONS[1],
+    chassis: CHASSIS_OPTIONS[0], cooling: COOLING_OPTIONS[0], psu: PSU_OPTIONS[0]
+};
+
+const DEFAULT_CONFIG = {
+    gpu: GPU_OPTIONS[0], gpuCount: 4, motherboard: MOTHERBOARD_OPTIONS[0],
+    cpu: CPU_OPTIONS[2], ram: RAM_OPTIONS[1], storage: STORAGE_OPTIONS[1],
+    chassis: CHASSIS_OPTIONS[0], cooling: COOLING_OPTIONS[0], psu: PSU_OPTIONS[0]
+};
+
+const STORAGE_KEY = 'vidiai-configurator-build';
+
+function saveConfig() {
+    const data = { gpuId: config.gpu.id, gpuCount: config.gpuCount, motherboardId: config.motherboard.id, cpuId: config.cpu.id, ramId: config.ram.id, storageId: config.storage.id, chassisId: config.chassis.id, coolingId: config.cooling.id, psuId: config.psu.id };
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch (e) {}
+}
+
+function loadConfig() {
+    try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return false;
+        const data = JSON.parse(raw);
+        config.gpu = GPU_OPTIONS.find(g => g.id === data.gpuId) || DEFAULT_CONFIG.gpu;
+        config.gpuCount = data.gpuCount || DEFAULT_CONFIG.gpuCount;
+        config.motherboard = MOTHERBOARD_OPTIONS.find(m => m.id === data.motherboardId) || DEFAULT_CONFIG.motherboard;
+        config.cpu = CPU_OPTIONS.find(c => c.id === data.cpuId) || DEFAULT_CONFIG.cpu;
+        config.ram = RAM_OPTIONS.find(r => r.id === data.ramId) || DEFAULT_CONFIG.ram;
+        config.storage = STORAGE_OPTIONS.find(s => s.id === data.storageId) || DEFAULT_CONFIG.storage;
+        config.chassis = CHASSIS_OPTIONS.find(c => c.id === data.chassisId) || DEFAULT_CONFIG.chassis;
+        config.cooling = COOLING_OPTIONS.find(c => c.id === data.coolingId) || DEFAULT_CONFIG.cooling;
+        config.psu = PSU_OPTIONS.find(p => p.id === data.psuId) || DEFAULT_CONFIG.psu;
+        return true;
+    } catch (e) { return false; }
+}
+
+function resetToDefault() {
+    Object.assign(config, JSON.parse(JSON.stringify(DEFAULT_CONFIG)));
+    config.gpu = GPU_OPTIONS[0]; config.gpuCount = 4; config.motherboard = MOTHERBOARD_OPTIONS[0];
+    config.cpu = CPU_OPTIONS[2]; config.ram = RAM_OPTIONS[1]; config.storage = STORAGE_OPTIONS[1];
+    config.chassis = CHASSIS_OPTIONS[0]; config.cooling = COOLING_OPTIONS[0]; config.psu = PSU_OPTIONS[0];
+    localStorage.removeItem(STORAGE_KEY);
+    refreshAll();
+    showToast('Reset to default build');
+}
+
+// ==================== PRICING ENGINE ====================
+function calculateTotal() {
+    return (config.gpu.price * config.gpuCount) + config.motherboard.price + config.cpu.price + config.ram.price + config.storage.price + config.chassis.price + config.cooling.price + config.psu.price;
+}
+function calculateVRAM() { return config.gpu.vram * config.gpuCount; }
+function calculatePowerDraw() { return (config.gpu.tdp * config.gpuCount) + config.cpu.tdp + 150; }
+function calculatePSUHeadroom() { const draw = calculatePowerDraw(); return ((config.psu.wattage - draw) / config.psu.wattage) * 100; }
+
+// ==================== COMPATIBILITY ====================
+function validateCompatibility() {
+    const issues = [], warnings = [], ok = [];
+    if (config.gpuCount > config.motherboard.maxGpus) { issues.push(`GPU count (${config.gpuCount}) exceeds motherboard max (${config.motherboard.maxGpus})`); } else { ok.push(`GPU count within motherboard limit (${config.motherboard.maxGpus})`); }
+    if (config.gpuCount > config.chassis.maxGpuCount) { issues.push(`GPU count (${config.gpuCount}) exceeds chassis capacity (${config.chassis.maxGpuCount})`); } else { ok.push(`GPU count fits in chassis (${config.chassis.maxGpuCount} max)`); }
+    if (config.gpu.id === 'nvidia-4090' && (config.chassis.id === 'rm44' || config.chassis.id === 'rm43')) { warnings.push('RTX 4090 may not fit in 4U chassis - verify dimensions'); }
+    if (config.motherboard.socket === 'AM5' && config.cpu.socket !== 'AM5') { issues.push(`CPU socket (${config.cpu.socket}) incompatible with motherboard (${config.motherboard.socket})`); } else if (config.motherboard.socket === 'sTR5' && config.cpu.socket !== 'sTR5') { issues.push(`CPU socket (${config.cpu.socket}) incompatible with motherboard (${config.motherboard.socket})`); } else if (config.motherboard.socket === 'LGA4677' && config.cpu.socket !== 'LGA4677') { issues.push(`CPU socket incompatible with Intel Xeon motherboard`); } else { ok.push(`CPU socket compatible (${config.motherboard.socket})`); }
+    const draw = calculatePowerDraw(), headroom = calculatePSUHeadroom();
+    if (draw > config.psu.wattage) { issues.push(`Power draw (${draw}W) exceeds PSU capacity (${config.psu.wattage}W)`); } else if (headroom < 10) { warnings.push(`Low PSU headroom (${headroom.toFixed(1)}%)`); } else { ok.push(`PSU adequate (${headroom.toFixed(1)}% headroom)`); }
+    if (config.motherboard.id === 'trx50-sage' && config.gpuCount > 3) { warnings.push(`GPU ${config.gpuCount} on TRX50: slots 4+ run at reduced speed`); }
+    if (config.motherboard.id === 'x670e-standard' && config.gpuCount > 1) { warnings.push(`GPU ${config.gpuCount} on X670E: slot 2 runs at x4 Gen 4`); }
+    if (config.gpu.id === 'arc-b70-oa' && config.gpuCount > 2 && config.chassis.id === 'rm44') { warnings.push('Open-air GPUs in RM44 with 3+ cards may cause heat recirculation. Use blower variant.'); }
+    return { issues, warnings, ok };
+}
+
+// ==================== RENDER SELECTORS ====================
+function renderThumbnail(opt) {
+    if (opt.image) {
+        return `<img class="selector-thumb" src="${opt.image}" alt="${opt.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="selector-thumb-placeholder" style="display:none">${opt.name.charAt(0)}</div>`;
+    }
+    return `<div class="selector-thumb-placeholder">${opt.name.charAt(0)}</div>`;
+}
+
+function renderLearnPanel(opt) {
+    if (!opt.whatIsIt) return '';
+    let specsHtml = '';
+    if (opt.specs && opt.specs.length > 0) {
+        specsHtml = '<table class="spec-table" style="margin-top:1rem">' + opt.specs.map(s => `<tr><td>${s[0]}</td><td>${s[1]}</td></tr>`).join('') + '</table>';
+    }
+    let imgHtml = '';
+    if (opt.image) {
+        imgHtml = `<img src="${opt.image}" alt="${opt.name}" style="max-width:300px" onerror="this.style.display='none'">`;
+    }
+    return `
+        <div class="selector-learn-panel" id="learn-${opt.id}">
+            <div class="learn-content">
+                ${imgHtml}
+                <h5>What Is It?</h5>
+                <p>${opt.whatIsIt || ''}</p>
+                <h5>What Is It Used For?</h5>
+                <p>${opt.whatIsItUsedFor || ''}</p>
+                <h5>Why It Matters</h5>
+                <p>${opt.whyItMatters || ''}</p>
+                ${specsHtml}
+            </div>
+        </div>`;
+}
+
+function renderSelectors() {
+    const col = document.getElementById('selector-column');
+    function makeSelect(label, options, selected, onChange, extraHtml) {
+        const idPrefix = label.toLowerCase().replace(/[^a-z]/g, '');
+        const opt = options.find(o => o.id === selected.id);
+        const thumb = renderThumbnail(opt || options[0]);
+        const opts = options.map(o => `<option value="${o.id}" ${o.id === selected.id ? 'selected' : ''}>${o.name} - $${o.price.toLocaleString()}</option>`).join('');
+        const hasLearn = opt && opt.whatIsIt;
+        const learnPanel = opt ? renderLearnPanel(opt) : '';
+        const buyBtn = (opt && opt.buyUrl) ? `<a class="btn-selector-buy" href="${opt.buyUrl}" target="_blank" rel="noopener" onclick="event.stopPropagation()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3h6v6"/><line x1="10" y1="14" x2="21" y2="3"/></svg>Buy</a>` : '';
+        const learnBtn = hasLearn ? `<button class="btn-selector-learn" onclick="toggleSelectorLearn('learn-${opt.id}', this)">Learn More</button>` : '';
+        const shortDesc = (opt && opt.shortDesc) ? `<div class="selector-info">${opt.shortDesc}</div>` : '';
+        return `<div class="selector-group">
+            <div class="selector-label">${label}</div>
+            <div class="selector-row">${thumb}<select onchange="${onChange}">${opts}</select>${extraHtml || ''}</div>
+            ${shortDesc}
+            <div class="selector-actions">${learnBtn}${buyBtn}</div>
+            ${learnPanel}
+        </div>`;
+    }
+    const gpuExtra = `<div class="gpu-count"><button onclick="changeGpuCount(-1)" ${config.gpuCount <= 1 ? 'disabled' : ''}>−</button><span>${config.gpuCount}</span><button onclick="changeGpuCount(1)" ${config.gpuCount >= config.motherboard.maxGpus ? 'disabled' : ''}>+</button></div>`;
+    col.innerHTML = `
+        ${makeSelect('GPU', GPU_OPTIONS, config.gpu, 'onGpuChange(this.value)', gpuExtra)}
+        ${makeSelect('Motherboard', MOTHERBOARD_OPTIONS, config.motherboard, 'onMotherboardChange(this.value)')}
+        ${makeSelect('CPU', CPU_OPTIONS, config.cpu, 'onCpuChange(this.value)')}
+        ${makeSelect('RAM', RAM_OPTIONS, config.ram, 'onRamChange(this.value)')}
+        ${makeSelect('Storage', STORAGE_OPTIONS, config.storage, 'onStorageChange(this.value)')}
+        ${makeSelect('Chassis', CHASSIS_OPTIONS, config.chassis, 'onChassisChange(this.value)')}
+        ${makeSelect('Cooling', COOLING_OPTIONS, config.cooling, 'onCoolingChange(this.value)')}
+        ${makeSelect('PSU', PSU_OPTIONS, config.psu, 'onPsuChange(this.value)')}
+    `;
+}
+
+function toggleSelectorLearn(panelId, btn) {
+    const panel = document.getElementById(panelId);
+    if (!panel) return;
+    panel.classList.toggle('open');
+    btn.classList.toggle('active');
+}
+
+function renderSummary() {
+    const panel = document.getElementById('summary-panel');
+    const total = calculateTotal(), vram = calculateVRAM(), powerDraw = calculatePowerDraw(), headroom = calculatePSUHeadroom(), compat = validateCompatibility();
+    let headroomClass = 'green', barClass = 'safe';
+    if (headroom < 10) { headroomClass = 'red'; barClass = 'danger'; } else if (headroom < 20) { headroomClass = 'amber'; barClass = 'warning'; }
+    const barWidth = Math.min((powerDraw / config.psu.wattage) * 100, 100);
+    let compatHtml = '';
+    compat.issues.forEach(i => { compatHtml += `<div class="compat-item"><span class="compat-dot err"></span>${i}</div>`; });
+    compat.warnings.forEach(w => { compatHtml += `<div class="compat-item"><span class="compat-dot warn"></span>${w}</div>`; });
+    compat.ok.forEach(o => { compatHtml += `<div class="compat-item"><span class="compat-dot ok"></span>${o}</div>`; });
+
+    const buyLinks = [
+        { name: `${config.gpuCount}x ${config.gpu.name}`, url: config.gpu.buyUrl },
+        { name: config.motherboard.name, url: config.motherboard.buyUrl },
+        { name: config.cpu.name, url: config.cpu.buyUrl },
+        { name: config.ram.name, url: config.ram.buyUrl },
+        { name: config.storage.name, url: config.storage.buyUrl },
+        { name: config.chassis.name, url: config.chassis.buyUrl },
+        { name: config.cooling.name, url: config.cooling.buyUrl },
+        { name: config.psu.name, url: config.psu.buyUrl }
+    ];
+    let buyLinksHtml = buyLinks.map(l => `
+        <a class="buy-link-item" href="${l.url}" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3h6v6"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            ${l.name}
+        </a>
+    `).join('');
+
+    panel.innerHTML = `
+        <div class="summary-title">Live Build Summary</div>
+        <div class="total-price">$${total.toLocaleString()}</div>
+        <div class="stat-row"><span class="stat-label">Total VRAM</span><span class="stat-value green">${vram} GB</span></div>
+        <div class="stat-row"><span class="stat-label">GPU Cost</span><span class="stat-value">$${(config.gpu.price * config.gpuCount).toLocaleString()}</span></div>
+        <div class="stat-row"><span class="stat-label">System Cost</span><span class="stat-value">$${(total - config.gpu.price * config.gpuCount).toLocaleString()}</span></div>
+        <div class="power-bar-container">
+            <div class="power-bar-label"><span>Power Draw: ${powerDraw}W / ${config.psu.wattage}W</span><span class="stat-value ${headroomClass}">${headroom.toFixed(1)}% free</span></div>
+            <div class="power-bar"><div class="power-bar-fill ${barClass}" style="width: ${barWidth}%;"></div></div>
+        </div>
+        <div class="compat-section"><div class="compat-title">Compatibility Check</div>${compatHtml}</div>
+        <div style="margin-top:1.5rem;padding-top:1rem;border-top:1px solid var(--border-color);">
+            <div class="compat-title">Quick Buy Links</div>
+            ${buyLinksHtml}
+        </div>
+        <button class="btn-export" onclick="exportConfig()">Export Configuration</button>
+        <button class="btn-share" onclick="shareConfig()">Copy Share Link</button>
+        <button class="btn-reset" onclick="resetToDefault()">Reset to Default</button>
+    `;
+}
+
+function updateCompareBars() {
+    const vram = calculateVRAM(), total = calculateTotal();
+    let tflops = 0;
+    if (config.gpu.id === 'arc-b70' || config.gpu.id === 'arc-b70-oa') tflops = 12 * config.gpuCount;
+    else if (config.gpu.id === 'nvidia-4090') tflops = 20 * config.gpuCount;
+    else if (config.gpu.id === 'amd-w7900') tflops = 15 * config.gpuCount;
+    const maxTflops = Math.max(tflops, 48), maxVram = Math.max(vram, 192), maxPrice = Math.max(total, 8499);
+    const barVidiTflops = document.getElementById('bar-vidi-tflops'), barVidiVram = document.getElementById('bar-vidi-vram'), barVidiPrice = document.getElementById('bar-vidi-price');
+    const valVidiTflops = document.getElementById('val-vidi-tflops'), valVidiVram = document.getElementById('val-vidi-vram'), valVidiPrice = document.getElementById('val-vidi-price');
+    if (barVidiTflops) { barVidiTflops.style.width = (tflops / maxTflops * 100) + '%'; barVidiTflops.textContent = tflops; valVidiTflops.textContent = tflops; }
+    if (barVidiVram) { barVidiVram.style.width = (vram / maxVram * 100) + '%'; barVidiVram.textContent = vram; valVidiVram.textContent = vram; }
+    if (barVidiPrice) { barVidiPrice.style.width = (total / maxPrice * 100) + '%'; barVidiPrice.textContent = '$' + total.toLocaleString(); valVidiPrice.textContent = '$' + total.toLocaleString(); }
+}
+
+// ==================== EVENT HANDLERS ====================
+function changeGpuCount(delta) { const newCount = config.gpuCount + delta; if (newCount >= 1 && newCount <= config.motherboard.maxGpus) { config.gpuCount = newCount; refreshAll(); } }
+function onGpuChange(id) { config.gpu = GPU_OPTIONS.find(g => g.id === id); refreshAll(); }
+function onMotherboardChange(id) {
+    config.motherboard = MOTHERBOARD_OPTIONS.find(m => m.id === id);
+    if (config.gpuCount > config.motherboard.maxGpus) config.gpuCount = config.motherboard.maxGpus;
+    if (config.motherboard.socket === 'AM5' && config.cpu.socket !== 'AM5') config.cpu = CPU_OPTIONS.find(c => c.socket === 'AM5');
+    else if (config.motherboard.socket === 'sTR5' && config.cpu.socket !== 'sTR5') config.cpu = CPU_OPTIONS.find(c => c.socket === 'sTR5');
+    else if (config.motherboard.socket === 'LGA4677') config.cpu = CPU_OPTIONS.find(c => c.socket === 'LGA4677') || config.cpu;
+    refreshAll();
+}
+function onCpuChange(id) { config.cpu = CPU_OPTIONS.find(c => c.id === id); refreshAll(); }
+function onRamChange(id) { config.ram = RAM_OPTIONS.find(r => r.id === id); refreshAll(); }
+function onStorageChange(id) { config.storage = STORAGE_OPTIONS.find(s => s.id === id); refreshAll(); }
+function onChassisChange(id) { config.chassis = CHASSIS_OPTIONS.find(c => c.id === id); if (config.gpuCount > config.chassis.maxGpuCount) config.gpuCount = config.chassis.maxGpuCount; refreshAll(); }
+function onCoolingChange(id) { config.cooling = COOLING_OPTIONS.find(c => c.id === id); refreshAll(); }
+function onPsuChange(id) { config.psu = PSU_OPTIONS.find(p => p.id === id); refreshAll(); }
+function refreshAll() { renderSelectors(); renderSummary(); updateCompareBars(); saveConfig(); }
+
+function exportConfig() {
+    const total = calculateTotal(), vram = calculateVRAM(), powerDraw = calculatePowerDraw(), compat = validateCompatibility();
+    const buyLinks = [
+        `GPU: ${config.gpu.buyUrl}`,
+        `Motherboard: ${config.motherboard.buyUrl}`,
+        `CPU: ${config.cpu.buyUrl}`,
+        `RAM: ${config.ram.buyUrl}`,
+        `Storage: ${config.storage.buyUrl}`,
+        `Chassis: ${config.chassis.buyUrl}`,
+        `Cooling: ${config.cooling.buyUrl}`,
+        `PSU: ${config.psu.buyUrl}`
+    ].join('\n');
+    const text = `=== VIDI AI BUILD CONFIGURATION ===\n\nGPU: ${config.gpuCount}x ${config.gpu.name} (${config.gpu.vram}GB each)\nMotherboard: ${config.motherboard.name}\nCPU: ${config.cpu.name}\nRAM: ${config.ram.name}\nStorage: ${config.storage.name}\nChassis: ${config.chassis.name}\nCooling: ${config.cooling.name}\nPSU: ${config.psu.name}\n\n--- PURCHASE LINKS ---\n${buyLinks}\n\n--- SUMMARY ---\nTotal Price: $${total.toLocaleString()}\nTotal VRAM: ${vram} GB\nEst. Power Draw: ${powerDraw}W\nPSU Headroom: ${calculatePSUHeadroom().toFixed(1)}%\n\n--- COMPATIBILITY ---\n${compat.issues.map(i => '\u274c ' + i).join('\n')}\n${compat.warnings.map(w => '\u26a0\ufe0f ' + w).join('\n')}\n${compat.ok.map(o => '\u2705 ' + o).join('\n')}`;
+    const blob = new Blob([text], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url; a.download = 'vidiai-build-config.txt'; a.click();
+    URL.revokeObjectURL(url);
+    showToast('Configuration exported!');
+}
+
+function shareConfig() {
+    const total = calculateTotal(), vram = calculateVRAM();
+    const text = `Vidi Ai Build: ${config.gpuCount}x ${config.gpu.name} | ${vram}GB VRAM | $${total.toLocaleString()} | ${config.motherboard.name}`;
+    navigator.clipboard.writeText(text).then(() => showToast('Link copied to clipboard!')).catch(() => showToast('Failed to copy'));
+}
+
+function showToast(msg) { const toast = document.getElementById('toast'); toast.textContent = msg; toast.classList.add('show'); setTimeout(() => toast.classList.remove('show'), 2000); }
+
+// ==================== TAB SWITCHING ====================
+function switchTab(tabId) {
+    document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    const section = document.getElementById(tabId);
+    if (section) section.classList.add('active');
+    // Find and activate the corresponding nav button
+    const navBtns = document.querySelectorAll('.nav-btn');
+    navBtns.forEach(b => {
+        if (b.textContent.trim().toLowerCase() === tabId.toLowerCase() ||
+            (tabId === 'configurator' && b.textContent.trim() === 'Configurator') ||
+            (tabId === 'wizard' && b.textContent.trim() === 'Wizard') ||
+            (tabId === 'compare' && b.textContent.trim() === 'Compare') ||
+            (tabId === 'hardware' && b.textContent.trim() === 'Hardware') ||
+            (tabId === 'reference' && b.textContent.trim() === 'Reference') ||
+            (tabId === 'assembly' && b.textContent.trim() === 'Assembly') ||
+            (tabId === 'ecosystem' && b.textContent.trim() === 'Ecosystem') ||
+            (tabId === 'agents' && b.textContent.trim() === 'Agent OS') ||
+            (tabId === 'pricing' && b.textContent.trim() === 'Pricing') ||
+            (tabId === 'faq' && b.textContent.trim() === 'FAQ')) {
+            b.classList.add('active');
+        }
+    });
+    if (tabId === 'compare') setTimeout(updateCompareBars, 100);
+    if (tabId === 'hardware') { renderTiers(); renderVisualizer(); }
+    if (event && event.target) {
+        // Already handled by class matching above
+    }
+}
+
+// ==================== REFERENCE TAB ====================
+function toggleRef(id) { document.getElementById(id).classList.toggle('open'); }
+
+// ==================== REFERENCE DROPDOWN ====================
+function toggleRefDropdown(e) {
+    e.stopPropagation();
+    document.getElementById('refDropdown').classList.toggle('open');
+}
+function closeRefDropdown() {
+    document.getElementById('refDropdown').classList.remove('open');
+}
+function scrollToProduct(sectionId) {
+    closeRefDropdown();
+    switchTab('reference');
+    setTimeout(() => {
+        const el = document.getElementById(sectionId);
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+    }, 200);
+}
+document.addEventListener('click', function(e) {
+    if (!e.target.closest('.ref-dropdown')) {
+        document.getElementById('refDropdown').classList.remove('open');
+    }
+});
+
+// ==================== CONFIGURATION WIZARD ====================
+const WIZARD_DATA = {
+    medical: {
+        build: '4-Card Build',
+        price: '$6,850',
+        vram: '128GB',
+        model: 'Qwen 72B Q8_0',
+        desc: 'Recommended for 50+ concurrent users. 128GB VRAM handles Qwen 72B at Q8_0 with room for Mem0 and Hermes Agent overhead. Dual-model setup possible with Qwen 32B as fallback.',
+        bom: '4x Arc Pro B70 ($3,800) | WRX90E-SAGE ($1,300) | Threadripper Pro 7845WX ($650) | 128GB DDR5 ECC ($450) | 4TB NVMe ($300) | RM44 ($200) | 2050W PSU ($410)',
+        config: { gpuId: 'arc-b70', gpuCount: 4, motherboardId: 'wrx90-sage', cpuId: '7845wx', ramId: '128gb-ecc', storageId: '4tb-nvme', chassisId: 'rm44', coolingId: 'noctua-3x', psuId: '2050w-hela' }
+    },
+    coding: {
+        build: '4-Card Build',
+        price: '$6,850',
+        vram: '128GB',
+        model: 'Qwen 72B + YaRN 1M',
+        desc: '1-3 developers get full 72B model with 1M token context via YaRN. Perfect for large codebase analysis, documentation review, and AI pair programming.',
+        bom: '4x Arc Pro B70 ($3,800) | WRX90E-SAGE ($1,300) | Threadripper Pro 7845WX ($650) | 128GB DDR5 ECC ($450) | 4TB NVMe ($300) | RM44 ($200) | 2050W PSU ($410)',
+        config: { gpuId: 'arc-b70', gpuCount: 4, motherboardId: 'wrx90-sage', cpuId: '7845wx', ramId: '128gb-ecc', storageId: '4tb-nvme', chassisId: 'rm44', coolingId: 'noctua-3x', psuId: '2050w-hela' }
+    },
+    creative: {
+        build: '5-Card Build',
+        price: '$7,900',
+        vram: '160GB',
+        model: 'Qwen 72B + ComfyUI',
+        desc: 'Maximum VRAM for running LLM and ComfyUI simultaneously. 160GB handles Qwen 72B Q8_0 (72GB) + SUPIR/FLUX workflows (32GB+) with room to spare.',
+        bom: '5x Arc Pro B70 ($4,750) | WRX90E-SAGE ($1,300) | Threadripper Pro 7845WX ($650) | 128GB DDR5 ECC ($450) | 4TB NVMe ($300) | RM44 ($200) | 2050W PSU ($410)',
+        config: { gpuId: 'arc-b70', gpuCount: 5, motherboardId: 'wrx90-sage', cpuId: '7845wx', ramId: '128gb-ecc', storageId: '4tb-nvme', chassisId: 'rm44', coolingId: 'noctua-5x', psuId: '2050w-hela' }
+    },
+    mixed: {
+        build: '4-Card Build',
+        price: '$6,850',
+        vram: '128GB',
+        model: 'Qwen 72B + Gemma 4 Dual',
+        desc: 'Dual model setup: Qwen 72B for medical/general (72GB) + Gemma 4 27B for coding (27GB) = 99GB used. 29GB headroom for system overhead.',
+        bom: '4x Arc Pro B70 ($3,800) | WRX90E-SAGE ($1,300) | Threadripper Pro 7845WX ($650) | 128GB DDR5 ECC ($450) | 4TB NVMe ($300) | RM44 ($200) | 2050W PSU ($410)',
+        config: { gpuId: 'arc-b70', gpuCount: 4, motherboardId: 'wrx90-sage', cpuId: '7845wx', ramId: '128gb-ecc', storageId: '4tb-nvme', chassisId: 'rm44', coolingId: 'noctua-3x', psuId: '2050w-hela' }
+    }
+};
+
+function selectWizard(el, type) {
+    document.querySelectorAll('.wizard-card').forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
+    const d = WIZARD_DATA[type];
+    const r = document.getElementById('wizardResult');
+    r.classList.add('show');
+    document.getElementById('wizardContent').innerHTML = `
+        <div class="grid" style="grid-template-columns:1fr 1fr;gap:2rem;margin-top:1rem">
+            <div>
+                <p><span class="badge badge-blue">Recommended</span></p>
+                <h3 style="margin:0.5rem 0">${d.build}</h3>
+                <div style="font-size:2rem;font-weight:800">${d.price}</div>
+                <div style="color:var(--accent-blue);font-weight:700">${d.vram} VRAM</div>
+                <p style="margin-top:0.5rem"><strong>Model:</strong> ${d.model}</p>
+                <button class="wizard-apply-btn" onclick="applyWizardConfig('${type}')">Apply to Rig Builder</button>
+            </div>
+            <div>
+                <p style="font-size:0.9rem;line-height:1.7">${d.desc}</p>
+                <p style="font-size:0.8rem;color:var(--text-tertiary);margin-top:1rem"><strong>BOM:</strong> ${d.bom}</p>
+            </div>
+        </div>`;
+}
+
+function applyWizardConfig(type) {
+    const wc = WIZARD_DATA[type].config;
+    config.gpu = GPU_OPTIONS.find(g => g.id === wc.gpuId) || config.gpu;
+    config.gpuCount = wc.gpuCount;
+    config.motherboard = MOTHERBOARD_OPTIONS.find(m => m.id === wc.motherboardId) || config.motherboard;
+    config.cpu = CPU_OPTIONS.find(c => c.id === wc.cpuId) || config.cpu;
+    config.ram = RAM_OPTIONS.find(r => r.id === wc.ramId) || config.ram;
+    config.storage = STORAGE_OPTIONS.find(s => s.id === wc.storageId) || config.storage;
+    config.chassis = CHASSIS_OPTIONS.find(c => c.id === wc.chassisId) || config.chassis;
+    config.cooling = COOLING_OPTIONS.find(c => c.id === wc.coolingId) || config.cooling;
+    config.psu = PSU_OPTIONS.find(p => p.id === wc.psuId) || config.psu;
+    refreshAll();
+    switchTab('configurator');
+    showToast('Wizard configuration applied!');
+}
+
+// ==================== HARDWARE TAB ====================
+const HARDWARE_TIERS = [
+    { id: 'pro', type: "Professional (The Seven)", name: "Asus Pro WS WRX90E-SAGE SE", lanes: "128 PCIe 5.0 Lanes", slots: [{id:1,speed:"x16 Gen 5",status:"Direct CPU",quality:"optimal"},{id:2,speed:"x16 Gen 5",status:"Direct CPU",quality:"optimal"},{id:3,speed:"x16 Gen 5",status:"Direct CPU",quality:"optimal"},{id:4,speed:"x16 Gen 5",status:"Direct CPU",quality:"optimal"},{id:5,speed:"x16 Gen 5",status:"Direct CPU",quality:"optimal"},{id:6,speed:"x16 Gen 5",status:"Direct CPU",quality:"optimal"},{id:7,speed:"x16 Gen 5",status:"Direct CPU",quality:"optimal"}], price: "$1,300", summary: "Guaranteed x16 on all slots. Zero bandwidth bottlenecks.", color: "emerald" },
+    { id: 'enthusiast', type: "Enthusiast (TRX)", name: "Asus Pro WS TRX50-SAGE WIFI", lanes: "92 PCIe 5.0 Lanes", slots: [{id:1,speed:"x16 Gen 5",status:"Direct CPU",quality:"optimal"},{id:2,speed:"x16 Gen 5",status:"Direct CPU",quality:"optimal"},{id:3,speed:"x16 Gen 5",status:"Direct CPU",quality:"optimal"},{id:4,speed:"x8 Gen 4",status:"Chipset",quality:"warning"},{id:5,speed:"x4 Gen 4",status:"Chipset",quality:"danger"}], price: "$820", summary: "3rd card starts dropping lanes. Multi-user lag begins.", color: "amber" },
+    { id: 'consumer', type: "Consumer (Standard)", name: "Standard X670E / Z790 Board", lanes: "24-28 PCIe 5.0 Lanes", slots: [{id:1,speed:"x16 Gen 5",status:"Direct CPU",quality:"optimal"},{id:2,speed:"x4 Gen 4",status:"Chipset",quality:"danger"},{id:3,speed:"x1 Gen 4",status:"Chipset",quality:"danger"}], price: "$350", summary: "Useless for clusters. 90% performance loss on card 2.", color: "red" }
+];
+
+const COMFY_TOP_10 = [
+    { id: 1, name: "SUPIR Upscaling", vram: "32GB+", desc: "Gold standard for medical imaging restoration." },
+    { id: 2, name: "FLUX.1 [dev]", vram: "24GB+", desc: "Benchmark for logic and medical text rendering." },
+    { id: 3, name: "AnimateDiff V3", vram: "24GB", desc: "Generating fluid MRI-based motion studies." },
+    { id: 4, name: "Stable Video Diffusion", vram: "18GB+", desc: "3D rotational anatomical visualization." },
+    { id: 5, name: "Segment Anything 2", vram: "12GB", desc: "Real-time zero-shot organ segmentation." },
+    { id: 6, name: "IP-Adapter FaceID", vram: "8GB", desc: "Digital Twins for telehealth identity." },
+    { id: 7, name: "ControlNet Multi-Stack", vram: "22GB+", desc: "Running 5+ spatial surgical constraints." },
+    { id: 8, name: "LivePortrait Local", vram: "12GB", desc: "Interactive medical training avatars." },
+    { id: 9, name: "Layered Diffusion", vram: "16GB", desc: "Transparent medical UI asset generation." },
+    { id: 10, name: "SDXL Lightning", vram: "12GB", desc: "Sub-second gen for 50 simultaneous users." }
+];
+
+const MANIFEST = [
+    { label: "GPUs (4x Vidi Ai Arc Pro B70 32GB Blower)", cost: "$3,800" },
+    { label: "Motherboard (Asus Pro WRX90 SAGE SE)", cost: "$1,300" },
+    { label: "CPU (AMD Threadripper Pro 7845WX)", cost: "$650" },
+    { label: "Memory (128GB DDR5-5600 ECC)", cost: "$450" },
+    { label: "Storage (4TB Enterprise NVMe)", cost: "$300" },
+    { label: "Chassis (SilverStone RM44 4U Case)", cost: "$200" },
+    { label: "Cooling (3x Noctua 3000RPM)", cost: "$90" },
+    { label: "Power (SilverStone 2050W HELA)", cost: "$410" }
+];
+
+let currentTier = HARDWARE_TIERS[0];
+
+function renderTiers() {
+    const list = document.getElementById('tier-list');
+    if (!list) return;
+    list.innerHTML = '';
+    HARDWARE_TIERS.forEach(tier => {
+        const btn = document.createElement('button');
+        btn.className = `tier-btn ${currentTier.id === tier.id ? 'active' : ''}`;
+        btn.dataset.color = tier.color;
+        btn.onclick = () => { currentTier = tier; renderTiers(); renderVisualizer(); };
+        btn.innerHTML = `<div style="display: flex; justify-content: space-between; font-size: 9px; font-weight: 900; text-transform: uppercase; margin-bottom: 0.5rem;"><span>${tier.type}</span><span style="opacity: 0.4;">${tier.price}</span></div><h4 style="margin-bottom: 0.5rem; font-size: 1.1rem;">${tier.name}</h4><p style="font-size: 11px; color: var(--text-secondary);">${tier.summary}</p>`;
+        list.appendChild(btn);
+    });
+}
+
+function renderVisualizer() {
+    const viz = document.getElementById('lane-visualizer');
+    if (!viz) return;
+    const colorMap = { emerald: '#10b981', amber: '#f59e0b', red: '#ef4444' };
+    const accent = colorMap[currentTier.color];
+    let slotsHtml = currentTier.slots.map(s => `
+        <div class="slot-row" style="border-color: ${s.quality === 'optimal' ? 'rgba(16,185,129,0.2)' : s.quality === 'warning' ? 'rgba(245,158,11,0.2)' : 'rgba(239,68,68,0.2)'}">
+            <div class="slot-label">Slot ${s.id}</div>
+            <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 13px; font-weight: 700;">
+                <span style="color: ${colorMap[s.quality === 'optimal' ? 'emerald' : s.quality === 'warning' ? 'amber' : 'red']}">${s.status}</span>
+            </div>
+            <div class="slot-speed" style="color: ${colorMap[s.quality === 'optimal' ? 'emerald' : s.quality === 'warning' ? 'amber' : 'red']}">${s.speed}</div>
+        </div>
+    `).join('');
+    viz.innerHTML = `
+        <div class="visual-lane-card">
+            <div class="flex justify-between items-center" style="margin-bottom: 2rem;">
+                <div><h4 style="font-size: 10px; color: var(--accent-blue);">Lane Architecture</h4><p style="font-size: 1.5rem;">${currentTier.name}</p></div>
+                <div style="padding: 4px 12px; border: 1px solid ${accent}; border-radius: 20px; color: ${accent}; font-size: 10px; font-weight: 900;">${currentTier.lanes}</div>
+            </div>
+            ${slotsHtml}
+            <div style="margin-top: 2rem; padding: 1.5rem; background: rgba(0,0,0,0.3); border-radius: 20px; border: 1px solid var(--border-color); font-size: 11px; color: var(--text-secondary);">
+                <strong>Architect's Note:</strong> ${currentTier.id === 'pro' ? 'Optimal for high-density inference. Every card reaches peak throughput without contention.' : 'Sub-optimal for 50-user environments. Bus saturation will cause noticeable response jitter.'}
+            </div>
+        </div>
+    `;
+}
+
+function renderComfy() {
+    const list = document.getElementById('comfy-list');
+    if (!list) return;
+    COMFY_TOP_10.forEach(app => {
+        const card = document.createElement('div');
+        card.className = 'comfy-card';
+        card.innerHTML = `<div class="flex justify-between items-start" style="margin-bottom: 1.5rem;"><span style="font-size: 2rem; font-weight: 900; opacity: 0.1;">0${app.id}</span><span class="vram-badge">${app.vram}</span></div><h5 style="font-size: 1rem; margin-bottom: 0.5rem;">${app.name}</h5><p style="font-size: 11px; color: var(--text-secondary);">${app.desc}</p>`;
+        list.appendChild(card);
+    });
+}
+
+function renderManifest() {
+    const target = document.getElementById('manifest-content');
+    if (!target) return;
+    MANIFEST.forEach(item => {
+        const row = document.createElement('div');
+        row.className = 'manifest-row';
+        row.innerHTML = `<span style="font-size: 11px; font-weight: 800; color: #475569; text-transform: uppercase;">${item.label}</span><span style="font-size: 13px; font-weight: 900; color: #fff;">${item.cost}</span>`;
+        target.appendChild(row);
+    });
+}
+
+// ==================== ASSEMBLY ====================
+var assemblyStep = 0; var assemblyTimer = null;
+function startAssembly() {
+    assemblyStep = 0; resetAssembly();
+    assemblyTimer = setInterval(function() {
+        assemblyStep++;
+        if (assemblyStep <= 4) { var gpu = document.getElementById('gpu' + assemblyStep); if (gpu) { gpu.style.transition = 'opacity 0.5s'; gpu.setAttribute('opacity', '1'); } }
+        if (assemblyStep === 5) { document.getElementById('airgaps').style.transition = 'opacity 0.5s'; document.getElementById('airgaps').setAttribute('opacity', '0.5'); }
+        if (assemblyStep === 6) { document.getElementById('assemblyStatus').textContent = 'Assembly Complete: 4x B70 in slots 1,3,5,7 - All PCIe 5.0 x16'; document.getElementById('assemblyStatus').setAttribute('fill', '#10b981'); }
+        if (assemblyStep > 6) { clearInterval(assemblyTimer); }
+    }, 800);
+}
+function resetAssembly() {
+    clearInterval(assemblyTimer); assemblyStep = 0;
+    for (var i = 1; i <= 4; i++) { var gpu = document.getElementById('gpu' + i); if (gpu) gpu.setAttribute('opacity', '0'); }
+    document.getElementById('airgaps').setAttribute('opacity', '0');
+    document.getElementById('assemblyStatus').textContent = 'Click "Initialize Assembly" to begin';
+    document.getElementById('assemblyStatus').setAttribute('fill', 'var(--text-secondary)');
+}
+
+// ==================== FAQ ====================
+function toggleFaq(el) { el.classList.toggle('open'); }
+
+// ==================== INIT ====================
+window.onload = () => {
+    const restored = loadConfig();
+    renderSelectors(); renderSummary(); renderTiers(); renderVisualizer();
+    renderComfy(); renderManifest(); updateCompareBars();
+    if (restored) showToast('Previous build restored');
+};
+</script>
+
+</body>
+</html>
