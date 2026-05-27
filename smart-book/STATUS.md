@@ -1,159 +1,157 @@
 # Smart-Book Project Status
 
-**Last Updated:** April 9, 2026
+**Last Updated:** May 27, 2026
 **Project:** "The Speed of Agentic Visual AI" — Interactive Digital Book
 **Author:** James May, VidiSmart · Savage Digital Solutions
+**Branch:** `siteground-cleanup`
 
 ---
 
-## 📊 Current Status: ✅ LIVE & OPERATIONAL
+## Current State: IN PROGRESS — Fresh Update
 
 **Live URLs:**
 - Landing Page: https://vidismart.com/smart-book/index.html
 - Book Reader: https://vidismart.com/smart-book/print-book.html
-- Documentation: https://vidismart.com/smart-book/SMARTBOOK-IMPROVEMENTS.md
 
 ---
 
-## 📁 Project Files
+## File Locations
 
-| File | Purpose | Status |
-|------|---------|--------|
-| `index.html` | Landing page with persona selection, Three.js animation, hero slideshow | ✅ Live |
-| `print-book.html` | Full book reader with two-column layout, lightbox, progress bar | ✅ Live |
-| `data.js` | Book content — 37 chapters, 5 parts, 3 personas, knowledge graph | ✅ Live |
-| `SMARTBOOK-IMPROVEMENTS.md` | Implementation plan & research documentation | ✅ Live |
-| `STATUS.md` | This file — current project status | ✅ Live |
-
----
-
-## ✅ Completed Work
-
-### Phase 1: Bug Fixes & Cleanup
-- [x] Fixed image `referrerpolicy="no-referrer"` on all dynamic `<img>` tags
-- [x] Removed duplicate `<meta name="referrer">` tag in index.html
-- [x] Removed hardcoded file path fallback (`file:///M:/+Proj/...`) in print-book.html
-- [x] Deleted temp files: `index - Copy.html`, `index.html.three.tmp`, `index2.html`
-
-### Phase 2: UI/UX Improvements
-- [x] **Two-column reading layout** — Text (680px) + sticky image sidebar (300px)
-- [x] **Image lightbox** — Full-size modal with prev/next, keyboard nav, counter
-- [x] **Scroll progress bar** — Fixed 3px gradient bar at top of viewport
-- [x] **Scroll-spy navigation** — Active chapter highlights in sidebar index
-- [x] **Responsive design** — Collapses to single column on mobile (<1024px)
-- [x] **Dark mode** — Toggle between light and dark reading modes
-
-### Phase 3: Deployment
-- [x] Committed to Git with descriptive message
-- [x] Pushed to SiteGround via `git push siteground fresh-start:master`
-- [x] Verified live at https://vidismart.com/smart-book/
+| File | Role |
+|------|------|
+| `smart-book/data.js` | Core content — chapters, personas, knowledge graph, edges |
+| `smart-book/index.html` | Landing page — hero, persona selection, parts grid |
+| `smart-book/print-book.html` | Book reader — two-column layout, lightbox, scroll-spy, sidebar TOC |
+| `smart-book/STATUS.md` | This file |
+| `.kilo/plans/1778876581975-jolly-circuit.md` | Master plan (content update + KDP + podcast + launch) |
 
 ---
 
-## 📖 Book Content Summary
+## Book Structure (Target After Update)
 
-**Title:** The Speed of Agentic Visual AI
-**Subtitle:** How the Top 1% Will Generate 500% Business Growth
-**Author:** James May
-**Edition:** 2026, First Edition
+**46 chapters across 7 parts + Foreword**
 
-### Structure
 | Part | Title | Chapters |
 |------|-------|----------|
-| Foreword | The 500% Lead | 1 |
-| Part I | The Landscape | Ch1–Ch9 |
-| Part II | The Technology | Ch10–Ch17 |
-| Part III | The Business | Ch18–Ch26 |
-| Part IV | The Stack & The Future | Ch27–Ch32 |
-| Part V | The Horizon | Ch33–Ch37 |
+| Foreword | The 500% Lead & The 500-App Breaking Point | 1 |
+| Part I | The Landscape | ch1–ch9 |
+| Part II | The Technology | ch10–ch17 |
+| Part III | The Business | ch18–ch26 |
+| Part IV | The Stack & The Future | ch27–ch35 |
+| Part V | The Horizon | ch36–ch41 |
+| Part VI | Reference | ch42–ch44 |
+| Part VII | (TBD) | — |
 
-**Total:** 37 chapters, ~500+ minutes reading time (full book)
+### New Chapters Being Added
 
-### Reading Paths (Persona-Based)
-| Persona | Chapters | Est. Time | Focus |
-|---------|----------|-----------|-------|
-| Consumer | 18 | ~45 min | Personal productivity, creativity, AI basics |
-| IT Professional | 27 | ~75 min | Technical implementation, infrastructure, models |
-| Executive/Entrepreneur | 24 | ~70 min | Strategy, competitive dynamics, investment |
+| # | Title | Part | Status |
+|---|-------|------|--------|
+| ch1 | The Computing Eras — A Personal Journey | Part I | To write |
+| ch36 | Abstraction — When It Has Value | Part II | To write |
+| ch37 | Observation, Analytics & Adaptive Learning | Part III | To write |
+| ch38 | Smart Process — AI Collab with HITL | Part IV | To write |
+| ch39 | Glossary (~65 terms A-Z) | Part VI | To write |
+| ch40 | New Job Titles + Personal Story | Part VI | To write |
+| ch41 | Temporal Truth | Part VI | To write |
+
+### Renumbering
+
+| Old ID | New ID | Title |
+|--------|--------|-------|
+| ch1 | ch2 | The Customer Journey Out of App Chaos |
+| ch2 | ch3 | The Agent Army |
+| ... | ... | (all ch1–ch36 shift to ch2–ch37) |
+| ch37 | ch42 | Robotics — The Brilliant Machine |
+| ch38 | ch43 | Smart Stack — The 5-Layer Architecture |
+| ch39 | ch44 | Smart Stack Issue Matrix |
 
 ---
 
-## 🏗️ Architecture
+## Personas (3)
 
-### Hosting
-| Component | Platform | URL |
-|-----------|----------|-----|
-| Static HTML/CSS/JS | SiteGround | https://vidismart.com/smart-book/ |
-| Images/Video CDN | Cloudflare R2 | https://cdn.vidi.news/images/ |
+| Persona | Color | Focus |
+|---------|-------|-------|
+| Consumer | #3B82F6 | Personal productivity, creativity, AI basics |
+| IT Professional | #10B981 | Technical implementation, infrastructure, models |
+| Executive/Entrepreneur | #8B5CF6 | Strategy, competitive dynamics, investment |
 
-### Deployment
+Each persona has: `critical`, `high`, `medium`, `hide` arrays + `aiInsights` per chapter.
+
+---
+
+## Knowledge Graph
+
+**Current:** 30 nodes, 47 edges
+**Target:** ~50 nodes, ~55-60 edges
+
+New nodes to add: Abstraction, Adaptive Learning, HITL, Context Engineer, Knowledge Architect, Temporal Truth, Glossary, Computing Eras, Era Economics
+
+---
+
+## Open Decisions
+
+| # | Decision | Status |
+|---|----------|--------|
+| D1 | Computing Eras chapter placement | RESOLVED — becomes ch1, all chapters shift +1 |
+| D2 | Podcast tour authorship (James vs team) | Open |
+| D3 | Audiobook narration (James vs pro) | Open |
+| D4 | KDP Select enrollment (90-day exclusive vs wide) | Open |
+| D5 | ACX audio release pace | Open |
+| D6 | Paperback distribution (Amazon POD vs IngramSpark) | Open |
+
+---
+
+## Completed Work
+
+- [x] Initial book creation (39 chapters, 6 parts)
+- [x] Two-column reading layout
+- [x] Image lightbox with keyboard nav
+- [x] Scroll progress bar
+- [x] Scroll-spy navigation
+- [x] Responsive design (mobile collapse)
+- [x] Dark mode toggle
+- [x] Persona-based content filtering
+- [x] Knowledge graph visualization
+- [x] Deployed to SiteGround
+
+---
+
+## Remaining Tasks
+
+- [ ] T-20: Rewrite STATUS.md (this file)
+- [ ] T-01: Update PART_LABELS to 7 parts
+- [ ] T-02: Write ch1 (Computing Eras)
+- [ ] T-03: Shift all chapter IDs +1
+- [ ] T-04: Write ch36 (Abstraction)
+- [ ] T-05: Write ch37 (OAL)
+- [ ] T-06: Write ch38 (HITL)
+- [ ] T-07: Write ch39 (Glossary)
+- [ ] T-08: Write ch40 (New Jobs)
+- [ ] T-09: Write ch41 (Temporal Truth)
+- [ ] T-10: Renumber ch37→ch42, ch38→ch43, ch39→ch44
+- [ ] T-11: Add knowledge nodes
+- [ ] T-12: Update edges
+- [ ] T-13: Update persona arrays
+- [ ] T-14: Update aiInsights
+- [ ] T-15: Update print-book.html PART_LABELS + chapterKeys
+- [ ] T-16: Update cover stats
+- [ ] T-17: Update index.html parts-grid + hero stats
+- [ ] T-18: Extend sidebar TOC
+- [ ] T-19: Visual QA in browser
+
+---
+
+## Deployment
+
 - **Method:** Git push to SiteGround remote
 - **Remote:** `siteground` → `ssh://u2627-m33aqlpqghg3@gtxm1044.siteground.biz:18765/home/customer/www/vidismart.com/public_html/`
-- **Branch:** `fresh-start` → `master` on SiteGround
-
-### Key Features
-- Three.js neural network background animation (interactive, mouse-tracking)
-- Hero image slideshow (10 images, auto-rotate, arrow/dot/keyboard/touch nav)
-- Persona-based content filtering (hides irrelevant chapters per path)
-- URL parameter support (`?persona=...&name=...`) for cross-page navigation
-- localStorage session persistence
-- Print-optimized styles with page breaks
-- Image lightbox with full keyboard navigation
+- **Branch:** `siteground-cleanup` → `master` on SiteGround
 
 ---
 
-## 🔧 Technical Stack
+## Known Issues / Notes
 
-| Technology | Usage |
-|------------|-------|
-| HTML5/CSS3 | Semantic markup, CSS Grid, custom properties |
-| Vanilla JavaScript | No frameworks — pure JS for all interactivity |
-| Three.js | Neural network background animation |
-| Google Fonts | Inter, Lora, Kumbh Sans |
-| Cloudflare R2 | CDN for all images (cdn.vidi.news) |
-
----
-
-## 📋 Known Issues / Notes
-
-1. **referrerpolicy** — Currently set on all images. User confirmed vidismart.com was added to CDN approved list, so this may no longer be necessary, but keeping it as a safety net.
-2. **No server-side rendering** — Pure static HTML, no SEO optimization for search engines
-3. **No analytics** — No tracking of reading behavior or persona selection
-4. **No offline support** — No service worker or caching strategy
-
----
-
-## 🚀 Future Enhancements (Not In Scope)
-
-- [ ] Service worker for offline reading
-- [ ] Font size adjustment controls
-- [ ] Bookmarking / reading position save
-- [ ] Reading time remaining estimate
-- [ ] Annotation / highlighting system
-- [ ] Audio narration integration
-- [ ] Social sharing of quotes
-- [ ] Analytics integration (reading behavior, popular chapters)
-- [ ] PDF export with proper formatting
-- [ ] ePub generation
-
----
-
-## 📝 Recent Changes Log
-
-| Date | Change |
-|------|--------|
-| 2026-04-09 | Complete UI overhaul: two-column layout, lightbox, progress bar, scroll-spy |
-| 2026-04-09 | Deployed to SiteGround, verified live |
-| 2026-04-09 | Created SMARTBOOK-IMPROVEMENTS.md documentation |
-| 2026-04-09 | Cleaned up temp files, fixed referrerpolicy issues |
-
----
-
-## 🔗 Related Projects
-
-| Project | Location | Status |
-|---------|----------|--------|
-| VidiFlow | `m:/code/vidismart/vidiflow/` | Active development |
-| Vidi.News | `m:/code/vidi.news/` | Deployed on Vercel |
-| VidiCRM (Directus) | `m:/code/vidismart/converge/` | Running on port 8055 |
-| SmartGen | `m:/code/vidismart/smartgen/` | In development |
+1. STATUS.md was stale (last updated 2026-04-09, referenced 37 chapters/5 parts)
+2. No server-side rendering — pure static HTML
+3. No analytics — no tracking of reading behavior
+4. No offline support — no service worker
