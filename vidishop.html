@@ -1,730 +1,1374 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VidiShop | Where Search Becomes the Store</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link rel="stylesheet" href="vidi-nav-component.css">
-    <script src="vidi-nav-component.js"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <title>Sovereign AI Node - Interactive Architect Console</title>
     <style>
-        body {
-            font-family: 'Geist', 'Inter', sans-serif;
-            background-color: #030712;
-            color: #f8fafc;
+        :root {
+            --bg: #030712; --surface: #0b0f19; --surface-bright: #161e2e;
+            --text-primary: #ffffff; --text-secondary: #94a3b8;
+            --blue: #3b82f6; --emerald: #10b981; --amber: #f59e0b;
+            --red: #ef4444; --purple: #a855f7;
+            --border: rgba(255,255,255,0.1);
+            --font: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         }
-        .brand-font { font-family: 'Geist', sans-serif; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background: var(--bg); color: var(--text-primary); font-family: var(--font); line-height: 1.5; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+        .container { max-width: 1500px; margin: 0 auto; padding: 0 2rem; }
 
-        /* Glow effects */
-        .glow-red { box-shadow: 0 0 60px rgba(239, 68, 68, 0.15), 0 0 120px rgba(239, 68, 68, 0.05); }
-        .glow-blue { box-shadow: 0 0 60px rgba(59, 130, 246, 0.15), 0 0 120px rgba(59, 130, 246, 0.05); }
-        .glow-text { text-shadow: 0 0 40px rgba(239, 68, 68, 0.3); }
+        header { padding: 1.25rem 0; background: rgba(3,7,18,0.95); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
+        .header-content { display: flex; justify-content: space-between; align-items: center; }
+        .logo-box { display: flex; align-items: center; gap: 0.75rem; }
+        .logo-symbol { width: 36px; height: 36px; background: linear-gradient(135deg, var(--blue), #4f46e5); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 1.1rem; }
 
-        /* Glass */
-        .glass {
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-        }
-        .glass-light {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+        .workspace-grid { display: grid; grid-template-columns: 1.15fr 1.85fr; gap: 2.5rem; margin: 3rem 0; }
+        @media (max-width: 1200px) {
+            .workspace-grid { grid-template-columns: 1fr; gap: 2rem; }
         }
 
-        /* Cards */
-        .tech-card {
-            transition: all 0.3s ease;
-            border-left: 3px solid transparent;
+        /* CONFIG PANEL */
+        .config-panel { background: var(--surface); border: 1px solid var(--border); border-radius: 32px; padding: 2.5rem; display: flex; flex-direction: column; gap: 1.75rem; }
+        .visual-panel { display: flex; flex-direction: column; gap: 1.5rem; }
+
+        .section-title { font-size: 0.73rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.15em; color: var(--blue); margin-bottom: 0.75rem; }
+        .sub-label { font-size: 0.68rem; font-weight: 800; color: var(--text-secondary); margin-bottom: 0.4rem; text-transform: uppercase; letter-spacing: 0.05em; }
+
+        .control-group { border-bottom: 1px solid var(--border); padding-bottom: 1.5rem; }
+        .control-group:last-child { border-bottom: none; padding-bottom: 0; }
+
+        .selector-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 0.6rem; }
+
+        .select-card { background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 12px; padding: 0.875rem 0.75rem; cursor: pointer; text-align: center; transition: all 0.2s ease; }
+        .select-card:hover { background: rgba(255,255,255,0.07); border-color: var(--blue); transform: translateY(-1px); }
+        .select-card.active { background: rgba(59,130,246,0.12); border-color: var(--blue); box-shadow: 0 0 18px rgba(59,130,246,0.22); }
+        .select-card.disabled { opacity: 0.32; pointer-events: none; }
+        .select-card h4 { font-size: 0.83rem; font-weight: 800; margin-bottom: 0.2rem; }
+        .select-card p { font-size: 0.69rem; color: var(--text-secondary); font-weight: 600; }
+        .card-badge { display: inline-block; margin-top: 0.35rem; font-size: 0.58rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.04em; padding: 2px 6px; border-radius: 4px; }
+        .bg-green  { background: rgba(16,185,129,0.15); color: var(--emerald); }
+        .bg-blue   { background: rgba(59,130,246,0.15); color: var(--blue); }
+        .bg-amber  { background: rgba(245,158,11,0.15); color: var(--amber); }
+        .bg-red    { background: rgba(239,68,68,0.15); color: var(--red); }
+        .bg-purple { background: rgba(168,85,247,0.15); color: var(--purple); }
+
+        .presets-row { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+        .preset-btn { flex: 1; min-width: 110px; background: var(--surface-bright); border: 1px solid var(--border); border-radius: 10px; padding: 0.65rem 0.5rem; cursor: pointer; font-size: 0.68rem; font-weight: 900; text-transform: uppercase; color: var(--text-secondary); transition: all 0.2s; }
+        .preset-btn:hover { border-color: var(--blue); color: #fff; }
+        .preset-btn.active { background: var(--blue); color: #fff; border-color: var(--blue); }
+
+        /* SPOTLIGHT */
+        .spotlight-card { border: 1px solid var(--border); border-radius: 24px; overflow: hidden; position: relative; height: 500px; background: #080c14; }
+        .spotlight-img { width: 100%; height: 100%; object-fit: contain; padding: 2.5rem; transition: opacity 0.18s ease; display: block; }
+        .spotlight-img.fading { opacity: 0 !important; }
+        .spotlight-placeholder { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem; }
+        .spotlight-placeholder svg { opacity: 0.15; }
+        .spotlight-filename { font-family: 'Courier New', monospace; font-size: 0.7rem; color: #475569; font-weight: 700; letter-spacing: 0.05em; text-align: center; max-width: 80%; word-break: break-all; line-height: 1.6; }
+        .spotlight-placeholder-label { font-size: 0.65rem; color: #334155; font-weight: 800; text-transform: uppercase; letter-spacing: 0.12em; }
+        .spotlight-overlay { position: absolute; bottom: 0; left: 0; right: 0; padding: 2rem; background: linear-gradient(to top, rgba(0,0,0,0.97) 0%, rgba(0,0,0,0.6) 60%, transparent 100%); pointer-events: none; }
+        .spotlight-cat { font-size: 0.62rem; font-weight: 900; color: var(--blue); text-transform: uppercase; letter-spacing: 0.18em; margin-bottom: 0.3rem; }
+        .spotlight-name { font-size: 1.2rem; font-weight: 950; color: #fff; line-height: 1.2; margin-bottom: 0.3rem; }
+        .spotlight-price { font-size: 0.85rem; font-weight: 700; color: var(--text-secondary); }
+        .spotlight-hint { position: absolute; top: 1rem; right: 1rem; font-size: 0.62rem; font-weight: 900; color: var(--blue); text-transform: uppercase; letter-spacing: 0.1em; background: rgba(59,130,246,0.12); border: 1px solid rgba(59,130,246,0.2); padding: 3px 8px; border-radius: 6px; transition: opacity 0.3s; }
+        .spotlight-hint:empty { opacity: 0; }
+
+        /* STAT ROW */
+        .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
+        .stat-badge { background: var(--surface-bright); border: 1px solid var(--border); border-radius: 16px; padding: 1.2rem; text-align: center; }
+        .stat-badge p { font-size: 0.62rem; font-weight: 800; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.3rem; }
+        .stat-badge h3 { font-size: 1.25rem; font-weight: 950; line-height: 1; }
+        .circuit-ok h3 { color: var(--emerald); }
+        .circuit-warn h3 { color: var(--amber); }
+        .circuit-danger h3 { color: var(--red); }
+
+        /* ALERTS */
+        .alert-box { border-radius: 14px; padding: 1rem 1.25rem; display: flex; gap: 1rem; align-items: flex-start; }
+        .alert-box.hidden { display: none; }
+        .alert-power     { background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.25); color: var(--amber); }
+        .alert-clearance { background: rgba(239,68,68,0.07); border: 1px solid rgba(239,68,68,0.22); color: var(--red); }
+        .alert-compat    { background: rgba(239,68,68,0.07); border: 1px solid rgba(239,68,68,0.22); color: var(--red); }
+        .alert-icon { font-size: 1.3rem; flex-shrink: 0; }
+        .alert-title { font-size: 0.76rem; font-weight: 900; text-transform: uppercase; margin-bottom: 3px; }
+        .alert-body { font-size: 0.7rem; opacity: 0.85; line-height: 1.45; }
+
+        /* BUILD vs BUY CARD */
+        .bizon-card { background: var(--surface); border: 1px solid rgba(168,85,247,0.3); border-radius: 24px; padding: 1.75rem 2rem; position: relative; overflow: hidden; }
+        .bizon-card::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at top right, rgba(168,85,247,0.06) 0%, transparent 65%); pointer-events: none; }
+        .bizon-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; margin-bottom: 1.25rem; }
+        .bizon-title-block h3 { font-size: 1rem; font-weight: 950; letter-spacing: -0.01em; }
+        .bizon-title-block p { font-size: 0.67rem; color: var(--text-secondary); font-weight: 600; margin-top: 3px; }
+        .bizon-tag { font-size: 0.58rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.1em; padding: 4px 10px; border-radius: 6px; background: rgba(168,85,247,0.15); color: var(--purple); white-space: nowrap; }
+        .bizon-compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+        .bizon-col { background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 16px; padding: 1.25rem; }
+        .bizon-col.sovereign { border-color: rgba(59,130,246,0.35); background: rgba(59,130,246,0.05); }
+        .bizon-col.competitor { border-color: rgba(168,85,247,0.25); background: rgba(168,85,247,0.04); }
+        .bizon-col-label { font-size: 0.6rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 0.5rem; }
+        .bizon-col.sovereign .bizon-col-label { color: var(--blue); }
+        .bizon-col.competitor .bizon-col-label { color: var(--purple); }
+        .bizon-col-price { font-size: 1.65rem; font-weight: 950; line-height: 1; margin-bottom: 4px; }
+        .bizon-col.sovereign .bizon-col-price { color: var(--blue); }
+        .bizon-col.competitor .bizon-col-price { color: var(--purple); }
+        .bizon-col-desc { font-size: 0.65rem; color: var(--text-secondary); line-height: 1.45; }
+        .bizon-savings { margin-top: 1.25rem; background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.25); border-radius: 14px; padding: 1rem 1.25rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+        .bizon-savings-amount { font-size: 2rem; font-weight: 950; color: var(--emerald); line-height: 1; }
+        .bizon-savings-label { font-size: 0.62rem; font-weight: 800; color: var(--emerald); text-transform: uppercase; letter-spacing: 0.1em; margin-top: 4px; }
+        .bizon-savings-note { font-size: 0.63rem; color: var(--text-secondary); line-height: 1.5; max-width: 55%; text-align: right; }
+        .bizon-na { opacity: 0.45; font-style: italic; }
+
+        /* HUB / PCB CARD */
+        .hub-card { background: #000; border: 1px solid var(--border); border-radius: 24px; padding: 2rem; }
+        .mb-schematic { width: 100%; height: 480px; background: #080c14; border-radius: 16px; border: 2px solid #1e293b; position: relative; padding: 30px; margin: 1.5rem 0; box-shadow: inset 0 0 50px rgba(0,0,0,0.8); }
+        .mb-cpu { position: absolute; left: 30px; top: 130px; width: 130px; height: 130px; border: 2px dashed #475569; border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #0d131f; }
+        .mb-cpu-text { font-size: 8px; font-weight: 900; text-transform: uppercase; color: #475569; margin-top: 5px; }
+        .mb-slot { height: 12px; background: #1e293b; border-radius: 3px; position: absolute; left: 200px; width: 530px; border: 1px solid rgba(255,255,255,0.05); }
+        .mb-slot::before { content: attr(data-lane); position: absolute; left: -110px; top: -2px; font-size: 8px; font-weight: 900; color: #475569; width: 100px; text-align: right; }
+        .mb-gpu-card { height: 38px; position: absolute; left: 200px; width: 530px; border-radius: 6px; display: flex; align-items: center; justify-content: space-between; padding: 0 1rem; font-size: 9px; font-weight: 950; text-transform: uppercase; box-shadow: 0 10px 20px rgba(0,0,0,0.7); border: 1px solid rgba(255,255,255,0.25); transform: scaleY(0); transform-origin: top; opacity: 0; transition: transform 0.5s cubic-bezier(0.175,0.885,0.32,1.275), opacity 0.3s ease; z-index: 10; }
+        .mb-gpu-card.active { transform: scaleY(1); opacity: 1; }
+        .color-b70     { background: linear-gradient(90deg, #1d4ed8, #1e40af); }
+        .color-4090    { background: linear-gradient(90deg, #166534, #14532d); }
+        .color-a6000   { background: linear-gradient(90deg, #6b21a8, #581c87); }
+        .color-rtx     { background: linear-gradient(90deg, #b45309, #78350f); }
+        .color-h100    { background: linear-gradient(90deg, #991b1b, #7f1d1d); }
+
+        /* BOM */
+        .bom-table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+        .bom-table th { text-align: left; padding: 0.6rem 0.75rem; border-bottom: 2px solid var(--border); font-size: 0.68rem; text-transform: uppercase; color: var(--text-secondary); }
+        .bom-table td { padding: 0.6rem 0.75rem; border-bottom: 1px solid var(--border); font-size: 0.8rem; font-weight: 600; vertical-align: top; }
+        .bom-table .bom-total td { border-top: 2px solid var(--border); color: var(--blue); font-size: 0.95rem; }
+
+        /* VENDOR BUTTONS */
+        .vendor-links { display: flex; gap: 0.35rem; justify-content: flex-end; align-items: center; }
+        .vendor-btn {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 22px; height: 22px; border-radius: 5px;
+            font-size: 0.65rem; font-weight: 900; text-decoration: none;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid var(--border);
+            text-transform: uppercase;
         }
-        .tech-card:hover {
-            transform: translateY(-2px);
-            border-left-color: #ef4444;
-            background: rgba(255, 255, 255, 0.06);
+        .vendor-btn:hover {
+            transform: translateY(-1.5px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+            border-color: rgba(255,255,255,0.25);
         }
-        .tech-card.active {
-            border-left-color: #ef4444;
-            background: rgba(239, 68, 68, 0.08);
+        .vendor-btn.amz { background: rgba(255, 153, 0, 0.1); color: #ff9900; }
+        .vendor-btn.amz:hover { background: #ff9900; color: #000; box-shadow: 0 0 10px rgba(255, 153, 0, 0.35); }
+        .vendor-btn.neg { background: rgba(245, 166, 35, 0.1); color: #f5a623; }
+        .vendor-btn.neg:hover { background: #f5a623; color: #000; box-shadow: 0 0 10px rgba(245, 166, 35, 0.35); }
+        .vendor-btn.bh { background: rgba(59, 130, 246, 0.1); color: #3b82f6; }
+        .vendor-btn.bh:hover { background: #3b82f6; color: #fff; box-shadow: 0 0 10px rgba(59, 130, 246, 0.35); }
+        .vendor-btn.mfg { background: rgba(16, 185, 129, 0.1); color: #10b981; }
+        .vendor-btn.mfg:hover { background: #10b981; color: #000; box-shadow: 0 0 10px rgba(16, 185, 129, 0.35); }
+
+        .btn-assemble { width: 100%; padding: 1rem; background: var(--blue); border: none; border-radius: 14px; color: #fff; font-size: 0.83rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.08em; cursor: pointer; transition: all 0.2s; }
+        .btn-assemble:hover { background: #2563eb; transform: translateY(-1px); }
+
+        .modal-toast { position: fixed; bottom: 2rem; right: 2rem; background: var(--emerald); color: #000; padding: 1rem 2rem; border-radius: 12px; font-weight: 900; font-size: 0.85rem; text-transform: uppercase; box-shadow: 0 10px 30px rgba(16,185,129,0.3); display: none; z-index: 1000; }
+
+        /* VIDISHAP AGENT OVERLAY */
+        .vs-agent-overlay {
+            position: fixed; inset: 0; background: rgba(3,7,18,0.7);
+            backdrop-filter: blur(8px); z-index: 1000;
+            display: flex; justify-content: flex-end;
+            opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
         }
-
-        /* Stats counter animation */
-        @keyframes countUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .stat-animate { animation: countUp 0.6s ease-out forwards; }
-
-        /* Floating animation */
-        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
-        .float { animation: float 4s ease-in-out infinite; }
-
-        /* Gradient mesh bg */
-        .mesh-bg {
-            background:
-                radial-gradient(at 20% 20%, rgba(239, 68, 68, 0.08) 0%, transparent 50%),
-                radial-gradient(at 80% 80%, rgba(59, 130, 246, 0.08) 0%, transparent 50%),
-                radial-gradient(at 50% 50%, rgba(139, 92, 246, 0.05) 0%, transparent 50%);
+        .vs-agent-overlay.active { opacity: 1; pointer-events: auto; }
+        
+        .vs-agent-sidebar {
+            width: 500px; height: 100%; background: #070b15;
+            border-left: 1px solid var(--border); padding: 2rem;
+            display: flex; flex-direction: column; gap: 1.5rem;
+            transform: translateX(100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow-y: auto;
         }
-
-        /* Chart container */
-        .chart-container {
-            position: relative;
-            width: 100%;
-            max-width: 600px;
-            margin: 0 auto;
-            height: 300px;
+        .vs-agent-overlay.active .vs-agent-sidebar { transform: translateX(0); }
+        
+        .vs-agent-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 1rem; }
+        .vs-agent-title { font-size: 1.15rem; font-weight: 950; text-transform: uppercase; letter-spacing: -0.01em; color: #fff; }
+        .vs-agent-subtitle { font-size: 0.65rem; font-weight: 800; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; }
+        .vs-agent-close { background: none; border: none; color: var(--text-secondary); font-size: 1.5rem; cursor: pointer; transition: color 0.2s; }
+        .vs-agent-close:hover { color: #fff; }
+        
+        .vs-agent-pulse { width: 10px; height: 10px; background: var(--blue); border-radius: 50%; box-shadow: 0 0 10px var(--blue); animation: vsPulse 2s infinite; }
+        @keyframes vsPulse { 0% { transform: scale(0.9); opacity: 0.6; } 50% { transform: scale(1.2); opacity: 1; box-shadow: 0 0 14px var(--blue); } 100% { transform: scale(0.9); opacity: 0.6; } }
+        
+        .vs-agent-banner { background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-radius: 12px; padding: 1rem; }
+        .vs-progress-bar-bg { height: 6px; background: rgba(255,255,255,0.05); border-radius: 3px; margin-top: 0.5rem; overflow: hidden; }
+        .vs-progress-bar-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--blue), var(--emerald)); transition: width 0.1s ease; }
+        
+        .vs-terminal {
+            background: #000; border: 1px solid #1e293b; border-radius: 12px;
+            padding: 1.25rem; font-family: 'Courier New', monospace; font-size: 0.68rem;
+            color: #38bdf8; height: 260px; overflow-y: auto;
+            display: flex; flex-direction: column; gap: 0.5rem;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
         }
-        @media (min-width: 768px) { .chart-container { height: 350px; } }
+        .vs-log-row { line-height: 1.45; word-break: break-all; text-align: left; }
+        .vs-log-row.info { color: #94a3b8; }
+        .vs-log-row.success { color: var(--emerald); font-weight: bold; }
+        .vs-log-row.system { color: var(--blue); font-weight: bold; }
+        .vs-log-row.warn { color: var(--amber); }
+        .vs-log-row.error { color: var(--red); }
+        
+        .vs-results-card { background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-radius: 16px; padding: 1.25rem; }
+        .vs-results-table { width: 100%; border-collapse: collapse; margin-bottom: 1rem; }
+        .vs-results-table th { text-align: left; padding: 0.5rem 0.6rem; border-bottom: 2px solid var(--border); font-size: 0.62rem; text-transform: uppercase; color: var(--text-secondary); }
+        .vs-results-table td { padding: 0.5rem 0.6rem; border-bottom: 1px solid var(--border); font-size: 0.73rem; font-weight: 700; color: #fff; text-align: left; }
+        .vs-results-table td.link-col a { color: var(--blue); text-decoration: none; font-weight: 800; }
+        .vs-results-table td.link-col a:hover { text-decoration: underline; }
+        .vs-summary-box { background: rgba(59,130,246,0.04); border: 1px solid rgba(59,130,246,0.15); border-radius: 12px; padding: 1rem; }
+        
+        .vs-btn-scan {
+            width: 100%; padding: 1rem; background: var(--blue); border: none; border-radius: 14px;
+            color: #fff; font-size: 0.83rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.08em;
+            cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 14px rgba(59,130,246,0.3);
+        }
+        .vs-btn-scan:hover { background: #2563eb; transform: translateY(-1px); }
+        .vs-btn-scan.scanning { background: rgba(255,255,255,0.05); color: var(--text-secondary); pointer-events: none; border: 1px solid var(--border); box-shadow: none; }
 
-        /* Timeline node */
-        .timeline-node { transition: all 0.3s ease; }
-        .timeline-node:hover { transform: scale(1.03); }
-
-        /* Scroll snap for demo reel */
-        .demo-scroll { scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; }
-        .demo-scroll > * { scroll-snap-align: center; }
-
-        /* Custom scrollbar */
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
-        ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
+        .vs-btn-deep-scan {
+            width: 100%; padding: 1rem; background: linear-gradient(135deg, var(--purple), #c084fc); border: none; border-radius: 14px;
+            color: #fff; font-size: 0.83rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.08em;
+            cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 14px rgba(168,85,247,0.3); margin-top: 0.75rem;
+        }
+        .vs-btn-deep-scan:hover { background: linear-gradient(135deg, #a855f7, #a855f7); transform: translateY(-1px); }
+        .vs-btn-deep-scan.scanning { background: rgba(255,255,255,0.05); color: var(--text-secondary); pointer-events: none; border: 1px solid var(--border); box-shadow: none; }
     </style>
 </head>
+<body>
 
-<body class="antialiased">
-    <!-- Universal Nav injected by vidi-nav-component.js -->
-    <div style="height: 70px;"></div>
+<header>
+    <div class="container header-content">
+        <a href="https://vidishop.com" target="_blank" style="text-decoration:none;color:inherit;display:flex;align-items:center;gap:0.75rem">
+            <div class="logo-symbol" style="background:linear-gradient(135deg, var(--purple), #c084fc);box-shadow:0 0 12px rgba(168,85,247,0.3)">V</div>
+            <div style="text-align:left">
+                <h1 style="font-size:1.25rem;font-weight:950;text-transform:uppercase;letter-spacing:-0.03em;color:#fff;line-height:1.1">VidiShop</h1>
+                <p style="font-size:8px;font-weight:900;color:var(--purple);text-transform:uppercase;letter-spacing:0.12em">Sovereign Workstation Shopping Engine</p>
+            </div>
+        </a>
+        <div style="font-size:10px;font-weight:900;color:var(--text-secondary);text-transform:uppercase">Active Price Matching Agent</div>
+    </div>
+</header>
 
-    <!-- ============================================ -->
-    <!-- HERO: Full-bleed cinematic -->
-    <!-- ============================================ -->
-    <section class="relative min-h-[90vh] flex items-center overflow-hidden mesh-bg">
-        <!-- Ambient orbs -->
-        <div class="absolute top-[-20%] left-[-10%] w-[600px] h-[600px] bg-red-500/10 rounded-full blur-[120px] pointer-events-none"></div>
-        <div class="absolute bottom-[-20%] right-[-10%] w-[500px] h-[500px] bg-blue-500/10 rounded-full blur-[120px] pointer-events-none"></div>
+<main class="container">
+    <div class="workspace-grid">
 
-        <div class="max-w-7xl mx-auto px-6 lg:px-8 py-20 grid lg:grid-cols-2 gap-16 items-center relative z-10">
-            <div>
-                <div class="flex items-center gap-3 mb-6">
-                    <span class="px-3 py-1.5 glass-light rounded-full text-[10px] font-black uppercase tracking-[0.2em] text-red-400 border border-red-500/20">
-                        <i class="fas fa-bolt mr-1"></i> Gen UI Commerce
-                    </span>
-                    <span class="px-3 py-1.5 glass-light rounded-full text-[10px] font-black uppercase tracking-[0.2em] text-emerald-400 border border-emerald-500/20">
-                        <span class="inline-block w-1.5 h-1.5 bg-emerald-400 rounded-full mr-1 animate-pulse"></span> Live
-                    </span>
-                </div>
+        <!-- ── CONFIG COLUMN ─────────────────────────────────── -->
+        <div class="config-panel" onmouseleave="resetIdleTimer()">
+            <h2 style="font-size:1.4rem;font-weight:950;text-transform:uppercase;letter-spacing:-0.03em">Sovereign Custom Build</h2>
 
-                <h1 class="text-5xl md:text-7xl font-black brand-font tracking-tighter leading-[0.9] mb-6">
-                    Search<br>
-                    Becomes<br>
-                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-rose-400 to-amber-400 glow-text">The Store.</span>
-                </h1>
+            <div class="presets-row">
+                <button class="preset-btn active" id="btn-preset-starter"   onclick="applyPreset('starter')">Starter (~$4k)</button>
+                <button class="preset-btn"        id="btn-preset-rack"      onclick="applyPreset('rack')">Rack (~$11k)</button>
+                <button class="preset-btn"        id="btn-preset-inference" onclick="applyPreset('inference')">Inf Pro (~$20k)</button>
+                <button class="preset-btn"        id="btn-preset-clinical"  onclick="applyPreset('clinical')">Clinical (~$50k)</button>
+            </div>
 
-                <p class="text-lg md:text-xl text-slate-400 max-w-xl mb-10 leading-relaxed font-medium">
-                    VidiShop doesn't list products. It <strong class="text-white">generates the entire shopping interface</strong> in real-time — custom-faceted through visual vector intelligence while you watch video content.
-                </p>
-
-                <div class="flex flex-wrap gap-4">
-                    <a href="#demo-reel" class="px-8 py-4 bg-gradient-to-r from-red-600 to-red-500 text-white rounded-xl font-bold hover:from-red-500 hover:to-red-400 transition-all flex items-center shadow-lg shadow-red-500/20 hover:shadow-red-500/40 transform hover:-translate-y-1">
-                        <i class="fas fa-play-circle mr-3"></i> Watch Demo
-                    </a>
-                    <a href="#smart-stack" class="px-8 py-4 glass text-white rounded-xl font-bold hover:bg-white/10 transition-all flex items-center">
-                        <i class="fas fa-layer-group mr-3 text-slate-400"></i> View Architecture
-                    </a>
-                </div>
-
-                <!-- Stats bar -->
-                <div class="flex gap-8 mt-12 pt-8 border-t border-white/5">
-                    <div>
-                        <div class="text-2xl font-black text-white stat-animate">138+</div>
-                        <div class="text-[11px] text-slate-500 font-bold uppercase tracking-wider">Categories</div>
+            <!-- CHASSIS -->
+            <div class="control-group">
+                <div class="section-title">Chassis Selection</div>
+                <div class="selector-grid" style="grid-template-columns:1fr 1fr">
+                    <div class="select-card active" id="case-define-7-xl" onclick="setCase('define-7-xl')" onmouseenter="showSpotlight('define-7-xl')">
+                        <h4>Fractal Define 7 XL</h4><p>$240 · Tower · SSI-EEB</p>
+                        <span class="card-badge bg-green">9 Slots ✓ Best Clearance</span>
                     </div>
-                    <div>
-                        <div class="text-2xl font-black text-white stat-animate">&lt;50ms</div>
-                        <div class="text-[11px] text-slate-500 font-bold uppercase tracking-wider">UI Generation</div>
+                    <div class="select-card" id="case-enthoo-pro2" onclick="setCase('enthoo-pro2')" onmouseenter="showSpotlight('enthoo-pro2')">
+                        <h4>Phanteks Enthoo Pro 2</h4><p>$170 · Tower · SSI-EEB</p>
+                        <span class="card-badge bg-blue">8 Slots · Dual PSU Ready</span>
                     </div>
-                    <div>
-                        <div class="text-2xl font-black text-white stat-animate">24fps</div>
-                        <div class="text-[11px] text-slate-500 font-bold uppercase tracking-wider">Real-Time</div>
+                    <div class="select-card" id="case-o11d-xl" onclick="setCase('o11d-xl')" onmouseenter="showSpotlight('o11d-xl')">
+                        <h4>Lian Li O11D EVO XL</h4><p>$245 · Tower · E-ATX Only</p>
+                        <span class="card-badge bg-amber">8 Slots · Panoramic Glass</span>
+                    </div>
+                    <div class="select-card" id="case-7000d" onclick="setCase('7000d')" onmouseenter="showSpotlight('7000d')">
+                        <h4>Corsair 7000D Airflow</h4><p>$270 · Tower · E-ATX Only</p>
+                        <span class="card-badge bg-amber">8 Slots · Max Volume</span>
+                    </div>
+                    <div class="select-card" id="case-rm44" onclick="setCase('rm44')" onmouseenter="showSpotlight('rm44')">
+                        <h4>SilverStone RM44</h4><p>$200 · 4U Rack · SSI-EEB</p>
+                        <span class="card-badge bg-purple">8 Slots · Rackmount</span>
                     </div>
                 </div>
             </div>
 
-            <!-- Hero Image -->
-            <div class="relative float">
-                <div class="absolute -inset-4 bg-gradient-to-r from-red-600/20 to-blue-600/20 rounded-3xl blur-2xl opacity-50"></div>
-                <div class="relative glass rounded-3xl p-3 glow-red">
-                    <img referrerpolicy="no-referrer" src="https://cdn.vidi.news/vidishop_ui_mockup.png" alt="VidiShop AI-Generated Shopping Interface" class="w-full rounded-2xl">
+            <!-- MOTHERBOARD -->
+            <div class="control-group">
+                <div class="section-title">Motherboard Backbone</div>
+                <div class="selector-grid">
+                    <div class="select-card active" id="mobo-wrx90" onclick="setMotherboard('wrx90')" onmouseenter="showSpotlight('wrx90')">
+                        <h4>Asus WRX90 SAGE SE</h4><p>$1,300 · 128 Lanes · 7× PCIe x16</p>
+                        <span class="card-badge bg-green">SSI-EEB · Max 4 GPU</span>
+                    </div>
+                    <div class="select-card" id="mobo-trx50" onclick="setMotherboard('trx50')" onmouseenter="showSpotlight('trx50')">
+                        <h4>Asus TRX50 SAGE WiFi</h4><p>$820 · 92 Lanes · 4× PCIe x16</p>
+                        <span class="card-badge bg-blue">E-ATX · Max 2 GPU</span>
+                    </div>
                 </div>
             </div>
-        </div>
-    </section>
 
-    <!-- ============================================ -->
-    <!-- DEMO REEL: Video + Live Commerce Mockup -->
-    <!-- ============================================ -->
-    <section id="demo-reel" class="py-24 relative">
-        <div class="absolute inset-0 bg-gradient-to-b from-transparent via-red-950/5 to-transparent pointer-events-none"></div>
-        <div class="max-w-7xl mx-auto px-6 lg:px-8 relative z-10">
-            <div class="text-center mb-16">
-                <span class="px-4 py-2 glass-light rounded-full text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 inline-block mb-6">
-                    The Experience
-                </span>
-                <h2 class="text-4xl md:text-5xl font-black brand-font tracking-tighter mb-4">
-                    Watch Content. <span class="text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-amber-400">Shop Instantly.</span>
-                </h2>
-                <p class="text-slate-500 max-w-2xl mx-auto text-lg font-medium">The AI detects purchase intent from video context and generates a shoppable interface — overlaid in real-time.</p>
+            <!-- CPU -->
+            <div class="control-group">
+                <div class="section-title">Workstation Processor</div>
+                <div class="selector-grid">
+                    <div class="select-card active" id="cpu-7845wx" onclick="setCPU('7845wx')" onmouseenter="showSpotlight('7845wx')">
+                        <h4>TR Pro 7845WX</h4><p>$650 · 12 Core · 350W</p>
+                    </div>
+                    <div class="select-card" id="cpu-7975wx" onclick="setCPU('7975wx')" onmouseenter="showSpotlight('7975wx')">
+                        <h4>TR Pro 7975WX</h4><p>$3,900 · 32 Core · 350W</p>
+                    </div>
+                    <div class="select-card" id="cpu-7995wx" onclick="setCPU('7995wx')" onmouseenter="showSpotlight('7995wx')">
+                        <h4>TR Pro 7995WX</h4><p>$9,999 · 96 Core · 350W</p>
+                    </div>
+                </div>
             </div>
 
-            <div class="grid lg:grid-cols-2 gap-8">
-                <!-- Video Player -->
-                <div class="glass rounded-3xl overflow-hidden glow-blue">
-                    <div class="p-4 border-b border-white/5 flex items-center justify-between">
-                        <div class="flex items-center gap-3">
-                            <div class="flex gap-1.5">
-                                <div class="w-3 h-3 rounded-full bg-red-500"></div>
-                                <div class="w-3 h-3 rounded-full bg-amber-500"></div>
-                                <div class="w-3 h-3 rounded-full bg-green-500"></div>
+            <!-- CPU COOLING -->
+            <div class="control-group">
+                <div class="section-title">CPU Thermal Solution</div>
+                <div class="selector-grid">
+                    <div class="select-card active" id="cooling-air-noctua" onclick="setCooling('air-noctua')" onmouseenter="showSpotlight('air-noctua')">
+                        <h4>Noctua NH-U14S TR5</h4><p>$100 · Air Cooler</p>
+                    </div>
+                    <div class="select-card" id="cooling-aio-360" onclick="setCooling('aio-360')" onmouseenter="showSpotlight('aio-360')">
+                        <h4>360mm AIO Liquid</h4><p>$220 · 3× 120mm Rad</p>
+                    </div>
+                    <div class="select-card" id="cooling-custom-loop" onclick="setCooling('custom-loop')" onmouseenter="showSpotlight('custom-loop')">
+                        <h4>Custom D5 Loop</h4><p>$800 · 360mm + Res</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- GPU -->
+            <div class="control-group">
+                <div class="section-title">GPU Accelerator Array</div>
+                <div style="display:flex;flex-direction:column;gap:1rem">
+                    <div>
+                        <p class="sub-label">GPU Family</p>
+                        <div class="selector-grid" style="grid-template-columns:1fr 1fr">
+                            <div class="select-card active" id="gpu-family-b70" onclick="setGPUFamily('b70')" onmouseenter="showSpotlight('b70')">
+                                <h4>Intel Arc Pro B70</h4><p>32GB VRAM · 250W</p>
+                                <span class="card-badge bg-blue">$950 / card</span>
                             </div>
-                            <span class="text-[11px] text-slate-500 font-mono">vidishop.live/demo</span>
-                        </div>
-                        <span class="px-2 py-0.5 bg-red-500/20 text-red-400 text-[9px] font-bold rounded uppercase tracking-wider">
-                            <span class="inline-block w-1.5 h-1.5 bg-red-500 rounded-full mr-1 animate-pulse"></span> Recording
-                        </span>
-                    </div>
-                    <div class="relative w-full aspect-video bg-black">
-                        <video controls autoplay muted loop class="w-full h-full object-contain">
-                            <source src="https://cdn.vidi.news/smartchannel.vidishop.mp4" type="video/mp4">
-                        </video>
-                    </div>
-                    <div class="p-4 flex items-center justify-between">
-                        <div class="flex items-center gap-2">
-                            <i class="fas fa-brain text-red-400 text-xs"></i>
-                            <span class="text-[11px] text-slate-400 font-medium">AI detecting intent from video frames...</span>
-                        </div>
-                        <div class="flex gap-2">
-                            <span class="px-2 py-0.5 bg-emerald-500/10 text-emerald-400 text-[9px] font-bold rounded">TENSOR MATCH</span>
-                            <span class="px-2 py-0.5 bg-blue-500/10 text-blue-400 text-[9px] font-bold rounded">GEN UI ACTIVE</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Commerce Preview -->
-                <div class="glass rounded-3xl overflow-hidden glow-red relative group">
-                    <div class="p-4 border-b border-white/5 flex items-center justify-between">
-                        <span class="text-[11px] text-slate-400 font-bold uppercase tracking-wider"><i class="fas fa-magic text-red-400 mr-2"></i>Generated Commerce Interface</span>
-                        <span class="text-[10px] text-slate-600">Powered by Visual Vector Search</span>
-                    </div>
-                    <div class="relative">
-                        <img referrerpolicy="no-referrer" src="https://cdn.vidi.news/vidishop_lingerie_model.png" alt="VidiShop Live Commerce Experience" class="w-full">
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
-                        <div class="absolute bottom-0 left-0 right-0 p-6">
-                            <div class="flex items-center justify-between">
-                                <div>
-                                    <p class="text-white font-bold text-lg">Live Shopping Experience</p>
-                                    <p class="text-slate-300 text-sm">AI-generated product overlay from video content</p>
-                                </div>
-                                <div class="flex gap-2">
-                                    <span class="w-10 h-10 glass-light rounded-full flex items-center justify-center text-white hover:bg-white/20 transition cursor-pointer"><i class="fas fa-shopping-bag"></i></span>
-                                    <span class="w-10 h-10 glass-light rounded-full flex items-center justify-center text-white hover:bg-white/20 transition cursor-pointer"><i class="fas fa-expand"></i></span>
-                                </div>
+                            <div class="select-card" id="gpu-family-rtx4090" onclick="setGPUFamily('rtx4090')" onmouseenter="showSpotlight('rtx4090')">
+                                <h4>NVIDIA RTX 4090</h4><p>24GB VRAM · 450W</p>
+                                <span class="card-badge bg-green">$1,800 / card</span>
+                            </div>
+                            <div class="select-card" id="gpu-family-a6000" onclick="setGPUFamily('a6000')" onmouseenter="showSpotlight('a6000')">
+                                <h4>NVIDIA RTX A6000 Ada</h4><p>48GB VRAM · 300W</p>
+                                <span class="card-badge bg-purple">$3,500 / card</span>
+                            </div>
+                            <div class="select-card" id="gpu-family-rtx6000ada" onclick="setGPUFamily('rtx6000ada')" onmouseenter="showSpotlight('rtx6000ada')">
+                                <h4>NVIDIA RTX 6000 Ada</h4><p>48GB VRAM · 300W</p>
+                                <span class="card-badge bg-amber">$6,800 / card</span>
+                            </div>
+                            <div class="select-card" id="gpu-family-h100" onclick="setGPUFamily('h100')" onmouseenter="showSpotlight('h100')">
+                                <h4>NVIDIA H100 PCIe 80GB</h4><p>80GB VRAM · 350W</p>
+                                <span class="card-badge bg-red">$25,000 / card</span>
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- ============================================ -->
-    <!-- HOW IT WORKS: 3-step visual flow -->
-    <!-- ============================================ -->
-    <section class="py-24">
-        <div class="max-w-7xl mx-auto px-6 lg:px-8">
-            <div class="text-center mb-16">
-                <span class="px-4 py-2 glass-light rounded-full text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 inline-block mb-6">
-                    How It Works
-                </span>
-                <h2 class="text-4xl md:text-5xl font-black brand-font tracking-tighter">
-                    From Video to <span class="text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-amber-400">Checkout</span> in 3 Steps
-                </h2>
-            </div>
-
-            <div class="grid md:grid-cols-3 gap-6 relative">
-                <!-- Connecting line -->
-                <div class="hidden md:block absolute top-1/2 left-[16%] right-[16%] h-px bg-gradient-to-r from-red-500/30 via-amber-500/30 to-emerald-500/30 -translate-y-1/2 z-0"></div>
-
-                <div class="glass rounded-3xl p-8 relative z-10 group hover:bg-white/[0.04] transition">
-                    <div class="w-14 h-14 bg-gradient-to-br from-red-600 to-red-500 rounded-2xl flex items-center justify-center text-white text-xl font-black mb-6 shadow-lg shadow-red-500/20 group-hover:scale-110 transition">1</div>
-                    <h3 class="text-xl font-bold text-white mb-3">User Watches Video</h3>
-                    <p class="text-slate-400 text-sm leading-relaxed">A viewer watches a VidiCity news segment about a new restaurant opening, a fashion event, or local lifestyle content.</p>
-                </div>
-
-                <div class="glass rounded-3xl p-8 relative z-10 group hover:bg-white/[0.04] transition">
-                    <div class="w-14 h-14 bg-gradient-to-br from-amber-600 to-amber-500 rounded-2xl flex items-center justify-center text-white text-xl font-black mb-6 shadow-lg shadow-amber-500/20 group-hover:scale-110 transition">2</div>
-                    <h3 class="text-xl font-bold text-white mb-3">AI Detects Intent</h3>
-                    <p class="text-slate-400 text-sm leading-relaxed">Visual vector search analyzes video frames in real-time. Tensor matching identifies products, locations, and purchase signals with sub-50ms latency.</p>
-                </div>
-
-                <div class="glass rounded-3xl p-8 relative z-10 group hover:bg-white/[0.04] transition">
-                    <div class="w-14 h-14 bg-gradient-to-br from-emerald-600 to-emerald-500 rounded-2xl flex items-center justify-center text-white text-xl font-black mb-6 shadow-lg shadow-emerald-500/20 group-hover:scale-110 transition">3</div>
-                    <h3 class="text-xl font-bold text-white mb-3">Shop Interface Appears</h3>
-                    <p class="text-slate-400 text-sm leading-relaxed">Gen UI assembles a custom shopping overlay — faceted products, pricing, reviews — all generated from context, not templates.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- ============================================ -->
-    <!-- TENSOR ARCHITECTURE: Visual explainer -->
-    <!-- ============================================ -->
-    <section class="py-24 relative">
-        <div class="absolute inset-0 bg-gradient-to-b from-transparent via-blue-950/5 to-transparent pointer-events-none"></div>
-        <div class="max-w-7xl mx-auto px-6 lg:px-8 relative z-10">
-            <div class="text-center mb-12">
-                <span class="px-4 py-2 glass-light rounded-full text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 inline-block mb-6">
-                    Visual Vector Intelligence
-                </span>
-                <h2 class="text-4xl md:text-5xl font-black brand-font tracking-tighter mb-4">
-                    The Brain Behind <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">Every Search</span>
-                </h2>
-                <p class="text-slate-500 max-w-2xl mx-auto text-lg font-medium">Multi-dimensional tensors don't just match keywords — they reason about visual context, location, and user intent simultaneously.</p>
-            </div>
-
-            <div class="glass rounded-3xl overflow-hidden glow-blue p-4 max-w-5xl mx-auto mb-12">
-                <img referrerpolicy="no-referrer" src="https://cdn.vidi.news/Tensor.VVOmni.png" alt="Tensor Architecture: The Multi-Factor Brain of Multimodal AI" class="w-full rounded-2xl">
-            </div>
-
-            <!-- Key capabilities grid -->
-            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4 max-w-5xl mx-auto">
-                <div class="glass rounded-2xl p-6 hover:bg-white/[0.04] transition group">
-                    <div class="w-10 h-10 bg-red-500/10 rounded-xl flex items-center justify-center text-red-400 mb-4 group-hover:scale-110 transition">
-                        <i class="fas fa-eye"></i>
-                    </div>
-                    <h4 class="font-bold text-white text-sm mb-1">Visual Matching</h4>
-                    <p class="text-[11px] text-slate-500 leading-relaxed">ColPali vision model identifies products in video frames without text descriptions.</p>
-                </div>
-                <div class="glass rounded-2xl p-6 hover:bg-white/[0.04] transition group">
-                    <div class="w-10 h-10 bg-blue-500/10 rounded-xl flex items-center justify-center text-blue-400 mb-4 group-hover:scale-110 transition">
-                        <i class="fas fa-brain"></i>
-                    </div>
-                    <h4 class="font-bold text-white text-sm mb-1">Tensor Reasoning</h4>
-                    <p class="text-[11px] text-slate-500 leading-relaxed">Multi-dimensional tensors preserve context — distinguishing "luxury yacht" from "water texture".</p>
-                </div>
-                <div class="glass rounded-2xl p-6 hover:bg-white/[0.04] transition group">
-                    <div class="w-10 h-10 bg-amber-500/10 rounded-xl flex items-center justify-center text-amber-400 mb-4 group-hover:scale-110 transition">
-                        <i class="fas fa-map-marker-alt"></i>
-                    </div>
-                    <h4 class="font-bold text-white text-sm mb-1">Geospatial Context</h4>
-                    <p class="text-[11px] text-slate-500 leading-relaxed">Location-aware results surface local businesses and inventory within delivery range.</p>
-                </div>
-                <div class="glass rounded-2xl p-6 hover:bg-white/[0.04] transition group">
-                    <div class="w-10 h-10 bg-emerald-500/10 rounded-xl flex items-center justify-center text-emerald-400 mb-4 group-hover:scale-110 transition">
-                        <i class="fas fa-bolt"></i>
-                    </div>
-                    <h4 class="font-bold text-white text-sm mb-1">Real-Time Assembly</h4>
-                    <p class="text-[11px] text-slate-500 leading-relaxed">Gen UI components instantiate from JSON schemas — no templates, fully dynamic.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- ============================================ -->
-    <!-- SMART STACK: Interactive tech blueprint -->
-    <!-- ============================================ -->
-    <section id="smart-stack" class="py-24">
-        <div class="max-w-7xl mx-auto px-6 lg:px-8">
-            <div class="mb-12">
-                <span class="px-4 py-2 glass-light rounded-full text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 inline-block mb-6">
-                    Technical Architecture
-                </span>
-                <h2 class="text-4xl md:text-5xl font-black brand-font tracking-tighter mb-4">
-                    The Smart Stack <span class="text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-amber-400">Blueprint</span>
-                </h2>
-                <p class="text-slate-500 max-w-3xl text-lg font-medium">
-                    Three pillars power VidiShop: <strong class="text-slate-300">Frontend (Flutter)</strong>, <strong class="text-slate-300">The Brain (Vidi AI)</strong>, and <strong class="text-slate-300">System Connectors</strong>. Click any card to inspect.
-                </p>
-            </div>
-
-            <div class="grid lg:grid-cols-3 gap-6">
-                <!-- Column A: Frontend -->
-                <div>
-                    <div class="bg-blue-500/10 border border-blue-500/20 p-4 rounded-t-2xl flex items-center gap-3">
-                        <div class="w-10 h-10 bg-blue-500/20 rounded-xl flex items-center justify-center text-blue-400">
-                            <i class="fas fa-mobile-alt text-lg"></i>
-                        </div>
-                        <div>
-                            <h3 class="font-bold text-white text-sm">A. Frontend Integration</h3>
-                            <p class="text-[10px] text-blue-400 font-mono">Flutter & Dart / SDUI</p>
-                        </div>
-                    </div>
-                    <div class="glass border-t-0 rounded-b-2xl p-4 space-y-2">
-                        <div class="tech-card p-4 rounded-xl cursor-pointer" onclick="updateDetail('flutter')">
-                            <h4 class="font-bold text-white text-sm">Server-Driven UI</h4>
-                            <p class="text-xs text-slate-500 mt-1">Dynamic Widget Builder instead of hard-coded layouts.</p>
-                        </div>
-                        <div class="tech-card p-4 rounded-xl cursor-pointer" onclick="updateDetail('factories')">
-                            <h4 class="font-bold text-white text-sm">Widget Factories</h4>
-                            <p class="text-xs text-slate-500 mt-1">Mapping JSON tags to native Dart widget classes.</p>
-                        </div>
-                        <div class="tech-card p-4 rounded-xl cursor-pointer" onclick="updateDetail('assembly')">
-                            <h4 class="font-bold text-white text-sm">Real-Time Assembly</h4>
-                            <p class="text-xs text-slate-500 mt-1">Instant overlay assembly on "High Purchase Intent".</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Column B: Brain -->
-                <div>
-                    <div class="bg-purple-500/10 border border-purple-500/20 p-4 rounded-t-2xl flex items-center gap-3">
-                        <div class="w-10 h-10 bg-purple-500/20 rounded-xl flex items-center justify-center text-purple-400">
-                            <i class="fas fa-brain text-lg"></i>
-                        </div>
-                        <div>
-                            <h3 class="font-bold text-white text-sm">B. Visual Vector Search</h3>
-                            <p class="text-[10px] text-purple-400 font-mono">Vidi AI Platform</p>
-                        </div>
-                    </div>
-                    <div class="glass border-t-0 rounded-b-2xl p-4 space-y-2">
-                        <div class="tech-card p-4 rounded-xl cursor-pointer" onclick="updateDetail('vespa')">
-                            <h4 class="font-bold text-white text-sm">Vidi AI Engine</h4>
-                            <p class="text-xs text-slate-500 mt-1">Sub-millisecond visual matching & re-ranking.</p>
-                        </div>
-                        <div class="tech-card p-4 rounded-xl cursor-pointer" onclick="updateDetail('tensors')">
-                            <h4 class="font-bold text-white text-sm">Tensors vs. Vectors</h4>
-                            <p class="text-xs text-slate-500 mt-1">Multi-dimensional tensors to "reason" about context.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Column C: Connectors -->
-                <div>
-                    <div class="bg-amber-500/10 border border-amber-500/20 p-4 rounded-t-2xl flex items-center gap-3">
-                        <div class="w-10 h-10 bg-amber-500/20 rounded-xl flex items-center justify-center text-amber-400">
-                            <i class="fas fa-plug text-lg"></i>
-                        </div>
-                        <div>
-                            <h3 class="font-bold text-white text-sm">C. Connectors</h3>
-                            <p class="text-[10px] text-amber-400 font-mono">MCP / CMS / APIs</p>
-                        </div>
-                    </div>
-                    <div class="glass border-t-0 rounded-b-2xl p-4 space-y-2">
-                        <div class="tech-card p-4 rounded-xl cursor-pointer" onclick="updateDetail('mcp')">
-                            <h4 class="font-bold text-white text-sm">Model Context Protocol</h4>
-                            <p class="text-xs text-slate-500 mt-1">The "Handshake" between Agent and Checkout.</p>
-                        </div>
-                        <div class="tech-card p-4 rounded-xl cursor-pointer" onclick="updateDetail('cms')">
-                            <h4 class="font-bold text-white text-sm">Directus / Strapi</h4>
-                            <p class="text-xs text-slate-500 mt-1">Headless CMS for 138+ Business Categories.</p>
-                        </div>
-                        <div class="tech-card p-4 rounded-xl cursor-pointer" onclick="updateDetail('youtube')">
-                            <h4 class="font-bold text-white text-sm">YouTube IFrame API</h4>
-                            <p class="text-xs text-slate-500 mt-1">PMax-style overlays on video content.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Detail Panel -->
-            <div id="tech-detail-panel" class="mt-6 bg-gradient-to-r from-slate-900 to-slate-800 border border-white/10 text-white p-8 rounded-2xl shadow-2xl hidden">
-                <div class="flex items-start justify-between">
                     <div>
-                        <h4 id="detail-title" class="text-xl font-bold text-red-400 mb-2">Select a component</h4>
-                        <p id="detail-desc" class="text-slate-300 text-sm leading-relaxed max-w-3xl">Click on any card in the stack above to view deep-dive technical specifications.</p>
-                    </div>
-                    <div class="w-12 h-12 bg-red-500/10 rounded-xl flex items-center justify-center text-red-400 shrink-0">
-                        <i class="fas fa-microchip text-xl"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- ============================================ -->
-    <!-- PMAX STRATEGY: Interactive simulator -->
-    <!-- ============================================ -->
-    <section id="pmax" class="py-24 relative">
-        <div class="absolute inset-0 bg-gradient-to-b from-transparent via-red-950/5 to-transparent pointer-events-none"></div>
-        <div class="max-w-7xl mx-auto px-6 lg:px-8 relative z-10">
-            <div class="text-center mb-16">
-                <span class="px-4 py-2 glass-light rounded-full text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 inline-block mb-6">
-                    Growth Engine
-                </span>
-                <h2 class="text-4xl md:text-5xl font-black brand-font tracking-tighter mb-4">
-                    Performance Max <span class="text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-amber-400">Strategy</span>
-                </h2>
-                <p class="text-slate-500 max-w-2xl mx-auto text-lg font-medium">VidiCity segments are high-impact assets for Google PMax. Drag the sliders to simulate reach.</p>
-            </div>
-
-            <div class="grid lg:grid-cols-2 gap-8 items-stretch">
-                <!-- Simulator Controls -->
-                <div class="glass rounded-3xl p-8 flex flex-col">
-                    <h3 class="font-bold text-white text-lg mb-6"><i class="fas fa-sliders-h text-red-400 mr-2"></i> Impact Simulator</h3>
-
-                    <div class="space-y-6 flex-1">
-                        <div>
-                            <label class="flex justify-between text-sm font-medium text-slate-300 mb-2">
-                                <span>VidiCity Video Assets</span>
-                                <span id="asset-count-display" class="text-red-400 font-bold">10</span>
-                            </label>
-                            <input type="range" id="asset-slider" min="5" max="50" value="10"
-                                class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-red-500">
-                        </div>
-                        <div>
-                            <label class="flex justify-between text-sm font-medium text-slate-300 mb-2">
-                                <span>PMax Ad Budget Multiplier</span>
-                                <span id="budget-display" class="text-red-400 font-bold">1x</span>
-                            </label>
-                            <input type="range" id="budget-slider" min="1" max="5" value="1"
-                                class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-red-500">
-                        </div>
-                    </div>
-
-                    <div class="mt-8 p-6 bg-gradient-to-r from-red-600/10 to-amber-600/10 rounded-2xl border border-red-500/20">
-                        <div class="flex justify-between items-center">
-                            <span class="text-sm font-bold text-slate-400">Projected Local Reach</span>
-                            <span id="reach-projection" class="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-amber-400">25,000</span>
-                        </div>
-                    </div>
-
-                    <button onclick="window.alert('Redirecting to Google Ads Strategy Portal...')"
-                        class="mt-6 w-full bg-gradient-to-r from-red-600 to-red-500 hover:from-red-500 hover:to-red-400 text-white font-bold py-4 px-6 rounded-xl transition shadow-lg shadow-red-500/20 flex items-center justify-center gap-2">
-                        <i class="fas fa-calendar"></i> Book Google Meeting
-                    </button>
-                </div>
-
-                <!-- Chart -->
-                <div class="glass rounded-3xl p-8 flex flex-col">
-                    <h3 class="font-bold text-white text-lg mb-6 text-center"><i class="fas fa-chart-bar text-blue-400 mr-2"></i> Asset Impact Analysis</h3>
-                    <div class="chart-container flex-1">
-                        <canvas id="pmaxChart"></canvas>
-                    </div>
-                    <p class="text-xs text-center text-slate-600 mt-4">Simulated data based on PMax visual conversion benchmarks.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- ============================================ -->
-    <!-- ROADMAP: Execution timeline -->
-    <!-- ============================================ -->
-    <section id="roadmap" class="py-24">
-        <div class="max-w-7xl mx-auto px-6 lg:px-8">
-            <div class="text-center mb-16">
-                <span class="px-4 py-2 glass-light rounded-full text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 inline-block mb-6">
-                    Execution
-                </span>
-                <h2 class="text-4xl md:text-5xl font-black brand-font tracking-tighter mb-4">
-                    Deployment <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400">Roadmap</span>
-                </h2>
-                <p class="text-slate-500 max-w-xl mx-auto text-lg font-medium">Three steps to launch the VidiShop "Story-to-Shop" pilot.</p>
-            </div>
-
-            <div class="relative">
-                <!-- Timeline connector -->
-                <div class="hidden md:block absolute top-1/2 left-[10%] right-[10%] h-px bg-gradient-to-r from-emerald-500/40 via-blue-500/40 to-red-500/40 -translate-y-1/2 z-0"></div>
-
-                <div class="grid md:grid-cols-3 gap-8">
-                    <!-- Step 1 -->
-                    <div class="glass rounded-3xl p-8 relative z-10 border-emerald-500/30 border timeline-node hover:border-emerald-400/50 transition">
-                        <div class="absolute -top-4 left-1/2 -translate-x-1/2 w-8 h-8 bg-emerald-500 rounded-full flex items-center justify-center font-black text-sm text-white shadow-lg shadow-emerald-500/30">1</div>
-                        <div class="text-center mt-2">
-                            <h3 class="font-bold text-lg text-white mb-2">Vector-VidiBridge</h3>
-                            <p class="text-sm text-slate-400 mb-4">Initialize the index of <strong class="text-slate-300">138 business categories</strong> in Vidi AI.</p>
-                            <span class="px-3 py-1 bg-emerald-500/20 text-emerald-400 text-xs font-bold rounded-full">
-                                <i class="fas fa-spinner fa-spin mr-1"></i> In Progress
-                            </span>
-                        </div>
-                    </div>
-
-                    <!-- Step 2 -->
-                    <div class="glass rounded-3xl p-8 relative z-10 timeline-node hover:border-blue-400/30 transition">
-                        <div class="absolute -top-4 left-1/2 -translate-x-1/2 w-8 h-8 bg-slate-700 rounded-full flex items-center justify-center font-black text-sm text-slate-400 border border-slate-600">2</div>
-                        <div class="text-center mt-2">
-                            <h3 class="font-bold text-lg text-white mb-2">Gen UI Spec</h3>
-                            <p class="text-sm text-slate-400 mb-4">Define <strong class="text-slate-300">JSON Schema</strong> for Flutter widgets. Map AI agent tools.</p>
-                            <span class="px-3 py-1 bg-slate-700 text-slate-400 text-xs font-bold rounded-full">Pending</span>
-                        </div>
-                    </div>
-
-                    <!-- Step 3 -->
-                    <div class="glass rounded-3xl p-8 relative z-10 timeline-node hover:border-red-400/30 transition">
-                        <div class="absolute -top-4 left-1/2 -translate-x-1/2 w-8 h-8 bg-slate-700 rounded-full flex items-center justify-center font-black text-sm text-slate-400 border border-slate-600">3</div>
-                        <div class="text-center mt-2">
-                            <h3 class="font-bold text-lg text-white mb-2">Pilot Deployment</h3>
-                            <p class="text-sm text-slate-400 mb-4">Launch <strong class="text-slate-300">West Palm Beach</strong> "Story-to-Shop" demo in VidiCity App.</p>
-                            <span class="px-3 py-1 bg-slate-700 text-slate-400 text-xs font-bold rounded-full">Scheduled</span>
+                        <p class="sub-label">Quantity <span id="gpu-count-limit" style="color:var(--blue);font-size:0.6rem">(Max 4 for WRX90)</span></p>
+                        <div class="selector-grid" style="grid-template-columns:repeat(4,1fr)">
+                            <div class="select-card active" id="gpu-count-1" onclick="setGPUCount(1)"><h4>1×</h4></div>
+                            <div class="select-card" id="gpu-count-2" onclick="setGPUCount(2)"><h4>2×</h4></div>
+                            <div class="select-card" id="gpu-count-3" onclick="setGPUCount(3)"><h4>3×</h4></div>
+                            <div class="select-card" id="gpu-count-4" onclick="setGPUCount(4)"><h4>4×</h4></div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
 
-    <!-- ============================================ -->
-    <!-- CTA: Final section -->
-    <!-- ============================================ -->
-    <section class="py-24 relative overflow-hidden">
-        <div class="absolute inset-0 mesh-bg pointer-events-none"></div>
-        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-red-500/10 rounded-full blur-[150px] pointer-events-none"></div>
-
-        <div class="max-w-3xl mx-auto px-6 text-center relative z-10">
-            <h2 class="text-4xl md:text-6xl font-black brand-font tracking-tighter mb-6">
-                Ready to Make<br>Search <span class="text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-amber-400">Shoppable?</span>
-            </h2>
-            <p class="text-slate-400 text-lg mb-10 max-w-xl mx-auto font-medium">Join the VidiShop pilot program and transform video content into a real-time commerce channel.</p>
-            <div class="flex flex-wrap justify-center gap-4">
-                <a href="SmartGenUi.html" class="px-10 py-5 bg-gradient-to-r from-red-600 to-red-500 text-white rounded-2xl font-black uppercase tracking-wider hover:from-red-500 hover:to-red-400 transition-all shadow-xl shadow-red-500/20 hover:shadow-red-500/40 transform hover:-translate-y-1">
-                    Explore Gen UI
-                </a>
-                <a href="vidismart.masterlist.html" class="px-10 py-5 glass text-white rounded-2xl font-black uppercase tracking-wider hover:bg-white/10 transition-all">
-                    View Full Smart Stack
-                </a>
+            <!-- RAM -->
+            <div class="control-group">
+                <div class="section-title">8-Channel System Memory (RDIMM)</div>
+                <div style="display:flex;flex-direction:column;gap:1rem">
+                    <div class="selector-grid">
+                        <div class="select-card active" id="ram-size-64"  onclick="setRAMSize(64)"  onmouseenter="showSpotlight(64)"><h4>64GB</h4><p>$450 · 8× 8GB</p></div>
+                        <div class="select-card" id="ram-size-128" onclick="setRAMSize(128)" onmouseenter="showSpotlight(128)"><h4>128GB</h4><p>$600 · 8× 16GB</p></div>
+                        <div class="select-card" id="ram-size-256" onclick="setRAMSize(256)" onmouseenter="showSpotlight(256)"><h4>256GB</h4><p>$1,150 · 8× 32GB</p></div>
+                        <div class="select-card" id="ram-size-512" onclick="setRAMSize(512)" onmouseenter="showSpotlight(512)"><h4>512GB</h4><p>$2,300 · 8× 64GB</p></div>
+                    </div>
+                    <div>
+                        <p class="sub-label">DDR5 Speed Profile</p>
+                        <div class="selector-grid" style="grid-template-columns:1fr 1fr 1fr">
+                            <div class="select-card active" id="ram-speed-4800" onclick="setRAMSpeed(4800)"><h4>4800 MT/s</h4><p>Crucial Std</p></div>
+                            <div class="select-card" id="ram-speed-5600" onclick="setRAMSpeed(5600)"><h4>5600 MT/s</h4><p>+$150 Kingston</p></div>
+                            <div class="select-card" id="ram-speed-6000" onclick="setRAMSpeed(6000)"><h4>6000 MT/s</h4><p>+$350 G.Skill</p></div>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </div>
-    </section>
 
-    <!-- Footer -->
-    <footer class="border-t border-white/5 py-12">
-        <div class="max-w-7xl mx-auto px-6 text-center">
-            <p class="text-slate-600 text-xs font-bold uppercase tracking-[0.3em] mb-2">VidiSmart.com</p>
-            <p class="text-slate-700 text-[10px] uppercase tracking-widest">&copy; 2026 VidiSmart Inc. All rights reserved.</p>
-        </div>
-    </footer>
+            <!-- STORAGE -->
+            <div class="control-group">
+                <div class="section-title">Enterprise Primary Storage</div>
+                <div class="selector-grid">
+                    <div class="select-card active" id="storage-1tb" onclick="setStorage('1tb')" onmouseenter="showSpotlight('1tb')"><h4>1TB Gen4</h4><p>$120 · WD Black</p></div>
+                    <div class="select-card" id="storage-4tb" onclick="setStorage('4tb')" onmouseenter="showSpotlight('4tb')"><h4>4TB Gen5</h4><p>$600 · FireCuda Pro</p></div>
+                    <div class="select-card" id="storage-8tb" onclick="setStorage('8tb')" onmouseenter="showSpotlight('8tb')"><h4>8TB U.3 SSD</h4><p>$1,200 · Micron 9400</p></div>
+                </div>
+            </div>
 
-    <script>
-        // --- TECH STACK DETAILS ---
-        const techDetails = {
-            'flutter': {
-                title: "Frontend: Server-Driven UI (SDUI)",
-                desc: "Your existing Flutter app is perfectly suited. By utilizing a 'Dynamic Widget Builder', we avoid hard-coding UI changes. The app listens for JSON instructions from the AI agent and renders native Dart widgets dynamically — no app store updates required."
-            },
-            'factories': {
-                title: "Widget Factories",
-                desc: "This maps specific JSON tags (like `product_facet_grid` or `video_overlay`) directly to your existing Dart widget classes, allowing the AI to 'pick' the right component for every context."
-            },
-            'assembly': {
-                title: "Real-Time Assembly",
-                desc: "When the AI Agent detects 'High Purchase Intent' during a video, it sends a JSON payload. The Flutter app instantly assembles the VidiShop overlay on top of the news video — in under 50 milliseconds."
-            },
-            'vespa': {
-                title: "Vidi AI Engine",
-                desc: "Unlike standard vector databases, Vidi AI is a full Search Platform with built-in tensor operations. It enables sub-millisecond visual matching of video frames to product categories, essential for real-time commerce."
-            },
-            'tensors': {
-                title: "Tensors vs. Vectors",
-                desc: "While vectors flatten data into single-dimensional embeddings, tensors preserve multi-dimensional context. We use them to 'reason' about visual scenes — distinguishing 'yacht texture' from 'water texture' for far more accurate product matching."
-            },
-            'mcp': {
-                title: "Model Context Protocol (MCP)",
-                desc: "The critical 'handshake' protocol allowing the AI agent to navigate between the VidiCity video library and the VidiShop checkout system securely and contextually."
-            },
-            'cms': {
-                title: "Headless CMS (Directus/Strapi)",
-                desc: "Acts as the central repository for the metadata of 138+ business categories, feeding structured data to the Vidi AI index for instant retrieval."
-            },
-            'youtube': {
-                title: "YouTube IFrame API",
-                desc: "Used to embed VidiCity segments within the app while triggering PMax-style ad overlays, leveraging Google's infrastructure for delivery and analytics."
-            }
+            <button class="btn-assemble" onclick="exportConfig()">Copy Hardware Proposal</button>
+        </div>
+
+        <!-- ── VISUAL COLUMN ──────────────────────────────────── -->
+        <div class="visual-panel">
+
+            <!-- PART SPOTLIGHT -->
+            <div class="spotlight-card" id="spotlight-card">
+                <div class="spotlight-hint" id="spotlight-hint">Hover a part to preview</div>
+                <img id="spotlight-img" class="spotlight-img" src="" alt="" style="opacity:0;display:none">
+                <div id="spotlight-placeholder" class="spotlight-placeholder">
+                    <svg width="72" height="72" viewBox="0 0 24 24" fill="none" stroke="#334155" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                    <div class="spotlight-placeholder-label">Part Preview</div>
+                    <div class="spotlight-filename" id="spotlight-filename">Hover any component card to see the product photo</div>
+                </div>
+                <div class="spotlight-overlay">
+                    <div class="spotlight-cat"   id="spotlight-cat"></div>
+                    <div class="spotlight-name"  id="spotlight-name"></div>
+                    <div class="spotlight-price" id="spotlight-price"></div>
+                </div>
+            </div>
+
+            <!-- STATS -->
+            <div class="stats-row">
+                <div class="stat-badge"><p>Total Config Cost</p><h3 id="display-price">—</h3></div>
+                <div class="stat-badge"><p>System Wattage</p><h3 id="display-wattage">—</h3></div>
+                <div class="stat-badge"><p>Total VRAM Pool</p><h3 id="display-vram">—</h3></div>
+                <div class="stat-badge" id="circuit-badge"><p>Circuit Required</p><h3 id="display-circuit">—</h3></div>
+            </div>
+
+            <!-- ALERTS -->
+            <div class="alert-box alert-power hidden" id="alert-power">
+                <div class="alert-icon">⚡</div>
+                <div><div class="alert-title">US Wall Circuit Overload</div><div class="alert-body" id="alert-power-body"></div></div>
+            </div>
+            <div class="alert-box alert-clearance hidden" id="alert-clearance">
+                <div class="alert-icon">🔩</div>
+                <div><div class="alert-title">GPU Bottom Clearance Warning</div><div class="alert-body">4 GPUs in an 8-slot chassis seats GPU 4 flush against the PSU shroud. Blower intake starved — GPU 4 runs 10–15°C hotter. Upgrade to Fractal Define 7 XL (9 slots) for proper clearance.</div></div>
+            </div>
+            <div class="alert-box alert-compat hidden" id="alert-compat">
+                <div class="alert-icon">⚠️</div>
+                <div><div class="alert-title">Case / Motherboard Incompatibility</div><div class="alert-body">Selected case max form factor is E-ATX. Asus WRX90E-SAGE SE is SSI-EEB (larger) and will NOT fit. Switch to Define 7 XL, Enthoo Pro 2, or SilverStone RM44.</div></div>
+            </div>
+
+            <!-- BUILD vs BUY -->
+            <div class="bizon-card">
+                <div class="bizon-header">
+                    <div class="bizon-title-block">
+                        <h3>Build vs. Buy — Bizon G3000</h3>
+                        <p>Sovereign DIY vs. nearest turnkey workstation · Same GPU · Same VRAM tier</p>
+                    </div>
+                    <span class="bizon-tag">Live Comparison</span>
+                </div>
+                <div class="bizon-compare-grid">
+                    <div class="bizon-col sovereign">
+                        <div class="bizon-col-label">Sovereign Build — DIY</div>
+                        <div class="bizon-col-price" id="bizon-sov-price">—</div>
+                        <div class="bizon-col-desc">AMD Threadripper Pro · Full custom config · Your chassis choice · No markup</div>
+                    </div>
+                    <div class="bizon-col competitor">
+                        <div class="bizon-col-label">Bizon G3000 — Turnkey</div>
+                        <div class="bizon-col-price" id="bizon-comp-price">—</div>
+                        <div class="bizon-col-desc" id="bizon-comp-desc">Intel Xeon W · Pre-built · Warranty included · Same GPU VRAM pool</div>
+                    </div>
+                </div>
+                <div class="bizon-savings" id="bizon-savings-row">
+                    <div>
+                        <div class="bizon-savings-amount" id="bizon-savings-amount">—</div>
+                        <div class="bizon-savings-label" id="bizon-savings-label">DIY Savings</div>
+                    </div>
+                    <div class="bizon-savings-note" id="bizon-savings-note">AMD Threadripper Pro delivers equivalent multi-GPU PCIe bandwidth to Xeon W. Bizon uses WRX80/WRX90 socket; Sovereign uses same WRX90 platform.</div>
+                </div>
+            </div>
+
+            <!-- PCB SCHEMATIC -->
+            <div class="hub-card">
+                <h3 style="font-size:1.05rem;font-weight:900;letter-spacing:-0.01em">PCIe Slot Spacing &amp; Clearance Map</h3>
+                <p style="color:var(--text-secondary);font-size:0.73rem;font-weight:600;margin-top:3px">Every-other-slot layout · 1-slot air gap between dual-slot blower cards</p>
+                <div class="mb-schematic">
+                    <div class="mb-cpu">
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#475569" stroke-width="1.5"><rect x="4" y="4" width="16" height="16" rx="2"/><circle cx="12" cy="12" r="3"/></svg>
+                        <span class="mb-cpu-text" id="display-schematic-cpu">7845WX</span>
+                    </div>
+                    <div class="mb-slot" style="top:30px"  data-lane="Slot 1 (x16)"></div>
+                    <div class="mb-slot" style="top:100px" data-lane="Slot 2 (x16)"></div>
+                    <div class="mb-slot" style="top:170px" data-lane="Slot 3 (x16)"></div>
+                    <div class="mb-slot" style="top:240px" data-lane="Slot 4 (x16)"></div>
+                    <div class="mb-slot" style="top:310px" data-lane="Slot 5 (x16)"></div>
+                    <div class="mb-slot" style="top:380px" data-lane="Slot 6 (x16)"></div>
+                    <div class="mb-slot" style="top:450px" data-lane="Slot 7 (x16)"></div>
+                    <div class="mb-gpu-card color-b70" id="mb-gpu-1" style="top:23px"> <span>Intel Arc B70</span><span>Slot 1 · x16 ACTIVE</span></div>
+                    <div class="mb-gpu-card color-b70" id="mb-gpu-2" style="top:163px"><span>Intel Arc B70</span><span>Slot 3 · x16 ACTIVE</span></div>
+                    <div class="mb-gpu-card color-b70" id="mb-gpu-3" style="top:303px"><span>Intel Arc B70</span><span>Slot 5 · x16 ACTIVE</span></div>
+                    <div class="mb-gpu-card color-b70" id="mb-gpu-4" style="top:443px"><span>Intel Arc B70</span><span>Slot 7 · OVERHANG</span></div>
+                </div>
+                <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:0.75rem;margin-top:0.25rem">
+                    <div style="text-align:center"><p style="font-size:0.58rem;color:var(--text-secondary);font-weight:800;text-transform:uppercase">Case</p><p style="font-size:0.75rem;font-weight:900" id="info-case-name">Define 7 XL</p></div>
+                    <div style="text-align:center"><p style="font-size:0.58rem;color:var(--text-secondary);font-weight:800;text-transform:uppercase">Exp. Slots</p><p style="font-size:0.75rem;font-weight:900" id="info-slot-count">9 Slots</p></div>
+                    <div style="text-align:center"><p style="font-size:0.58rem;color:var(--text-secondary);font-weight:800;text-transform:uppercase">Form Factor</p><p style="font-size:0.75rem;font-weight:900" id="info-form-factor">Tower</p></div>
+                    <div style="text-align:center"><p style="font-size:0.58rem;color:var(--text-secondary);font-weight:800;text-transform:uppercase">Dual PSU</p><p style="font-size:0.75rem;font-weight:900" id="info-dual-psu">No</p></div>
+                </div>
+            </div>
+
+            <!-- BOM TABLE -->
+            <div class="hub-card">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem">
+                    <div>
+                        <h3 style="font-size:1.05rem;font-weight:900;letter-spacing:-0.01em">Configured Bill of Materials</h3>
+                        <p style="color:var(--text-secondary);font-size:0.7rem;font-weight:600;margin-top:3px">Standard pricing benchmarks</p>
+                    </div>
+                    <button class="preset-btn" style="flex:none;min-width:auto;padding:0.6rem 1.2rem;background:linear-gradient(135deg, var(--blue), var(--purple));color:#fff;border:none;border-radius:10px;box-shadow:0 4px 12px rgba(168,85,247,0.3);font-size:0.73rem;letter-spacing:0.02em" onclick="openAgentConsole()">VidiShop Price scan</button>
+                </div>
+                <table class="bom-table" style="margin-top:0">
+                    <thead><tr><th>Category</th><th>Component</th><th style="text-align:right">Price</th><th style="text-align:right;width:120px;padding-right:0.75rem">Live Search</th></tr></thead>
+                    <tbody id="bom-list"></tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+</main>
+
+<div class="modal-toast" id="copy-toast">Hardware Proposal Copied!</div>
+
+<script>
+// ── SPOTLIGHT DATA ────────────────────────────────────────────────────────────
+// Add images to the img/ folder using the filenames listed below.
+// Run: document.querySelectorAll('[data-imgpath]') to audit missing images.
+
+const SPOTLIGHT = {
+    // Cases
+    'define-7-xl': { img:'hardware/case-define7xl.jpg',    cat:'Chassis — Full Tower',     name:'Fractal Design Define 7 XL',       price:'$239.99' },
+    'enthoo-pro2':  { img:'hardware/case-enthoo-pro2.jpg',  cat:'Chassis — Full Tower',     name:'Phanteks Enthoo Pro 2',             price:'$169.99' },
+    'o11d-xl':      { img:'hardware/case-o11d-xl.jpg',      cat:'Chassis — Panoramic Tower', name:'Lian Li O11D EVO XL',              price:'$244.99' },
+    '7000d':        { img:'hardware/case-7000d.jpg',        cat:'Chassis — Full Tower',     name:'Corsair Obsidian 7000D Airflow',    price:'$269.99' },
+    'rm44':         { img:'hardware/case-rm44.jpg',         cat:'Chassis — 4U Rackmount',   name:'SilverStone RM44 4U Rack',         price:'$199.99' },
+    // Motherboards
+    'wrx90':        { img:'hardware/mobo-wrx90.jpg',        cat:'Motherboard — SSI-EEB',    name:'Asus Pro WS WRX90E-SAGE SE',       price:'$1,299.99' },
+    'trx50':        { img:'hardware/mobo-trx50.jpg',        cat:'Motherboard — E-ATX',      name:'Asus Pro WS TRX50-SAGE WiFi',      price:'$819.99' },
+    // CPUs
+    '7845wx':       { img:'hardware/cpu-7845wx.jpg',        cat:'Processor — 12 Core',      name:'AMD Threadripper Pro 7845WX',      price:'$649.99' },
+    '7975wx':       { img:'hardware/cpu-7975wx.jpg',        cat:'Processor — 32 Core',      name:'AMD Threadripper Pro 7975WX',      price:'$3,899.99' },
+    '7995wx':       { img:'hardware/cpu-7995wx.jpg',        cat:'Processor — 96 Core',      name:'AMD Threadripper Pro 7995WX',      price:'$9,999.99' },
+    // Cooling
+    'air-noctua':   { img:'hardware/cooling-noctua-u14s.jpg', cat:'CPU Cooling — Air',       name:'Noctua NH-U14S TR5',               price:'$99.99' },
+    'aio-360':      { img:'hardware/cooling-aio-360.jpg',   cat:'CPU Cooling — Liquid AIO', name:'360mm AIO Liquid Cooler',          price:'$219.99' },
+    'custom-loop':  { img:'hardware/cooling-custom-loop.jpg',cat:'CPU Cooling — Custom Loop',name:'Custom D5 Pump Loop + 360 Rad',   price:'$799.99' },
+    // GPUs
+    'b70':          { img:'hardware/gpu-arc-b70.jpg',       cat:'GPU — 32GB VRAM · 250W',   name:'Intel Arc Pro B70 32GB Blower',    price:'$949.99' },
+    'rtx4090':      { img:'hardware/gpu-rtx4090.jpg',       cat:'GPU — 24GB VRAM · 450W',   name:'NVIDIA GeForce RTX 4090 24GB',     price:'$1,799.99' },
+    'a6000':        { img:'hardware/gpu-rtx-a6000-ada.jpg', cat:'GPU — 48GB VRAM · 300W',   name:'NVIDIA RTX A6000 Ada 48GB',        price:'$3,499.99' },
+    'rtx6000ada':   { img:'hardware/gpu-rtx6000ada.jpg',    cat:'GPU — 48GB VRAM · 300W',   name:'NVIDIA RTX 6000 Ada Generation',   price:'$6,799.99' },
+    'h100':         { img:'hardware/gpu-h100-pcie.jpg',     cat:'GPU — 80GB VRAM · 350W',   name:'NVIDIA H100 PCIe 80GB',            price:'$24,999.99' },
+    // RAM
+    64:             { img:'hardware/ram-ddr5-rdimm.jpg',    cat:'System RAM — 64GB Kit',    name:'8× 8GB DDR5 RDIMM ECC',            price:'$449.99' },
+    128:            { img:'hardware/ram-ddr5-rdimm.jpg',    cat:'System RAM — 128GB Kit',   name:'8× 16GB DDR5 RDIMM ECC',           price:'$599.99' },
+    256:            { img:'hardware/ram-ddr5-rdimm.jpg',    cat:'System RAM — 256GB Kit',   name:'8× 32GB DDR5 RDIMM ECC',           price:'$1,149.99' },
+    512:            { img:'hardware/ram-ddr5-rdimm.jpg',    cat:'System RAM — 512GB Kit',   name:'8× 64GB DDR5 RDIMM ECC',           price:'$2,299.99' },
+    // Storage
+    '1tb':          { img:'hardware/storage-wd-black.jpg',      cat:'Storage — Gen4 NVMe',       name:'1TB WD Black SN850X Gen4',           price:'$119.99' },
+    '4tb':          { img:'hardware/storage-firecuda.jpg',      cat:'Storage — Gen5 NVMe',       name:'4TB Seagate FireCuda 540 Gen5',      price:'$599.99' },
+    '8tb':          { img:'hardware/storage-micron-9400.jpg',   cat:'Storage — U.3 Enterprise',  name:'8TB Micron 9400 U.3 Enterprise SSD', price:'$1,199.99' },
+    // PSU tiers (auto-selected)
+    'psu-1000w':    { img:'hardware/psu-silverstone-1000w.jpg', cat:'Power Supply — Platinum',   name:'SilverStone HELA 1000W Platinum',    price:'$179.99' },
+    'psu-1200w':    { img:'hardware/psu-corsair-ax1200i.jpg',   cat:'Power Supply — Titanium',   name:'Corsair AX1200i Digital Titanium',   price:'$349.99' },
+    'psu-1600w':    { img:'hardware/psu-corsair-ax1600i.jpg',   cat:'Power Supply — Titanium',   name:'Corsair AX1600i Digital Titanium',   price:'$449.99' },
+    'psu-2050w':    { img:'hardware/psu-silverstone-2050w.jpg', cat:'Power Supply — Platinum',   name:'SilverStone HELA 2050W Platinum',    price:'$409.99' },
+    'psu-dual':     { img:'hardware/psu-dual-1000w.jpg',        cat:'Power Supply — Dual 1000W', name:'Dual 1000W PSUs + Phanteks Combiner',price:'$399.99' },
+    // Case fans
+    'fans':         { img:'hardware/fans-noctua-nfa14.jpg',     cat:'Case Cooling — 6× 140mm',   name:'6× Noctua NF-A14 industrialPPC PWM', price:'$219.99' }
+};
+
+// ── PARTS DATA ────────────────────────────────────────────────────────────────
+
+const S = {
+    chassis: {
+        'define-7-xl': { price:240,  name:'Fractal Design Define 7 XL',    slots:9, formFactor:'Tower',   moboMax:'SSI-EEB', dualPSU:false },
+        'enthoo-pro2':  { price:170,  name:'Phanteks Enthoo Pro 2',          slots:8, formFactor:'Tower',   moboMax:'SSI-EEB', dualPSU:true  },
+        'o11d-xl':      { price:245,  name:'Lian Li O11D EVO XL',            slots:8, formFactor:'Tower',   moboMax:'E-ATX',   dualPSU:false },
+        '7000d':        { price:270,  name:'Corsair Obsidian 7000D Airflow', slots:8, formFactor:'Tower',   moboMax:'E-ATX',   dualPSU:false },
+        'rm44':         { price:200,  name:'SilverStone RM44 4U Rack',       slots:8, formFactor:'4U Rack', moboMax:'SSI-EEB', dualPSU:false }
+    },
+    mobo: {
+        wrx90: { price:1300, name:'Asus Pro WS WRX90E-SAGE SE',   maxGPU:4, formFactor:'SSI-EEB' },
+        trx50: { price:820,  name:'Asus Pro WS TRX50-SAGE WiFi',  maxGPU:2, formFactor:'E-ATX'   }
+    },
+    cpu: {
+        '7845wx': { price:650,  name:'AMD Threadripper Pro 7845WX (12C)', tdp:350 },
+        '7975wx': { price:3900, name:'AMD Threadripper Pro 7975WX (32C)', tdp:350 },
+        '7995wx': { price:9999, name:'AMD Threadripper Pro 7995WX (96C)', tdp:350 }
+    },
+    cooling: {
+        'air-noctua':  { price:100, name:'Noctua NH-U14S TR5 Air Cooler' },
+        'aio-360':     { price:220, name:'360mm AIO Liquid Cooler (3× 120mm)' },
+        'custom-loop': { price:800, name:'Custom D5 Loop Kit + 360mm Rad' }
+    },
+    gpu: {
+        b70:        { price:950,   name:'Intel Arc Pro B70',         vram:32, tdp:250, color:'color-b70',   label:'Intel Arc Pro B70 32GB'   },
+        rtx4090:    { price:1800,  name:'NVIDIA GeForce RTX 4090',   vram:24, tdp:450, color:'color-4090',  label:'RTX 4090 24GB'            },
+        a6000:      { price:3500,  name:'NVIDIA RTX A6000 Ada',      vram:48, tdp:300, color:'color-a6000', label:'RTX A6000 Ada 48GB'       },
+        rtx6000ada: { price:6800,  name:'NVIDIA RTX 6000 Ada',       vram:48, tdp:300, color:'color-rtx',   label:'RTX 6000 Ada 48GB'        },
+        h100:       { price:25000, name:'NVIDIA H100 PCIe 80GB',     vram:80, tdp:350, color:'color-h100',  label:'H100 PCIe 80GB'           }
+    },
+    ram:      { 64:{price:450,name:'64GB (8×8GB) DDR5 RDIMM ECC'}, 128:{price:600,name:'128GB (8×16GB) DDR5 RDIMM ECC'}, 256:{price:1150,name:'256GB (8×32GB) DDR5 RDIMM ECC'}, 512:{price:2300,name:'512GB (8×64GB) DDR5 RDIMM ECC'} },
+    ramSpeed: { 4800:{price:0,name:'4800 MT/s Crucial Standard'}, 5600:{price:150,name:'5600 MT/s Kingston Premier'}, 6000:{price:350,name:'6000 MT/s G.Skill Zeta5 EXPO'} },
+    storage:  { '1tb':{price:120,name:'1TB WD Black SN850X Gen4 NVMe'}, '4tb':{price:600,name:'4TB Seagate FireCuda 540 Gen5 NVMe'}, '8tb':{price:1200,name:'8TB Micron 9400 U.3 Enterprise SSD'} },
+    fans:     { price:220, name:'6× Noctua NF-A14 Industrial 3000RPM PWM' }
+};
+
+// ── STATE ─────────────────────────────────────────────────────────────────────
+
+let state = { chassis:'define-7-xl', mobo:'wrx90', cpu:'7845wx', cooling:'air-noctua', gpuFamily:'b70', gpuCount:1, ramSize:64, ramSpeed:4800, storage:'1tb' };
+
+const PRESETS = {
+    starter:   { chassis:'enthoo-pro2', mobo:'trx50',  cpu:'7845wx', cooling:'air-noctua',  gpuFamily:'b70',        gpuCount:1, ramSize:64,  ramSpeed:4800, storage:'1tb' },
+    rack:      { chassis:'rm44',        mobo:'wrx90',  cpu:'7845wx', cooling:'aio-360',     gpuFamily:'b70',        gpuCount:4, ramSize:128, ramSpeed:5600, storage:'4tb' },
+    inference: { chassis:'define-7-xl', mobo:'wrx90',  cpu:'7845wx', cooling:'aio-360',     gpuFamily:'a6000',      gpuCount:4, ramSize:256, ramSpeed:5600, storage:'4tb' },
+    clinical:  { chassis:'define-7-xl', mobo:'wrx90',  cpu:'7975wx', cooling:'custom-loop', gpuFamily:'rtx6000ada', gpuCount:4, ramSize:512, ramSpeed:6000, storage:'8tb' }
+};
+
+// ── SPOTLIGHT ─────────────────────────────────────────────────────────────────
+
+let _spotlightTimer = null;
+
+// ── SPOTLIGHT CORE ────────────────────────────────────────────────────────────
+
+function showSpotlight(key, fromSlideshow) {
+    const data = SPOTLIGHT[key];
+    if (!data) return;
+
+    const img  = document.getElementById('spotlight-img');
+    const ph   = document.getElementById('spotlight-placeholder');
+    const fn   = document.getElementById('spotlight-filename');
+    const cat  = document.getElementById('spotlight-cat');
+    const nm   = document.getElementById('spotlight-name');
+    const pr   = document.getElementById('spotlight-price');
+    const hint = document.getElementById('spotlight-hint');
+
+    cat.textContent  = data.cat;
+    nm.textContent   = data.name;
+    pr.textContent   = data.price;
+    hint.textContent = fromSlideshow ? '▶ Auto' : '';
+
+    img.classList.add('fading');
+    clearTimeout(_spotlightTimer);
+    _spotlightTimer = setTimeout(() => {
+        img.src = data.img;
+        img.style.display = 'block';
+        ph.style.display  = 'none';
+
+        img.onload  = () => { img.classList.remove('fading'); img.style.opacity = '1'; };
+        img.onerror = () => {
+            img.style.display = 'none';
+            ph.style.display  = 'flex';
+            fn.textContent = '⚠ Image needed: ' + data.img;
+            img.classList.remove('fading');
         };
+    }, 140);
+}
 
-        function updateDetail(key) {
-            const panel = document.getElementById('tech-detail-panel');
-            const title = document.getElementById('detail-title');
-            const desc = document.getElementById('detail-desc');
+function showSpotlightForCurrentState() {
+    showSpotlight(state.gpuFamily);
+}
 
-            document.querySelectorAll('.tech-card').forEach(c => c.classList.remove('active'));
-            event.currentTarget.classList.add('active');
+// ── SLIDESHOW ─────────────────────────────────────────────────────────────────
 
-            if (techDetails[key]) {
-                title.textContent = techDetails[key].title;
-                desc.textContent = techDetails[key].desc;
-                panel.classList.remove('hidden');
-            }
-        }
+let _ssTimer   = null;  // interval handle
+let _ssIndex   = 0;
+let _ssHovering = false;
+let _ssIdleTimer = null;
 
-        // --- PMAX SIMULATOR ---
-        const assetSlider = document.getElementById('asset-slider');
-        const budgetSlider = document.getElementById('budget-slider');
-        const assetDisplay = document.getElementById('asset-count-display');
-        const budgetDisplay = document.getElementById('budget-display');
-        const reachDisplay = document.getElementById('reach-projection');
-        let pmaxChartInstance = null;
+function getPSUKey(wattage, chassisId) {
+    const c = S.chassis[chassisId];
+    if (c.dualPSU && wattage > 1400) return 'psu-dual';
+    if (wattage <= 900)  return 'psu-1000w';
+    if (wattage <= 1200) return 'psu-1200w';
+    if (wattage <= 1600) return 'psu-1600w';
+    return 'psu-2050w';
+}
 
-        function initChart() {
-            const ctx = document.getElementById('pmaxChart').getContext('2d');
-            pmaxChartInstance = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: ['Search Views', 'Video Impressions', 'Local Actions'],
-                    datasets: [{
-                        label: 'Monthly Metrics',
-                        data: calculateMetrics(10, 1),
-                        backgroundColor: [
-                            'rgba(59, 130, 246, 0.6)',
-                            'rgba(239, 68, 68, 0.6)',
-                            'rgba(34, 197, 94, 0.6)'
-                        ],
-                        borderColor: [
-                            'rgba(59, 130, 246, 0.8)',
-                            'rgba(239, 68, 68, 0.8)',
-                            'rgba(34, 197, 94, 0.8)'
-                        ],
-                        borderWidth: 1,
-                        borderRadius: 8
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: false }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            grid: { color: 'rgba(255,255,255,0.03)' },
-                            ticks: { color: '#64748b' }
-                        },
-                        x: {
-                            grid: { display: false },
-                            ticks: { color: '#64748b', font: { size: 11 } }
-                        }
-                    }
-                }
-            });
-        }
+function buildSlideshowPlaylist() {
+    const gpu     = S.gpu[state.gpuFamily];
+    const wattage = (gpu.tdp * state.gpuCount) + S.cpu[state.cpu].tdp + 150;
+    const psuKey  = getPSUKey(wattage, state.chassis);
 
-        function calculateMetrics(assets, budgetMult) {
-            const base = 2500;
-            const sv = (base * (assets * 0.1)) * budgetMult;
-            const vi = (base * (assets * 0.5)) * budgetMult;
-            const la = (base * (assets * 0.02)) * budgetMult;
-            reachDisplay.textContent = Math.round(sv + vi).toLocaleString();
-            return [sv, vi, la];
-        }
+    // One entry per GPU if multiple selected
+    const gpuSlides = [];
+    for (let i = 0; i < Math.min(state.gpuCount, 2); i++) gpuSlides.push(state.gpuFamily);
 
-        function updateSimulation() {
-            const a = parseInt(assetSlider.value);
-            const b = parseInt(budgetSlider.value);
-            assetDisplay.textContent = a;
-            budgetDisplay.textContent = b + 'x';
-            pmaxChartInstance.data.datasets[0].data = calculateMetrics(a, b);
-            pmaxChartInstance.update();
-        }
+    return [
+        state.chassis,
+        state.mobo,
+        state.cpu,
+        state.cooling,
+        ...gpuSlides,
+        state.ramSize,
+        state.storage,
+        psuKey,
+        'fans',
+    ].filter(k => SPOTLIGHT[k]);
+}
 
-        document.addEventListener('DOMContentLoaded', () => {
-            initChart();
-            assetSlider.addEventListener('input', updateSimulation);
-            budgetSlider.addEventListener('input', updateSimulation);
+function stopSlideshow() {
+    clearInterval(_ssTimer);
+    _ssTimer = null;
+}
+
+function startSlideshow() {
+    if (_ssTimer) return;
+    const playlist = buildSlideshowPlaylist();
+    if (!playlist.length) return;
+    _ssIndex = 0;
+
+    function tick() {
+        showSpotlight(playlist[_ssIndex], true);
+        _ssIndex = (_ssIndex + 1) % playlist.length;
+    }
+    tick();
+    _ssTimer = setInterval(tick, 4000);
+}
+
+function resetIdleTimer() {
+    clearTimeout(_ssIdleTimer);
+    stopSlideshow();
+    _ssIdleTimer = setTimeout(() => {
+        if (!_ssHovering) startSlideshow();
+    }, 5000);
+}
+
+// Wire hover on all select-cards: mouseenter pauses, mouseleave restarts idle countdown
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.select-card').forEach(card => {
+        card.addEventListener('mouseenter', () => {
+            _ssHovering = true;
+            stopSlideshow();
+            clearTimeout(_ssIdleTimer);
         });
-    </script>
-</body>
+        card.addEventListener('mouseleave', () => {
+            _ssHovering = false;
+            resetIdleTimer();
+        });
+    });
+});
 
+// ── PSU / CIRCUIT HELPERS ─────────────────────────────────────────────────────
+
+function getPSU(wattage, chassisId) {
+    const c = S.chassis[chassisId];
+    if (c.dualPSU && wattage > 1400) return { price:400, name:'Dual 1000W PSUs (2× Corsair RM1000x) + Phanteks Power Combiner' };
+    if (wattage <= 900)  return { price:180, name:'SilverStone HELA 1000W Platinum' };
+    if (wattage <= 1200) return { price:350, name:'Corsair AX1200i Titanium Workstation PSU' };
+    if (wattage <= 1600) return { price:450, name:'Corsair AX1600i Titanium Workstation PSU' };
+    return { price:410, name:'SilverStone HELA 2050W Platinum Cybenetics' };
+}
+
+function getCircuit(w) {
+    if (w <= 1000) return { label:'15A / 120V',         cls:'circuit-ok'     };
+    if (w <= 1440) return { label:'15A (Near Limit)',   cls:'circuit-warn'   };
+    if (w <= 1920) return { label:'20A / 120V Req.',    cls:'circuit-warn'   };
+    return               { label:'220V / 240V Req.',    cls:'circuit-danger' };
+}
+
+// ── SETTERS ───────────────────────────────────────────────────────────────────
+
+function applyPreset(id) {
+    document.querySelectorAll('.presets-row button').forEach(b => b.classList.remove('active'));
+    document.getElementById('btn-preset-' + id).classList.add('active');
+    Object.assign(state, PRESETS[id]);
+    updateInterface();
+}
+function setCase(id)      { state.chassis = id;   clearPreset(); updateInterface(); }
+function setMotherboard(id){ state.mobo = id;      clearPreset(); updateInterface(); }
+function setCPU(id)        { state.cpu = id;       clearPreset(); updateInterface(); }
+function setCooling(id)    { state.cooling = id;   clearPreset(); updateInterface(); }
+function setGPUFamily(id)  { state.gpuFamily = id; clearPreset(); updateInterface(); }
+function setGPUCount(n)    { state.gpuCount = n;   clearPreset(); updateInterface(); }
+function setRAMSize(n)     { state.ramSize = n;    clearPreset(); updateInterface(); }
+function setRAMSpeed(n)    { state.ramSpeed = n;   clearPreset(); updateInterface(); }
+function setStorage(id)    { state.storage = id;   clearPreset(); updateInterface(); }
+function clearPreset()     { document.querySelectorAll('.presets-row button').forEach(b => b.classList.remove('active')); }
+
+// ── MAIN RENDER ───────────────────────────────────────────────────────────────
+
+// ── BIZON G3000 COMPARISON DATA ───────────────────────────────────────────────
+// Source: bizon-tech.com/bizon-g3000.html — scraped 2026-05-24
+// Base system: Intel Xeon W3-2525 8-core, 96GB DDR5 ECC, 1× GPU
+// These prices represent the FULLY CONFIGURED system with N units of the given GPU
+const BIZON = {
+    // [gpuFamily]: { count: price }
+    // Prices from hash #3142:46739;3143:28230;3144:28232;3145:60108;3151:46751;3155:28394
+    'rtx6000ada': { 1: 14800, 2: 28230, 3: 37400, 4: 46739 },
+    'a6000':      { 1: 12200, 2: 23100, 3: 34600, 4: null  }, // RTX A6000 Ada — estimated
+    'h100':       { 1: null,  2: null,  3: null,  4: null  }, // No Bizon H100 G3000 equiv
+    'rtx4090':    { 1: 9500,  2: 17800, 3: null,  4: null  }, // Bizon G3000 max 2× 4090
+    'b70':        { 1: null,  2: null,  3: null,  4: null  }, // No Arc B70 config on Bizon
+};
+const BIZON_GPU_LABELS = {
+    'rtx6000ada': 'RTX 6000 Ada 48GB',
+    'a6000':      'RTX A6000 Ada 48GB',
+    'h100':       'H100 PCIe 80GB',
+    'rtx4090':    'RTX 4090 24GB',
+    'b70':        'Arc Pro B70 32GB',
+};
+
+function updateBizonComparison(sovTotal, gpuFamily, gpuCount) {
+    const bizonEntry = BIZON[gpuFamily];
+    const compPrice  = bizonEntry ? bizonEntry[gpuCount] : null;
+    const gpuLabel   = BIZON_GPU_LABELS[gpuFamily] || gpuFamily;
+
+    document.getElementById('bizon-sov-price').textContent = '$' + sovTotal.toLocaleString();
+
+    if (!compPrice) {
+        document.getElementById('bizon-comp-price').textContent = 'N/A';
+        document.getElementById('bizon-comp-price').classList.add('bizon-na');
+        document.getElementById('bizon-comp-desc').textContent =
+            'Bizon G3000 does not offer this GPU in this quantity. No direct comparison available.';
+        document.getElementById('bizon-savings-amount').textContent = '—';
+        document.getElementById('bizon-savings-note').textContent =
+            'Select RTX 6000 Ada or RTX 4090 to see a live savings estimate.';
+        return;
+    }
+
+    document.getElementById('bizon-comp-price').textContent = '$' + compPrice.toLocaleString();
+    document.getElementById('bizon-comp-price').classList.remove('bizon-na');
+    document.getElementById('bizon-comp-desc').textContent =
+        `Intel Xeon W · ${gpuCount}× ${gpuLabel} · Pre-built turnkey · Source: bizon-tech.com/bizon-g3000.html`;
+
+    const savings = compPrice - sovTotal;
+    const savingsEl = document.getElementById('bizon-savings-amount');
+    const rowEl     = document.getElementById('bizon-savings-row');
+
+    if (savings > 0) {
+        savingsEl.textContent = '$' + savings.toLocaleString();
+        savingsEl.style.color = 'var(--emerald)';
+        rowEl.style.background = 'rgba(16,185,129,0.08)';
+        rowEl.style.borderColor = 'rgba(16,185,129,0.25)';
+        document.getElementById('bizon-savings-label').textContent = 'DIY Savings';
+        document.getElementById('bizon-savings-note').textContent =
+            'AMD Threadripper Pro delivers equivalent multi-GPU PCIe bandwidth to Intel Xeon W. Build your own and pocket the difference.';
+    } else {
+        savingsEl.textContent = '$' + Math.abs(savings).toLocaleString();
+        savingsEl.style.color = 'var(--amber)';
+        rowEl.style.background = 'rgba(245,158,11,0.08)';
+        rowEl.style.borderColor = 'rgba(245,158,11,0.25)';
+        document.getElementById('bizon-savings-label').textContent = 'Bizon Undercuts DIY';
+        document.getElementById('bizon-savings-note').textContent =
+            'Bizon turnkey is cheaper here — likely volume GPU pricing. Factor in your time for assembly, BIOS config, and driver setup.';
+    }
+}
+
+function updateInterface() {
+    const ch  = S.chassis[state.chassis];
+    const mb  = S.mobo[state.mobo];
+    const cpu = S.cpu[state.cpu];
+    const cl  = S.cooling[state.cooling];
+    const gpu = S.gpu[state.gpuFamily];
+    const ram = S.ram[state.ramSize];
+    const rs  = S.ramSpeed[state.ramSpeed];
+    const st  = S.storage[state.storage];
+
+    // Clamp GPU count
+    if (state.gpuCount > mb.maxGPU) state.gpuCount = mb.maxGPU;
+    document.getElementById('gpu-count-limit').textContent = `(Max ${mb.maxGPU} for ${state.mobo === 'wrx90' ? 'WRX90' : 'TRX50'})`;
+    [1,2,3,4].forEach(n => document.getElementById('gpu-count-' + n).classList.toggle('disabled', n > mb.maxGPU));
+
+    // Active states
+    document.querySelectorAll('.select-card').forEach(c => c.classList.remove('active'));
+    ['case-' + state.chassis, 'mobo-' + state.mobo, 'cpu-' + state.cpu,
+     'cooling-' + state.cooling, 'gpu-family-' + state.gpuFamily,
+     'gpu-count-' + state.gpuCount, 'ram-size-' + state.ramSize,
+     'ram-speed-' + state.ramSpeed, 'storage-' + state.storage
+    ].forEach(id => document.getElementById(id)?.classList.add('active'));
+
+    // Power
+    const wattage = (gpu.tdp * state.gpuCount) + cpu.tdp + 150;
+    const psu = getPSU(wattage, state.chassis);
+    const circuit = getCircuit(wattage);
+
+    // Cost
+    const total = ch.price + mb.price + cpu.price + cl.price +
+                  (gpu.price * state.gpuCount) + ram.price + rs.price +
+                  st.price + psu.price + S.fans.price;
+
+    // Stats
+    document.getElementById('display-price').textContent   = '$' + total.toLocaleString();
+    document.getElementById('display-wattage').textContent = wattage + 'W';
+    document.getElementById('display-vram').textContent    = (gpu.vram * state.gpuCount) + 'GB';
+    document.getElementById('display-circuit').textContent = circuit.label;
+    const cb = document.getElementById('circuit-badge');
+    cb.classList.remove('circuit-ok','circuit-warn','circuit-danger');
+    cb.classList.add(circuit.cls);
+
+    // Alerts
+    const isEATXWarn = (ch.moboMax === 'E-ATX' && mb.formFactor === 'SSI-EEB');
+    const isClearWarn = (state.gpuCount >= 4 && ch.slots === 8);
+    document.getElementById('alert-power').classList.toggle('hidden', wattage <= 1440);
+    document.getElementById('alert-clearance').classList.toggle('hidden', !isClearWarn);
+    document.getElementById('alert-compat').classList.toggle('hidden', !isEATXWarn);
+    document.getElementById('alert-power-body').textContent = wattage > 1920
+        ? `${wattage}W total draw requires a dedicated 220V/240V outlet. 20A/120V max is 1,920W.`
+        : `${wattage}W draw exceeds the 1,440W continuous safe limit of a US 15A/120V circuit. Use a dedicated 20A circuit.`;
+
+    // CPU label
+    document.getElementById('display-schematic-cpu').textContent = state.cpu.toUpperCase();
+
+    // Schematic
+    const slotMap = [1,3,5,7];
+    for (let i = 1; i <= 4; i++) {
+        const card = document.getElementById('mb-gpu-' + i);
+        card.className = 'mb-gpu-card ' + gpu.color;
+        if (i <= state.gpuCount) {
+            card.classList.add('active');
+            card.querySelector('span:first-child').textContent = gpu.label;
+            card.querySelector('span:last-child').textContent = i === 4
+                ? (ch.slots >= 9 ? 'Slot 7 · Overhang OK ✓' : 'Slot 7 · ⚠ Tight Clearance')
+                : `Slot ${slotMap[i-1]} · x16 ACTIVE`;
+        }
+    }
+
+    // Case info strip
+    document.getElementById('info-case-name').textContent  = ch.name.split(' ').slice(0,4).join(' ');
+    document.getElementById('info-slot-count').textContent = ch.slots + ' Slots';
+    document.getElementById('info-form-factor').textContent= ch.formFactor;
+    document.getElementById('info-dual-psu').textContent   = ch.dualPSU ? 'Yes ✓' : 'No';
+
+    // BOM
+    const rows = [
+        ['Chassis',    ch.name,                         ch.price],
+        ['Motherboard',mb.name,                         mb.price],
+        ['CPU',        cpu.name,                        cpu.price],
+        ['CPU Cooling',cl.name,                         cl.price],
+        [`GPU ×${state.gpuCount}`, gpu.name + ' ×' + state.gpuCount, gpu.price * state.gpuCount],
+        ['System RAM', ram.name + ' — ' + rs.name,      ram.price + rs.price],
+        ['Storage',    st.name,                         st.price],
+        ['PSU',        psu.name,                        psu.price],
+        ['Case Fans',  S.fans.name,                     S.fans.price],
+    ];
+    document.getElementById('bom-list').innerHTML =
+        rows.map(([cat,desc,p]) => {
+            const query = encodeURIComponent((desc.includes(' — ') ? desc.split(' — ')[0] : desc).replace(/ ×\d+/g, '').replace(/\s*\(\d+C\)/g, '').trim());
+            return `<tr>
+                <td style="color:var(--text-secondary);font-size:0.7rem;white-space:nowrap;width:110px">${cat}</td>
+                <td>${desc}</td>
+                <td style="text-align:right;white-space:nowrap">$${p.toLocaleString()}</td>
+                <td style="text-align:right;white-space:nowrap;padding-right:0.75rem">
+                    <div class="vendor-links">
+                        <a class="vendor-btn amz" href="https://www.amazon.com/s?k=${query}" target="_blank" title="Search Amazon">a</a>
+                        <a class="vendor-btn neg" href="https://www.newegg.com/p/pl?d=${query}" target="_blank" title="Search Newegg">n</a>
+                        <a class="vendor-btn bh" href="https://www.bhphotovideo.com/c/search?Ntt=${query}" target="_blank" title="Search B&H Photo">b</a>
+                        <a class="vendor-btn mfg" href="https://www.google.com/search?q=${query}" target="_blank" title="Search Vendor/Manufacturer">g</a>
+                    </div>
+                </td>
+            </tr>`;
+        }).join('') +
+        `<tr class="bom-total">
+            <td style="color:var(--blue);font-size:0.7rem">TOTAL</td>
+            <td></td>
+            <td style="text-align:right;color:var(--blue)">$${total.toLocaleString()}</td>
+            <td></td>
+        </tr>`;
+
+    // Bizon comparison + spotlight + restart slideshow idle timer
+    updateBizonComparison(total, state.gpuFamily, state.gpuCount);
+    showSpotlightForCurrentState();
+    resetIdleTimer();
+}
+
+// ── EXPORT ────────────────────────────────────────────────────────────────────
+
+function exportConfig() {
+    const gpu = S.gpu[state.gpuFamily];
+    const wattage = (gpu.tdp * state.gpuCount) + S.cpu[state.cpu].tdp + 150;
+    let text = `### SOVEREIGN WORKSTATION BUILD PROPOSAL\n\n`;
+    text += `Chassis:     ${S.chassis[state.chassis].name}\n`;
+    text += `Motherboard: ${S.mobo[state.mobo].name}\n`;
+    text += `CPU:         ${S.cpu[state.cpu].name}\n`;
+    text += `CPU Cooling: ${S.cooling[state.cooling].name}\n`;
+    text += `GPU:         ${state.gpuCount}× ${gpu.name} (${gpu.vram * state.gpuCount}GB VRAM)\n`;
+    text += `RAM:         ${S.ram[state.ramSize].name} — ${S.ramSpeed[state.ramSpeed].name}\n`;
+    text += `Storage:     ${S.storage[state.storage].name}\n`;
+    text += `Fans:        ${S.fans.name}\n\n`;
+    text += `Wattage: ${wattage}W\n`;
+    text += `Total: ${document.getElementById('display-price').textContent}\n`;
+    text += `Circuit: ${document.getElementById('display-circuit').textContent}\n`;
+
+    navigator.clipboard.writeText(text).catch(() => {
+        const t = document.createElement('textarea');
+        t.value = text;
+        document.body.appendChild(t); t.select(); document.execCommand('copy'); document.body.removeChild(t);
+    });
+    const toast = document.getElementById('copy-toast');
+    toast.style.display = 'block';
+    setTimeout(() => { toast.style.display = 'none'; }, 2800);
+}
+
+updateInterface();
+</script>
+
+<!-- ── VIDISHAP PRICE SEARCH AGENT CONSOLE (MODAL/OVERLAY) ──────────────── -->
+<div class="vs-agent-overlay" id="vs-agent-overlay">
+    <div class="vs-agent-sidebar">
+        <div class="vs-agent-header">
+            <div style="display:flex;align-items:center;gap:0.75rem">
+                <div class="vs-agent-pulse"></div>
+                <div style="text-align:left">
+                    <h2 class="vs-agent-title">VidiShop Price Agent</h2>
+                    <p class="vs-agent-subtitle">Multi-Vendor Price Match Engine v2.6</p>
+                </div>
+            </div>
+            <button class="vs-agent-close" onclick="closeAgentConsole()">×</button>
+        </div>
+        
+        <!-- Status Banner -->
+        <div class="vs-agent-banner">
+            <div style="display:flex;justify-content:space-between;font-size:0.65rem;font-weight:900;text-transform:uppercase;letter-spacing:0.05em">
+                <span style="color:#fff">Agent Status: <span id="agent-status-tag" style="color:var(--emerald)">IDLE</span></span>
+                <span id="agent-progress-pct" style="color:#fff">0%</span>
+            </div>
+            <div class="vs-progress-bar-bg">
+                <div class="vs-progress-bar-fill" id="agent-progress-fill"></div>
+            </div>
+        </div>
+
+        <!-- Terminal Logs -->
+        <div class="vs-terminal" id="vs-terminal">
+            <div class="vs-log-row system">[SYSTEM] VidiShop Agent initialized. Awaiting hardware configuration...</div>
+        </div>
+
+        <!-- Price Match Results Table -->
+        <div class="vs-results-card">
+            <h3 style="font-size:0.8rem;font-weight:900;text-transform:uppercase;letter-spacing:0.05em;color:var(--blue);margin-bottom:0.75rem;text-align:left">Optimized Purchase Plan</h3>
+            <table class="vs-results-table">
+                <thead>
+                    <tr>
+                        <th style="text-align:left">Component</th>
+                        <th style="text-align:left">Matched Vendor</th>
+                        <th style="text-align:right">Price Match</th>
+                        <th style="text-align:right">Savings</th>
+                    </tr>
+                </thead>
+                <tbody id="vs-results-body">
+                    <tr>
+                        <td colspan="4" style="text-align:center;color:var(--text-secondary);font-size:0.75rem;padding:2rem 0">
+                            Initializing price matching agent...
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="vs-summary-box" id="vs-summary-box" style="display:none">
+                <div style="display:flex;justify-content:space-between;margin-bottom:0.4rem">
+                    <span style="font-size:0.75rem;color:var(--text-secondary)">DIY Estimated Total:</span>
+                    <span style="font-size:0.75rem;font-weight:700" id="vs-diy-total">—</span>
+                </div>
+                <div style="display:flex;justify-content:space-between;margin-bottom:0.5rem">
+                    <span style="font-size:0.75rem;color:var(--emerald)">VidiShop Optimized Total:</span>
+                    <span style="font-size:0.75rem;font-weight:900;color:var(--emerald)" id="vs-opt-total">—</span>
+                </div>
+                <div style="display:flex;justify-content:space-between;border-top:1px solid var(--border);padding-top:0.5rem">
+                    <span style="font-size:0.8rem;font-weight:900;color:var(--blue)">Net Agent Savings:</span>
+                    <span style="font-size:0.85rem;font-weight:950;color:var(--blue)" id="vs-net-savings">—</span>
+                </div>
+            </div>
+        </div>
+
+        <button class="vs-btn-scan" id="vs-btn-scan" onclick="runPriceScan()">Run VidiShop Price Match</button>
+        <button class="vs-btn-deep-scan" id="vs-btn-deep-scan" style="display:none" onclick="runDeepScan()">Run VidiShop SecondMarket Deep Scan</button>
+    </div>
+</div>
+
+<script>
+// ── VIDISHAP PRICE SCAN AGENT SCRIPT ──────────────────────────────────────────
+
+function openAgentConsole() {
+    document.getElementById('vs-agent-overlay').classList.add('active');
+    resetIdleTimer();
+    // Auto-trigger the scan on launch instantly!
+    runPriceScan();
+}
+
+function closeAgentConsole() {
+    document.getElementById('vs-agent-overlay').classList.remove('active');
+}
+
+let isScanning = false;
+let isDeepScanning = false;
+let primaryResults = []; // Store standard results to override them
+
+function writeLog(text, type = 'info') {
+    const t = document.getElementById('vs-terminal');
+    const row = document.createElement('div');
+    row.className = `vs-log-row ${type}`;
+    row.textContent = `[${new Date().toLocaleTimeString()}] ${text}`;
+    t.appendChild(row);
+    t.scrollTop = t.scrollHeight;
+}
+
+function runPriceScan() {
+    if (isScanning || isDeepScanning) return;
+    isScanning = true;
+    
+    // Hide deep scan button at start
+    const deepBtn = document.getElementById('vs-btn-deep-scan');
+    if (deepBtn) deepBtn.style.display = 'none';
+
+    const btn = document.getElementById('vs-btn-scan');
+    btn.className = 'vs-btn-scan scanning';
+    btn.textContent = 'Agent Scanning Multi-Vendors...';
+    
+    const statusTag = document.getElementById('agent-status-tag');
+    statusTag.textContent = 'RUNNING';
+    statusTag.style.color = 'var(--amber)';
+    
+    const term = document.getElementById('vs-terminal');
+    term.innerHTML = '';
+    
+    writeLog('SYSTEM: Starting VidiShop Agentic Price Scraper v2.6...', 'system');
+    writeLog('SYSTEM: Connecting to AppFlowy AI Local Scraper Proxy...', 'system');
+    writeLog('AGENT: Extracting active workstation configuration BOM...', 'info');
+    
+    // Gather all components to scan
+    const ch = S.chassis[state.chassis];
+    const mb = S.mobo[state.mobo];
+    const cpu = S.cpu[state.cpu];
+    const cl = S.cooling[state.cooling];
+    const gpu = S.gpu[state.gpuFamily];
+    const ram = S.ram[state.ramSize];
+    const rs = S.ramSpeed[state.ramSpeed];
+    const st = S.storage[state.storage];
+    
+    const totalWattage = (gpu.tdp * state.gpuCount) + cpu.tdp + 150;
+    const psu = getPSU(totalWattage, state.chassis);
+    
+    const items = [
+        { cat: 'Chassis', name: ch.name, est: ch.price, clean: ch.name },
+        { cat: 'Motherboard', name: mb.name, est: mb.price, clean: mb.name },
+        { cat: 'CPU', name: cpu.name, est: cpu.price, clean: cpu.name.replace(/\s*\(\d+C\)/g, '') },
+        { cat: 'CPU Cooling', name: cl.name, est: cl.price, clean: cl.name },
+        { cat: 'GPU Array', name: `${state.gpuCount}× ${gpu.name}`, est: gpu.price * state.gpuCount, clean: gpu.name },
+        { cat: 'System RAM', name: `${ram.name} (${rs.name})`, est: ram.price + rs.price, clean: ram.name },
+        { cat: 'Storage', name: st.name, est: st.price, clean: st.name },
+        { cat: 'PSU', name: psu.name, est: psu.price, clean: psu.name },
+        { cat: 'Case Fans', name: S.fans.name, est: S.fans.price, clean: S.fans.name }
+    ];
+    
+    let currentItemIndex = 0;
+    const progressFill = document.getElementById('agent-progress-fill');
+    const progressPct = document.getElementById('agent-progress-pct');
+    
+    const vendors = ['Amazon', 'Newegg', 'B&H Photo', 'Manufacturer Store', 'Google Shopping'];
+    const results = [];
+    
+    function scanNextItem() {
+        if (currentItemIndex >= items.length) {
+            // Scan finished!
+            isScanning = false;
+            btn.className = 'vs-btn-scan';
+            btn.textContent = 'Run VidiShop Price Match';
+            
+            statusTag.textContent = 'SUCCESS';
+            statusTag.style.color = 'var(--emerald)';
+            
+            progressFill.style.width = '100%';
+            progressPct.textContent = '100%';
+            
+            writeLog('SYSTEM: Price scan consolidation complete.', 'success');
+            writeLog('AGENT: Optimized purchasing list generated successfully!', 'success');
+            
+            renderResults(results);
+            
+            // Reveal Deep Scan button!
+            if (deepBtn) {
+                deepBtn.style.display = 'block';
+                deepBtn.textContent = 'Run VidiShop Deep Scan (eBay/FB)';
+                deepBtn.className = 'vs-btn-deep-scan';
+            }
+            return;
+        }
+        
+        const item = items[currentItemIndex];
+        const pct = Math.round((currentItemIndex / items.length) * 100);
+        progressFill.style.width = `${pct}%`;
+        progressPct.textContent = `${pct}%`;
+        
+        writeLog(`AGENT: Initiating deep lookup for ${item.cat}: "${item.clean}"...`, 'info');
+        
+        // Step 1: Querying vendors
+        setTimeout(() => {
+            writeLog(`AGENT: [Querying] Amazon, Newegg, B&H Photo, Manufacturer API...`, 'info');
+            
+            // Step 2: Parsing results
+            setTimeout(() => {
+                // Generate a simulated actual match price (slightly lower or higher)
+                // We'll give them nice direct discounts on some parts to show the agent found a deal!
+                const discountPct = (currentItemIndex % 3 === 0) ? 0.08 : (currentItemIndex % 2 === 0 ? 0.04 : 0);
+                const matchedPrice = Math.round(item.est * (1 - discountPct));
+                const chosenVendor = vendors[Math.floor(Math.random() * vendors.length)];
+                const savings = item.est - matchedPrice;
+                
+                if (savings > 0) {
+                    writeLog(`MATCH: [Deal Found] ${chosenVendor} matches "${item.clean}" at $${matchedPrice.toLocaleString()} (Saved $${savings.toLocaleString()})!`, 'success');
+                } else {
+                    writeLog(`MATCH: [Standard Match] ${chosenVendor} matches "${item.clean}" at MSRP $${matchedPrice.toLocaleString()}`, 'info');
+                }
+                
+                results.push({
+                    cat: item.cat,
+                    name: item.clean,
+                    vendor: chosenVendor,
+                    price: matchedPrice,
+                    est: item.est,
+                    savings: savings
+                });
+                
+                currentItemIndex++;
+                scanNextItem();
+            }, 1000);
+        }, 800);
+    }
+    
+    scanNextItem();
+}
+
+function runDeepScan() {
+    if (isDeepScanning || isScanning) return;
+    isDeepScanning = true;
+    
+    const deepBtn = document.getElementById('vs-btn-deep-scan');
+    deepBtn.className = 'vs-btn-deep-scan scanning';
+    deepBtn.textContent = 'Agent Deep Scanning eBay & FB...';
+    
+    const statusTag = document.getElementById('agent-status-tag');
+    statusTag.textContent = 'DEEP MATCHING';
+    statusTag.style.color = 'var(--purple)';
+    
+    writeLog('SYSTEM: Starting VidiShop SecondMarket Deep Scraper v2.6...', 'system');
+    writeLog('SYSTEM: Authenticating with eBay Refurbished Partner API...', 'system');
+    writeLog('SYSTEM: Initializing crawler for local Facebook Marketplace listings...', 'system');
+    writeLog('AGENT: Running parallel search scans for second-hand/ECC components...', 'info');
+
+    const progressFill = document.getElementById('agent-progress-fill');
+    const progressPct = document.getElementById('agent-progress-pct');
+    
+    // Refurbished/Used matches
+    const secondMatches = {
+        'System RAM': { vendor: 'eBay (Used)', price: 580, note: 'ECC DDR5 RDIMM 8-channel kit (Vetted, 99.8% rating)', query: 'ECC DDR5 RDIMM 8x' },
+        'CPU': { vendor: 'r/homelabsales', price: 510, note: 'Threadripper Pro 7845WX (Vetted Seller, original box)', query: 'Threadripper Pro 7845WX' },
+        'Chassis': { vendor: 'Facebook Marketplace', price: 95, note: 'Define 7 XL (Locally listed, pick-up)', query: 'Define 7 XL' },
+        'PSU': { vendor: 'UnixSurplus', price: 120, note: 'Refurbished SilverStone Platinum PSU (Tested)', query: 'SilverStone Platinum PSU' }
+    };
+    
+    const matchKeys = Object.keys(secondMatches);
+    let matchIndex = 0;
+    
+    function nextDeepMatch() {
+        if (matchIndex >= matchKeys.length) {
+            isDeepScanning = false;
+            deepBtn.className = 'vs-btn-deep-scan';
+            deepBtn.textContent = 'VidiShop Deep Scan Complete ✓';
+            deepBtn.style.background = 'rgba(168,85,247,0.1)';
+            deepBtn.style.color = 'var(--purple)';
+            deepBtn.style.borderColor = 'rgba(168,85,247,0.3)';
+            
+            statusTag.textContent = 'DEEP SUCCESS';
+            statusTag.style.color = 'var(--purple)';
+            
+            progressFill.style.width = '100%';
+            progressPct.textContent = '100%';
+            
+            writeLog('SYSTEM: Deep second-market scan complete.', 'success');
+            writeLog('AGENT: Highly optimized second-hand alternative plan generated!', 'success');
+            
+            renderResults(primaryResults);
+            return;
+        }
+        
+        const pct = Math.round((matchIndex / matchKeys.length) * 100);
+        progressFill.style.width = `${pct}%`;
+        progressPct.textContent = `${pct}%`;
+        
+        const catKey = matchKeys[matchIndex];
+        const match = secondMatches[catKey];
+        
+        writeLog(`AGENT: [Crawling] Searching secondary markets for optimized ${catKey} alternatives...`, 'info');
+        
+        setTimeout(() => {
+            writeLog(`AGENT: Querying eBay Used/Refurbished list for "${match.query}"...`, 'info');
+            
+            setTimeout(() => {
+                const idx = primaryResults.findIndex(r => r.cat === catKey);
+                if (idx !== -1) {
+                    const old = primaryResults[idx];
+                    const savings = old.price - match.price;
+                    
+                    writeLog(`MATCH: [Second-Market Bargain] Found ${match.vendor} matched "${match.note}" at $${match.price} (Saved $${savings} extra!)`, 'success');
+                    
+                    primaryResults[idx] = {
+                        cat: catKey,
+                        name: match.note,
+                        vendor: match.vendor,
+                        price: match.price,
+                        est: old.est,
+                        savings: old.est - match.price,
+                        isSecondary: true
+                    };
+                }
+                
+                matchIndex++;
+                nextDeepMatch();
+            }, 1000);
+        }, 800);
+    }
+    
+    nextDeepMatch();
+}
+
+function renderResults(results) {
+    primaryResults = results; // cache results locally for deep scan support
+    const body = document.getElementById('vs-results-body');
+    body.innerHTML = '';
+    
+    let totalEst = 0;
+    let totalMatched = 0;
+    let totalSavings = 0;
+    
+    results.forEach(r => {
+        totalEst += r.est;
+        totalMatched += r.price;
+        totalSavings += r.savings;
+        
+        const savingsText = r.savings > 0 
+            ? `<span style="color:var(--emerald)">-$${r.savings.toLocaleString()}</span>` 
+            : `<span style="color:var(--text-secondary)">MSRP</span>`;
+            
+        const badgeText = r.isSecondary 
+            ? `<br><span style="display:inline-block;margin-top:0.25rem;font-size:0.55rem;font-weight:900;text-transform:uppercase;letter-spacing:0.04em;padding:1px 4px;border-radius:4px;background:rgba(168,85,247,0.15);color:var(--purple)">Used / Refurbished</span>` 
+            : '';
+
+        const query = encodeURIComponent(r.name);
+        let vendorLink = '';
+        if (r.vendor.includes('Amazon')) vendorLink = `https://www.amazon.com/s?k=${query}`;
+        else if (r.vendor.includes('Newegg')) vendorLink = `https://www.newegg.com/p/pl?d=${query}`;
+        else if (r.vendor.includes('B&H')) vendorLink = `https://www.bhphotovideo.com/c/search?Ntt=${query}`;
+        else if (r.vendor.includes('eBay')) vendorLink = `https://www.ebay.com/sch/i.html?_nkw=${query}`;
+        else vendorLink = `https://www.google.com/search?q=${query}`;
+
+        body.innerHTML += `<tr>
+            <td style="font-size:0.75rem">${r.cat} ${badgeText}</td>
+            <td class="link-col" style="font-size:0.7rem;font-weight:800"><a href="${vendorLink}" target="_blank">${r.vendor} ↗</a></td>
+            <td style="text-align:right;font-size:0.75rem">$${r.price.toLocaleString()}</td>
+            <td style="text-align:right;font-size:0.75rem">${savingsText}</td>
+        </tr>`;
+    });
+    
+    document.getElementById('vs-diy-total').textContent = `$${totalEst.toLocaleString()}`;
+    document.getElementById('vs-opt-total').textContent = `$${totalMatched.toLocaleString()}`;
+    document.getElementById('vs-net-savings').textContent = `$${totalSavings.toLocaleString()}`;
+    document.getElementById('vs-summary-box').style.display = 'block';
+}
+</script>
+</body>
 </html>
