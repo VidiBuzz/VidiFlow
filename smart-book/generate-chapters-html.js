@@ -44,7 +44,7 @@ const chapterKeys = Object.keys(chapters).sort((a, b) => {
     return orderA - orderB;
 });
 
-// Group chapters by part
+// Group chapters by part FIRST, then sort within each part
 const parts = {};
 chapterKeys.forEach(key => {
     const ch = chapters[key];
@@ -53,6 +53,11 @@ chapterKeys.forEach(key => {
         parts[partNum] = { num: partNum, chapters: [] };
     }
     parts[partNum].chapters.push({ key, ...ch });
+});
+
+// Sort chapters within each part by order
+Object.values(parts).forEach(part => {
+    part.chapters.sort((a, b) => (a.order ?? 999) - (b.order ?? 999));
 });
 
 // Part names
@@ -78,10 +83,16 @@ function generateChapterCard(ch) {
     const title = ch.title.replace(/^Ch\d+:\s*/, '').replace(/^Foreword:\s*/, '');
     const readTime = ch.readTime || '10 min';
     
-    // Get first 150 chars of content for description
+    // Get first 150 chars of content for description - strip ALL HTML
     let summary = '';
     if (ch.content) {
-        summary = ch.content.replace(/<[^>]*>/g, '').substring(0, 150).trim();
+        // Strip all HTML tags, collapse whitespace, trim
+        summary = ch.content
+            .replace(/<[^>]*>/g, ' ')           // Remove all HTML tags
+            .replace(/&[^;]+;/g, ' ')           // Remove HTML entities
+            .replace(/\s+/g, ' ')               // Collapse whitespace
+            .trim()
+            .substring(0, 150);
         if (summary.length >= 150) summary += '...';
     }
     
