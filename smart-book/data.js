@@ -25,6 +25,7 @@ const BOOK_DATA = {
       "ch31",
       "ch33",
       "ch1",
+      "ch39",
       "ch40"
       ],
       high: [
@@ -43,7 +44,6 @@ const BOOK_DATA = {
       "ch13",
       "ch13b",
       "ch22",
-      "ch39",
       "ch41",
       "ch45"
       ],
@@ -115,6 +115,7 @@ const BOOK_DATA = {
       "ch36",
       "ch37",
       "ch38",
+      "ch39",
       "ch41",
       "ch45"
       ],
@@ -130,7 +131,6 @@ const BOOK_DATA = {
       "ch27",
       "ch29",
       "ch44",
-      "ch39",
       "ch40"
       ],
       medium: [
@@ -216,6 +216,7 @@ const BOOK_DATA = {
       "ch44",
       "ch1",
       "ch38",
+      "ch39",
       "ch40",
       "ch45"
       ],
@@ -236,7 +237,6 @@ const BOOK_DATA = {
       "ch34",
       "ch33v",
       "ch35",
-      "ch39",
       "ch41"
       ],
       medium: [
@@ -737,9 +737,56 @@ foreword: {
         <p>The difference between a collection of AI tools and an agentic orchestration system is the difference between a collection of specialists and a high-functioning team. The specialists are the same. The orchestration determines whether they produce something greater than the sum of their parts.</p>
       </div>
       <p>In production right now: a marketing agency runs a content production system where an Orchestrator agent receives a client brief, assigns research to a Research agent, hands findings to a Strategy agent that creates a content plan, passes the plan to a Writing agent, routes outputs to an Image Generation agent for visual assets, sends everything to a Quality Review agent that checks brand guidelines and factual accuracy, and delivers a complete content package — articles, images, social variations — to the client within 4 hours of brief receipt. The entire workflow runs autonomously. A human reviews the final output before delivery. That's it.</p>
-      <p>The leading platforms: Microsoft AutoGen for multi-agent conversation workflows, CrewAI for role-based coordination, LangGraph for stateful workflow orchestration with loops and branches, and n8n for integrating AI agents with existing business systems via API. Each has different strengths — the right choice depends on whether your workflow is primarily conversational, task-based, stateful, or integration-heavy.</p>`,
+      <p>The leading platforms: Microsoft AutoGen for multi-agent conversation workflows, CrewAI for role-based coordination, LangGraph for stateful workflow orchestration with loops and branches, and n8n for integrating AI agents with existing business systems via API. Each has different strengths — the right choice depends on whether your workflow is primarily conversational, task-based, stateful, or integration-heavy.</p>
+
+      <h3>The Freshness-Aware Orchestrator Pattern</h3>
+      <p>The first agent in any agentic pipeline should ask a question that most orchestrators skip entirely: <strong>"Does this query need current information?"</strong> This is the Freshness-Aware Router Agent — a critical component that determines information freshness requirements before routing to any downstream agent. Without it, every agent in the pipeline operates on potentially stale data, and the most dangerous AI output is not the hallucination — it is the accurate answer to a question that has already changed.</p>
+
+      <h3>The Problem: LLMs Are Stupid About Knowing When to Search</h3>
+      <p>Large language models are confidently ignorant about the currency of their own knowledge. An LLM trained on data through January 2025 will answer "What is the current stock price of Apple?" with fabricated numbers pulled from training patterns — not because it is lying, but because it has no mechanism to distinguish between facts that are stable (gravity, mathematics, historical events) and facts that change hourly (stock prices, weather, breaking news, regulatory status). The model does not know what it does not know, and worse, it does not know <em>when</em> what it knows stopped being true.</p>
+      <p>This is the knowledge cutoff problem, and it is not a minor inconvenience — it is a systemic failure mode. Training data from six months ago may be completely useless for a query about current market conditions, product availability, regulatory requirements, or recent events. Yet without explicit freshness routing, the LLM will use that stale data as if it were authoritative, delivering wrong answers with perfect confidence.</p>
+
+      <h3>The Solution: Classify Freshness Before Routing</h3>
+      <p>A Freshness-Aware Orchestrator classifies every incoming query against a <strong>freshness spectrum</strong> before routing to downstream agents:</p>
+      <ul>
+        <li><strong>Real-time</strong> (stock prices, breaking news, live data, inventory levels) — must search NOW with no caching</li>
+        <li><strong>Recent</strong> (last 24–48 hours, current week's events) — must search with explicit time window constraints</li>
+        <li><strong>Current</strong> (last month, recent regulatory changes, product launches) — check knowledge base freshness, then search if stale</li>
+        <li><strong>Evergreen</strong> (concepts, principles, historical facts, mathematical relationships) — can safely use training data</li>
+      </ul>
+
+      <p>The routing logic follows directly from the classification:</p>
+      <pre><code>User Query
+    │
+    ▼
+┌─────────────────────────┐
+│  Freshness Router Agent  │
+│  "How fresh must this   │
+│   answer be?"           │
+└────────┬────────────────┘
+         │
+    ┌────┼────────────┬──────────────┐
+    ▼    ▼            ▼              ▼
+Real-  Recent      Current       Evergreen
+time                │              │
+  │      │     ┌────┴────┐         │
+  ▼      ▼     ▼         ▼         ▼
+Search  Search  Check KB  Search   Internal
+Agent   Agent   Freshness Agent    Knowledge
+(no     + Time  ───────►  if
+cache)  Window  Stale?    Stale</code></pre>
+
+      <h3>Connection to Temporal Truth</h3>
+      <p>The Freshness Spectrum defined in <strong>Temporal Truth</strong> (Chapter 41) provides the classification logic for the router. The key insight: different data domains have fundamentally different freshness windows. Stock prices degrade in 30 milliseconds. Inventory levels may be accurate for 60 minutes. Customer support knowledge may hold for 24 hours. Regulatory information may remain valid for 30 days. The Freshness-Aware Router maps each query to the appropriate window using domain classification and temporal metadata.</p>
+      <p>Without this connection, you get an orchestrator that routes by task type — "this is a search query, send to the search agent" — without asking whether the search agent's default behavior (search everything, cache results) is appropriate for a query where the answer may have changed since this morning. The task-type router treats all search queries identically. The freshness-aware router treats them differently based on how quickly the world changes around the topic.</p>
+
+      <h3>Why This Is the First Agent That Matters</h3>
+      <p>In a multi-agent pipeline, every downstream decision depends on the quality and currency of the information it receives. The Research Agent, the Analysis Agent, the Response Agent — all of them produce output that is only as current as their input. If the first agent in the pipeline does not verify freshness, then every agent downstream is operating on a potentially outdated foundation.</p>
+      <p>The practical implementation is straightforward: the Freshness Router Agent runs a lightweight classification step before any heavy computation. It examines the query, determines the domain (finance, news, product data, historical facts), applies the appropriate freshness window, and routes accordingly. The latency cost is minimal — a single LLM call for classification — but the accuracy improvement is dramatic. Queries that need current data get current data. Queries that are evergreen proceed without unnecessary search overhead.</p>
+      <blockquote>"The AI system that does not know which freshness window applies to which query is a system that will deliver wrong answers with perfect confidence."</blockquote>
+      <p>The Freshness-Aware Orchestrator is not an optional enhancement to agentic pipeline design. It is the minimum viable architecture for any system where the answers matter. The orchestrator that routes by task type without checking freshness is an orchestrator that will eventually — inevitably — deliver stale information as if it were current, and do so with the full authority that makes AI-generated answers so dangerous when they are wrong.</p>`,
       images: ["ai_agents_orchestration_1771112589509.png", "agentic_storyboard.png"],
-      readingTime: 14
+      readingTime: 18
     },
     ch25: {
       id: "ch25",
@@ -1011,74 +1058,509 @@ foreword: {
     },
     ch39: {
       id: "ch39",
-      title: "Ch39: Glossary",
+      title: "Ch39: Glossary — Key Terms & Acronyms",
       part: 6,
       order: 39,
-      content: `<div class="glossary">
-      <div class="glossary-entry"><strong>25–7 Contact</strong> — <em>Customer engagement strategy.</em> The practice of reaching out to prospects or customers through 25 different touchpoints across 7 channels over a defined period. In AI-augmented workflows, agents automate the scheduling, content generation, and tracking of these touchpoints while humans handle the high-value relationship moments. <em>See Ch33: SmartGen.</em></div>
-      <div class="glossary-entry"><strong>30–40 Agent Mesh</strong> — <em>Architecture pattern.</em> The coordinated system of 30 to 40 purpose-built AI agents that replaces the 500-app SaaS stack. Each agent owns a specific vertical (customer support, content production, legal review, AP/AR) and communicates natively with other agents through shared protocols. <em>See Foreword, Ch24: Agentic AI Orchestration.</em></div>
-      <div class="glossary-entry"><strong>Abstraction</strong> — <em>Engineering principle.</em> A layer that hides implementation complexity behind a simpler interface. All non-trivial abstractions leak (Leaky Abstraction Law). The abstraction boundary defines where debugging is possible. <em>See Ch36: Abstraction.</em></div>
-      <div class="glossary-entry"><strong>Adaptive Learning</strong> — <em>Production pattern.</em> The third phase of the OAL loop: retuning prompts, refining thresholds, and fine-tuning adapters based on observed performance data. The system that learns from its own telemetry compounds in capability. <em>See Ch37: Observation, Analytics & Adaptive Learning.</em></div>
-      <div class="glossary-entry"><strong>Agentic AI</strong> — <em>AI paradigm.</em> AI systems that act autonomously to accomplish goals, rather than simply responding to prompts. Agentic AI plans, executes tool calls, validates its own outputs, and escalates to humans when confidence falls below defined thresholds. <em>See Ch24: Agentic AI Orchestration.</em></div>
-      <div class="glossary-entry"><strong>Agentic Orchestration</strong> — <em>System design.</em> The practice of coordinating multiple AI agents to work together on complex tasks. Platforms include Microsoft AutoGen, CrewAI, LangGraph, and n8n. The difference between a collection of tools and an orchestration system is the difference between specialists and a team. <em>See Ch24: Agentic AI Orchestration.</em></div>
-      <div class="glossary-entry"><strong>AI Answer Engine</strong> — <em>Search paradigm.</em> Systems like Perplexity and Google AI Overviews that generate complete answers rather than returning links. The shift from "ten blue links" to synthesized answers changes the entire content strategy landscape. <em>See Ch15: Google Zero Matters.</em></div>
-      <div class="glossary-entry"><strong>API-First</strong> — <em>Architecture principle.</em> Designing systems where every capability is exposed through a well-defined API before any user interface is built. In agentic architectures, API-first design enables agents to communicate natively without UI intermediation. <em>See Ch38: Smart Stack.</em></div>
-      <div class="glossary-entry"><strong>Autonomous Agent</strong> — <em>Agent type.</em> An AI agent that can plan and execute a multi-step workflow without human intervention, within defined boundaries. Autonomous does not mean unsupervised — HITL boundaries define where human review is required. <em>See Ch24: Agentic AI Orchestration.</em></div>
-      <div class="glossary-entry"><strong>Brand LoRA</strong> — <em>Fine-tuning technique.</em> A Low-Rank Adaptation trained on a brand's visual identity assets to produce consistent, on-brand AI-generated images. Eliminates the inconsistency that makes AI content immediately recognizable as AI-generated. <em>See Ch27: Inference, Fine-Tuning & LoRAs.</em></div>
-      <div class="glossary-entry"><strong>Chunking</strong> — <em>Data processing technique.</em> The process of dividing documents into semantically coherent segments for embedding. Strategies include semantic chunking (meaning-based boundaries), parent-child chunking (retrieve child, expand to parent), and structure-aware chunking (respect document headings). <em>See Ch13+: The Embedding Problem.</em></div>
-      <div class="glossary-entry"><strong>Citation Discipline</strong> — <em>RAG principle.</em> The practice of instructing AI generation layers to cite only what was retrieved, never fabricating sources. The difference between reliable business intelligence and confidently manufactured answers. <em>See Ch20: LLM Knowledge-Based Search.</em></div>
-      <div class="glossary-entry"><strong>Cognitive Compression</strong> — <em>Engineering principle.</em> The mental load of holding multiple abstraction layers in working memory. Beyond 4-5 layers, error rates rise non-linearly. Each layer of the AI stack must be independently inspectable. <em>See Ch36: Abstraction.</em></div>
-      <div class="glossary-entry"><strong>ComfyUI</strong> — <em>Tool.</em> A node-based visual programming environment for AI image and video generation. Exposes the full model pipeline as a graph of interconnected operations. Runs on consumer hardware (24GB GPU). The master control environment for the visual AI production stack. <em>See Ch32+: Visual AI Production Stack.</em></div>
-      <div class="glossary-entry"><strong>Confidence Threshold</strong> — <em>HITL mechanism.</em> A defined minimum confidence score below which an AI agent auto-escalates to human review. Typically 0.85 for routine tasks, 0.95 for high-stakes decisions. <em>See Ch38: Smart Process — AI Collab with HITL.</em></div>
-      <div class="glossary-entry"><strong>Consequence Threshold</strong> — <em>HITL mechanism.</em> A defined impact level above which an action requires mandatory human review regardless of AI confidence. Financial transactions >$50k, regulatory filings, and production system changes are common consequence thresholds. <em>See Ch38: Smart Process — AI Collab with HITL.</em></div>
-      <div class="glossary-entry"><strong>Context Engineer</strong> — <em>Job title.</em> A role responsible for context window design, prompt template libraries, RAG pipeline tuning, embedding strategy, and retrieval quality monitoring. Salary: $120k–$250k in 2026. Combines software engineering with prompt design and data architecture. <em>See Ch40: New Job Titles + Personal Story.</em></div>
-      <div class="glossary-entry"><strong>Context Window</strong> — <em>Model parameter.</em> The maximum amount of text (measured in tokens) that an LLM can process in a single prompt. Larger context windows enable processing of longer documents but increase compute cost and can degrade retrieval precision. <em>See Ch20: LLM Knowledge-Based Search.</em></div>
-      <div class="glossary-entry"><strong>Custom Silicon</strong> — <em>Hardware strategy.</em> AI-specific processors designed by Google (TPU), Amazon (Trainium), and startups (Cerebras, Groq) as alternatives to NVIDIA GPUs. Offer different tradeoffs in throughput, latency, and cost for specific workload types. <em>See Ch34: The Data Center Race.</em></div>
-      <div class="glossary-entry"><strong>Data Sovereignty</strong> — <em>Strategy.</em> The principle that an organization's data should remain under its control — not used to train external models, not visible to third-party providers. Implemented through private model deployment and proprietary knowledge bases. <em>See Ch17: Privacy.</em></div>
-      <div class="glossary-entry"><strong>Decision-Grade AI</strong> — <em>Output quality level.</em> AI output that recommends an action, provides confidence and evidence, flags key assumptions, and routes to humans when confidence falls below threshold. The highest value tier in the information → answers → decisions hierarchy. <em>See Ch19: Instant Information vs. Answers vs. Decisions.</em></div>
-      <div class="glossary-entry"><strong>Embedding</strong> — <em>AI technique.</em> The process of converting text, images, or other content into a high-dimensional vector (list of numbers) where semantic similarity becomes spatial proximity. Vectors are model-specific and not portable between models. <em>See Ch13+: The Embedding Problem.</em></div>
-      <div class="glossary-entry"><strong>Epistemic Humility</strong> — <em>AI design principle.</em> The practice of designing AI systems to acknowledge uncertainty rather than generate confident-sounding answers about facts they don't know. The agent that knows what it doesn't know earns permanent trust. <em>See Ch22: Text Models Only Predict the Next Word.</em></div>
-      <div class="glossary-entry"><strong>Fine-Tuning</strong> — <em>ML technique.</em> Adapting a pre-trained model to a specific domain using additional training data. More computationally expensive than LoRA but produces deeper domain adaptation. <em>See Ch27: Inference, Fine-Tuning & LoRAs.</em></div>
-      <div class="glossary-entry"><strong>FlashVSR</strong> — <em>Tool.</em> Video Super-Resolution tool integrated into ComfyUI. Upscales low-resolution AI-generated video to clean 4K with temporal consistency. Built on Wan 2.2 architecture, optimized for 24GB VRAM. <em>See Ch32+: Visual AI Production Stack.</em></div>
-      <div class="glossary-entry"><strong>Freshness Spectrum</strong> — <em>Concept.</em> The range of time windows within which data remains accurate for different use cases: stock prices (30ms), inventory (60 minutes), customer support context (24 hours), regulatory tracking (30 days). <em>See Ch41: Temporal Truth.</em></div>
-      <div class="glossary-entry"><strong>Google Zero</strong> — <em>Search phenomenon.</em> The moment when a search query generates a complete answer directly on the search results page — the user never clicks through to any website. AI Overviews now appear on 40%+ of US search queries. <em>See Ch15: Google Zero Matters.</em></div>
-      <div class="glossary-entry"><strong>GraphRAG</strong> — <em>Architecture.</em> Hybrid retrieval combining vector similarity search with knowledge graph traversal. Microsoft's open-source implementation demonstrated 40% reduction in hallucination rate on complex multi-hop questions vs. standard RAG. <em>See Ch13+: The Embedding Problem.</em></div>
-      <div class="glossary-entry"><strong>Human-in-the-Loop (HITL)</strong> — <em>Design principle.</em> The practice of integrating human review at defined points in AI workflows — confidence thresholds, consequence thresholds, and novelty detection. Makes AI systems trustworthy and deployable at scale. <em>See Ch38: Smart Process — AI Collab with HITL.</em></div>
-      <div class="glossary-entry"><strong>Inference</strong> — <em>ML operation.</em> Running a trained model to generate an output. When you prompt an image generator and it produces an image, that is inference. Different from training and fine-tuning in cost structure and capability. <em>See Ch27: Inference, Fine-Tuning & LoRAs.</em></div>
-      <div class="glossary-entry"><strong>Knowledge Architect</strong> — <em>Job title.</em> A role responsible for ontology design, entity-relationship modeling, knowledge graph schema, grounding rules, and fact verification. Combines CS with philosophy/logic or law/regulatory background. Salary: $140k–$300k in 2026. <em>See Ch40: New Job Titles + Personal Story.</em></div>
-      <div class="glossary-entry"><strong>Knowledge Graph</strong> — <em>Data structure.</em> A structured representation of entities, relationships, and properties that AI systems can traverse, query, and reason about. Unlike flat vector stores, knowledge graphs model how concepts relate. <em>See Ch25: Ontology.</em></div>
-      <div class="glossary-entry"><strong>Leaky Abstraction</strong> — <em>Engineering principle.</em> Joel Spolsky's law: all non-trivial abstractions leak. Applied to AI: embedding models leak when query domains shift, RAG pipelines leak when chunking misses boundaries, models leak on out-of-distribution inputs. <em>See Ch36: Abstraction.</em></div>
-      <div class="glossary-entry"><strong>Local AI</strong> — <em>Deployment strategy.</em> Running AI models on your own hardware (RTX 5090 with 96GB VRAM) rather than cloud APIs. Benefits: privacy, zero marginal inference cost, no data extraction by providers. Crossover point: ~500K tokens/day sustained usage. <em>See Ch30: Run It Yourself.</em></div>
-      <div class="glossary-entry"><strong>LoRA</strong> — <em>ML technique.</em> Low-Rank Adaptation — fine-tuning with a fraction of the compute by modifying only a small set of model parameters. Enables brand-specific visual output and domain adaptation on consumer hardware. <em>See Ch27: Inference, Fine-Tuning & LoRAs.</em></div>
-      <div class="glossary-entry"><strong>Model Tier Routing</strong> — <em>Architecture pattern.</em> Automatically routing tasks to the appropriate model tier: small models for high-volume routine tasks, mid-sized for summarization and drafting, frontier models for high-stakes reasoning. Enforced at the orchestration layer. <em>See Ch38: Smart Stack.</em></div>
-      <div class="glossary-entry"><strong>Multimodal AI</strong> — <em>AI capability.</em> Systems trained end-to-end on visual, audio, and text data — as opposed to language models with vision plugins bolted on. The first filter for any AI architecture decision in 2026. <em>See Ch3: Ranking Early LLM Leaders.</em></div>
-      <div class="glossary-entry"><strong>Novelty Detection</strong> — <em>HITL mechanism.</em> The third level of HITL: detecting out-of-distribution inputs and escalating automatically. Implemented by monitoring embedding-space distance from training distribution. Unknown equals escalate. <em>See Ch38: Smart Process — AI Collab with HITL.</em></div>
-      <div class="glossary-entry"><strong>Ontology</strong> — <em>Knowledge structure.</em> The structured representation of knowledge — how concepts relate to each other, how meaning is encoded. A knowledge graph is the practical implementation of an ontology. <em>See Ch25: Ontology.</em></div>
-      <div class="glossary-entry"><strong>Prompt Injection</strong> — <em>Security vulnerability.</em> Malicious content embedded in data that the AI processes, designed to override the agent's system instructions. A documented attack pattern in production deployments. Defense: input sanitization at the agent boundary. <em>See Ch44: Smart Stack Issue Matrix.</em></div>
-      <div class="glossary-entry"><strong>RAG (Retrieval-Augmented Generation)</strong> — <em>Architecture.</em> The pattern where an LLM reasons over retrieved context from a knowledge base rather than relying solely on training data. The LLM reasons. The knowledge base provides the facts. Together they produce what neither can alone. <em>See Ch20: LLM Knowledge-Based Search.</em></div>
-      <div class="glossary-entry"><strong>Retrieval Precision</strong> — <em>Performance metric.</em> The percentage of retrieved context that is actually relevant to the query. Every percentage point of retrieval precision translates directly to output quality. <em>See Ch38: Smart Stack.</em></div>
-      <div class="glossary-entry"><strong>Reranking</strong> — <em>Retrieval technique.</em> A second-stage scoring model applied after initial vector retrieval to improve result quality. Incorporates contextual signals (user session, geospatial context, recency) that the base embedding model does not capture. <em>See Ch41: Temporal Truth.</em></div>
-      <div class="glossary-entry"><strong>SaaSpocalypse</strong> — <em>Market phenomenon.</em> The systematic dismantling of the monolithic SaaS application model by AI-native alternatives. Generic content tools, simple automation platforms, and keyword SEO tools are being obliterated. CRM, ERP, and support platforms are being transformed. <em>See Ch36: SaaSpocalypse.</em></div>
-      <div class="glossary-entry"><strong>Semantic Authority</strong> — <em>Content strategy.</em> The preferential treatment AI answer engines give to sources with deep, consistent domain expertise. Built through original research, authoritative data, and expert analysis that AI systems can confidently cite. <em>See Ch13: Semantic Understanding.</em></div>
-      <div class="glossary-entry"><strong>Semantic Search</strong> — <em>Search paradigm.</em> Search that understands meaning rather than matching keywords. Powered by embeddings that encode semantic similarity as spatial proximity in high-dimensional vector space. <em>See Ch13: Semantic Understanding.</em></div>
-      <div class="glossary-entry"><strong>Smart Stack</strong> — <em>Architecture framework.</em> The 5-layer model for building AI systems: Strategic Layer (why), Data Layer (fuel), Model Layer (capability), Agent Layer (orchestration), Interface Layer (handoff). Not a product — an architecture you build. <em>See Ch43: Smart Stack.</em></div>
-      <div class="glossary-entry"><strong>Sovereign AI</strong> — <em>Strategy.</em> Running AI systems on your infrastructure, your models, your data, with your security boundaries. Not a luxury for regulated industries — the foundation of any AI strategy that compounds over time. <em>See Ch17: Privacy.</em></div>
-      <div class="glossary-entry"><strong>Streaming Ingestion</strong> — <em>Data pipeline pattern.</em> Real-time data ingestion that updates the knowledge base continuously rather than in batch cycles. Critical for maintaining freshness in time-sensitive AI applications. <em>See Ch41: Temporal Truth.</em></div>
-      <div class="glossary-entry"><strong>Tensor Truth</strong> — <em>Framework.</em> Verifiable AI outputs anchored to proprietary data, validated against ground truth. Every factual output must be verifiable against a source before it is acted upon. The AI generates. The validation layer verifies. <em>See Foreword, Ch22: Text Models Only Predict.</em></div>
-      <div class="glossary-entry"><strong>Temporal Truth</strong> — <em>Concept.</em> A correct answer delivered too late is a wrong answer. In 2026, more AI failures are temporal failures (stale data) than factual failures (wrong data). <em>See Ch41: Temporal Truth.</em></div>
-      <div class="glossary-entry"><strong>Time-Weighted Embeddings</strong> — <em>Embedding technique.</em> Embeddings that incorporate temporal metadata so that retrieval can weight recency alongside semantic similarity. Fresh data surfaces higher in results than stale data of equal semantic relevance. <em>See Ch41: Temporal Truth.</em></div>
-      <div class="glossary-entry"><strong>Token Budget</strong> — <em>Cost governance.</em> Context window limits and output length caps enforced per agent per task type at the orchestration layer. Prevents runaway inference costs when agents are deployed at full volume. <em>See Ch44: Smart Stack Issue Matrix.</em></div>
-      <div class="glossary-entry"><strong>Vector Database</strong> — <em>Infrastructure.</em> A database optimized for storing and querying high-dimensional embedding vectors. Supports approximate nearest-neighbor (ANN) search for rapid semantic similarity retrieval. <em>See Ch13+: The Embedding Problem.</em></div>
-      <div class="glossary-entry"><strong>Vector Index</strong> — <em>Data structure.</em> The searchable index of embedding vectors within a vector database. Model-specific — vectors from different models cannot coexist in the same index. <em>See Ch13+: The Embedding Problem.</em></div>
-      <div class="glossary-entry"><strong>Vibe Coding</strong> — <em>Development practice.</em> Prompting an AI to build software through conversational iteration. Works for certain classes of problems but requires engineering discipline (CVI: Curate, Validate, Integrate) for production deployment. <em>See Ch6: The Vibe Coding Myth.</em></div>
-      <div class="glossary-entry"><strong>Visual AI</strong> — <em>AI capability.</em> AI systems that understand, generate, and manipulate visual content — images, video, spatial context. The dimension where the gap between AI capability and human capability is still largest and closing fastest. <em>See Ch14: Visual AI Has Just Begun.</em></div>
-      <div class="glossary-entry"><strong>Visual Equity</strong> — <em>Strategic asset.</em> A recognizable aesthetic built through hundreds of consistent AI-generated images that cannot be replicated overnight by a competitor. Part of the defensible moat alongside proprietary data and semantic authority. <em>See Ch4: The Art of AI.</em></div>
-      <div class="glossary-entry"><strong>Visual Vector</strong> — <em>Architecture.</em> Embedding images and video frames into high-dimensional semantic space for rapid similarity search. Connects visual search to structured product and content data. <em>See Ch13: Semantic Understanding.</em></div>
-      <div class="glossary-entry"><strong>World Model</strong> — <em>AI capability.</em> An AI system's understanding of how things work in physical, spatial, and causal reality. The frontier where the gap between AI capability and human capability is still largest. <em>See Ch11: World Models.</em></div>
-      <div class="glossary-entry"><strong>Zero-Human Transaction</strong> — <em>Automation pattern.</em> A commercial transaction handled entirely by AI without human involvement. Achieved for 89% of routine purchase orders in production deployments. The architecture: intake → validation → Tensor Truth check → routing → execution → confirmation. <em>See Ch21: Zero-Human Transactions.</em></div>
-    </div>`,
-      images: ["glossary_term_cloud.png"],
-      readingTime: 10
+      content: `
+        <p class="chapter-intro">A comprehensive glossary of key terms, acronyms, and concepts referenced throughout "The Speed of Agentic Visual AI." Organized A-Z for quick reference, with cross-links to relevant chapters for deeper exploration.</p>
+
+        <h2>A</h2>
+        <dl>
+          <dt><strong>Agent / AI Agent</strong></dt>
+          <dd>An autonomous AI system that plans, executes tool calls, validates its own outputs, and escalates to humans when confidence falls below defined thresholds. The foundational building block of the 30–40 agent mesh architecture that replaces the 500-app SaaS stack. <em>See Foreword, Ch24: Agentic AI Orchestration.</em></dd>
+
+          <dt><strong>Agentic AI</strong></dt>
+          <dd>AI systems that act autonomously to accomplish goals rather than simply responding to prompts. Agentic AI plans multi-step workflows, executes tool calls, validates outputs, and escalates to humans at defined confidence thresholds. Distinguished from generative AI by the capacity for autonomous action. <em>See Ch24: Agentic AI Orchestration.</em></dd>
+
+          <dt><strong>AGI (Artificial General Intelligence)</strong></dt>
+          <dd>An AI system with human-level or greater capability across most cognitive tasks. May arrive in 5 years or 20 — the debate consumes strategic planning cycles that should be spent deploying today's usable capabilities. <em>See Ch10: AGI May Happen in 5 Years — Focus on Today.</em></dd>
+
+          <dt><strong>API (Application Programming Interface)</strong></dt>
+          <dd>A defined interface through which software systems communicate. In agentic architectures, API-first design enables agents to communicate natively without UI intermediation. Every capability in the Smart Stack is exposed through a well-defined API before any interface is built. <em>See Ch43: Smart Stack.</em></dd>
+
+          <dt><strong>AI Answer Engine</strong></dt>
+          <dd>Systems like Perplexity and Google AI Overviews that generate complete answers directly on the search results page rather than returning links. The shift from "ten blue links" to synthesized answers permanently changes the content strategy landscape. <em>See Ch16: Google Zero Matters.</em></dd>
+
+          <dt><strong>Attention Mechanism</strong></dt>
+          <dd>The neural network architecture innovation (introduced in the 2017 "Attention Is All You Need" paper) that enables transformers to weigh the relevance of different input tokens when generating each output token. The mathematical foundation of every modern LLM and multimodal model.</dd>
+
+          <dt><strong>AutoGen</strong></dt>
+          <dd>Microsoft's open-source framework for building multi-agent conversation workflows. Agents communicate, debate, validate each other's outputs, and escalate to humans. One of the leading enterprise agentic orchestration platforms alongside CrewAI and LangGraph. <em>See Ch24: Agentic AI Orchestration.</em></dd>
+        </dl>
+
+        <h2>B</h2>
+        <dl>
+          <dt><strong>Batch Processing</strong></dt>
+          <dd>Processing data in scheduled groups rather than in real time. Contrast with streaming ingestion, which updates knowledge bases continuously. The choice between batch and streaming directly determines data freshness and the accuracy of time-sensitive AI applications. <em>See Ch41: Temporal Truth.</em></dd>
+
+          <dt><strong>BERT (Bidirectional Encoder Representations from Transformers)</strong></dt>
+          <dd>Google's 2018 breakthrough language model that reads text bidirectionally (both left-to-right and right-to-left). Predecessor to modern LLMs; established the pre-train-then-fine-tune paradigm that dominates NLP today.</dd>
+
+          <dt><strong>Bias (AI Bias)</strong></dt>
+          <dd>Systematic errors in AI outputs caused by imbalances in training data or model architecture. Can manifest as demographic, cultural, or domain-specific skew. Mitigated through diverse training data, output auditing, and HITL review at consequence thresholds. <em>See Ch44: Smart Stack Issue Matrix.</em></dd>
+
+          <dt><strong>Brand LoRA</strong></dt>
+          <dd>A Low-Rank Adaptation trained on a brand's visual identity assets to produce consistent, on-brand AI-generated images. Eliminates the inconsistency that makes AI-generated content immediately recognizable as AI-generated — the primary objection to AI visual content in professional contexts. <em>See Ch28: Inference, Fine-Tuning & LoRAs.</em></dd>
+
+          <dt><strong>Business Intelligence (BI)</strong></dt>
+          <dd>The practice of analyzing organizational data to inform decision-making. AI-augmented BI adds predictive analytics, anomaly detection, and natural language querying to traditional dashboard-based approaches. The shift from "what happened?" to "what will happen?"</dd>
+        </dl>
+
+        <h2>C</h2>
+        <dl>
+          <dt><strong>Chatbot</strong></dt>
+          <dd>A text-based conversational interface, typically with pre-scripted responses. The chatbot era is ending — replaced by voice agents and agentic AI systems that understand context, take action, and escalate appropriately rather than trapping users in decision trees. <em>See Ch34: Voice Agents — The End of the Chatbot Era.</em></dd>
+
+          <dt><strong>Chunking</strong></dt>
+          <dd>The process of dividing documents into semantically coherent segments for embedding into vector databases. Strategies include semantic chunking (meaning-based boundaries), parent-child chunking (retrieve child, expand to parent), hierarchical chunking with overlap, and structure-aware chunking (respecting document headings). A misconfigured chunking strategy is the most common failure mode in RAG implementations. <em>See Ch13b: The Embedding Problem.</em></dd>
+
+          <dt><strong>Citation Discipline</strong></dt>
+          <dd>The practice of instructing AI generation layers to cite only what was retrieved from the knowledge base, never fabricating sources. The difference between reliable business intelligence and confidently manufactured answers. Every chunk in a production RAG system must carry provenance metadata. <em>See Ch20: LLM Knowledge-Based Search.</em></dd>
+
+          <dt><strong>Cloud Computing</strong></dt>
+          <dd>On-demand access to computing resources (servers, storage, AI inference) via the internet. Cloud AI inference is convenient but creates ongoing costs and data sovereignty concerns. The economic crossover point for local AI deployment is approximately 500K tokens/day sustained usage. <em>See Ch31: Run It Yourself — Local AI.</em></dd>
+
+          <dt><strong>CDP (Customer Data Platform)</strong></dt>
+          <dd>A unified customer database that aggregates data from multiple sources. In agentic architectures, the CDP becomes a knowledge base that agents query directly rather than a separate analytics tool — collapsing the distinction between data storage and intelligence. <em>See Ch9: Build Your Own Custom Software vs. SaaS.</em></dd>
+
+          <dt><strong>CNN (Convolutional Neural Network)</strong></dt>
+          <dd>A neural network architecture specialized for processing grid-like data (images, video frames). The dominant architecture for computer vision tasks for over a decade before vision transformers emerged. Still used in production for efficient image classification and real-time object detection at the edge.</dd>
+
+          <dt><strong>ComfyUI</strong></dt>
+          <dd>A node-based visual programming environment for AI image and video generation. Exposes the full model pipeline as a graph of interconnected operations — load model, apply LoRA, encode prompt, generate latents, decode image, upscale, save. Runs on consumer hardware (24GB GPU). The master control environment for the visual AI production stack. <em>See Ch32b: Visual AI Production Stack.</em></dd>
+
+          <dt><strong>Confidence Threshold</strong></dt>
+          <dd>A defined minimum confidence score below which an AI agent auto-escalates to human review. Typically 0.85 for routine tasks, 0.95 for high-stakes decisions. The first and most fundamental level of HITL protection. <em>See Ch38: Smart Process — AI Collab with HITL.</em></dd>
+
+          <dt><strong>Consequence Threshold</strong></dt>
+          <dd>A defined impact level above which an action requires mandatory human review regardless of AI confidence. Financial transactions above $50k, regulatory filings, and production system changes are common consequence thresholds. Confidence and consequence are independent dimensions. <em>See Ch38: Smart Process — AI Collab with HITL.</em></dd>
+
+          <dt><strong>Context Engineer</strong></dt>
+          <dd>A role responsible for context window design, prompt template libraries, RAG pipeline tuning, embedding strategy, and retrieval quality monitoring. Salary: $120k–$250k in 2026. Combines software engineering with prompt design and data architecture — not a prompt engineer, but a systems engineer who understands the full retrieval and reasoning pipeline. <em>See Ch40: New Job Titles + Personal Story.</em></dd>
+
+          <dt><strong>Context Window</strong></dt>
+          <dd>The maximum amount of text (measured in tokens) that an LLM can process in a single prompt. Larger context windows enable processing of longer documents but increase compute cost and can degrade retrieval precision at the edges. <em>See Ch20: LLM Knowledge-Based Search.</em></dd>
+
+          <dt><strong>CrewAI</strong></dt>
+          <dd>An open-source framework for orchestrating role-based AI agent teams. Agents are assigned specific roles, goals, and tools, then execute tasks collaboratively. One of the leading agentic orchestration platforms for production deployments. <em>See Ch24: Agentic AI Orchestration.</em></dd>
+
+          <dt><strong>CRM (Customer Relationship Management)</strong></dt>
+          <dd>Software for managing customer interactions and data. In the agentic era, CRM is being transformed from a data entry system into an intelligent agent that automatically captures, enriches, and acts on customer signals without human data entry. <em>See Ch9: Build Your Own Custom Software vs. SaaS.</em></dd>
+
+          <dt><strong>Custom Silicon</strong></dt>
+          <dd>AI-specific processors designed by Google (TPU v5), Amazon (Trainium2), and startups (Cerebras, Groq) as alternatives to NVIDIA GPUs. Offer different tradeoffs in throughput, latency, and cost efficiency for specific workload types. <em>See Ch35: The Data Center Race.</em></dd>
+        </dl>
+
+        <h2>D</h2>
+        <dl>
+          <dt><strong>DALL-E</strong></dt>
+          <dd>OpenAI's text-to-image generation model series. DALL-E 3 (2023) integrated native text rendering and ChatGPT-level prompt understanding. Represents the frontier of cloud-based image generation but faces competition from open-source alternatives (Stable Diffusion, Flux) that run locally.</dd>
+
+          <dt><strong>Dark Data</strong></dt>
+          <dd>Unstructured data that organizations collect but cannot analyze — scanned PDFs, video footage, audio recordings, handwritten notes, emails. Represents approximately 90% of most organizations' data assets. Tools like Unstructured.io and DocLing unlock dark data for AI processing. <em>See Ch13: Reading Unstructured Data — The 90% Problem.</em></dd>
+
+          <dt><strong>Data Pipeline</strong></dt>
+          <dd>The end-to-end flow of data from ingestion through processing, embedding, indexing, and retrieval. A well-designed data pipeline is the difference between AI that delivers accurate answers and AI that hallucinates confidently. <em>See Ch13b: The Embedding Problem.</em></dd>
+
+          <dt><strong>Data Sovereignty</strong></dt>
+          <dd>The principle that an organization's data should remain under its control — not used to train external models, not visible to third-party providers. Implemented through private model deployment, proprietary knowledge bases, and no-training agreements with API providers. <em>See Ch18: Privacy.</em></dd>
+
+          <dt><strong>Decision-Grade AI</strong></dt>
+          <dd>AI output that recommends a specific action, provides confidence and evidence, flags key assumptions, and routes to humans when confidence falls below threshold. The highest value tier in the information → answers → decisions hierarchy. Most organizations are still at the "answers" tier. <em>See Ch19: Instant Information vs. Answers vs. Decisions.</em></dd>
+
+          <dt><strong>Deep Learning</strong></dt>
+          <dd>A subset of machine learning using neural networks with many layers (hence "deep"). The architectural foundation of modern AI — LLMs, image generators, speech recognition, and computer vision all run on deep learning architectures trained on massive datasets.</dd>
+
+          <dt><strong>Diffusion Model</strong></dt>
+          <dd>A class of generative models that create images by iteratively denoising random noise into a coherent picture. The underlying architecture behind Stable Diffusion, DALL-E, Midjourney, and Flux. Diffusion models learn to reverse a gradual noising process, producing high-quality images from text descriptions.</dd>
+
+          <dt><strong>Directus</strong></dt>
+          <dd>An open-source headless CMS and data platform that wraps any SQL database with a dynamic API and admin interface. Used in the VidiSmart ecosystem as the backend data layer connecting structured content to AI agent workflows. Enables non-technical teams to manage structured data that agents query at runtime.</dd>
+
+          <dt><strong>DocLing</strong></dt>
+          <dd>IBM Research's open-source document processing tool for unlocking dark data lakes. Handles complex document formats — tables, multi-column layouts, scientific notation — with particular strength in regulated industries. One of the two leading tools alongside Unstructured.io for AI document preprocessing. <em>See Ch13b: The Embedding Problem.</em></dd>
+        </dl>
+
+        <h2>E</h2>
+        <dl>
+          <dt><strong>Edge Computing</strong></dt>
+          <dd>Processing data near its source rather than in a centralized cloud data center. In AI contexts, edge deployment reduces latency for real-time applications (voice agents, autonomous systems) and keeps sensitive data local. <em>See Ch31: Run It Yourself — Local AI.</em></dd>
+
+          <dt><strong>ElevenLabs</strong></dt>
+          <dd>The leading AI voice synthesis platform, with voices indistinguishable from human recordings in blind tests. ElevenLabs Flash delivers sub-75ms latency for real-time voice agent applications. Powers voice cloning, text-to-speech, and voice agent deployments across industries. <em>See Ch34: Voice Agents.</em></dd>
+
+          <dt><strong>Embedding</strong></dt>
+          <dd>The process of converting text, images, or other content into a high-dimensional vector (a list of 768, 1024, or 1536 floating-point numbers) where semantic similarity becomes spatial proximity. Vectors are model-specific and not portable between models — changing embedding models requires re-embedding the entire corpus. <em>See Ch13b: The Embedding Problem.</em></dd>
+
+          <dt><strong>Epistemic Humility</strong></dt>
+          <dd>The practice of designing AI systems to acknowledge uncertainty rather than generate confident-sounding answers about facts they don't know. The agent that knows what it doesn't know — and escalates instead of improvising — is the one that earns permanent trust in production. <em>See Ch22: Text Models Only Predict the Next Word.</em></dd>
+
+          <dt><strong>ERP (Enterprise Resource Planning)</strong></dt>
+          <dd>Integrated software for managing core business processes — finance, HR, supply chain, manufacturing. In the agentic era, ERP is being transformed from a monolithic system into a mesh of purpose-built agents that handle each function natively. <em>See Ch9: Build Your Own Custom Software vs. SaaS.</em></dd>
+
+          <dt><strong>Escalation Packet</strong></dt>
+          <dd>A structured brief an AI agent provides when routing a decision to a human: situation statement, assembled evidence, considered actions and why they were rejected, the specific judgment needed, and a recommended action with confidence. Transforms escalation from a vague alert into a 30-second decision. <em>See Ch38: Smart Process — AI Collab with HITL.</em></dd>
+
+          <dt><strong>Executive Dashboard</strong></dt>
+          <dd>A visual interface displaying key performance indicators and real-time business metrics. AI-augmented executive dashboards add predictive alerts, anomaly detection, and natural language querying — shifting from "what happened last quarter?" to "what needs attention right now?"</dd>
+        </dl>
+
+        <h2>F</h2>
+        <dl>
+          <dt><strong>FDE (Forward Deployed Engineer)</strong></dt>
+          <dd>An engineer who works directly at customer sites to integrate AI systems into production environments. Combines deep technical capability with customer-facing problem solving. The bridge between what the AI can do in a demo and what it actually does in the customer's environment. <em>See Ch40: New Job Titles + Personal Story.</em></dd>
+
+          <dt><strong>Fine-tuning</strong></dt>
+          <dd>Adapting a pre-trained model to a specific domain using additional training data. More computationally expensive than LoRA but produces deeper domain adaptation. Full fine-tuning modifies all model weights; LoRA and QLoRA modify only a small subset for efficiency. <em>See Ch28: Inference, Fine-Tuning & LoRAs.</em></dd>
+
+          <dt><strong>FlashVSR</strong></dt>
+          <dd>Video Super-Resolution tool integrated into ComfyUI. Upscales low-resolution AI-generated video to clean 4K with temporal consistency between frames. Built on Wan 2.2 architecture, optimized for 24GB VRAM. Enables generating at 720p for speed then upscaling to broadcast-quality 4K output. <em>See Ch32b: Visual AI Production Stack.</em></dd>
+
+          <dt><strong>Foundation Model</strong></dt>
+          <dd>A large AI model trained on broad, diverse data that can be adapted to a wide range of downstream tasks. GPT-5.4, Claude Opus 4.7, Gemini 3.1 Ultra, and Llama 4 Maverick are 2026's frontier foundation models. The base layer upon which domain-specific fine-tuned models and LoRAs are built. <em>See Ch4: Ranking Early LLM Leaders.</em></dd>
+
+          <dt><strong>Freshness Spectrum</strong></dt>
+          <dd>The range of time windows within which data remains accurate for different use cases: stock prices (30ms), inventory levels (60 minutes), customer support context (24 hours), regulatory tracking (30 days). An AI system that doesn't know which freshness window applies to which query delivers wrong answers with perfect confidence. <em>See Ch41: Temporal Truth.</em></dd>
+        </dl>
+
+        <h2>G</h2>
+        <dl>
+          <dt><strong>GAN (Generative Adversarial Network)</strong></dt>
+          <dd>An AI architecture where two neural networks — a generator and a discriminator — compete against each other. The generator creates content; the discriminator judges it. Through this adversarial process, the generator learns to produce increasingly realistic outputs. Preceded diffusion models as the dominant image generation architecture.</dd>
+
+          <dt><strong>Generative AI</strong></dt>
+          <dd>AI systems that create new content — text, images, video, code, audio — from training data patterns. Distinguished from agentic AI by the focus on content creation rather than autonomous action. The two categories are complementary: generative AI produces the content; agentic AI deploys and acts on it.</dd>
+
+          <dt><strong>Google Zero</strong></dt>
+          <dd>The moment when a search query generates a complete, satisfying answer directly on the search results page — the user never clicks through to any website. AI Overviews now appear on 40%+ of US search queries. The entire business model of organic search traffic was built on the assumption that ranking highly meant getting visitors. Google Zero ends that assumption. <em>See Ch16: Google Zero Matters.</em></dd>
+
+          <dt><strong>GPU (Graphics Processing Unit)</strong></dt>
+          <dd>A specialized processor originally designed for rendering graphics, now the primary hardware for AI training and inference. NVIDIA dominates with the H100/H200 (data center) and RTX 5090 (consumer, 96GB VRAM). The pick-and-shovel of the AI gold rush — NVIDIA crossed $3 trillion market cap on GPU demand. <em>See Ch35: The Data Center Race.</em></dd>
+
+          <dt><strong>Graph Database</strong></dt>
+          <dd>A database that stores data as nodes (entities) and edges (relationships) rather than rows and columns. The foundation for knowledge graphs — enables AI systems to traverse relationship networks rather than just retrieve text fragments. Neo4j and Amazon Neptune are leading graph database platforms. <em>See Ch26: Ontology — Consciousness & Meaning.</em></dd>
+
+          <dt><strong>GraphRAG</strong></dt>
+          <dd>Hybrid retrieval architecture combining vector similarity search with knowledge graph traversal. Microsoft's open-source implementation demonstrated 40% reduction in hallucination rate on complex multi-hop questions vs. standard RAG. The knowledge graph preserves relational structure that chunking destroys. <em>See Ch13b: The Embedding Problem.</em></dd>
+        </dl>
+
+        <h2>H</h2>
+        <dl>
+          <dt><strong>Hallucination</strong></dt>
+          <dd>When an AI generates confident, plausible-sounding output that is factually incorrect. Not a bug — a property of the autoregressive architecture. Language models predict the most statistically likely next token; sometimes the most likely answer is wrong. Mitigated (not eliminated) by RAG, knowledge graphs, citation discipline, and Tensor Truth verification. <em>See Ch22: Text Models Only Predict the Next Word.</em></dd>
+
+          <dt><strong>HeyGen</strong></dt>
+          <dd>AI video generation platform specializing in avatar-based video content with voice cloning and lip-sync. Enables a single recorded video to generate thousands of personalized variants — each addressing the recipient by name with custom content. Production time: minutes for what previously required a studio. <em>See Ch33v: Video Agents — Story at Scale.</em></dd>
+
+          <dt><strong>HITL (Human-in-the-Loop)</strong></dt>
+          <dd>A first-class design principle integrating human review at defined points in AI workflows through three mechanisms: confidence thresholds (escalate below 0.85), consequence thresholds (mandatory review for high-impact actions), and novelty detection (escalate out-of-distribution inputs). HITL is not a concession to AI limitations — it is what makes AI systems trustworthy and deployable at scale. <em>See Ch38: Smart Process — AI Collab with HITL.</em></dd>
+
+          <dt><strong>HuggingFace</strong></dt>
+          <dd>The central hub for open-source AI models, datasets, and tools. Hosts hundreds of thousands of models (LLMs, image generators, embeddings), provides libraries (Transformers, Diffusers, Datasets), and enables community collaboration on model development. The GitHub of the AI era.</dd>
+        </dl>
+
+        <h2>I</h2>
+        <dl>
+          <dt><strong>Image Recognition</strong></dt>
+          <dd>The ability of AI systems to identify objects, people, text, scenes, and activities in images. Mature capability — production-grade accuracy on structured categories. The foundation for visual search, content moderation, medical imaging analysis, and autonomous systems.</dd>
+
+          <dt><strong>Inference</strong></dt>
+          <dd>Running a trained model to generate an output. When you prompt an image generator and it produces an image, that is inference. Different from training (creating the model) and fine-tuning (adapting the model) in both cost structure and capability requirements. Inference is the operation that generates business value. <em>See Ch28: Inference, Fine-Tuning & LoRAs.</em></dd>
+
+          <dt><strong>Integration</strong></dt>
+          <dd>The connection layer between AI agents and existing business systems. The most common reason AI projects stall in production is not the AI — it is integration failures: data access gaps, protocol mismatches, and state management failures across systems. <em>See Ch44: Smart Stack Issue Matrix.</em></dd>
+
+          <dt><strong>IoT (Internet of Things)</strong></dt>
+          <dd>The network of physical devices embedded with sensors and connectivity. In AI contexts, IoT devices generate the real-time data streams that feed continuous learning systems — from factory floor sensors to smart building controls to connected vehicles.</dd>
+        </dl>
+
+        <h2>K</h2>
+        <dl>
+          <dt><strong>Kilo Code</strong></dt>
+          <dd>The #1 coding agent on OpenRouter with 1.5M+ users. Ships with a team of specialized sub-agents (Code, Ask, Debug, Architect, Orchestrator) that break complex tasks into sub-tasks, assign to specialists, and synthesize results. Operable by a single person on their local machine. <em>See Ch23b: Personal Agent Stack.</em></dd>
+
+          <dt><strong>Knowledge Architect</strong></dt>
+          <dd>A role responsible for ontology design, entity-relationship modeling, knowledge graph schema, grounding rules, and the fact verification layer. The rarest profile in 2026: combines CS with philosophy/logic or law/regulatory background. Salary: $140k–$300k. The bridge between AI capability and organizational need for verifiable truth. <em>See Ch40: New Job Titles + Personal Story.</em></dd>
+
+          <dt><strong>Knowledge Base</strong></dt>
+          <dd>A structured repository of organizational information that AI systems query for retrieval-augmented generation. The quality of the knowledge base directly determines the quality of AI outputs. Must include provenance metadata for every chunk to enable citation and verification. <em>See Ch20: LLM Knowledge-Based Search.</em></dd>
+
+          <dt><strong>Knowledge Graph</strong></dt>
+          <dd>A structured representation of entities, relationships, and properties that AI systems can traverse, query, and reason about. Unlike flat vector stores, knowledge graphs model how concepts relate — enabling multi-hop reasoning that vector search alone cannot provide. The deepest layer of the Tensor Truth framework. <em>See Ch26: Ontology — Consciousness & Meaning.</em></dd>
+
+          <dt><strong>KPI (Key Performance Indicator)</strong></dt>
+          <dd>A measurable value demonstrating how effectively an organization achieves key objectives. In AI-augmented operations, KPIs shift from backward-looking aggregates to real-time, predictive metrics — "what will happen?" replaces "what happened?"</dd>
+        </dl>
+
+        <h2>L</h2>
+        <dl>
+          <dt><strong>LangChain</strong></dt>
+          <dd>An open-source framework for building applications powered by LLMs. Provides standardized interfaces for chains, agents, tools, and retrieval strategies. One of the most widely adopted frameworks for RAG and agentic application development alongside LangGraph for stateful workflows. <em>See Ch24: Agentic AI Orchestration.</em></dd>
+
+          <dt><strong>Latency</strong></dt>
+          <dd>The time delay between a request and a response in a computing system. For AI applications, sub-200ms latency is the threshold below which human perception registers a response as natural. Voice agents require sub-75ms for real-time conversation; visual search pipelines target sub-200ms end-to-end. <em>See Ch34: Voice Agents.</em></dd>
+
+          <dt><strong>Leaky Abstraction</strong></dt>
+          <dd>Joel Spolsky's law: all non-trivial abstractions leak. In AI: embedding models leak when query domains shift, RAG pipelines leak when chunking misses boundaries, LLMs leak on out-of-distribution inputs. The engineer who understands where the abstraction leaks is the one who can debug when it fails. <em>See Ch36: Abstraction — When It Has Value.</em></dd>
+
+          <dt><strong>LLM (Large Language Model)</strong></dt>
+          <dd>An AI model trained on massive text corpora to predict the next token in a sequence. GPT-5.4, Claude Opus 4.7, Gemini 3.1 Ultra, Llama 4 Maverick, and Qwen3 are 2026's frontier LLMs. Despite their name, they don't "understand" language — they predict statistically likely sequences, which is why they require RAG and verification layers for production reliability. <em>See Ch4: Ranking Early LLM Leaders.</em></dd>
+
+          <dt><strong>Local AI</strong></dt>
+          <dd>Running AI models on your own hardware rather than cloud APIs. Benefits: complete privacy (data never leaves infrastructure), zero marginal inference cost after hardware purchase, no vendor dependency. The RTX 5090 (96GB VRAM) can run multiple large models simultaneously. Economic crossover point: ~500K tokens/day sustained usage. <em>See Ch31: Run It Yourself — Local AI.</em></dd>
+
+          <dt><strong>LoRA (Low-Rank Adaptation)</strong></dt>
+          <dd>A fine-tuning technique that modifies only a small subset of model parameters, requiring a fraction of the compute of full fine-tuning. Enables brand-specific visual output (face consistency, product aesthetic, illustration style) on consumer hardware. A talent LoRA trained on 30–50 reference images can reliably reproduce a specific face across any background. <em>See Ch28: Inference, Fine-Tuning & LoRAs.</em></dd>
+        </dl>
+
+        <h2>M</h2>
+        <dl>
+          <dt><strong>MCP (Model Context Protocol)</strong></dt>
+          <dd>An open protocol (introduced by Anthropic in 2024) that standardizes how AI agents connect to external tools and data sources. Enables agents to use any MCP-compatible tool — file systems, databases, APIs, browsers — through a unified interface. The USB-C of AI agent connectivity. <em>See Ch23b: Personal Agent Stack.</em></dd>
+
+          <dt><strong>Microservices</strong></dt>
+          <dd>An architectural style structuring applications as collections of loosely coupled, independently deployable services. In the agentic era, the 30–40 agent mesh is the next evolution: microservices that think, decide, and act rather than just process. <em>See Ch9: Build Your Own Custom Software vs. SaaS.</em></dd>
+
+          <dt><strong>ML (Machine Learning)</strong></dt>
+          <dd>The subset of AI focused on systems that learn from data without explicit programming. Encompasses supervised learning, unsupervised learning, reinforcement learning, and deep learning. The broader field within which LLMs, diffusion models, and computer vision systems operate.</dd>
+
+          <dt><strong>Model Tier Routing</strong></dt>
+          <dd>An architecture pattern that automatically routes tasks to the appropriate model tier: small models (1.5B–7B params) for high-volume classification and routing at near-zero cost; mid-sized models (7B–70B) for summarization and drafting; frontier models (100B+) for high-stakes reasoning. Enforced at the orchestration layer with automatic downgrade when tasks don't justify frontier cost. <em>See Ch43: Smart Stack.</em></dd>
+
+          <dt><strong>Multi-modal AI</strong></dt>
+          <dd>AI systems trained end-to-end on visual, audio, and text data — as opposed to language models with vision plugins bolted on. Gemini 3.1 Ultra and GPT-5.4 with vision are genuinely multimodal; many other "multi-modal" systems are language-first with adapters. The first filter for any AI architecture decision in 2026. <em>See Ch4: Ranking Early LLM Leaders.</em></dd>
+        </dl>
+
+        <h2>N</h2>
+        <dl>
+          <dt><strong>Neural Network</strong></dt>
+          <dd>A computing system inspired by biological neurons, consisting of interconnected layers of nodes that process and transform data. The fundamental building block of deep learning. Modern neural networks contain billions of parameters and are trained on datasets measured in trillions of tokens.</dd>
+
+          <dt><strong>NLG (Natural Language Generation)</strong></dt>
+          <dd>The AI capability of producing human-readable text from structured data or machine representations. All LLMs perform NLG as their primary function. The quality of NLG depends on the quality of the input context — garbage context in, garbage prose out.</dd>
+
+          <dt><strong>NLP (Natural Language Processing)</strong></dt>
+          <dd>The field of AI focused on enabling computers to understand, interpret, and generate human language. Encompasses NLU (understanding), NLG (generation), sentiment analysis, entity extraction, and machine translation. The academic discipline from which LLMs emerged.</dd>
+
+          <dt><strong>NLU (Natural Language Understanding)</strong></dt>
+          <dd>The AI capability of comprehending human language — intent, entities, sentiment, relationships. LLMs demonstrate strong NLU within their training distribution but can fail on novel linguistic patterns. RAG augments NLU with retrieval to ground understanding in verified facts. <em>See Ch20: LLM Knowledge-Based Search.</em></dd>
+
+          <dt><strong>Novelty Detection</strong></dt>
+          <dd>The third level of HITL: detecting when an agent encounters an input outside its training distribution and escalating automatically. Implemented by monitoring embedding-space distance from the training distribution. Unknown equals escalate — the principle that makes agentic systems safe at scale. <em>See Ch38: Smart Process — AI Collab with HITL.</em></dd>
+
+          <dt><strong>NVIDIA</strong></dt>
+          <dd>The dominant manufacturer of GPUs for AI training and inference. $3 trillion market cap as the pick-and-shovel provider of the AI era. Products span from consumer (RTX 5090, 96GB VRAM) to data center (H100/H200, B200). Also provides CUDA software ecosystem, NIM inference microservices, and AgentIQ agent observability platform. <em>See Ch35: The Data Center Race.</em></dd>
+        </dl>
+
+        <h2>O</h2>
+        <dl>
+          <dt><strong>OCR (Optical Character Recognition)</strong></dt>
+          <dd>Technology that converts images of text (scanned documents, photos of signs, video frames containing text) into machine-readable text. Modern AI-powered OCR handles handwriting, complex layouts, and multi-language documents. A critical preprocessing step for unlocking dark data in document-heavy industries.</dd>
+
+          <dt><strong>Ontology</strong></dt>
+          <dd>The structured representation of knowledge — how concepts relate to each other, how meaning is encoded in a domain. A knowledge graph is the practical implementation of an ontology: entities, relationships, and properties structured for AI traversal and reasoning. The deepest layer of organizational intelligence. <em>See Ch26: Ontology — Consciousness & Meaning.</em></dd>
+
+          <dt><strong>Open Source</strong></dt>
+          <dd>Software with source code freely available for use, modification, and distribution. In AI, open-source models (Llama 4, Qwen3, Gemma 4, Stable Diffusion, Flux) compete with proprietary alternatives on capability while providing advantages in sovereignty, cost, and customizability. The open-weight model ecosystem is closing the gap with proprietary frontier models. <em>See Ch31: Run It Yourself — Local AI.</em></dd>
+
+          <dt><strong>Orchestration</strong></dt>
+          <dd>The coordination layer that manages multiple AI agents working together on complex tasks. Platforms include AutoGen (conversation-based), CrewAI (role-based), LangGraph (stateful workflows), and n8n (integration-heavy). Orchestration is the difference between a collection of AI tools and an intelligent system. <em>See Ch24: Agentic AI Orchestration.</em></dd>
+        </dl>
+
+        <h2>P</h2>
+        <dl>
+          <dt><strong>Personalization</strong></dt>
+          <dd>The practice of tailoring content, recommendations, and interactions to individual users based on their data and behavior. AI-scale personalization — generating unique content variants for each recipient — was physically impossible before video agents and SmartGen. Now it's the expected baseline. <em>See Ch33v: Video Agents — Story at Scale.</em></dd>
+
+          <dt><strong>Pipeline</strong></dt>
+          <dd>An automated sequence of processing steps that data or content flows through. In AI: data ingestion → preprocessing → embedding → indexing → retrieval → generation → validation. A well-designed pipeline enables consistent, auditable, improvable AI outputs. A poorly designed pipeline produces confident hallucinations at scale. <em>See Ch13b: The Embedding Problem.</em></dd>
+
+          <dt><strong>Predictive Analytics</strong></dt>
+          <dd>The use of data, statistical algorithms, and machine learning to identify the likelihood of future outcomes. AI-augmented predictive analytics moves from "what happened?" to "what will happen and what should we do about it?" — the decision-grade tier of business intelligence.</dd>
+
+          <dt><strong>Prompt Engineering</strong></dt>
+          <dd>The practice of designing and optimizing the text input (prompt) given to an LLM to achieve specific, reliable outputs. Involves template design, few-shot examples, chain-of-thought structuring, and systematic testing. Being absorbed into the broader Context Engineer role as AI systems become more complex. <em>See Ch40: New Job Titles + Personal Story.</em></dd>
+
+          <dt><strong>Prompt Injection</strong></dt>
+          <dd>A security vulnerability where malicious content embedded in data processed by an AI overrides the agent's system instructions. A documented attack pattern in production deployments — e.g., a customer support ticket containing hidden instructions to exfiltrate conversation history. Defense: input sanitization at the agent boundary and output filtering before delivery. <em>See Ch44: Smart Stack Issue Matrix.</em></dd>
+        </dl>
+
+        <h2>Q</h2>
+        <dl>
+          <dt><strong>QLoRA</strong></dt>
+          <dd>Quantized Low-Rank Adaptation — a variant of LoRA that applies 4-bit quantization to the base model before fine-tuning, further reducing memory requirements. Enables fine-tuning of large models on consumer hardware with minimal quality degradation. <em>See Ch28: Inference, Fine-Tuning & LoRAs.</em></dd>
+
+          <dt><strong>Quantization</strong></dt>
+          <dd>The technique of reducing the numerical precision of model weights (e.g., from 16-bit to 4-bit) to decrease memory usage and increase inference speed with minimal quality loss. Enables running 70B-parameter models on consumer GPUs that would otherwise require data center hardware. Critical for local AI deployment. <em>See Ch31: Run It Yourself — Local AI.</em></dd>
+
+          <dt><strong>Query Processing</strong></dt>
+          <dd>The full pipeline from a user's natural language question to a retrieved, verified answer: intent classification, query expansion/rewriting, embedding generation, vector similarity search, re-ranking, context assembly, and generation. Each stage introduces potential failure modes that compound. <em>See Ch20: LLM Knowledge-Based Search.</em></dd>
+        </dl>
+
+        <h2>R</h2>
+        <dl>
+          <dt><strong>RAG (Retrieval-Augmented Generation)</strong></dt>
+          <dd>An architecture pattern where an LLM reasons over context retrieved from a knowledge base rather than relying solely on its training data. The LLM provides reasoning and communication. The knowledge base provides verified facts. Together they produce what neither can alone. Not optional for production deployments where accuracy matters. <em>See Ch20: LLM Knowledge-Based Search.</em></dd>
+
+          <dt><strong>Real-time Processing</strong></dt>
+          <dd>Processing data as it arrives rather than in batches. In AI: streaming ingestion into continuously updating knowledge bases that agents query against current-state data. The distinction between batch and real-time processing determines whether AI outputs are decisions or historical summaries. <em>See Ch41: Temporal Truth.</em></dd>
+
+          <dt><strong>Reranking</strong></dt>
+          <dd>A second-stage scoring model applied after initial vector retrieval to improve result quality. Incorporates contextual signals (user session history, geospatial context, recency, authority) that the base embedding model does not capture. The difference between relevant results and the right result. <em>See Ch41: Temporal Truth.</em></dd>
+
+          <dt><strong>Retrieval Precision</strong></dt>
+          <dd>The percentage of retrieved context chunks that are actually relevant to the query. Every percentage point of retrieval precision translates directly to output quality — and output quality determines whether the system earns trust or sits unused after the pilot. <em>See Ch43: Smart Stack.</em></dd>
+
+          <dt><strong>ROI (Return on Investment)</strong></dt>
+          <dd>The financial return generated by an investment relative to its cost. AI ROI is consistently underreported because measurement frameworks haven't caught up: costs are easy to measure; quality improvements, revenue impact, and optionality value are harder — and typically worth more. <em>See Ch44: Smart Stack Issue Matrix.</em></dd>
+
+          <dt><strong>RPA (Robotic Process Automation)</strong></dt>
+          <dd>Software bots that automate repetitive, rule-based tasks in existing applications. Being absorbed into the broader agentic AI category as agents gain the ability to interact with UIs, APIs, and unstructured data — not just follow pre-scripted rules but reason about exceptions.</dd>
+        </dl>
+
+        <h2>S</h2>
+        <dl>
+          <dt><strong>SaaS (Software as a Service)</strong></dt>
+          <dd>Cloud-based software delivered on a subscription basis. The SaaS model funded the last 20 years of software business and created the 500-app chaos. The SaaSpocalypse — the systematic dismantling of monolithic SaaS by AI-native alternatives — is the central disruption of the 2026 business landscape. <em>See Ch6: Defensible Moats in the SaaSpocalypse.</em></dd>
+
+          <dt><strong>SaaSpocalypse</strong></dt>
+          <dd>The systematic dismantling of the monolithic SaaS application model by AI-native alternatives. When an AI agent builds a functional CRM in four hours, the $200/seat/month CRM has a fundamental problem. Generic content tools, simple automation platforms, and keyword SEO tools are being obliterated. CRM, ERP, and support platforms are being transformed. <em>See Ch6: Defensible Moats in the SaaSpocalypse.</em></dd>
+
+          <dt><strong>Semantic Authority</strong></dt>
+          <dd>The preferential treatment AI answer engines give to sources with deep, consistent domain expertise. Built through original research, authoritative data, first-person case studies, and expert analysis that AI systems can confidently cite. In the Google Zero era, semantic authority replaces keyword optimization as the foundation of content strategy. <em>See Ch14: Semantic Understanding — Beyond Keywords.</em></dd>
+
+          <dt><strong>Semantic Search</strong></dt>
+          <dd>Search that understands meaning rather than matching keywords. Powered by embeddings that encode semantic similarity as spatial proximity in high-dimensional vector space. A search for "comfortable work shoes for standing all day" matches products based on their visual and descriptive characteristics — not the presence of those exact words in metadata. <em>See Ch14: Semantic Understanding — Beyond Keywords.</em></dd>
+
+          <dt><strong>SLA (Service Level Agreement)</strong></dt>
+          <dd>A contractual commitment defining the expected level of service between a provider and customer. In AI deployments, SLAs must cover latency (p95 response time), accuracy (precision/recall thresholds), availability (uptime), and freshness (maximum data staleness). Traditional IT SLAs don't capture AI-specific failure modes. <em>See Ch44: Smart Stack Issue Matrix.</em></dd>
+
+          <dt><strong>Smart Stack</strong></dt>
+          <dd>The 5-layer architecture framework for building AI systems: Strategic Layer (why — measurable business outcomes), Data Layer (fuel — ingestion, cleaning, embedding), Model Layer (capability — tiered model architecture), Agent Layer (orchestration — governed autonomous decision-makers), Interface Layer (handoff — escalation surfaces, overrides, audit trails, feedback loops). Not a product you buy. An architecture you build. <em>See Ch43: Smart Stack — The 5-Layer Architecture Framework.</em></dd>
+
+          <dt><strong>Smart Video</strong></dt>
+          <dd>Context-aware AI-generated or AI-personalized video content. From a single recorded message, Smart Video systems (Tavus, HeyGen) generate thousands of personalized variants — each addressing a specific recipient by name with custom content based on their data. Engagement rates: 5–50x higher than generic broadcast video. <em>See Ch33v: Video Agents — Story at Scale.</em></dd>
+
+          <dt><strong>SmartGen</strong></dt>
+          <dd>The AI content creation system that transforms a single strategic seed (keyword cluster, business objective, market brief) into a complete deployable content package: long-form article, custom images, short-form video, and social media variations for every platform. One brief. One workflow. One hour. Content that previously required a team of three over two weeks. <em>See Ch33: SmartGen — AI Content Creation.</em></dd>
+
+          <dt><strong>Sovereign AI</strong></dt>
+          <dd>Running AI systems on your infrastructure, your models, your data, with your security boundaries. Not a luxury for regulated industries — the foundation of any AI strategy that compounds over time. The cost to run a fully sovereign AI stack has dropped from millions to thousands of dollars. <em>See Ch18: Privacy.</em></dd>
+
+          <dt><strong>Streaming Ingestion</strong></dt>
+          <dd>A data pipeline pattern where data enters the knowledge base continuously in real time rather than in scheduled batch cycles. Event-driven data → embedding → vector index in seconds, not hours. The infrastructure requirement for AI systems that deliver decisions rather than historical summaries. <em>See Ch41: Temporal Truth.</em></dd>
+        </dl>
+
+        <h2>T</h2>
+        <dl>
+          <dt><strong>Temporal Truth</strong></dt>
+          <dd>The principle that a correct answer delivered too late is a wrong answer. In 2026, more AI failures are temporal failures (stale data) than factual failures (wrong data). The AI retrieves accurate data that is six hours old instead of six seconds old — factually correct, operationally useless. <em>See Ch41: Temporal Truth.</em></dd>
+
+          <dt><strong>Tensor Truth</strong></dt>
+          <dd>The framework for verifiable AI outputs: every factual output must be verifiable against a ground truth source before it is acted upon. The AI generates. The validation layer verifies. The output that reaches a human or downstream system has passed a confirmation step the AI alone cannot provide. The framework that runs through every chapter of the book. <em>See Foreword, Ch22: Text Models Only Predict the Next Word.</em></dd>
+
+          <dt><strong>Time-Weighted Embeddings</strong></dt>
+          <dd>Embeddings that incorporate temporal metadata so retrieval can weight recency alongside semantic similarity. Fresh data surfaces higher in results than stale data of equal semantic relevance. The technical implementation of the Temporal Truth principle at the retrieval layer. <em>See Ch41: Temporal Truth.</em></dd>
+
+          <dt><strong>Token</strong></dt>
+          <dd>The fundamental unit of text processed by an LLM — typically a word, part of a word, or punctuation mark. Models charge per token (input + output). A 10,000-word document is approximately 13,000–15,000 tokens. Token budgets at the orchestration layer prevent runaway inference costs at production scale. <em>See Ch44: Smart Stack Issue Matrix.</em></dd>
+
+          <dt><strong>Token Budget</strong></dt>
+          <dd>A cost governance mechanism: context window limits and output length caps enforced per agent per task type at the orchestration layer. Prevents the failure mode where an agent performing well on a 100-query test generates a $40,000 monthly bill when deployed to 10,000 users. <em>See Ch44: Smart Stack Issue Matrix.</em></dd>
+
+          <dt><strong>Transformer</strong></dt>
+          <dd>The neural network architecture (introduced in 2017) that powers every modern LLM. Uses self-attention mechanisms to process all tokens in parallel while weighing their contextual relevance. The "T" in GPT (Generative Pre-trained Transformer). The most consequential architecture innovation in AI history.</dd>
+
+          <dt><strong>TTS (Text-to-Speech)</strong></dt>
+          <dd>AI systems that convert written text into spoken audio. Modern TTS (ElevenLabs) produces voices indistinguishable from human recordings in blind tests. The audio foundation for voice agents, audiobook generation, and personalized video narration. <em>See Ch34: Voice Agents — The End of the Chatbot Era.</em></dd>
+        </dl>
+
+        <h2>U</h2>
+        <dl>
+          <dt><strong>ULMFiT (Universal Language Model Fine-tuning)</strong></dt>
+          <dd>A 2018 technique that established the transfer learning paradigm for NLP: pre-train a language model on a large general corpus, then fine-tune on a specific task with much less data. The methodological predecessor to modern LLM fine-tuning and the "pre-train then adapt" approach that dominates AI today.</dd>
+
+          <dt><strong>Unstructured.io</strong></dt>
+          <dd>An open-source document preprocessing tool that partitions documents by layout understanding — titles, paragraphs, lists, tables, headers — while preserving structure. Cleans boilerplate, extracts metadata, chunks cleaned content into semantically coherent segments. Connects to 20+ vector databases. One of the two leading tools for unlocking dark data lakes. <em>See Ch13b: The Embedding Problem.</em></dd>
+
+          <dt><strong>UX (User Experience)</strong></dt>
+          <dd>The overall experience of a person using a product or system. In AI contexts, UX must prevent both over-trust (opaque systems where users assume correctness) and under-trust (overly transparent systems where uncertainty causes paralysis). The interface is the antidote for both — and the condition under which AI systems actually get used. <em>See Ch38: Smart Process — AI Collab with HITL.</em></dd>
+        </dl>
+
+        <h2>V</h2>
+        <dl>
+          <dt><strong>Vector Database</strong></dt>
+          <dd>A database optimized for storing and querying high-dimensional embedding vectors. Supports approximate nearest-neighbor (ANN) search for rapid semantic similarity retrieval across millions of documents. Leading platforms: Pinecone, Weaviate, Qdrant, Milvus, pgvector. <em>See Ch13b: The Embedding Problem.</em></dd>
+
+          <dt><strong>Vector Index</strong></dt>
+          <dd>The searchable index of embedding vectors within a vector database. Critically: vectors are model-specific — generated by a specific embedding model and not portable between models. Changing embedding models requires rebuilding the entire index from source documents. <em>See Ch13b: The Embedding Problem.</em></dd>
+
+          <dt><strong>Vibe Coding</strong></dt>
+          <dd>The practice of prompting an AI to build software through conversational iteration. Cursor, Claude Code, and GitHub Copilot can compress ideation-to-prototype cycles from days to hours. For production deployment, requires CVI discipline: Curate (human judgment selects the approach), Validate (rigorous testing in context), Integrate (deploy with full observability). <em>See Ch7: The Vibe Coding Myth.</em></dd>
+
+          <dt><strong>Video Agent</strong></dt>
+          <dd>An AI system that generates, personalizes, or interacts through video. Includes: video generation agents (LTX Studio, HoloCine), personalization agents (Tavus, HeyGen — one recording → thousands of personalized variants), and interactive video agents that respond to viewer behavior. The next frontier after voice agents. <em>See Ch33v: Video Agents — Story at Scale.</em></dd>
+
+          <dt><strong>VidiChannel</strong></dt>
+          <dd>The interactive video delivery company founded by James May in 1999 — ahead of its time, delivering personalized video before broadband was ubiquitous. The experience of being early in 1999 informs the resolve to be on time in 2026. The bridge from the Internet era to the AI era. <em>See Foreword, Ch1: The Computing Eras.</em></dd>
+
+          <dt><strong>VidiSmart</strong></dt>
+          <dd>The ecosystem of AI-powered platforms and tools built around the Smart Stack architecture: SmartGen (content creation), SmartChannel (visual AI pipeline), Smart Video (personalized video agents), VidiCity (33,000-city hyperlocal platform), and the agentic orchestration layer connecting them all. The practical implementation of the principles in this book.</dd>
+
+          <dt><strong>Visual AI</strong></dt>
+          <dd>AI systems that understand, generate, and manipulate visual content — images, video, spatial context. The dimension where the gap between AI and human capability is still largest and closing fastest. 90% of information transmitted to the human brain is visual; humans process visual information 60,000x faster than text. <em>See Ch15: Visual AI Has Just Begun.</em></dd>
+
+          <dt><strong>Visual Equity</strong></dt>
+          <dd>A recognizable aesthetic identity built through hundreds of consistent AI-generated images — composition, color palette, style, brand elements. Cannot be replicated overnight by a competitor starting from zero. One of the three defensible moats alongside proprietary data and semantic authority. <em>See Ch5: The Art of AI — Original Creation as a Defensible Moat.</em></dd>
+
+          <dt><strong>Visual Vector</strong></dt>
+          <dd>The architecture that embeds images and video frames into high-dimensional semantic space for rapid similarity search. Enables visual search that understands what's in an image — not just what keywords are attached to it. Production implementation executes embedding retrieval, semantic scoring, geospatial weighting, and re-ranking in under 200ms. <em>See Ch14: Semantic Understanding — Beyond Keywords.</em></dd>
+
+          <dt><strong>VLM (Vision-Language Model)</strong></dt>
+          <dd>An AI model that processes both visual and textual inputs, typically generating text outputs. Can describe images, answer questions about visual content, extract structured data from documents, and reason about spatial relationships. Distinct from image generators — VLMs understand visual content; diffusion models create it. <em>See Ch4: Ranking Early LLM Leaders.</em></dd>
+
+          <dt><strong>Voice Agent</strong></dt>
+          <dd>An AI system that conducts natural conversations via voice rather than text. Built on the stack: ElevenLabs Flash (sub-75ms voice synthesis), VAPI or Retell AI (orchestration), GPT-5.4 or Claude (reasoning), and CRM/calendar integration for action-taking. First-call resolution rates of 65–75% for Tier 1 support — comparable to well-trained human agents. <em>See Ch34: Voice Agents — The End of the Chatbot Era.</em></dd>
+        </dl>
+
+        <h2>W</h2>
+        <dl>
+          <dt><strong>Web Scraping</strong></dt>
+          <dd>The automated extraction of data from websites. In AI contexts, web scraping feeds competitive intelligence agents, market research pipelines, and content monitoring systems. Must operate within legal and ethical boundaries — robots.txt compliance, rate limiting, and terms of service respect.</dd>
+
+          <dt><strong>Workflow Automation</strong></dt>
+          <dd>The design and execution of automated sequences of tasks across systems. In the agentic era, workflow automation evolves from rigid, pre-defined sequences (if-this-then-that) to intelligent, context-aware processes where agents decide routing, handle exceptions, and escalate appropriately. <em>See Ch24: Agentic AI Orchestration.</em></dd>
+
+          <dt><strong>World Model</strong></dt>
+          <dd>An AI system's internal representation of how things work in physical, spatial, and causal reality. The frontier where the gap between AI and human capability is still largest — and closing fastest. AI has read every book ever written; it has not lived a single day. The gap between reading about the world and experiencing it is where human judgment remains irreplaceable. <em>See Ch12: World Models & the Human Experience.</em></dd>
+        </dl>
+
+        <h2>X</h2>
+        <dl>
+          <dt><strong>XAI (Explainable AI)</strong></dt>
+          <dd>The field of AI focused on making model decisions transparent and interpretable to humans. Critical for regulated industries (finance, healthcare, legal) where decisions must be auditable. In practice: citation of source documents, confidence scores, reasoning traces, and decision paths that a human reviewer can reconstruct without interviewing anyone. <em>See Ch38: Smart Process — AI Collab with HITL, Ch44: Smart Stack Issue Matrix.</em></dd>
+        </dl>
+
+        <h2>Y</h2>
+        <dl>
+          <dt><strong>YOLO (You Only Look Once)</strong></dt>
+          <dd>A real-time object detection algorithm that processes an entire image in a single forward pass through a neural network. Industry standard for real-time video analysis — security monitoring, manufacturing quality control, autonomous vehicle perception. Balances speed and accuracy for production deployment at the edge.</dd>
+        </dl>
+
+        <h2>Z</h2>
+        <dl>
+          <dt><strong>Zero-Human Transaction</strong></dt>
+          <dd>A commercial transaction handled entirely by AI agents without human involvement at any step. Achieved for 89% of routine purchase orders in production deployments. Architecture: intake → validation → Tensor Truth check → routing → execution → confirmation. The goal is not zero human involvement — it is human involvement precisely where judgment adds value and nowhere else. <em>See Ch21: Zero-Human Transactions.</em></dd>
+
+          <dt><strong>Zero-shot Learning</strong></dt>
+          <dd>The ability of an AI model to perform a task it was never explicitly trained on, using only a description or example at inference time. A model trained on general text corpora answering a specialized legal question it never saw during training is performing zero-shot reasoning. The capability that makes foundation models general-purpose rather than task-specific.</dd>
+
+          <dt><strong>Zettabyte</strong></dt>
+          <dd>A unit of digital information equal to one sextillion (10^21) bytes. Global data creation is projected to exceed 180 zettabytes annually by 2025. The vast majority — over 90% — is unstructured and invisible to traditional analytics systems. The scale at which the 90% Problem operates. <em>See Ch13: Reading Unstructured Data — The 90% Problem.</em></dd>
+        </dl>
+      `,
+      images: [],
+      readingTime: 15
     },
     ch40: {
       id: "ch40",
@@ -1096,6 +1578,7 @@ foreword: {
       <p><strong>Tempo Calibration:</strong> knowing when to move fast (deploy, measure, iterate) and when to move slow (define HITL boundaries, validate against ground truth, test edge cases). The wrong tempo in either direction is expensive.</p>
       <p><strong>Context Engineer.</strong> The role that sits between the model and the application. Responsibilities: context window design (what goes in the prompt, what stays out), prompt template library (reusable, versioned, tested), RAG pipeline tuning (chunking strategy, retrieval thresholds, reranking weights), embedding strategy (model selection, index design, migration planning), and retrieval quality monitoring (precision tracking, drift detection, source citation validation). Salary: $120k–$250k in 2026. This is not a prompt engineer — it is a systems engineer who understands that the prompt is the interface to a complex retrieval and reasoning pipeline.</p>
       <p><strong>Knowledge Architect.</strong> The role that designs the structure of organizational intelligence. Responsibilities: ontology design (how concepts relate), entity-relationship modeling (what exists and how it connects), knowledge graph schema (the blueprint the graph is built against), grounding rules (what counts as a fact, what counts as opinion), and the fact verification layer (the system that checks every AI claim against source material). The rarest profile in 2026: combines a CS degree with a philosophy/logic background or a law/regulatory background. Salary: $140k–$300k in 2026. This person is the bridge between the AI's capability and the organization's need for verifiable truth.</p>
+      <p><strong>Knowledge Engineer.</strong> The role that builds, maintains, and optimizes the knowledge infrastructure that powers AI systems. Responsibilities: knowledge graph construction (ingesting, cleaning, and structuring data from disparate sources), embedding pipeline management (selecting models, tuning chunking strategies, monitoring retrieval quality), knowledge base versioning (tracking changes, managing updates, ensuring consistency across environments), and knowledge quality assurance (validating facts, detecting contradictions, measuring coverage gaps). The Knowledge Engineer is the operational counterpart to the Knowledge Architect — where the Architect designs the blueprint, the Engineer builds and maintains the structure. Salary: $110k–$220k in 2026. This role is critical for organizations scaling AI beyond pilots, where the knowledge base must be continuously updated, validated, and optimized to maintain AI system accuracy and trustworthiness.</p>
       <p><em>The James May Bridge: From VidiChannel to Smart Stack.</em> When I built VidiChannel in 1999, I was a tool builder — solving a specific technical problem with a specific technical solution. The shift to Smart Stack is a shift from tool builder to platform architect. The tool builder asks: "How do I make this work?" The platform architect asks: "How do I make every tool work together, with the right boundaries, the right handoffs, the right level of human oversight, and the right data flowing between them?" That shift — from tool to platform, from solution to architecture — is the shift that defines the next decade of technology careers.</p>
       <blockquote>"The skills that will matter most in 2026 were never taught in a CS program. They are the skills of context, judgment, and architecture — and they are available to anyone willing to learn them."</blockquote>`,
       images: ["context_engineer_role.png", "knowledge_architect_role.png", "james_may_journey.png"],
@@ -1199,6 +1682,31 @@ foreword: {
       images: ["political_campaign_ai_1775089142138.png", "smart_video_personalization.png"],
       readingTime: 14
     },
+    ch46: {
+      id: "ch46",
+      title: "Ch46: The AI Side Hustle — From Garage to Millions",
+      part: 5,
+      order: 46,
+      content: `<div class="strategic-context">
+        <h3>Strategic Context</h3>
+        <p>The biggest misconception in AI is not technical — it is economic. Everyone is asking the wrong question. They are asking: "Will AI take my job?" The question that actually matters — the one that separates the people who will be wealthy from the people who will be watching — is: "How do I build a business that runs on AI agents while everyone else is still writing résumés?"</p>
+        <p>The demand for AI-related services in 2026 is not growing. It has already outpaced supply. Every small business that needs AI-generated content, automated customer workflows, voice agents, visual production, or intelligent data processing is searching for someone who can deliver — and finding almost no one who understands the full stack. The gap between what businesses need and what the market can supply is not a problem. It is an arbitrage window. And like every arbitrage window in history, it will close — not because the demand disappears, but because enough people figure it out that the margins compress. The question is not whether this opportunity exists. The question is whether you will be among the first to capture it.</p>
+      </div>
+      <p><strong>The 50x Employee.</strong> Here is what makes this moment fundamentally different from every previous side-hustle wave. In the gig economy era, you traded your time for money — driving Uber, writing copy on Fiverr, managing social media accounts. The ceiling was always your hours in the day. AI agents change the math entirely. A single person orchestrating a team of 50 AI agents — each one 50 times faster than a human specialist in its narrow domain — is not performing one job. They are performing fifty. The agent that writes SEO-optimized blog posts runs simultaneously with the one generating product photography, the one handling inbound customer qualification, the one producing localized video content, and the one monitoring competitor pricing. You are not working harder. You are supervising an intelligent workforce that never sleeps, never takes breaks, and never asks for a raise.</p>
+      <p><strong>The Arbitrage Window Is Open — Right Now.</strong> The AI services market in 2026 is characterized by three conditions that create an unprecedented opportunity for solo operators. First: <strong>demand exceeds supply by 10x</strong> — businesses are desperate for AI implementation but cannot find qualified providers. Second: <strong>the tools are accessible</strong> — open-source models, commercial APIs, and orchestration frameworks are available to anyone with a laptop and an internet connection. Third: <strong>the knowledge barrier is low</strong> — most "AI consultants" are selling generic advice, not implementation. The person who can actually build and deploy a working AI workflow — not just talk about it — commands premium pricing because the alternative for the client is months of searching for someone else who can deliver.</p>
+      <p><strong>The Solo Operator's Stack.</strong> The specific AI agent stacks generating $10,000 to $100,000 per month for solo operators in 2026:</p>
+      <p><strong>Stack 1: Content Production Pipeline.</strong> An orchestrated system of agents that handles the entire content lifecycle: research agent (finds trending topics, competitor gaps, audience questions), writing agent (drafts SEO-optimized articles, social posts, email sequences), visual agent (generates product photography, infographics, social graphics), video agent (produces short-form video content with AI voiceover and smart editing), and distribution agent (schedules, publishes, and tracks performance across platforms). One person directing this stack produces the output of a 10-person content team. Pricing: $5,000–$15,000/month per client. Capacity: 5–8 clients simultaneously. Revenue potential: $25,000–$120,000/month.</p>
+      <p><strong>Stack 2: Customer Experience Automation.</strong> Voice agents and chat agents that handle inbound customer inquiries, qualify leads, schedule appointments, and process routine transactions — deployed for small and medium businesses that cannot afford a full customer service team. The solo operator builds the system once, customizes it per client, and charges a setup fee plus monthly retainer. Pricing: $3,000–$8,000 setup + $1,500–$5,000/month per client. Capacity: 10–15 clients. Revenue potential: $15,000–$75,000/month.</p>
+      <p><strong>Stack 3: Data Intelligence Service.</strong> Agents that ingest, clean, analyze, and visualize business data for clients who have data but no analytics capability. The solo operator builds custom dashboards, automated reporting, and predictive models using the client's existing data. Pricing: $5,000–$20,000 per project + $2,000–$5,000/month for ongoing monitoring. Capacity: 3–5 clients. Revenue potential: $15,000–$100,000/month.</p>
+      <p><strong>Stack 4: Local Business AI Deployment.</strong> HyperLocal AI solutions (see Ch8) deployed for local businesses: AI-powered local SEO content, automated review response systems, personalized email marketing, and smart appointment booking. The solo operator becomes the "AI department" for 20–30 local businesses in their community. Pricing: $500–$2,000/month per client. Capacity: 20–30 clients. Revenue potential: $10,000–$60,000/month.</p>
+      <p><strong>The Orchestration Advantage.</strong> The key insight from Chapter 24 (Agentic AI Orchestration) applies directly here: the solo operator is not doing the work — they are orchestrating the agents that do the work. The Freshness-Aware Router determines which tasks need current information (competitor pricing, trending topics, real-time customer inquiries) and which can use cached knowledge. The HITL boundaries define where the operator needs to review agent output before delivery (high-stakes client communications, financial reports) versus where agents can operate autonomously (routine content generation, data processing). The solo operator's role is architectural oversight, not manual execution. This is the shift from "doing the work" to "supervising the workforce" — and it is the shift that makes seven-figure revenue possible for one person.</p>
+      <p><strong>Client Acquisition at AI Speed.</strong> The solo operator's client acquisition strategy leverages the same AI tools they sell. An outbound agent identifies potential clients (businesses in specific verticals showing signs of needing AI services — recent funding, job postings for marketing roles, outdated websites). A personalization agent generates tailored outreach that references the prospect's specific business challenges. A qualification agent handles inbound responses and schedules discovery calls. The solo operator shows up to the call with a working demo of what the AI system would do for that specific client — not a slide deck, not a proposal, but a live demonstration. The close rate on a live demo versus a proposal is 3x to 5x higher. The entire acquisition funnel runs on AI, and the operator's time is spent only on high-value activities: strategy, relationship building, and closing.</p>
+      <p><strong>The Pricing Psychology.</strong> The most common mistake solo AI operators make is underpricing. They think in terms of their time cost, not the value delivered. A content production pipeline that replaces a $120,000/year marketing coordinator and produces 5x the output is worth $10,000/month to the client — not $2,000. A customer experience automation that handles 80% of inbound inquiries without human intervention saves the client $60,000–$100,000/year in staffing costs. The pricing should reflect the value created, not the hours invested. The solo operator who prices at value — not at cost — is the one who reaches seven figures.</p>
+      <p><strong>The Window Will Close.</strong> Every arbitrage window in history has closed. The dot-com window closed. The mobile app window closed. The social media marketing window closed. The AI services window is open now because the technology is new, the demand is urgent, and the supply of qualified operators is thin. In 18–24 months, the market will be saturated with AI service providers, pricing will compress, and the margins that make solo seven-figure businesses possible will shrink. The operators who build their client base, reputation, and systems now — while the window is open — will have compounding advantages that late entrants cannot match. The question is not whether to start. The question is whether you start this week or next month. The difference is measured in clients, revenue, and market position.</p>
+      <blockquote>"The side hustle is dead. The AI side business — one person, fifty agents, unlimited scale — is just getting started. The window is open. It will not stay open forever."</blockquote>`,
+      images: [],
+      readingTime: 16
+    },
   },
   knowledgeNodes: [
     { id: "strategic_vision", label: "Strategic Vision", type: "concept", color: "#FF6B35" },
@@ -1243,13 +1751,17 @@ foreword: {
     { id: "era_economics", label: "Era Economics", type: "strategy", color: "#F59E0B" },
     { id: "escalation_protocol", label: "Escalation Protocol", type: "strategy", color: "#F59E0B" },
     { id: "freshness_spectrum", label: "Freshness Spectrum", type: "concept", color: "#FF6B35" },
-    { id: "glossary", label: "Glossary", type: "concept", color: "#8B5CF6" },
+    { id: "glossary", label: "Glossary", type: "reference", color: "#6B7280" },
     { id: "career_paths", label: "Career Paths", type: "strategy", color: "#F59E0B" },
     { id: "political_campaigns", label: "Political Campaigns", type: "strategy", color: "#EF4444" },
     { id: "voter_targeting", label: "Voter Micro-Targeting", type: "technology", color: "#3B82F6" },
     { id: "smart_video", label: "Context-Aware Smart Video", type: "technology", color: "#FF6B35" },
     { id: "rapid_response", label: "Rapid Response AI", type: "technology", color: "#F59E0B" },
     { id: "gotv_optimization", label: "GOTV Optimization", type: "strategy", color: "#10B981" },
+    { id: "ai_side_hustle", label: "AI Side Hustle", type: "strategy", color: "#F59E0B" },
+    { id: "solo_operator", label: "Solo Operator", type: "concept", color: "#FF6B35" },
+    { id: "agent_workforce", label: "Agent Workforce", type: "technology", color: "#3B82F6" },
+    { id: "arbitrage_window", label: "Arbitrage Window", type: "concept", color: "#EF4444" },
   ],
   edges: [
     { source: "foreword", target: "ch2", type: "sequence" },
@@ -1318,5 +1830,40 @@ foreword: {
     { source: "ch34", target: "ch45", type: "conceptual", label: "voice agents" },
     { source: "ch43", target: "ch45", type: "conceptual", label: "governance" },
     { source: "ch44", target: "ch45", type: "conceptual", label: "issue matrix" },
+    { source: "ch24", target: "ch46", type: "conceptual", label: "orchestration" },
+    { source: "ch33", target: "ch46", type: "conceptual", label: "content pipeline" },
+    { source: "ch8", target: "ch46", type: "conceptual", label: "local business" },
+    { source: "ch34", target: "ch46", type: "conceptual", label: "voice agents" },
+    { source: "ch43", target: "ch46", type: "conceptual", label: "smart stack" },
+
+    { source: "ch39", target: "foreword", type: "reference", label: "tensor truth" },
+    { source: "ch39", target: "ch4", type: "reference", label: "LLM leaders" },
+    { source: "ch39", target: "ch5", type: "reference", label: "visual equity" },
+    { source: "ch39", target: "ch6", type: "reference", label: "SaaSpocalypse" },
+    { source: "ch39", target: "ch12", type: "reference", label: "world models" },
+    { source: "ch39", target: "ch13", type: "reference", label: "90% problem" },
+    { source: "ch39", target: "ch13b", type: "reference", label: "embedding" },
+    { source: "ch39", target: "ch14", type: "reference", label: "semantic" },
+    { source: "ch39", target: "ch15", type: "reference", label: "visual AI" },
+    { source: "ch39", target: "ch16", type: "reference", label: "Google Zero" },
+    { source: "ch39", target: "ch20", type: "reference", label: "RAG" },
+    { source: "ch39", target: "ch21", type: "reference", label: "zero-human" },
+    { source: "ch39", target: "ch22", type: "reference", label: "text models" },
+    { source: "ch39", target: "ch24", type: "reference", label: "orchestration" },
+    { source: "ch39", target: "ch23b", type: "reference", label: "MCP" },
+    { source: "ch39", target: "ch26", type: "reference", label: "ontology" },
+    { source: "ch39", target: "ch28", type: "reference", label: "LoRA" },
+    { source: "ch39", target: "ch31", type: "reference", label: "local AI" },
+    { source: "ch39", target: "ch32b", type: "reference", label: "ComfyUI" },
+    { source: "ch39", target: "ch33", type: "reference", label: "SmartGen" },
+    { source: "ch39", target: "ch33v", type: "reference", label: "video agents" },
+    { source: "ch39", target: "ch34", type: "reference", label: "voice agents" },
+    { source: "ch39", target: "ch35", type: "reference", label: "GPU/NVIDIA" },
+    { source: "ch39", target: "ch36", type: "reference", label: "abstraction" },
+    { source: "ch39", target: "ch38", type: "reference", label: "HITL" },
+    { source: "ch39", target: "ch40", type: "reference", label: "job titles" },
+    { source: "ch39", target: "ch41", type: "reference", label: "temporal truth" },
+    { source: "ch39", target: "ch43", type: "reference", label: "Smart Stack" },
+    { source: "ch39", target: "ch44", type: "reference", label: "issue matrix" },
   ]
 };
