@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OpenRouter Model Pricing — May 2026</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #0f1117;
+      color: #e2e8f0;
+      min-height: 100vh;
+      padding: 32px 24px
+    }
+
+    h1 {
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 4px
+    }
+
+    .sub {
+      font-size: 12px;
+      color: #64748b;
+      margin-bottom: 28px
+    }
+
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 24px;
+      flex-wrap: wrap
+    }
+
+    .tab {
+      padding: 8px 18px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      border: 1px solid #2d3748;
+      background: #1a202c;
+      color: #94a3b8;
+      transition: all .15s
+    }
+
+    .tab.on {
+      background: #2563eb;
+      color: #fff;
+      border-color: #2563eb
+    }
+
+    .panel {
+      display: none
+    }
+
+    .panel.on {
+      display: block
+    }
+
+    /* PRICE CARDS */
+    .cards {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px
+    }
+
+    @media(max-width:700px) {
+      .cards {
+        grid-template-columns: 1fr
+      }
+    }
+
+    .card {
+      background: #1a202c;
+      border: 1px solid #2d3748;
+      border-radius: 12px;
+      padding: 18px;
+      border-left: 4px solid var(--ac)
+    }
+
+    .card-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 12px
+    }
+
+    .cname {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--ac)
+    }
+
+    .ctype {
+      font-size: 11px;
+      color: #64748b;
+      margin-top: 3px
+    }
+
+    .or-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      font-weight: 600;
+      color: #60a5fa;
+      text-decoration: none;
+      background: #1e3a5f;
+      border: 1px solid #2563eb44;
+      border-radius: 6px;
+      padding: 5px 10px;
+      white-space: nowrap;
+      transition: background .15s
+    }
+
+    .or-btn:hover {
+      background: #2563eb33
+    }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 6px;
+      margin-bottom: 10px
+    }
+
+    .m {
+      background: #0f1117;
+      border-radius: 8px;
+      padding: 9px 8px;
+      border: 1px solid #1e293b
+    }
+
+    .m.combo {
+      border-color: var(--ac);
+      background: #0f1117
+    }
+
+    .m.cache {
+      border-color: #10b98144
+    }
+
+    .mlb {
+      font-size: 9px;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      margin-bottom: 3px
+    }
+
+    .mv {
+      font-size: 12px;
+      font-weight: 700;
+      color: #e2e8f0
+    }
+
+    .m.combo .mv {
+      color: var(--ac)
+    }
+
+    .m.cache .mv {
+      color: #10b981
+    }
+
+    .msb {
+      font-size: 9px;
+      color: #475569;
+      margin-top: 2px
+    }
+
+    .badge {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 600;
+      padding: 3px 9px;
+      border-radius: 5px;
+      margin: 3px 3px 0 0
+    }
+
+    .b-green {
+      background: #052e16;
+      color: #34d399;
+      border: 1px solid #065f46
+    }
+
+    .b-blue {
+      background: #0c1e3e;
+      color: #60a5fa;
+      border: 1px solid #1d4ed866
+    }
+
+    .b-yellow {
+      background: #1c1000;
+      color: #fbbf24;
+      border: 1px solid #78350f66
+    }
+
+    .note {
+      font-size: 10px;
+      color: #475569;
+      margin-top: 8px;
+      line-height: 1.5
+    }
+
+    /* BENCHMARKS */
+    .bench-callout {
+      background: #0c1e3e;
+      border-left: 4px solid #2563eb;
+      border-radius: 0 8px 8px 0;
+      padding: 12px 16px;
+      font-size: 12px;
+      color: #94a3b8;
+      line-height: 1.7;
+      margin-bottom: 20px
+    }
+
+    .bench-callout strong {
+      color: #60a5fa
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #1a202c;
+      border-radius: 12px;
+      overflow: hidden
+    }
+
+    thead tr {
+      background: #0f1117
+    }
+
+    th {
+      padding: 10px 12px;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: .7px;
+      color: #64748b;
+      text-align: center;
+      border-bottom: 1px solid #2d3748
+    }
+
+    th:first-child {
+      text-align: left
+    }
+
+    td {
+      padding: 10px 12px;
+      font-size: 12px;
+      text-align: center;
+      border-bottom: 1px solid #1e293b;
+      color: #94a3b8
+    }
+
+    td:first-child {
+      text-align: left;
+      font-weight: 600;
+      color: #e2e8f0
+    }
+
+    td.win {
+      color: #e2e8f0;
+      font-weight: 700
+    }
+
+    tr:last-child td {
+      border-bottom: none
+    }
+
+    .edge-mimo {
+      color: #f97316;
+      font-weight: 700
+    }
+
+    .edge-ds {
+      color: #3b82f6;
+      font-weight: 700
+    }
+
+    .edge-tie {
+      color: #64748b
+    }
+
+    .src {
+      font-size: 10px;
+      color: #334155;
+      margin-top: 10px
+    }
+
+    /* DAILY COST */
+    .warn-box {
+      background: #1c0a00;
+      border-left: 4px solid #ef4444;
+      border-radius: 0 8px 8px 0;
+      padding: 12px 16px;
+      font-size: 12px;
+      color: #fca5a5;
+      line-height: 1.7;
+      margin-bottom: 20px
+    }
+
+    .warn-box strong {
+      color: #ef4444
+    }
+
+    .sliders {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      background: #1a202c;
+      border: 1px solid #2d3748;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px
+    }
+
+    @media(max-width:600px) {
+      .sliders {
+        grid-template-columns: 1fr
+      }
+    }
+
+    .slabel {
+      font-size: 12px;
+      color: #94a3b8;
+      margin-bottom: 3px;
+      font-weight: 600
+    }
+
+    .snote {
+      font-size: 10px;
+      color: #475569;
+      margin-bottom: 6px
+    }
+
+    .srow {
+      display: flex;
+      align-items: center;
+      gap: 10px
+    }
+
+    .srow input[type=range] {
+      flex: 1;
+      accent-color: #2563eb
+    }
+
+    .sval {
+      font-size: 13px;
+      font-weight: 700;
+      min-width: 48px;
+      text-align: right;
+      color: #e2e8f0
+    }
+
+    .cost-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px
+    }
+
+    @media(max-width:600px) {
+      .cost-grid {
+        grid-template-columns: 1fr 1fr
+      }
+    }
+
+    .cc {
+      background: #1a202c;
+      border: 1px solid #2d3748;
+      border-radius: 10px;
+      padding: 14px;
+      border-top: 3px solid var(--ac)
+    }
+
+    .ccname {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--ac);
+      margin-bottom: 2px
+    }
+
+    .ccv {
+      font-size: #64748b;
+      margin-bottom: 1px
+    }
+
+    .ccbig {
+      font-size: 20px;
+      font-weight: 700;
+      color: #e2e8f0;
+      margin: 3px 0 10px
+    }
+
+    .clb {
+      font-size: 9px;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: .5px
+    }
+
+    .monthly {
+      color: #60a5fa
+    }
+
+    footer {
+      margin-top: 40px;
+      font-size: 10px;
+      color: #334155;
+      text-align: center;
+      line-height: 1.8
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>OpenRouter Model Pricing</h1>
+  <p class="sub">Live prices · May 28, 2026 · All links go to official OpenRouter model pages</p>
+
+  <div class="tabs">
+    <div class="tab on" onclick="show('prices')">Prices + links</div>
+    <div class="tab" onclick="show('benchmarks')">Benchmarks</div>
+    <div class="tab" onclick="show('daily')">Daily cost estimator</div>
+  </div>
+
+  <!-- ═══ PRICES ═══════════════════════════════════════════════════════════ -->
+  <div id="prices" class="panel on">
+    <div class="cards">
+
+      <div class="card" style="--ac:#f97316">
+        <div class="card-head">
+          <div>
+            <div class="cname">MiMo V2.5 (Omni)</div>
+            <div class="ctype">Xiaomi · Native omni · text / image / video / audio</div>
+          </div>
+          <a class="or-btn" href="https://openrouter.ai/xiaomi/mimo-v2.5" target="_blank">↗ OpenRouter</a>
+        </div>
+        <div class="metrics">
+          <div class="m">
+            <div class="mlb">Input</div>
+            <div class="mv">$0.14</div>
+            <div class="msb">/1M tokens</div>
+          </div>
+          <div class="m">
+            <div class="mlb">Output</div>
+            <div class="mv">$0.28</div>
+            <div class="msb">/1M tokens</div>
+          </div>
+          <div class="m combo">
+            <div class="mlb">1M+1M total</div>
+            <div class="mv">$0.42</div>
+            <div class="msb">combined</div>
+          </div>
+          <div class="m cache">
+            <div class="mlb">Cache read</div>
+            <div class="mv">$0.035</div>
+            <div class="msb">/1M tokens</div>
+          </div>
+          <div class="m">
+            <div class="mlb">Round trip</div>
+            <div class="mv">$0.00197</div>
+            <div class="msb">avg/call</div>
+          </div>
+        </div>
+        <span class="badge b-green">✓ Accepts image, video &amp; audio natively</span>
+        <span class="badge b-blue">Cheapest omni model on this list</span>
+        <div class="note">1M token context · $0.42 combined is the only frontier omni model at this price tier · April
+          22 2026</div>
+      </div>
+
+      <div class="card" style="--ac:#ea580c">
+        <div class="card-head">
+          <div>
+            <div class="cname">MiMo V2.5-Pro</div>
+            <div class="ctype">Xiaomi · Agentic · long-horizon coding</div>
+          </div>
+          <a class="or-btn" href="https://openrouter.ai/xiaomi/mimo-v2.5-pro" target="_blank">↗ OpenRouter</a>
+        </div>
+        <div class="metrics">
+          <div class="m">
+            <div class="mlb">Input</div>
+            <div class="mv">$0.435</div>
+            <div class="msb">/1M tokens</div>
+          </div>
+          <div class="m">
+            <div class="mlb">Output</div>
+            <div class="mv">$0.87</div>
+            <div class="msb">/1M tokens</div>
+          </div>
+          <div class="m combo">
+            <div class="mlb">1M+1M total</div>
+            <div class="mv">$1.305</div>
+            <div class="msb">combined</div>
+          </div>
+          <div class="m cache">
+            <div class="mlb">Cache read</div>
+            <div class="mv">$0.043</div>
+            <div class="msb">/1M tokens</div>
+          </div>
+          <div class="m">
+            <div class="mlb">Round trip</div>
+            <div class="mv">$0.00368</div>
+            <div class="msb">avg/call</div>
+          </div>
+        </div>
+        <span class="badge b-green">SWE-bench Pro: 57.2% (edges DS V4 Pro)</span>
+        <span class="badge b-blue">40-60% fewer tokens/trajectory than Opus 4.6</span>
+        <div class="note">1.02T params · 42B active · same price as DS V4 Pro · 1M context · April 22 2026</div>
+      </div>
+
+      <div class="card" style="--ac:#3b82f6">
+        <div class="card-head">
+          <div>
+            <div class="cname">DeepSeek V4 Flash</div>
+            <div class="ctype">DeepSeek · Fast inference · MoE</div>
+          </div>
+          <a class="or-btn" href="https://openrouter.ai/deepseek/deepseek-v4-flash" target="_blank">↗ OpenRouter</a>
+        </div>
+        <div class="metrics">
+          <div class="m">
+            <div class="mlb">Input</div>
+            <div class="mv">$0.10</div>
+            <div class="msb">/1M tokens</div>
+          </div>
+          <div class="m">
+            <div class="mlb">Output</div>
+            <div class="mv">$0.20</div>
+            <div class="msb">/1M tokens</div>
+          </div>
+          <div class="m combo">
+            <div class="mlb">1M+1M total</div>
+            <div class="mv">$0.30</div>
+            <div class="msb">combined</div>
+          </div>
+          <div class="m cache">
+            <div class="mlb">Cache read</div>
+            <div class="mv">$0.003625</div>
+            <div class="msb">/1M tokens</div>
+          </div>
+          <div class="m">
+            <div class="mlb">Round trip</div>
+            <div class="mv">$0.000553</div>
+            <div class="msb">avg/call</div>
+          </div>
+        </div>
+        <span class="badge b-blue">Lowest combined price on this list: $0.30</span>
+        <span class="badge b-green">Best raw coding score in flash tier</span>
+        <div class="note">284B total params · 13B active per inference · 1M context · April 24 2026</div>
+      </div>
+
+      <div class="card" style="--ac:#1d4ed8">
+        <div class="card-head">
+          <div>
+            <div class="cname">DeepSeek V4 Pro</div>
+            <div class="ctype">DeepSeek · Reasoning · coding</div>
+          </div>
+          <a class="or-btn" href="https://openrouter.ai/deepseek/deepseek-v4-pro" target="_blank">↗ OpenRouter</a>
+        </div>
+        <div class="metrics">
+          <div class="m">
+            <div class="mlb">Input</div>
+            <div class="mv">$0.435</div>
+            <div class="msb">/1M tokens</div>
+          </div>
+          <div class="m">
+            <div class="mlb">Output</div>
+            <div class="mv">$0.87</div>
+            <div class="msb">/1M tokens</div>
+          </div>
+          <div class="m combo">
+            <div class="mlb">1M+1M total</div>
+            <div class="mv">$1.305</div>
+            <div class="msb">combined</div>
+          </div>
+          <div class="m cache">
+            <div class="mlb">Cache read</div>
+            <div class="mv">$0.003625</div>
+            <div class="msb">/1M tokens</div>
+          </div>
+          <div class="m">
+            <div class="mlb">Round trip</div>
+            <div class="mv">$0.000553</div>
+            <div class="msb">avg/call</div>
+          </div>
+        </div>
+        <span class="badge b-green">PERMANENT price — 75% cut confirmed May 23 2026</span>
+        <span class="badge b-yellow">Cache hit = 120× cheaper than cache miss</span>
+        <div class="note">1.6T total params · 49B active · 1M context · cache hit $0.003625/M is the most aggressive on
+          any frontier model</div>
+      </div>
+
+      <div class="card" style="--ac:#16a34a">
+        <div class="card-head">
+          <div>
+            <div class="cname">Gemini 2.5 Flash</div>
+            <div class="ctype">Google · Omni · reference</div>
+          </div>
+          <a class="or-btn" href="https://openrouter.ai/google/gemini-2.5-flash" target="_blank">↗ OpenRouter</a>
+        </div>
+        <div class="metrics">
+          <div class="m">
+            <div class="mlb">Input</div>
+            <div class="mv">$0.30</div>
+            <div class="msb">/1M tokens</div>
+          </div>
+          <div class="m">
+            <div class="mlb">Output</div>
+            <div class="mv">$2.50</div>
+            <div class="msb">/1M tokens</div>
+          </div>
+          <div class="m combo">
+            <div class="mlb">1M+1M total</div>
+            <div class="mv">$2.80</div>
+            <div class="msb">combined</div>
+          </div>
+          <div class="m cache">
+            <div class="mlb">Cache read</div>
+            <div class="mv">$0.075</div>
+            <div class="msb">/1M tokens</div>
+          </div>
+          <div class="m">
+            <div class="mlb">Round trip</div>
+            <div class="mv">$0.00791</div>
+            <div class="msb">avg/call</div>
+          </div>
+        </div>
+        <span class="badge b-blue">Reference model</span>
+        <div class="note">Implicit caching · 1024 token minimum · output is 8.3× MiMo V2.5 Omni at same input price
+        </div>
+      </div>
+
+      <div class="card" style="--ac:#15803d">
+        <div class="card-head">
+          <div>
+            <div class="cname">Gemini 2.5 Pro</div>
+            <div class="ctype">Google · Text / coding · reference</div>
+          </div>
+          <a class="or-btn" href="https://openrouter.ai/google/gemini-2.5-pro" target="_blank">↗ OpenRouter</a>
+        </div>
+        <div class="metrics">
+          <div class="m">
+            <div class="mlb">Input</div>
+            <div class="mv">$1.25</div>
+            <div class="msb">/1M tokens</div>
+          </div>
+          <div class="m">
+            <div class="mlb">Output</div>
+            <div class="mv">$10.00</div>
+            <div class="msb">/1M tokens</div>
+          </div>
+          <div class="m combo">
+            <div class="mlb">1M+1M total</div>
+            <div class="mv">$11.25</div>
+            <div class="msb">combined</div>
+          </div>
+          <div class="m cache">
+            <div class="mlb">Cache read</div>
+            <div class="mv">$0.3125</div>
+            <div class="msb">/1M tokens</div>
+          </div>
+          <div class="m">
+            <div class="mlb">Round trip</div>
+            <div class="mv">$0.03219</div>
+            <div class="msb">avg/call</div>
+          </div>
+        </div>
+        <span class="badge b-blue">Reference model</span>
+        <div class="note">Implicit caching · 4096 token minimum · 1M+1M combined is 8.6× more expensive than DS V4 Pro
+        </div>
+      </div>
+
+    </div><!-- /cards -->
+    <p style="font-size:10px;color:#334155;margin-top:16px">Round trip assumes: 55K cached prefix + 25K new input + 1.5K
+      output per call. All prices confirmed on OpenRouter May 28 2026.</p>
+  </div>
+
+  <!-- ═══ BENCHMARKS ═══════════════════════════════════════════════════════ -->
+  <div id="benchmarks" class="panel">
+    <div class="bench-callout">
+      <strong>MiMo V2.5-Pro vs DS V4 Pro — identical price ($1.305 combined), different strengths.</strong><br>
+      MiMo edges DS on agentic tasks and SWE-bench Pro. DS edges MiMo on SWE-bench Verified and knowledge. Both tie Kimi
+      K2.6 on the AA Intelligence Index at 54. MiMo uses 40–60% fewer tokens per trajectory at comparable quality —
+      meaning its real cost at scale is lower despite identical listed pricing.
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th style="text-align:left">Benchmark</th>
+          <th style="color:#ea580c">MiMo V2.5-Pro</th>
+          <th style="color:#3b82f6">DS V4 Pro</th>
+          <th style="color:#60a5fa">DS V4 Flash</th>
+          <th>Edge</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>SWE-bench Pro (%)</td>
+          <td class="win">57.2</td>
+          <td>55.4</td>
+          <td>45.1</td>
+          <td class="edge-mimo">MiMo Pro ↑</td>
+        </tr>
+        <tr>
+          <td>SWE-bench Verified (%)</td>
+          <td>78.9</td>
+          <td class="win">80.6</td>
+          <td>71.3</td>
+          <td class="edge-ds">DS Pro ↑</td>
+        </tr>
+        <tr>
+          <td>Terminal-Bench 2.0</td>
+          <td class="win">68.4</td>
+          <td>67.9</td>
+          <td class="win">72.2</td>
+          <td class="edge-tie">≈ tied (coding edge DS Flash)</td>
+        </tr>
+        <tr>
+          <td>Agentic / GDPVal</td>
+          <td class="win">68.4</td>
+          <td>62.1</td>
+          <td>55.4</td>
+          <td class="edge-mimo">MiMo Pro ↑</td>
+        </tr>
+        <tr>
+          <td>GPQA Diamond (%)</td>
+          <td class="win">72.1</td>
+          <td>68.4</td>
+          <td>58.2</td>
+          <td class="edge-mimo">MiMo Pro ↑</td>
+        </tr>
+        <tr>
+          <td>AA Intelligence Index</td>
+          <td class="win">54</td>
+          <td>52</td>
+          <td>41</td>
+          <td class="edge-mimo">MiMo Pro ↑</td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="src">Sources: Artificial Analysis Intelligence Index v4.0 · BenchLM.ai · Xiaomi official benchmarks (April
+      2026) · Firethering.com · Bold = highest score in row</p>
+  </div>
+
+  <!-- ═══ DAILY COST ════════════════════════════════════════════════════════ -->
+  <div id="daily" class="panel">
+    <div class="warn-box">
+      <strong>⚠ Critical: every API call retransmits your full context.</strong><br>
+      If your context has grown to 150K tokens, the model is billed for 150K tokens on every single call — not just the
+      new part. Nothing is stored between calls. The model is stateless. Caching only helps if your prompt is
+      architectured with stable content first.
+    </div>
+
+    <div class="sliders">
+      <div>
+        <div class="slabel">Avg context / call (K tokens)</div>
+        <div class="snote">Your pattern: 25K start → 150K peak → compress to 30K. Avg ≈ 80K</div>
+        <div class="srow"><input type="range" min="10" max="400" step="10" value="80" id="sCtx" oninput="calc()"><span
+            class="sval" id="vCtx">80K</span></div>
+      </div>
+      <div>
+        <div class="slabel">Output per call (K tokens)</div>
+        <div class="snote">Typical agent response 1–3K tokens</div>
+        <div class="srow"><input type="range" min="0.5" max="20" step="0.5" value="2" id="sOut" oninput="calc()"><span
+            class="sval" id="vOut">2K</span></div>
+      </div>
+      <div>
+        <div class="slabel">Cache hit rate (%)</div>
+        <div class="snote">0% = no caching · 65% = well-architected · 90% = expert</div>
+        <div class="srow"><input type="range" min="0" max="95" step="5" value="65" id="sCh" oninput="calc()"><span
+            class="sval" id="vCh">65%</span></div>
+      </div>
+      <div>
+        <div class="slabel">Total calls per day</div>
+        <div class="snote">200 calls/hr × 10 hrs = 2,000/day</div>
+        <div class="srow"><input type="range" min="100" max="10000" step="100" value="2000" id="sCalls"
+            oninput="calc()"><span class="sval" id="vCalls">2,000</span></div>
+      </div>
+    </div>
+
+    <div class="cost-grid" id="costGrid"></div>
+    <p style="font-size:10px;color:#334155;margin-top:12px">Formula: (context × miss% × input price) + (context × hit% ×
+      cache price) + (output × output price) × calls per day</p>
+  </div>
+
+  <footer>
+    All prices from OpenRouter · May 28, 2026 · DeepSeek V4 Pro permanent price confirmed May 23 2026<br>
+    Benchmarks: Artificial Analysis Intelligence Index v4.0 · BenchLM.ai · Xiaomi official · Firethering.com
+  </footer>
+
+  <script>
+    const MODELS = [
+      { name: "MiMo V2.5 (Omni)", ac: "#f97316", input: .14, output: .28, cache: .035 },
+      { name: "MiMo V2.5-Pro", ac: "#ea580c", input: .435, output: .87, cache: .043 },
+      { name: "DeepSeek V4 Flash", ac: "#3b82f6", input: .10, output: .20, cache: .003625 },
+      { name: "DeepSeek V4 Pro", ac: "#1d4ed8", input: .435, output: .87, cache: .003625 },
+      { name: "Gemini 2.5 Flash", ac: "#16a34a", input: .30, output: 2.50, cache: .075 },
+      { name: "Gemini 2.5 Pro", ac: "#15803d", input: 1.25, output: 10.0, cache: .3125 },
+    ];
+
+    function show(id) {
+      document.querySelectorAll('.panel').forEach(p => p.classList.remove('on'));
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('on'));
+      document.getElementById(id).classList.add('on');
+      event.target.classList.add('on');
+    }
+
+    function fmtBig(v) {
+      if (v < 0.001) return '$' + v.toFixed(5);
+      if (v < 1) return '$' + v.toFixed(3);
+      if (v < 1000) return '$' + v.toFixed(2);
+      return '$' + (v / 1000).toFixed(2) + 'k';
+    }
+
+    function calc() {
+      const ctx = +document.getElementById('sCtx').value;
+      const out = +document.getElementById('sOut').value;
+      const ch = +document.getElementById('sCh').value;
+      const calls = +document.getElementById('sCalls').value;
+      document.getElementById('vCtx').textContent = ctx + 'K';
+      document.getElementById('vOut').textContent = out + 'K';
+      document.getElementById('vCh').textContent = ch + '%';
+      document.getElementById('vCalls').textContent = calls.toLocaleString();
+      const miss = 1 - ch / 100, hit = ch / 100;
+      document.getElementById('costGrid').innerHTML = MODELS.map(m => {
+        const pc = (ctx / 1000) * miss * m.input + (ctx / 1000) * hit * m.cache + (out / 1000) * m.output;
+        const daily = pc * calls;
+        const monthly = daily * 30;
+        return `<div class="cc" style="--ac:${m.ac}">
+      <div class="ccname">${m.name}</div>
+      <div class="clb">Per call</div>
+      <div class="ccbig" style="font-size:14px">${fmtBig(pc)}</div>
+      <div class="clb">Daily (${calls.toLocaleString()} calls)</div>
+      <div class="ccbig">${fmtBig(daily)}</div>
+      <div class="clb">Monthly</div>
+      <div class="ccbig monthly">${fmtBig(monthly)}</div>
+    </div>`;
+      }).join('');
+    }
+
+    calc();
+  </script>
+</body>
+
+</html>
