@@ -166,7 +166,7 @@ const projectsData = [
     location: "Playa Grande, Dominican Republic",
     description: "Ultra-luxury resort featuring 25 casitas and an Aman Spa, overlooking the Atlantic Ocean.",
     category: "luxury",
-    image: "assets/images/project-15-amanera.png",
+    image: "assets/images/project-15-plantation.png",
     link: "https://80659.sgp.homes/"
   },
   {

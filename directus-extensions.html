@@ -1,400 +1,904 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Directus Extensions · VidiSmart</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Kumbh+Sans:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-<style>
-:root{--bg:#0c0e13;--surface:#131620;--surface2:#191d2c;--surface3:#1f2438;--border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.13);--text:#e8eaf2;--muted:#6b7280;--muted2:#3d4455;--d-purple:#6644ff;--d-purple2:#8b6cff;--radius:10px;--font:'DM Sans',system-ui,sans-serif;--mono:'DM Mono',monospace;--brand:'Kumbh Sans',system-ui,sans-serif;}
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:15px;min-height:100vh;}
-.t-interface{--tc:#00d8ff;--tb:rgba(0,216,255,0.08);}
-.t-module{--tc:#7c5cfc;--tb:rgba(124,92,252,0.1);}
-.t-panel{--tc:#f59e0b;--tb:rgba(245,158,11,0.08);}
-.t-operation{--tc:#10b981;--tb:rgba(16,185,129,0.08);}
-.t-hook{--tc:#f97316;--tb:rgba(249,115,22,0.08);}
-.t-endpoint{--tc:#06b6d4;--tb:rgba(6,182,212,0.08);}
-.t-layout{--tc:#8b5cf6;--tb:rgba(139,92,246,0.08);}
-.t-display{--tc:#ec4899;--tb:rgba(236,72,153,0.08);}
-.t-bundle{--tc:#6366f1;--tb:rgba(99,102,241,0.08);}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Directus Extensions · VidiSmart</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Kumbh+Sans:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0c0e13;
+      --surface: #131620;
+      --surface2: #191d2c;
+      --surface3: #1f2438;
+      --border: rgba(255, 255, 255, 0.07);
+      --border2: rgba(255, 255, 255, 0.13);
+      --text: #e8eaf2;
+      --muted: #6b7280;
+      --muted2: #3d4455;
+      --d-purple: #6644ff;
+      --d-purple2: #8b6cff;
+      --radius: 10px;
+      --font: 'DM Sans', system-ui, sans-serif;
+      --mono: 'DM Mono', monospace;
+      --brand: 'Kumbh Sans', system-ui, sans-serif;
+    }
 
-/* ── Extension Icons ── */
-.ext-icon{width:36px;height:36px;border-radius:8px;background:var(--surface2);display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid var(--border);}
-.ext-icon svg{width:18px;height:18px;opacity:0.5;}
-.ext-icon-wrap{display:flex;align-items:center;gap:10px;}
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-/* ── Top Nav ── */
-.topnav{background:#0a0c10;border-bottom:1px solid rgba(255,255,255,0.07);padding:0 40px;display:flex;align-items:center;height:50px;gap:0;}
-.topnav-brand{display:flex;align-items:center;gap:10px;text-decoration:none;margin-right:22px;}
-.brand-icon{width:28px;height:28px;border-radius:7px;background:linear-gradient(135deg,#4f7fff,#7c5cfc);display:flex;align-items:center;justify-content:center;font-family:var(--brand);font-size:11px;font-weight:700;color:white;letter-spacing:-0.03em;}
-.brand-text{font-family:var(--brand);font-size:18px;font-weight:700;color:rgba(255,255,255,0.88);letter-spacing:-0.03em;}
-.brand-text span{color:rgba(255,255,255,0.38);font-weight:400;}
-.nav-sep{width:1px;height:22px;background:rgba(255,255,255,0.09);margin:0 6px;}
-.navlink{display:flex;align-items:center;gap:6px;padding:0 14px;height:50px;font-size:12.5px;font-weight:500;color:rgba(255,255,255,0.38);text-decoration:none;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;white-space:nowrap;}
-.navlink:hover{color:rgba(255,255,255,0.7);}
-.navlink.active{color:var(--text);border-bottom-color:var(--d-purple);}
-.nl-dot{width:6px;height:6px;border-radius:50%;background:var(--d-purple);opacity:.6;}
-.navlink.active .nl-dot{opacity:1;}
-@media(max-width:640px){.topnav{padding:0 16px;}.brand-text span{display:none;}}
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      font-size: 15px;
+      min-height: 100vh;
+    }
 
-/* ── Header ── */
-.header{padding:36px 40px 24px;border-bottom:1px solid var(--border);background:linear-gradient(180deg,rgba(102,68,255,0.06) 0%,transparent 100%);}
-.header-inner{max-width:1400px;margin:0 auto;}
-.logo-row{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
-.logo-mark{width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,var(--d-purple),var(--d-purple2));display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:white;font-family:var(--mono);}
-.logo-name{font-size:13px;font-weight:500;color:var(--muted);}
-h1{font-size:27px;font-weight:300;letter-spacing:-0.04em;margin-bottom:4px;}
-h1 strong{font-weight:600;background:linear-gradient(90deg,var(--d-purple),var(--d-purple2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
-.subtitle{color:var(--muted);font-size:13px;margin-bottom:18px;}
-.meta-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:16px;}
-.meta-link{font-size:12px;color:var(--d-purple2);text-decoration:none;padding:4px 11px;border:1px solid rgba(102,68,255,0.25);border-radius:6px;background:rgba(102,68,255,0.06);transition:all .15s;white-space:nowrap;}
-.meta-link:hover{background:rgba(102,68,255,0.12);border-color:rgba(102,68,255,0.4);}
-.toolbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
-.search-wrap{position:relative;flex:1;max-width:380px;min-width:180px;}
-.si{position:absolute;left:12px;top:50%;transform:translateY(-50%);pointer-events:none;}
-.si svg{width:14px;height:14px;stroke:var(--muted);fill:none;stroke-width:1.8;}
-input[type=search]{width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;color:var(--text);font-family:var(--font);font-size:13px;padding:8px 12px 8px 34px;outline:none;transition:border-color .15s;}
-input[type=search]:focus{border-color:var(--d-purple);}
-input[type=search]::placeholder{color:var(--muted);}
-.toggle-btn{padding:6px 12px;border-radius:7px;border:1px solid var(--border2);background:transparent;color:var(--muted);font-family:var(--font);font-size:12px;cursor:pointer;transition:all .15s;white-space:nowrap;display:flex;align-items:center;gap:5px;}
-.toggle-btn.active{background:rgba(102,68,255,0.1);border-color:rgba(102,68,255,0.35);color:var(--d-purple2);}
-.toggle-btn .dot{width:6px;height:6px;border-radius:50%;background:currentColor;}
-.count-badge{font-size:11px;color:var(--muted);font-family:var(--mono);padding:5px 9px;background:var(--surface2);border:1px solid var(--border);border-radius:6px;}
+    .t-interface {
+      --tc: #00d8ff;
+      --tb: rgba(0, 216, 255, 0.08);
+    }
 
-/* ── Main ── */
-.main{max-width:1400px;margin:0 auto;padding:24px 40px 60px;}
-.type-pills{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:18px;}
-.tpill{padding:5px 13px;border-radius:16px;border:1px solid var(--border);background:var(--surface);color:var(--muted);font-size:12px;font-family:var(--font);cursor:pointer;transition:all .15s;white-space:nowrap;}
-.tpill:hover{border-color:var(--border2);color:var(--text);}
-.tpill.active{border-color:color-mix(in srgb,var(--tc,var(--d-purple)) 40%,transparent);color:var(--tc,var(--d-purple));background:var(--tb,rgba(102,68,255,0.08));}
+    .t-module {
+      --tc: #7c5cfc;
+      --tb: rgba(124, 92, 252, 0.1);
+    }
 
-/* ── Cards ── */
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:10px;}
-.ext-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 15px 13px;display:flex;flex-direction:column;gap:9px;transition:border-color .15s,background .15s;}
-.ext-card:hover{border-color:var(--border2);background:var(--surface2);}
-.ext-card.labs{border-color:rgba(102,68,255,0.18);}
-.ext-card.labs:hover{border-color:rgba(102,68,255,0.35);}
-.card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;}
-.ext-name{font-size:13.5px;font-weight:500;color:var(--text);line-height:1.3;flex:1;}
-.labs-badge{font-size:9px;padding:2px 6px;border-radius:4px;background:rgba(102,68,255,0.15);color:var(--d-purple2);border:1px solid rgba(102,68,255,0.25);white-space:nowrap;flex-shrink:0;font-weight:500;}
-.ext-desc{font-size:12px;color:var(--muted);line-height:1.5;flex:1;}
-.card-foot{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;}
-.type-badge{font-size:10px;padding:2px 8px;border-radius:4px;font-family:var(--mono);font-weight:500;background:var(--tb);color:var(--tc);border:1px solid color-mix(in srgb,var(--tc) 20%,transparent);}
-.dl-count{font-size:11px;color:var(--muted2);font-family:var(--mono);}
-.card-links{display:flex;gap:6px;flex-wrap:wrap;align-items:center;}
-.ext-link{font-size:11px;color:var(--d-purple2);text-decoration:none;padding:3px 9px;border:1px solid rgba(102,68,255,0.2);border-radius:5px;background:rgba(102,68,255,0.05);transition:all .12s;white-space:nowrap;}
-.ext-link:hover{background:rgba(102,68,255,0.12);border-color:rgba(102,68,255,0.4);}
-.ext-link.npm{color:#cc342d;border-color:rgba(204,52,45,0.2);background:rgba(204,52,45,0.04);}
-.ext-link.npm:hover{background:rgba(204,52,45,0.1);}
-.ext-link.gh{color:#68a063;border-color:rgba(104,160,99,0.2);background:rgba(104,160,99,0.04);}
-.ext-link.gh:hover{background:rgba(104,160,99,0.1);}
-.ext-link.site{color:#f59e0b;border-color:rgba(245,158,11,0.2);background:rgba(245,158,11,0.04);}
-.ext-link.site:hover{background:rgba(245,158,11,0.1);}
+    .t-panel {
+      --tc: #f59e0b;
+      --tb: rgba(245, 158, 11, 0.08);
+    }
 
-.empty{text-align:center;padding:60px 0;color:var(--muted);grid-column:1/-1;font-size:14px;}
-@media(max-width:640px){.header,.main{padding-left:16px;padding-right:16px;}.grid{grid-template-columns:1fr;}}
-</style>
+    .t-operation {
+      --tc: #10b981;
+      --tb: rgba(16, 185, 129, 0.08);
+    }
+
+    .t-hook {
+      --tc: #f97316;
+      --tb: rgba(249, 115, 22, 0.08);
+    }
+
+    .t-endpoint {
+      --tc: #06b6d4;
+      --tb: rgba(6, 182, 212, 0.08);
+    }
+
+    .t-layout {
+      --tc: #8b5cf6;
+      --tb: rgba(139, 92, 246, 0.08);
+    }
+
+    .t-display {
+      --tc: #ec4899;
+      --tb: rgba(236, 72, 153, 0.08);
+    }
+
+    .t-bundle {
+      --tc: #6366f1;
+      --tb: rgba(99, 102, 241, 0.08);
+    }
+
+    /* ── Extension Icons ── */
+    .ext-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      background: var(--surface2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      border: 1px solid var(--border);
+    }
+
+    .ext-icon svg {
+      width: 18px;
+      height: 18px;
+      opacity: 0.5;
+    }
+
+    .ext-icon-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* ── Top Nav ── */
+    .topnav {
+      background: #0a0c10;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+      padding: 0 40px;
+      display: flex;
+      align-items: center;
+      height: 50px;
+      gap: 0;
+    }
+
+    .topnav-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      margin-right: 22px;
+    }
+
+    .brand-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 7px;
+      background: linear-gradient(135deg, #4f7fff, #7c5cfc);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--brand);
+      font-size: 11px;
+      font-weight: 700;
+      color: white;
+      letter-spacing: -0.03em;
+    }
+
+    .brand-text {
+      font-family: var(--brand);
+      font-size: 18px;
+      font-weight: 700;
+      color: rgba(255, 255, 255, 0.88);
+      letter-spacing: -0.03em;
+    }
+
+    .brand-text span {
+      color: rgba(255, 255, 255, 0.38);
+      font-weight: 400;
+    }
+
+    .nav-sep {
+      width: 1px;
+      height: 22px;
+      background: rgba(255, 255, 255, 0.09);
+      margin: 0 6px;
+    }
+
+    .navlink {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 0 14px;
+      height: 50px;
+      font-size: 12.5px;
+      font-weight: 500;
+      color: rgba(255, 255, 255, 0.38);
+      text-decoration: none;
+      border-bottom: 2px solid transparent;
+      transition: color .15s, border-color .15s;
+      white-space: nowrap;
+    }
+
+    .navlink:hover {
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .navlink.active {
+      color: var(--text);
+      border-bottom-color: var(--d-purple);
+    }
+
+    .nl-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--d-purple);
+      opacity: .6;
+    }
+
+    .navlink.active .nl-dot {
+      opacity: 1;
+    }
+
+    @media(max-width:640px) {
+      .topnav {
+        padding: 0 16px;
+      }
+
+      .brand-text span {
+        display: none;
+      }
+    }
+
+    /* ── Header ── */
+    .header {
+      padding: 36px 40px 24px;
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(180deg, rgba(102, 68, 255, 0.06) 0%, transparent 100%);
+    }
+
+    .header-inner {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .logo-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .logo-mark {
+      width: 26px;
+      height: 26px;
+      border-radius: 7px;
+      background: linear-gradient(135deg, var(--d-purple), var(--d-purple2));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      color: white;
+      font-family: var(--mono);
+    }
+
+    .logo-name {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--muted);
+    }
+
+    h1 {
+      font-size: 27px;
+      font-weight: 300;
+      letter-spacing: -0.04em;
+      margin-bottom: 4px;
+    }
+
+    h1 strong {
+      font-weight: 600;
+      background: linear-gradient(90deg, var(--d-purple), var(--d-purple2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 18px;
+    }
+
+    .meta-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .meta-link {
+      font-size: 12px;
+      color: var(--d-purple2);
+      text-decoration: none;
+      padding: 4px 11px;
+      border: 1px solid rgba(102, 68, 255, 0.25);
+      border-radius: 6px;
+      background: rgba(102, 68, 255, 0.06);
+      transition: all .15s;
+      white-space: nowrap;
+    }
+
+    .meta-link:hover {
+      background: rgba(102, 68, 255, 0.12);
+      border-color: rgba(102, 68, 255, 0.4);
+    }
+
+    .toolbar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .search-wrap {
+      position: relative;
+      flex: 1;
+      max-width: 380px;
+      min-width: 180px;
+    }
+
+    .si {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      pointer-events: none;
+    }
+
+    .si svg {
+      width: 14px;
+      height: 14px;
+      stroke: var(--muted);
+      fill: none;
+      stroke-width: 1.8;
+    }
+
+    input[type=search] {
+      width: 100%;
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      border-radius: 8px;
+      color: var(--text);
+      font-family: var(--font);
+      font-size: 13px;
+      padding: 8px 12px 8px 34px;
+      outline: none;
+      transition: border-color .15s;
+    }
+
+    input[type=search]:focus {
+      border-color: var(--d-purple);
+    }
+
+    input[type=search]::placeholder {
+      color: var(--muted);
+    }
+
+    .toggle-btn {
+      padding: 6px 12px;
+      border-radius: 7px;
+      border: 1px solid var(--border2);
+      background: transparent;
+      color: var(--muted);
+      font-family: var(--font);
+      font-size: 12px;
+      cursor: pointer;
+      transition: all .15s;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .toggle-btn.active {
+      background: rgba(102, 68, 255, 0.1);
+      border-color: rgba(102, 68, 255, 0.35);
+      color: var(--d-purple2);
+    }
+
+    .toggle-btn .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    .count-badge {
+      font-size: 11px;
+      color: var(--muted);
+      font-family: var(--mono);
+      padding: 5px 9px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+    }
+
+    /* ── Main ── */
+    .main {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 24px 40px 60px;
+    }
+
+    .type-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 18px;
+    }
+
+    .tpill {
+      padding: 5px 13px;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--muted);
+      font-size: 12px;
+      font-family: var(--font);
+      cursor: pointer;
+      transition: all .15s;
+      white-space: nowrap;
+    }
+
+    .tpill:hover {
+      border-color: var(--border2);
+      color: var(--text);
+    }
+
+    .tpill.active {
+      border-color: color-mix(in srgb, var(--tc, var(--d-purple)) 40%, transparent);
+      color: var(--tc, var(--d-purple));
+      background: var(--tb, rgba(102, 68, 255, 0.08));
+    }
+
+    /* ── Cards ── */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+      gap: 10px;
+    }
+
+    .ext-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 15px 13px;
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+      transition: border-color .15s, background .15s;
+    }
+
+    .ext-card:hover {
+      border-color: var(--border2);
+      background: var(--surface2);
+    }
+
+    .ext-card.labs {
+      border-color: rgba(102, 68, 255, 0.18);
+    }
+
+    .ext-card.labs:hover {
+      border-color: rgba(102, 68, 255, 0.35);
+    }
+
+    .card-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .ext-name {
+      font-size: 13.5px;
+      font-weight: 500;
+      color: var(--text);
+      line-height: 1.3;
+      flex: 1;
+    }
+
+    .labs-badge {
+      font-size: 9px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      background: rgba(102, 68, 255, 0.15);
+      color: var(--d-purple2);
+      border: 1px solid rgba(102, 68, 255, 0.25);
+      white-space: nowrap;
+      flex-shrink: 0;
+      font-weight: 500;
+    }
+
+    .ext-desc {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.5;
+      flex: 1;
+    }
+
+    .card-foot {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .type-badge {
+      font-size: 10px;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-family: var(--mono);
+      font-weight: 500;
+      background: var(--tb);
+      color: var(--tc);
+      border: 1px solid color-mix(in srgb, var(--tc) 20%, transparent);
+    }
+
+    .dl-count {
+      font-size: 11px;
+      color: var(--muted2);
+      font-family: var(--mono);
+    }
+
+    .card-links {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .ext-link {
+      font-size: 11px;
+      color: var(--d-purple2);
+      text-decoration: none;
+      padding: 3px 9px;
+      border: 1px solid rgba(102, 68, 255, 0.2);
+      border-radius: 5px;
+      background: rgba(102, 68, 255, 0.05);
+      transition: all .12s;
+      white-space: nowrap;
+    }
+
+    .ext-link:hover {
+      background: rgba(102, 68, 255, 0.12);
+      border-color: rgba(102, 68, 255, 0.4);
+    }
+
+    .ext-link.npm {
+      color: #cc342d;
+      border-color: rgba(204, 52, 45, 0.2);
+      background: rgba(204, 52, 45, 0.04);
+    }
+
+    .ext-link.npm:hover {
+      background: rgba(204, 52, 45, 0.1);
+    }
+
+    .ext-link.gh {
+      color: #68a063;
+      border-color: rgba(104, 160, 99, 0.2);
+      background: rgba(104, 160, 99, 0.04);
+    }
+
+    .ext-link.gh:hover {
+      background: rgba(104, 160, 99, 0.1);
+    }
+
+    .ext-link.site {
+      color: #f59e0b;
+      border-color: rgba(245, 158, 11, 0.2);
+      background: rgba(245, 158, 11, 0.04);
+    }
+
+    .ext-link.site:hover {
+      background: rgba(245, 158, 11, 0.1);
+    }
+
+    .empty {
+      text-align: center;
+      padding: 60px 0;
+      color: var(--muted);
+      grid-column: 1/-1;
+      font-size: 14px;
+    }
+
+    @media(max-width:640px) {
+
+      .header,
+      .main {
+        padding-left: 16px;
+        padding-right: 16px;
+      }
+
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
 </head>
+
 <body>
 
-<nav class="topnav">
-  <a class="topnav-brand" href="open-apps.html">
-    <div class="brand-icon">VS</div>
-    <span class="brand-text">VidiSmart <span>Stack</span></span>
-  </a>
-  <div class="nav-sep"></div>
-  <a class="navlink" href="open-apps.html">
-    <span class="nl-dot" style="background:#4f7fff"></span>Open Apps
-  </a>
-  <a class="navlink active" href="directus-extensions.html">
-    <span class="nl-dot"></span>Directus Extensions
-  </a>
-  <a class="navlink" href="visualai-tools.html">
-    <span class="nl-dot" style="background:#00d8ff"></span>Visual AI Tools
-  </a>
-  <a class="navlink" href="topmodels.html">
-    <span class="nl-dot" style="background:#ffcc00"></span>Top Models
-  </a>
-</nav>
+  <nav class="topnav">
+    <a class="topnav-brand" href="open-apps.html">
+      <div class="brand-icon">VS</div>
+      <span class="brand-text">VidiSmart <span>Stack</span></span>
+    </a>
+    <div class="nav-sep"></div>
+    <a class="navlink" href="open-apps.html">
+      <span class="nl-dot" style="background:#4f7fff"></span>Open Apps
+    </a>
+    <a class="navlink active" href="directus-extensions.html">
+      <span class="nl-dot"></span>Directus Extensions
+    </a>
+    <a class="navlink" href="visualai-tools.html">
+      <span class="nl-dot" style="background:#00d8ff"></span>Visual AI Tools
+    </a>
+    <a class="navlink" href="topmodels.html">
+      <span class="nl-dot" style="background:#ffcc00"></span>Top Models
+    </a>
+  </nav>
 
-<div class="header">
-  <div class="header-inner">
-    <div class="logo-row">
-      <div class="logo-mark">D</div>
-      <span class="logo-name">Directus Extensions Directory</span>
-    </div>
-    <h1>Directus <strong>Extension Library</strong></h1>
-    <p class="subtitle">509+ extensions from the Directus Marketplace &amp; community — sorted by downloads · type filters · live links</p>
-    <div class="meta-row">
-      <a class="meta-link" href="https://directus.io/toolkit/marketplace" target="_blank" rel="noopener">↗ Official Marketplace</a>
-      <a class="meta-link" href="https://www.dirextensions.com/" target="_blank" rel="noopener">↗ dirextensions.com</a>
-      <a class="meta-link" href="https://github.com/directus-labs/extensions" target="_blank" rel="noopener">↗ Directus Labs GitHub</a>
-      <a class="meta-link" href="https://directus.io/docs/guides/extensions/marketplace" target="_blank" rel="noopener">↗ Install Docs</a>
-    </div>
-    <div class="toolbar">
-      <div class="search-wrap">
-        <span class="si"><svg viewBox="0 0 16 16"><circle cx="6.5" cy="6.5" r="4.5"/><line x1="10.5" y1="10.5" x2="14" y2="14"/></svg></span>
-        <input type="search" id="search" placeholder="Search extensions…" autocomplete="off">
+  <div class="header">
+    <div class="header-inner">
+      <div class="logo-row">
+        <div class="logo-mark">D</div>
+        <span class="logo-name">Directus Extensions Directory</span>
       </div>
-      <button class="toggle-btn" id="labsBtn"><span class="dot"></span>Directus Labs only</button>
-      <span class="count-badge" id="countBadge">— extensions</span>
+      <h1>Directus <strong>Extension Library</strong></h1>
+      <p class="subtitle">509+ extensions from the Directus Marketplace &amp; community — sorted by downloads · type
+        filters · live links</p>
+      <div class="meta-row">
+        <a class="meta-link" href="https://directus.io/toolkit/marketplace" target="_blank" rel="noopener">↗ Official
+          Marketplace</a>
+        <a class="meta-link" href="https://www.dirextensions.com/" target="_blank" rel="noopener">↗
+          dirextensions.com</a>
+        <a class="meta-link" href="https://github.com/directus-labs/extensions" target="_blank" rel="noopener">↗
+          Directus Labs GitHub</a>
+        <a class="meta-link" href="https://directus.io/docs/guides/extensions/marketplace" target="_blank"
+          rel="noopener">↗ Install Docs</a>
+      </div>
+      <div class="toolbar">
+        <div class="search-wrap">
+          <span class="si"><svg viewBox="0 0 16 16">
+              <circle cx="6.5" cy="6.5" r="4.5" />
+              <line x1="10.5" y1="10.5" x2="14" y2="14" />
+            </svg></span>
+          <input type="search" id="search" placeholder="Search extensions…" autocomplete="off">
+        </div>
+        <button class="toggle-btn" id="labsBtn"><span class="dot"></span>Directus Labs only</button>
+        <span class="count-badge" id="countBadge">— extensions</span>
+      </div>
     </div>
   </div>
-</div>
 
-<div class="main">
-  <div class="type-pills" id="typePills"></div>
-  <div class="grid" id="grid"></div>
-</div>
+  <div class="main">
+    <div class="type-pills" id="typePills"></div>
+    <div class="grid" id="grid"></div>
+  </div>
 
-<script>
-const EXTS=[
-  {name:'Directus Sync (CLI)',desc:'Version-control and sync Directus configs across environments via Git. Most downloaded tool overall.',type:'bundle',dl:'72.0K',labs:false,dir:'https://www.dirextensions.com/details/directus-sync/',npm:'https://www.npmjs.com/package/@tractr/directus-sync',gh:'https://github.com/tractr/directus-sync',site:'tractr.net'},
-  {name:'Schema Management Module',desc:'UI for sharing and applying schema snapshots between Directus instances.',type:'module',dl:'68.4K',labs:false,dir:'https://www.dirextensions.com/details/directus-extension-schema-management-module/',npm:'https://www.npmjs.com/package/directus-extension-schema-management-module',gh:'https://github.com/rezo-labs/directus-extension-schema-management-module',site:'github.com/rezo-labs'},
-  {name:'Tab Group Interface',desc:'Group fields into tabs as a cleaner alternative to the default accordion group.',type:'interface',dl:'62.6K',labs:false,dir:'https://www.dirextensions.com/details/directus-extension-group-tabs-interface/',npm:'https://www.npmjs.com/package/directus-extension-group-tabs-interface',gh:'https://github.com/hanneskuettner/directus-extension-group-tabs-interface',site:'github.com/hanneskuettner'},
-  {name:'Schema Sync for Directus',desc:'Sync schema, configuration, and selected data between environments. Excellent for CI/CD.',type:'bundle',dl:'40.0K',labs:false,dir:'https://www.dirextensions.com/details/schema-sync-for-directus/',npm:'https://www.npmjs.com/package/schema-sync-for-directus',gh:'https://github.com/bcc-code/schema-sync-for-directus',site:'bcc.no'},
-  {name:'WP Slug Interface',desc:'WordPress-style slug/permalink field that auto-generates from a title or any field.',type:'interface',dl:'52.6K',labs:false,dir:'https://www.dirextensions.com/details/directus-extension-wpslug-interface/',npm:'https://www.npmjs.com/package/directus-extension-wpslug-interface',gh:'https://github.com/dimitrov-adrian/directus-extension-wpslug-interface',site:'github.com/dimitrov-adrian'},
-  {name:'Super Header Interface',desc:'Rich page headers with titles, subtitles, help text, and action buttons inside item forms.',type:'interface',dl:'35.0K',labs:true,dir:'https://www.dirextensions.com/details/super-header-interface/',npm:'https://www.npmjs.com/package/super-header-interface',gh:'https://github.com/directus-labs/extensions/tree/main/packages/super-header-interface',site:'directus.io'},
-  {name:'SEO Plugin',desc:'Full SEO metadata — title, description, og:image, canonical, robots — per item. Essential for VidiCity.',type:'bundle',dl:'44.3K',labs:true,dir:'https://www.dirextensions.com/details/seo-plugin/',npm:'https://www.npmjs.com/package/seo-plugin',gh:'https://github.com/directus-labs/extensions/tree/main/packages/seo-plugin',site:'directus.io'},
-  {name:'Command Palette Module',desc:'⌘K command palette for fast navigation anywhere in the Directus Data Studio.',type:'module',dl:'43.2K',labs:true,dir:'https://www.dirextensions.com/details/command-palette-module/',npm:'https://www.npmjs.com/package/command-palette-module',gh:'https://github.com/directus-labs/extensions/tree/main/packages/command-palette-module',site:'directus.io'},
-  {name:'Inline Repeater Interface',desc:'Manage repeatable form fields inline with drag-to-reorder. Critical for block/page builders.',type:'interface',dl:'37.5K',labs:true,dir:'https://www.dirextensions.com/details/inline-repeater-interface/',npm:'https://www.npmjs.com/package/inline-repeater-interface',gh:'https://github.com/directus-labs/extensions/tree/main/packages/inline-repeater-interface',site:'directus.io'},
-  {name:'Experimental M2A Interface',desc:'Matrix button selector for the Many-to-Any interface — better block-type picking.',type:'interface',dl:'36.8K',labs:true,dir:'https://www.dirextensions.com/details/experimental-m2a-interface/',npm:'https://www.npmjs.com/package/experimental-m2a-interface',gh:'https://github.com/directus-labs/extensions/tree/main/packages/experimental-m2a-interface',site:'directus.io'},
-  {name:'Card Select Interfaces',desc:'Bundle of card-based selection interfaces — icon picker, color picker, radio cards.',type:'interface',dl:'36.1K',labs:true,dir:'https://www.dirextensions.com/details/card-select-interfaces/',npm:'https://www.npmjs.com/package/card-select-interfaces',gh:'https://github.com/directus-labs/extensions/tree/main/packages/card-select-interfaces',site:'directus.io'},
-  {name:'Flexible Editor',desc:'WYSIWYG with JSON output supporting embedded M2A relations. The go-to block editor for Directus.',type:'interface',dl:'31.6K',labs:false,dir:'https://www.dirextensions.com/details/directus-extension-flexible-editor/',npm:'https://www.npmjs.com/package/directus-extension-flexible-editor',gh:'https://github.com/formfcw/directus-extension-flexible-editor',site:'github.com/formfcw'},
-  {name:'Field Actions Interface',desc:'Add advanced link, copy, and action buttons to any field — interface + display combo.',type:'display',dl:'29.0K',labs:false,dir:'https://www.dirextensions.com/details/directus-extension-field-actions/',npm:'https://www.npmjs.com/package/directus-extension-field-actions',site:'github.com'},
-  {name:'Simple List Interface',desc:'Input a simple ordered list of text items with full keyboard support and drag-to-reorder.',type:'interface',dl:'32.7K',labs:true,dir:'https://www.dirextensions.com/details/simple-list-interface/',npm:'https://www.npmjs.com/package/simple-list-interface',site:'directus.io'},
-  {name:'Computed Interface',desc:'Auto-compute a field value from other fields using templates or arithmetic.',type:'interface',dl:'30.0K',labs:false,dir:'https://www.dirextensions.com/details/directus-extension-computed-interface/',npm:'https://www.npmjs.com/package/directus-extension-computed-interface',gh:'https://github.com/rezo-labs/directus-extension-computed-interface',site:'github.com/rezo-labs'},
-  {name:'Liquid Template Operation',desc:'Render Jinja2-style Liquid templates inside Flows — key for dynamic emails and content.',type:'operation',dl:'27.3K',labs:true,dir:'https://www.dirextensions.com/details/liquid-template-operation/',npm:'https://www.npmjs.com/package/liquid-template-operation',gh:'https://github.com/directus-labs/extensions/tree/main/packages/liquid-template-operation',site:'directus.io'},
-  {name:'AI Image Generation',desc:'Use DALL·E 3 to generate images from a prompt inside Directus Flows.',type:'operation',dl:'19.1K',labs:true,dir:'https://www.dirextensions.com/details/ai-image-generation-operation/',npm:'https://www.npmjs.com/package/ai-image-generation-operation',gh:'https://github.com/directus-labs/extensions/tree/main/packages/ai-image-generation-operation',site:'directus.io'},
-  {name:'AI Writer Operation',desc:'Generate text with OpenAI, Claude, Mistral, or Meta APIs directly inside Flows.',type:'operation',dl:'18.5K',labs:true,dir:'https://www.dirextensions.com/details/ai-writer-operation/',npm:'https://www.npmjs.com/package/ai-writer-operation',gh:'https://github.com/directus-labs/extensions/tree/main/packages/ai-writer-operation',site:'directus.io'},
-  {name:'API Trigger Interface',desc:'Trigger external API calls via a button directly inside the item editor UI.',type:'interface',dl:'18.3K',labs:false,dir:'https://www.dirextensions.com/details/directus-extension-api-trigger-interface/',npm:'https://www.npmjs.com/package/directus-extension-api-trigger-interface',site:'github.com'},
-  {name:'Switch Interface',desc:'Clean toggle switch for boolean fields — polished alternative to the default checkbox.',type:'interface',dl:'14.9K',labs:true,dir:'https://www.dirextensions.com/details/switch-interface/',npm:'https://www.npmjs.com/package/switch-interface',site:'directus.io'},
-  {name:'directus-extension-models',desc:'Generate .d.ts TypeScript type definitions directly from your Directus schema.',type:'bundle',dl:'14.5K',labs:false,dir:'https://www.dirextensions.com/details/directus-extension-models/',npm:'https://www.npmjs.com/package/directus-extension-models',site:'npmjs.com'},
-  {name:'Spreadsheet Layout',desc:'Edit items directly inline in a spreadsheet-style table — no modal required.',type:'layout',dl:'12.3K',labs:true,dir:'https://www.dirextensions.com/details/spreadsheet-layout/',npm:'https://www.npmjs.com/package/spreadsheet-layout',gh:'https://github.com/directus-labs/extensions/tree/main/packages/spreadsheet-layout',site:'directus.io'},
-  {name:'Migration Bundle',desc:'Migrate entire collections of data from one Directus instance to another with a UI.',type:'module',dl:'11.7K',labs:true,dir:'https://www.dirextensions.com/details/migration-bundle/',npm:'https://www.npmjs.com/package/migration-bundle',gh:'https://github.com/directus-labs/extensions/tree/main/packages/migration-bundle',site:'directus.io'},
-  {name:'Inline Form Interface',desc:'Render a full nested item form inline within a parent item — no modal popup.',type:'interface',dl:'10.8K',labs:false,dir:'https://www.dirextensions.com/details/directus-extension-inline-form-interface/',npm:'https://www.npmjs.com/package/directus-extension-inline-form-interface',gh:'https://github.com/hanneskuettner/directus-extension-inline-form-interface',site:'github.com/hanneskuettner'},
-  {name:'Generate Types',desc:'Generate TypeScript, Python type hints, and OpenAPI specs from your Directus schema.',type:'bundle',dl:'9.0K',labs:false,dir:'https://www.dirextensions.com/details/directus-extension-generate-types/',npm:'https://www.npmjs.com/package/directus-extension-generate-types',site:'npmjs.com'},
-  {name:'Web3 Login Endpoint',desc:'Auth endpoint for Web3 wallet login — sign in with an Ethereum address.',type:'endpoint',dl:'8.9K',labs:false,dir:'https://www.dirextensions.com/details/directus-extension-web3login-endpoint/',npm:'https://www.npmjs.com/package/directus-extension-web3login-endpoint',site:'github.com'},
-  {name:'Steps Interface',desc:'Clickable step-by-step checklist users can follow inside item forms.',type:'interface',dl:'9.4K',labs:true,dir:'https://www.dirextensions.com/details/extension-steps-component/',npm:'https://www.npmjs.com/package/extension-steps-component',site:'directus.io'},
-  {name:'Tour Group Interface',desc:'Interactive guided tours inside Directus forms — onboarding for editors.',type:'interface',dl:'8.7K',labs:true,dir:'https://www.dirextensions.com/details/tour-group-interface/',npm:'https://www.npmjs.com/package/tour-group-interface',site:'directus.io'},
-  {name:'Flow Manager Module',desc:'List, view, and manage all Directus Flows from one consolidated screen.',type:'module',dl:'7.7K',labs:false,dir:'https://www.dirextensions.com/details/directus-extension-flow-manager/',npm:'https://www.npmjs.com/package/directus-extension-flow-manager',site:'npmjs.com'},
-  {name:'Masked Interface',desc:'Input masking for fields — phone numbers, postal codes, custom patterns.',type:'interface',dl:'7.7K',labs:false,dir:'https://www.dirextensions.com/details/directus-extension-masked-interface/',npm:'https://www.npmjs.com/package/directus-extension-masked-interface',site:'github.com/dimitrov-adrian'},
-  {name:'Currency Interface',desc:'Dedicated currency field with formatting and locale support.',type:'interface',dl:'7.1K',labs:false,dir:'https://www.dirextensions.com/details/directus-extension-currency-interface/',npm:'https://www.npmjs.com/package/directus-extension-currency-interface',site:'github.com'},
-  {name:'Calculated Fields Bundle',desc:'Auto-calculate field values from other fields — sums, products, concatenations, slugs.',type:'bundle',dl:'7.0K',labs:true,dir:'https://www.dirextensions.com/details/calculated-fields-bundle/',npm:'https://www.npmjs.com/package/calculated-fields-bundle',gh:'https://github.com/directus-labs/extensions/tree/main/packages/calculated-fields-bundle',site:'directus.io'},
-  {name:'Group Modal Interface',desc:'Group fields in a modal dialog triggered by a button — clean for optional metadata.',type:'interface',dl:'6.8K',labs:false,dir:'https://www.dirextensions.com/details/directus-extension-group-modal-interface/',npm:'https://www.npmjs.com/package/directus-extension-group-modal-interface',site:'github.com/dimitrov-adrian'},
-  {name:'Collaborative Editing',desc:'Real-time sync and collaborative editing across collections — multiple editors simultaneously.',type:'panel',dl:'5.9K',labs:true,dir:'https://www.dirextensions.com/details/collaborative-editing/',npm:'https://www.npmjs.com/package/collaborative-editing',gh:'https://github.com/directus-labs/extensions/tree/main/packages/collaborative-editing',site:'directus.io'},
-  {name:'Tree View Table Layout',desc:'Nest items within a table using a tree view — for hierarchical/parent-child data.',type:'layout',dl:'5.9K',labs:true,dir:'https://www.dirextensions.com/details/tree-view-table-layout/',npm:'https://www.npmjs.com/package/tree-view-table-layout',gh:'https://github.com/directus-labs/extensions/tree/main/packages/tree-view-table-layout',site:'directus.io'},
-  {name:'Prometheus Exporter',desc:'Export Directus performance and API metrics in Prometheus format.',type:'endpoint',dl:'4.9K',labs:false,dir:'https://www.dirextensions.com/details/directus-extension-prometheus/',npm:'https://www.npmjs.com/package/directus-extension-prometheus',site:'npmjs.com'},
-  {name:'Panel Table View',desc:'Display a full data table inside the Insights dashboard — query any collection.',type:'panel',dl:'4.4K',labs:true,dir:'https://www.dirextensions.com/details/table-view-panel/',npm:'https://www.npmjs.com/package/table-view-panel',site:'directus.io'},
-  {name:'Classified Group Interface',desc:'Apply custom CSS classes to field groups for per-context styling.',type:'interface',dl:'4.4K',labs:false,dir:'https://www.dirextensions.com/details/directus-extension-classified-group/',npm:'https://www.npmjs.com/package/directus-extension-classified-group',gh:'https://github.com/formfcw/directus-extension-classified-group',site:'github.com/formfcw'},
-  {name:'Grid Layout',desc:'Display collection items in a configurable grid/card layout instead of table.',type:'layout',dl:'4.2K',labs:false,dir:'https://www.dirextensions.com/details/directus-extension-grid-layout/',npm:'https://www.npmjs.com/package/directus-extension-grid-layout',site:'npmjs.com'},
-  {name:'External JWT Plugin',desc:'Trust tokens issued by external OAuth2/OIDC providers — Keycloak integration path.',type:'endpoint',dl:'4.1K',labs:false,dir:'https://www.dirextensions.com/details/directus-extension-external-jwt/',npm:'https://www.npmjs.com/package/directus-extension-external-jwt',site:'npmjs.com'},
-  {name:'Editable Layout',desc:'Table layout with inline field editing — click any cell to edit in-place.',type:'layout',dl:'4.1K',labs:false,dir:'https://www.dirextensions.com/details/directus-extension-editable-layout/',npm:'https://www.npmjs.com/package/directus-extension-editable-layout',gh:'https://github.com/formfcw/directus-extension-editable-layout',site:'github.com/formfcw'},
-  {name:'M2M Tags Interface',desc:'Many-to-many tags interface — create and select tags from a related collection.',type:'interface',dl:'3.9K',labs:false,dir:'https://www.dirextensions.com/details/directus-extension-tags-m2m-interface/',npm:'https://www.npmjs.com/package/directus-extension-tags-m2m-interface',site:'github.com/dimitrov-adrian'},
-  {name:'Module Export',desc:'Import and export collection data between Directus servers via a module UI.',type:'module',dl:'3.9K',labs:false,dir:'https://www.dirextensions.com/details/directus-module-export/',npm:'https://www.npmjs.com/package/directus-module-export',site:'npmjs.com'},
-  {name:'Group Layout Sidebar',desc:'Field organization with a docked sidebar — persistent nav for long item forms.',type:'interface',dl:'3.9K',labs:false,dir:'https://www.dirextensions.com/details/directus-extension-group-layout-sidebar/',npm:'https://www.npmjs.com/package/directus-extension-group-layout-sidebar',site:'npmjs.com'},
-  {name:'Editor.js Interface',desc:'Block-styled rich media editor outputting clean JSON. Modular block approach.',type:'interface',dl:'3.9K',labs:false,dir:'https://www.dirextensions.com/details/directus-extension-editorjs/',npm:'https://www.npmjs.com/package/directus-extension-editorjs',site:'editorjs.io'},
-  {name:'Custom Search Config',desc:'Override internal Directus search with custom filters supporting deep relationships.',type:'endpoint',dl:'3.8K',labs:false,dir:'https://www.dirextensions.com/details/directus-extension-custom-search-okam/',npm:'https://www.npmjs.com/package/directus-extension-custom-search-okam',site:'npmjs.com'},
-  {name:'SQL Query Panel',desc:'Run dynamic SQL queries and display results as Insights dashboard panels.',type:'panel',dl:'3.5K',labs:false,dir:'https://www.dirextensions.com/details/directus-extension-sql-query-panel/',npm:'https://www.npmjs.com/package/directus-extension-sql-query-panel',site:'npmjs.com'},
-  {name:'Constrained Files Interface',desc:'File upload with folder, storage driver, and MIME type constraints.',type:'interface',dl:'3.4K',labs:false,dir:'https://www.dirextensions.com/details/directus-extension-constrained-file-interface/',npm:'https://www.npmjs.com/package/directus-extension-constrained-file-interface',site:'npmjs.com'},
-  {name:'Hash Operation',desc:'Hash input values with HMAC-SHA256 using an env-variable secret key inside Flows.',type:'operation',dl:'3.2K',labs:false,dir:'https://www.dirextensions.com/details/directus-extension-hash-operation/',npm:'https://www.npmjs.com/package/directus-extension-hash-operation',site:'npmjs.com'},
-  {name:'Filters Interface',desc:'Custom filter & rule builder interface — define filter conditions visually.',type:'interface',dl:'3.1K',labs:false,dir:'https://www.dirextensions.com/details/directus-extension-filters-interface/',npm:'https://www.npmjs.com/package/directus-extension-filters-interface',site:'npmjs.com'},
-  {name:'PDF Viewer Interface',desc:'View uploaded PDF files directly inside the item editor without leaving Directus.',type:'interface',dl:'3.1K',labs:true,dir:'https://www.dirextensions.com/details/pdf-viewer-interface/',npm:'https://www.npmjs.com/package/pdf-viewer-interface',site:'directus.io'},
-  {name:'AI Text Operation',desc:'Generate AI text content using configurable LLM providers inside Flows.',type:'operation',dl:'3.0K',labs:false,dir:'https://www.dirextensions.com/details/directus-extension-ai-text-operation/',npm:'https://www.npmjs.com/package/directus-extension-ai-text-operation',site:'npmjs.com'},
-  {name:'Auto-Sync Extension',desc:'Pull and push snapshot configurations between Directus environments automatically.',type:'hook',dl:'3.0K',labs:false,dir:'https://www.dirextensions.com/details/directus-extension-simple-autosync/',npm:'https://www.npmjs.com/package/directus-extension-simple-autosync',site:'npmjs.com'},
-  {name:'Firebase Bundle',desc:'Firebase integration — real-time sync, auth, and Firestore hooks for Directus.',type:'bundle',dl:'2.9K',labs:false,dir:'https://www.dirextensions.com/details/directus-extension-bundle-firebase/',npm:'https://www.npmjs.com/package/directus-extension-bundle-firebase',site:'firebase.google.com'},
-  {name:'Video Player Interface',desc:'Select & display videos from YouTube, Vimeo, or local Directus file storage.',type:'interface',dl:'2.9K',labs:true,dir:'https://www.dirextensions.com/details/video-player-interface/',npm:'https://www.npmjs.com/package/video-player-interface',gh:'https://github.com/directus-labs/extensions/tree/main/packages/video-player-interface',site:'directus.io'},
-  {name:'Tiptap Editor',desc:'Modern Tiptap rich text editor as a Directus interface — alternative to built-in WYSIWYG.',type:'interface',dl:'2.8K',labs:false,dir:'https://www.dirextensions.com/details/directus-extension-tiptap/',npm:'https://www.npmjs.com/package/directus-extension-tiptap',gh:'https://github.com/br41nslug/directus-extension-tiptap',site:'tiptap.dev'},
-  {name:'Resend Email Operation',desc:'Send transactional emails via the Resend API directly from Directus Flows.',type:'operation',dl:'2.7K',labs:true,dir:'https://www.dirextensions.com/details/resend-operation/',npm:'https://www.npmjs.com/package/resend-operation',gh:'https://github.com/directus-labs/extensions/tree/main/packages/resend-operation',site:'resend.com'},
-  {name:'TextToAnything',desc:'Generate PDFs, QR codes, barcodes, run OCR and virus scanning inside Flows.',type:'operation',dl:'2.7K',labs:false,dir:'https://www.dirextensions.com/details/directus-extension-texttoanything/',npm:'https://www.npmjs.com/package/directus-extension-texttoanything',site:'npmjs.com'},
-  {name:'Plausible Analytics Bundle',desc:'Embed Plausible Analytics dashboard directly inside your Directus project.',type:'module',dl:'2.7K',labs:true,dir:'https://www.dirextensions.com/details/plausible-analytics-bundle/',npm:'https://www.npmjs.com/package/plausible-analytics-bundle',gh:'https://github.com/directus-labs/extensions/tree/main/packages/plausible-analytics-bundle',site:'plausible.io'},
-  {name:'Sluggernaut',desc:'All-in-one route & slug management — generate, store, and manage URL paths.',type:'bundle',dl:'2.7K',labs:false,dir:'https://www.dirextensions.com/details/directus-bundle-sluggernaut/',npm:'https://www.npmjs.com/package/directus-bundle-sluggernaut',site:'npmjs.com'},
-  {name:'Tokenized Preview Endpoint',desc:'Add an active auth token to preview URLs — live preview for drafts in Next.js.',type:'endpoint',dl:'2.3K',labs:false,dir:'https://www.dirextensions.com/details/tokenized-preview-endpoint-for-directus/',npm:'https://www.npmjs.com/package/tokenized-preview-endpoint-for-directus',gh:'https://github.com/formfcw/tokenized-preview-endpoint-for-directus',site:'github.com/formfcw'},
-  {name:'Simple Currency Field',desc:'Efficient currency field with locale-aware formatting for financial data.',type:'interface',dl:'2.1K',labs:false,dir:'https://www.dirextensions.com/details/directus-extension-simple-currency-field/',npm:'https://www.npmjs.com/package/directus-extension-simple-currency-field',site:'npmjs.com'},
-  {name:'Directus Blurhasher',desc:'Auto-generate BlurHash strings for images on upload — progressive image loading.',type:'hook',dl:'2.0K',labs:false,dir:'https://www.dirextensions.com/details/directus-extension-blurhasher/',npm:'https://www.npmjs.com/package/directus-extension-blurhasher',site:'blurha.sh'},
-  {name:'Cache Flush Hook',desc:'Send requests to external systems to invalidate cache when Directus data changes.',type:'hook',dl:'2.2K',labs:false,dir:'https://www.dirextensions.com/details/directus-extension-cache-flush/',npm:'https://www.npmjs.com/package/directus-extension-cache-flush',site:'npmjs.com'},
-  {name:'PDF Image Hook',desc:'Auto-create a thumbnail/preview image for every PDF uploaded to Directus.',type:'hook',dl:'2.1K',labs:false,dir:'https://www.dirextensions.com/details/directus-extension-pdf-image/',npm:'https://www.npmjs.com/package/directus-extension-pdf-image',site:'npmjs.com'},
-  {name:'Expandable Blocks Interface',desc:'M2A interface with inline expandable editing for block-based content builders.',type:'interface',dl:'2.0K',labs:false,dir:'https://www.dirextensions.com/details/directus-extension-expandable-blocks/',npm:'https://www.npmjs.com/package/directus-extension-expandable-blocks',site:'npmjs.com'},
-];
+  <script>
+    const EXTS = [
+      { name: 'Directus Sync (CLI)', desc: 'Version-control and sync Directus configs across environments via Git. Most downloaded tool overall.', type: 'bundle', dl: '72.0K', labs: false, dir: 'https://www.dirextensions.com/details/directus-sync/', npm: 'https://www.npmjs.com/package/@tractr/directus-sync', gh: 'https://github.com/tractr/directus-sync', site: 'tractr.net' },
+      { name: 'Schema Management Module', desc: 'UI for sharing and applying schema snapshots between Directus instances.', type: 'module', dl: '68.4K', labs: false, dir: 'https://www.dirextensions.com/details/directus-extension-schema-management-module/', npm: 'https://www.npmjs.com/package/directus-extension-schema-management-module', gh: 'https://github.com/rezo-labs/directus-extension-schema-management-module', site: 'github.com/rezo-labs' },
+      { name: 'Tab Group Interface', desc: 'Group fields into tabs as a cleaner alternative to the default accordion group.', type: 'interface', dl: '62.6K', labs: false, dir: 'https://www.dirextensions.com/details/directus-extension-group-tabs-interface/', npm: 'https://www.npmjs.com/package/directus-extension-group-tabs-interface', gh: 'https://github.com/hanneskuettner/directus-extension-group-tabs-interface', site: 'github.com/hanneskuettner' },
+      { name: 'Schema Sync for Directus', desc: 'Sync schema, configuration, and selected data between environments. Excellent for CI/CD.', type: 'bundle', dl: '40.0K', labs: false, dir: 'https://www.dirextensions.com/details/schema-sync-for-directus/', npm: 'https://www.npmjs.com/package/schema-sync-for-directus', gh: 'https://github.com/bcc-code/schema-sync-for-directus', site: 'bcc.no' },
+      { name: 'WP Slug Interface', desc: 'WordPress-style slug/permalink field that auto-generates from a title or any field.', type: 'interface', dl: '52.6K', labs: false, dir: 'https://www.dirextensions.com/details/directus-extension-wpslug-interface/', npm: 'https://www.npmjs.com/package/directus-extension-wpslug-interface', gh: 'https://github.com/dimitrov-adrian/directus-extension-wpslug-interface', site: 'github.com/dimitrov-adrian' },
+      { name: 'Super Header Interface', desc: 'Rich page headers with titles, subtitles, help text, and action buttons inside item forms.', type: 'interface', dl: '35.0K', labs: true, dir: 'https://www.dirextensions.com/details/super-header-interface/', npm: 'https://www.npmjs.com/package/super-header-interface', gh: 'https://github.com/directus-labs/extensions/tree/main/packages/super-header-interface', site: 'directus.io' },
+      { name: 'SEO Plugin', desc: 'Full SEO metadata — title, description, og:image, canonical, robots — per item. Essential for VidiCity.', type: 'bundle', dl: '44.3K', labs: true, dir: 'https://www.dirextensions.com/details/seo-plugin/', npm: 'https://www.npmjs.com/package/seo-plugin', gh: 'https://github.com/directus-labs/extensions/tree/main/packages/seo-plugin', site: 'directus.io' },
+      { name: 'Command Palette Module', desc: '⌘K command palette for fast navigation anywhere in the Directus Data Studio.', type: 'module', dl: '43.2K', labs: true, dir: 'https://www.dirextensions.com/details/command-palette-module/', npm: 'https://www.npmjs.com/package/command-palette-module', gh: 'https://github.com/directus-labs/extensions/tree/main/packages/command-palette-module', site: 'directus.io' },
+      { name: 'Inline Repeater Interface', desc: 'Manage repeatable form fields inline with drag-to-reorder. Critical for block/page builders.', type: 'interface', dl: '37.5K', labs: true, dir: 'https://www.dirextensions.com/details/inline-repeater-interface/', npm: 'https://www.npmjs.com/package/inline-repeater-interface', gh: 'https://github.com/directus-labs/extensions/tree/main/packages/inline-repeater-interface', site: 'directus.io' },
+      { name: 'Experimental M2A Interface', desc: 'Matrix button selector for the Many-to-Any interface — better block-type picking.', type: 'interface', dl: '36.8K', labs: true, dir: 'https://www.dirextensions.com/details/experimental-m2a-interface/', npm: 'https://www.npmjs.com/package/experimental-m2a-interface', gh: 'https://github.com/directus-labs/extensions/tree/main/packages/experimental-m2a-interface', site: 'directus.io' },
+      { name: 'Card Select Interfaces', desc: 'Bundle of card-based selection interfaces — icon picker, color picker, radio cards.', type: 'interface', dl: '36.1K', labs: true, dir: 'https://www.dirextensions.com/details/card-select-interfaces/', npm: 'https://www.npmjs.com/package/card-select-interfaces', gh: 'https://github.com/directus-labs/extensions/tree/main/packages/card-select-interfaces', site: 'directus.io' },
+      { name: 'Flexible Editor', desc: 'WYSIWYG with JSON output supporting embedded M2A relations. The go-to block editor for Directus.', type: 'interface', dl: '31.6K', labs: false, dir: 'https://www.dirextensions.com/details/directus-extension-flexible-editor/', npm: 'https://www.npmjs.com/package/directus-extension-flexible-editor', gh: 'https://github.com/formfcw/directus-extension-flexible-editor', site: 'github.com/formfcw' },
+      { name: 'Field Actions Interface', desc: 'Add advanced link, copy, and action buttons to any field — interface + display combo.', type: 'display', dl: '29.0K', labs: false, dir: 'https://www.dirextensions.com/details/directus-extension-field-actions/', npm: 'https://www.npmjs.com/package/directus-extension-field-actions', site: 'github.com' },
+      { name: 'Simple List Interface', desc: 'Input a simple ordered list of text items with full keyboard support and drag-to-reorder.', type: 'interface', dl: '32.7K', labs: true, dir: 'https://www.dirextensions.com/details/simple-list-interface/', npm: 'https://www.npmjs.com/package/simple-list-interface', site: 'directus.io' },
+      { name: 'Computed Interface', desc: 'Auto-compute a field value from other fields using templates or arithmetic.', type: 'interface', dl: '30.0K', labs: false, dir: 'https://www.dirextensions.com/details/directus-extension-computed-interface/', npm: 'https://www.npmjs.com/package/directus-extension-computed-interface', gh: 'https://github.com/rezo-labs/directus-extension-computed-interface', site: 'github.com/rezo-labs' },
+      { name: 'Liquid Template Operation', desc: 'Render Jinja2-style Liquid templates inside Flows — key for dynamic emails and content.', type: 'operation', dl: '27.3K', labs: true, dir: 'https://www.dirextensions.com/details/liquid-template-operation/', npm: 'https://www.npmjs.com/package/liquid-template-operation', gh: 'https://github.com/directus-labs/extensions/tree/main/packages/liquid-template-operation', site: 'directus.io' },
+      { name: 'AI Image Generation', desc: 'Use DALL·E 3 to generate images from a prompt inside Directus Flows.', type: 'operation', dl: '19.1K', labs: true, dir: 'https://www.dirextensions.com/details/ai-image-generation-operation/', npm: 'https://www.npmjs.com/package/ai-image-generation-operation', gh: 'https://github.com/directus-labs/extensions/tree/main/packages/ai-image-generation-operation', site: 'directus.io' },
+      { name: 'AI Writer Operation', desc: 'Generate text with OpenAI, Claude, Mistral, or Meta APIs directly inside Flows.', type: 'operation', dl: '18.5K', labs: true, dir: 'https://www.dirextensions.com/details/ai-writer-operation/', npm: 'https://www.npmjs.com/package/ai-writer-operation', gh: 'https://github.com/directus-labs/extensions/tree/main/packages/ai-writer-operation', site: 'directus.io' },
+      { name: 'API Trigger Interface', desc: 'Trigger external API calls via a button directly inside the item editor UI.', type: 'interface', dl: '18.3K', labs: false, dir: 'https://www.dirextensions.com/details/directus-extension-api-trigger-interface/', npm: 'https://www.npmjs.com/package/directus-extension-api-trigger-interface', site: 'github.com' },
+      { name: 'Switch Interface', desc: 'Clean toggle switch for boolean fields — polished alternative to the default checkbox.', type: 'interface', dl: '14.9K', labs: true, dir: 'https://www.dirextensions.com/details/switch-interface/', npm: 'https://www.npmjs.com/package/switch-interface', site: 'directus.io' },
+      { name: 'directus-extension-models', desc: 'Generate .d.ts TypeScript type definitions directly from your Directus schema.', type: 'bundle', dl: '14.5K', labs: false, dir: 'https://www.dirextensions.com/details/directus-extension-models/', npm: 'https://www.npmjs.com/package/directus-extension-models', site: 'npmjs.com' },
+      { name: 'Spreadsheet Layout', desc: 'Edit items directly inline in a spreadsheet-style table — no modal required.', type: 'layout', dl: '12.3K', labs: true, dir: 'https://www.dirextensions.com/details/spreadsheet-layout/', npm: 'https://www.npmjs.com/package/spreadsheet-layout', gh: 'https://github.com/directus-labs/extensions/tree/main/packages/spreadsheet-layout', site: 'directus.io' },
+      { name: 'Migration Bundle', desc: 'Migrate entire collections of data from one Directus instance to another with a UI.', type: 'module', dl: '11.7K', labs: true, dir: 'https://www.dirextensions.com/details/migration-bundle/', npm: 'https://www.npmjs.com/package/migration-bundle', gh: 'https://github.com/directus-labs/extensions/tree/main/packages/migration-bundle', site: 'directus.io' },
+      { name: 'Inline Form Interface', desc: 'Render a full nested item form inline within a parent item — no modal popup.', type: 'interface', dl: '10.8K', labs: false, dir: 'https://www.dirextensions.com/details/directus-extension-inline-form-interface/', npm: 'https://www.npmjs.com/package/directus-extension-inline-form-interface', gh: 'https://github.com/hanneskuettner/directus-extension-inline-form-interface', site: 'github.com/hanneskuettner' },
+      { name: 'Generate Types', desc: 'Generate TypeScript, Python type hints, and OpenAPI specs from your Directus schema.', type: 'bundle', dl: '9.0K', labs: false, dir: 'https://www.dirextensions.com/details/directus-extension-generate-types/', npm: 'https://www.npmjs.com/package/directus-extension-generate-types', site: 'npmjs.com' },
+      { name: 'Web3 Login Endpoint', desc: 'Auth endpoint for Web3 wallet login — sign in with an Ethereum address.', type: 'endpoint', dl: '8.9K', labs: false, dir: 'https://www.dirextensions.com/details/directus-extension-web3login-endpoint/', npm: 'https://www.npmjs.com/package/directus-extension-web3login-endpoint', site: 'github.com' },
+      { name: 'Steps Interface', desc: 'Clickable step-by-step checklist users can follow inside item forms.', type: 'interface', dl: '9.4K', labs: true, dir: 'https://www.dirextensions.com/details/extension-steps-component/', npm: 'https://www.npmjs.com/package/extension-steps-component', site: 'directus.io' },
+      { name: 'Tour Group Interface', desc: 'Interactive guided tours inside Directus forms — onboarding for editors.', type: 'interface', dl: '8.7K', labs: true, dir: 'https://www.dirextensions.com/details/tour-group-interface/', npm: 'https://www.npmjs.com/package/tour-group-interface', site: 'directus.io' },
+      { name: 'Flow Manager Module', desc: 'List, view, and manage all Directus Flows from one consolidated screen.', type: 'module', dl: '7.7K', labs: false, dir: 'https://www.dirextensions.com/details/directus-extension-flow-manager/', npm: 'https://www.npmjs.com/package/directus-extension-flow-manager', site: 'npmjs.com' },
+      { name: 'Masked Interface', desc: 'Input masking for fields — phone numbers, postal codes, custom patterns.', type: 'interface', dl: '7.7K', labs: false, dir: 'https://www.dirextensions.com/details/directus-extension-masked-interface/', npm: 'https://www.npmjs.com/package/directus-extension-masked-interface', site: 'github.com/dimitrov-adrian' },
+      { name: 'Currency Interface', desc: 'Dedicated currency field with formatting and locale support.', type: 'interface', dl: '7.1K', labs: false, dir: 'https://www.dirextensions.com/details/directus-extension-currency-interface/', npm: 'https://www.npmjs.com/package/directus-extension-currency-interface', site: 'github.com' },
+      { name: 'Calculated Fields Bundle', desc: 'Auto-calculate field values from other fields — sums, products, concatenations, slugs.', type: 'bundle', dl: '7.0K', labs: true, dir: 'https://www.dirextensions.com/details/calculated-fields-bundle/', npm: 'https://www.npmjs.com/package/calculated-fields-bundle', gh: 'https://github.com/directus-labs/extensions/tree/main/packages/calculated-fields-bundle', site: 'directus.io' },
+      { name: 'Group Modal Interface', desc: 'Group fields in a modal dialog triggered by a button — clean for optional metadata.', type: 'interface', dl: '6.8K', labs: false, dir: 'https://www.dirextensions.com/details/directus-extension-group-modal-interface/', npm: 'https://www.npmjs.com/package/directus-extension-group-modal-interface', site: 'github.com/dimitrov-adrian' },
+      { name: 'Collaborative Editing', desc: 'Real-time sync and collaborative editing across collections — multiple editors simultaneously.', type: 'panel', dl: '5.9K', labs: true, dir: 'https://www.dirextensions.com/details/collaborative-editing/', npm: 'https://www.npmjs.com/package/collaborative-editing', gh: 'https://github.com/directus-labs/extensions/tree/main/packages/collaborative-editing', site: 'directus.io' },
+      { name: 'Tree View Table Layout', desc: 'Nest items within a table using a tree view — for hierarchical/parent-child data.', type: 'layout', dl: '5.9K', labs: true, dir: 'https://www.dirextensions.com/details/tree-view-table-layout/', npm: 'https://www.npmjs.com/package/tree-view-table-layout', gh: 'https://github.com/directus-labs/extensions/tree/main/packages/tree-view-table-layout', site: 'directus.io' },
+      { name: 'Prometheus Exporter', desc: 'Export Directus performance and API metrics in Prometheus format.', type: 'endpoint', dl: '4.9K', labs: false, dir: 'https://www.dirextensions.com/details/directus-extension-prometheus/', npm: 'https://www.npmjs.com/package/directus-extension-prometheus', site: 'npmjs.com' },
+      { name: 'Panel Table View', desc: 'Display a full data table inside the Insights dashboard — query any collection.', type: 'panel', dl: '4.4K', labs: true, dir: 'https://www.dirextensions.com/details/table-view-panel/', npm: 'https://www.npmjs.com/package/table-view-panel', site: 'directus.io' },
+      { name: 'Classified Group Interface', desc: 'Apply custom CSS classes to field groups for per-context styling.', type: 'interface', dl: '4.4K', labs: false, dir: 'https://www.dirextensions.com/details/directus-extension-classified-group/', npm: 'https://www.npmjs.com/package/directus-extension-classified-group', gh: 'https://github.com/formfcw/directus-extension-classified-group', site: 'github.com/formfcw' },
+      { name: 'Grid Layout', desc: 'Display collection items in a configurable grid/card layout instead of table.', type: 'layout', dl: '4.2K', labs: false, dir: 'https://www.dirextensions.com/details/directus-extension-grid-layout/', npm: 'https://www.npmjs.com/package/directus-extension-grid-layout', site: 'npmjs.com' },
+      { name: 'External JWT Plugin', desc: 'Trust tokens issued by external OAuth2/OIDC providers — Keycloak integration path.', type: 'endpoint', dl: '4.1K', labs: false, dir: 'https://www.dirextensions.com/details/directus-extension-external-jwt/', npm: 'https://www.npmjs.com/package/directus-extension-external-jwt', site: 'npmjs.com' },
+      { name: 'Editable Layout', desc: 'Table layout with inline field editing — click any cell to edit in-place.', type: 'layout', dl: '4.1K', labs: false, dir: 'https://www.dirextensions.com/details/directus-extension-editable-layout/', npm: 'https://www.npmjs.com/package/directus-extension-editable-layout', gh: 'https://github.com/formfcw/directus-extension-editable-layout', site: 'github.com/formfcw' },
+      { name: 'M2M Tags Interface', desc: 'Many-to-many tags interface — create and select tags from a related collection.', type: 'interface', dl: '3.9K', labs: false, dir: 'https://www.dirextensions.com/details/directus-extension-tags-m2m-interface/', npm: 'https://www.npmjs.com/package/directus-extension-tags-m2m-interface', site: 'github.com/dimitrov-adrian' },
+      { name: 'Module Export', desc: 'Import and export collection data between Directus servers via a module UI.', type: 'module', dl: '3.9K', labs: false, dir: 'https://www.dirextensions.com/details/directus-module-export/', npm: 'https://www.npmjs.com/package/directus-module-export', site: 'npmjs.com' },
+      { name: 'Group Layout Sidebar', desc: 'Field organization with a docked sidebar — persistent nav for long item forms.', type: 'interface', dl: '3.9K', labs: false, dir: 'https://www.dirextensions.com/details/directus-extension-group-layout-sidebar/', npm: 'https://www.npmjs.com/package/directus-extension-group-layout-sidebar', site: 'npmjs.com' },
+      { name: 'Editor.js Interface', desc: 'Block-styled rich media editor outputting clean JSON. Modular block approach.', type: 'interface', dl: '3.9K', labs: false, dir: 'https://www.dirextensions.com/details/directus-extension-editorjs/', npm: 'https://www.npmjs.com/package/directus-extension-editorjs', site: 'editorjs.io' },
+      { name: 'Custom Search Config', desc: 'Override internal Directus search with custom filters supporting deep relationships.', type: 'endpoint', dl: '3.8K', labs: false, dir: 'https://www.dirextensions.com/details/directus-extension-custom-search-okam/', npm: 'https://www.npmjs.com/package/directus-extension-custom-search-okam', site: 'npmjs.com' },
+      { name: 'SQL Query Panel', desc: 'Run dynamic SQL queries and display results as Insights dashboard panels.', type: 'panel', dl: '3.5K', labs: false, dir: 'https://www.dirextensions.com/details/directus-extension-sql-query-panel/', npm: 'https://www.npmjs.com/package/directus-extension-sql-query-panel', site: 'npmjs.com' },
+      { name: 'Constrained Files Interface', desc: 'File upload with folder, storage driver, and MIME type constraints.', type: 'interface', dl: '3.4K', labs: false, dir: 'https://www.dirextensions.com/details/directus-extension-constrained-file-interface/', npm: 'https://www.npmjs.com/package/directus-extension-constrained-file-interface', site: 'npmjs.com' },
+      { name: 'Hash Operation', desc: 'Hash input values with HMAC-SHA256 using an env-variable secret key inside Flows.', type: 'operation', dl: '3.2K', labs: false, dir: 'https://www.dirextensions.com/details/directus-extension-hash-operation/', npm: 'https://www.npmjs.com/package/directus-extension-hash-operation', site: 'npmjs.com' },
+      { name: 'Filters Interface', desc: 'Custom filter & rule builder interface — define filter conditions visually.', type: 'interface', dl: '3.1K', labs: false, dir: 'https://www.dirextensions.com/details/directus-extension-filters-interface/', npm: 'https://www.npmjs.com/package/directus-extension-filters-interface', site: 'npmjs.com' },
+      { name: 'PDF Viewer Interface', desc: 'View uploaded PDF files directly inside the item editor without leaving Directus.', type: 'interface', dl: '3.1K', labs: true, dir: 'https://www.dirextensions.com/details/pdf-viewer-interface/', npm: 'https://www.npmjs.com/package/pdf-viewer-interface', site: 'directus.io' },
+      { name: 'AI Text Operation', desc: 'Generate AI text content using configurable LLM providers inside Flows.', type: 'operation', dl: '3.0K', labs: false, dir: 'https://www.dirextensions.com/details/directus-extension-ai-text-operation/', npm: 'https://www.npmjs.com/package/directus-extension-ai-text-operation', site: 'npmjs.com' },
+      { name: 'Auto-Sync Extension', desc: 'Pull and push snapshot configurations between Directus environments automatically.', type: 'hook', dl: '3.0K', labs: false, dir: 'https://www.dirextensions.com/details/directus-extension-simple-autosync/', npm: 'https://www.npmjs.com/package/directus-extension-simple-autosync', site: 'npmjs.com' },
+      { name: 'Firebase Bundle', desc: 'Firebase integration — real-time sync, auth, and Firestore hooks for Directus.', type: 'bundle', dl: '2.9K', labs: false, dir: 'https://www.dirextensions.com/details/directus-extension-bundle-firebase/', npm: 'https://www.npmjs.com/package/directus-extension-bundle-firebase', site: 'firebase.google.com' },
+      { name: 'Video Player Interface', desc: 'Select & display videos from YouTube, Vimeo, or local Directus file storage.', type: 'interface', dl: '2.9K', labs: true, dir: 'https://www.dirextensions.com/details/video-player-interface/', npm: 'https://www.npmjs.com/package/video-player-interface', gh: 'https://github.com/directus-labs/extensions/tree/main/packages/video-player-interface', site: 'directus.io' },
+      { name: 'Tiptap Editor', desc: 'Modern Tiptap rich text editor as a Directus interface — alternative to built-in WYSIWYG.', type: 'interface', dl: '2.8K', labs: false, dir: 'https://www.dirextensions.com/details/directus-extension-tiptap/', npm: 'https://www.npmjs.com/package/directus-extension-tiptap', gh: 'https://github.com/br41nslug/directus-extension-tiptap', site: 'tiptap.dev' },
+      { name: 'Resend Email Operation', desc: 'Send transactional emails via the Resend API directly from Directus Flows.', type: 'operation', dl: '2.7K', labs: true, dir: 'https://www.dirextensions.com/details/resend-operation/', npm: 'https://www.npmjs.com/package/resend-operation', gh: 'https://github.com/directus-labs/extensions/tree/main/packages/resend-operation', site: 'resend.com' },
+      { name: 'TextToAnything', desc: 'Generate PDFs, QR codes, barcodes, run OCR and virus scanning inside Flows.', type: 'operation', dl: '2.7K', labs: false, dir: 'https://www.dirextensions.com/details/directus-extension-texttoanything/', npm: 'https://www.npmjs.com/package/directus-extension-texttoanything', site: 'npmjs.com' },
+      { name: 'Plausible Analytics Bundle', desc: 'Embed Plausible Analytics dashboard directly inside your Directus project.', type: 'module', dl: '2.7K', labs: true, dir: 'https://www.dirextensions.com/details/plausible-analytics-bundle/', npm: 'https://www.npmjs.com/package/plausible-analytics-bundle', gh: 'https://github.com/directus-labs/extensions/tree/main/packages/plausible-analytics-bundle', site: 'plausible.io' },
+      { name: 'Sluggernaut', desc: 'All-in-one route & slug management — generate, store, and manage URL paths.', type: 'bundle', dl: '2.7K', labs: false, dir: 'https://www.dirextensions.com/details/directus-bundle-sluggernaut/', npm: 'https://www.npmjs.com/package/directus-bundle-sluggernaut', site: 'npmjs.com' },
+      { name: 'Tokenized Preview Endpoint', desc: 'Add an active auth token to preview URLs — live preview for drafts in Next.js.', type: 'endpoint', dl: '2.3K', labs: false, dir: 'https://www.dirextensions.com/details/tokenized-preview-endpoint-for-directus/', npm: 'https://www.npmjs.com/package/tokenized-preview-endpoint-for-directus', gh: 'https://github.com/formfcw/tokenized-preview-endpoint-for-directus', site: 'github.com/formfcw' },
+      { name: 'Simple Currency Field', desc: 'Efficient currency field with locale-aware formatting for financial data.', type: 'interface', dl: '2.1K', labs: false, dir: 'https://www.dirextensions.com/details/directus-extension-simple-currency-field/', npm: 'https://www.npmjs.com/package/directus-extension-simple-currency-field', site: 'npmjs.com' },
+      { name: 'Directus Blurhasher', desc: 'Auto-generate BlurHash strings for images on upload — progressive image loading.', type: 'hook', dl: '2.0K', labs: false, dir: 'https://www.dirextensions.com/details/directus-extension-blurhasher/', npm: 'https://www.npmjs.com/package/directus-extension-blurhasher', site: 'blurha.sh' },
+      { name: 'Cache Flush Hook', desc: 'Send requests to external systems to invalidate cache when Directus data changes.', type: 'hook', dl: '2.2K', labs: false, dir: 'https://www.dirextensions.com/details/directus-extension-cache-flush/', npm: 'https://www.npmjs.com/package/directus-extension-cache-flush', site: 'npmjs.com' },
+      { name: 'PDF Image Hook', desc: 'Auto-create a thumbnail/preview image for every PDF uploaded to Directus.', type: 'hook', dl: '2.1K', labs: false, dir: 'https://www.dirextensions.com/details/directus-extension-pdf-image/', npm: 'https://www.npmjs.com/package/directus-extension-pdf-image', site: 'npmjs.com' },
+      { name: 'Expandable Blocks Interface', desc: 'M2A interface with inline expandable editing for block-based content builders.', type: 'interface', dl: '2.0K', labs: false, dir: 'https://www.dirextensions.com/details/directus-extension-expandable-blocks/', npm: 'https://www.npmjs.com/package/directus-extension-expandable-blocks', site: 'npmjs.com' },
+    ];
 
-const TYPES={all:'All',interface:'Interface',module:'Module',operation:'Operation',hook:'Hook',endpoint:'Endpoint',layout:'Layout',panel:'Panel',display:'Display',bundle:'Bundle'};
-const TYPE_CLS={interface:'t-interface',module:'t-module',operation:'t-operation',hook:'t-hook',endpoint:'t-endpoint',layout:'t-layout',panel:'t-panel',display:'t-display',bundle:'t-bundle'};
-let curType='all',labsOnly=false,sq='';
+    const TYPES = { all: 'All', interface: 'Interface', module: 'Module', operation: 'Operation', hook: 'Hook', endpoint: 'Endpoint', layout: 'Layout', panel: 'Panel', display: 'Display', bundle: 'Bundle' };
+    const TYPE_CLS = { interface: 't-interface', module: 't-module', operation: 't-operation', hook: 't-hook', endpoint: 't-endpoint', layout: 't-layout', panel: 't-panel', display: 't-display', bundle: 't-bundle' };
+    let curType = 'all', labsOnly = false, sq = '';
 
-// Icon SVG paths by category/keyword
-const ICONS={
-  sync:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>`,
-  schema:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M17 14v3M14 17h3"/></svg>`,
-  tab:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="6" width="20" height="4" rx="1"/><rect x="2" y="14" width="20" height="4" rx="1"/><line x1="6" y1="8" x2="6" y2="12"/></svg>`,
-  slug:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>`,
-  seo:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/><path d="M8 11h6M11 8v6"/></svg>`,
-  command:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 3a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3H6a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3V6a3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3h12a3 3 0 0 0 3-3 3 3 0 0 0-3-3z"/></svg>`,
-  repeater:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="6" rx="1"/><rect x="3" y="15" width="18" height="6" rx="1"/><path d="M8 6v3M16 6v3M8 18v3M16 18v3"/></svg>`,
-  matrix:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>`,
-  card:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="5" rx="1"/><rect x="2" y="12" width="20" height="5" rx="1"/><rect x="2" y="20" width="20" height="5" rx="1"/></svg>`,
-  header:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="3" rx="1"/><rect x="2" y="9" width="12" height="2" rx="0.5"/><rect x="2" y="13" width="16" height="2" rx="0.5"/><rect x="2" y="17" width="8" height="2" rx="0.5"/></svg>`,
-  list:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><circle cx="4" cy="6" r="1" fill="currentColor"/><circle cx="4" cy="12" r="1" fill="currentColor"/><circle cx="4" cy="18" r="1" fill="currentColor"/></svg>`,
-  editor:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>`,
-  compute:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6v6H9z"/><path d="M9 1v3M15 1v3M9 20v3M15 20v3M1 9h3M1 15h3M20 9h3M20 15h3"/></svg>`,
-  action:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="M12 8v4l3 3"/></svg>`,
-  liquid:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2c-4 4-6 8-6 11a6 6 0 0 0 12 0c0-3-2-7-6-11z"/></svg>`,
-  ai:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a4 4 0 0 1 4 4v2a4 4 0 0 1-8 0V6a4 4 0 0 1 4-4z"/><path d="M16 14h.01M8 14h.01M12 16v4M8 20h8"/><circle cx="12" cy="6" r="1"/></svg>`,
-  api:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4zM9 9l3-3 3 3M9 15l3 3 3-3"/></svg>`,
-  switch:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="6" width="20" height="12" rx="6"/><circle cx="8" cy="12" r="3" fill="currentColor"/></svg>`,
-  model:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="10" y1="12" x2="14" y2="12"/><line x1="10" y1="16" x2="14" y2="16"/></svg>`,
-  spreadsheet:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/></svg>`,
-  migration:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>`,
-  form:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="7" y1="8" x2="17" y2="8"/><line x1="7" y1="12" x2="17" y2="12"/><line x1="7" y1="16" x2="12" y2="16"/></svg>`,
-  steps:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="5" cy="6" r="2"/><circle cx="5" cy="12" r="2"/><circle cx="5" cy="18" r="2"/><line x1="9" y1="6" x2="19" y2="6"/><line x1="9" y1="12" x2="19" y2="12"/><line x1="9" y1="18" x2="19" y2="18"/></svg>`,
-  tour:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>`,
-  flow:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>`,
-  mask:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M7 5V3M17 5V3M7 19v2M17 19v2"/></svg>`,
-  currency:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>`,
-  calculate:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="10" y2="10"/><line x1="14" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="10" y2="14"/><line x1="14" y1="14" x2="16" y2="14"/><line x1="8" y1="18" x2="16" y2="18"/></svg>`,
-  modal:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/></svg>`,
-  collaborative:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="7" r="3"/><circle cx="17" y="9" r="2"/><path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/><path d="M17 14a3 3 0 0 1 3 3v4"/></svg>`,
-  tree:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v6M9 9h6M6 15h12M9 21h6"/></svg>`,
-  prometheus:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h4l3 9 4-18 3 9h4"/></svg>`,
-  table:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/></svg>`,
-  css:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 11l2-2 2 2 2-4 2 4"/></svg>`,
-  grid:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>`,
-  jwt:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 1 1 8 0v4"/><circle cx="12" cy="16" r="1"/></svg>`,
-  edit:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>`,
-  tag:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>`,
-  export:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>`,
-  sidebar:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>`,
-  editorjs:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="7" y1="8" x2="17" y2="8"/><line x1="7" y1="12" x2="14" y2="12"/><line x1="7" y1="16" x2="11" y2="16"/></svg>`,
-  search:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>`,
-  sql:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>`,
-  file:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>`,
-  hash:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="9" x2="20" y2="9"/><line x1="4" y1="15" x2="20" y2="15"/><line x1="10" y1="3" x2="8" y2="21"/><line x1="16" y1="3" x2="14" y2="21"/></svg>`,
-  filter:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="22,3 2,3 10,12.46 10,19 14,21 14,12.46"/></svg>`,
-  pdf:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/><path d="M9 15v-2h2a1 1 0 1 1 0 2H9zM9 11h2"/></svg>`,
-  text:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7V4h16v3M9 20h6M12 4v16"/></svg>`,
-  webhook:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 16.98h-5.99c-1.66 0-2.99-1.35-2.99-3a3 3 0 0 1 3-3h.99c1.42 0 2.77.93 3.4 2.43"/><path d="M6 7.02c-1.66 0-3 1.35-3 3a3 3 0 0 0 3 3h.99c1.42 0 2.77-.93 3.4-2.43"/><circle cx="12" cy="12" r="2"/></svg>`,
-  firebase:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 8l10 6 10-6-10-6z"/><path d="M12 22V8"/><path d="M2 16l10 6 10-6"/></svg>`,
-  video:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><polygon points="10,8 16,12 10,16"/></svg>`,
-  tiptap:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/></svg>`,
-  email:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>`,
-  qr:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="3" height="3"/><rect x="18" y="14" width="3" height="3"/><rect x="14" y="18" width="3" height="3"/><rect x="18" y="18" width="3" height="3"/></svg>`,
-  plausible:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>`,
-  route:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="19" r="3"/><circle cx="18" cy="5" r="3"/><path d="M6 16v-3a6 6 0 0 1 6-6h0M18 8v3a6 6 0 0 1-6 6h0"/></svg>`,
-  token:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>`,
-  blur:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10" opacity="0.3"/><circle cx="12" cy="12" r="6" opacity="0.5"/><circle cx="12" cy="12" r="2"/></svg>`,
-  cache:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12A10 10 0 1 1 12 2"/><path d="M22 2L12 12"/><polyline points="22,2 12,12"/></svg>`,
-  thumbnail:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21,15 16,10 5,21"/></svg>`,
-  expand:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15,3 21,3 21,9"/><polyline points="9,21 3,21 3,15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>`,
-  block:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>`,
-  default:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>`
-};
+    // Icon SVG paths by category/keyword
+    const ICONS = {
+      sync: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>`,
+      schema: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M17 14v3M14 17h3"/></svg>`,
+      tab: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="6" width="20" height="4" rx="1"/><rect x="2" y="14" width="20" height="4" rx="1"/><line x1="6" y1="8" x2="6" y2="12"/></svg>`,
+      slug: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>`,
+      seo: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/><path d="M8 11h6M11 8v6"/></svg>`,
+      command: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 3a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3H6a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3V6a3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3h12a3 3 0 0 0 3-3 3 3 0 0 0-3-3z"/></svg>`,
+      repeater: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="6" rx="1"/><rect x="3" y="15" width="18" height="6" rx="1"/><path d="M8 6v3M16 6v3M8 18v3M16 18v3"/></svg>`,
+      matrix: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>`,
+      card: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="5" rx="1"/><rect x="2" y="12" width="20" height="5" rx="1"/><rect x="2" y="20" width="20" height="5" rx="1"/></svg>`,
+      header: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="3" rx="1"/><rect x="2" y="9" width="12" height="2" rx="0.5"/><rect x="2" y="13" width="16" height="2" rx="0.5"/><rect x="2" y="17" width="8" height="2" rx="0.5"/></svg>`,
+      list: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><circle cx="4" cy="6" r="1" fill="currentColor"/><circle cx="4" cy="12" r="1" fill="currentColor"/><circle cx="4" cy="18" r="1" fill="currentColor"/></svg>`,
+      editor: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>`,
+      compute: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6v6H9z"/><path d="M9 1v3M15 1v3M9 20v3M15 20v3M1 9h3M1 15h3M20 9h3M20 15h3"/></svg>`,
+      action: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="M12 8v4l3 3"/></svg>`,
+      liquid: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2c-4 4-6 8-6 11a6 6 0 0 0 12 0c0-3-2-7-6-11z"/></svg>`,
+      ai: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a4 4 0 0 1 4 4v2a4 4 0 0 1-8 0V6a4 4 0 0 1 4-4z"/><path d="M16 14h.01M8 14h.01M12 16v4M8 20h8"/><circle cx="12" cy="6" r="1"/></svg>`,
+      api: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4zM9 9l3-3 3 3M9 15l3 3 3-3"/></svg>`,
+      switch: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="6" width="20" height="12" rx="6"/><circle cx="8" cy="12" r="3" fill="currentColor"/></svg>`,
+      model: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="10" y1="12" x2="14" y2="12"/><line x1="10" y1="16" x2="14" y2="16"/></svg>`,
+      spreadsheet: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/></svg>`,
+      migration: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>`,
+      form: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="7" y1="8" x2="17" y2="8"/><line x1="7" y1="12" x2="17" y2="12"/><line x1="7" y1="16" x2="12" y2="16"/></svg>`,
+      steps: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="5" cy="6" r="2"/><circle cx="5" cy="12" r="2"/><circle cx="5" cy="18" r="2"/><line x1="9" y1="6" x2="19" y2="6"/><line x1="9" y1="12" x2="19" y2="12"/><line x1="9" y1="18" x2="19" y2="18"/></svg>`,
+      tour: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>`,
+      flow: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>`,
+      mask: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M7 5V3M17 5V3M7 19v2M17 19v2"/></svg>`,
+      currency: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>`,
+      calculate: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="10" y2="10"/><line x1="14" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="10" y2="14"/><line x1="14" y1="14" x2="16" y2="14"/><line x1="8" y1="18" x2="16" y2="18"/></svg>`,
+      modal: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/></svg>`,
+      collaborative: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="7" r="3"/><circle cx="17" y="9" r="2"/><path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/><path d="M17 14a3 3 0 0 1 3 3v4"/></svg>`,
+      tree: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v6M9 9h6M6 15h12M9 21h6"/></svg>`,
+      prometheus: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h4l3 9 4-18 3 9h4"/></svg>`,
+      table: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/></svg>`,
+      css: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 11l2-2 2 2 2-4 2 4"/></svg>`,
+      grid: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>`,
+      jwt: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 1 1 8 0v4"/><circle cx="12" cy="16" r="1"/></svg>`,
+      edit: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>`,
+      tag: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>`,
+      export: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>`,
+      sidebar: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>`,
+      editorjs: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="7" y1="8" x2="17" y2="8"/><line x1="7" y1="12" x2="14" y2="12"/><line x1="7" y1="16" x2="11" y2="16"/></svg>`,
+      search: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>`,
+      sql: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>`,
+      file: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>`,
+      hash: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="9" x2="20" y2="9"/><line x1="4" y1="15" x2="20" y2="15"/><line x1="10" y1="3" x2="8" y2="21"/><line x1="16" y1="3" x2="14" y2="21"/></svg>`,
+      filter: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="22,3 2,3 10,12.46 10,19 14,21 14,12.46"/></svg>`,
+      pdf: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/><path d="M9 15v-2h2a1 1 0 1 1 0 2H9zM9 11h2"/></svg>`,
+      text: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7V4h16v3M9 20h6M12 4v16"/></svg>`,
+      webhook: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 16.98h-5.99c-1.66 0-2.99-1.35-2.99-3a3 3 0 0 1 3-3h.99c1.42 0 2.77.93 3.4 2.43"/><path d="M6 7.02c-1.66 0-3 1.35-3 3a3 3 0 0 0 3 3h.99c1.42 0 2.77-.93 3.4-2.43"/><circle cx="12" cy="12" r="2"/></svg>`,
+      firebase: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 8l10 6 10-6-10-6z"/><path d="M12 22V8"/><path d="M2 16l10 6 10-6"/></svg>`,
+      video: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><polygon points="10,8 16,12 10,16"/></svg>`,
+      tiptap: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/></svg>`,
+      email: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>`,
+      qr: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="3" height="3"/><rect x="18" y="14" width="3" height="3"/><rect x="14" y="18" width="3" height="3"/><rect x="18" y="18" width="3" height="3"/></svg>`,
+      plausible: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>`,
+      route: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="19" r="3"/><circle cx="18" cy="5" r="3"/><path d="M6 16v-3a6 6 0 0 1 6-6h0M18 8v3a6 6 0 0 1-6 6h0"/></svg>`,
+      token: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>`,
+      blur: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10" opacity="0.3"/><circle cx="12" cy="12" r="6" opacity="0.5"/><circle cx="12" cy="12" r="2"/></svg>`,
+      cache: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12A10 10 0 1 1 12 2"/><path d="M22 2L12 12"/><polyline points="22,2 12,12"/></svg>`,
+      thumbnail: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21,15 16,10 5,21"/></svg>`,
+      expand: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15,3 21,3 21,9"/><polyline points="9,21 3,21 3,15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>`,
+      block: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>`,
+      default: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>`
+    };
 
-// Get icon for extension based on name/description
-function getIcon(name, desc) {
-  const n = (name + ' ' + desc).toLowerCase();
-  if (n.includes('sync') || n.includes('ci/cd') || n.includes('version')) return 'sync';
-  if (n.includes('schema')) return 'schema';
-  if (n.includes('tab')) return 'tab';
-  if (n.includes('slug') || n.includes('permalink') || n.includes('url')) return 'slug';
-  if (n.includes('seo')) return 'seo';
-  if (n.includes('command') || n.includes('palette')) return 'command';
-  if (n.includes('repeater') || n.includes('inline') && n.includes('repeat')) return 'repeater';
-  if (n.includes('matrix') || n.includes('m2a') || n.includes('many-to-any')) return 'matrix';
-  if (n.includes('card') || n.includes('select')) return 'card';
-  if (n.includes('header') || n.includes('super')) return 'header';
-  if (n.includes('list')) return 'list';
-  if (n.includes('editor') || n.includes('wysiwyg') || n.includes('rich text') || n.includes('tiptap')) return 'editor';
-  if (n.includes('computed') || n.includes('calculate')) return 'compute';
-  if (n.includes('action') || n.includes('button')) return 'action';
-  if (n.includes('liquid') || n.includes('template') || n.includes('jinja')) return 'liquid';
-  if (n.includes('ai') || n.includes('dall') || n.includes('openai') || n.includes('claude') || n.includes('llm') || n.includes('writer') || n.includes('generation')) return 'ai';
-  if (n.includes('api') || n.includes('trigger') || n.includes('endpoint') || n.includes('http')) return 'api';
-  if (n.includes('switch') || n.includes('toggle') || n.includes('boolean')) return 'switch';
-  if (n.includes('model') || n.includes('type') || n.includes('typescript') || n.includes('types')) return 'model';
-  if (n.includes('spread') || n.includes('excel')) return 'spreadsheet';
-  if (n.includes('migration') || n.includes('migrate')) return 'migration';
-  if (n.includes('form')) return 'form';
-  if (n.includes('step') || n.includes('checklist') || n.includes('onboarding')) return 'steps';
-  if (n.includes('tour')) return 'tour';
-  if (n.includes('flow') || n.includes('workflow')) return 'flow';
-  if (n.includes('mask') || n.includes('format')) return 'mask';
-  if (n.includes('currency') || n.includes('money') || n.includes('financial')) return 'currency';
-  if (n.includes('calculate') || n.includes('field')) return 'calculate';
-  if (n.includes('modal') || n.includes('dialog')) return 'modal';
-  if (n.includes('collaborative') || n.includes('realtime') || n.includes('real-time') || n.includes('sync')) return 'collaborative';
-  if (n.includes('tree') || n.includes('hierarchical') || n.includes('nested')) return 'tree';
-  if (n.includes('prometheus') || n.includes('metric') || n.includes('monitor')) return 'prometheus';
-  if (n.includes('table') || n.includes('spreadsheet')) return 'table';
-  if (n.includes('class') || n.includes('css') || n.includes('style')) return 'css';
-  if (n.includes('grid') || n.includes('card layout')) return 'grid';
-  if (n.includes('jwt') || n.includes('oauth') || n.includes('auth') || n.includes('login') || n.includes('web3') || n.includes('password')) return 'jwt';
-  if (n.includes('edit') || n.includes('editable') || n.includes('inline')) return 'edit';
-  if (n.includes('tag')) return 'tag';
-  if (n.includes('export') || n.includes('import')) return 'export';
-  if (n.includes('sidebar') || n.includes('dock')) return 'sidebar';
-  if (n.includes('editor.js')) return 'editorjs';
-  if (n.includes('search')) return 'search';
-  if (n.includes('sql') || n.includes('query') || n.includes('database')) return 'sql';
-  if (n.includes('file') || n.includes('upload') || n.includes('storage') || n.includes('constrain')) return 'file';
-  if (n.includes('hash')) return 'hash';
-  if (n.includes('filter') || n.includes('rule')) return 'filter';
-  if (n.includes('pdf')) return 'pdf';
-  if (n.includes('text')) return 'text';
-  if (n.includes('hook')) return 'webhook';
-  if (n.includes('firebase')) return 'firebase';
-  if (n.includes('video') || n.includes('youtube') || n.includes('vimeo')) return 'video';
-  if (n.includes('tiptap')) return 'tiptap';
-  if (n.includes('email') || n.includes('mail') || n.includes('resend')) return 'email';
-  if (n.includes('qr') || n.includes('barcode') || n.includes('ocr')) return 'qr';
-  if (n.includes('analytics') || n.includes('plausible')) return 'plausible';
-  if (n.includes('route') || n.includes('slug') || n.includes('path')) return 'route';
-  if (n.includes('token') || n.includes('preview')) return 'token';
-  if (n.includes('blur') || n.includes('blurhash')) return 'blur';
-  if (n.includes('cache')) return 'cache';
-  if (n.includes('thumbnail') || n.includes('image')) return 'thumbnail';
-  if (n.includes('expand') || n.includes('block')) return 'expand';
-  return 'default';
-}
+    // Get icon for extension based on name/description
+    function getIcon(name, desc) {
+      const n = (name + ' ' + desc).toLowerCase();
+      if (n.includes('sync') || n.includes('ci/cd') || n.includes('version')) return 'sync';
+      if (n.includes('schema')) return 'schema';
+      if (n.includes('tab')) return 'tab';
+      if (n.includes('slug') || n.includes('permalink') || n.includes('url')) return 'slug';
+      if (n.includes('seo')) return 'seo';
+      if (n.includes('command') || n.includes('palette')) return 'command';
+      if (n.includes('repeater') || n.includes('inline') && n.includes('repeat')) return 'repeater';
+      if (n.includes('matrix') || n.includes('m2a') || n.includes('many-to-any')) return 'matrix';
+      if (n.includes('card') || n.includes('select')) return 'card';
+      if (n.includes('header') || n.includes('super')) return 'header';
+      if (n.includes('list')) return 'list';
+      if (n.includes('editor') || n.includes('wysiwyg') || n.includes('rich text') || n.includes('tiptap')) return 'editor';
+      if (n.includes('computed') || n.includes('calculate')) return 'compute';
+      if (n.includes('action') || n.includes('button')) return 'action';
+      if (n.includes('liquid') || n.includes('template') || n.includes('jinja')) return 'liquid';
+      if (n.includes('ai') || n.includes('dall') || n.includes('openai') || n.includes('claude') || n.includes('llm') || n.includes('writer') || n.includes('generation')) return 'ai';
+      if (n.includes('api') || n.includes('trigger') || n.includes('endpoint') || n.includes('http')) return 'api';
+      if (n.includes('switch') || n.includes('toggle') || n.includes('boolean')) return 'switch';
+      if (n.includes('model') || n.includes('type') || n.includes('typescript') || n.includes('types')) return 'model';
+      if (n.includes('spread') || n.includes('excel')) return 'spreadsheet';
+      if (n.includes('migration') || n.includes('migrate')) return 'migration';
+      if (n.includes('form')) return 'form';
+      if (n.includes('step') || n.includes('checklist') || n.includes('onboarding')) return 'steps';
+      if (n.includes('tour')) return 'tour';
+      if (n.includes('flow') || n.includes('workflow')) return 'flow';
+      if (n.includes('mask') || n.includes('format')) return 'mask';
+      if (n.includes('currency') || n.includes('money') || n.includes('financial')) return 'currency';
+      if (n.includes('calculate') || n.includes('field')) return 'calculate';
+      if (n.includes('modal') || n.includes('dialog')) return 'modal';
+      if (n.includes('collaborative') || n.includes('realtime') || n.includes('real-time') || n.includes('sync')) return 'collaborative';
+      if (n.includes('tree') || n.includes('hierarchical') || n.includes('nested')) return 'tree';
+      if (n.includes('prometheus') || n.includes('metric') || n.includes('monitor')) return 'prometheus';
+      if (n.includes('table') || n.includes('spreadsheet')) return 'table';
+      if (n.includes('class') || n.includes('css') || n.includes('style')) return 'css';
+      if (n.includes('grid') || n.includes('card layout')) return 'grid';
+      if (n.includes('jwt') || n.includes('oauth') || n.includes('auth') || n.includes('login') || n.includes('web3') || n.includes('password')) return 'jwt';
+      if (n.includes('edit') || n.includes('editable') || n.includes('inline')) return 'edit';
+      if (n.includes('tag')) return 'tag';
+      if (n.includes('export') || n.includes('import')) return 'export';
+      if (n.includes('sidebar') || n.includes('dock')) return 'sidebar';
+      if (n.includes('editor.js')) return 'editorjs';
+      if (n.includes('search')) return 'search';
+      if (n.includes('sql') || n.includes('query') || n.includes('database')) return 'sql';
+      if (n.includes('file') || n.includes('upload') || n.includes('storage') || n.includes('constrain')) return 'file';
+      if (n.includes('hash')) return 'hash';
+      if (n.includes('filter') || n.includes('rule')) return 'filter';
+      if (n.includes('pdf')) return 'pdf';
+      if (n.includes('text')) return 'text';
+      if (n.includes('hook')) return 'webhook';
+      if (n.includes('firebase')) return 'firebase';
+      if (n.includes('video') || n.includes('youtube') || n.includes('vimeo')) return 'video';
+      if (n.includes('tiptap')) return 'tiptap';
+      if (n.includes('email') || n.includes('mail') || n.includes('resend')) return 'email';
+      if (n.includes('qr') || n.includes('barcode') || n.includes('ocr')) return 'qr';
+      if (n.includes('analytics') || n.includes('plausible')) return 'plausible';
+      if (n.includes('route') || n.includes('slug') || n.includes('path')) return 'route';
+      if (n.includes('token') || n.includes('preview')) return 'token';
+      if (n.includes('blur') || n.includes('blurhash')) return 'blur';
+      if (n.includes('cache')) return 'cache';
+      if (n.includes('thumbnail') || n.includes('image')) return 'thumbnail';
+      if (n.includes('expand') || n.includes('block')) return 'expand';
+      return 'default';
+    }
 
-function parseDL(s){const n=parseFloat(s);return s.endsWith('K')?n*1000:n;}
+    function parseDL(s) { const n = parseFloat(s); return s.endsWith('K') ? n * 1000 : n; }
 
-function filteredExts(overrideType){
-  const q=sq.toLowerCase();
-  const t=overrideType!==undefined?overrideType:curType;
-  return EXTS.filter(e=>{
-    if(labsOnly&&!e.labs)return false;
-    if(t!=='all'&&e.type!==t)return false;
-    if(q&&!e.name.toLowerCase().includes(q)&&!e.desc.toLowerCase().includes(q)&&!(e.site||'').includes(q))return false;
-    return true;
-  });
-}
+    function filteredExts(overrideType) {
+      const q = sq.toLowerCase();
+      const t = overrideType !== undefined ? overrideType : curType;
+      return EXTS.filter(e => {
+        if (labsOnly && !e.labs) return false;
+        if (t !== 'all' && e.type !== t) return false;
+        if (q && !e.name.toLowerCase().includes(q) && !e.desc.toLowerCase().includes(q) && !(e.site || '').includes(q)) return false;
+        return true;
+      });
+    }
 
-function render(){
-  const f=filteredExts().sort((a,b)=>parseDL(b.dl)-parseDL(a.dl));
+    function render() {
+      const f = filteredExts().sort((a, b) => parseDL(b.dl) - parseDL(a.dl));
 
-  document.getElementById('typePills').innerHTML=
-    Object.entries(TYPES).map(([k,v])=>{
-      const cls=TYPE_CLS[k]||'';
-      const c=k==='all'?filteredExts('all').length:filteredExts(k).length;
-      return `<button class="tpill ${cls}${k===curType?' active':''}" data-type="${k}">${v} <small style="opacity:.55">${c}</small></button>`;
-    }).join('');
-  document.getElementById('typePills').querySelectorAll('.tpill').forEach(b=>b.addEventListener('click',()=>{curType=b.dataset.type;render();}));
+      document.getElementById('typePills').innerHTML =
+        Object.entries(TYPES).map(([k, v]) => {
+          const cls = TYPE_CLS[k] || '';
+          const c = k === 'all' ? filteredExts('all').length : filteredExts(k).length;
+          return `<button class="tpill ${cls}${k === curType ? ' active' : ''}" data-type="${k}">${v} <small style="opacity:.55">${c}</small></button>`;
+        }).join('');
+      document.getElementById('typePills').querySelectorAll('.tpill').forEach(b => b.addEventListener('click', () => { curType = b.dataset.type; render(); }));
 
-  document.getElementById('countBadge').textContent=f.length+' extensions';
-  if(!f.length){document.getElementById('grid').innerHTML='<div class="empty">No extensions match.</div>';return;}
+      document.getElementById('countBadge').textContent = f.length + ' extensions';
+      if (!f.length) { document.getElementById('grid').innerHTML = '<div class="empty">No extensions match.</div>'; return; }
 
-  document.getElementById('grid').innerHTML=f.map(e=>{
-    const tc=TYPE_CLS[e.type]||'t-bundle';
-    const iconKey=getIcon(e.name,e.desc);
-    const iconSvg=ICONS[iconKey]||ICONS.default;
-    return `<div class="ext-card${e.labs?' labs':''}">
+      document.getElementById('grid').innerHTML = f.map(e => {
+        const tc = TYPE_CLS[e.type] || 't-bundle';
+        const iconKey = getIcon(e.name, e.desc);
+        const iconSvg = ICONS[iconKey] || ICONS.default;
+        return `<div class="ext-card${e.labs ? ' labs' : ''}">
       <div class="card-head">
         <div class="ext-icon-wrap">
           <div class="ext-icon">${iconSvg}</div>
           <div class="ext-name">${e.name}</div>
         </div>
-        ${e.labs?'<span class="labs-badge">Directus Labs</span>':''}
+        ${e.labs ? '<span class="labs-badge">Directus Labs</span>' : ''}
       </div>
       <div class="ext-desc">${e.desc}</div>
       <div class="card-foot">
@@ -403,17 +907,18 @@ function render(){
       </div>
       <div class="card-links">
         <a class="ext-link" href="${e.dir}" target="_blank" rel="noopener">dirextensions ↗</a>
-        ${e.npm?`<a class="ext-link npm" href="${e.npm}" target="_blank" rel="noopener">npm ↗</a>`:''}
-        ${e.gh?`<a class="ext-link gh" href="${e.gh}" target="_blank" rel="noopener">GitHub ↗</a>`:''}
-        ${e.site?`<a class="ext-link site" href="https://${e.site}" target="_blank" rel="noopener">${e.site} ↗</a>`:''}
+        ${e.npm ? `<a class="ext-link npm" href="${e.npm}" target="_blank" rel="noopener">npm ↗</a>` : ''}
+        ${e.gh ? `<a class="ext-link gh" href="${e.gh}" target="_blank" rel="noopener">GitHub ↗</a>` : ''}
+        ${e.site ? `<a class="ext-link site" href="https://${e.site}" target="_blank" rel="noopener">${e.site} ↗</a>` : ''}
       </div>
     </div>`;
-  }).join('');
-}
+      }).join('');
+    }
 
-document.getElementById('search').addEventListener('input',e=>{sq=e.target.value;render();});
-document.getElementById('labsBtn').addEventListener('click',function(){labsOnly=!labsOnly;this.classList.toggle('active',labsOnly);render();});
-render();
-</script>
+    document.getElementById('search').addEventListener('input', e => { sq = e.target.value; render(); });
+    document.getElementById('labsBtn').addEventListener('click', function () { labsOnly = !labsOnly; this.classList.toggle('active', labsOnly); render(); });
+    render();
+  </script>
 </body>
+
 </html>

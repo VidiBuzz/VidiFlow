@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VidiSmart Project Dashboard</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0a0a0c;
+            color: #e2e8f0;
+            line-height: 1.6;
+        }
+        .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+        header {
+            background: linear-gradient(135deg, #1e3a5f 0%, #0a0a0c 100%);
+            border-bottom: 2px solid #3b82f6;
+            padding: 30px;
+            margin-bottom: 30px;
+            border-radius: 12px;
+        }
+        h1 { font-size: 2.5em; color: #60a5fa; margin-bottom: 10px; }
+        .subtitle { color: #94a3b8; font-size: 1.1em; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .card {
+            background: #1a1a2e;
+            border: 1px solid #2d3748;
+            border-radius: 12px;
+            padding: 24px;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+        .card:hover { transform: translateY(-2px); border-color: #3b82f6; }
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #2d3748;
+        }
+        .card-icon { font-size: 1.5em; }
+        .card-title { font-size: 1.3em; font-weight: 600; color: #f1f5f9; }
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 500;
+        }
+        .status-done { background: #064e3b; color: #34d399; }
+        .status-pending { background: #451a03; color: #fbbf24; }
+        .status-critical { background: #450a0a; color: #f87171; }
+        .file-list { list-style: none; }
+        .file-list li {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 0;
+            border-bottom: 1px solid #1e293b;
+        }
+        .file-list li:last-child { border-bottom: none; }
+        .file-link {
+            color: #60a5fa;
+            text-decoration: none;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+        .file-link:hover { text-decoration: underline; color: #93c5fd; }
+        .file-desc { color: #94a3b8; font-size: 0.85em; margin-left: auto; }
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #1e293b;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3b82f6, #60a5fa);
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 30px;
+        }
+        .stat-card {
+            background: #1a1a2e;
+            border: 1px solid #2d3748;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+        .stat-number { font-size: 2.5em; font-weight: 700; color: #60a5fa; }
+        .stat-label { color: #94a3b8; font-size: 0.9em; margin-top: 4px; }
+        .action-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #2563eb;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 500;
+            margin-top: 12px;
+            transition: background 0.2s;
+        }
+        .action-btn:hover { background: #1d4ed8; }
+        .gap-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px;
+            background: #0f172a;
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
+        .gap-id { font-family: monospace; color: #fbbf24; font-weight: 600; }
+        .gap-desc { color: #cbd5e1; }
+        .timestamp {
+            text-align: center;
+            color: #64748b;
+            font-size: 0.85em;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #1e293b;
+        }
+        .section-title {
+            font-size: 1.5em;
+            color: #f1f5f9;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🚀 VidiSmart Project Dashboard</h1>
+            <p class="subtitle">SmartGen + Smart Book + Smart Deck Agent — Live Status Tracker</p>
+        </header>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number" style="color: #34d399;">12</div>
+                <div class="stat-label">Tasks Completed</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" style="color: #fbbf24;">6</div>
+                <div class="stat-label">Tasks Pending</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" style="color: #60a5fa;">154</div>
+                <div class="stat-label">HTML Files Ready</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" style="color: #f87171;">7</div>
+                <div class="stat-label">Critical Gaps</div>
+            </div>
+        </div>
+
+        <div class="grid">
+            <!-- Completed Tasks -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-icon">✅</span>
+                    <span class="card-title">Completed Tasks</span>
+                    <span class="status-badge status-done">12 Done</span>
+                </div>
+                <ul class="file-list">
+                    <li>
+                        <span>✓</span>
+                        <span>Reviewed SmartGen project structure & docs</span>
+                    </li>
+                    <li>
+                        <span>✓</span>
+                        <span>Examined Smart Book live deployment</span>
+                    </li>
+                    <li>
+                        <span>✓</span>
+                        <span>Reviewed Smart Deck Agent implementation</span>
+                    </li>
+                    <li>
+                        <span>✓</span>
+                        <span>Analyzed Railway deployment config</span>
+                    </li>
+                    <li>
+                        <span>✓</span>
+                        <span>Checked Directus integration for Smart Book</span>
+                    </li>
+                    <li>
+                        <span>✓</span>
+                        <span>Identified gaps in SmartGen implementation</span>
+                    </li>
+                    <li>
+                        <span>✓</span>
+                        <span>Planned Smart Stack Generator enhancements</span>
+                    </li>
+                    <li>
+                        <span>✓</span>
+                        <span>Planned Smart Book Agent improvements</span>
+                    </li>
+                    <li>
+                        <span>✓</span>
+                        <span>Planned Smart Deck Agent enhancements</span>
+                    </li>
+                    <li>
+                        <span>✓</span>
+                        <span>Created comprehensive gap analysis report</span>
+                    </li>
+                    <li>
+                        <span>✓</span>
+                        <span>Ran migration dry-run (154/154 files ready)</span>
+                    </li>
+                    <li>
+                        <span>✓</span>
+                        <span>Audited 168 HTML files on disk</span>
+                    </li>
+                </ul>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 66%;"></div>
+                </div>
+            </div>
+
+            <!-- Pending Tasks -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-icon">⏳</span>
+                    <span class="card-title">Pending Tasks (Action Required)</span>
+                    <span class="status-badge status-pending">6 Left</span>
+                </div>
+                <ul class="file-list">
+                    <li>
+                        <span class="status-badge status-critical">BLOCKED</span>
+                        <span>Create book_chapters collection in Directus</span>
+                    </li>
+                    <li>
+                        <span class="status-badge status-critical">BLOCKED</span>
+                        <span>Execute actual migration (needs DIRECTUS_ACCESS_TOKEN)</span>
+                    </li>
+                    <li>
+                        <span class="status-badge status-pending">READY</span>
+                        <span>Re-auth Railway CLI and verify deployments</span>
+                    </li>
+                    <li>
+                        <span class="status-badge status-pending">READY</span>
+                        <span>Enable PostGIS in converge/docker-compose.yml</span>
+                    </li>
+                    <li>
+                        <span class="status-badge status-pending">READY</span>
+                        <span>Build real Vespa integration test</span>
+                    </li>
+                    <li>
+                        <span class="status-badge status-pending">READY</span>
+                        <span>Create Kafka consumer skeleton</span>
+                    </li>
+                </ul>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 0%;"></div>
+                </div>
+            </div>
+
+            <!-- SmartGen Files -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-icon">📁</span>
+                    <span class="card-title">SmartGen Documents</span>
+                    <span class="status-badge status-done">12 Files</span>
+                </div>
+                <ul class="file-list">
+                    <li>
+                        <a class="file-link" href="../smartgen/GAP_ANALYSIS_REPORT.md">GAP_ANALYSIS_REPORT.md</a>
+                        <span class="file-desc">7 critical gaps documented</span>
+                    </li>
+                    <li>
+                        <a class="file-link" href="../smartgen/VIDISMART_VECTOR_STACK_ARCHITECTURE.md">VIDISMART_VECTOR_STACK_ARCHITECTURE.md</a>
+                        <span class="file-desc">Full architecture plan</span>
+                    </li>
+                    <li>
+                        <a class="file-link" href="../smartgen/SmartGen.Plant.md">SmartGen.Plant.md</a>
+                        <span class="file-desc">Agent execution system</span>
+                    </li>
+                    <li>
+                        <a class="file-link" href="../smartgen/APPROVED_IMPLEMENTATION_ROADMAP.md">APPROVED_IMPLEMENTATION_ROADMAP.md</a>
+                        <span class="file-desc">Approved roadmap</span>
+                    </li>
+                    <li>
+                        <a class="file-link" href="../smartgen/DUAL_DEPLOYMENT_PIPELINE.md">DUAL_DEPLOYMENT_PIPELINE.md</a>
+                        <span class="file-desc">Railway + SiteGround</span>
+                    </li>
+                    <li>
+                        <a class="file-link" href="../smartgen/VespaPriorityService.js">VespaPriorityService.js</a>
+                        <span class="file-desc">Mock priority service</span>
+                    </li>
+                    <li>
+                        <a class="file-link" href="../smartgen/SmartGenGapAnalyzer.js">SmartGenGapAnalyzer.js</a>
+                        <span class="file-desc">Gap analyzer tool</span>
+                    </li>
+                    <li>
+                        <a class="file-link" href="../smartgen/VIDISMART_LAUNCH_PLAN.md">VIDISMART_LAUNCH_PLAN.md</a>
+                        <span class="file-desc">Launch checklist</span>
+                    </li>
+                    <li>
+                        <a class="file-link" href="../smartgen/UNIFIED_PLATFORM_DEPLOYMENT_PLAN.md">UNIFIED_PLATFORM_DEPLOYMENT_PLAN.md</a>
+                        <span class="file-desc">Deployment plan</span>
+                    </li>
+                    <li>
+                        <a class="file-link" href="../smartgen/smartchannel-new-pages-architecture.md">smartchannel-new-pages-architecture.md</a>
+                        <span class="file-desc">CX architecture</span>
+                    </li>
+                    <li>
+                        <a class="file-link" href="../smartgen/SMART_CHANNEL_CX_ARCHITECTURE_PLAN.html">SMART_CHANNEL_CX_ARCHITECTURE_PLAN.html</a>
+                        <span class="file-desc">Visual architecture</span>
+                    </li>
+                    <li>
+                        <a class="file-link" href="../smartgen/1776358951108-misty-eagle.md">1776358951108-misty-eagle.md</a>
+                        <span class="file-desc">Video AI tools research</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Smart Book Files -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-icon">📚</span>
+                    <span class="card-title">Smart Book Files</span>
+                    <span class="status-badge status-done">10 Files</span>
+                </div>
+                <ul class="file-list">
+                    <li>
+                        <a class="file-link" href="../smart-book/index.html">index.html</a>
+                        <span class="file-desc">Main book reader (live)</span>
+                    </li>
+                    <li>
+                        <a class="file-link" href="../smart-book/print-book.html">print-book.html</a>
+                        <span class="file-desc">Print-friendly version</span>
+                    </li>
+                    <li>
+                        <a class="file-link" href="../smart-book/data.js">data.js</a>
+                        <span class="file-desc">Book content (39 chapters)</span>
+                    </li>
+                    <li>
+                        <a class="file-link" href="../smart-book/migrate-to-directus.js">migrate-to-directus.js</a>
+                        <span class="file-desc">Migration script (154 files)</span>
+                    </li>
+                    <li>
+                        <a class="file-link" href="../smart-book/SMARTBOOK-IMPROVEMENTS.md">SMARTBOOK-IMPROVEMENTS.md</a>
+                        <span class="file-desc">Planned improvements</span>
+                    </li>
+                    <li>
+                        <a class="file-link" href="../smart-book/STATUS.md">STATUS.md</a>
+                        <span class="file-desc">Project status</span>
+                    </li>
+                    <li>
+                        <a class="file-link" href="../smart-book/SMART-BOOK-CONTENT-PLAN.md">SMART-BOOK-CONTENT-PLAN.md</a>
+                        <span class="file-desc">Content plan</span>
+                    </li>
+                    <li>
+                        <a class="file-link" href="../smart-book/qwen-agent.js">qwen-agent.js</a>
+                        <span class="file-desc">Qwen AI agent</span>
+                    </li>
+                    <li>
+                        <a class="file-link" href="../smart-book/data-smartstack-chapters.js">data-smartstack-chapters.js</a>
+                        <span class="file-desc">SmartStack chapters</span>
+                    </li>
+                    <li>
+                        <a class="file-link" href="../smart-book/package.json">package.json</a>
+                        <span class="file-desc">Dependencies</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Critical Gaps Section -->
+        <div class="card" style="margin-bottom: 30px;">
+            <div class="card-header">
+                <span class="card-icon">🚨</span>
+                <span class="card-title">7 Critical Gaps (From Gap Analysis)</span>
+                <span class="status-badge status-critical">Needs Action</span>
+            </div>
+            <div class="gap-item">
+                <span class="gap-id">G001</span>
+                <div>
+                    <strong style="color: #f87171;">Content Migration Gap</strong>
+                    <p class="gap-desc">168 HTML files exist on disk. 0 VidiSmart pages in Directus. Migration script ready (154 files) but needs DIRECTUS_ACCESS_TOKEN to execute.</p>
+                </div>
+            </div>
+            <div class="gap-item">
+                <span class="gap-id">G002</span>
+                <div>
+                    <strong style="color: #f87171;">Book Chapters Not in CMS</strong>
+                    <p class="gap-desc">39 chapters in data.js are client-side only. Need book_chapters collection in Directus for true CMS management.</p>
+                </div>
+            </div>
+            <div class="gap-item">
+                <span class="gap-id">G003</span>
+                <div>
+                    <strong style="color: #fbbf24;">Vespa Integration is Mock-Only</strong>
+                    <p class="gap-desc">VespaPriorityService.js exists but has no real Vespa connection. Need actual vector DB setup.</p>
+                </div>
+            </div>
+            <div class="gap-item">
+                <span class="gap-id">G004</span>
+                <div>
+                    <strong style="color: #fbbf24;">PostGIS Not Enabled</strong>
+                    <p class="gap-desc">docker-compose.yml doesn't enable PostGIS extension. Required for hyperlocal geolocation features.</p>
+                </div>
+            </div>
+            <div class="gap-item">
+                <span class="gap-id">G005</span>
+                <div>
+                    <strong style="color: #fbbf24;">Railway Token Expired</strong>
+                    <p class="gap-desc">Cannot verify Railway deployments. Need to re-authenticate CLI.</p>
+                </div>
+            </div>
+            <div class="gap-item">
+                <span class="gap-id">G006</span>
+                <div>
+                    <strong style="color: #fbbf24;">Kafka Not Implemented</strong>
+                    <p class="gap-desc">Real-time feedback loop requires Kafka consumer. No implementation exists yet.</p>
+                </div>
+            </div>
+            <div class="gap-item">
+                <span class="gap-id">G007</span>
+                <div>
+                    <strong style="color: #fbbf24;">Neo4j GraphRAG Missing</strong>
+                    <p class="gap-desc">Neo4j schema defined in docs but no actual database or integration code exists.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="card">
+            <div class="card-header">
+                <span class="card-icon">⚡</span>
+                <span class="card-title">Quick Actions</span>
+            </div>
+            <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                <a class="action-btn" href="../smart-book/index.html" target="_blank">📖 Open Smart Book</a>
+                <a class="action-btn" href="../smart_stack_builder.html" target="_blank">🏗️ Open Smart Stack Builder</a>
+                <a class="action-btn" href="../vidismart.deck.agent.html" target="_blank">🎴 Open Deck Agent</a>
+                <a class="action-btn" href="../smartgen/GAP_ANALYSIS_REPORT.md" target="_blank">📋 View Gap Report</a>
+                <a class="action-btn" href="../smart-book/migrate-to-directus.js" target="_blank">🚀 View Migration Script</a>
+            </div>
+        </div>
+
+        <div class="timestamp">
+            Dashboard generated: 2026-05-16 20:25 UTC | Project: VidiSmart | Location: M:\code\vidismart
+        </div>
+    </div>
+</body>
+</html>

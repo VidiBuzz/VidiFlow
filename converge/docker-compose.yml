@@ -1,6 +1,114 @@
 services:
+  # ==========================================
+  # DATABASE SERVICE (PostgreSQL + PostGIS)
+  # ==========================================
+  database:
+    image: postgis/postgis:15-3.3
+    container_name: converge-database
+    ports:
+      - "5433:5432"
+    volumes:
+      - ./database:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: converge
+      POSTGRES_USER: converge
+      POSTGRES_PASSWORD: converge_secret
+    # Resource limits for 1GB fiber connection
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+        reservations:
+          cpus: '0.5'
+          memory: 256M
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "converge", "-d", "converge"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # ==========================================
+  # CACHE SERVICE (Redis)
+  # ==========================================
+  cache:
+    image: redis:7-alpine
+    container_name: converge-cache
+    ports:
+      - "6389:6379"
+    volumes:
+      - ./cache:/data
+    command: redis-server --maxmemory 128mb --maxmemory-policy allkeys-lru
+    restart: unless-stopped
+
+  # ==========================================
+  # MESSAGE BROKER (RabbitMQ for async processing)
+  # ==========================================
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: converge-rabbitmq
+    ports:
+      - "5672:5672"   # AMQP port
+      - "15672:15672" # Management UI
+    environment:
+      RABBITMQ_DEFAULT_USER: vidicrm
+      RABBITMQ_DEFAULT_PASS: vidicrm_secret
+    volumes:
+      - ./rabbitmq:/var/lib/rabbitmq
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+    restart: unless-stopped
+
+  # ==========================================
+  # API SERVICE (Node.js Express)
+  # ==========================================
+  api:
+    build:
+      context: ../api
+      dockerfile: Dockerfile
+    container_name: converge-api
+    ports:
+       - "8081:3005"
+    environment:
+      NODE_ENV: production
+      DB_HOST: database
+      DB_PORT: 5432
+      DB_DATABASE: converge
+      DB_USER: converge
+      DB_PASSWORD: converge_secret
+      REDIS_HOST: cache
+      REDIS_PORT: 6379
+      RABBITMQ_HOST: rabbitmq
+      VESPA_URL: http://vespa:8080
+      RESEND_API_KEY: ${RESEND_API_KEY}
+      # AirPMD integration
+      AIRPMD_SESSION_SECRET: ${AIRPMD_SESSION_SECRET:-change-this-secret-in-production}
+      AIRPMD_JWT_SECRET: ${AIRPMD_JWT_SECRET:-change-this-jwt-secret-in-production}
+      AIRPMD_SITE_URL: https://vidicrm.com/air
+      QWEN_ENDPOINT: http://localhost:1234/v1/chat/completions
+    volumes:
+      - ../api:/app
+      - /app/node_modules
+    depends_on:
+      - database
+      - cache
+      - rabbitmq
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+    restart: unless-stopped
+
+  # ==========================================
+  # DIRECTUS ADMIN SERVICE
+  # ==========================================
   directus:
-    image: directus/directus:11.17.2
+    image: directus/directus:11.17.3
     container_name: converge-directus
     ports:
       - "8055:8055"
@@ -24,7 +132,8 @@ services:
       CACHE_STORE: redis
       REDIS_HOST: cache
       REDIS_PORT: "6379"
-      # Storage - Cloudflare R2
+      # Storage - Cloudflare R2 (default) + local fallback
+      FILES_LOCATION: r2
       STORAGE_LOCATIONS: r2,local
       STORAGE_R2_DRIVER: s3
       STORAGE_R2_KEY: e9c7b7eb9ea570cc59e413cfdf580deb
@@ -35,7 +144,7 @@ services:
       STORAGE_LOCAL_ROOT: /directus/uploads
       # CORS Configuration
       CORS_ENABLED: "true"
-      CORS_ORIGIN: "http://localhost:3000,http://localhost:3001,http://localhost:8080,https://vidismart.com,https://www.vidismart.com,http://localhost:8055,https://vidicrm.com"
+      CORS_ORIGIN: "http://localhost:3000,http://localhost:8080,http://localhost:8081,https://vidismart.com,https://www.vidismart.com,http://localhost:8055,https://vidicrm.com"
       CORS_METHODS: "GET,POST,PUT,PATCH,DELETE,OPTIONS"
       CORS_ALLOWED_HEADERS: "Content-Type,Authorization,Origin,Accept,X-Requested-With"
       CORS_CREDENTIALS: "true"
@@ -51,27 +160,38 @@ services:
         condition: service_started
     restart: unless-stopped
 
-  database:
-    image: postgis/postgis:15-3.3
-    container_name: converge-database
-    ports:
-      - "5433:5432"
-    volumes:
-      - ./database:/var/lib/postgresql/data
+  # ==========================================
+  # WORKER SERVICE (Async task processor)
+  # ==========================================
+  worker:
+    build:
+      context: ../api
+      dockerfile: Dockerfile.worker
+    container_name: converge-worker
     environment:
-      POSTGRES_DB: converge
-      POSTGRES_USER: converge
-      POSTGRES_PASSWORD: converge_secret
-    healthcheck:
-      test: ["CMD", "pg_isready", "-U", "converge", "-d", "converge"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+      NODE_ENV: production
+      DB_HOST: database
+      DB_PORT: 5432
+      DB_DATABASE: converge
+      DB_USER: converge
+      DB_PASSWORD: converge_secret
+      REDIS_HOST: cache
+      REDIS_PORT: 6379
+      RABBITMQ_HOST: rabbitmq
+      VESPA_URL: http://vespa:8080
+      RESEND_API_KEY: ${RESEND_API_KEY}
+    depends_on:
+      - database
+      - cache
+      - rabbitmq
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
     restart: unless-stopped
 
-  cache:
-    image: redis:6
-    container_name: converge-cache
-    ports:
-      - "6389:6379"
-    restart: unless-stopped
+networks:
+  default:
+    name: vidicrm-network
+    driver: bridge

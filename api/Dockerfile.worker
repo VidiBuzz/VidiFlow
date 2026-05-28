@@ -1,0 +1,19 @@
+# Worker Service - Async Task Processor (Email sending, Vespa indexing)
+FROM node:18-alpine
+
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+
+# Install production dependencies (amqplib is declared in package.json)
+RUN npm install --omit=dev
+
+# Copy application code
+COPY . .
+
+# Expose port (not used, but required by Docker)
+EXPOSE 3005
+
+# Start the worker
+CMD ["node", "worker.js"]

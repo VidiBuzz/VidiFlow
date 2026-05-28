@@ -2,9 +2,28 @@ const express = require('express');
 const { Pool } = require('pg');
 const cors = require('cors');
 const path = require('path');
+const chatRouter = require('./controllers/chat');
+
+require('dotenv').config();
 
 const app = express();
-const port = process.env.PORT || 3001;
+const port = process.env.PORT || 3005;
+
+// ── Block search engines from /air ───────────────────────────────────────────
+app.get('/air/robots.txt', (req, res) => {
+  res.type('text/plain');
+  res.send('User-agent: *\nDisallow: /');
+});
+
+// Add noindex header to all /air responses
+app.use('/air', (req, res, next) => {
+  res.setHeader('X-Robots-Tag', 'noindex, nofollow, noarchive');
+  next();
+});
+
+// ── AirPMD Sub-application ────────────────────────────────────────────────────
+const airpmdApp = require('./airpmd/server');
+app.use('/air', airpmdApp.router);
 
 // Middleware
 app.use(cors());
@@ -13,10 +32,17 @@ app.use(express.json());
 // Serve static files from parent directory (waitlist.html, index.html, etc.)
 app.use(express.static(path.join(__dirname, '..')));
 
-// PostgreSQL connection
+// Mount chat handler
+app.use('/api/chat', chatRouter);
+
+// PostgreSQL connection with environment variables
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
+  host: process.env.DB_HOST || 'database',
+  port: process.env.DB_PORT || 5432,
+  database: process.env.DB_DATABASE || 'converge',
+  user: process.env.DB_USER || 'converge',
+  password: process.env.DB_PASSWORD || 'converge_secret',
+  ssl: false
 });
 
 // Initialize database tables
@@ -43,6 +69,23 @@ async function initDB() {
         status VARCHAR(50) DEFAULT 'new',
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+
+      CREATE TABLE IF NOT EXISTS waitlist_leads (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        email VARCHAR(255) UNIQUE NOT NULL,
+        name VARCHAR(255),
+        company VARCHAR(255),
+        business_type VARCHAR(100),
+        interests TEXT,
+        source VARCHAR(100) DEFAULT 'vidismart-website',
+        referrer_url VARCHAR(500),
+        utm_source VARCHAR(100),
+        utm_medium VARCHAR(100),
+        utm_campaign VARCHAR(100),
+        status VARCHAR(50) DEFAULT 'pending',
+        date_created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        date_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
     `);
     console.log('Database initialized');
@@ -146,33 +189,6 @@ app.post('/api/signup', async (req, res) => {
       [company, name, email, phone, platform || 'all']
     );
 
-    // Feed lead to Vespa for semantic search and AI retrieval
-    try {
-      // Placeholder zero-vector array of dimension 768 for compatibility
-      const dummyVector = new Array(768).fill(0.01);
-
-      const vespaDoc = {
-        put: `id:community:leads::${result.rows[0].id}`,
-        fields: {
-          id: String(result.rows[0].id),
-          company: company || '',
-          email: email || '',
-          platform: platform || 'all',
-          vector: dummyVector
-        }
-      };
-
-      await fetch('http://localhost:8080/document/v1/community/leads/docid/' + result.rows[0].id, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(vespaDoc)
-      });
-      console.log('Successfully indexed lead into Vespa AI Engine');
-    } catch (vespaErr) {
-      console.error('Failed to index lead in Vespa:', vespaErr);
-      // We don't fail the signup if Vespa is down
-    }
-
     // TODO: Send welcome email to customer
     // TODO: Add to CRM
     // TODO: Send notification email to sales team
@@ -224,8 +240,8 @@ app.post('/api/waitlist', async (req, res) => {
       [email, name, company || null, business_type, interests || null, source || 'vidismart-website', referrer_url || null, utm_source || null, utm_medium || null, utm_campaign || null]
     );
 
-    // Send welcome email via Resend SMTP (configure RESEND_API_KEY in .env)
-    sendWaitlistEmail(email, name);
+    // TODO: Send welcome email via Resend SMTP (configure RESEND_API_KEY in .env)
+    // sendWaitlistEmail(email, name);
 
     res.status(201).json({
       success: true,
@@ -242,9 +258,6 @@ app.post('/api/waitlist', async (req, res) => {
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
-
-// Stock Quotes API - disabled due to yahoo-finance2 package compatibility issue
-// TODO: Re-enable with a compatible version or alternative API
 
 // Resend email configuration (REST API)
 async function sendWaitlistEmail(email, name) {

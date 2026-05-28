@@ -1,0 +1,1035 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BrandSwap Batch Processor</title>
+    <style>
+        :root {
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-tertiary: #334155;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --accent: #0ea5e9;
+            --accent-hover: #0284c7;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #3b82f6;
+            --border: #334155;
+            --radius: 8px;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+
+        header {
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+            padding: 20px 0;
+            margin-bottom: 30px;
+        }
+
+        header .container { display: flex; justify-content: space-between; align-items: center; }
+
+        .logo { display: flex; align-items: center; gap: 12px; }
+        .logo-icon { width: 40px; height: 40px; background: linear-gradient(135deg, var(--accent), #2563eb); border-radius: var(--radius); display: flex; align-items: center; justify-content: center; font-size: 20px; }
+        .logo h1 { font-size: 24px; font-weight: 700; background: linear-gradient(135deg, var(--accent), #2563eb); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+        .status-badge { display: flex; align-items: center; gap: 8px; padding: 8px 16px; background: var(--bg-tertiary); border-radius: 20px; font-size: 14px; }
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--success); animation: pulse 2s infinite; }
+        .status-dot.error { background: var(--danger); animation: none; }
+        .status-dot.warning { background: var(--warning); animation: none; }
+
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 30px; }
+
+        .card { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; box-shadow: var(--shadow); }
+        .card h2 { font-size: 18px; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+
+        .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+        .stat-item { background: var(--bg-primary); padding: 16px; border-radius: var(--radius); text-align: center; }
+        .stat-value { font-size: 32px; font-weight: 700; color: var(--accent); }
+        .stat-label { font-size: 12px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 4px; }
+
+        .dropzone { border: 2px dashed var(--border); border-radius: var(--radius); padding: 40px; text-align: center; cursor: pointer; transition: all 0.3s; background: var(--bg-primary); }
+        .dropzone:hover, .dropzone.dragover { border-color: var(--accent); background: rgba(14, 165, 233, 0.05); }
+        .dropzone-icon { font-size: 48px; margin-bottom: 12px; }
+        .dropzone-text { color: var(--text-secondary); margin-bottom: 8px; }
+        .dropzone-hint { font-size: 12px; color: var(--text-secondary); opacity: 0.7; }
+        .file-input { display: none; }
+
+        .template-upload { background: var(--bg-primary); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin-top: 12px; }
+        .template-upload h3 { font-size: 14px; margin-bottom: 12px; color: var(--accent); }
+        .template-preview { margin-top: 12px; text-align: center; }
+        .template-preview img { max-width: 200px; max-height: 100px; border-radius: var(--radius); border: 1px solid var(--border); }
+        .template-upload input[type="file"] { font-size: 13px; }
+
+        .processing-config { background: var(--bg-primary); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin-top: 12px; }
+        .processing-config h3 { font-size: 14px; margin-bottom: 12px; color: var(--accent); }
+
+        .range-group { display: flex; align-items: center; gap: 10px; }
+        .range-group input[type="range"] { flex: 1; accent-color: var(--accent); }
+        .range-value { font-size: 13px; font-weight: 600; color: var(--accent); min-width: 36px; text-align: center; }
+
+        .file-type-icon { font-size: 16px; margin-right: 6px; }
+
+        .btn { padding: 10px 20px; border: none; border-radius: var(--radius); font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px; }
+        .btn-primary { background: var(--accent); color: white; }
+        .btn-primary:hover { background: var(--accent-hover); }
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-danger:hover { background: #dc2626; }
+        .btn-secondary { background: var(--bg-tertiary); color: var(--text-primary); }
+        .btn-secondary:hover { background: #475569; }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .job-list { max-height: 400px; overflow-y: auto; }
+        .job-item { display: flex; align-items: center; justify-content: space-between; padding: 12px; background: var(--bg-primary); border-radius: var(--radius); margin-bottom: 8px; border-left: 3px solid transparent; transition: all 0.2s; }
+        .job-item:hover { background: var(--bg-tertiary); }
+        .job-item.pending { border-left-color: var(--warning); }
+        .job-item.processing { border-left-color: var(--accent); }
+        .job-item.completed { border-left-color: var(--success); }
+        .job-item.failed { border-left-color: var(--danger); }
+
+        .job-info { flex: 1; min-width: 0; }
+        .job-name { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .job-meta { font-size: 12px; color: var(--text-secondary); }
+        .job-status { padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600; text-transform: uppercase; }
+        .job-status.pending { background: rgba(245, 158, 11, 0.2); color: var(--warning); }
+        .job-status.processing { background: rgba(14, 165, 233, 0.2); color: var(--accent); }
+        .job-status.completed { background: rgba(16, 185, 129, 0.2); color: var(--success); }
+        .job-status.failed { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
+
+        .job-actions { display: flex; gap: 8px; margin-left: 12px; }
+        .btn-icon { width: 32px; height: 32px; padding: 0; display: flex; align-items: center; justify-content: center; background: var(--bg-tertiary); border: none; border-radius: var(--radius); color: var(--text-primary); cursor: pointer; transition: all 0.2s; }
+        .btn-icon:hover { background: var(--accent); color: white; }
+
+        .progress-bar { width: 100%; height: 4px; background: var(--bg-primary); border-radius: 2px; margin-top: 8px; overflow: hidden; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent), #2563eb); border-radius: 2px; transition: width 0.3s; }
+
+        .output-files { max-height: 300px; overflow-y: auto; }
+        .file-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; background: var(--bg-primary); border-radius: var(--radius); margin-bottom: 6px; }
+        .file-name { font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .file-size { font-size: 12px; color: var(--text-secondary); margin-left: 8px; }
+        .file-actions { display: flex; gap: 6px; }
+
+        .empty-state { text-align: center; padding: 40px; color: var(--text-secondary); }
+        .empty-state-icon { font-size: 48px; margin-bottom: 12px; opacity: 0.5; }
+
+        .logs-container { background: var(--bg-primary); border-radius: var(--radius); padding: 16px; font-family: 'Consolas', 'Monaco', monospace; font-size: 12px; max-height: 200px; overflow-y: auto; color: var(--text-secondary); }
+        .log-entry { padding: 2px 0; border-bottom: 1px solid var(--bg-secondary); }
+        .log-entry:last-child { border-bottom: none; }
+        .log-time { color: var(--accent); margin-right: 8px; }
+
+        .controls { display: flex; gap: 12px; flex-wrap: wrap; }
+
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8); z-index: 1000; align-items: center; justify-content: center; }
+        .modal.active { display: flex; }
+        .modal-content { background: var(--bg-secondary); border-radius: var(--radius); padding: 24px; max-width: 500px; width: 90%; border: 1px solid var(--border); }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+        .modal-close { background: none; border: none; color: var(--text-secondary); font-size: 24px; cursor: pointer; }
+
+        .config-form { display: flex; flex-direction: column; gap: 16px; }
+        .form-group { display: flex; flex-direction: column; gap: 6px; }
+        .form-group label { font-size: 14px; font-weight: 600; }
+        .form-group input, .form-group select, .form-group textarea { padding: 10px; background: var(--bg-primary); border: 1px solid var(--border); border-radius: var(--radius); color: var(--text-primary); font-size: 14px; }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: var(--accent); }
+
+        .toast { position: fixed; bottom: 20px; right: 20px; padding: 16px 24px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); display: flex; align-items: center; gap: 12px; transform: translateX(400px); transition: transform 0.3s; z-index: 1001; }
+        .toast.show { transform: translateX(0); }
+        .toast.success { border-left: 3px solid var(--success); }
+        .toast.error { border-left: 3px solid var(--danger); }
+        .toast.info { border-left: 3px solid var(--accent); }
+
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-primary); }
+        ::-webkit-scrollbar-thumb { background: var(--bg-tertiary); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #475569; }
+
+        .btn-success { background: var(--success); color: white; }
+        .btn-success:hover { background: #059669; }
+
+        @media (max-width: 768px) { .grid { grid-template-columns: 1fr; } header .container { flex-direction: column; gap: 16px; text-align: center; } .controls { justify-content: center; } }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">
+                <div class="logo-icon">🔄</div>
+                <h1>BrandSwap Batch Processor</h1>
+            </div>
+            <div class="status-badge">
+                <div class="status-dot" id="connectionStatus"></div>
+                <span id="connectionText">Connecting...</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Stats Overview -->
+        <div class="grid">
+            <div class="card">
+                <h2>📊 Queue Stats</h2>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-value" id="statPending">0</div>
+                        <div class="stat-label">Pending</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="statProcessing">0</div>
+                        <div class="stat-label">Processing</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="statCompleted">0</div>
+                        <div class="stat-label">Completed</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="statFailed">0</div>
+                        <div class="stat-label">Failed</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>⚡ System Status</h2>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-value" id="statUptime">0s</div>
+                        <div class="stat-label">Uptime</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="statMemory">0</div>
+                        <div class="stat-label">Memory (MB)</div>
+                    </div>
+                </div>
+                <div style="margin-top: 16px;">
+                    <div style="display: flex; justify-content: space-between; font-size: 12px; color: var(--text-secondary); margin-bottom: 4px;">
+                        <span>Input Dir</span>
+                        <span id="inputDir">-</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; font-size: 12px; color: var(--text-secondary);">
+                        <span>Output Dir</span>
+                        <span id="outputDir">-</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Upload & Controls -->
+        <div class="grid">
+            <div class="card">
+                <h2>📁 Upload Files</h2>
+                <div class="dropzone" id="dropzone">
+                    <div class="dropzone-icon">📤</div>
+                    <div class="dropzone-text">Drop files here or click to browse</div>
+                    <div class="dropzone-hint">Supports MP4, MOV, AVI, MKV, WEBM, HTML, HTM, JPG, PNG, GIF, WebP, BMP, TIFF</div>
+                </div>
+                <input type="file" class="file-input" id="fileInput" multiple accept=".mp4,.mov,.avi,.mkv,.webm,.html,.htm,.jpg,.jpeg,.png,.gif,.webp,.bmp,.tiff,.tif">
+
+                <!-- Template Upload Section -->
+                <div class="template-upload">
+                    <h3>🖼️ Step 1: Upload Logo Template (the logo to find)</h3>
+                    <input type="file" id="templateFile" accept="image/*">
+                    <div class="template-preview" id="templatePreview"></div>
+                    <div style="margin-top: 8px; font-size: 12px; color: var(--text-secondary);" id="templateStatus">No template uploaded</div>
+                </div>
+
+                <!-- Processing Config -->
+                <div class="processing-config">
+                    <h3>⚙️ Image Processing Settings</h3>
+                    <div class="form-group">
+                        <label>Replacement Text</label>
+                        <input type="text" id="replacementText" value="VidiSmart™" placeholder="Text to overlay">
+                    </div>
+                    <div class="form-group">
+                        <label>Position</label>
+                        <select id="replacementPosition">
+                            <option value="top-left">Top Left</option>
+                            <option value="top-right" selected>Top Right</option>
+                            <option value="bottom-left">Bottom Left</option>
+                            <option value="bottom-right">Bottom Right</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Match Threshold</label>
+                        <div class="range-group">
+                            <input type="range" id="replacementThreshold" min="0.1" max="1.0" step="0.05" value="0.5">
+                            <span class="range-value" id="thresholdValue">0.50</span>
+                        </div>
+                        <div style="font-size: 11px; color: var(--text-secondary); margin-top: 4px;">Lower = more sensitive detection, Higher = stricter matching</div>
+                    </div>
+                    <div class="form-group">
+                        <label>Replacement Logo Image (optional)</label>
+                        <input type="file" id="replacementLogo" accept="image/*">
+                    </div>
+                    <button class="btn btn-primary" style="margin-top: 8px; width: 100%;" onclick="saveProcessingConfig()">💾 Save Image Config</button>
+                </div>
+                <div id="uploadProgress" style="margin-top: 12px; display: none;">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="uploadProgressBar" style="width: 0%"></div>
+                    </div>
+                    <div style="text-align: center; margin-top: 4px; font-size: 12px; color: var(--text-secondary);" id="uploadProgressText">0%</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>🎛️ Controls</h2>
+                <div class="controls">
+                    <button class="btn btn-secondary" onclick="refreshData()">🔄 Refresh</button>
+                    <button class="btn btn-secondary" onclick="clearCompleted()">✅ Clear Completed</button>
+                    <button class="btn btn-secondary" onclick="clearFailed()">❌ Clear Failed</button>
+                    <button class="btn btn-primary" onclick="openConfig()">⚙️ Config</button>
+                    <button class="btn btn-success" onclick="downloadZip()">📦 Download ZIP</button>
+                    <button class="btn btn-danger" onclick="shutdown()">🛑 Shutdown</button>
+                </div>
+                <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border);">
+                    <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 8px;">Quick Actions</div>
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                        <button class="btn btn-secondary" style="font-size: 12px; padding: 6px 12px;" onclick="openInputDir()">📂 Open Input</button>
+                        <button class="btn btn-secondary" style="font-size: 12px; padding: 6px 12px;" onclick="openOutputDir()">📂 Open Output</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Job Queue -->
+        <div class="card" style="margin-bottom: 20px;">
+            <h2>📋 Job Queue</h2>
+            <div class="job-list" id="jobList">
+                <div class="empty-state">
+                    <div class="empty-state-icon">📭</div>
+                    <div>No jobs in queue</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Output Files -->
+        <div class="card" style="margin-bottom: 20px;">
+            <h2 style="display: flex; justify-content: space-between; align-items: center;">
+                <span>📦 Output Files</span>
+                <button class="btn btn-success" onclick="downloadZip()" style="font-size: 13px; padding: 6px 14px;">📦 Download All as ZIP</button>
+            </h2>
+            <div class="output-files" id="outputFiles">
+                <div class="empty-state">
+                    <div class="empty-state-icon">📭</div>
+                    <div>No output files yet</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Logs -->
+        <div class="card">
+            <h2>📝 Recent Logs</h2>
+            <div class="logs-container" id="logsContainer">
+                <div class="log-entry">
+                    <span class="log-time">--:--:--</span>
+                    Waiting for logs...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Config Modal -->
+    <div class="modal" id="configModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>⚙️ Configuration</h2>
+                <button class="modal-close" onclick="closeConfig()">&times;</button>
+            </div>
+            <form class="config-form" onsubmit="saveConfig(event)">
+                <h3 style="color: var(--accent); font-size: 14px; border-bottom: 1px solid var(--border); padding-bottom: 8px;">Video / HTML Settings</h3>
+                <div class="form-group">
+                    <label>Default Text Overlay</label>
+                    <input type="text" id="configText" value="VidiSmart" placeholder="Text to overlay on videos">
+                </div>
+                <div class="form-group">
+                    <label>Font Size</label>
+                    <input type="number" id="configFontSize" value="48" min="12" max="200">
+                </div>
+                <div class="form-group">
+                    <label>Font Color</label>
+                    <input type="color" id="configFontColor" value="#ffffff">
+                </div>
+                <div class="form-group">
+                    <label>Video Codec</label>
+                    <select id="configCodec">
+                        <option value="libx264">H.264 (libx264)</option>
+                        <option value="libx265">H.265 (libx265)</option>
+                        <option value="copy">Copy (no re-encode)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>CRF Quality (lower = better, 18-28)</label>
+                    <input type="number" id="configCrf" value="23" min="0" max="51">
+                </div>
+                <div class="form-group">
+                    <label>Text Replacements (one per line: old|new)</label>
+                    <textarea id="configReplacements" rows="5" placeholder="NotebookLM|VidiSmart&#10;Google|AirPMD">NotebookLM|VidiSmart
+Google|AirPMD</textarea>
+                </div>
+
+                <h3 style="color: var(--accent); font-size: 14px; border-bottom: 1px solid var(--border); padding-bottom: 8px; margin-top: 8px;">Image Processing Settings</h3>
+                <div class="form-group">
+                    <label>Replacement Text (for images)</label>
+                    <input type="text" id="configImageText" value="VidiSmart™" placeholder="Text to overlay on images">
+                </div>
+                <div class="form-group">
+                    <label>Position</label>
+                    <select id="configImagePosition">
+                        <option value="top-left">Top Left</option>
+                        <option value="top-right" selected>Top Right</option>
+                        <option value="bottom-left">Bottom Left</option>
+                        <option value="bottom-right">Bottom Right</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Match Threshold</label>
+                    <div class="range-group">
+                        <input type="range" id="configImageThreshold" min="0.1" max="1.0" step="0.05" value="0.50">
+                        <span class="range-value" id="configThresholdValue">0.50</span>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Save All Configuration</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast">
+        <span id="toastIcon">ℹ️</span>
+        <span id="toastMessage">Message</span>
+    </div>
+
+    <script>
+        // Global state
+        let ws = null;
+        let jobs = [];
+        let outputFiles = [];
+        let reconnectInterval = null;
+        let logs = [];
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            connectWebSocket();
+            setupDropzone();
+            setupTemplateUpload();
+            setupThresholdSliders();
+            loadServerConfig();
+            refreshData();
+            
+            // Auto-refresh every 5 seconds as fallback
+            setInterval(refreshData, 5000);
+        });
+
+        // WebSocket connection
+        function connectWebSocket() {
+            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsUrl = `${protocol}//${window.location.host}`;
+            
+            ws = new WebSocket(wsUrl);
+            
+            ws.onopen = () => {
+                updateConnectionStatus('connected', 'Connected');
+                showToast('Connected to server', 'success');
+                if (reconnectInterval) {
+                    clearInterval(reconnectInterval);
+                    reconnectInterval = null;
+                }
+            };
+            
+            ws.onmessage = (event) => {
+                try {
+                    const data = JSON.parse(event.data);
+                    handleWebSocketMessage(data);
+                } catch (err) {
+                    console.error('WebSocket message error:', err);
+                }
+            };
+            
+            ws.onclose = () => {
+                updateConnectionStatus('error', 'Disconnected');
+                if (!reconnectInterval) {
+                    reconnectInterval = setInterval(connectWebSocket, 3000);
+                }
+            };
+            
+            ws.onerror = () => {
+                updateConnectionStatus('error', 'Error');
+            };
+        }
+
+        function updateConnectionStatus(status, text) {
+            const dot = document.getElementById('connectionStatus');
+            const label = document.getElementById('connectionText');
+            
+            dot.className = 'status-dot';
+            if (status === 'connected') dot.classList.add('connected');
+            else if (status === 'error') dot.classList.add('error');
+            else if (status === 'warning') dot.classList.add('warning');
+            
+            label.textContent = text;
+        }
+
+        function handleWebSocketMessage(data) {
+            switch (data.type) {
+                case 'job:added':
+                    addJobToUI(data.job);
+                    break;
+                case 'job:started':
+                    updateJobStatus(data.job.id, 'processing');
+                    break;
+                case 'job:progress':
+                    updateJobProgress(data.jobId, data.progress, data.message);
+                    break;
+                case 'job:completed':
+                    addJobToUI(data.job);
+                    break;
+                case 'job:failed':
+                    addJobToUI(data.job);
+                    showToast(`Job ${data.job.name} failed: ${data.error}`, 'error');
+                    break;
+                case 'queue:empty':
+                    refreshData();
+                    break;
+            }
+        }
+
+        function setupDropzone() {
+            const dropzone = document.getElementById('dropzone');
+            const fileInput = document.getElementById('fileInput');
+            
+            dropzone.addEventListener('click', () => fileInput.click());
+            dropzone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                dropzone.classList.add('dragover');
+            });
+            dropzone.addEventListener('dragleave', () => {
+                dropzone.classList.remove('dragover');
+            });
+            dropzone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dropzone.classList.remove('dragover');
+                const files = Array.from(e.dataTransfer.files);
+                handleFiles(files);
+            });
+            
+            fileInput.addEventListener('change', () => {
+                const files = Array.from(fileInput.files);
+                handleFiles(files);
+            });
+        }
+
+        async function handleFiles(files) {
+            if (files.length === 0) return;
+            
+            // Show upload progress
+            document.getElementById('uploadProgress').style.display = 'block';
+            let uploaded = 0;
+            
+            // Check if any files are images and if template is configured
+            const hasImages = files.some(f => /\.(jpg|jpeg|png|gif|webp|bmp|tiff|tif)$/i.test(f.name));
+            const templateInput = document.getElementById('templateFile');
+            const hasTemplate = templateInput && templateInput.files.length > 0;
+
+            // Upload each file sequentially to track progress
+            for (const file of files) {
+                const formData = new FormData();
+                formData.append('files', file);
+                
+                try {
+                    const res = await fetch('/api/upload', { method: 'POST', body: formData });
+                    const data = await res.json();
+                    if (data.success) {
+                        showToast(`Uploaded ${file.name}`, 'success');
+                    }
+                } catch (err) {
+                    showToast(`Upload failed: ${err.message}`, 'error');
+                }
+                
+                uploaded++;
+                document.getElementById('uploadProgressBar').style.width = `${(uploaded / files.length) * 100}%`;
+                document.getElementById('uploadProgressText').textContent = `${uploaded}/${files.length}`;
+            }
+            
+            document.getElementById('uploadProgress').style.display = 'none';
+            document.getElementById('uploadProgressBar').style.width = '0%';
+            document.getElementById('uploadProgressText').textContent = '0%';
+
+            if (hasImages && !hasTemplate) {
+                showToast('⚠️ Image files uploaded but no logo template set. Upload a template above before images can be processed.', 'info');
+            }
+        }
+
+        function refreshData() {
+            if (ws && ws.readyState === 1) return; // Already connected
+            
+            fetch('/api/status')
+                .then(res => res.json())
+                .then(data => updateSystemStatus(data));
+            
+            fetch('/api/jobs')
+                .then(res => res.json())
+                .then(data => {
+                    jobs = data.jobs || [];
+                    renderJobs();
+                });
+            
+            fetch('/api/output')
+                .then(res => res.json())
+                .then(data => {
+                    outputFiles = data || [];
+                    renderOutputFiles();
+                });
+        }
+
+        function updateSystemStatus(data) {
+            if (data.uptime != null) {
+                document.getElementById('statUptime').textContent = formatDuration(data.uptime);
+            } else {
+                document.getElementById('statUptime').textContent = 'N/A';
+            }
+            if (data.memory) {
+                document.getElementById('statMemory').textContent = Math.round(data.memory.rss / 1024 / 1024);
+            } else {
+                document.getElementById('statMemory').textContent = 'N/A';
+            }
+            document.getElementById('inputDir').textContent = data.inputDir || data.stats?.inputDir || '-';
+            document.getElementById('outputDir').textContent = data.outputDir || data.stats?.outputDir || '-';
+        }
+
+        function getFileTypeIcon(type, filename) {
+            if (type === 'image' || /\.(jpg|jpeg|png|gif|webp|bmp|tiff|tif)$/i.test(filename)) return '🖼️';
+            if (type === 'html' || /\.(html|htm)$/i.test(filename)) return '📄';
+            if (type === 'video' || /\.(mp4|mov|avi|mkv|webm)$/i.test(filename)) return '🎬';
+            return '📁';
+        }
+
+        function renderJobs() {
+            const jobList = document.getElementById('jobList');
+            
+            if (jobs.length === 0) {
+                jobList.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📭</div>
+                        <div>No jobs in queue</div>
+                    </div>
+                `;
+                return;
+            }
+            
+            jobList.innerHTML = jobs.map(job => {
+                const progress = job.progress || 0;
+                const progressFill = progress > 0 ? `<div class="progress-bar"><div class="progress-fill" style="width: ${progress}%"></div></div><div style="text-align: center; margin-top: 4px; font-size: 12px; color: var(--text-secondary);">${Math.round(progress)}%</div>` : '';
+                const typeIcon = getFileTypeIcon(job.type, job.inputFile || job.name || '');
+                
+                return `
+                    <div class="job-item ${job.status}" data-id="${job.id}">
+                        <div class="job-info">
+                            <div class="job-name" title="${escapeHtml(job.inputFile || job.name || 'Unknown')}"><span class="file-type-icon">${typeIcon}</span>${escapeHtml(job.inputFile || job.name || 'Unknown')}</div>
+                            <div class="job-meta">${formatFileSize(job.size || 0)} • ${job.type || 'unknown'}</div>
+                            ${progressFill}
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span class="job-status ${job.status}">${job.status}</span>
+                            <div class="job-actions">
+                                ${job.status === 'failed' ? `<button class="btn-icon" onclick="retryJob('${job.id}')">🔄</button>` : ''}
+                                ${job.status === 'completed' ? `<button class="btn-icon" onclick="deleteOutput('${job.outputFile || job.outputPath || (job.inputFile || job.name || '').replace(/\\.[^.]+$/, '')}')">🗑️</button>` : ''}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            // Update stats
+            const pending = jobs.filter(j => j.status === 'pending').length;
+            const processing = jobs.filter(j => j.status === 'processing').length;
+            const completed = jobs.filter(j => j.status === 'completed').length;
+            const failed = jobs.filter(j => j.status === 'failed').length;
+            
+            document.getElementById('statPending').textContent = pending;
+            document.getElementById('statProcessing').textContent = processing;
+            document.getElementById('statCompleted').textContent = completed;
+            document.getElementById('statFailed').textContent = failed;
+        }
+
+        function renderOutputFiles() {
+            const outputContainer = document.getElementById('outputFiles');
+            
+            if (outputFiles.length === 0) {
+                outputContainer.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📭</div>
+                        <div>No output files yet</div>
+                    </div>
+                `;
+                return;
+            }
+            
+            outputContainer.innerHTML = outputFiles.map(file => {
+                const fileName = file.name || file.filename || 'Unknown';
+                return `
+                <div class="file-item">
+                    <div style="display: flex; align-items: center;">
+                        <span class="file-name" title="${escapeHtml(fileName)}">${escapeHtml(fileName)}</span>
+                        <span class="file-size">${formatFileSize(file.size || 0)}</span>
+                    </div>
+                    <div class="file-actions">
+                        <a href="/api/output/${encodeURIComponent(fileName)}" class="btn-icon" download>⬇️</a>
+                        <button class="btn-icon" onclick="deleteOutput('${fileName}')">🗑️</button>
+                    </div>
+                </div>
+            `;
+            }).join('');
+        }
+
+        function addJobToUI(job) {
+            renderJobs();
+        }
+
+        function updateJobStatus(jobId, status) {
+            const jobEl = document.querySelector(`.job-item[data-id="${jobId}"]`);
+            if (jobEl) {
+                jobEl.classList.remove('pending', 'processing', 'completed', 'failed');
+                jobEl.classList.add(status);
+            }
+        }
+
+        function updateJobProgress(jobId, progress, message) {
+            const jobEl = document.querySelector(`.job-item[data-id="${jobId}"]`);
+            if (jobEl) {
+                const progressFill = jobEl.querySelector('.progress-fill');
+                const progressText = jobEl.parentElement.querySelector('[style*="text-align: center"]');
+                
+                if (progressFill) progressFill.style.width = `${progress}%`;
+                if (progressText) progressText.textContent = `${Math.round(progress)}% ${message || ''}`;
+            }
+        }
+
+        function clearCompleted() {
+            fetch('/api/jobs/clear-completed', { method: 'POST' })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        showToast('Completed jobs cleared', 'success');
+                        refreshData();
+                    } else {
+                        showToast(data.error || 'Failed to clear completed jobs', 'error');
+                    }
+                });
+        }
+
+        function clearFailed() {
+            fetch('/api/jobs/clear-failed', { method: 'POST' })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        showToast('Failed jobs cleared', 'success');
+                        refreshData();
+                    } else {
+                        showToast(data.error || 'Failed to clear failed jobs', 'error');
+                    }
+                });
+        }
+
+        function retryJob(jobId) {
+            fetch(`/api/jobs/${jobId}/retry`, { method: 'POST' })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        showToast(`Job ${data.job.name} queued for retry`, 'success');
+                        refreshData();
+                    } else {
+                        showToast(data.error || 'Failed to retry job', 'error');
+                    }
+                });
+        }
+
+        function shutdown() {
+            if (ws) ws.close();
+            fetch('/api/shutdown', { method: 'POST' })
+                .then(res => res.json())
+                .then(data => {
+                    showToast('Server shutting down...', 'info');
+                    setTimeout(() => window.location.reload(), 2000);
+                });
+        }
+
+        function openConfig() {
+            document.getElementById('configModal').classList.add('active');
+        }
+
+        function closeConfig() {
+            document.getElementById('configModal').classList.remove('active');
+        }
+
+        function saveConfig(event) {
+            event.preventDefault();
+            
+            const config = {
+                text: document.getElementById('configText').value,
+                fontSize: parseInt(document.getElementById('configFontSize').value),
+                fontColor: document.getElementById('configFontColor').value,
+                codec: document.getElementById('configCodec').value,
+                crf: parseInt(document.getElementById('configCrf').value),
+                replacements: document.getElementById('configReplacements').value.split('\n').filter(line => line.trim()),
+                // Image processing config from modal
+                replacementText: document.getElementById('configImageText').value,
+                position: document.getElementById('configImagePosition').value,
+                threshold: parseFloat(document.getElementById('configImageThreshold').value)
+            };
+            
+            fetch('/api/config', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(config)
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    showToast('Configuration saved', 'success');
+                    closeConfig();
+                    // Sync the sidebar sliders
+                    loadServerConfig();
+                } else {
+                    showToast(data.error || 'Failed to save configuration', 'error');
+                }
+            });
+        }
+
+        function setupTemplateUpload() {
+            const templateInput = document.getElementById('templateFile');
+            if (!templateInput) return;
+            
+            templateInput.addEventListener('change', async () => {
+                const file = templateInput.files[0];
+                if (!file) return;
+                
+                // Show preview
+                const preview = document.getElementById('templatePreview');
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    preview.innerHTML = `<img src="${e.target.result}" alt="Template Preview">`;
+                };
+                reader.readAsDataURL(file);
+                
+                // Upload template
+                const formData = new FormData();
+                formData.append('template', file);
+                
+                try {
+                    const res = await fetch('/api/template', { method: 'POST', body: formData });
+                    const data = await res.json();
+                    if (data.success) {
+                        document.getElementById('templateStatus').textContent = `✅ Template: ${file.name}`;
+                        document.getElementById('templateStatus').style.color = 'var(--success)';
+                        showToast(`Template uploaded: ${file.name}`, 'success');
+                    } else {
+                        throw new Error(data.error);
+                    }
+                } catch (err) {
+                    document.getElementById('templateStatus').textContent = `❌ Upload failed: ${err.message}`;
+                    document.getElementById('templateStatus').style.color = 'var(--danger)';
+                    showToast(`Template upload failed: ${err.message}`, 'error');
+                }
+            });
+        }
+
+        function setupThresholdSliders() {
+            const slider = document.getElementById('replacementThreshold');
+            const display = document.getElementById('thresholdValue');
+            if (slider && display) {
+                slider.addEventListener('input', () => {
+                    display.textContent = parseFloat(slider.value).toFixed(2);
+                });
+            }
+            const slider2 = document.getElementById('configImageThreshold');
+            const display2 = document.getElementById('configThresholdValue');
+            if (slider2 && display2) {
+                slider2.addEventListener('input', () => {
+                    display2.textContent = parseFloat(slider2.value).toFixed(2);
+                });
+            }
+        }
+
+        async function saveProcessingConfig() {
+            const config = {
+                text: document.getElementById('replacementText').value,
+                position: document.getElementById('replacementPosition').value,
+                threshold: parseFloat(document.getElementById('replacementThreshold').value)
+            };
+
+            // Handle optional replacement logo
+            const logoInput = document.getElementById('replacementLogo');
+            if (logoInput && logoInput.files.length > 0) {
+                // Upload the replacement logo first
+                const formData = new FormData();
+                formData.append('files', logoInput.files[0]);
+                try {
+                    const uploadRes = await fetch('/api/upload', { method: 'POST', body: formData });
+                    const uploadData = await uploadRes.json();
+                    if (uploadData.success && uploadData.files && uploadData.files[0]) {
+                        config.replacementImage = uploadData.files[0].path;
+                    }
+                } catch (err) {
+                    showToast(`Failed to upload replacement logo: ${err.message}`, 'error');
+                    return;
+                }
+            }
+
+            try {
+                const res = await fetch('/api/replacements', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(config)
+                });
+                const data = await res.json();
+                if (data.success) {
+                    showToast('Image processing config saved', 'success');
+                } else {
+                    showToast(data.error || 'Failed to save config', 'error');
+                }
+            } catch (err) {
+                showToast(`Config save failed: ${err.message}`, 'error');
+            }
+        }
+
+        async function loadServerConfig() {
+            try {
+                const res = await fetch('/api/config');
+                const data = await res.json();
+                if (data.replacementText) {
+                    const el = document.getElementById('replacementText');
+                    if (el) el.value = data.replacementText;
+                    const el2 = document.getElementById('configImageText');
+                    if (el2) el2.value = data.replacementText;
+                }
+                if (data.position) {
+                    const el = document.getElementById('replacementPosition');
+                    if (el) el.value = data.position;
+                    const el2 = document.getElementById('configImagePosition');
+                    if (el2) el2.value = data.position;
+                }
+                if (data.threshold !== undefined && data.threshold !== null) {
+                    const el = document.getElementById('replacementThreshold');
+                    if (el) el.value = data.threshold;
+                    const el2 = document.getElementById('configImageThreshold');
+                    if (el2) el2.value = data.threshold;
+                    const d = document.getElementById('thresholdValue');
+                    if (d) d.textContent = parseFloat(data.threshold).toFixed(2);
+                    const d2 = document.getElementById('configThresholdValue');
+                    if (d2) d2.textContent = parseFloat(data.threshold).toFixed(2);
+                }
+                if (data.templateFile) {
+                    const status = document.getElementById('templateStatus');
+                    if (status) {
+                        status.textContent = '✅ Template configured';
+                        status.style.color = 'var(--success)';
+                    }
+                }
+            } catch (err) {
+                // Config not available yet
+            }
+        }
+
+        function downloadZip() {
+            showToast('Generating ZIP archive...', 'info');
+            fetch('/api/download-zip', { method: 'POST' })
+                .then(res => {
+                    if (!res.ok) return res.json().then(d => { throw new Error(d.error || 'Download failed'); });
+                    return res.blob();
+                })
+                .then(blob => {
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'brandswap-output.zip';
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                    showToast('ZIP downloaded successfully', 'success');
+                })
+                .catch(err => {
+                    showToast(`ZIP download failed: ${err.message}`, 'error');
+                });
+        }
+
+        function openInputDir() {
+            const dir = document.getElementById('inputDir').textContent;
+            if (dir) window.open(dir, '_blank');
+        }
+
+        function openOutputDir() {
+            const dir = document.getElementById('outputDir').textContent;
+            if (dir) window.open(dir, '_blank');
+        }
+
+        function deleteOutput(filename) {
+            if (!confirm(`Delete ${filename}?`)) return;
+            
+            fetch(`/api/output/${encodeURIComponent(filename)}`, { method: 'DELETE' })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        showToast('File deleted', 'success');
+                        refreshData();
+                    } else {
+                        showToast(data.error || 'Failed to delete file', 'error');
+                    }
+                });
+        }
+
+        function showToast(message, type = 'info') {
+            const toast = document.getElementById('toast');
+            const icon = document.getElementById('toastIcon');
+            
+            toast.className = `toast ${type}`;
+            toast.classList.add('show');
+            icon.textContent = type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️';
+            document.getElementById('toastMessage').textContent = message;
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 4000);
+        }
+
+        function formatDuration(seconds) {
+            if (seconds < 60) return `${seconds}s`;
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.round(seconds % 60);
+            return `${mins}m ${secs}s`;
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 B';
+            const k = 1024;
+            const sizes = ['B', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            return text.replace(/&/g, '\u0026amp;')
+                      .replace(/</g, '\u0026lt;')
+                      .replace(/>/g, '\u0026gt;')
+                      .replace(/"/g, '\u0026quot;')
+                      .replace(/'/g, '\u0026#039;');
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,1560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VidiSmart Control Center v2</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --bg-primary: #06060a;
+            --bg-secondary: #0e0e16;
+            --bg-card: #141420;
+            --bg-card-hover: #1a1a2e;
+            --border: #1e1e30;
+            --border-active: #3b82f6;
+            --text-primary: #e8e8f0;
+            --text-secondary: #8888a8;
+            --text-muted: #555570;
+            --blue: #3b82f6;
+            --blue-light: #60a5fa;
+            --green: #22c55e;
+            --green-light: #4ade80;
+            --yellow: #eab308;
+            --yellow-light: #facc15;
+            --red: #ef4444;
+            --red-light: #f87171;
+            --purple: #8b5cf6;
+            --purple-light: #a78bfa;
+            --cyan: #06b6d4;
+            --cyan-light: #22d3ee;
+            --orange: #f97316;
+            --pink: #ec4899;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            overflow-x: hidden;
+        }
+
+        /* ===== ADVANCED ORBITAL ANIMATIONS ===== */
+        .anim-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .anim-icon svg { overflow: visible; }
+
+        /* Pulse animation for active items */
+        @keyframes pulse-ring {
+            0% { transform: scale(0.8); opacity: 1; }
+            100% { transform: scale(1.4); opacity: 0; }
+        }
+        @keyframes pulse-dot {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+        }
+        @keyframes spin-slow {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        @keyframes spin-reverse {
+            from { transform: rotate(360deg); }
+            to { transform: rotate(0deg); }
+        }
+        @keyframes flow-right {
+            0% { transform: translateX(-100%); opacity: 0; }
+            50% { opacity: 1; }
+            100% { transform: translateX(100%); opacity: 0; }
+        }
+        @keyframes bounce-in {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+        @keyframes glitch {
+            0%, 100% { transform: translate(0); }
+            20% { transform: translate(-2px, 2px); }
+            40% { transform: translate(2px, -2px); }
+            60% { transform: translate(-1px, -1px); }
+            80% { transform: translate(1px, 1px); }
+        }
+        @keyframes data-flow {
+            0% { stroke-dashoffset: 20; }
+            100% { stroke-dashoffset: 0; }
+        }
+        @keyframes node-pulse {
+            0%, 100% { r: 4; opacity: 0.6; }
+            50% { r: 6; opacity: 1; }
+        }
+        @keyframes failover-flash {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        /* ===== ORBITAL ANIMATIONS - ADVANCED ===== */
+        @keyframes orbit {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        @keyframes orbit-reverse {
+            0% { transform: rotate(360deg); }
+            100% { transform: rotate(0deg); }
+        }
+        @keyframes orbit-tilt {
+            0% { transform: rotateX(60deg) rotateZ(0deg); }
+            100% { transform: rotateX(60deg) rotateZ(360deg); }
+        }
+        @keyframes squiggle-morph {
+            0%, 100% { d: path("M0,10 Q10,0 20,10 T40,10"); }
+            25% { d: path("M0,10 Q10,20 20,10 T40,10"); }
+            50% { d: path("M0,10 Q10,5 20,15 T40,10"); }
+            75% { d: path("M0,10 Q10,15 20,5 T40,10"); }
+        }
+        @keyframes squiggle-flow {
+            0% { stroke-dashoffset: 0; }
+            100% { stroke-dashoffset: -40; }
+        }
+        @keyframes particle-burst {
+            0% { transform: scale(0) rotate(0deg); opacity: 1; }
+            50% { transform: scale(1) rotate(180deg); opacity: 0.8; }
+            100% { transform: scale(0) rotate(360deg); opacity: 0; }
+        }
+        @keyframes wave-ripple {
+            0%, 100% { transform: scaleY(1) translateY(0); }
+            50% { transform: scaleY(1.3) translateY(-3px); }
+        }
+        @keyframes helix-spin {
+            0% { transform: rotateY(0deg); }
+            100% { transform: rotateY(360deg); }
+        }
+        @keyframes gravity-pull {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            25% { transform: translate(5px, -5px) scale(1.1); }
+            50% { transform: translate(0, -8px) scale(0.9); }
+            75% { transform: translate(-5px, -5px) scale(1.05); }
+        }
+        @keyframes energy-pulse {
+            0%, 100% { filter: drop-shadow(0 0 2px currentColor); }
+            50% { filter: drop-shadow(0 0 8px currentColor) brightness(1.3); }
+        }
+        @keyframes orbital-trail {
+            0% { stroke-dashoffset: 100; opacity: 0; }
+            20% { opacity: 1; }
+            80% { opacity: 1; }
+            100% { stroke-dashoffset: 0; opacity: 0; }
+        }
+
+        .orbit { animation: orbit var(--orbit-duration, 4s) linear infinite; transform-origin: center center; }
+        .orbit-reverse { animation: orbit-reverse var(--orbit-duration, 5s) linear infinite; transform-origin: center center; }
+        .orbit-tilt { animation: orbit-tilt var(--orbit-duration, 6s) linear infinite; transform-origin: center center; }
+        .squiggle-morph { animation: squiggle-morph 3s ease-in-out infinite; }
+        .squiggle-flow { animation: squiggle-flow 2s linear infinite; }
+        .particle-burst { animation: particle-burst 1.5s ease-out infinite; }
+        .wave-ripple { animation: wave-ripple 2s ease-in-out infinite; }
+        .helix-spin { animation: helix-spin 4s linear infinite; }
+        .gravity-pull { animation: gravity-pull 3s ease-in-out infinite; }
+        .energy-pulse { animation: energy-pulse 2s ease-in-out infinite; }
+        .orbital-trail { animation: orbital-trail 3s linear infinite; }
+
+        .pulse-ring { animation: pulse-ring 2s infinite; }
+        .pulse-dot { animation: pulse-dot 2s infinite; }
+        .spin-slow { animation: spin-slow 3s linear infinite; }
+        .spin-reverse { animation: spin-reverse 3s linear infinite; }
+        .bounce-in { animation: bounce-in 0.4s ease-out; }
+        .glitch { animation: glitch 0.3s ease-in-out; }
+        .failover-flash { animation: failover-flash 1s infinite; }
+
+        /* App Icon Badges */
+        .app-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            flex-shrink: 0;
+            font-weight: 700;
+            font-size: 9px;
+            letter-spacing: -0.3px;
+            transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .app-badge:hover { transform: scale(1.2); z-index: 10; }
+        .app-badge::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+            background-size: 200% 100%;
+            animation: shimmer 3s infinite;
+        }
+
+        .badge-railway { background: linear-gradient(135deg, #4B2C88, #7C3AED); color: #fff; }
+        .badge-appflowy { background: linear-gradient(135deg, #E85D69, #F472B6); color: #fff; }
+        .badge-directus { background: #18202F; color: #60A5FA; border: 1px solid #374151; }
+        .badge-vscode { background: linear-gradient(135deg, #007ACC, #0098FF); color: #fff; }
+        .badge-hermes { background: linear-gradient(135deg, #F59E0B, #FBBF24); color: #1a1a2e; }
+        .badge-github { background: #161b22; color: #fff; border: 1px solid #30363d; }
+        .badge-docker { background: linear-gradient(135deg, #2496ED, #38BDF8); color: #fff; }
+        .badge-postgres { background: linear-gradient(135deg, #336791, #4A90D9); color: #fff; }
+        .badge-playwright { background: linear-gradient(135deg, #E5A233, #F59E0B); color: #1a1a2e; }
+        .badge-nodejs { background: linear-gradient(135deg, #339933, #4ADE80); color: #1a1a2e; }
+        .badge-python { background: linear-gradient(135deg, #3776AB, #FFD43B); color: #fff; }
+        .badge-siteground { background: linear-gradient(135deg, #7D5A00, #B8860B); color: #fff; }
+        .badge-vespa { background: linear-gradient(135deg, #1E3A5F, #2563EB); color: #fff; }
+        .badge-kafka { background: #231F20; color: #fff; border: 1px solid #454545; }
+        .badge-neo4j { background: linear-gradient(135deg, #018BFF, #00B4FF); color: #fff; }
+        .badge-file { background: var(--bg-secondary); color: var(--text-muted); border: 1px solid var(--border); }
+
+        /* Status dots with animation */
+        .status-dot {
+            width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+        }
+        .status-dot.online { background: var(--green); box-shadow: 0 0 8px rgba(34,197,94,0.5); }
+        .status-dot.online::after {
+            content: ''; position: absolute; inset: -3px; border-radius: 50%;
+            border: 2px solid var(--green); animation: pulse-ring 2s infinite;
+        }
+        .status-dot.busy { background: var(--yellow); }
+        .status-dot.busy::after {
+            content: ''; position: absolute; inset: -3px; border-radius: 50%;
+            border: 2px solid var(--yellow); animation: pulse-ring 1.5s infinite;
+        }
+        .status-dot.error { background: var(--red); animation: failover-flash 1s infinite; }
+        .status-dot.idle { background: var(--text-muted); }
+
+        /* Priority left border */
+        .priority-critical { border-left: 3px solid var(--red) !important; }
+        .priority-high { border-left: 3px solid var(--orange) !important; }
+        .priority-medium { border-left: 3px solid var(--blue) !important; }
+        .priority-low { border-left: 3px solid var(--green) !important; }
+
+        /* ===== HEADER ===== */
+        .header {
+            background: linear-gradient(135deg, #0f172a 0%, #06060a 100%);
+            border-bottom: 1px solid var(--border);
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header-left h1 {
+            font-size: 1.3em;
+            font-weight: 800;
+            background: linear-gradient(90deg, #60a5fa, #a78bfa, #22d3ee);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .header-subtitle { font-size: 0.75em; color: var(--text-muted); margin-top: 2px; }
+        .header-right { display: flex; gap: 8px; align-items: center; }
+        .header-pill {
+            display: flex; align-items: center; gap: 6px;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.06);
+            padding: 6px 12px; border-radius: 16px;
+            font-size: 0.78em; color: var(--text-secondary);
+        }
+
+        /* ===== MODEL FAILOVER INDICATOR ===== */
+        .model-failover {
+            display: flex; align-items: center; gap: 4px;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.06);
+            padding: 6px 10px; border-radius: 16px;
+            font-size: 0.72em;
+        }
+        .model-slot {
+            width: 20px; height: 20px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 10px; font-weight: 700;
+            position: relative;
+        }
+        .model-slot.active { background: var(--green); color: #000; }
+        .model-slot.standby { background: var(--text-muted); color: #000; opacity: 0.5; }
+        .model-slot.failed { background: var(--red); color: #fff; animation: failover-flash 1s infinite; }
+        .model-arrow { color: var(--text-muted); font-size: 10px; }
+
+        /* ===== MAIN LAYOUT ===== */
+        .container {
+            display: grid;
+            grid-template-columns: 240px 1fr;
+            height: calc(100vh - 60px);
+        }
+
+        /* ===== SIDEBAR ===== */
+        .sidebar {
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border);
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+        .sidebar-section { padding: 14px; border-bottom: 1px solid rgba(255,255,255,0.03); }
+        .sidebar-label {
+            font-size: 0.65em; text-transform: uppercase; letter-spacing: 1.5px;
+            color: var(--text-muted); margin-bottom: 10px; font-weight: 700;
+        }
+
+        .project-item {
+            display: flex; align-items: center; gap: 8px;
+            padding: 8px 10px; border-radius: 8px;
+            cursor: pointer; transition: all 0.15s; margin-bottom: 3px;
+        }
+        .project-item:hover { background: rgba(255,255,255,0.04); }
+        .project-item.active { background: rgba(59,130,246,0.12); border: 1px solid rgba(59,130,246,0.2); }
+        .project-icon {
+            width: 32px; height: 32px; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 14px; flex-shrink: 0;
+        }
+        .project-info { flex: 1; min-width: 0; }
+        .project-name { font-weight: 600; font-size: 0.84em; }
+        .project-meta { font-size: 0.7em; color: var(--text-muted); margin-top: 2px; }
+        .project-badges { display: flex; gap: 3px; margin-top: 3px; }
+        .project-count {
+            background: rgba(255,255,255,0.06); padding: 2px 7px;
+            border-radius: 8px; font-size: 0.7em; font-weight: 600;
+        }
+        .project-item.active .project-count { background: var(--blue); color: #fff; }
+
+        /* Agent list */
+        .agent-list { display: flex; flex-direction: column; gap: 5px; }
+        .agent-item {
+            display: flex; align-items: center; gap: 8px;
+            padding: 8px 10px; background: rgba(0,0,0,0.2);
+            border-radius: 8px; border: 1px solid rgba(255,255,255,0.03);
+        }
+        .agent-avatar {
+            width: 28px; height: 28px; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 12px; flex-shrink: 0;
+        }
+        .agent-details { flex: 1; }
+        .agent-name { font-size: 0.8em; font-weight: 600; }
+        .agent-status { font-size: 0.68em; display: flex; align-items: center; gap: 4px; margin-top: 1px; }
+        .agent-load {
+            width: 40px; height: 3px; background: rgba(255,255,255,0.06);
+            border-radius: 2px; overflow: hidden; flex-shrink: 0;
+        }
+        .agent-load-fill { height: 100%; border-radius: 2px; transition: width 0.5s; }
+
+        /* App Legend */
+        .app-legend { padding: 12px; margin-top: auto; border-top: 1px solid rgba(255,255,255,0.03); }
+        .legend-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px; }
+        .legend-item {
+            display: flex; align-items: center; gap: 5px;
+            font-size: 0.68em; color: var(--text-muted);
+        }
+
+        /* ===== MAIN CONTENT ===== */
+        .main { overflow-y: auto; padding: 16px 20px; }
+
+        /* Stats Row */
+        .stats-grid {
+            display: grid; grid-template-columns: repeat(4, 1fr);
+            gap: 12px; margin-bottom: 16px;
+        }
+        .stat-card {
+            background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: 12px; padding: 14px 16px; position: relative; overflow: hidden;
+        }
+        .stat-card::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+        }
+        .stat-card:nth-child(1)::before { background: linear-gradient(90deg, #3b82f6, #60a5fa); }
+        .stat-card:nth-child(2)::before { background: linear-gradient(90deg, #eab308, #facc15); }
+        .stat-card:nth-child(3)::before { background: linear-gradient(90deg, #ef4444, #f87171); }
+        .stat-card:nth-child(4)::before { background: linear-gradient(90deg, #22c55e, #4ade80); }
+        .stat-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+        .stat-value { font-size: 1.8em; font-weight: 800; line-height: 1; }
+        .stat-value.blue { color: var(--blue-light); }
+        .stat-value.yellow { color: var(--yellow-light); }
+        .stat-value.red { color: var(--red-light); }
+        .stat-value.green { color: var(--green-light); }
+        .stat-label { font-size: 0.78em; color: var(--text-muted); font-weight: 500; }
+        .stat-change { font-size: 0.7em; margin-top: 4px; }
+        .stat-change.up { color: var(--green); }
+        .stat-change.warn { color: var(--yellow); }
+        .stat-change.down { color: var(--red); }
+
+        /* ===== KANBAN BOARD ===== */
+        .board-container {
+            display: grid; grid-template-columns: repeat(3, 1fr);
+            gap: 14px; margin-bottom: 20px;
+        }
+        .board-column {
+            background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: 12px; overflow: hidden; display: flex; flex-direction: column;
+        }
+        .board-header {
+            padding: 12px 14px; background: rgba(0,0,0,0.2);
+            border-bottom: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .board-title { font-weight: 700; font-size: 0.84em; display: flex; align-items: center; gap: 6px; }
+        .board-count {
+            background: rgba(255,255,255,0.06); padding: 2px 8px;
+            border-radius: 10px; font-size: 0.74em; font-weight: 600;
+        }
+        .board-tasks {
+            padding: 10px; display: flex; flex-direction: column;
+            gap: 8px; min-height: 160px; max-height: 480px; overflow-y: auto;
+        }
+
+        /* ===== TASK CARD WITH COLLAPSIBLE LAYERS ===== */
+        .task-card {
+            background: var(--bg-secondary);
+            border: 1px solid rgba(255,255,255,0.04);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.18s ease;
+            border-left: 3px solid transparent;
+            overflow: hidden;
+        }
+        .task-card:hover {
+            border-color: rgba(59,130,246,0.3);
+            background: var(--bg-card-hover);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+        }
+
+        .task-main {
+            padding: 12px 14px;
+        }
+        .task-top {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 6px; gap: 6px;
+        }
+        .task-id {
+            font-family: 'SF Mono', 'Consolas', monospace;
+            font-size: 0.66em; color: var(--text-muted);
+            background: rgba(255,255,255,0.04); padding: 2px 6px;
+            border-radius: 4px; font-weight: 500;
+        }
+        .task-badges { display: flex; gap: 3px; }
+        .task-title { font-weight: 600; font-size: 0.86em; line-height: 1.3; margin-bottom: 4px; }
+        .task-desc {
+            color: var(--text-muted); font-size: 0.74em; line-height: 1.35;
+            margin-bottom: 10px;
+            display: -webkit-box; -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical; overflow: hidden;
+        }
+        .task-footer {
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .task-agent {
+            display: flex; align-items: center; gap: 5px;
+        }
+        .mini-avatar {
+            width: 20px; height: 20px; border-radius: 5px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 10px;
+        }
+        .agent-label { font-size: 0.7em; color: var(--text-muted); }
+
+        /* Collapsible Layers */
+        .task-layers {
+            border-top: 1px solid rgba(255,255,255,0.04);
+        }
+        .layer-toggle {
+            display: flex; align-items: center; gap: 6px;
+            padding: 6px 14px; cursor: pointer;
+            font-size: 0.7em; color: var(--text-muted);
+            transition: all 0.15s;
+        }
+        .layer-toggle:hover { color: var(--text-secondary); background: rgba(255,255,255,0.02); }
+        .layer-arrow {
+            transition: transform 0.2s;
+            font-size: 10px;
+        }
+        .layer-toggle.open .layer-arrow { transform: rotate(90deg); }
+        .layer-content {
+            max-height: 0; overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+        .layer-content.open { max-height: 300px; }
+        .layer-inner { padding: 8px 14px 12px; }
+
+        /* Layer sections */
+        .layer-section { margin-bottom: 8px; }
+        .layer-section:last-child { margin-bottom: 0; }
+        .layer-label {
+            font-size: 0.65em; text-transform: uppercase; letter-spacing: 1px;
+            color: var(--text-muted); margin-bottom: 4px; font-weight: 600;
+        }
+        .layer-items { display: flex; flex-wrap: wrap; gap: 4px; }
+        .layer-item {
+            display: flex; align-items: center; gap: 4px;
+            background: rgba(255,255,255,0.04); padding: 3px 8px;
+            border-radius: 4px; font-size: 0.68em; color: var(--text-secondary);
+        }
+
+        /* Node link visualization */
+        .node-chain {
+            display: flex; align-items: center; gap: 2px;
+            padding: 6px 0; overflow-x: auto;
+        }
+        .node {
+            display: flex; align-items: center; justify-content: center;
+            width: 24px; height: 24px; border-radius: 6px;
+            font-size: 10px; font-weight: 700; flex-shrink: 0;
+            position: relative;
+        }
+        .node-link {
+            width: 16px; height: 2px; background: var(--border);
+            position: relative; flex-shrink: 0;
+        }
+        .node-link::after {
+            content: ''; position: absolute; inset: 0;
+            background: var(--blue);
+            animation: flow-right 1.5s infinite;
+        }
+
+        /* ===== LIVE ACTIVITY STREAM ===== */
+        .activity-section { margin-bottom: 20px; }
+        .section-header {
+            display: flex; align-items: center; gap: 8px;
+            margin-bottom: 12px;
+        }
+        .section-title { font-size: 1em; font-weight: 700; }
+        .live-dot {
+            width: 8px; height: 8px; border-radius: 50%;
+            background: var(--green);
+            animation: pulse-dot 1.5s infinite;
+        }
+
+        .activity-feed {
+            background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: 12px; padding: 14px 16px;
+        }
+        .activity-item {
+            display: flex; gap: 10px; padding: 10px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.03);
+            align-items: flex-start;
+        }
+        .activity-item:last-child { border-bottom: none; }
+        .activity-icon {
+            width: 30px; height: 30px; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 13px; flex-shrink: 0;
+        }
+        .activity-body { flex: 1; }
+        .activity-text { font-size: 0.82em; line-height: 1.4; }
+        .activity-text strong { color: var(--text-primary); }
+        .activity-time { font-size: 0.7em; color: var(--text-muted); margin-top: 2px; }
+
+        /* Animated event indicators */
+        .event-indicator {
+            display: inline-flex; align-items: center; gap: 4px;
+            padding: 2px 8px; border-radius: 10px;
+            font-size: 0.68em; font-weight: 600;
+        }
+        .event-indicator.error {
+            background: rgba(239,68,68,0.15); color: var(--red-light);
+        }
+        .event-indicator.warn {
+            background: rgba(234,179,8,0.15); color: var(--yellow-light);
+        }
+        .event-indicator.success {
+            background: rgba(34,197,94,0.15); color: var(--green-light);
+        }
+        .event-indicator.info {
+            background: rgba(59,130,246,0.15); color: var(--blue-light);
+        }
+
+        /* ===== RESOURCE OVERVIEW ===== */
+        .resource-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 10px; margin-bottom: 20px;
+        }
+        .resource-card {
+            background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: 10px; padding: 12px 14px;
+            display: flex; align-items: center; gap: 10px;
+            transition: all 0.15s;
+        }
+        .resource-card:hover { border-color: var(--blue); transform: translateY(-1px); }
+        .resource-icon {
+            width: 36px; height: 36px; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 16px; flex-shrink: 0;
+        }
+        .resource-info { flex: 1; }
+        .resource-name { font-size: 0.82em; font-weight: 600; }
+        .resource-status { font-size: 0.7em; color: var(--text-muted); margin-top: 2px; }
+        .resource-count {
+            font-size: 0.7em; font-weight: 700;
+            background: rgba(255,255,255,0.06); padding: 2px 8px;
+            border-radius: 8px;
+        }
+
+        /* Responsive */
+        @media (max-width: 1100px) {
+            .board-container { grid-template-columns: repeat(2, 1fr); }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 800px) {
+            .container { grid-template-columns: 1fr; }
+            .sidebar { display: none; }
+            .board-container { grid-template-columns: 1fr; }
+            .stats-grid { grid-template-columns: 1fr; }
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 3px; }
+    </style>
+</head>
+<body>
+
+<!-- ===== HEADER ===== -->
+<div class="header">
+    <div class="header-left">
+        <h1>
+            <!-- Advanced Orbital Animation SVG -->
+            <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                <!-- Outer orbital ring -->
+                <circle cx="16" cy="16" r="14" stroke="url(#grad1)" stroke-width="1" fill="none" stroke-dasharray="3 5" class="spin-slow" opacity="0.5"/>
+                
+                <!-- Middle orbital ring with tilt -->
+                <ellipse cx="16" cy="16" rx="12" ry="8" stroke="url(#grad2)" stroke-width="1.5" fill="none" class="orbit-tilt" style="--orbit-radius: 12px; --orbit-duration: 6s;" transform="rotate(-30 16 16)"/>
+                
+                <!-- Inner orbital ring reverse -->
+                <circle cx="16" cy="16" r="8" stroke="url(#grad1)" stroke-width="1" fill="none" stroke-dasharray="2 4" class="spin-reverse"/>
+                
+                <!-- Orbiting particles -->
+                <g style="transform-origin: 16px 16px;">
+                    <circle cx="16" cy="16" r="2" fill="#60a5fa" class="orbit energy-pulse" style="--orbit-radius: 14px; --orbit-duration: 3s;"/>
+                    <circle cx="16" cy="16" r="1.5" fill="#a78bfa" class="orbit-reverse energy-pulse" style="--orbit-radius: 10px; --orbit-duration: 4s;"/>
+                    <circle cx="16" cy="16" r="1" fill="#22d3ee" class="orbit-tilt" style="--orbit-radius: 12px; --orbit-duration: 5s;"/>
+                </g>
+                
+                <!-- Squiggly morphing line -->
+                <path class="squiggle-morph" stroke="url(#grad1)" stroke-width="1.5" fill="none" stroke-dasharray="8 4" style="transform-origin: center;"/>
+                
+                <!-- Center core with pulse -->
+                <circle cx="16" cy="16" r="3" fill="url(#grad1)" class="pulse-dot"/>
+                <circle cx="16" cy="16" r="5" stroke="url(#grad1)" stroke-width="1" fill="none" class="pulse-ring"/>
+                
+                <!-- Particle burst effect -->
+                <g class="particle-burst" style="transform-origin: 16px 16px;">
+                    <circle cx="16" cy="8" r="0.5" fill="#60a5fa"/>
+                    <circle cx="24" cy="16" r="0.5" fill="#a78bfa"/>
+                    <circle cx="16" cy="24" r="0.5" fill="#22d3ee"/>
+                    <circle cx="8" cy="16" r="0.5" fill="#60a5fa"/>
+                </g>
+                
+                <defs>
+                    <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#60a5fa"/>
+                        <stop offset="100%" style="stop-color:#a78bfa"/>
+                    </linearGradient>
+                    <linearGradient id="grad2" x1="100%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" style="stop-color:#22d3ee"/>
+                        <stop offset="100%" style="stop-color:#60a5fa"/>
+                    </linearGradient>
+                </defs>
+            </svg>
+            VidiSmart Control Center
+        </h1>
+        <div class="header-subtitle">Hermes Router · Paperclip State · Multi-Agent Orchestration</div>
+    </div>
+    <div class="header-right">
+        <!-- Model Failover Indicator -->
+        <div class="model-failover">
+            <span style="color:var(--text-muted);font-size:0.9em;">Models:</span>
+            <div class="model-slot active" title="Primary - Active">Q</div>
+            <span class="model-arrow">→</span>
+            <div class="model-slot standby" title="Standby 1">K</div>
+            <span class="model-arrow">→</span>
+            <div class="model-slot standby" title="Standby 2">G</div>
+        </div>
+        <div class="header-pill">
+            <span class="status-dot online" style="position:relative;"></span>
+            <span>Hermes</span>
+        </div>
+        <div class="header-pill">
+            <span class="app-badge badge-vscode" style="padding:2px 5px;height:18px;">VS</span>
+            <span>Roo</span>
+        </div>
+        <div class="header-pill">
+            <span class="app-badge badge-appflowy" style="padding:2px 5px;height:18px;">AF</span>
+            <span>KB</span>
+        </div>
+        <div class="header-pill">
+            <span style="color:var(--cyan)">●</span>
+            <span>142/s</span>
+        </div>
+    </div>
+</div>
+
+<!-- ===== MAIN LAYOUT ===== -->
+<div class="container">
+
+    <!-- ===== SIDEBAR ===== -->
+    <div class="sidebar">
+        <div class="sidebar-section">
+            <div class="sidebar-label">Projects</div>
+            
+            <div class="project-item active">
+                <div class="project-icon" style="background:linear-gradient(135deg,#007ACC,#0098FF);">🔧</div>
+                <div class="project-info">
+                    <div class="project-name">SmartGen</div>
+                    <div class="project-meta">14 tasks · 43%</div>
+                    <div class="project-badges">
+                        <span class="app-badge badge-directus" style="padding:1px 4px;height:16px;font-size:8px;">D</span>
+                        <span class="app-badge badge-railway" style="padding:1px 4px;height:16px;font-size:8px;">RW</span>
+                    </div>
+                </div>
+                <span class="project-count">14</span>
+            </div>
+
+            <div class="project-item">
+                <div class="project-icon" style="background:linear-gradient(135deg,#E85D69,#F472B6);">📚</div>
+                <div class="project-info">
+                    <div class="project-name">Smart Book</div>
+                    <div class="project-meta">8 tasks · 50%</div>
+                    <div class="project-badges">
+                        <span class="app-badge badge-appflowy" style="padding:1px 4px;height:16px;font-size:8px;">AF</span>
+                        <span class="app-badge badge-directus" style="padding:1px 4px;height:16px;font-size:8px;">D</span>
+                    </div>
+                </div>
+                <span class="project-count">8</span>
+            </div>
+
+            <div class="project-item">
+                <div class="project-icon" style="background:linear-gradient(135deg,#161b22,#30363d);">🎴</div>
+                <div class="project-info">
+                    <div class="project-name">Smart Deck</div>
+                    <div class="project-meta">2 tasks · 50%</div>
+                    <div class="project-badges">
+                        <span class="app-badge badge-github" style="padding:1px 4px;height:16px;font-size:8px;">GH</span>
+                    </div>
+                </div>
+                <span class="project-count">2</span>
+            </div>
+
+            <div class="project-item">
+                <div class="project-icon" style="background:linear-gradient(135deg,#E5A233,#F59E0B);">🎬</div>
+                <div class="project-info">
+                    <div class="project-name">VidiPitch</div>
+                    <div class="project-meta">2 tasks · 0%</div>
+                    <div class="project-badges">
+                        <span class="app-badge badge-playwright" style="padding:1px 4px;height:16px;font-size:8px;">PW</span>
+                        <span class="app-badge badge-siteground" style="padding:1px 4px;height:16px;font-size:8px;">SG</span>
+                    </div>
+                </div>
+                <span class="project-count">2</span>
+            </div>
+
+            <div class="project-item">
+                <div class="project-icon" style="background:linear-gradient(135deg,#2496ED,#38BDF8);">⚙️</div>
+                <div class="project-info">
+                    <div class="project-name">Infrastructure</div>
+                    <div class="project-meta">4 tasks · 25%</div>
+                    <div class="project-badges">
+                        <span class="app-badge badge-docker" style="padding:1px 4px;height:16px;font-size:8px;">DK</span>
+                        <span class="app-badge badge-postgres" style="padding:1px 4px;height:16px;font-size:8px;">PG</span>
+                        <span class="app-badge badge-railway" style="padding:1px 4px;height:16px;font-size:8px;">RW</span>
+                    </div>
+                </div>
+                <span class="project-count">4</span>
+            </div>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-label">Active Agents</div>
+            <div class="agent-list">
+                <div class="agent-item">
+                    <div class="agent-avatar" style="background:linear-gradient(135deg,#3b82f6,#60a5fa);">🤖</div>
+                    <div class="agent-details">
+                        <div class="agent-name">Coordinator</div>
+                        <div class="agent-status">
+                            <span class="status-dot busy" style="position:relative;"></span>
+                            Processing
+                        </div>
+                    </div>
+                    <div class="agent-load"><div class="agent-load-fill" style="width:67%;background:var(--blue);"></div></div>
+                </div>
+                <div class="agent-item">
+                    <div class="agent-avatar" style="background:linear-gradient(135deg,#06b6d4,#22d3ee);">💻</div>
+                    <div class="agent-details">
+                        <div class="agent-name">Coder</div>
+                        <div class="agent-status">
+                            <span class="status-dot idle"></span>
+                            Idle
+                        </div>
+                    </div>
+                    <div class="agent-load"><div class="agent-load-fill" style="width:12%;background:var(--cyan);"></div></div>
+                </div>
+                <div class="agent-item">
+                    <div class="agent-avatar" style="background:linear-gradient(135deg,#8b5cf6,#a78bfa);">🔍</div>
+                    <div class="agent-details">
+                        <div class="agent-name">Research</div>
+                        <div class="agent-status">
+                            <span class="status-dot busy" style="position:relative;"></span>
+                            Analyzing
+                        </div>
+                    </div>
+                    <div class="agent-load"><div class="agent-load-fill" style="width:45%;background:var(--purple);"></div></div>
+                </div>
+                <div class="agent-item">
+                    <div class="agent-avatar" style="background:linear-gradient(135deg,#F59E0B,#FBBF24);color:#1a1a2e;">📡</div>
+                    <div class="agent-details">
+                        <div class="agent-name">Hermes</div>
+                        <div class="agent-status">
+                            <span class="status-dot online" style="position:relative;"></span>
+                            Routing
+                        </div>
+                    </div>
+                    <div class="agent-load"><div class="agent-load-fill" style="width:89%;background:var(--yellow);"></div></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="app-legend">
+            <div class="sidebar-label">Systems</div>
+            <div class="legend-grid">
+                <div class="legend-item"><span class="app-badge badge-railway" style="padding:1px 4px;height:16px;font-size:8px;">RW</span> Railway</div>
+                <div class="legend-item"><span class="app-badge badge-appflowy" style="padding:1px 4px;height:16px;font-size:8px;">AF</span> AppFlowy</div>
+                <div class="legend-item"><span class="app-badge badge-directus" style="padding:1px 4px;height:16px;font-size:8px;">D</span> Directus</div>
+                <div class="legend-item"><span class="app-badge badge-vscode" style="padding:1px 4px;height:16px;font-size:8px;">VS</span> VS Code</div>
+                <div class="legend-item"><span class="app-badge badge-hermes" style="padding:1px 4px;height:16px;font-size:8px;">H</span> Hermes</div>
+                <div class="legend-item"><span class="app-badge badge-github" style="padding:1px 4px;height:16px;font-size:8px;">GH</span> GitHub</div>
+                <div class="legend-item"><span class="app-badge badge-docker" style="padding:1px 4px;height:16px;font-size:8px;">DK</span> Docker</div>
+                <div class="legend-item"><span class="app-badge badge-postgres" style="padding:1px 4px;height:16px;font-size:8px;">PG</span> Postgres</div>
+                <div class="legend-item"><span class="app-badge badge-playwright" style="padding:1px 4px;height:16px;font-size:8px;">PW</span> Playwright</div>
+                <div class="legend-item"><span class="app-badge badge-nodejs" style="padding:1px 4px;height:16px;font-size:8px;">N</span> Node.js</div>
+                <div class="legend-item"><span class="app-badge badge-python" style="padding:1px 4px;height:16px;font-size:8px;">PY</span> Python</div>
+                <div class="legend-item"><span class="app-badge badge-siteground" style="padding:1px 4px;height:16px;font-size:8px;">SG</span> SiteGround</div>
+                <div class="legend-item"><span class="app-badge badge-vespa" style="padding:1px 4px;height:16px;font-size:8px;">VS</span> Vespa</div>
+                <div class="legend-item"><span class="app-badge badge-kafka" style="padding:1px 4px;height:16px;font-size:8px;">KF</span> Kafka</div>
+                <div class="legend-item"><span class="app-badge badge-neo4j" style="padding:1px 4px;height:16px;font-size:8px;">N4</span> Neo4j</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <div class="main">
+
+        <!-- Stats Row -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-top">
+                    <div>
+                        <div class="stat-value blue">12</div>
+                        <div class="stat-label">Completed</div>
+                    </div>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                        <circle cx="12" cy="12" r="10" stroke="#3b82f6" stroke-width="2" fill="none"/>
+                        <path d="M8 12l3 3 5-5" stroke="#4ade80" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <div class="stat-change up">↑ +3 today</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-top">
+                    <div>
+                        <div class="stat-value yellow">6</div>
+                        <div class="stat-label">Pending</div>
+                    </div>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                        <circle cx="12" cy="12" r="10" stroke="#eab308" stroke-width="2" fill="none"/>
+                        <path d="M12 8v4M12 16h.01" stroke="#facc15" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </div>
+                <div class="stat-change warn">⚠ 2 blocked</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-top">
+                    <div>
+                        <div class="stat-value red">2</div>
+                        <div class="stat-label">Critical</div>
+                    </div>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                        <circle cx="12" cy="12" r="10" stroke="#ef4444" stroke-width="2" fill="none"/>
+                        <path d="M12 8v4M12 16h.01" stroke="#f87171" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </div>
+                <div class="stat-change down">Needs attention</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-top">
+                    <div>
+                        <div class="stat-value green">154</div>
+                        <div class="stat-label">Files Ready</div>
+                    </div>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                        <circle cx="12" cy="12" r="10" stroke="#22c55e" stroke-width="2" fill="none"/>
+                        <path d="M8 12h8M12 8v8" stroke="#4ade80" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </div>
+                <div class="stat-change up">For migration →</div>
+            </div>
+        </div>
+
+        <!-- Kanban Board -->
+        <div class="board-container">
+
+            <!-- TO DO Column -->
+            <div class="board-column">
+                <div class="board-header">
+                    <div class="board-title">⏳ To Do</div>
+                    <span class="board-count">4</span>
+                </div>
+                <div class="board-tasks">
+
+                    <!-- Task 1: With collapsible layers -->
+                    <div class="task-card priority-high">
+                        <div class="task-main">
+                            <div class="task-top">
+                                <span class="task-id">SMART-013</span>
+                                <div class="task-badges">
+                                    <span class="app-badge badge-directus" style="padding:1px 4px;height:16px;font-size:8px;" title="Directus CMS">D</span>
+                                    <span class="app-badge badge-appflowy" style="padding:1px 4px;height:16px;font-size:8px;" title="AppFlowy KB">AF</span>
+                                    <span class="app-badge badge-postgres" style="padding:1px 4px;height:16px;font-size:8px;" title="PostgreSQL">PG</span>
+                                </div>
+                            </div>
+                            <div class="task-title">Create book_chapters collection in Directus</div>
+                            <div class="task-desc">Design schema for 39 book chapters, create collection via Directus API, sync from AppFlowy KB</div>
+                            <div class="task-footer">
+                                <div class="task-agent">
+                                    <div class="mini-avatar" style="background:linear-gradient(135deg,#06b6d4,#22d3ee);"></div>
+                                    <span class="agent-label">Coder</span>
+                                </div>
+                                <span class="event-indicator error">🔒 Blocked</span>
+                            </div>
+                        </div>
+                        <!-- Collapsible Layers -->
+                        <div class="task-layers">
+                            <div class="layer-toggle" onclick="toggleLayer(this)">
+                                <span class="layer-arrow">▶</span>
+                                <span>Resources & Dependencies (3 layers)</span>
+                            </div>
+                            <div class="layer-content">
+                                <div class="layer-inner">
+                                    <div class="layer-section">
+                                        <div class="layer-label">Apps Required</div>
+                                        <div class="layer-items">
+                                            <div class="layer-item"><span class="app-badge badge-directus" style="padding:1px 4px;height:14px;font-size:7px;">D</span> Directus</div>
+                                            <div class="layer-item"><span class="app-badge badge-appflowy" style="padding:1px 4px;height:14px;font-size:7px;">AF</span> AppFlowy</div>
+                                            <div class="layer-item"><span class="app-badge badge-postgres" style="padding:1px 4px;height:14px;font-size:7px;">PG</span> PostgreSQL</div>
+                                        </div>
+                                    </div>
+                                    <div class="layer-section">
+                                        <div class="layer-label">Code Libraries</div>
+                                        <div class="layer-items">
+                                            <div class="layer-item">directus-sdk</div>
+                                            <div class="layer-item">appflowy-api</div>
+                                            <div class="layer-item">pg-client</div>
+                                        </div>
+                                    </div>
+                                    <div class="layer-section">
+                                        <div class="layer-label">Node Chain</div>
+                                        <div class="node-chain">
+                                            <div class="node" style="background:linear-gradient(135deg,#E85D69,#F472B6);color:#fff;">AF</div>
+                                            <div class="node-link"></div>
+                                            <div class="node" style="background:linear-gradient(135deg,#18202F,#364151);color:#60A5FA;">D</div>
+                                            <div class="node-link"></div>
+                                            <div class="node" style="background:linear-gradient(135deg,#336791,#4A90D9);color:#fff;">PG</div>
+                                            <div class="node-link"></div>
+                                            <div class="node" style="background:var(--bg-secondary);border:1px solid var(--border);color:var(--text-muted);">✓</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Task 2 -->
+                    <div class="task-card priority-high">
+                        <div class="task-main">
+                            <div class="task-top">
+                                <span class="task-id">SMART-014</span>
+                                <div class="task-badges">
+                                    <span class="app-badge badge-railway" style="padding:1px 4px;height:16px;font-size:8px;" title="Railway">RW</span>
+                                    <span class="app-badge badge-docker" style="padding:1px 4px;height:16px;font-size:8px;" title="Docker">DK</span>
+                                </div>
+                            </div>
+                            <div class="task-title">Re-auth Railway CLI & verify deployments</div>
+                            <div class="task-desc">Run railway login, check all services running, verify domains are live</div>
+                            <div class="task-footer">
+                                <div class="task-agent">
+                                    <div class="mini-avatar" style="background:linear-gradient(135deg,#F59E0B,#FBBF24);color:#1a1a2e;">⚙️</div>
+                                    <span class="agent-label">Ops</span>
+                                </div>
+                                <span class="event-indicator info">▸ Ready</span>
+                            </div>
+                        </div>
+                        <div class="task-layers">
+                            <div class="layer-toggle" onclick="toggleLayer(this)">
+                                <span class="layer-arrow">▶</span>
+                                <span>Resources & Dependencies (2 layers)</span>
+                            </div>
+                            <div class="layer-content">
+                                <div class="layer-inner">
+                                    <div class="layer-section">
+                                        <div class="layer-label">Apps Required</div>
+                                        <div class="layer-items">
+                                            <div class="layer-item"><span class="app-badge badge-railway" style="padding:1px 4px;height:14px;font-size:7px;">RW</span> Railway</div>
+                                            <div class="layer-item"><span class="app-badge badge-docker" style="padding:1px 4px;height:14px;font-size:7px;">DK</span> Docker</div>
+                                        </div>
+                                    </div>
+                                    <div class="layer-section">
+                                        <div class="layer-label">Node Chain</div>
+                                        <div class="node-chain">
+                                            <div class="node" style="background:linear-gradient(135deg,#4B2C88,#7C3AED);color:#fff;">RW</div>
+                                            <div class="node-link"></div>
+                                            <div class="node" style="background:linear-gradient(135deg,#2496ED,#38BDF8);color:#fff;">DK</div>
+                                            <div class="node-link"></div>
+                                            <div class="node" style="background:var(--bg-secondary);border:1px solid var(--border);color:var(--text-muted);">✓</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Task 3 -->
+                    <div class="task-card priority-medium">
+                        <div class="task-main">
+                            <div class="task-top">
+                                <span class="task-id">SMART-015</span>
+                                <div class="task-badges">
+                                    <span class="app-badge badge-docker" style="padding:1px 4px;height:16px;font-size:8px;">DK</span>
+                                    <span class="app-badge badge-postgres" style="padding:1px 4px;height:16px;font-size:8px;">PG</span>
+                                </div>
+                            </div>
+                            <div class="task-title">Enable PostGIS in converge/docker-compose.yml</div>
+                            <div class="task-desc">Add PostGIS extension config for hyperlocal geolocation features</div>
+                            <div class="task-footer">
+                                <div class="task-agent">
+                                    <div class="mini-avatar" style="background:linear-gradient(135deg,#06b6d4,#22d3ee);">💻</div>
+                                    <span class="agent-label">Coder</span>
+                                </div>
+                                <span class="event-indicator info">▸ Ready</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Task 4 -->
+                    <div class="task-card priority-medium">
+                        <div class="task-main">
+                            <div class="task-top">
+                                <span class="task-id">SMART-017</span>
+                                <div class="task-badges">
+                                    <span class="app-badge badge-kafka" style="padding:1px 4px;height:16px;font-size:8px;">KF</span>
+                                    <span class="app-badge badge-nodejs" style="padding:1px 4px;height:16px;font-size:8px;">N</span>
+                                </div>
+                            </div>
+                            <div class="task-title">Create Kafka consumer skeleton</div>
+                            <div class="task-desc">Build real-time feedback loop consumer for agent communication</div>
+                            <div class="task-footer">
+                                <div class="task-agent">
+                                    <div class="mini-avatar" style="background:linear-gradient(135deg,#06b6d4,#22d3ee);"></div>
+                                    <span class="agent-label">Coder</span>
+                                </div>
+                                <span class="event-indicator info">▸ Ready</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- IN PROGRESS Column -->
+            <div class="board-column">
+                <div class="board-header">
+                    <div class="board-title">🔨 In Progress</div>
+                    <span class="board-count">2</span>
+                </div>
+                <div class="board-tasks">
+
+                    <!-- Task 5 -->
+                    <div class="task-card priority-medium">
+                        <div class="task-main">
+                            <div class="task-top">
+                                <span class="task-id">SMART-016</span>
+                                <div class="task-badges">
+                                    <span class="app-badge badge-vespa" style="padding:1px 4px;height:16px;font-size:8px;">VS</span>
+                                    <span class="app-badge badge-python" style="padding:1px 4px;height:16px;font-size:8px;">PY</span>
+                                    <span class="app-badge badge-docker" style="padding:1px 4px;height:16px;font-size:8px;">DK</span>
+                                </div>
+                            </div>
+                            <div class="task-title">Build real Vespa integration test</div>
+                            <div class="task-desc">Connect to actual Vespa instance, verify vector search works end-to-end</div>
+                            <div class="task-footer">
+                                <div class="task-agent">
+                                    <div class="mini-avatar" style="background:linear-gradient(135deg,#06b6d4,#22d3ee);">💻</div>
+                                    <span class="agent-label">Coder</span>
+                                </div>
+                                <span class="status-dot busy" style="position:relative;margin-left:auto;"></span>
+                            </div>
+                        </div>
+                        <div class="task-layers">
+                            <div class="layer-toggle" onclick="toggleLayer(this)">
+                                <span class="layer-arrow">▶</span>
+                                <span>Resources & Dependencies (3 layers)</span>
+                            </div>
+                            <div class="layer-content">
+                                <div class="layer-inner">
+                                    <div class="layer-section">
+                                        <div class="layer-label">Apps Required</div>
+                                        <div class="layer-items">
+                                            <div class="layer-item"><span class="app-badge badge-vespa" style="padding:1px 4px;height:14px;font-size:7px;">VS</span> Vespa</div>
+                                            <div class="layer-item"><span class="app-badge badge-python" style="padding:1px 4px;height:14px;font-size:7px;">PY</span> Python</div>
+                                            <div class="layer-item"><span class="app-badge badge-docker" style="padding:1px 4px;height:14px;font-size:7px;">DK</span> Docker</div>
+                                        </div>
+                                    </div>
+                                    <div class="layer-section">
+                                        <div class="layer-label">Code Libraries</div>
+                                        <div class="layer-items">
+                                            <div class="layer-item">vespa-client</div>
+                                            <div class="layer-item">pytest</div>
+                                            <div class="layer-item">docker-py</div>
+                                        </div>
+                                    </div>
+                                    <div class="layer-section">
+                                        <div class="layer-label">Node Chain</div>
+                                        <div class="node-chain">
+                                            <div class="node" style="background:linear-gradient(135deg,#1E3A5F,#2563EB);color:#fff;">VS</div>
+                                            <div class="node-link"></div>
+                                            <div class="node" style="background:linear-gradient(135deg,#3776AB,#FFD43B);color:#fff;">PY</div>
+                                            <div class="node-link"></div>
+                                            <div class="node" style="background:linear-gradient(135deg,#2496ED,#38BDF8);color:#fff;">DK</div>
+                                            <div class="node-link"></div>
+                                            <div class="node" style="background:var(--bg-secondary);border:1px solid var(--border);color:var(--text-muted);">✓</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Task 6: Bridge Server - THE BIG ONE -->
+                    <div class="task-card priority-critical">
+                        <div class="task-main">
+                            <div class="task-top">
+                                <span class="task-id">SMART-018</span>
+                                <div class="task-badges">
+                                    <span class="app-badge badge-appflowy" style="padding:1px 4px;height:16px;font-size:8px;">AF</span>
+                                    <span class="app-badge badge-hermes" style="padding:1px 4px;height:16px;font-size:8px;">H</span>
+                                    <span class="app-badge badge-vscode" style="padding:1px 4px;height:16px;font-size:8px;">VS</span>
+                                    <span class="app-badge badge-playwright" style="padding:1px 4px;height:16px;font-size:8px;">PW</span>
+                                </div>
+                            </div>
+                            <div class="task-title">Build Bridge Server — AppFlowy ↔ Agents ↔ Web Fetch</div>
+                            <div class="task-desc">Middleware layer connecting knowledge base to AI agents with live web enrichment</div>
+                            <div class="task-footer">
+                                <div class="task-agent">
+                                    <div class="mini-avatar" style="background:linear-gradient(135deg,#3b82f6,#60a5fa);">🤖</div>
+                                    <span class="agent-label">Coordinator</span>
+                                </div>
+                                <span class="status-dot busy" style="position:relative;margin-left:auto;"></span>
+                            </div>
+                        </div>
+                        <div class="task-layers">
+                            <div class="layer-toggle" onclick="toggleLayer(this)">
+                                <span class="layer-arrow">▶</span>
+                                <span>Resources & Dependencies (4 layers)</span>
+                            </div>
+                            <div class="layer-content">
+                                <div class="layer-inner">
+                                    <div class="layer-section">
+                                        <div class="layer-label">Apps Required</div>
+                                        <div class="layer-items">
+                                            <div class="layer-item"><span class="app-badge badge-appflowy" style="padding:1px 4px;height:14px;font-size:7px;">AF</span> AppFlowy</div>
+                                            <div class="layer-item"><span class="app-badge badge-hermes" style="padding:1px 4px;height:14px;font-size:7px;">H</span> Hermes</div>
+                                            <div class="layer-item"><span class="app-badge badge-vscode" style="padding:1px 4px;height:14px;font-size:7px;">VS</span> VS Code</div>
+                                            <div class="layer-item"><span class="app-badge badge-playwright" style="padding:1px 4px;height:14px;font-size:7px;">PW</span> Playwright</div>
+                                            <div class="layer-item"><span class="app-badge badge-nodejs" style="padding:1px 4px;height:14px;font-size:7px;">N</span> Node.js</div>
+                                        </div>
+                                    </div>
+                                    <div class="layer-section">
+                                        <div class="layer-label">Code Libraries</div>
+                                        <div class="layer-items">
+                                            <div class="layer-item">express</div>
+                                            <div class="layer-item">socket.io</div>
+                                            <div class="layer-item">playwright</div>
+                                            <div class="layer-item">tavily-api</div>
+                                            <div class="layer-item">appflowy-sdk</div>
+                                        </div>
+                                    </div>
+                                    <div class="layer-section">
+                                        <div class="layer-label">Node Chain</div>
+                                        <div class="node-chain">
+                                            <div class="node" style="background:linear-gradient(135deg,#E85D69,#F472B6);color:#fff;">AF</div>
+                                            <div class="node-link"></div>
+                                            <div class="node" style="background:linear-gradient(135deg,#F59E0B,#FBBF24);color:#1a1a2e;">H</div>
+                                            <div class="node-link"></div>
+                                            <div class="node" style="background:linear-gradient(135deg,#007ACC,#0098FF);color:#fff;">VS</div>
+                                            <div class="node-link"></div>
+                                            <div class="node" style="background:linear-gradient(135deg,#E5A233,#F59E0B);color:#1a1a2e;">PW</div>
+                                            <div class="node-link"></div>
+                                            <div class="node" style="background:var(--bg-secondary);border:1px solid var(--border);color:var(--text-muted);">✓</div>
+                                        </div>
+                                    </div>
+                                    <div class="layer-section">
+                                        <div class="layer-label">Model Failover</div>
+                                        <div class="layer-items">
+                                            <div class="layer-item" style="background:rgba(34,197,94,0.15);color:var(--green);">Q (Active)</div>
+                                            <div class="layer-item" style="background:rgba(255,255,255,0.04);color:var(--text-muted);">K (Standby)</div>
+                                            <div class="layer-item" style="background:rgba(255,255,255,0.04);color:var(--text-muted);">G (Standby)</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- DONE Column -->
+            <div class="board-column">
+                <div class="board-header">
+                    <div class="board-title">✅ Done</div>
+                    <span class="board-count">12</span>
+                </div>
+                <div class="board-tasks">
+
+                    <div class="task-card priority-low">
+                        <div class="task-main">
+                            <div class="task-top">
+                                <span class="task-id">SMART-001</span>
+                                <div class="task-badges">
+                                    <span class="app-badge badge-vscode" style="padding:1px 4px;height:16px;font-size:8px;">VS</span>
+                                    <span class="app-badge badge-github" style="padding:1px 4px;height:16px;font-size:8px;">GH</span>
+                                </div>
+                            </div>
+                            <div class="task-title">Review SmartGen project structure & docs</div>
+                            <div class="task-desc">Analyzed smartgen/ directory, read all architecture documents</div>
+                            <div class="task-footer">
+                                <div class="task-agent">
+                                    <div class="mini-avatar" style="background:linear-gradient(135deg,#8b5cf6,#a78bfa);">🔍</div>
+                                    <span class="agent-label">Research</span>
+                                </div>
+                                <span class="status-dot online" style="position:relative;margin-left:auto;"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="task-card priority-low">
+                        <div class="task-main">
+                            <div class="task-top">
+                                <span class="task-id">SMART-002</span>
+                                <div class="task-badges">
+                                    <span class="app-badge badge-appflowy" style="padding:1px 4px;height:16px;font-size:8px;">AF</span>
+                                    <span class="app-badge badge-siteground" style="padding:1px 4px;height:16px;font-size:8px;">SG</span>
+                                </div>
+                            </div>
+                            <div class="task-title">Examine Smart Book live deployment</div>
+                            <div class="task-desc">Checked SiteGround hosting, verified 39 chapters rendering correctly</div>
+                            <div class="task-footer">
+                                <div class="task-agent">
+                                    <div class="mini-avatar" style="background:linear-gradient(135deg,#8b5cf6,#a78bfa);"></div>
+                                    <span class="agent-label">Research</span>
+                                </div>
+                                <span class="status-dot online" style="position:relative;margin-left:auto;"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="task-card priority-medium">
+                        <div class="task-main">
+                            <div class="task-top">
+                                <span class="task-id">SMART-010</span>
+                                <div class="task-badges">
+                                    <span class="app-badge badge-directus" style="padding:1px 4px;height:16px;font-size:8px;">D</span>
+                                    <span class="app-badge badge-nodejs" style="padding:1px 4px;height:16px;font-size:8px;">N</span>
+                                    <span class="app-badge badge-appflowy" style="padding:1px 4px;height:16px;font-size:8px;">AF</span>
+                                </div>
+                            </div>
+                            <div class="task-title">Run migration dry-run (154/154 files ready)</div>
+                            <div class="task-desc">Executed migrate-to-directus.js --dry-run, all files validated</div>
+                            <div class="task-footer">
+                                <div class="task-agent">
+                                    <div class="mini-avatar" style="background:linear-gradient(135deg,#3b82f6,#60a5fa);">🤖</div>
+                                    <span class="agent-label">Coordinator</span>
+                                </div>
+                                <span class="status-dot online" style="position:relative;margin-left:auto;"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="task-card priority-low">
+                        <div class="task-main">
+                            <div class="task-top">
+                                <span class="task-id">SMART-011</span>
+                                <div class="task-badges">
+                                    <span class="app-badge badge-vscode" style="padding:1px 4px;height:16px;font-size:8px;">VS</span>
+                                    <span class="app-badge badge-file" style="padding:1px 4px;height:16px;font-size:8px;">📄</span>
+                                </div>
+                            </div>
+                            <div class="task-title">Audit 168 HTML files on disk</div>
+                            <div class="task-desc">Full filesystem audit across all project directories</div>
+                            <div class="task-footer">
+                                <div class="task-agent">
+                                    <div class="mini-avatar" style="background:linear-gradient(135deg,#8b5cf6,#a78bfa);">🔍</div>
+                                    <span class="agent-label">Research</span>
+                                </div>
+                                <span class="status-dot online" style="position:relative;margin-left:auto;"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="task-card priority-medium">
+                        <div class="task-main">
+                            <div class="task-top">
+                                <span class="task-id">SMART-012</span>
+                                <div class="task-badges">
+                                    <span class="app-badge badge-vscode" style="padding:1px 4px;height:16px;font-size:8px;">VS</span>
+                                    <span class="app-badge badge-hermes" style="padding:1px 4px;height:16px;font-size:8px;">H</span>
+                                </div>
+                            </div>
+                            <div class="task-title">Build Agent Control Center Dashboard</div>
+                            <div class="task-desc">Kanban UI with task board, agents panel, file previews, activity feed</div>
+                            <div class="task-footer">
+                                <div class="task-agent">
+                                    <div class="mini-avatar" style="background:linear-gradient(135deg,#06b6d4,#22d3ee);">💻</div>
+                                    <span class="agent-label">Coder</span>
+                                </div>
+                                <span class="status-dot online" style="position:relative;margin-left:auto;"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div><!-- /board-container -->
+
+        <!-- Live Activity Stream -->
+        <div class="activity-section">
+            <div class="section-header">
+                <span class="live-dot"></span>
+                <span class="section-title">Live Activity</span>
+            </div>
+            <div class="activity-feed">
+
+                <div class="activity-item">
+                    <div class="activity-icon" style="background:rgba(239,68,68,0.15);color:var(--red-light);">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                            <circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.5" fill="none" class="spin-slow"/>
+                            <circle cx="8" cy="8" r="2" fill="currentColor" class="pulse-dot"/>
+                            <path d="M8 5v3M8 10.5h.01" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" class="energy-pulse"/>
+                        </svg>
+                    </div>
+                    <div class="activity-body">
+                        <div class="activity-text">
+                            <strong>Model Failover</strong> triggered — 
+                            <span class="event-indicator error">Q failed</span>
+                            → switching to 
+                            <span class="event-indicator success">K active</span>
+                            <span class="app-badge badge-hermes" style="padding:1px 4px;height:14px;font-size:7px;margin:0 3px;">H</span>
+                        </div>
+                        <div class="activity-time">21:24 UTC · Just now</div>
+                    </div>
+                </div>
+
+                <div class="activity-item">
+                    <div class="activity-icon" style="background:rgba(234,179,8,0.15);color:var(--yellow-light);">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                            <circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.5" fill="none" class="spin-reverse"/>
+                            <circle cx="8" cy="8" r="1.5" fill="currentColor" class="orbit" style="--orbit-radius: 4px; --orbit-duration: 2s;"/>
+                            <path d="M6 8l2 2 3-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="energy-pulse"/>
+                        </svg>
+                    </div>
+                    <div class="activity-body">
+                        <div class="activity-text">
+                            <strong>Data insufficient</strong> for SMART-013 — 
+                            <span class="event-indicator warn">needs AppFlowy sync</span>
+                            <span class="app-badge badge-appflowy" style="padding:1px 4px;height:14px;font-size:7px;margin:0 3px;">AF</span>
+                            <span class="app-badge badge-directus" style="padding:1px 4px;height:14px;font-size:7px;margin:0 3px;">D</span>
+                        </div>
+                        <div class="activity-time">21:22 UTC · 2 min ago</div>
+                    </div>
+                </div>
+
+                <div class="activity-item">
+                    <div class="activity-icon" style="background:rgba(34,197,94,0.15);color:var(--green-light);">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                            <circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.5" fill="none" class="spin-slow"/>
+                            <circle cx="8" cy="8" r="1" fill="currentColor" class="orbit-reverse" style="--orbit-radius: 5px; --orbit-duration: 2.5s;"/>
+                            <path d="M5 8l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="energy-pulse"/>
+                        </svg>
+                    </div>
+                    <div class="activity-body">
+                        <div class="activity-text">
+                            <strong>Web fetch complete</strong> — 
+                            <span class="event-indicator success">154 files validated</span>
+                            <span class="app-badge badge-playwright" style="padding:1px 4px;height:14px;font-size:7px;margin:0 3px;">PW</span>
+                            <span class="app-badge badge-directus" style="padding:1px 4px;height:14px;font-size:7px;margin:0 3px;">D</span>
+                        </div>
+                        <div class="activity-time">21:15 UTC · 9 min ago</div>
+                    </div>
+                </div>
+
+                <div class="activity-item">
+                    <div class="activity-icon" style="background:rgba(59,130,246,0.15);color:var(--blue-light);">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                            <circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.5" fill="none" class="spin-reverse"/>
+                            <circle cx="8" cy="8" r="1.5" fill="currentColor" class="orbit-tilt" style="--orbit-radius: 4px; --orbit-duration: 3s;"/>
+                            <path d="M8 5v6M5 8h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" class="energy-pulse"/>
+                        </svg>
+                    </div>
+                    <div class="activity-body">
+                        <div class="activity-text">
+                            <strong>Bridge Server</strong> architecture created — 
+                            <span class="event-indicator info">4 layers defined</span>
+                            <span class="app-badge badge-appflowy" style="padding:1px 4px;height:14px;font-size:7px;margin:0 3px;">AF</span>
+                            <span class="app-badge badge-hermes" style="padding:1px 4px;height:14px;font-size:7px;margin:0 3px;">H</span>
+                            <span class="app-badge badge-vscode" style="padding:1px 4px;height:14px;font-size:7px;margin:0 3px;">VS</span>
+                            <span class="app-badge badge-playwright" style="padding:1px 4px;height:14px;font-size:7px;margin:0 3px;">PW</span>
+                        </div>
+                        <div class="activity-time">21:11 UTC · 13 min ago</div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Resource Overview -->
+        <div class="section-header">
+            <span class="section-title"> Resource Overview</span>
+        </div>
+        <div class="resource-grid">
+            <div class="resource-card">
+                <div class="resource-icon" style="background:linear-gradient(135deg,#E85D69,#F472B6);">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                        <rect x="3" y="3" width="14" height="14" rx="3" stroke="#fff" stroke-width="1.5" fill="none" class="spin-slow"/>
+                        <circle cx="10" cy="10" r="2" fill="#fff" class="pulse-dot"/>
+                        <path d="M7 7h6M7 10h6M7 13h4" stroke="#fff" stroke-width="1.5" stroke-linecap="round" class="energy-pulse"/>
+                    </svg>
+                </div>
+                <div class="resource-info">
+                    <div class="resource-name">AppFlowy</div>
+                    <div class="resource-status">Knowledge Base · 1000s pages</div>
+                </div>
+                <span class="resource-count">8</span>
+            </div>
+            <div class="resource-card">
+                <div class="resource-icon" style="background:linear-gradient(135deg,#4B2C88,#7C3AED);">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                        <path d="M10 3l7 4v6l-7 4-7-4V7l7-4z" stroke="#fff" stroke-width="1.5" fill="none" class="spin-slow"/>
+                        <circle cx="10" cy="10" r="2" fill="#fff" class="orbit" style="--orbit-radius: 5px; --orbit-duration: 3s;"/>
+                        <path d="M10 10l7-4M10 10v7M10 10L3 6" stroke="#fff" stroke-width="1.5" class="energy-pulse"/>
+                    </svg>
+                </div>
+                <div class="resource-info">
+                    <div class="resource-name">Railway</div>
+                    <div class="resource-status">Deployment · 3 services</div>
+                </div>
+                <span class="resource-count">4</span>
+            </div>
+            <div class="resource-card">
+                <div class="resource-icon" style="background:#18202F;border:1px solid #374151;">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                        <circle cx="10" cy="10" r="7" stroke="#60A5FA" stroke-width="1.5" fill="none" class="spin-reverse"/>
+                        <circle cx="10" cy="10" r="2" fill="#60A5FA" class="pulse-dot"/>
+                        <circle cx="10" cy="10" r="1" fill="#60A5FA" class="orbit-reverse" style="--orbit-radius: 6px; --orbit-duration: 2.5s;"/>
+                        <path d="M7 10h6M10 7v6" stroke="#60A5FA" stroke-width="1.5" stroke-linecap="round" class="energy-pulse"/>
+                    </svg>
+                </div>
+                <div class="resource-info">
+                    <div class="resource-name">Directus</div>
+                    <div class="resource-status">CMS · 154 files ready</div>
+                </div>
+                <span class="resource-count">6</span>
+            </div>
+            <div class="resource-card">
+                <div class="resource-icon" style="background:linear-gradient(135deg,#007ACC,#0098FF);">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                        <rect x="4" y="4" width="12" height="12" rx="2" stroke="#fff" stroke-width="1.5" fill="none" class="spin-slow"/>
+                        <circle cx="10" cy="10" r="2" fill="#fff" class="orbit-tilt" style="--orbit-radius: 4px; --orbit-duration: 3s;"/>
+                        <path d="M8 8h4M8 10h4M8 12h2" stroke="#fff" stroke-width="1.5" stroke-linecap="round" class="energy-pulse"/>
+                    </svg>
+                </div>
+                <div class="resource-info">
+                    <div class="resource-name">VS Code</div>
+                    <div class="resource-status">Editor · Roo/Kilo/Quad</div>
+                </div>
+                <span class="resource-count">12</span>
+            </div>
+            <div class="resource-card">
+                <div class="resource-icon" style="background:linear-gradient(135deg,#F59E0B,#FBBF24);">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                        <circle cx="10" cy="10" r="7" stroke="#1a1a2e" stroke-width="1.5" fill="none" class="spin-reverse"/>
+                        <circle cx="10" cy="10" r="2" fill="#1a1a2e" class="pulse-dot"/>
+                        <circle cx="10" cy="10" r="1" fill="#1a1a2e" class="orbit" style="--orbit-radius: 5px; --orbit-duration: 2s;"/>
+                        <path d="M7 10l2 2 4-4" stroke="#1a1a2e" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="energy-pulse"/>
+                    </svg>
+                </div>
+                <div class="resource-info">
+                    <div class="resource-name">Hermes</div>
+                    <div class="resource-status">Router · 142 req/s</div>
+                </div>
+                <span class="resource-count">3</span>
+            </div>
+            <div class="resource-card">
+                <div class="resource-icon" style="background:linear-gradient(135deg,#2496ED,#38BDF8);">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                        <rect x="3" y="6" width="14" height="10" rx="2" stroke="#fff" stroke-width="1.5" fill="none" class="spin-slow"/>
+                        <circle cx="10" cy="11" r="2" fill="#fff" class="orbit-reverse" style="--orbit-radius: 4px; --orbit-duration: 2.5s;"/>
+                        <path d="M7 6V4a3 3 0 016 0v2" stroke="#fff" stroke-width="1.5" class="energy-pulse"/>
+                    </svg>
+                </div>
+                <div class="resource-info">
+                    <div class="resource-name">Docker</div>
+                    <div class="resource-status">Containers · 5 running</div>
+                </div>
+                <span class="resource-count">5</span>
+            </div>
+        </div>
+
+    </div><!-- /main -->
+
+</div><!-- /container -->
+
+<script>
+    // Toggle collapsible layers
+    function toggleLayer(el) {
+        el.classList.toggle('open');
+        const content = el.nextElementSibling;
+        content.classList.toggle('open');
+    }
+
+    // Simulate live activity updates
+    const activities = [
+        { icon: 'error', text: '<strong>Model timeout</strong> — Q model unresponsive, failover to K', badges: ['H'], time: 'Just now' },
+        { icon: 'success', text: '<strong>Web fetch</strong> completed for SMART-016', badges: ['PW', 'VS'], time: '1 min ago' },
+        { icon: 'warn', text: '<strong>Rate limit</strong> approaching on AppFlowy API', badges: ['AF'], time: '3 min ago' },
+        { icon: 'info', text: '<strong>Sync complete</strong> — 154 files validated in Directus', badges: ['D', 'N'], time: '5 min ago' },
+    ];
+
+    let activityIndex = 0;
+    setInterval(() => {
+        // In production, this would fetch real activity from the bridge server
+        activityIndex = (activityIndex + 1) % activities.length;
+    }, 10000);
+</script>
+
+</body>
+</html>

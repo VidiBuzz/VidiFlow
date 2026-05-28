@@ -3,14 +3,18 @@
  * Injects consistent navigation across all VidiSmart pages
  */
 
-(function() {
+(function () {
     'use strict';
+
+    // Calculate relative path prefix based on current location
+    const isSubfolder = window.location.pathname.includes('/tariff/');
+    const pathPrefix = isSubfolder ? '../' : '';
 
     // Navigation HTML template
     const navTemplate = `
     <nav class="vidi-nav">
         <div class="vidi-nav-container">
-            <a href="index.html" class="vidi-nav-logo">
+            <a href="${pathPrefix}vidismart.masterlist.html" class="vidi-nav-logo">
                 <span class="vidi-logo-vidi">Vidi</span><span class="vidi-logo-smart">Smart</span>
             </a>
             
@@ -22,16 +26,17 @@
 
             <div class="vidi-nav-menu">
                 <div class="vidi-nav-links">
-                    <a href="vidismart.masterlist.html" class="vidi-nav-link">Master Stack</a>
-                    <a href="vidishop.html" class="vidi-nav-link">VidiShop</a>
-                    <a href="VIDIMAIL_VIDIBLAST_SHOWCASE.html" class="vidi-nav-link">VidiMail</a>
-                    <a href="ai_consultants_directory_v3.html" class="vidi-nav-link">AI Consultants</a>
-                    <a href="dashboard.html" class="vidi-nav-link">Dashboard</a>
+                    <a href="${pathPrefix}vidismart.masterlist.html" class="vidi-nav-link" data-page="masterlist">Master Stack</a>
+                    <a href="${pathPrefix}open-apps.html" class="vidi-nav-link" data-page="open-apps">Open Apps</a>
+                    <a href="${pathPrefix}visualai-tools.html" class="vidi-nav-link" data-page="visualai-tools">AI Tools</a>
+                    <a href="${pathPrefix}topmodels.html" class="vidi-nav-link" data-page="topmodels">Top Models</a>
+                    <a href="${pathPrefix}directus-extensions.html" class="vidi-nav-link" data-page="directus-extensions">Extensions</a>
+                    <a href="${pathPrefix}tariff/tariff-timeline.html" class="vidi-nav-link" data-page="tariff-timeline">Tariff Map</a>
                 </div>
                 
                 <div class="vidi-nav-actions">
-                    <a href="waitlist.html" class="vidi-nav-btn vidi-nav-btn-primary">
-                        <i class="fas fa-rocket"></i> Join Waitlist
+                    <a href="${pathPrefix}waitlist.html" class="vidi-nav-btn vidi-nav-btn-primary">
+                        <i class="fas fa-envelope"></i> Contact
                     </a>
                 </div>
             </div>
@@ -42,53 +47,46 @@
 
     // Inject navigation when DOM is ready
     function injectNavigation() {
-        // Check if nav already exists
-        if (document.querySelector('.vidi-nav')) {
-            return;
-        }
+        if (document.querySelector('.vidi-nav')) return;
 
-        // Create container
         const navContainer = document.createElement('div');
         navContainer.innerHTML = navTemplate;
+        document.body.insertBefore(navContainer, document.body.firstChild);
 
-        // Insert at the beginning of body
-        const firstElement = document.body.firstChild;
-        document.body.insertBefore(navContainer, firstElement);
-
-        // Initialize mobile toggle
         initMobileToggle();
-
-        // Highlight current page
         highlightCurrentPage();
     }
 
-    // Mobile menu toggle
     function initMobileToggle() {
         const toggle = document.querySelector('.vidi-nav-toggle');
         const menu = document.querySelector('.vidi-nav-menu');
-
         if (toggle && menu) {
-            toggle.addEventListener('click', function() {
+            toggle.addEventListener('click', () => {
                 toggle.classList.toggle('active');
                 menu.classList.toggle('active');
             });
         }
     }
 
-    // Highlight current page in nav
     function highlightCurrentPage() {
-        const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+        const path = window.location.pathname;
         const links = document.querySelectorAll('.vidi-nav-link');
 
         links.forEach(link => {
-            const href = link.getAttribute('href');
-            if (href === currentPage || (currentPage === '' && href === 'index.html')) {
+            const page = link.getAttribute('data-page');
+            if (
+                (page === 'tariff-timeline' && path.includes('tariff-timeline')) ||
+                (page === 'masterlist' && path.includes('vidismart.masterlist')) ||
+                (page === 'open-apps' && path.includes('open-apps')) ||
+                (page === 'visualai-tools' && path.includes('visualai-tools')) ||
+                (page === 'topmodels' && path.includes('topmodels')) ||
+                (page === 'directus-extensions' && path.includes('directus-extensions'))
+            ) {
                 link.classList.add('active');
             }
         });
     }
 
-    // Initialize when DOM is ready
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', injectNavigation);
     } else {

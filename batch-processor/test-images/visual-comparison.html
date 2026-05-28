@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BrandSwap Visual Comparison</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+        
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            color: white;
+            text-align: center;
+            margin-bottom: 0.5rem;
+            font-size: 2.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .subtitle {
+            color: rgba(255,255,255,0.9);
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+        }
+        
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .image-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        
+        .image-card h2 {
+            color: #333;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .badge-before {
+            background: #fee;
+            color: #c33;
+        }
+        
+        .badge-after {
+            background: #efe;
+            color: #3c3;
+        }
+        
+        .image-wrapper {
+            position: relative;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
+            background: #f5f5f5;
+        }
+        
+        .image-wrapper img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        
+        .zoom-hint {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            pointer-events: none;
+        }
+        
+        .details {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            color: #555;
+        }
+        
+        .details strong {
+            color: #333;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .controls {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        
+        .controls h3 {
+            margin-bottom: 1rem;
+            color: #333;
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-secondary {
+            background: #e0e0e0;
+            color: #333;
+        }
+        
+        .btn-secondary:hover {
+            background: #d0d0d0;
+        }
+        
+        .highlight-box {
+            position: absolute;
+            border: 3px solid #ff0000;
+            background: rgba(255, 0, 0, 0.1);
+            pointer-events: none;
+            display: none;
+        }
+        
+        .highlight-box.show {
+            display: block;
+        }
+        
+        @media (max-width: 968px) {
+            .comparison-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔄 BrandSwap Visual Comparison</h1>
+        <p class="subtitle">NotebookLM → VidiSmart Logo Replacement Test</p>
+        
+        <div class="comparison-grid">
+            <div class="image-card">
+                <h2>
+                    <span class="badge badge-before">Before</span>
+                    Original Input
+                </h2>
+                <div class="image-wrapper">
+                    <img id="beforeImage" src="realistic_test_input.png" alt="Original image with NotebookLM logo">
+                    <div class="zoom-hint">🔍 Click to zoom</div>
+                    <div class="highlight-box" id="highlightBefore"></div>
+                </div>
+                <div class="details">
+                    <strong>File:</strong> realistic_test_input.png<br>
+                    <strong>Size:</strong> 1200×800px<br>
+                    <strong>Logo:</strong> NotebookLM (blue background, white text)<br>
+                    <strong>Position:</strong> Top-right corner (950, 20)
+                </div>
+            </div>
+            
+            <div class="image-card">
+                <h2>
+                    <span class="badge badge-after">After</span>
+                    Processed Output
+                </h2>
+                <div class="image-wrapper">
+                    <img id="afterImage" src="../output/1779995087901-c781bbc4-6c5f-4069-b0bd-83284c1cd614-realistic_test_input_rebranded_2026-05-28T19-04-49-956Z.png" alt="Processed image with VidiSmart logo">
+                    <div class="zoom-hint">🔍 Click to zoom</div>
+                    <div class="highlight-box" id="highlightAfter"></div>
+                </div>
+                <div class="details">
+                    <strong>File:</strong> realistic_test_input_rebranded_2026-05-28T19-04-49-956Z.png<br>
+                    <strong>Size:</strong> 1200×800px<br>
+                    <strong>Logo:</strong> VidiSmart (indigo background, white text)<br>
+                    <strong>Detection Confidence:</strong> 64.89%
+                </div>
+            </div>
+        </div>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value">✅</div>
+                <div class="stat-label">NotebookLM Removed</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">⚠️</div>
+                <div class="stat-label">VidiSmart Detected (64.89%)</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">35.5KB</div>
+                <div class="stat-label">Output File Size</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">0.5</div>
+                <div class="stat-label">Detection Threshold</div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <h3>🎛️ Comparison Tools</h3>
+            <div class="btn-group">
+                <button class="btn btn-primary" onclick="toggleHighlight()">🔍 Highlight Logo Region</button>
+                <button class="btn btn-primary" onclick="openFullscreen()">⛶ Fullscreen View</button>
+                <button class="btn btn-secondary" onclick="downloadComparison()">💾 Download Side-by-Side</button>
+                <button class="btn btn-secondary" onclick="refreshImages()">🔄 Refresh Images</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let highlightVisible = false;
+        
+        // Logo region coordinates (from test)
+        const logoRegion = {
+            x: 950,
+            y: 20,
+            w: 200,
+            h: 40
+        };
+        
+        function toggleHighlight() {
+            highlightVisible = !highlightVisible;
+            const beforeBox = document.getElementById('highlightBefore');
+            const afterBox = document.getElementById('highlightAfter');
+            
+            if (highlightVisible) {
+                const beforeImg = document.getElementById('beforeImage');
+                const afterImg = document.getElementById('afterImage');
+                
+                // Calculate scale factors
+                const beforeScale = beforeImg.clientWidth / 1200;
+                const afterScale = afterImg.clientWidth / 1200;
+                
+                // Position highlights
+                beforeBox.style.left = (logoRegion.x * beforeScale) + 'px';
+                beforeBox.style.top = (logoRegion.y * beforeScale) + 'px';
+                beforeBox.style.width = (logoRegion.w * beforeScale) + 'px';
+                beforeBox.style.height = (logoRegion.h * beforeScale) + 'px';
+                beforeBox.classList.add('show');
+                
+                afterBox.style.left = (logoRegion.x * afterScale) + 'px';
+                afterBox.style.top = (logoRegion.y * afterScale) + 'px';
+                afterBox.style.width = (logoRegion.w * afterScale) + 'px';
+                afterBox.style.height = (logoRegion.h * afterScale) + 'px';
+                afterBox.classList.add('show');
+            } else {
+                beforeBox.classList.remove('show');
+                afterBox.classList.remove('show');
+            }
+        }
+        
+        function openFullscreen() {
+            const beforeImg = document.getElementById('beforeImage');
+            const afterImg = document.getElementById('afterImage');
+            
+            if (beforeImg.requestFullscreen) {
+                beforeImg.requestFullscreen();
+            } else if (beforeImg.webkitRequestFullscreen) {
+                beforeImg.webkitRequestFullscreen();
+            }
+        }
+        
+        function downloadComparison() {
+            alert('To create a side-by-side comparison image:\n\n1. Right-click each image and save them\n2. Use an image editor to combine them\n3. Or use the Python script: create_comparison.py');
+        }
+        
+        function refreshImages() {
+            const beforeImg = document.getElementById('beforeImage');
+            const afterImg = document.getElementById('afterImage');
+            
+            const timestamp = new Date().getTime();
+            beforeImg.src = beforeImg.src.split('?')[0] + '?' + timestamp;
+            afterImg.src = afterImg.src.split('?')[0] + '?' + timestamp;
+        }
+        
+        // Add click-to-zoom functionality
+        document.querySelectorAll('.image-wrapper img').forEach(img => {
+            img.style.cursor = 'zoom-in';
+            img.addEventListener('click', function() {
+                window.open(this.src, '_blank');
+            });
+        });
+    </script>
+</body>
+</html>

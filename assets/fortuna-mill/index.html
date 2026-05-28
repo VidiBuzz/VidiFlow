@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><title>Download Images</title></head>
+<body style="font-family: system-ui; padding: 2rem;">
+<h1>Fortuna Mill Estate Image Downloader</h1>
+<p>This will automatically download ~20+ images from the Perplexity search results page.</p>
+
+<script>
+window.DOWNLOAD_IMAGES = async function() {
+  console.log('Starting download...');
+  
+  // Check if on the right search page and extract image links
+  const currentPage = window.location.href;
+  console.log('Current page:', currentPage);
+  
+  // Method 1: Extract from result card images
+  try {
+    const imgElements = document.querySelectorAll('.result-article a, .result-card a[href*=".jpg"], [class^="prose"] a[href*="png"]');
+    
+    for (const link of imgElements) {
+      try {
+        let src;
+        
+        // Try to get image source from various attributes on link or child elements
+        const inner = link.shadowRoot || link.querySelector('img') || null;
+        
+        if (!inner && !link.dataset.src && !link.getAttribute('data-img-uri')) continue;
+        
+        try {
+          // Extract from data attributes
+          let rawSrc = link.getAttribute('data-img-uri') || 
+                       link.getAttribute('data-img') || 
+                       link.getAttribute('data-src') || '';
+          
+          // Skip Perplexity internal URLs and thumbnails
+          if (!rawSrc) continue;
+          
+          const parsedUrl = new URL(rawSrc);
+          
+          if (!parsedUrl.pathname.includes('/thumbnails/') && 
+              !rawSrc.includes('+id=') &&
+              (!parsedUrl.hostname.startsWith('perplexity') || rawSrc.length > 70)) {
+            
+            // Try to follow link to get actual source or use direct from data
+            console.log('[EXTRACT] ', rawSrc.substring(0,80));
+          }
+        } catch(e) {/* parse error */}
+      } catch(e) {/* continue */}
+    }
+    
+    // Method 2: Extract directly from img element attributes (if any visible on page)
+    const galleryImages = document.querySelectorAll('[data-href], [data-full-width]');
+    
+    for (const img of galleryImages) {
+      try {
+        if (!img.srcset && !img.dataset.hintSrc) continue;
+        
+        let imgSrc;
+        if (img.dataset.fullWidth) {
+          try {
+            const fullUrl = new URL(img.dataset.fullWidth);
+            imgSrc = fullUrl.href.split('?')[0];
+            console.log('[GALLERY] ', imgSrc.substring(0,80));
+          } catch(e) {}
+        } else if (img.srcset) {
+          // Extract first image from srcset
+          const part = img.srcset.split(',')[0].trim().split(' ').pop();
+          try {
+            const match = part.match(/([^\s]+(?:\.[^\s\)]+)?)/);
+            if (match) {
+              const cleanPart = match[1];
+              console.log('[SRCSET]', cleanPart.substring(0,80));
+            }
+          } catch(e) {}
+        }
+      } catch(e) {/* continue */}
+    }
+    
+  } catch(e) {/* error */}
+  
+  // Method 3: Direct fetch approach - wait for images to load then download
+  await new Promise(r => setTimeout(r, 8000)); // Wait longer for lazy-loaded images
+  
+  const results = [];
+  
+  // Try to extract from actual image tag attributes after page load
+  try {
+    for (const img of document.querySelectorAll('img[src], img[data-src]')) {
+      let sourceUrl;
+      
+      if (img.dataset.src) {
+        try { sourceUrl = new URL(img.dataset.src).href.split('?')[0]; }
+        catch(e) {}
+      } else if (img.getAttribute('data-href')) {
+        try { sourceUrl = new URL(img.getAttribute('data-href')).href.split('?')[0]; }
+        catch(e) {}
+      } else if (img.src.includes('http') && !img.src.includes('+id=')) {
+        // Already has an actual URL in src
+        sourceUrl = img.src.split('?')[0];
+      }
+      
+      if (!sourceUrl ||
+          new URL(sourceUrl).pathname.startsWith('/thumbnails/') || 
+          imageHashes.has(sourceUrl)) {
+        continue;
+      }
+      
+      results.push(sourceUrl);
+      console.log(`Image #${results.length}: ${sourceUrl.substring(0,75)}...`);
+      
+      // Deduplicate based on hash
+      const sourceKey = Math.abs(sourceUrl.split('?')[0].split('/').pop().replaceAll('-', '').replace(/[^0-9a-z_-]/g, '')) % 1000;
+      
+ imageHashes.set(sourceUrl, { key: sourceKey });
+    }
+  } catch(e) {/* error */}
+  
+  // If we got very few images from data attributes, try direct src URLs
+  if (results.length < 20 && document.querySelectorAll('.lazyloaded, img[src*="spark"]').length > 1) {
+    console.log('Attempting to download visible images with direct fetch...');
+    
+    for (const lazyImg of Array.from(document.querySelectorAll('* > img[style]')).slice(0,35)) {
+      try {
+        const directSrc = await page.evaluate(el => el.getAttribute('src'), lazyImg);
+        
+        // Try alternative sources if standard src isn't usable
+        let fetchUrl;
+        if (lazyImg.dataHRef) {
+          try { fetchUrl = new URL(lazyImg.getAttribute('data-href')).href.split('?')[0]; }
+          catch(e) { fetchUrl = directSrc.split('?')[0]; }
+        } else {
+          fetchUrl = directSrc.split('?')[0];
+        }
+        
+        // Add to results if not duplicate or Perplexity system image
+        if (!fetchUrl || 
+            !/thumbnails|thumb/i.test(new URL(fetchUrl).pathname) || 
+            new URL(fetchUrl).hostname.includes('+id')) {
+          
+          if (!results.includes(fetchUrl)) {
+            results.push(fetchUrl);
+          }
+        }
+      } catch(e) {/* skip failed attempts */}
+    }
+  }
+  
+  // Method 4: Search text content for inline URLs (edge case fallback)
+  const pageContent = await page.content();
+  const textMatches = pageContent.match(/https?:\/\/[^\s"\'\(<]+\.(jpg|jpeg|png|gif)/gi);
+  
+  if (textMatches && textMatches.length > results.length) {
+    console.log('Found', textMatches.length.toLocaleString(), 'images in page text');
+    
+    for (const match of textMatches.slice(0, 15)) {
+      try {
+        const urlObj = new URL(match);
+        // Only add if it's an external image resource we can fetch directly
+        const isExternal = !urlObj.pathname.startsWith('/thumbnails/') && 
+                          !urlObj.pathname.includes('+id=') &&
+                          (new URL(match).hostname.indexOf('sparkplatform.com') > -1 || urlObj.pathname.split('/')[2]?.match(/\d{8}/));
+        
+        if (!isExternal) continue;
+        
+        // Convert to full URL and add
+        const fullUrl = new URL(match);
+        if (!results.some(r => typeof r === 'string' && r === fullUrl.toString().split('?')[0])) {
+          results.push(fullUrl.href.split('?')[0]);
+          console.log(`Text match: ${match.substring(0,75)}...`);
+        }
+      } catch(e) {/* invalid URL format */}
+    }
+  }
+  
+  // Limit to top candidates (prioritize those from result cards first)
+  return results.slice(0, 35).map(url => ({url: url, priority: true}));
+};
+</script>
+
+<pre id="output"></pre>
+
+<script>
+const output = document.getElementById('output');
+updateOutput(`Starting...`);
+
+let browser;
+try {
+  window.addEventListener('load', () => {});
+  
+  // Wait for search results to load with all images available
+  updateOutput('Waiting for Perplexity search page to fully load...');
+  
+  setTimeout(async function() {
+    try {
+      // Navigate back if not already on the right page
+      await fetch('/perplexity/search/find-all-images-and-video-of-fortuna-mill-estate/420ig', { waitUntil: 'domcontentloaded' });
+      
+      updateOutput('Navigating to search results...');
+      const imageUrls = await window.DOWNLOAD_IMAGES();
+      
+      console.log(`Found ${imageUrls.length.toLocaleString()} images`);
+      
+      if (imageUrls && imageUrls.length > 0) {
+        for (let i = 0; i < imageUrls.length; i++) {
+          const item = imageUrls[i];
+          
+          try {
+            // Check against already downloaded files to avoid duplicates
+            const existingFiles = await page.evaluate(() => 
+              Array.from(document.dirsync('/d/vidismart/assets/fortuna-mill/spark_platform_fullres/'))
+                     .map(f => f.replace(/\.(jpg|jpeg)$/i, '.orig'))
+            );
+            
+            if (existingFiles.length > imageUrls.length - 5) {
+              console.log('Skipping duplicate:', existingFiles);
+              continue;
+            }
+            
+            const urlObj = new URL(item.url);
+            const isSparkPlatformImage = urlObj.host.indexOf('sparkplatform.com') >= 0 || 
+                                         (urlObj.pathname !== '/thumbnails/' && urlObj.pathname.match(/vir|^photo-/) || false);
+            
+            if (!isSparkPlatformImage) {
+              console.log(`Skipping non-gallery: ${urlObj.pathname}`);
+              continue;
+            }
+            
+            // Skip Perplexity internal URLs
+            if (new URL(item.url).pathname.startsWith('/search') || new URL(item.url).pathn().indexOf('+id=') > -1) {
+              console.log(`Perplexity internal link skipped`);
+              continue;
+            } catch(e) {}
+          }
+          
+          const buffer = await fetch(item.url).then(r => r.arrayBuffer());
+          updateOutput(`${i+1}/${imageUrls.length} downloaded: ${buffer.byteLength} bytes (`.padStart(7).substring(0, 81));
+          });
+
+      updateOutput('Complete!');
+    } catch(e) {
+      updateOutput(`Error: ${e.message.substring(0,60)}...`);
+    }
+    
+  }, 8000);
+} catch(e) {/* error handling */}
+
+</script>
+</body>
+</html>
+
+EXTRACT
