@@ -135,6 +135,30 @@
         .bom-table td { padding: 0.6rem 0.75rem; border-bottom: 1px solid var(--border); font-size: 0.8rem; font-weight: 600; vertical-align: top; }
         .bom-table .bom-total td { border-top: 2px solid var(--border); color: var(--blue); font-size: 0.95rem; }
 
+        /* VENDOR BUTTONS */
+        .vendor-links { display: flex; gap: 0.35rem; justify-content: flex-end; align-items: center; }
+        .vendor-btn {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 22px; height: 22px; border-radius: 5px;
+            font-size: 0.65rem; font-weight: 900; text-decoration: none;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid var(--border);
+            text-transform: uppercase;
+        }
+        .vendor-btn:hover {
+            transform: translateY(-1.5px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+            border-color: rgba(255,255,255,0.25);
+        }
+        .vendor-btn.amz { background: rgba(255, 153, 0, 0.1); color: #ff9900; }
+        .vendor-btn.amz:hover { background: #ff9900; color: #000; box-shadow: 0 0 10px rgba(255, 153, 0, 0.35); }
+        .vendor-btn.neg { background: rgba(245, 166, 35, 0.1); color: #f5a623; }
+        .vendor-btn.neg:hover { background: #f5a623; color: #000; box-shadow: 0 0 10px rgba(245, 166, 35, 0.35); }
+        .vendor-btn.bh { background: rgba(59, 130, 246, 0.1); color: #3b82f6; }
+        .vendor-btn.bh:hover { background: #3b82f6; color: #fff; box-shadow: 0 0 10px rgba(59, 130, 246, 0.35); }
+        .vendor-btn.mfg { background: rgba(16, 185, 129, 0.1); color: #10b981; }
+        .vendor-btn.mfg:hover { background: #10b981; color: #000; box-shadow: 0 0 10px rgba(16, 185, 129, 0.35); }
+
         .btn-assemble { width: 100%; padding: 1rem; background: var(--blue); border: none; border-radius: 14px; color: #fff; font-size: 0.83rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.08em; cursor: pointer; transition: all 0.2s; }
         .btn-assemble:hover { background: #2563eb; transform: translateY(-1px); }
 
@@ -423,7 +447,7 @@
             <div class="hub-card">
                 <h3 style="font-size:1.05rem;font-weight:900;letter-spacing:-0.01em">Configured Bill of Materials</h3>
                 <table class="bom-table">
-                    <thead><tr><th>Category</th><th>Component</th><th style="text-align:right">Price</th></tr></thead>
+                    <thead><tr><th>Category</th><th>Component</th><th style="text-align:right">Price</th><th style="text-align:right;width:120px;padding-right:0.75rem">Live Search</th></tr></thead>
                     <tbody id="bom-list"></tbody>
                 </table>
             </div>
@@ -848,10 +872,28 @@ function updateInterface() {
         ['Case Fans',  S.fans.name,                     S.fans.price],
     ];
     document.getElementById('bom-list').innerHTML =
-        rows.map(([cat,desc,p]) =>
-            `<tr><td style="color:var(--text-secondary);font-size:0.7rem;white-space:nowrap;width:110px">${cat}</td><td>${desc}</td><td style="text-align:right;white-space:nowrap">$${p.toLocaleString()}</td></tr>`
-        ).join('') +
-        `<tr class="bom-total"><td style="color:var(--blue);font-size:0.7rem">TOTAL</td><td></td><td style="text-align:right;color:var(--blue)">$${total.toLocaleString()}</td></tr>`;
+        rows.map(([cat,desc,p]) => {
+            const query = encodeURIComponent((desc.includes(' — ') ? desc.split(' — ')[0] : desc).replace(/ ×\d+/g, '').replace(/\s*\(\d+C\)/g, '').trim());
+            return `<tr>
+                <td style="color:var(--text-secondary);font-size:0.7rem;white-space:nowrap;width:110px">${cat}</td>
+                <td>${desc}</td>
+                <td style="text-align:right;white-space:nowrap">$${p.toLocaleString()}</td>
+                <td style="text-align:right;white-space:nowrap;padding-right:0.75rem">
+                    <div class="vendor-links">
+                        <a class="vendor-btn amz" href="https://www.amazon.com/s?k=${query}" target="_blank" title="Search Amazon">a</a>
+                        <a class="vendor-btn neg" href="https://www.newegg.com/p/pl?d=${query}" target="_blank" title="Search Newegg">n</a>
+                        <a class="vendor-btn bh" href="https://www.bhphotovideo.com/c/search?Ntt=${query}" target="_blank" title="Search B&H Photo">b</a>
+                        <a class="vendor-btn mfg" href="https://www.google.com/search?q=${query}" target="_blank" title="Search Vendor/Manufacturer">g</a>
+                    </div>
+                </td>
+            </tr>`;
+        }).join('') +
+        `<tr class="bom-total">
+            <td style="color:var(--blue);font-size:0.7rem">TOTAL</td>
+            <td></td>
+            <td style="text-align:right;color:var(--blue)">$${total.toLocaleString()}</td>
+            <td></td>
+        </tr>`;
 
     // Bizon comparison + spotlight + restart slideshow idle timer
     updateBizonComparison(total, state.gpuFamily, state.gpuCount);
