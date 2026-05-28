@@ -225,6 +225,14 @@
         }
         .vs-btn-scan:hover { background: #2563eb; transform: translateY(-1px); }
         .vs-btn-scan.scanning { background: rgba(255,255,255,0.05); color: var(--text-secondary); pointer-events: none; border: 1px solid var(--border); box-shadow: none; }
+
+        .vs-btn-deep-scan {
+            width: 100%; padding: 1rem; background: linear-gradient(135deg, var(--purple), #c084fc); border: none; border-radius: 14px;
+            color: #fff; font-size: 0.83rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.08em;
+            cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 14px rgba(168,85,247,0.3); margin-top: 0.75rem;
+        }
+        .vs-btn-deep-scan:hover { background: linear-gradient(135deg, #a855f7, #a855f7); transform: translateY(-1px); }
+        .vs-btn-deep-scan.scanning { background: rgba(255,255,255,0.05); color: var(--text-secondary); pointer-events: none; border: 1px solid var(--border); box-shadow: none; }
     </style>
 </head>
 <body>
@@ -1068,6 +1076,7 @@ updateInterface();
         </div>
 
         <button class="vs-btn-scan" id="vs-btn-scan" onclick="runPriceScan()">Run VidiShop Price Match</button>
+        <button class="vs-btn-deep-scan" id="vs-btn-deep-scan" style="display:none" onclick="runDeepScan()">Run VidiShop SecondMarket Deep Scan</button>
     </div>
 </div>
 
@@ -1077,6 +1086,8 @@ updateInterface();
 function openAgentConsole() {
     document.getElementById('vs-agent-overlay').classList.add('active');
     resetIdleTimer();
+    // Auto-trigger the scan on launch!
+    setTimeout(runPriceScan, 300);
 }
 
 function closeAgentConsole() {
@@ -1084,6 +1095,8 @@ function closeAgentConsole() {
 }
 
 let isScanning = false;
+let isDeepScanning = false;
+let primaryResults = []; // Store standard results to override them
 
 function writeLog(text, type = 'info') {
     const t = document.getElementById('vs-terminal');
@@ -1095,9 +1108,13 @@ function writeLog(text, type = 'info') {
 }
 
 function runPriceScan() {
-    if (isScanning) return;
+    if (isScanning || isDeepScanning) return;
     isScanning = true;
     
+    // Hide deep scan button at start
+    const deepBtn = document.getElementById('vs-btn-deep-scan');
+    if (deepBtn) deepBtn.style.display = 'none';
+
     const btn = document.getElementById('vs-btn-scan');
     btn.className = 'vs-btn-scan scanning';
     btn.textContent = 'Agent Scanning Multi-Vendors...';
@@ -1162,6 +1179,13 @@ function runPriceScan() {
             writeLog('AGENT: Optimized purchasing list generated successfully!', 'success');
             
             renderResults(results);
+            
+            // Reveal Deep Scan button!
+            if (deepBtn) {
+                deepBtn.style.display = 'block';
+                deepBtn.textContent = 'Run VidiShop Deep Scan (eBay/FB)';
+                deepBtn.className = 'vs-btn-deep-scan';
+            }
             return;
         }
         
@@ -1209,7 +1233,101 @@ function runPriceScan() {
     scanNextItem();
 }
 
+function runDeepScan() {
+    if (isDeepScanning || isScanning) return;
+    isDeepScanning = true;
+    
+    const deepBtn = document.getElementById('vs-btn-deep-scan');
+    deepBtn.className = 'vs-btn-deep-scan scanning';
+    deepBtn.textContent = 'Agent Deep Scanning eBay & FB...';
+    
+    const statusTag = document.getElementById('agent-status-tag');
+    statusTag.textContent = 'DEEP MATCHING';
+    statusTag.style.color = 'var(--purple)';
+    
+    writeLog('SYSTEM: Starting VidiShop SecondMarket Deep Scraper v2.6...', 'system');
+    writeLog('SYSTEM: Authenticating with eBay Refurbished Partner API...', 'system');
+    writeLog('SYSTEM: Initializing crawler for local Facebook Marketplace listings...', 'system');
+    writeLog('AGENT: Running parallel search scans for second-hand/ECC components...', 'info');
+
+    const progressFill = document.getElementById('agent-progress-fill');
+    const progressPct = document.getElementById('agent-progress-pct');
+    
+    // Refurbished/Used matches
+    const secondMatches = {
+        'System RAM': { vendor: 'eBay (Used)', price: 580, note: 'ECC DDR5 RDIMM 8-channel kit (Vetted, 99.8% rating)', query: 'ECC DDR5 RDIMM 8x' },
+        'CPU': { vendor: 'r/homelabsales', price: 510, note: 'Threadripper Pro 7845WX (Vetted Seller, original box)', query: 'Threadripper Pro 7845WX' },
+        'Chassis': { vendor: 'Facebook Marketplace', price: 95, note: 'Define 7 XL (Locally listed, pick-up)', query: 'Define 7 XL' },
+        'PSU': { vendor: 'UnixSurplus', price: 120, note: 'Refurbished SilverStone Platinum PSU (Tested)', query: 'SilverStone Platinum PSU' }
+    };
+    
+    const matchKeys = Object.keys(secondMatches);
+    let matchIndex = 0;
+    
+    function nextDeepMatch() {
+        if (matchIndex >= matchKeys.length) {
+            isDeepScanning = false;
+            deepBtn.className = 'vs-btn-deep-scan';
+            deepBtn.textContent = 'VidiShop Deep Scan Complete ✓';
+            deepBtn.style.background = 'rgba(168,85,247,0.1)';
+            deepBtn.style.color = 'var(--purple)';
+            deepBtn.style.borderColor = 'rgba(168,85,247,0.3)';
+            
+            statusTag.textContent = 'DEEP SUCCESS';
+            statusTag.style.color = 'var(--purple)';
+            
+            progressFill.style.width = '100%';
+            progressPct.textContent = '100%';
+            
+            writeLog('SYSTEM: Deep second-market scan complete.', 'success');
+            writeLog('AGENT: Highly optimized second-hand alternative plan generated!', 'success');
+            
+            renderResults(primaryResults);
+            return;
+        }
+        
+        const pct = Math.round((matchIndex / matchKeys.length) * 100);
+        progressFill.style.width = `${pct}%`;
+        progressPct.textContent = `${pct}%`;
+        
+        const catKey = matchKeys[matchIndex];
+        const match = secondMatches[catKey];
+        
+        writeLog(`AGENT: [Crawling] Searching secondary markets for optimized ${catKey} alternatives...`, 'info');
+        
+        setTimeout(() => {
+            writeLog(`AGENT: Querying eBay Used/Refurbished list for "${match.query}"...`, 'info');
+            
+            setTimeout(() => {
+                const idx = primaryResults.findIndex(r => r.cat === catKey);
+                if (idx !== -1) {
+                    const old = primaryResults[idx];
+                    const savings = old.price - match.price;
+                    
+                    writeLog(`MATCH: [Second-Market Bargain] Found ${match.vendor} matched "${match.note}" at $${match.price} (Saved $${savings} extra!)`, 'success');
+                    
+                    primaryResults[idx] = {
+                        cat: catKey,
+                        name: match.note,
+                        vendor: match.vendor,
+                        price: match.price,
+                        est: old.est,
+                        savings: old.est - match.price,
+                        isSecondary: true
+                    };
+                }
+                
+                matchIndex++;
+                nextDeepMatch();
+            }, 1000);
+        }, 800);
+    }
+    
+    nextDeepMatch();
+}
+
 function renderResults(results) {
+    primaryResults = results; // cache results locally for deep scan support
     const body = document.getElementById('vs-results-body');
     body.innerHTML = '';
     
@@ -1226,15 +1344,20 @@ function renderResults(results) {
             ? `<span style="color:var(--emerald)">-$${r.savings.toLocaleString()}</span>` 
             : `<span style="color:var(--text-secondary)">MSRP</span>`;
             
+        const badgeText = r.isSecondary 
+            ? `<br><span style="display:inline-block;margin-top:0.25rem;font-size:0.55rem;font-weight:900;text-transform:uppercase;letter-spacing:0.04em;padding:1px 4px;border-radius:4px;background:rgba(168,85,247,0.15);color:var(--purple)">Used / Refurbished</span>` 
+            : '';
+
         const query = encodeURIComponent(r.name);
         let vendorLink = '';
-        if (r.vendor === 'Amazon') vendorLink = `https://www.amazon.com/s?k=${query}`;
-        else if (r.vendor === 'Newegg') vendorLink = `https://www.newegg.com/p/pl?d=${query}`;
-        else if (r.vendor === 'B&H Photo') vendorLink = `https://www.bhphotovideo.com/c/search?Ntt=${query}`;
+        if (r.vendor.includes('Amazon')) vendorLink = `https://www.amazon.com/s?k=${query}`;
+        else if (r.vendor.includes('Newegg')) vendorLink = `https://www.newegg.com/p/pl?d=${query}`;
+        else if (r.vendor.includes('B&H')) vendorLink = `https://www.bhphotovideo.com/c/search?Ntt=${query}`;
+        else if (r.vendor.includes('eBay')) vendorLink = `https://www.ebay.com/sch/i.html?_nkw=${query}`;
         else vendorLink = `https://www.google.com/search?q=${query}`;
 
         body.innerHTML += `<tr>
-            <td style="font-size:0.75rem">${r.cat}</td>
+            <td style="font-size:0.75rem">${r.cat} ${badgeText}</td>
             <td class="link-col" style="font-size:0.7rem;font-weight:800"><a href="${vendorLink}" target="_blank">${r.vendor} ↗</a></td>
             <td style="text-align:right;font-size:0.75rem">$${r.price.toLocaleString()}</td>
             <td style="text-align:right;font-size:0.75rem">${savingsText}</td>
