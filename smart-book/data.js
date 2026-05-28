@@ -1867,3 +1867,8 @@ cache)  Window  Stale?    Stale</code></pre>
     { source: "ch39", target: "ch44", type: "reference", label: "issue matrix" },
   ]
 };
+
+// Node.js export
+if (typeof module !== 'undefined') {
+  try { module.exports = { BOOK_DATA }; } catch(e) {}
+}

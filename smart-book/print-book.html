@@ -1583,6 +1583,7 @@
                 const params = new URLSearchParams(window.location.search);
                 const personaParam = params.get('persona');
                 const nameParam = params.get('name');
+                const chapterParam = params.get('chapter');
 
                 if (personaParam && BOOK_DATA.personas[personaParam]) {
                     document.getElementById('personaSelect').value = personaParam;
@@ -1600,8 +1601,20 @@
 
                 buildBook();
 
+                // If a specific chapter was requested, scroll to it after build
+                if (chapterParam && BOOK_DATA.chapters[chapterParam]) {
+                    setTimeout(function() {
+                        var chapterEl = document.getElementById(chapterParam);
+                        if (chapterEl) {
+                            chapterEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                            var chTitle = BOOK_DATA.chapters[chapterParam].title;
+                            showToast('\u2705 Navigated to ' + chTitle);
+                        }
+                    }, 300);
+                }
+
                 // Show toast for persona navigation from index.html
-                if (personaParam && personaParam !== 'all') {
+                if (personaParam && personaParam !== 'all' && !chapterParam) {
                     var pLabel = BOOK_DATA.personas[personaParam] ? BOOK_DATA.personas[personaParam].label : personaParam;
                     var nStr = nameParam ? ' for ' + decodeURIComponent(nameParam) : '';
                     setTimeout(function () { showToast('\u2705 ' + pLabel + ' Edition loaded' + nStr); }, 500);
