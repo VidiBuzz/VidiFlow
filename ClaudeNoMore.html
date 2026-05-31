@@ -17,7 +17,13 @@
       background: #0f1117;
       color: #e2e8f0;
       min-height: 100vh;
-      padding: 32px 24px
+      padding: 40px 0;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
     }
 
     h1 {
@@ -68,13 +74,198 @@
     /* PRICE CARDS */
     .cards {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 14px
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      position: relative;
     }
 
-    @media(max-width:700px) {
-      .cards {
-        grid-template-columns: 1fr
+    /* SIDE-BY-SIDE PANELS & SIDEBARS */
+    .prices-layout {
+      display: grid;
+      grid-template-columns: 2fr 1.15fr;
+      gap: 24px;
+      align-items: start;
+    }
+
+    .prices-columns {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .prices-column {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .column-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: #fbbf24;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 2px solid #1e293b;
+      padding-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .cards-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      position: relative;
+    }
+
+    /* Vertical connector line passing through the middle combo metric of all stacked cards in this column */
+    .cards-stack::before {
+      content: '';
+      position: absolute;
+      left: calc(50% + 1.5px);
+      top: 50px;
+      bottom: 50px;
+      width: 2px;
+      background: repeating-linear-gradient(to bottom, #fbbf24, #fbbf24 6px, transparent 6px, transparent 12px);
+      opacity: 0.35;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    @media(max-width: 1400px) {
+      .prices-layout {
+        grid-template-columns: 1.8fr 1.2fr;
+      }
+    }
+
+    @media(max-width: 1100px) {
+      .prices-layout {
+        grid-template-columns: 1fr;
+      }
+      .prices-columns {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .performance-sidebar {
+      background: #1a202c;
+      border: 1px solid #2d3748;
+      border-radius: 12px;
+      padding: 24px;
+      position: sticky;
+      top: 20px;
+      z-index: 5;
+    }
+
+    .performance-sidebar h3 {
+      font-size: 16px;
+      font-weight: 700;
+      color: #fbbf24;
+      margin-bottom: 6px;
+    }
+
+    .sidebar-sub {
+      font-size: 11px;
+      color: #64748b;
+      margin-bottom: 20px;
+    }
+
+    .chart-metric {
+      margin-bottom: 20px;
+    }
+
+    .chart-metric-title {
+      font-size: 11px;
+      font-weight: 600;
+      color: #e2e8f0;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .bar-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .bar-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .bar-label {
+      font-size: 10.5px;
+      color: #94a3b8;
+      min-width: 75px;
+      font-weight: 600;
+    }
+
+    .bar-container {
+      flex: 1;
+      height: 9px;
+      background: #0f1117;
+      border-radius: 4.5px;
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      height: 100%;
+      border-radius: 4px;
+    }
+
+    .bar-fill.color-mimo {
+      background: #ea580c;
+    }
+
+    .bar-fill.color-dspro {
+      background: #3b82f6;
+    }
+
+    .bar-fill.color-dsflash {
+      background: #60a5fa;
+    }
+
+    .bar-fill.color-qwen {
+      background: #7c3aed;
+    }
+
+    .bar-fill.color-kimi {
+      background: #0ea5e9;
+    }
+
+    .bar-val {
+      font-size: 10px;
+      font-weight: 700;
+      color: #e2e8f0;
+      min-width: 32px;
+      text-align: right;
+    }
+
+    .sidebar-note {
+      font-size: 11px;
+      color: #94a3b8;
+      line-height: 1.5;
+      background: #111827;
+      padding: 10px 12px;
+      border-radius: 8px;
+      border-left: 3px solid #fbbf24;
+      margin-top: 14px;
+    }
+
+    .analysis-container {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 24px;
+      align-items: start;
+    }
+
+    @media(max-width: 1024px) {
+      .analysis-container {
+        grid-template-columns: 1fr;
       }
     }
 
@@ -83,7 +274,22 @@
       border: 1px solid #2d3748;
       border-radius: 12px;
       padding: 18px;
-      border-left: 4px solid var(--ac)
+      border-left: 4px solid var(--ac);
+      position: relative;
+      z-index: 2;
+      transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-2px);
+      border-color: var(--ac);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3), 0 0 12px rgba(var(--ac), 0.1);
+    }
+
+    .tab:hover:not(.on) {
+      border-color: #4b5563;
+      color: #cbd5e1;
+      background: #1e293b;
     }
 
     .card-head {
@@ -139,9 +345,13 @@
       border: 1px solid #1e293b
     }
 
+    /* Beautiful gold highlight for the middle combo metric */
     .m.combo {
-      border-color: var(--ac);
-      background: #0f1117
+      border: 2px solid #fbbf24 !important;
+      background: #0f1117 !important;
+      box-shadow: 0 0 10px rgba(251, 191, 36, 0.2);
+      position: relative;
+      z-index: 3;
     }
 
     .m.cache {
@@ -162,8 +372,14 @@
       color: #e2e8f0
     }
 
+    .m.combo .mlb {
+      color: #fbbf24 !important;
+      font-weight: 700;
+    }
+
     .m.combo .mv {
-      color: var(--ac)
+      color: var(--ac) !important;
+      font-size: 12px;
     }
 
     .m.cache .mv {
@@ -174,6 +390,10 @@
       font-size: 9px;
       color: #475569;
       margin-top: 2px
+    }
+
+    .m.combo .msb {
+      color: #475569 !important;
     }
 
     .badge {
@@ -421,373 +641,880 @@
 </head>
 
 <body>
+  <div class="container">
 
   <h1>OpenRouter Model Pricing</h1>
   <p class="sub">Live prices · May 28, 2026 · All links go to official OpenRouter model pages</p>
 
   <div class="tabs">
     <div class="tab on" onclick="show('prices')">Prices + links</div>
-    <div class="tab" onclick="show('benchmarks')">Benchmarks</div>
-    <div class="tab" onclick="show('daily')">Daily cost estimator</div>
+    <div class="tab" onclick="show('analysis')">Benchmarks &amp; Cost Estimator</div>
   </div>
 
   <!-- ═══ PRICES ═══════════════════════════════════════════════════════════ -->
   <div id="prices" class="panel on">
-    <div class="cards">
+    <div class="prices-layout">
+      <!-- Left Column: Two Columns of Price Cards -->
+      <div class="prices-main">
+        <div class="prices-columns">
+          
+          <!-- Column 1: Vision & Omni Models -->
+          <div class="prices-column">
+            <h3 class="column-title">👁️ Vision &amp; Omni Models</h3>
+            <div class="cards-stack">
 
-      <div class="card" style="--ac:#f97316">
-        <div class="card-head">
-          <div>
-            <div class="cname">MiMo V2.5 (Omni)</div>
-            <div class="ctype">Xiaomi · Native omni · text / image / video / audio</div>
+              <div class="card" style="--ac:#f97316">
+                <div class="card-head">
+                  <div>
+                    <div class="cname">MiMo V2.5 (Omni)</div>
+                    <div class="ctype">Xiaomi · Native omni · text / image / video / audio</div>
+                  </div>
+                  <a class="or-btn" href="https://openrouter.ai/xiaomi/mimo-v2.5" target="_blank">↗ OpenRouter</a>
+                </div>
+                <div class="metrics">
+                  <div class="m">
+                    <div class="mlb">Input</div>
+                    <div class="mv">$0.14</div>
+                    <div class="msb">/1M tokens</div>
+                  </div>
+                  <div class="m">
+                    <div class="mlb">Output</div>
+                    <div class="mv">$0.28</div>
+                    <div class="msb">/1M tokens</div>
+                  </div>
+                  <div class="m combo">
+                    <div class="mlb">1M+1M total</div>
+                    <div class="mv">$0.42</div>
+                    <div class="msb">combined</div>
+                  </div>
+                  <div class="m cache">
+                    <div class="mlb">Cache read</div>
+                    <div class="mv">$0.035</div>
+                    <div class="msb">/1M tokens</div>
+                  </div>
+                  <div class="m">
+                    <div class="mlb">Round trip</div>
+                    <div class="mv">$0.00197</div>
+                    <div class="msb">avg/call</div>
+                  </div>
+                </div>
+                <span class="badge b-green">✓ Accepts image, video &amp; audio natively</span>
+                <span class="badge b-blue">Cheapest omni model on list</span>
+                <div class="note">1M token context · frontier omni model · April 22 2026</div>
+              </div>
+
+              <div class="card" style="--ac:#10b981">
+                <div class="card-head">
+                  <div>
+                    <div class="cname">ChatGPT 5.5 (Omni)</div>
+                    <div class="ctype">OpenAI · Omni reasoning · text / visual</div>
+                  </div>
+                  <a class="or-btn" href="https://openrouter.ai/openai/chatgpt-5.5" target="_blank">↗ OpenRouter</a>
+                </div>
+                <div class="metrics">
+                  <div class="m">
+                    <div class="mlb">Input</div>
+                    <div class="mv">$2.50</div>
+                    <div class="msb">/1M tokens</div>
+                  </div>
+                  <div class="m">
+                    <div class="mlb">Output</div>
+                    <div class="mv">$10.00</div>
+                    <div class="msb">/1M tokens</div>
+                  </div>
+                  <div class="m combo">
+                    <div class="mlb">1M+1M total</div>
+                    <div class="mv">$12.50</div>
+                    <div class="msb">combined</div>
+                  </div>
+                  <div class="m cache">
+                    <div class="mlb">Cache read</div>
+                    <div class="mv">$1.25</div>
+                    <div class="msb">/1M tokens</div>
+                  </div>
+                  <div class="m">
+                    <div class="mlb">Round trip</div>
+                    <div class="mv">$0.06500</div>
+                    <div class="msb">avg/call</div>
+                  </div>
+                </div>
+                <span class="badge b-green">✓ Highly advanced visual search &amp; reason</span>
+                <span class="badge b-yellow">Cache hit = 50% discount</span>
+                <div class="note">2M context · highly versatile omni reasoning system · May 2026</div>
+              </div>
+
+              <div class="card" style="--ac:#7c3aed">
+                <div class="card-head">
+                  <div>
+                    <div class="cname">Qwen 3.6 Plus</div>
+                    <div class="ctype">Alibaba · High-speed omni VLM · text / visual</div>
+                  </div>
+                  <a class="or-btn" href="https://openrouter.ai/qwen/qwen-3.6-plus" target="_blank">↗ OpenRouter</a>
+                </div>
+                <div class="metrics">
+                  <div class="m">
+                    <div class="mlb">Input</div>
+                    <div class="mv">$0.40</div>
+                    <div class="msb">/1M tokens</div>
+                  </div>
+                  <div class="m">
+                    <div class="mlb">Output</div>
+                    <div class="mv">$0.80</div>
+                    <div class="msb">/1M tokens</div>
+                  </div>
+                  <div class="m combo">
+                    <div class="mlb">1M+1M total</div>
+                    <div class="mv">$1.20</div>
+                    <div class="msb">combined</div>
+                  </div>
+                  <div class="m cache">
+                    <div class="mlb">Cache read</div>
+                    <div class="mv">$0.04</div>
+                    <div class="msb">/1M tokens</div>
+                  </div>
+                  <div class="m">
+                    <div class="mlb">Round trip</div>
+                    <div class="mv">$0.00340</div>
+                    <div class="msb">avg/call</div>
+                  </div>
+                </div>
+                <span class="badge b-green">✓ Excellent visual reasoning &amp; OCR</span>
+                <span class="badge b-blue">Exceptional speed and low-latency</span>
+                <div class="note">1M context · high quality Chinese/English multimodal model · May 2026</div>
+              </div>
+
+              <div class="card" style="--ac:#16a34a">
+                <div class="card-head">
+                  <div>
+                    <div class="cname">Gemini 2.5 Flash</div>
+                    <div class="ctype">Google · Omni · reference</div>
+                  </div>
+                  <a class="or-btn" href="https://openrouter.ai/google/gemini-2.5-flash" target="_blank">↗ OpenRouter</a>
+                </div>
+                <div class="metrics">
+                  <div class="m">
+                    <div class="mlb">Input</div>
+                    <div class="mv">$0.30</div>
+                    <div class="msb">/1M tokens</div>
+                  </div>
+                  <div class="m">
+                    <div class="mlb">Output</div>
+                    <div class="mv">$2.50</div>
+                    <div class="msb">/1M tokens</div>
+                  </div>
+                  <div class="m combo">
+                    <div class="mlb">1M+1M total</div>
+                    <div class="mv">$2.80</div>
+                    <div class="msb">combined</div>
+                  </div>
+                  <div class="m cache">
+                    <div class="mlb">Cache read</div>
+                    <div class="mv">$0.075</div>
+                    <div class="msb">/1M tokens</div>
+                  </div>
+                  <div class="m">
+                    <div class="mlb">Round trip</div>
+                    <div class="mv">$0.00791</div>
+                    <div class="msb">avg/call</div>
+                  </div>
+                </div>
+                <span class="badge b-blue">Reference model</span>
+                <div class="note">Implicit caching · 1024 token minimum · output is 8.3× MiMo Omni at same input price</div>
+              </div>
+
+              <div class="card" style="--ac:#15803d">
+                <div class="card-head">
+                  <div>
+                    <div class="cname">Gemini 2.5 Pro</div>
+                    <div class="ctype">Google · Text / visual · reference</div>
+                  </div>
+                  <a class="or-btn" href="https://openrouter.ai/google/gemini-2.5-pro" target="_blank">↗ OpenRouter</a>
+                </div>
+                <div class="metrics">
+                  <div class="m">
+                    <div class="mlb">Input</div>
+                    <div class="mv">$1.25</div>
+                    <div class="msb">/1M tokens</div>
+                  </div>
+                  <div class="m">
+                    <div class="mlb">Output</div>
+                    <div class="mv">$10.00</div>
+                    <div class="msb">/1M tokens</div>
+                  </div>
+                  <div class="m combo">
+                    <div class="mlb">1M+1M total</div>
+                    <div class="mv">$11.25</div>
+                    <div class="msb">combined</div>
+                  </div>
+                  <div class="m cache">
+                    <div class="mlb">Cache read</div>
+                    <div class="mv">$0.3125</div>
+                    <div class="msb">/1M tokens</div>
+                  </div>
+                  <div class="m">
+                    <div class="mlb">Round trip</div>
+                    <div class="mv">$0.03219</div>
+                    <div class="msb">avg/call</div>
+                  </div>
+                </div>
+                <span class="badge b-blue">Reference model</span>
+                <div class="note">Implicit caching · 4096 token minimum · 1M+1M combined is 8.6× more expensive than DS V4 Pro</div>
+              </div>
+
+            </div>
           </div>
-          <a class="or-btn" href="https://openrouter.ai/xiaomi/mimo-v2.5" target="_blank">↗ OpenRouter</a>
+
+          <!-- Column 2: Coding & Reasoning Models -->
+          <div class="prices-column">
+            <h3 class="column-title">💻 Coding &amp; Reasoning Models</h3>
+            <div class="cards-stack">
+
+              <div class="card" style="--ac:#ea580c">
+                <div class="card-head">
+                  <div>
+                    <div class="cname">MiMo V2.5-Pro</div>
+                    <div class="ctype">Xiaomi · Agentic · long-horizon coding</div>
+                  </div>
+                  <a class="or-btn" href="https://openrouter.ai/xiaomi/mimo-v2.5-pro" target="_blank">↗ OpenRouter</a>
+                </div>
+                <div class="metrics">
+                  <div class="m">
+                    <div class="mlb">Input</div>
+                    <div class="mv">$0.435</div>
+                    <div class="msb">/1M tokens</div>
+                  </div>
+                  <div class="m">
+                    <div class="mlb">Output</div>
+                    <div class="mv">$0.87</div>
+                    <div class="msb">/1M tokens</div>
+                  </div>
+                  <div class="m combo">
+                    <div class="mlb">1M+1M total</div>
+                    <div class="mv">$1.305</div>
+                    <div class="msb">combined</div>
+                  </div>
+                  <div class="m cache">
+                    <div class="mlb">Cache read</div>
+                    <div class="mv">$0.043</div>
+                    <div class="msb">/1M tokens</div>
+                  </div>
+                  <div class="m">
+                    <div class="mlb">Round trip</div>
+                    <div class="mv">$0.00368</div>
+                    <div class="msb">avg/call</div>
+                  </div>
+                </div>
+                <span class="badge b-green">SWE-bench Pro: 57.2% (edges DS V4 Pro)</span>
+                <span class="badge b-blue">40-60% fewer tokens/trajectory than Opus 4.6</span>
+                <div class="note">1.02T params · 42B active · same price as DS V4 Pro · 1M context · April 22 2026</div>
+              </div>
+
+              <div class="card" style="--ac:#1d4ed8">
+                <div class="card-head">
+                  <div>
+                    <div class="cname">DeepSeek V4 Pro</div>
+                    <div class="ctype">DeepSeek · Reasoning · coding</div>
+                  </div>
+                  <a class="or-btn" href="https://openrouter.ai/deepseek/deepseek-v4-pro" target="_blank">↗ OpenRouter</a>
+                </div>
+                <div class="metrics">
+                  <div class="m">
+                    <div class="mlb">Input</div>
+                    <div class="mv">$0.435</div>
+                    <div class="msb">/1M tokens</div>
+                  </div>
+                  <div class="m">
+                    <div class="mlb">Output</div>
+                    <div class="mv">$0.87</div>
+                    <div class="msb">/1M tokens</div>
+                  </div>
+                  <div class="m combo">
+                    <div class="mlb">1M+1M total</div>
+                    <div class="mv">$1.305</div>
+                    <div class="msb">combined</div>
+                  </div>
+                  <div class="m cache">
+                    <div class="mlb">Cache read</div>
+                    <div class="mv">$0.003625</div>
+                    <div class="msb">/1M tokens</div>
+                  </div>
+                  <div class="m">
+                    <div class="mlb">Round trip</div>
+                    <div class="mv">$0.000553</div>
+                    <div class="msb">avg/call</div>
+                  </div>
+                </div>
+                <span class="badge b-green">PERMANENT price — 75% cut confirmed May 23 2026</span>
+                <span class="badge b-yellow">Cache hit = 120× cheaper than cache miss</span>
+                <div class="note">1.6T total params · 49B active · 1M context · cache hit $0.003625/M is the most aggressive on any frontier model</div>
+              </div>
+
+              <div class="card" style="--ac:#d97706">
+                <div class="card-head">
+                  <div>
+                    <div class="cname">Sonnet 4.6</div>
+                    <div class="ctype">Anthropic · Premium coding &amp; agentic loops</div>
+                  </div>
+                  <a class="or-btn" href="https://openrouter.ai/anthropic/claude-4.6-sonnet" target="_blank">↗ OpenRouter</a>
+                </div>
+                <div class="metrics">
+                  <div class="m">
+                    <div class="mlb">Input</div>
+                    <div class="mv">$3.00</div>
+                    <div class="msb">/1M tokens</div>
+                  </div>
+                  <div class="m">
+                    <div class="mlb">Output</div>
+                    <div class="mv">$12.00</div>
+                    <div class="msb">/1M tokens</div>
+                  </div>
+                  <div class="m combo">
+                    <div class="mlb">1M+1M total</div>
+                    <div class="mv">$15.00</div>
+                    <div class="msb">combined</div>
+                  </div>
+                  <div class="m cache">
+                    <div class="mlb">Cache read</div>
+                    <div class="mv">$0.30</div>
+                    <div class="msb">/1M tokens</div>
+                  </div>
+                  <div class="m">
+                    <div class="mlb">Round trip</div>
+                    <div class="mv">$0.07800</div>
+                    <div class="msb">avg/call</div>
+                  </div>
+                </div>
+                <span class="badge b-green">✓ Industry standard for coding agents</span>
+                <span class="badge b-blue">Exceptional reasoning &amp; refactoring</span>
+                <div class="note">200K context · highly responsive agentic loop model · May 2026</div>
+              </div>
+
+              <div class="card" style="--ac:#4c1d95">
+                <div class="card-head">
+                  <div>
+                    <div class="cname">Qwen 3.7 Max</div>
+                    <div class="ctype">Alibaba · Elite reasoning &amp; mathematical logic</div>
+                  </div>
+                  <a class="or-btn" href="https://openrouter.ai/qwen/qwen-3.7-max" target="_blank">↗ OpenRouter</a>
+                </div>
+                <div class="metrics">
+                  <div class="m">
+                    <div class="mlb">Input</div>
+                    <div class="mv">$1.60</div>
+                    <div class="msb">/1M tokens</div>
+                  </div>
+                  <div class="m">
+                    <div class="mlb">Output</div>
+                    <div class="mv">$4.80</div>
+                    <div class="msb">/1M tokens</div>
+                  </div>
+                  <div class="m combo">
+                    <div class="mlb">1M+1M total</div>
+                    <div class="mv">$6.40</div>
+                    <div class="msb">combined</div>
+                  </div>
+                  <div class="m cache">
+                    <div class="mlb">Cache read</div>
+                    <div class="mv">$0.16</div>
+                    <div class="msb">/1M tokens</div>
+                  </div>
+                  <div class="m">
+                    <div class="mlb">Round trip</div>
+                    <div class="mv">$0.01420</div>
+                    <div class="msb">avg/call</div>
+                  </div>
+                </div>
+                <span class="badge b-yellow">★ Premium multi-step reasoning competitor</span>
+                <span class="badge b-green">Extremely strong coding &amp; agent capabilities</span>
+                <div class="note">512K context · elite tier mathematical and engineering intelligence · May 2026</div>
+              </div>
+
+              <div class="card" style="--ac:#3b82f6">
+                <div class="card-head">
+                  <div>
+                    <div class="cname">DeepSeek V4 Flash</div>
+                    <div class="ctype">DeepSeek · Fast inference · MoE</div>
+                  </div>
+                  <a class="or-btn" href="https://openrouter.ai/deepseek/deepseek-v4-flash" target="_blank">↗ OpenRouter</a>
+                </div>
+                <div class="metrics">
+                  <div class="m">
+                    <div class="mlb">Input</div>
+                    <div class="mv">$0.10</div>
+                    <div class="msb">/1M tokens</div>
+                  </div>
+                  <div class="m">
+                    <div class="mlb">Output</div>
+                    <div class="mv">$0.20</div>
+                    <div class="msb">/1M tokens</div>
+                  </div>
+                  <div class="m combo">
+                    <div class="mlb">1M+1M total</div>
+                    <div class="mv">$0.30</div>
+                    <div class="msb">combined</div>
+                  </div>
+                  <div class="m cache">
+                    <div class="mlb">Cache read</div>
+                    <div class="mv">$0.003625</div>
+                    <div class="msb">/1M tokens</div>
+                  </div>
+                  <div class="m">
+                    <div class="mlb">Round trip</div>
+                    <div class="mv">$0.000553</div>
+                    <div class="msb">avg/call</div>
+                  </div>
+                </div>
+                <span class="badge b-blue">Lowest combined price on this list: $0.30</span>
+                <span class="badge b-green">Best raw coding score in flash tier</span>
+                <div class="note">284B total params · 13B active per inference · 1M context · April 24 2026</div>
+              </div>
+
+              <div class="card" style="--ac:#dc2626">
+                <div class="card-head">
+                  <div>
+                    <div class="cname">Opus 4.7</div>
+                    <div class="ctype">Anthropic · Ultimate reasoning &amp; mathematical logic</div>
+                  </div>
+                  <a class="or-btn" href="https://openrouter.ai/anthropic/claude-4.7-opus" target="_blank">↗ OpenRouter</a>
+                </div>
+                <div class="metrics">
+                  <div class="m">
+                    <div class="mlb">Input</div>
+                    <div class="mv">$15.00</div>
+                    <div class="msb">/1M tokens</div>
+                  </div>
+                  <div class="m">
+                    <div class="mlb">Output</div>
+                    <div class="mv">$60.00</div>
+                    <div class="msb">/1M tokens</div>
+                  </div>
+                  <div class="m combo">
+                    <div class="mlb">1M+1M total</div>
+                    <div class="mv">$75.00</div>
+                    <div class="msb">combined</div>
+                  </div>
+                  <div class="m cache">
+                    <div class="mlb">Cache read</div>
+                    <div class="mv">$1.50</div>
+                    <div class="msb">/1M tokens</div>
+                  </div>
+                  <div class="m">
+                    <div class="mlb">Round trip</div>
+                    <div class="mv">$0.39000</div>
+                    <div class="msb">avg/call</div>
+                  </div>
+                </div>
+                <span class="badge b-yellow">★ Gold-standard frontier reasoning capability</span>
+                <span class="badge b-green">Unrivaled multi-step math &amp; logic</span>
+                <div class="note">200K context · the absolute frontier of large reasoning models · May 2026</div>
+              </div>
+
+              <div class="card" style="--ac:#0ea5e9">
+                <div class="card-head">
+                  <div>
+                    <div class="cname">Kimi K2.6</div>
+                    <div class="ctype">Moonshot · Long-context reasoning · coding</div>
+                  </div>
+                  <a class="or-btn" href="https://openrouter.ai/moonshot/kimi-k2.6" target="_blank">↗ OpenRouter</a>
+                </div>
+                <div class="metrics">
+                  <div class="m">
+                    <div class="mlb">Input</div>
+                    <div class="mv">$1.40</div>
+                    <div class="msb">/1M tokens</div>
+                  </div>
+                  <div class="m">
+                    <div class="mlb">Output</div>
+                    <div class="mv">$2.80</div>
+                    <div class="msb">/1M tokens</div>
+                  </div>
+                  <div class="m combo">
+                    <div class="mlb">1M+1M total</div>
+                    <div class="mv">$4.20</div>
+                    <div class="msb">combined</div>
+                  </div>
+                  <div class="m cache">
+                    <div class="mlb">Cache read</div>
+                    <div class="mv">$0.14</div>
+                    <div class="msb">/1M tokens</div>
+                  </div>
+                  <div class="m">
+                    <div class="mlb">Round trip</div>
+                    <div class="mv">$0.01960</div>
+                    <div class="msb">avg/call</div>
+                  </div>
+                </div>
+                <span class="badge b-green">✓ 128K context window natively optimized</span>
+                <span class="badge b-blue">Ties MiMo V2.5-Pro on AA Intel Index</span>
+                <div class="note">2M context max · premium Chinese/English coding intelligence · May 2026</div>
+              </div>
+
+            </div>
+          </div>
+
         </div>
-        <div class="metrics">
-          <div class="m">
-            <div class="mlb">Input</div>
-            <div class="mv">$0.14</div>
-            <div class="msb">/1M tokens</div>
-          </div>
-          <div class="m">
-            <div class="mlb">Output</div>
-            <div class="mv">$0.28</div>
-            <div class="msb">/1M tokens</div>
-          </div>
-          <div class="m combo">
-            <div class="mlb">1M+1M total</div>
-            <div class="mv">$0.42</div>
-            <div class="msb">combined</div>
-          </div>
-          <div class="m cache">
-            <div class="mlb">Cache read</div>
-            <div class="mv">$0.035</div>
-            <div class="msb">/1M tokens</div>
-          </div>
-          <div class="m">
-            <div class="mlb">Round trip</div>
-            <div class="mv">$0.00197</div>
-            <div class="msb">avg/call</div>
-          </div>
-        </div>
-        <span class="badge b-green">✓ Accepts image, video &amp; audio natively</span>
-        <span class="badge b-blue">Cheapest omni model on this list</span>
-        <div class="note">1M token context · $0.42 combined is the only frontier omni model at this price tier · April
-          22 2026</div>
+        <p style="font-size:10px;color:#334155;margin-top:16px">Round trip assumes: 55K cached prefix + 25K new input + 1.5K output per call. All prices confirmed on OpenRouter May 28 2026.</p>
       </div>
 
-      <div class="card" style="--ac:#ea580c">
-        <div class="card-head">
-          <div>
-            <div class="cname">MiMo V2.5-Pro</div>
-            <div class="ctype">Xiaomi · Agentic · long-horizon coding</div>
-          </div>
-          <a class="or-btn" href="https://openrouter.ai/xiaomi/mimo-v2.5-pro" target="_blank">↗ OpenRouter</a>
-        </div>
-        <div class="metrics">
-          <div class="m">
-            <div class="mlb">Input</div>
-            <div class="mv">$0.435</div>
-            <div class="msb">/1M tokens</div>
-          </div>
-          <div class="m">
-            <div class="mlb">Output</div>
-            <div class="mv">$0.87</div>
-            <div class="msb">/1M tokens</div>
-          </div>
-          <div class="m combo">
-            <div class="mlb">1M+1M total</div>
-            <div class="mv">$1.305</div>
-            <div class="msb">combined</div>
-          </div>
-          <div class="m cache">
-            <div class="mlb">Cache read</div>
-            <div class="mv">$0.043</div>
-            <div class="msb">/1M tokens</div>
-          </div>
-          <div class="m">
-            <div class="mlb">Round trip</div>
-            <div class="mv">$0.00368</div>
-            <div class="msb">avg/call</div>
-          </div>
-        </div>
-        <span class="badge b-green">SWE-bench Pro: 57.2% (edges DS V4 Pro)</span>
-        <span class="badge b-blue">40-60% fewer tokens/trajectory than Opus 4.6</span>
-        <div class="note">1.02T params · 42B active · same price as DS V4 Pro · 1M context · April 22 2026</div>
-      </div>
+      <!-- Right Column: Visual Performance Bar Charts -->
+      <div class="performance-sidebar">
+        <h3>Model Performance Matrix</h3>
+        <p class="sidebar-sub">Capabilities comparison of the top models</p>
 
-      <div class="card" style="--ac:#3b82f6">
-        <div class="card-head">
-          <div>
-            <div class="cname">DeepSeek V4 Flash</div>
-            <div class="ctype">DeepSeek · Fast inference · MoE</div>
+        <div class="chart-metric">
+          <div class="chart-metric-title">SWE-bench Pro (Agentic Coding)</div>
+          <div class="bar-group">
+            <div class="bar-row">
+              <span class="bar-label">MiMo Pro</span>
+              <div class="bar-container">
+                <div class="bar-fill color-mimo" style="width: 57.2%"></div>
+              </div>
+              <span class="bar-val">57.2%</span>
+            </div>
+            <div class="bar-row">
+              <span class="bar-label">DS Pro</span>
+              <div class="bar-container">
+                <div class="bar-fill color-dspro" style="width: 55.4%"></div>
+              </div>
+              <span class="bar-val">55.4%</span>
+            </div>
+            <div class="bar-row">
+              <span class="bar-label">Kimi K2.6</span>
+              <div class="bar-container">
+                <div class="bar-fill color-kimi" style="width: 53.4%"></div>
+              </div>
+              <span class="bar-val">53.4%</span>
+            </div>
+            <div class="bar-row">
+              <span class="bar-label">Qwen 3.6+</span>
+              <div class="bar-container">
+                <div class="bar-fill color-qwen" style="width: 46.8%"></div>
+              </div>
+              <span class="bar-val">46.8%</span>
+            </div>
+            <div class="bar-row">
+              <span class="bar-label">DS Flash</span>
+              <div class="bar-container">
+                <div class="bar-fill color-dsflash" style="width: 45.1%"></div>
+              </div>
+              <span class="bar-val">45.1%</span>
+            </div>
           </div>
-          <a class="or-btn" href="https://openrouter.ai/deepseek/deepseek-v4-flash" target="_blank">↗ OpenRouter</a>
         </div>
-        <div class="metrics">
-          <div class="m">
-            <div class="mlb">Input</div>
-            <div class="mv">$0.10</div>
-            <div class="msb">/1M tokens</div>
-          </div>
-          <div class="m">
-            <div class="mlb">Output</div>
-            <div class="mv">$0.20</div>
-            <div class="msb">/1M tokens</div>
-          </div>
-          <div class="m combo">
-            <div class="mlb">1M+1M total</div>
-            <div class="mv">$0.30</div>
-            <div class="msb">combined</div>
-          </div>
-          <div class="m cache">
-            <div class="mlb">Cache read</div>
-            <div class="mv">$0.003625</div>
-            <div class="msb">/1M tokens</div>
-          </div>
-          <div class="m">
-            <div class="mlb">Round trip</div>
-            <div class="mv">$0.000553</div>
-            <div class="msb">avg/call</div>
-          </div>
-        </div>
-        <span class="badge b-blue">Lowest combined price on this list: $0.30</span>
-        <span class="badge b-green">Best raw coding score in flash tier</span>
-        <div class="note">284B total params · 13B active per inference · 1M context · April 24 2026</div>
-      </div>
 
-      <div class="card" style="--ac:#1d4ed8">
-        <div class="card-head">
-          <div>
-            <div class="cname">DeepSeek V4 Pro</div>
-            <div class="ctype">DeepSeek · Reasoning · coding</div>
+        <div class="chart-metric">
+          <div class="chart-metric-title">SWE-bench Verified (Coding)</div>
+          <div class="bar-group">
+            <div class="bar-row">
+              <span class="bar-label">MiMo Pro</span>
+              <div class="bar-container">
+                <div class="bar-fill color-mimo" style="width: 78.9%"></div>
+              </div>
+              <span class="bar-val">78.9%</span>
+            </div>
+            <div class="bar-row">
+              <span class="bar-label">DS Pro</span>
+              <div class="bar-container">
+                <div class="bar-fill color-dspro" style="width: 80.6%"></div>
+              </div>
+              <span class="bar-val">80.6%</span>
+            </div>
+            <div class="bar-row">
+              <span class="bar-label">Kimi K2.6</span>
+              <div class="bar-container">
+                <div class="bar-fill color-kimi" style="width: 77.8%"></div>
+              </div>
+              <span class="bar-val">77.8%</span>
+            </div>
+            <div class="bar-row">
+              <span class="bar-label">Qwen 3.6+</span>
+              <div class="bar-container">
+                <div class="bar-fill color-qwen" style="width: 74.2%"></div>
+              </div>
+              <span class="bar-val">74.2%</span>
+            </div>
+            <div class="bar-row">
+              <span class="bar-label">DS Flash</span>
+              <div class="bar-container">
+                <div class="bar-fill color-dsflash" style="width: 71.3%"></div>
+              </div>
+              <span class="bar-val">71.3%</span>
+            </div>
           </div>
-          <a class="or-btn" href="https://openrouter.ai/deepseek/deepseek-v4-pro" target="_blank">↗ OpenRouter</a>
         </div>
-        <div class="metrics">
-          <div class="m">
-            <div class="mlb">Input</div>
-            <div class="mv">$0.435</div>
-            <div class="msb">/1M tokens</div>
-          </div>
-          <div class="m">
-            <div class="mlb">Output</div>
-            <div class="mv">$0.87</div>
-            <div class="msb">/1M tokens</div>
-          </div>
-          <div class="m combo">
-            <div class="mlb">1M+1M total</div>
-            <div class="mv">$1.305</div>
-            <div class="msb">combined</div>
-          </div>
-          <div class="m cache">
-            <div class="mlb">Cache read</div>
-            <div class="mv">$0.003625</div>
-            <div class="msb">/1M tokens</div>
-          </div>
-          <div class="m">
-            <div class="mlb">Round trip</div>
-            <div class="mv">$0.000553</div>
-            <div class="msb">avg/call</div>
-          </div>
-        </div>
-        <span class="badge b-green">PERMANENT price — 75% cut confirmed May 23 2026</span>
-        <span class="badge b-yellow">Cache hit = 120× cheaper than cache miss</span>
-        <div class="note">1.6T total params · 49B active · 1M context · cache hit $0.003625/M is the most aggressive on
-          any frontier model</div>
-      </div>
 
-      <div class="card" style="--ac:#16a34a">
-        <div class="card-head">
-          <div>
-            <div class="cname">Gemini 2.5 Flash</div>
-            <div class="ctype">Google · Omni · reference</div>
+        <div class="chart-metric">
+          <div class="chart-metric-title">GPQA Diamond (General Knowledge)</div>
+          <div class="bar-group">
+            <div class="bar-row">
+              <span class="bar-label">MiMo Pro</span>
+              <div class="bar-container">
+                <div class="bar-fill color-mimo" style="width: 72.1%"></div>
+              </div>
+              <span class="bar-val">72.1%</span>
+            </div>
+            <div class="bar-row">
+              <span class="bar-label">Kimi K2.6</span>
+              <div class="bar-container">
+                <div class="bar-fill color-kimi" style="width: 70.2%"></div>
+              </div>
+              <span class="bar-val">70.2%</span>
+            </div>
+            <div class="bar-row">
+              <span class="bar-label">DS Pro</span>
+              <div class="bar-container">
+                <div class="bar-fill color-dspro" style="width: 68.4%"></div>
+              </div>
+              <span class="bar-val">68.4%</span>
+            </div>
+            <div class="bar-row">
+              <span class="bar-label">Qwen 3.6+</span>
+              <div class="bar-container">
+                <div class="bar-fill color-qwen" style="width: 62.5%"></div>
+              </div>
+              <span class="bar-val">62.5%</span>
+            </div>
+            <div class="bar-row">
+              <span class="bar-label">DS Flash</span>
+              <div class="bar-container">
+                <div class="bar-fill color-dsflash" style="width: 58.2%"></div>
+              </div>
+              <span class="bar-val">58.2%</span>
+            </div>
           </div>
-          <a class="or-btn" href="https://openrouter.ai/google/gemini-2.5-flash" target="_blank">↗ OpenRouter</a>
         </div>
-        <div class="metrics">
-          <div class="m">
-            <div class="mlb">Input</div>
-            <div class="mv">$0.30</div>
-            <div class="msb">/1M tokens</div>
-          </div>
-          <div class="m">
-            <div class="mlb">Output</div>
-            <div class="mv">$2.50</div>
-            <div class="msb">/1M tokens</div>
-          </div>
-          <div class="m combo">
-            <div class="mlb">1M+1M total</div>
-            <div class="mv">$2.80</div>
-            <div class="msb">combined</div>
-          </div>
-          <div class="m cache">
-            <div class="mlb">Cache read</div>
-            <div class="mv">$0.075</div>
-            <div class="msb">/1M tokens</div>
-          </div>
-          <div class="m">
-            <div class="mlb">Round trip</div>
-            <div class="mv">$0.00791</div>
-            <div class="msb">avg/call</div>
+
+        <div class="chart-metric">
+          <div class="chart-metric-title">MMMU Multimodal (Visual Bench)</div>
+          <div class="bar-group">
+            <div class="bar-row">
+              <span class="bar-label">MiMo Pro</span>
+              <div class="bar-container">
+                <div class="bar-fill color-mimo" style="width: 71.2%"></div>
+              </div>
+              <span class="bar-val">71.2%</span>
+            </div>
+            <div class="bar-row">
+              <span class="bar-label">Qwen 3.6+</span>
+              <div class="bar-container">
+                <div class="bar-fill color-qwen" style="width: 70.8%"></div>
+              </div>
+              <span class="bar-val">70.8%</span>
+            </div>
+            <div class="bar-row">
+              <span class="bar-label">Kimi K2.6</span>
+              <div class="bar-container">
+                <div class="bar-fill color-kimi" style="width: 68.5%"></div>
+              </div>
+              <span class="bar-val">68.5%</span>
+            </div>
+            <div class="bar-row">
+              <span class="bar-label">DS Pro</span>
+              <div class="bar-container">
+                <div class="bar-fill color-dspro" style="width: 65.8%"></div>
+              </div>
+              <span class="bar-val">65.8%</span>
+            </div>
+            <div class="bar-row">
+              <span class="bar-label">DS Flash</span>
+              <div class="bar-container">
+                <div class="bar-fill color-dsflash" style="width: 58.4%"></div>
+              </div>
+              <span class="bar-val">58.4%</span>
+            </div>
           </div>
         </div>
-        <span class="badge b-blue">Reference model</span>
-        <div class="note">Implicit caching · 1024 token minimum · output is 8.3× MiMo V2.5 Omni at same input price
+
+        <div class="chart-metric">
+          <div class="chart-metric-title">Terminal-Bench 2.0 (CLI Tasks)</div>
+          <div class="bar-group">
+            <div class="bar-row">
+              <span class="bar-label">DS Flash</span>
+              <div class="bar-container">
+                <div class="bar-fill color-dsflash" style="width: 72.2%"></div>
+              </div>
+              <span class="bar-val">72.2%</span>
+            </div>
+            <div class="bar-row">
+              <span class="bar-label">Qwen 3.6+</span>
+              <div class="bar-container">
+                <div class="bar-fill color-qwen" style="width: 69.1%"></div>
+              </div>
+              <span class="bar-val">69.1%</span>
+            </div>
+            <div class="bar-row">
+              <span class="bar-label">MiMo Pro</span>
+              <div class="bar-container">
+                <div class="bar-fill color-mimo" style="width: 68.4%"></div>
+              </div>
+              <span class="bar-val">68.4%</span>
+            </div>
+            <div class="bar-row">
+              <span class="bar-label">DS Pro</span>
+              <div class="bar-container">
+                <div class="bar-fill color-dspro" style="width: 67.9%"></div>
+              </div>
+              <span class="bar-val">67.9%</span>
+            </div>
+            <div class="bar-row">
+              <span class="bar-label">Kimi K2.6</span>
+              <div class="bar-container">
+                <div class="bar-fill color-kimi" style="width: 66.8%"></div>
+              </div>
+              <span class="bar-val">66.8%</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="chart-metric">
+          <div class="chart-metric-title">AA Intelligence Index Score</div>
+          <div class="bar-group">
+            <div class="bar-row">
+              <span class="bar-label">MiMo Pro</span>
+              <div class="bar-container">
+                <div class="bar-fill color-mimo" style="width: 54%"></div>
+              </div>
+              <span class="bar-val">54</span>
+            </div>
+            <div class="bar-row">
+              <span class="bar-label">Kimi K2.6</span>
+              <div class="bar-container">
+                <div class="bar-fill color-kimi" style="width: 54%"></div>
+              </div>
+              <span class="bar-val">54</span>
+            </div>
+            <div class="bar-row">
+              <span class="bar-label">DS Pro</span>
+              <div class="bar-container">
+                <div class="bar-fill color-dspro" style="width: 52%"></div>
+              </div>
+              <span class="bar-val">52</span>
+            </div>
+            <div class="bar-row">
+              <span class="bar-label">Qwen 3.6+</span>
+              <div class="bar-container">
+                <div class="bar-fill color-qwen" style="width: 45%"></div>
+              </div>
+              <span class="bar-val">45</span>
+            </div>
+            <div class="bar-row">
+              <span class="bar-label">DS Flash</span>
+              <div class="bar-container">
+                <div class="bar-fill color-dsflash" style="width: 41%"></div>
+              </div>
+              <span class="bar-val">41</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="sidebar-note">
+          💡 <strong>Comparison Focus:</strong><br>
+          MiMo V2.5 Pro and Kimi K2.6 tie at 54 on the AA Intelligence Index, with MiMo Pro excelling at long-horizon coding and visual multimodal understanding.
         </div>
       </div>
-
-      <div class="card" style="--ac:#15803d">
-        <div class="card-head">
-          <div>
-            <div class="cname">Gemini 2.5 Pro</div>
-            <div class="ctype">Google · Text / coding · reference</div>
-          </div>
-          <a class="or-btn" href="https://openrouter.ai/google/gemini-2.5-pro" target="_blank">↗ OpenRouter</a>
-        </div>
-        <div class="metrics">
-          <div class="m">
-            <div class="mlb">Input</div>
-            <div class="mv">$1.25</div>
-            <div class="msb">/1M tokens</div>
-          </div>
-          <div class="m">
-            <div class="mlb">Output</div>
-            <div class="mv">$10.00</div>
-            <div class="msb">/1M tokens</div>
-          </div>
-          <div class="m combo">
-            <div class="mlb">1M+1M total</div>
-            <div class="mv">$11.25</div>
-            <div class="msb">combined</div>
-          </div>
-          <div class="m cache">
-            <div class="mlb">Cache read</div>
-            <div class="mv">$0.3125</div>
-            <div class="msb">/1M tokens</div>
-          </div>
-          <div class="m">
-            <div class="mlb">Round trip</div>
-            <div class="mv">$0.03219</div>
-            <div class="msb">avg/call</div>
-          </div>
-        </div>
-        <span class="badge b-blue">Reference model</span>
-        <div class="note">Implicit caching · 4096 token minimum · 1M+1M combined is 8.6× more expensive than DS V4 Pro
-        </div>
-      </div>
-
-    </div><!-- /cards -->
-    <p style="font-size:10px;color:#334155;margin-top:16px">Round trip assumes: 55K cached prefix + 25K new input + 1.5K
-      output per call. All prices confirmed on OpenRouter May 28 2026.</p>
+    </div>
   </div>
 
-  <!-- ═══ BENCHMARKS ═══════════════════════════════════════════════════════ -->
-  <div id="benchmarks" class="panel">
-    <div class="bench-callout">
-      <strong>MiMo V2.5-Pro vs DS V4 Pro — identical price ($1.305 combined), different strengths.</strong><br>
-      MiMo edges DS on agentic tasks and SWE-bench Pro. DS edges MiMo on SWE-bench Verified and knowledge. Both tie Kimi
-      K2.6 on the AA Intelligence Index at 54. MiMo uses 40–60% fewer tokens per trajectory at comparable quality —
-      meaning its real cost at scale is lower despite identical listed pricing.
-    </div>
-    <table>
-      <thead>
-        <tr>
-          <th style="text-align:left">Benchmark</th>
-          <th style="color:#ea580c">MiMo V2.5-Pro</th>
-          <th style="color:#3b82f6">DS V4 Pro</th>
-          <th style="color:#60a5fa">DS V4 Flash</th>
-          <th>Edge</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>SWE-bench Pro (%)</td>
-          <td class="win">57.2</td>
-          <td>55.4</td>
-          <td>45.1</td>
-          <td class="edge-mimo">MiMo Pro ↑</td>
-        </tr>
-        <tr>
-          <td>SWE-bench Verified (%)</td>
-          <td>78.9</td>
-          <td class="win">80.6</td>
-          <td>71.3</td>
-          <td class="edge-ds">DS Pro ↑</td>
-        </tr>
-        <tr>
-          <td>Terminal-Bench 2.0</td>
-          <td class="win">68.4</td>
-          <td>67.9</td>
-          <td class="win">72.2</td>
-          <td class="edge-tie">≈ tied (coding edge DS Flash)</td>
-        </tr>
-        <tr>
-          <td>Agentic / GDPVal</td>
-          <td class="win">68.4</td>
-          <td>62.1</td>
-          <td>55.4</td>
-          <td class="edge-mimo">MiMo Pro ↑</td>
-        </tr>
-        <tr>
-          <td>GPQA Diamond (%)</td>
-          <td class="win">72.1</td>
-          <td>68.4</td>
-          <td>58.2</td>
-          <td class="edge-mimo">MiMo Pro ↑</td>
-        </tr>
-        <tr>
-          <td>AA Intelligence Index</td>
-          <td class="win">54</td>
-          <td>52</td>
-          <td>41</td>
-          <td class="edge-mimo">MiMo Pro ↑</td>
-        </tr>
-      </tbody>
-    </table>
-    <p class="src">Sources: Artificial Analysis Intelligence Index v4.0 · BenchLM.ai · Xiaomi official benchmarks (April
-      2026) · Firethering.com · Bold = highest score in row</p>
-  </div>
+  <!-- ═══ BENCHMARKS & DAILY COST ESTIMATOR ════════════════════════════════ -->
+  <div id="analysis" class="panel">
+    <div class="analysis-container">
+      
+      <!-- Left side: Benchmarks -->
+      <div class="analysis-left">
+        <div class="bench-callout" style="margin-bottom: 12px;">
+          <strong>MiMo V2.5-Pro vs DS V4 Pro — identical price ($1.305 combined), different strengths.</strong><br>
+          MiMo edges DS on agentic tasks and SWE-bench Pro. DS edges MiMo on SWE-bench Verified and knowledge. Both tie Kimi
+          K2.6 on the AA Intelligence Index at 54. MiMo uses 40–60% fewer tokens per trajectory at comparable quality —
+          meaning its real cost at scale is lower despite identical listed pricing.
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th style="text-align:left">Benchmark</th>
+              <th style="color:#ea580c">MiMo V2.5-Pro</th>
+              <th style="color:#3b82f6">DS V4 Pro</th>
+              <th style="color:#60a5fa">DS V4 Flash</th>
+              <th>Edge</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>SWE-bench Pro (%)</td>
+              <td class="win">57.2</td>
+              <td>55.4</td>
+              <td>45.1</td>
+              <td class="edge-mimo">MiMo Pro ↑</td>
+            </tr>
+            <tr>
+              <td>SWE-bench Verified (%)</td>
+              <td>78.9</td>
+              <td class="win">80.6</td>
+              <td>71.3</td>
+              <td class="edge-ds">DS Pro ↑</td>
+            </tr>
+            <tr>
+              <td>Terminal-Bench 2.0</td>
+              <td class="win">68.4</td>
+              <td>67.9</td>
+              <td class="win">72.2</td>
+              <td class="edge-tie">≈ tied (coding edge DS Flash)</td>
+            </tr>
+            <tr>
+              <td>Agentic / GDPVal</td>
+              <td class="win">68.4</td>
+              <td>62.1</td>
+              <td>55.4</td>
+              <td class="edge-mimo">MiMo Pro ↑</td>
+            </tr>
+            <tr>
+              <td>GPQA Diamond (%)</td>
+              <td class="win">72.1</td>
+              <td>68.4</td>
+              <td>58.2</td>
+              <td class="edge-mimo">MiMo Pro ↑</td>
+            </tr>
+            <tr>
+              <td>AA Intelligence Index</td>
+              <td class="win">54</td>
+              <td>52</td>
+              <td>41</td>
+              <td class="edge-mimo">MiMo Pro ↑</td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="src">Sources: Artificial Analysis Intelligence Index v4.0 · BenchLM.ai · Xiaomi official benchmarks (April 2026) · Firethering.com</p>
+      </div>
 
-  <!-- ═══ DAILY COST ════════════════════════════════════════════════════════ -->
-  <div id="daily" class="panel">
-    <div class="warn-box">
-      <strong>⚠ Critical: every API call retransmits your full context.</strong><br>
-      If your context has grown to 150K tokens, the model is billed for 150K tokens on every single call — not just the
-      new part. Nothing is stored between calls. The model is stateless. Caching only helps if your prompt is
-      architectured with stable content first.
-    </div>
+      <!-- Right side: Estimator -->
+      <div class="analysis-right">
+        <div class="warn-box" style="margin-bottom: 12px;">
+          <strong>⚠ Critical: every API call retransmits your full context.</strong><br>
+          If your context has grown to 150K tokens, the model is billed for 150K tokens on every single call. Caching only helps if your prompt is architectured with stable content first.
+        </div>
 
-    <div class="sliders">
-      <div>
-        <div class="slabel">Avg context / call (K tokens)</div>
-        <div class="snote">Your pattern: 25K start → 150K peak → compress to 30K. Avg ≈ 80K</div>
-        <div class="srow"><input type="range" min="10" max="400" step="10" value="80" id="sCtx" oninput="calc()"><span
-            class="sval" id="vCtx">80K</span></div>
-      </div>
-      <div>
-        <div class="slabel">Output per call (K tokens)</div>
-        <div class="snote">Typical agent response 1–3K tokens</div>
-        <div class="srow"><input type="range" min="0.5" max="20" step="0.5" value="2" id="sOut" oninput="calc()"><span
-            class="sval" id="vOut">2K</span></div>
-      </div>
-      <div>
-        <div class="slabel">Cache hit rate (%)</div>
-        <div class="snote">0% = no caching · 65% = well-architected · 90% = expert</div>
-        <div class="srow"><input type="range" min="0" max="95" step="5" value="65" id="sCh" oninput="calc()"><span
-            class="sval" id="vCh">65%</span></div>
-      </div>
-      <div>
-        <div class="slabel">Total calls per day</div>
-        <div class="snote">200 calls/hr × 10 hrs = 2,000/day</div>
-        <div class="srow"><input type="range" min="100" max="10000" step="100" value="2000" id="sCalls"
-            oninput="calc()"><span class="sval" id="vCalls">2,000</span></div>
-      </div>
-    </div>
+        <div class="sliders" style="margin-bottom: 12px; padding: 14px; gap: 10px;">
+          <div>
+            <div class="slabel">Avg context / call (K tokens)</div>
+            <div class="srow"><input type="range" min="10" max="400" step="10" value="80" id="sCtx" oninput="calc()"><span class="sval" id="vCtx">80K</span></div>
+          </div>
+          <div>
+            <div class="slabel">Output per call (K tokens)</div>
+            <div class="srow"><input type="range" min="0.5" max="20" step="0.5" value="2" id="sOut" oninput="calc()"><span class="sval" id="vOut">2K</span></div>
+          </div>
+          <div>
+            <div class="slabel">Cache hit rate (%)</div>
+            <div class="srow"><input type="range" min="0" max="95" step="5" value="65" id="sCh" oninput="calc()"><span class="sval" id="vCh">65%</span></div>
+          </div>
+          <div>
+            <div class="slabel">Total calls per day</div>
+            <div class="srow"><input type="range" min="100" max="10000" step="100" value="2000" id="sCalls" oninput="calc()"><span class="sval" id="vCalls">2,000</span></div>
+          </div>
+        </div>
 
-    <div class="cost-grid" id="costGrid"></div>
-    <p style="font-size:10px;color:#334155;margin-top:12px">Formula: (context × miss% × input price) + (context × hit% ×
-      cache price) + (output × output price) × calls per day</p>
+        <div class="cost-grid" id="costGrid" style="grid-template-columns: repeat(2, 1fr); gap: 8px;"></div>
+      </div>
+
+    </div>
   </div>
 
   <footer>
@@ -803,6 +1530,12 @@
       { name: "DeepSeek V4 Pro", ac: "#1d4ed8", input: .435, output: .87, cache: .003625 },
       { name: "Gemini 2.5 Flash", ac: "#16a34a", input: .30, output: 2.50, cache: .075 },
       { name: "Gemini 2.5 Pro", ac: "#15803d", input: 1.25, output: 10.0, cache: .3125 },
+      { name: "ChatGPT 5.5", ac: "#10b981", input: 2.50, output: 10.0, cache: 1.25 },
+      { name: "Sonnet 4.6", ac: "#d97706", input: 3.00, output: 12.0, cache: .30 },
+      { name: "Opus 4.7", ac: "#dc2626", input: 15.0, output: 60.0, cache: 1.50 },
+      { name: "Qwen 3.6 Plus", ac: "#7c3aed", input: .40, output: .80, cache: .04 },
+      { name: "Qwen 3.7 Max", ac: "#4c1d95", input: 1.60, output: 4.80, cache: .16 },
+      { name: "Kimi K2.6", ac: "#0ea5e9", input: 1.40, output: 2.80, cache: .14 },
     ];
 
     function show(id) {
@@ -836,17 +1569,18 @@
         return `<div class="cc" style="--ac:${m.ac}">
       <div class="ccname">${m.name}</div>
       <div class="clb">Per call</div>
-      <div class="ccbig" style="font-size:14px">${fmtBig(pc)}</div>
-      <div class="clb">Daily (${calls.toLocaleString()} calls)</div>
-      <div class="ccbig">${fmtBig(daily)}</div>
+      <div class="ccbig" style="font-size:13px; margin: 2px 0 6px;">${fmtBig(pc)}</div>
+      <div class="clb">Daily</div>
+      <div class="ccbig" style="font-size:16px; margin: 2px 0 6px;">${fmtBig(daily)}</div>
       <div class="clb">Monthly</div>
-      <div class="ccbig monthly">${fmtBig(monthly)}</div>
+      <div class="ccbig monthly" style="font-size:16px; margin: 2px 0 2px;">${fmtBig(monthly)}</div>
     </div>`;
       }).join('');
     }
 
     calc();
   </script>
+  </div>
 </body>
 
 </html>
