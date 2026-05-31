@@ -58,7 +58,8 @@ sorted.forEach(([pn, arr]) => {
         '<div class="chapter-grid">' + arr.map(card).join('') + '</div></div>';
 });
 
-const total = chapterKeys.length;
+const numberedCount = chapterKeys.filter(k => k !== 'foreword' && !chapters[k].id.includes('b') && !chapters[k].id.includes('v')).length;
+const bonusCount = chapterKeys.filter(k => chapters[k].id.includes('b') || chapters[k].id.includes('v')).length;
 const partsCount = Object.keys(parts).length;
 const readTime = chapterKeys.reduce((s,k)=>s+(chapters[k].readTime||10),0);
 
@@ -70,12 +71,13 @@ const html = '<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta n
     '<a href="index.html" class="back-link">&larr; Back to Book Cover</a>' +
     '<div class="page-header"><div class="page-eyebrow">Complete Chapter Reference</div>' +
     '<h1 class="page-title">Chapter Index</h1><p class="page-subtitle">The Speed of Agentic Visual AI</p>' +
-    '<div class="page-stats"><div class="page-stat"><div class="page-stat-num">' + total + '</div><div class="page-stat-label">Chapters</div></div>' +
-    '<div class="page-stat"><div class="page-stat-num">' + partsCount + '</div><div class="page-stat-label">Parts</div></div>' +
-    '<div class="page-stat"><div class="page-stat-num">~' + readTime + '</div><div class="page-stat-label">Min. Reading</div></div></div></div>' +
+    '<div class="page-stats"><div class="page-stat"><div class="page-stat-num">1</div><div class="page-stat-label">Foreword</div></div>' +
+    '<div class="page-stat"><div class="page-stat-num">' + numberedCount + '</div><div class="page-stat-label">Numbered Chapters</div></div>' +
+    '<div class="page-stat"><div class="page-stat-num">' + bonusCount + '</div><div class="page-stat-label">Bonus Chapters</div></div>' +
+    '<div class="page-stat"><div class="page-stat-num">' + partsCount + '</div><div class="page-stat-label">Parts</div></div></div></div>' +
     '<nav class="part-nav">' + nav + '</nav>' + sections +
-    '</div><footer><p>' + total + ' chapters &middot; ' + partsCount + ' parts</p></footer></body></html>';
+    '</div><footer><p>1 Foreword &middot; ' + numberedCount + ' Numbered Chapters &middot; ' + bonusCount + ' Bonus Chapters &middot; ' + partsCount + ' Parts</p></footer></body></html>';
 
 fs.writeFileSync(path.join(__dirname, 'chapters.html'), html, 'utf8');
-console.log('OK: ' + total + ' chapters, ' + partsCount + ' parts');
+console.log('OK: 1 Foreword + ' + numberedCount + ' numbered + ' + bonusCount + ' bonus, ' + partsCount + ' parts');
 chapterKeys.forEach(k => console.log('  ' + k + ': ' + chapters[k].title + ' (P' + chapters[k].part + ', O' + chapters[k].order + ')'));
