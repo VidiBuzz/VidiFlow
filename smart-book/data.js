@@ -1607,7 +1607,7 @@ cache)  Window  Stale?    Stale</code></pre>
     ch42: {
       id: "ch42",
       title: "Ch42: Robotics — The Brilliant Machine",
-      part: 5,
+      part: 6,
       order: 42,
       content: `<div class="strategic-context">
         <h3>Strategic Context</h3>
@@ -1666,7 +1666,7 @@ cache)  Window  Stale?    Stale</code></pre>
     ch45: {
       id: "ch45",
       title: "Ch45: AI & Political Campaigns — The New Battlefield",
-      part: 5,
+      part: 6,
       order: 45,
       content: `<div class="strategic-context">
         <h3>Strategic Context</h3>
@@ -1685,7 +1685,7 @@ cache)  Window  Stale?    Stale</code></pre>
     ch46: {
       id: "ch46",
       title: "Ch46: The AI Side Hustle — From Garage to Millions",
-      part: 5,
+      part: 6,
       order: 46,
       content: `<div class="strategic-context">
         <h3>Strategic Context</h3>
