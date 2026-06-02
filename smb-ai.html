@@ -761,6 +761,515 @@
             margin: 2.5rem 0;
             border-radius: 1px;
         }
+
+        /* FRAGILE THREE SEGMENT */
+        .fragile-three-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .fragile-card {
+            background: var(--white);
+            border: 1px solid rgba(211, 209, 199, 0.5);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 20px rgba(12, 31, 63, 0.03);
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        .fragile-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--red);
+        }
+
+        .fragile-card.hospitality::before {
+            background: var(--red);
+        }
+
+        .fragile-card.services::before {
+            background: var(--amber);
+        }
+
+        .fragile-card.retail::before {
+            background: var(--purple);
+        }
+
+        .fragile-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 30px rgba(12, 31, 63, 0.08);
+        }
+
+        .fragile-title-wrap {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .fragile-icon {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            background: var(--red-l);
+            color: var(--red);
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+
+        .fragile-card.services .fragile-icon {
+            background: var(--amber-l);
+            color: var(--amber);
+        }
+
+        .fragile-card.retail .fragile-icon {
+            background: var(--purple-l);
+            color: var(--purple);
+        }
+
+        .fragile-title {
+            font-family: var(--serif);
+            font-size: 1.25rem;
+            color: var(--navy);
+        }
+
+        .fragile-desc {
+            font-size: 0.88rem;
+            color: var(--gray-d);
+            line-height: 1.6;
+        }
+
+        .fragile-stats {
+            background: var(--gray-l);
+            border-radius: 8px;
+            padding: 0.8rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .fragile-stat-val {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--red);
+        }
+
+        .fragile-card.services .fragile-stat-val {
+            color: var(--amber);
+        }
+
+        .fragile-card.retail .fragile-stat-val {
+            color: var(--purple);
+        }
+
+        .fragile-stat-lbl {
+            font-size: 0.72rem;
+            color: var(--gray-m);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .fragile-points {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            font-size: 0.82rem;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .fragile-points li {
+            position: relative;
+            padding-left: 18px;
+            color: var(--gray-d);
+            line-height: 1.4;
+        }
+
+        .fragile-points li::before {
+            content: "•";
+            color: var(--red);
+            position: absolute;
+            left: 4px;
+            font-size: 1.1rem;
+            line-height: 1;
+            top: 0;
+        }
+
+        .fragile-card.services .fragile-points li::before {
+            color: var(--amber);
+        }
+
+        .fragile-card.retail .fragile-points li::before {
+            color: var(--purple);
+        }
+
+        /* RISK HEATMAP / MATRIX MAP */
+        .heatmap-container {
+            display: grid;
+            grid-template-columns: 40px 1fr;
+            grid-template-rows: 1fr 40px;
+            gap: 10px;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .y-axis-title {
+            writing-mode: vertical-rl;
+            transform: rotate(180deg);
+            text-align: center;
+            font-size: 0.72rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--gray-m);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .x-axis-title {
+            grid-column: 2;
+            text-align: center;
+            font-size: 0.72rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--gray-m);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding-top: 10px;
+        }
+
+        .heatmap-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 12px;
+            min-height: 380px;
+        }
+
+        .heatmap-quadrant {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            border: 1px dashed transparent;
+            position: relative;
+        }
+
+        /* Q1: Top Right - Critical Risk */
+        .quadrant-critical {
+            background: linear-gradient(135deg, rgba(226,75,74,0.06) 0%, rgba(226,75,74,0.01) 100%);
+            border-color: rgba(226,75,74,0.3);
+        }
+        .quadrant-critical .quadrant-header {
+            color: var(--red);
+        }
+
+        /* Q2: Top Left - High Risk */
+        .quadrant-high {
+            background: linear-gradient(135deg, rgba(186,117,23,0.06) 0%, rgba(186,117,23,0.01) 100%);
+            border-color: rgba(186,117,23,0.3);
+        }
+        .quadrant-high .quadrant-header {
+            color: var(--amber);
+        }
+
+        /* Q3: Bottom Right - Moderate Risk */
+        .quadrant-medium {
+            background: linear-gradient(135deg, rgba(24,95,165,0.06) 0%, rgba(24,95,165,0.01) 100%);
+            border-color: rgba(24,95,165,0.3);
+        }
+        .quadrant-medium .quadrant-header {
+            color: var(--blue);
+        }
+
+        /* Q4: Bottom Left - Insulated/Low Risk */
+        .quadrant-low {
+            background: linear-gradient(135deg, rgba(29,158,117,0.06) 0%, rgba(29,158,117,0.01) 100%);
+            border-color: rgba(29,158,117,0.3);
+        }
+        .quadrant-low .quadrant-header {
+            color: var(--teal);
+        }
+
+        .quadrant-header {
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 4px;
+        }
+
+        .quadrant-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .quadrant-item {
+            background: var(--white);
+            border: 1px solid rgba(211, 209, 199, 0.4);
+            border-radius: 6px;
+            padding: 5px 8px;
+            font-size: 0.76rem;
+            color: var(--text);
+            font-weight: 500;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+            transition: all 0.2s ease;
+        }
+
+        .quadrant-item:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            border-color: var(--gray-b);
+        }
+
+        /* SURVIVAL CALCULATOR / SIMULATOR */
+        .sim-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .sim-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .sim-panel-inputs {
+            background: var(--white);
+            border: 1px solid rgba(211, 209, 199, 0.5);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 20px rgba(12, 31, 63, 0.03);
+            display: flex;
+            flex-direction: column;
+            gap: 1.1rem;
+        }
+
+        .sim-panel-title {
+            font-family: var(--serif);
+            font-size: 1.25rem;
+            color: var(--navy);
+            margin-bottom: -0.25rem;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .input-label-wrap {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .input-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--gray-m);
+        }
+
+        .input-value-badge {
+            font-size: 0.75rem;
+            font-weight: 700;
+            background: var(--navy);
+            color: var(--white);
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .sim-select {
+            padding: 8px 10px;
+            border-radius: 6px;
+            border: 1px solid var(--gray-b);
+            background: var(--gray-l);
+            font-family: var(--sans);
+            font-size: 0.84rem;
+            color: var(--text);
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+
+        .sim-select:focus {
+            outline: none;
+            border-color: var(--teal);
+        }
+
+        .sim-range {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: var(--gray-b);
+            outline: none;
+            margin: 6px 0;
+        }
+
+        .sim-range::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: var(--teal);
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+
+        .sim-range::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+        }
+
+        .sim-panel-outputs {
+            background: linear-gradient(135deg, var(--navy) 0%, var(--navy2) 100%);
+            border-radius: 12px;
+            padding: 1.5rem;
+            color: var(--white);
+            box-shadow: 0 4px 20px rgba(12, 31, 63, 0.05);
+            display: flex;
+            flex-direction: column;
+            gap: 1.1rem;
+        }
+
+        .output-header-group {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 0.6rem;
+        }
+
+        .output-panel-title {
+            font-family: var(--serif);
+            font-size: 1.25rem;
+            color: var(--white);
+        }
+
+        .output-panel-sub {
+            font-size: 0.72rem;
+            color: #9FE1CB;
+            margin-top: 2px;
+        }
+
+        .output-metrics-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .output-card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+            padding: 0.8rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .output-card.risk-extreme {
+            background: rgba(226, 75, 74, 0.12);
+            border-color: rgba(226, 75, 74, 0.3);
+        }
+
+        .output-card.risk-warning {
+            background: rgba(186, 117, 23, 0.12);
+            border-color: rgba(186, 117, 23, 0.3);
+        }
+
+        .output-card.risk-safe {
+            background: rgba(29, 158, 117, 0.12);
+            border-color: rgba(29, 158, 117, 0.3);
+        }
+
+        .output-lbl {
+            font-size: 0.68rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: #9FE1CB;
+            margin-bottom: 4px;
+        }
+
+        .output-val {
+            font-size: 1.3rem;
+            font-weight: 700;
+            line-height: 1.2;
+        }
+
+        .output-val.loss {
+            color: #F09595;
+        }
+
+        .output-val.gain {
+            color: #9FE1CB;
+        }
+
+        .output-sub {
+            font-size: 0.7rem;
+            opacity: 0.8;
+            margin-top: 4px;
+        }
+
+        .output-runway-bar-bg {
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            margin-top: 6px;
+            overflow: hidden;
+        }
+
+        .output-runway-bar-fill {
+            height: 100%;
+            width: 50%;
+            background: var(--red);
+            border-radius: 3px;
+            transition: width 0.3s ease, background-color 0.3s ease;
+        }
+
+        .sim-rec-box {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px dashed rgba(255, 255, 255, 0.15);
+            border-radius: 8px;
+            padding: 0.8rem;
+        }
+
+        .sim-rec-title {
+            font-size: 0.76rem;
+            font-weight: 700;
+            color: #9FE1CB;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .sim-rec-text {
+            font-size: 0.78rem;
+            line-height: 1.45;
+            color: rgba(255, 255, 255, 0.85);
+        }
+
     </style>
 </head>
 
@@ -1308,6 +1817,140 @@
                 </div>
             </div>
 
+            <div class="sec-eye">Visual Breakdown · Risk Quadrant Heatmap</div>
+            <h3 style="font-family:var(--serif); font-size:1.1rem; color:var(--navy); margin-bottom:1.5rem;">Visualizing Industry Fragility vs. Search Reliance</h3>
+            
+            <div class="heatmap-container">
+                <div class="y-axis-title">Search Click / Organic Dependency →</div>
+                <div class="heatmap-grid">
+                    <!-- Q2: Top Left - High Risk (Pivotable) -->
+                    <div class="heatmap-quadrant quadrant-high">
+                        <div class="quadrant-header">High Dependency / Lower Overhead</div>
+                        <div class="quadrant-list">
+                            <span class="quadrant-item">Real Estate (HIGH)</span>
+                            <span class="quadrant-item">Professional Services (HIGH)</span>
+                            <span class="quadrant-item">Health Care (HIGH)</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Q1: Top Right - Critical Risk (Red Zone) -->
+                    <div class="heatmap-quadrant quadrant-critical">
+                        <div class="quadrant-header">High Dependency / High Overhead (Red Zone)</div>
+                        <div class="quadrant-list">
+                            <span class="quadrant-item">Restaurants & Food (CRITICAL)</span>
+                            <span class="quadrant-item">Home Services (HVAC/Plumbing) (CRITICAL)</span>
+                            <span class="quadrant-item">Retail Trade (CRITICAL)</span>
+                            <span class="quadrant-item">Construction (HIGH)</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Q4: Bottom Left - Insulated / Low Risk -->
+                    <div class="heatmap-quadrant quadrant-low">
+                        <div class="quadrant-header">Low Dependency / Lower Overhead (Safe Zone)</div>
+                        <div class="quadrant-list">
+                            <span class="quadrant-item">Agriculture & Forestry (LOW)</span>
+                            <span class="quadrant-item">Admin & Support (MEDIUM)</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Q3: Bottom Right - Moderate Risk -->
+                    <div class="heatmap-quadrant quadrant-medium">
+                        <div class="quadrant-header">Low Dependency / High Overhead</div>
+                        <div class="quadrant-list">
+                            <span class="quadrant-item">Wholesale & Distribution (MEDIUM)</span>
+                            <span class="quadrant-item">Transportation & Warehousing (MEDIUM)</span>
+                            <span class="quadrant-item">Manufacturing (MEDIUM)</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="x-axis-title">Fixed Operating Costs / Overhead Fragility →</div>
+            </div>
+
+            <div class="sec-eye">Deep Dive · The Fragile Three</div>
+            <h3 style="font-family:var(--serif); font-size:1.1rem; color:var(--navy); margin-bottom:1.5rem;">Why These Specific Sectors Are Uniquely Vulnerable</h3>
+            
+            <div class="fragile-three-grid">
+                <!-- Group 1: Hospitality & Food Service -->
+                <div class="fragile-card hospitality">
+                    <div class="fragile-title-wrap">
+                        <div class="fragile-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                        </div>
+                        <h4 class="fragile-title">Hospitality & Food Services</h4>
+                    </div>
+                    <p class="fragile-desc">Razor-thin operating margins leave zero buffer for lead volume drops. Mobile local search is their primary discovery mechanism.</p>
+                    <div class="fragile-stats">
+                        <div>
+                            <div class="fragile-stat-val">3–5%</div>
+                            <div class="fragile-stat-lbl">Avg Margin</div>
+                        </div>
+                        <div>
+                            <div class="fragile-stat-val">~90%</div>
+                            <div class="fragile-stat-lbl">Mobile Reliance</div>
+                        </div>
+                    </div>
+                    <ul class="fragile-points">
+                        <li><strong>Zero-Click Extraction:</strong> Google displays reviews, locations, and menus directly, eliminating site clicks.</li>
+                        <li><strong>High Rent & Labor:</strong> Fixed costs run 80%+ of revenue, turning minor traffic dips into instant losses.</li>
+                        <li><strong>Immediate Impact:</strong> Traffic drops reflect at checkout in days, not months.</li>
+                    </ul>
+                </div>
+
+                <!-- Group 2: Local High-Overhead Service Providers -->
+                <div class="fragile-card services">
+                    <div class="fragile-title-wrap">
+                        <div class="fragile-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+                        </div>
+                        <h4 class="fragile-title">Local High-Overhead Services</h4>
+                    </div>
+                    <p class="fragile-desc">HVAC, plumbing, pest control, and contractors carry heavy truck rolls, inventory, and dispatcher payroll, requiring constant emergency search queries.</p>
+                    <div class="fragile-stats">
+                        <div>
+                            <div class="fragile-stat-val">85%</div>
+                            <div class="fragile-stat-lbl">Search Reliance</div>
+                        </div>
+                        <div>
+                            <div class="fragile-stat-val">1.5M</div>
+                            <div class="fragile-stat-lbl">US Businesses</div>
+                        </div>
+                    </div>
+                    <ul class="fragile-points">
+                        <li><strong>AI Overview Priority:</strong> Local Service Ads and AI answers replace the "3-pack" map, choking organic search.</li>
+                        <li><strong>Payroll Cliffs:</strong> Field staff and dispatch operations require high lead velocity to sustain.</li>
+                        <li><strong>Referral Caps:</strong> Paid lead channels must run continuously because emergency repairs are non-recurrent.</li>
+                    </ul>
+                </div>
+
+                <!-- Group 3: E-commerce & Independent Retail -->
+                <div class="fragile-card retail">
+                    <div class="fragile-title-wrap">
+                        <div class="fragile-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+                        </div>
+                        <h4 class="fragile-title">Retail & Independent E-commerce</h4>
+                    </div>
+                    <p class="fragile-desc">Small retailers face double margins pressures: programmatic ad cost inflation and direct product comparisons generated by AI shoppers.</p>
+                    <div class="fragile-stats">
+                        <div>
+                            <div class="fragile-stat-val">80%</div>
+                            <div class="fragile-stat-lbl">Web Dependency</div>
+                        </div>
+                        <div>
+                            <div class="fragile-stat-val">2.8M</div>
+                            <div class="fragile-stat-lbl">US Retailers</div>
+                        </div>
+                    </div>
+                    <ul class="fragile-points">
+                        <li><strong>Comparison Engines:</strong> AI search directly summarizes product pricing and features, bypassing shop pages.</li>
+                        <li><strong>CAC Escalation:</strong> Shrinking organic space forces retailers into expensive paid advertising.</li>
+                        <li><strong>Scale Fragility:</strong> Bypassed retailers cannot compete with major marketplaces without direct organic SEO.</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="separator"></div>
+
             <h3 style="font-family:var(--serif); font-size:1.1rem; color:var(--navy); margin-bottom:1rem;">The survival
                 math — what losing half your traffic actually means</h3>
             <div class="scenario-grid">
@@ -1339,6 +1982,95 @@
                         Margin evaporates. Company in crisis unless on Amazon or has strong email list.</div>
                 </div>
             </div>
+
+            <div class="separator"></div>
+
+            <div class="sec-eye">Interactive Tool · Risk Simulator</div>
+            <h3 style="font-family:var(--serif); font-size:1.1rem; color:var(--navy); margin-bottom:1.5rem;">Simulate Your Business Exposure to the Zero-Click Shift</h3>
+            
+            <div class="sim-grid">
+                <!-- Inputs Panel -->
+                <div class="sim-panel-inputs">
+                    <div class="sim-panel-title">Your Business Profile</div>
+                    <p class="sec-sub" style="margin-bottom:0">Adjust sliders to see your projected runway and financial impact.</p>
+                    
+                    <div class="input-group">
+                        <label class="input-label" for="sim-industry">Select Industry Group</label>
+                        <select id="sim-industry" class="sim-select">
+                            <option value="restaurant">Restaurants & Food Service</option>
+                            <option value="services" selected>Local Services (HVAC, Plumbing)</option>
+                            <option value="retail">Retail & E-commerce</option>
+                            <option value="realestate">Real Estate & Rental</option>
+                            <option value="professional">Professional Services</option>
+                            <option value="other">Other / Low Overhead</option>
+                        </select>
+                    </div>
+
+                    <div class="input-group">
+                        <div class="input-label-wrap">
+                            <span class="input-label">Monthly Gross Revenue</span>
+                            <span class="input-value-badge" id="val-rev">$150,000</span>
+                        </div>
+                        <input type="range" id="sim-rev" class="sim-range" min="10000" max="500000" step="5000" value="150000">
+                    </div>
+
+                    <div class="input-group">
+                        <div class="input-label-wrap">
+                            <span class="input-label">% Leads from Organic Search</span>
+                            <span class="input-value-badge" id="val-reliance">70%</span>
+                        </div>
+                        <input type="range" id="sim-reliance" class="sim-range" min="10" max="100" step="5" value="70">
+                    </div>
+
+                    <div class="input-group">
+                        <div class="input-label-wrap">
+                            <span class="input-label">Fixed Monthly Overhead (Rent, Payroll)</span>
+                            <span class="input-value-badge" id="val-overhead">$45,000</span>
+                        </div>
+                        <input type="range" id="sim-overhead" class="sim-range" min="5000" max="200000" step="2000" value="45000">
+                    </div>
+                </div>
+
+                <!-- Outputs Panel -->
+                <div class="sim-panel-outputs">
+                    <div class="output-header-group">
+                        <div class="output-panel-title">Predicted Disruption Impact</div>
+                        <div class="output-panel-sub">Based on a 50% Organic Traffic Reduction</div>
+                    </div>
+                    
+                    <div class="output-metrics-grid">
+                        <div class="output-card" id="card-traffic">
+                            <span class="output-lbl">Lead Drop</span>
+                            <span class="output-val loss" id="out-traffic">-35%</span>
+                            <span class="output-sub">Of total monthly leads</span>
+                        </div>
+                        <div class="output-card" id="card-revenue">
+                            <span class="output-lbl font-bold">Revenue Drop</span>
+                            <span class="output-val loss" id="out-revenue">-$52,500</span>
+                            <span class="output-sub">Per month</span>
+                        </div>
+                        <div class="output-card" id="card-profit">
+                            <span class="output-lbl">New Net Margin</span>
+                            <span class="output-val" id="out-profit">$52,500</span>
+                            <span class="output-sub" id="out-profit-lbl">Net Profit / mo</span>
+                        </div>
+                        <div class="output-card" id="card-runway">
+                            <span class="output-lbl">Runway Window</span>
+                            <span class="output-val" id="out-runway">90 Days</span>
+                            <div class="output-runway-bar-bg">
+                                <div class="output-runway-bar-fill" id="runway-fill"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="sim-rec-box">
+                        <div class="sim-rec-title" id="rec-title">Critical Exposure Action Plan</div>
+                        <p class="sim-rec-text" id="rec-text">Your high fixed overhead exposes you to a cash cliff if leads fall. Implement an automated referral loop to capture existing clients offline immediately.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="separator"></div>
 
             <div class="callout danger">
                 <div class="callout-title">The ~8 million who cannot absorb a 50% traffic cut</div>
@@ -1730,6 +2462,149 @@
                 }
             }
         });
+
+        // Risk Simulator logic
+        const presets = {
+            restaurant: { rev: 120000, reliance: 90, overhead: 110000 },
+            services: { rev: 150000, reliance: 85, overhead: 45000 },
+            retail: { rev: 200000, reliance: 80, overhead: 180000 },
+            realestate: { rev: 80000, reliance: 75, overhead: 30000 },
+            professional: { rev: 90000, reliance: 60, overhead: 25000 },
+            other: { rev: 50000, reliance: 30, overhead: 15000 }
+        };
+
+        const simInd = document.getElementById('sim-industry');
+        const simRev = document.getElementById('sim-rev');
+        const simReliance = document.getElementById('sim-reliance');
+        const simOverhead = document.getElementById('sim-overhead');
+
+        const valRev = document.getElementById('val-rev');
+        const valReliance = document.getElementById('val-reliance');
+        const valOverhead = document.getElementById('val-overhead');
+
+        const outTraffic = document.getElementById('out-traffic');
+        const outRevenue = document.getElementById('out-revenue');
+        const outProfit = document.getElementById('out-profit');
+        const outProfitLbl = document.getElementById('out-profit-lbl');
+        const outRunway = document.getElementById('out-runway');
+        const runwayFill = document.getElementById('runway-fill');
+
+        const recTitle = document.getElementById('rec-title');
+        const recText = document.getElementById('rec-text');
+
+        const cardTraffic = document.getElementById('card-traffic');
+        const cardRevenue = document.getElementById('card-revenue');
+        const cardProfit = document.getElementById('card-profit');
+        const cardRunway = document.getElementById('card-runway');
+
+        function formatCurrency(val) {
+            return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(val);
+        }
+
+        function updateSimulator() {
+            const rev = parseInt(simRev.value);
+            const reliance = parseInt(simReliance.value);
+            const overhead = parseInt(simOverhead.value);
+
+            // Update badge displays
+            valRev.textContent = formatCurrency(rev);
+            valReliance.textContent = reliance + '%';
+            valOverhead.textContent = formatCurrency(overhead);
+
+            // Organic traffic drops by 50% on average
+            const trafficLossPercent = Math.round(reliance * 0.5);
+            const revDrop = Math.round(rev * (trafficLossPercent / 100));
+            const newRev = rev - revDrop;
+            const newProfit = newRev - overhead;
+
+            // Update UI values
+            outTraffic.textContent = '-' + trafficLossPercent + '%';
+            outRevenue.textContent = '-' + formatCurrency(revDrop);
+            
+            if (newProfit < 0) {
+                outProfit.textContent = formatCurrency(newProfit);
+                outProfit.className = 'output-val loss';
+                outProfitLbl.textContent = 'Bleeding / month';
+            } else {
+                outProfit.textContent = formatCurrency(newProfit);
+                outProfit.className = 'output-val gain';
+                outProfitLbl.textContent = 'Net Profit / month';
+            }
+
+            // Cash reserve is estimated as 1.5x of overhead
+            const cashReserve = 1.5 * overhead;
+            let runwayDays = 0;
+            let runwayText = '';
+            let riskClass = '';
+            
+            if (newProfit >= 0) {
+                runwayText = 'Stable';
+                riskClass = 'risk-safe';
+                runwayFill.style.width = '100%';
+                runwayFill.style.backgroundColor = 'var(--teal)';
+            } else {
+                runwayDays = Math.round((cashReserve / Math.abs(newProfit)) * 30);
+                if (runwayDays <= 60) {
+                    runwayText = runwayDays + ' Days';
+                    riskClass = 'risk-extreme';
+                    runwayFill.style.width = Math.max(10, Math.min(100, (runwayDays / 90) * 100)) + '%';
+                    runwayFill.style.backgroundColor = 'var(--red)';
+                } else if (runwayDays <= 120) {
+                    runwayText = runwayDays + ' Days';
+                    riskClass = 'risk-warning';
+                    runwayFill.style.width = Math.min(100, (runwayDays / 120) * 100) + '%';
+                    runwayFill.style.backgroundColor = 'var(--amber)';
+                } else {
+                    runwayText = runwayDays + ' Days';
+                    riskClass = 'risk-warning';
+                    runwayFill.style.width = '70%';
+                    runwayFill.style.backgroundColor = 'var(--blue)';
+                }
+            }
+
+            outRunway.textContent = runwayText;
+
+            // Reset classes
+            [cardTraffic, cardRevenue, cardProfit, cardRunway].forEach(c => {
+                c.className = 'output-card ' + riskClass;
+            });
+
+            // Action Plan content
+            let title = '';
+            let text = '';
+
+            if (riskClass === 'risk-extreme') {
+                title = 'CRITICAL EXPOSURE ACTION PLAN';
+                text = 'Your business is in the Danger Zone. Under a 50% search visibility loss, fixed overhead will swallow your shrinking revenue, depleting your cash reserves in under 60 days. <strong>Action:</strong> Immediately deploy a local AI-powered review campaign to lock in direct referral leads, bypassing Google clicks.';
+            } else if (riskClass === 'risk-warning') {
+                title = 'HIGH RISK MITIGATION PLAN';
+                text = 'You have a moderate buffer, but your high reliance on organic search means profitability will erode quickly. <strong>Action:</strong> Automate an email and SMS customer retention funnel using AI-driven follow-ups to maximize repeat buyers and reduce organic traffic dependency.';
+            } else {
+                title = 'STABLE ZONE MONITORING PLAN';
+                text = 'Your overhead is low enough to absorb the initial lead drop, but you are leaving growth on the table. <strong>Action:</strong> Use first-mover AI advantages to start capturing market share from at-risk competitors who fail to pivot.';
+            }
+
+            recTitle.innerHTML = title;
+            recText.innerHTML = text;
+        }
+
+        // Event listeners
+        simInd.addEventListener('change', () => {
+            const ind = simInd.value;
+            if (presets[ind]) {
+                simRev.value = presets[ind].rev;
+                simReliance.value = presets[ind].reliance;
+                simOverhead.value = presets[ind].overhead;
+                updateSimulator();
+            }
+        });
+
+        [simRev, simReliance, simOverhead].forEach(input => {
+            input.addEventListener('input', updateSimulator);
+        });
+
+        // Initialize values
+        updateSimulator();
     </script>
 </body>
 
