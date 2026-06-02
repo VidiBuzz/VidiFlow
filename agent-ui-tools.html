@@ -1,0 +1,1097 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visual Agent Orchestration UIs — Dashboards, Knowledge Graphs & Live Tracking | VidiSmart</title>
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,700%7CRoboto:400,700" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Open Sans', Arial, sans-serif;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a3e 100%);
+            color: #fff;
+            min-height: 100vh;
+        }
+        .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+
+        /* Top Nav */
+        .topnav {
+            background: rgba(10,12,16,0.95);
+            border-bottom: 1px solid rgba(255,255,255,0.07);
+            padding: 0 40px;
+            display: flex;
+            align-items: center;
+            height: 50px;
+            gap: 0;
+            position: sticky;
+            top: 0;
+            z-index: 2000;
+            backdrop-filter: blur(10px);
+        }
+        .topnav-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            margin-right: 22px;
+        }
+        .brand-icon {
+            width: 28px; height: 28px; border-radius: 7px;
+            background: linear-gradient(135deg, #ff6b6b, #e74c3c);
+            display: flex; align-items: center; justify-content: center;
+            font-family: 'Roboto', sans-serif; font-size: 11px; font-weight: 700;
+            color: white; letter-spacing: -0.03em;
+        }
+        .brand-text {
+            font-family: 'Roboto', sans-serif; font-size: 18px; font-weight: 700;
+            color: rgba(255,255,255,0.88); letter-spacing: -0.03em;
+        }
+        .brand-text span { color: rgba(255,255,255,0.38); font-weight: 400; }
+        .nav-sep { width: 1px; height: 22px; background: rgba(255,255,255,0.09); margin: 0 6px; }
+        .navlink {
+            display: flex; align-items: center; gap: 6px;
+            padding: 0 14px; height: 50px; font-size: 12.5px; font-weight: 500;
+            color: rgba(255,255,255,0.55); text-decoration: none;
+            border-bottom: 2px solid transparent; transition: color .15s, border-color .15s;
+            white-space: nowrap;
+        }
+        .navlink:hover { color: rgba(255,255,255,0.85); }
+        .navlink.active { color: #fff; border-bottom-color: #ff6b6b; }
+        .nl-dot { width: 6px; height: 6px; border-radius: 50%; opacity: .6; }
+        .navlink.active .nl-dot { opacity: 1; }
+        @media(max-width:640px) {
+            .topnav { padding: 0 16px; }
+            .brand-text span { display: none; }
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            padding: 50px 20px 40px;
+            background: linear-gradient(135deg, #1a0a2e 0%, #2d1b4e 50%, #0f0f23 100%);
+            border-radius: 20px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255,107,107,0.2);
+        }
+        .header h1 { font-size: 2.5em; margin: 0 0 12px 0; font-family: 'Roboto', sans-serif; line-height: 1.2; }
+        .header p { font-size: 1.15em; margin: 10px 0; opacity: 0.85; max-width: 800px; margin-left: auto; margin-right: auto; line-height: 1.5; }
+        .updated-badge {
+            display: inline-block; background: rgba(255,255,255,0.12);
+            padding: 10px 20px; border-radius: 25px; margin-top: 15px; font-size: 0.9em;
+        }
+
+        /* Sections */
+        .section {
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px; padding: 30px; margin-bottom: 30px;
+            backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1);
+        }
+        .section h2 { font-size: 1.8em; margin: 0 0 20px 0; color: #ff6b6b; font-family: 'Roboto', sans-serif; }
+        .section h3 { font-size: 1.3em; margin: 20px 0 12px 0; color: #f39c12; font-family: 'Roboto', sans-serif; }
+
+        /* Tool Cards */
+        .tool-card {
+            display: grid;
+            grid-template-columns: 140px 1fr;
+            gap: 25px;
+            background: linear-gradient(135deg, #1e1040 0%, #2a1a4a 100%);
+            border-radius: 15px; padding: 25px; margin-bottom: 20px;
+            border: 1px solid rgba(139,92,246,0.25);
+            transition: border-color 0.3s;
+        }
+        .tool-card:hover { border-color: rgba(139,92,246,0.6); }
+        .tool-visual { text-align: center; }
+        .tool-logo {
+            width: 100px; height: 100px; border-radius: 15px;
+            background: rgba(255,255,255,0.08); padding: 8px; margin-bottom: 12px;
+            display: flex; align-items: center; justify-content: center;
+            overflow: hidden;
+        }
+        .tool-logo svg { width: 80px; height: 80px; }
+        .tool-screenshot {
+            width: 100%; border-radius: 8px; overflow: hidden;
+            background: rgba(0,0,0,0.4); min-height: 120px; position: relative;
+        }
+        .tool-screenshot .mockup {
+            width: 100%; height: 120px; display: flex; flex-direction: column;
+        }
+        .mockup-titlebar {
+            height: 20px; background: rgba(255,255,255,0.08);
+            display: flex; align-items: center; padding: 0 8px; gap: 4px;
+        }
+        .mockup-dot { width: 6px; height: 6px; border-radius: 50%; }
+        .mockup-body { flex: 1; padding: 6px; display: flex; gap: 4px; }
+        .mockup-sidebar { width: 25%; background: rgba(255,255,255,0.04); border-radius: 3px; }
+        .mockup-main { flex: 1; display: flex; flex-direction: column; gap: 3px; }
+        .mockup-row { height: 8px; background: rgba(255,255,255,0.06); border-radius: 2px; }
+        .mockup-graph {
+            flex: 1; position: relative; overflow: hidden;
+        }
+        .mockup-graph .node {
+            position: absolute; width: 12px; height: 12px; border-radius: 50%;
+        }
+        .mockup-graph .edge {
+            position: absolute; height: 1px; transform-origin: left center;
+        }
+        .tool-content h3 { font-size: 1.5em; margin: 0 0 8px 0; color: #e879f9; font-family: 'Roboto', sans-serif; }
+        .tool-type {
+            display: inline-block; padding: 3px 12px; border-radius: 12px;
+            font-size: 0.7em; font-weight: bold; margin-left: 8px;
+            background: rgba(139,92,246,0.3); color: #c4b5fd;
+        }
+        .tool-meta { font-size: 0.85em; opacity: 0.7; margin-bottom: 12px; }
+        .visual-features { margin-top: 12px; }
+        .visual-features h4 { color: #f39c12; margin-bottom: 8px; font-size: 0.95em; }
+        .visual-features ul { list-style: none; padding: 0; }
+        .visual-features li { padding: 5px 0 5px 22px; position: relative; font-size: 0.9em; }
+        .visual-features li:before { content: "◆"; position: absolute; left: 2px; color: #8b5cf6; font-size: 0.7em; top: 7px; }
+
+        /* Badges */
+        .badge {
+            display: inline-block; padding: 4px 12px; border-radius: 15px;
+            font-size: 0.7em; font-weight: bold;
+        }
+        .badge-new { background: rgba(34,197,94,0.25); color: #4ade80; }
+        .badge-beta { background: rgba(251,191,36,0.25); color: #fbbf24; }
+        .badge-ga { background: rgba(59,130,246,0.25); color: #60a5fa; }
+        .badge-enterprise { background: rgba(139,92,246,0.25); color: #c4b5fd; }
+        .badge-oss { background: rgba(239,68,68,0.25); color: #fca5a5; }
+        .badge-rpg { background: rgba(236,72,153,0.25); color: #f472b6; }
+
+        /* Comparison Table */
+        .comparison-table-wrap {
+            overflow-x: auto; -webkit-overflow-scrolling: touch;
+            border-radius: 15px; margin-top: 10px;
+        }
+        .comparison-table-wrap table {
+            width: 100%; min-width: 900px;
+            border-collapse: collapse; background: rgba(0,0,0,0.2); border-radius: 10px;
+        }
+        .comparison-table-wrap th, .comparison-table-wrap td {
+            padding: 10px 12px; text-align: left;
+            border-bottom: 1px solid rgba(255,255,255,0.08); font-size: 0.85em;
+        }
+        .comparison-table-wrap th {
+            background: rgba(139,92,246,0.2); font-weight: bold; color: #c4b5fd;
+            position: sticky; top: 0;
+        }
+        .comparison-table-wrap tr:hover { background: rgba(255,255,255,0.04); }
+        .winner { color: #4ade80; font-weight: bold; }
+
+        /* Recommendations */
+        .rec-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 15px; margin-top: 15px;
+        }
+        .rec-card {
+            background: rgba(0,0,0,0.25); border-radius: 12px; padding: 18px;
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+        .rec-card h4 { color: #e879f9; margin: 0 0 8px 0; font-size: 1em; }
+        .rec-card p { margin: 0; font-size: 0.88em; opacity: 0.8; line-height: 1.5; }
+        .rec-card .rec-pick { color: #4ade80; font-weight: bold; }
+
+        /* Breadcrumb */
+        .breadcrumb {
+            padding: 12px 0; font-size: 0.85em; opacity: 0.6;
+        }
+        .breadcrumb a { color: #ff6b6b; text-decoration: none; }
+        .breadcrumb a:hover { text-decoration: underline; }
+
+        /* Footer */
+        .footer-section {
+            text-align: center; margin-top: 40px; padding: 30px;
+            background: rgba(255,255,255,0.03); border-radius: 15px;
+        }
+        .footer-section p { opacity: 0.6; font-size: 0.85em; margin: 5px 0; }
+        .footer-links { margin-top: 15px; }
+        .footer-links a {
+            color: #ff6b6b; text-decoration: none; margin: 0 15px;
+            font-size: 0.9em;
+        }
+        .footer-links a:hover { text-decoration: underline; }
+
+        @media (max-width: 768px) {
+            .tool-card { grid-template-columns: 1fr; }
+            .tool-visual { display: flex; gap: 15px; align-items: center; }
+            .tool-logo { width: 70px; height: 70px; margin-bottom: 0; }
+            .tool-screenshot { display: none; }
+            .header h1 { font-size: 1.8em; }
+            .rec-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<nav class="topnav">
+    <a class="topnav-brand" href="agentarmy.html">
+        <div class="brand-icon">VS</div>
+        <span class="brand-text">VidiSmart <span>Stack</span></span>
+    </a>
+    <div class="nav-sep"></div>
+    <a class="navlink" href="agentarmy.html">
+        <span class="nl-dot" style="background:#ff6b6b"></span>Agent Army
+    </a>
+    <a class="navlink active" href="agent-ui-tools.html">
+        <span class="nl-dot" style="background:#8b5cf6"></span>Visual UI Tools
+    </a>
+</nav>
+
+<div class="container">
+    <div class="breadcrumb">
+        <a href="agentarmy.html">Agent Army</a> &rsaquo; Visual Agent UI Tools
+    </div>
+
+    <div class="header">
+        <h1>Visual Agent Orchestration UIs</h1>
+        <p>Dashboards, Knowledge Graphs &amp; Live Tracking for Multi-Agent Systems — the companion guide for visualizing 50+ agents in real time with relationship graphs, progress tracking, and cost governance.</p>
+        <div class="updated-badge">Updated: June 2, 2026</div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         SECTION 1: Top Visual Agent Orchestration UIs
+         ═══════════════════════════════════════════════════════════════ -->
+    <div class="section">
+        <h2>🖥️ Top Visual Agent Orchestration UIs (2026)</h2>
+        <p>Tools purpose-built for visually tracking, debugging, and managing multi-agent swarms with real-time dashboards, DAG editors, and knowledge graphs.</p>
+
+        <!-- Paperclip -->
+        <div class="tool-card">
+            <div class="tool-visual">
+                <div class="tool-logo">
+                    <svg viewBox="0 0 80 80"><rect rx="16" width="80" height="80" fill="#6366f1"/><path d="M24 52V28a8 8 0 0116 0v20a5 5 0 01-10 0V32a3 3 0 016 0v14" stroke="#fff" stroke-width="3.5" fill="none" stroke-linecap="round"/></svg>
+                </div>
+                <div class="tool-screenshot">
+                    <div class="mockup">
+                        <div class="mockup-titlebar">
+                            <div class="mockup-dot" style="background:#ef4444"></div>
+                            <div class="mockup-dot" style="background:#fbbf24"></div>
+                            <div class="mockup-dot" style="background:#22c55e"></div>
+                        </div>
+                        <div class="mockup-body">
+                            <div class="mockup-sidebar"></div>
+                            <div class="mockup-main">
+                                <div class="mockup-row" style="width:60%"></div>
+                                <div class="mockup-row" style="width:80%"></div>
+                                <div class="mockup-row" style="width:45%"></div>
+                                <div style="display:flex;gap:4px;margin-top:4px;">
+                                    <div style="flex:1;background:rgba(99,102,241,0.15);border-radius:3px;height:50px;display:flex;align-items:center;justify-content:center;">
+                                        <svg width="30" height="24" viewBox="0 0 30 24"><rect x="1" y="1" width="8" height="8" rx="2" fill="rgba(255,255,255,0.15)"/><rect x="11" y="1" width="8" height="8" rx="2" fill="rgba(99,102,241,0.4)"/><rect x="21" y="1" width="8" height="8" rx="2" fill="rgba(255,255,255,0.15)"/><rect x="1" y="13" width="8" height="8" rx="2" fill="rgba(255,255,255,0.15)"/><rect x="11" y="13" width="8" height="8" rx="2" fill="rgba(255,255,255,0.15)"/><rect x="21" y="13" width="8" height="8" rx="2" fill="rgba(255,255,255,0.15)"/></svg>
+                                    </div>
+                                    <div style="flex:1;background:rgba(99,102,241,0.1);border-radius:3px;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="tool-content">
+                <h3>Paperclip <span class="tool-type">Node.js + React</span> <span class="badge badge-ga">66K+ ⭐</span></h3>
+                <p class="tool-meta">Company-as-software orchestration — manage agent teams like an org chart with real-time heartbeats</p>
+                <div class="visual-features">
+                    <h4>Visual Features</h4>
+                    <ul>
+                        <li><strong>Org Chart View:</strong> Hierarchical agent team visualization with reporting lines</li>
+                        <li><strong>Heartbeat Live Status:</strong> Real-time agent health indicators (active/idle/error)</li>
+                        <li><strong>Cost Dashboard:</strong> Per-agent token spend, model costs, budget alerts</li>
+                        <li><strong>Task Board:</strong> Kanban view of agent tasks with drag-and-drop assignment</li>
+                        <li><strong>Activity Feed:</strong> Real-time stream of agent actions, file edits, tool calls</li>
+                        <li><strong>Visibility Tab:</strong> File-level change tracking per agent with diff viewer</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cortivex -->
+        <div class="tool-card">
+            <div class="tool-visual">
+                <div class="tool-logo">
+                    <svg viewBox="0 0 80 80"><rect rx="16" width="80" height="80" fill="#0ea5e9"/><circle cx="28" cy="30" r="6" fill="rgba(255,255,255,0.9)"/><circle cx="52" cy="25" r="5" fill="rgba(255,255,255,0.7)"/><circle cx="40" cy="50" r="7" fill="rgba(255,255,255,0.8)"/><line x1="28" y1="30" x2="52" y2="25" stroke="#fff" stroke-width="1.5" opacity="0.5"/><line x1="28" y1="30" x2="40" y2="50" stroke="#fff" stroke-width="1.5" opacity="0.5"/><line x1="52" y1="25" x2="40" y2="50" stroke="#fff" stroke-width="1.5" opacity="0.5"/></svg>
+                </div>
+                <div class="tool-screenshot">
+                    <div class="mockup">
+                        <div class="mockup-titlebar">
+                            <div class="mockup-dot" style="background:#ef4444"></div>
+                            <div class="mockup-dot" style="background:#fbbf24"></div>
+                            <div class="mockup-dot" style="background:#22c55e"></div>
+                        </div>
+                        <div class="mockup-body">
+                            <div class="mockup-graph">
+                                <div class="node" style="background:#0ea5e9;left:10%;top:20%"></div>
+                                <div class="node" style="background:#22c55e;left:40%;top:10%"></div>
+                                <div class="node" style="background:#f59e0b;left:70%;top:25%"></div>
+                                <div class="node" style="background:#8b5cf6;left:25%;top:60%"></div>
+                                <div class="node" style="background:#ef4444;left:55%;top:55%"></div>
+                                <div class="node" style="background:#0ea5e9;left:80%;top:50%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="tool-content">
+                <h3>Cortivex <span class="tool-type">Express + WebSocket</span> <span class="badge badge-new">NEW</span></h3>
+                <p class="tool-meta">Full-stack agent orchestration with pipeline DAG editor, swarm coordination, and knowledge graph</p>
+                <div class="visual-features">
+                    <h4>Visual Features</h4>
+                    <ul>
+                        <li><strong>Pipeline DAG Editor:</strong> Visual directed-acyclic-graph builder for multi-step agent workflows</li>
+                        <li><strong>Live Execution View:</strong> Per-node progress bars, status indicators, real-time output streaming</li>
+                        <li><strong>Swarm Coordination:</strong> Topology view of agent-to-agent communication and leader election</li>
+                        <li><strong>Knowledge Graph:</strong> Interactive visualization of project entities, file relationships, dependency structures</li>
+                        <li><strong>Timeline View:</strong> Execution history with duration bars, failure points, retry chains</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lattice -->
+        <div class="tool-card">
+            <div class="tool-visual">
+                <div class="tool-logo">
+                    <svg viewBox="0 0 80 80"><rect rx="16" width="80" height="80" fill="#10b981"/><path d="M15 40h50M40 15v50M25 25l30 30M55 25l-30 30" stroke="#fff" stroke-width="2" opacity="0.6"/><circle cx="40" cy="40" r="8" fill="rgba(255,255,255,0.9)"/><circle cx="25" cy="25" r="4" fill="rgba(255,255,255,0.6)"/><circle cx="55" cy="55" r="4" fill="rgba(255,255,255,0.6)"/></svg>
+                </div>
+                <div class="tool-screenshot">
+                    <div class="mockup">
+                        <div class="mockup-titlebar">
+                            <div class="mockup-dot" style="background:#ef4444"></div>
+                            <div class="mockup-dot" style="background:#fbbf24"></div>
+                            <div class="mockup-dot" style="background:#22c55e"></div>
+                        </div>
+                        <div class="mockup-body">
+                            <div class="mockup-graph">
+                                <div class="node" style="background:#10b981;left:15%;top:30%;width:16px;height:16px"></div>
+                                <div class="node" style="background:#3b82f6;left:45%;top:15%;width:14px;height:14px"></div>
+                                <div class="node" style="background:#f59e0b;left:75%;top:35%;width:12px;height:12px"></div>
+                                <div class="node" style="background:#10b981;left:35%;top:65%;width:14px;height:14px"></div>
+                                <div class="node" style="background:#ef4444;left:65%;top:60%;width:10px;height:10px"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="tool-content">
+                <h3>Lattice <span class="tool-type">Next.js + React Flow</span> <span class="badge badge-new">NEW</span></h3>
+                <p class="tool-meta">Visual agent workflow graph generator from project files with color-coded models and team grouping</p>
+                <div class="visual-features">
+                    <h4>Visual Features</h4>
+                    <ul>
+                        <li><strong>Workflow Graph:</strong> Auto-generated from project files — shows agent call chains and data flow</li>
+                        <li><strong>Color-Coded Models:</strong> Each LLM provider gets a distinct color on the graph (GPT = green, Claude = orange, etc.)</li>
+                        <li><strong>Team Grouping:</strong> Agents clustered by team/role with collapsible groups</li>
+                        <li><strong>Pattern Detection:</strong> Identifies sequential, parallel, fan-out/fan-in, and cyclic patterns</li>
+                        <li><strong>Live Monitor:</strong> Real-time log timeline with per-agent filtering and cost tracking</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Construct -->
+        <div class="tool-card">
+            <div class="tool-visual">
+                <div class="tool-logo">
+                    <svg viewBox="0 0 80 80"><rect rx="16" width="80" height="80" fill="#f59e0b"/><rect x="18" y="20" width="18" height="18" rx="3" fill="rgba(255,255,255,0.85)"/><rect x="44" y="20" width="18" height="18" rx="3" fill="rgba(255,255,255,0.6)"/><rect x="18" y="44" width="18" height="18" rx="3" fill="rgba(255,255,255,0.6)"/><rect x="44" y="44" width="18" height="18" rx="3" fill="rgba(255,255,255,0.85)"/><line x1="36" y1="29" x2="44" y2="29" stroke="#fff" stroke-width="2" opacity="0.5"/><line x1="27" y1="38" x2="27" y2="44" stroke="#fff" stroke-width="2" opacity="0.5"/></svg>
+                </div>
+                <div class="tool-screenshot">
+                    <div class="mockup">
+                        <div class="mockup-titlebar">
+                            <div class="mockup-dot" style="background:#ef4444"></div>
+                            <div class="mockup-dot" style="background:#fbbf24"></div>
+                            <div class="mockup-dot" style="background:#22c55e"></div>
+                        </div>
+                        <div class="mockup-body">
+                            <div class="mockup-graph">
+                                <div class="node" style="background:#f59e0b;left:50%;top:50%;width:20px;height:20px"></div>
+                                <div class="node" style="background:#fff;left:20%;top:20%"></div>
+                                <div class="node" style="background:#fff;left:75%;top:25%"></div>
+                                <div class="node" style="background:#fff;left:30%;top:75%"></div>
+                                <div class="node" style="background:#fff;left:70%;top:70%"></div>
+                                <div class="node" style="background:rgba(245,158,11,0.5);left:15%;top:50%"></div>
+                                <div class="node" style="background:rgba(245,158,11,0.5);left:85%;top:50%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="tool-content">
+                <h3>Construct <span class="tool-type">React / Axum / Rust</span> <span class="badge badge-ga">GA</span></h3>
+                <p class="tool-meta">Rust-backed agent platform with interactive DAG, team graph, and Kumiho memory graph explorer</p>
+                <div class="visual-features">
+                    <h4>Visual Features</h4>
+                    <ul>
+                        <li><strong>Interactive DAG:</strong> Workflow runs with clickable nodes, zoom, and execution timeline</li>
+                        <li><strong>Teams Graph:</strong> Agent relationship visualization showing collaboration patterns</li>
+                        <li><strong>Kumiho Memory Graph:</strong> Neo4j-backed force-directed explorer of agent knowledge and memories</li>
+                        <li><strong>Cost Dashboard:</strong> Token usage, model costs, per-agent budget tracking</li>
+                        <li><strong>Audit Chain:</strong> Immutable log of all agent decisions with rollback capability</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Orkestr -->
+        <div class="tool-card">
+            <div class="tool-visual">
+                <div class="tool-logo">
+                    <svg viewBox="0 0 80 80"><rect rx="16" width="80" height="80" fill="#ec4899"/><path d="M20 55 L40 20 L60 55 Z" fill="none" stroke="#fff" stroke-width="3" stroke-linejoin="round"/><line x1="28" y1="42" x2="52" y2="42" stroke="#fff" stroke-width="2"/><circle cx="40" cy="35" r="4" fill="#fff"/></svg>
+                </div>
+                <div class="tool-screenshot">
+                    <div class="mockup">
+                        <div class="mockup-titlebar">
+                            <div class="mockup-dot" style="background:#ef4444"></div>
+                            <div class="mockup-dot" style="background:#fbbf24"></div>
+                            <div class="mockup-dot" style="background:#22c55e"></div>
+                        </div>
+                        <div class="mockup-body">
+                            <div class="mockup-sidebar"></div>
+                            <div class="mockup-main">
+                                <div class="mockup-row" style="width:70%"></div>
+                                <div style="flex:1;display:flex;gap:4px;">
+                                    <div style="flex:2;background:rgba(236,72,153,0.1);border-radius:3px;position:relative;">
+                                        <div class="node" style="background:#ec4899;left:20%;top:30%;width:10px;height:10px"></div>
+                                        <div class="node" style="background:#ec4899;left:60%;top:20%;width:10px;height:10px"></div>
+                                        <div class="node" style="background:#ec4899;left:40%;top:60%;width:10px;height:10px"></div>
+                                    </div>
+                                    <div style="flex:1;background:rgba(255,255,255,0.04);border-radius:3px;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="tool-content">
+                <h3>Orkestr <span class="tool-type">React + Laravel</span> <span class="badge badge-new">NEW</span></h3>
+                <p class="tool-meta">Visual DAG workflow builder with 18 pre-built agents, delegation chains, and execution trace timeline</p>
+                <div class="visual-features">
+                    <h4>Visual Features</h4>
+                    <ul>
+                        <li><strong>DAG Workflow Builder:</strong> Drag-and-drop visual canvas for composing multi-agent pipelines</li>
+                        <li><strong>Agent Canvas:</strong> Configure agent properties, model selection, and tool bindings visually</li>
+                        <li><strong>Delegation Chains:</strong> See which agent delegates to which, with handoff visualization</li>
+                        <li><strong>Execution Trace Timeline:</strong> Per-step duration, inputs/outputs, error states</li>
+                        <li><strong>Skill Library:</strong> Browse and attach 18+ pre-built agent capabilities from a visual catalog</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Agent World (codemoo) -->
+        <div class="tool-card">
+            <div class="tool-visual">
+                <div class="tool-logo">
+                    <svg viewBox="0 0 80 80"><rect rx="16" width="80" height="80" fill="#22c55e"/><rect x="10" y="10" width="60" height="60" rx="4" fill="rgba(0,0,0,0.2)"/><rect x="15" y="45" width="12" height="20" rx="2" fill="rgba(255,255,255,0.6)"/><rect x="34" y="45" width="12" height="20" rx="2" fill="rgba(255,255,255,0.6)"/><rect x="53" y="45" width="12" height="20" rx="2" fill="rgba(255,255,255,0.6)"/><circle cx="21" cy="30" r="5" fill="rgba(255,255,255,0.8)"/><circle cx="40" cy="28" r="5" fill="rgba(255,255,255,0.8)"/><circle cx="59" cy="32" r="5" fill="rgba(255,255,255,0.8)"/></svg>
+                </div>
+                <div class="tool-screenshot">
+                    <div class="mockup">
+                        <div class="mockup-titlebar">
+                            <div class="mockup-dot" style="background:#ef4444"></div>
+                            <div class="mockup-dot" style="background:#fbbf24"></div>
+                            <div class="mockup-dot" style="background:#22c55e"></div>
+                        </div>
+                        <div class="mockup-body" style="background:rgba(34,197,94,0.05);flex-wrap:wrap;gap:2px;">
+                            <div style="width:100%;display:flex;gap:2px;">
+                                <div style="flex:1;background:rgba(34,197,94,0.12);height:25px;border-radius:2px;display:flex;align-items:center;justify-content:center;">
+                                    <svg width="14" height="14" viewBox="0 0 14 14"><circle cx="7" cy="4" r="3" fill="rgba(255,255,255,0.5)"/><rect x="3" y="8" width="8" height="5" rx="2" fill="rgba(255,255,255,0.4)"/></svg>
+                                </div>
+                                <div style="flex:1;background:rgba(255,255,255,0.04);height:25px;border-radius:2px;"></div>
+                                <div style="flex:1;background:rgba(34,197,94,0.08);height:25px;border-radius:2px;"></div>
+                            </div>
+                            <div style="width:100%;display:flex;gap:2px;">
+                                <div style="flex:1;background:rgba(255,255,255,0.03);height:20px;border-radius:2px;"></div>
+                                <div style="flex:1;background:rgba(34,197,94,0.12);height:20px;border-radius:2px;display:flex;align-items:center;justify-content:center;">
+                                    <svg width="12" height="12" viewBox="0 0 12 12"><rect x="1" y="1" width="4" height="4" rx="1" fill="rgba(255,255,255,0.4)"/><rect x="7" y="1" width="4" height="4" rx="1" fill="rgba(255,255,255,0.4)"/><rect x="1" y="7" width="4" height="4" rx="1" fill="rgba(255,255,255,0.4)"/><rect x="7" y="7" width="4" height="4" rx="1" fill="rgba(255,255,255,0.4)"/></svg>
+                                </div>
+                                <div style="flex:1;background:rgba(255,255,255,0.03);height:20px;border-radius:2px;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="tool-content">
+                <h3>Agent World <span class="tool-type">Express + Canvas</span> <span class="badge badge-rpg">RPG VISUAL</span></h3>
+                <p class="tool-meta">RPG-style tile world for Paperclip agents — animated avatars, buildings, agents walk to work when active</p>
+                <div class="visual-features">
+                    <h4>Visual Features</h4>
+                    <ul>
+                        <li><strong>Tile World Map:</strong> Isometric RPG-style city where each agent has a building/desk</li>
+                        <li><strong>Animated Avatars:</strong> Agents walk to work desks when active, rest in homes when idle</li>
+                        <li><strong>100+ Agent Scale:</strong> Visual metaphor designed to represent massive agent swarms</li>
+                        <li><strong>Real-time Sync:</strong> Canvas updates driven by Paperclip WebSocket events</li>
+                        <li><strong>Activity Indicators:</strong> Smoke, lights, and animations signal agent workload</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ruflo Goal Planner -->
+        <div class="tool-card">
+            <div class="tool-visual">
+                <div class="tool-logo">
+                    <svg viewBox="0 0 80 80"><rect rx="16" width="80" height="80" fill="#3b82f6"/><path d="M40 15 L40 40 L60 55" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/><circle cx="40" cy="15" r="4" fill="#fff"/><circle cx="40" cy="40" r="4" fill="rgba(255,255,255,0.7)"/><circle cx="60" cy="55" r="4" fill="rgba(255,255,255,0.5)"/><path d="M40 40 L20 55" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" opacity="0.5"/><circle cx="20" cy="55" r="3" fill="rgba(255,255,255,0.4)"/></svg>
+                </div>
+                <div class="tool-screenshot">
+                    <div class="mockup">
+                        <div class="mockup-titlebar">
+                            <div class="mockup-dot" style="background:#ef4444"></div>
+                            <div class="mockup-dot" style="background:#fbbf24"></div>
+                            <div class="mockup-dot" style="background:#22c55e"></div>
+                        </div>
+                        <div class="mockup-body">
+                            <div class="mockup-graph">
+                                <div class="node" style="background:#3b82f6;left:50%;top:10%;width:16px;height:16px"></div>
+                                <div class="node" style="background:#60a5fa;left:25%;top:40%;width:12px;height:12px"></div>
+                                <div class="node" style="background:#60a5fa;left:70%;top:35%;width:12px;height:12px"></div>
+                                <div class="node" style="background:#93c5fd;left:15%;top:70%;width:10px;height:10px"></div>
+                                <div class="node" style="background:#93c5fd;left:40%;top:65%;width:10px;height:10px"></div>
+                                <div class="node" style="background:#93c5fd;left:65%;top:68%;width:10px;height:10px"></div>
+                                <div class="node" style="background:#93c5fd;left:85%;top:60%;width:10px;height:10px"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="tool-content">
+                <h3>Ruflo Goal Planner <span class="tool-type">Web UI Beta</span> <span class="badge badge-beta">48K+ ⭐</span></h3>
+                <p class="tool-meta">Multi-model chat with live agent dashboard and visual GOAP A* planner for 100+ agents</p>
+                <div class="visual-features">
+                    <h4>Visual Features</h4>
+                    <ul>
+                        <li><strong>Visual Plan Tree:</strong> Goal-Oriented Action Planning (GOAP) with A* pathfinding displayed as a tree</li>
+                        <li><strong>Agent Dashboard:</strong> <code>/agents</code> endpoint with live status grid of all running agents</li>
+                        <li><strong>Multi-Model Chat:</strong> Side-by-side comparison of agent outputs across models</li>
+                        <li><strong>Progress Tracking:</strong> Per-goal completion percentage with dependency visualization</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Hermes Agent Dashboard -->
+        <div class="tool-card">
+            <div class="tool-visual">
+                <div class="tool-logo">
+                    <svg viewBox="0 0 80 80"><rect rx="16" width="80" height="80" fill="#16a34a"/><path d="M25 55 C25 35 35 20 40 20 C45 20 55 35 55 55" stroke="#fff" stroke-width="2.5" fill="none"/><circle cx="32" cy="42" r="4" fill="#fff"/><circle cx="48" cy="42" r="4" fill="#fff"/><path d="M35 52 Q40 58 45 52" stroke="#fff" stroke-width="2" fill="none"/></svg>
+                </div>
+                <div class="tool-screenshot">
+                    <div class="mockup">
+                        <div class="mockup-titlebar">
+                            <div class="mockup-dot" style="background:#ef4444"></div>
+                            <div class="mockup-dot" style="background:#fbbf24"></div>
+                            <div class="mockup-dot" style="background:#22c55e"></div>
+                        </div>
+                        <div class="mockup-body">
+                            <div class="mockup-sidebar" style="background:rgba(22,163,74,0.08)"></div>
+                            <div class="mockup-main">
+                                <div class="mockup-row" style="width:50%;background:rgba(22,163,74,0.15)"></div>
+                                <div class="mockup-row" style="width:90%"></div>
+                                <div class="mockup-row" style="width:75%"></div>
+                                <div class="mockup-row" style="width:85%"></div>
+                                <div class="mockup-row" style="width:60%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="tool-content">
+                <h3>Hermes Agent Dashboard <span class="tool-type">React + FastAPI</span> <span class="badge badge-oss">177K ⭐</span></h3>
+                <p class="tool-meta">Official NousResearch dashboard for Hermes Agent — sessions, chat, skills, MCP tools, and configuration</p>
+                <div class="visual-features">
+                    <h4>Visual Features</h4>
+                    <ul>
+                        <li><strong>Sessions Manager:</strong> Browse and resume agent sessions with history timeline</li>
+                        <li><strong>Embedded Chat:</strong> Full conversational interface with agent output streaming</li>
+                        <li><strong>Skills Browser:</strong> View, load, and manage skill bundles with dependency info</li>
+                        <li><strong>MCP Tools:</strong> Configure and monitor Model Context Protocol tool connections</li>
+                        <li><strong>Self-Hosted:</strong> Lightweight React + FastAPI stack, runs locally or in Docker</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         SECTION 2: Platform-Built-In Dashboards
+         ═══════════════════════════════════════════════════════════════ -->
+    <div class="section">
+        <h2>🔌 Platform-Built-In Dashboards</h2>
+        <p>Agent platforms with visual dashboards integrated into their core offering — no separate install required.</p>
+
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:15px;">
+            <div style="background:rgba(0,0,0,0.25);border-radius:12px;padding:20px;border:1px solid rgba(255,255,255,0.08);">
+                <h3 style="color:#e879f9;margin:0 0 10px 0;font-size:1.1em;">CrewAI Studio</h3>
+                <p style="font-size:0.88em;opacity:0.8;margin:0 0 8px 0;">Visual drag-and-drop editor within CrewAI's Agent Management Platform (AMP). Non-technical users can compose multi-agent crews without code.</p>
+                <span class="badge badge-ga">Built-in to CrewAI</span>
+            </div>
+
+            <div style="background:rgba(0,0,0,0.25);border-radius:12px;padding:20px;border:1px solid rgba(255,255,255,0.08);">
+                <h3 style="color:#e879f9;margin:0 0 10px 0;font-size:1.1em;">LangGraph Studio</h3>
+                <p style="font-size:0.88em;opacity:0.8;margin:0 0 8px 0;">Visual graph IDE with state editing and time-travel debugging. Inspect node states, rewind execution, modify agent decisions mid-flight.</p>
+                <span class="badge badge-ga">Part of LangChain Stack</span>
+            </div>
+
+            <div style="background:rgba(0,0,0,0.25);border-radius:12px;padding:20px;border:1px solid rgba(255,255,255,0.08);">
+                <h3 style="color:#e879f9;margin:0 0 10px 0;font-size:1.1em;">LangSmith</h3>
+                <p style="font-size:0.88em;opacity:0.8;margin:0 0 8px 0;">Full observability dashboard — execution tracing, evaluation datasets, prompt management, and dataset annotation. The "Datadog of LLM apps."</p>
+                <span class="badge badge-enterprise">SaaS + Self-Hosted</span>
+            </div>
+
+            <div style="background:rgba(0,0,0,0.25);border-radius:12px;padding:20px;border:1px solid rgba(255,255,255,0.08);">
+                <h3 style="color:#e879f9;margin:0 0 10px 0;font-size:1.1em;">Azure AI Foundry Monitoring</h3>
+                <p style="font-size:0.88em;opacity:0.8;margin:0 0 8px 0;">Production monitoring for Microsoft Agent Framework — agent telemetry, cost tracking, alert management within the Azure portal.</p>
+                <span class="badge badge-enterprise">Azure Native</span>
+            </div>
+
+            <div style="background:rgba(0,0,0,0.25);border-radius:12px;padding:20px;border:1px solid rgba(255,255,255,0.08);">
+                <h3 style="color:#e879f9;margin:0 0 10px 0;font-size:1.1em;">Dify Workflow Canvas</h3>
+                <p style="font-size:0.88em;opacity:0.8;margin:0 0 8px 0;">Built-in drag-and-drop workflow builder within the Dify platform. Supports LLM nodes, tool nodes, conditional branching, and variable mapping.</p>
+                <span class="badge badge-oss">Open Source</span>
+            </div>
+
+            <div style="background:rgba(0,0,0,0.25);border-radius:12px;padding:20px;border:1px solid rgba(255,255,255,0.08);">
+                <h3 style="color:#e879f9;margin:0 0 10px 0;font-size:1.1em;">Flowise Agentflow</h3>
+                <p style="font-size:0.88em;opacity:0.8;margin:0 0 8px 0;">Visual multi-agent orchestration with sequential, parallel, and conditional flows. Human-in-the-loop approval gates and real-time observability via OpenTelemetry.</p>
+                <span class="badge badge-oss">Open Source (Workday)</span>
+            </div>
+        </div>
+
+        <h3>Platforms Without Native Visual Dashboards</h3>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;margin-top:10px;">
+            <div style="background:rgba(0,0,0,0.15);border-radius:10px;padding:15px;border:1px solid rgba(255,255,255,0.05);opacity:0.7;">
+                <strong>NemoClaw</strong> — Security runtime focus. No visual agent tracking UI; monitoring via logs and NVIDIA tooling.
+            </div>
+            <div style="background:rgba(0,0,0,0.15);border-radius:10px;padding:15px;border:1px solid rgba(255,255,255,0.05);opacity:0.7;">
+                <strong>OpenClaw</strong> — 22+ channel adapters but no built-in agent relationship UI. Community dashboards exist.
+            </div>
+            <div style="background:rgba(0,0,0,0.15);border-radius:10px;padding:15px;border:1px solid rgba(255,255,255,0.05);opacity:0.7;">
+                <strong>OpenFang</strong> — Tauri desktop app with system tray. Minimal visual orchestration; security-first design.
+            </div>
+            <div style="background:rgba(0,0,0,0.15);border-radius:10px;padding:15px;border:1px solid rgba(255,255,255,0.05);opacity:0.7;">
+                <strong>ZeroClaw</strong> — CLI-first, ultra-lightweight. No visual UI by design philosophy.
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         SECTION 3: Enterprise / Commercial Visual Platforms
+         ═══════════════════════════════════════════════════════════════ -->
+    <div class="section">
+        <h2>🏢 Enterprise &amp; Commercial Visual Platforms</h2>
+        <p>Managed or commercial platforms with sophisticated visual orchestration for production agent deployments.</p>
+
+        <!-- LaunchDarkly Agent Graphs -->
+        <div class="tool-card">
+            <div class="tool-visual">
+                <div class="tool-logo">
+                    <svg viewBox="0 0 80 80"><rect rx="16" width="80" height="80" fill="#0b3d2e"/><path d="M25 30 L40 15 L55 30 L55 55 L25 55 Z" fill="none" stroke="#22c55e" stroke-width="2.5"/><line x1="40" y1="15" x2="40" y2="55" stroke="#22c55e" stroke-width="1.5" opacity="0.4"/><circle cx="32" cy="38" r="4" fill="#22c55e"/><circle cx="48" cy="38" r="4" fill="#22c55e"/><circle cx="40" cy="48" r="3" fill="rgba(34,197,94,0.6)"/></svg>
+                </div>
+                <div class="tool-screenshot">
+                    <div class="mockup">
+                        <div class="mockup-titlebar">
+                            <div class="mockup-dot" style="background:#ef4444"></div>
+                            <div class="mockup-dot" style="background:#fbbf24"></div>
+                            <div class="mockup-dot" style="background:#22c55e"></div>
+                        </div>
+                        <div class="mockup-body">
+                            <div class="mockup-graph">
+                                <div class="node" style="background:#22c55e;left:30%;top:20%;width:18px;height:18px"></div>
+                                <div class="node" style="background:#16a34a;left:65%;top:25%;width:14px;height:14px"></div>
+                                <div class="node" style="background:#15803d;left:45%;top:55%;width:16px;height:16px"></div>
+                                <div class="node" style="background:#166534;left:20%;top:70%;width:12px;height:12px"></div>
+                                <div class="node" style="background:#166534;left:70%;top:65%;width:12px;height:12px"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="tool-content">
+                <h3>LaunchDarkly Agent Graphs <span class="tool-type">SaaS</span> <span class="badge badge-enterprise">ENTERPRISE</span></h3>
+                <p class="tool-meta">Externalizes agent topology into a visual graph builder with per-node latency and invocation metrics</p>
+                <div class="visual-features">
+                    <h4>Visual Features</h4>
+                    <ul>
+                        <li><strong>Topology Graph Builder:</strong> Visual canvas for mapping agent relationships and call chains</li>
+                        <li><strong>Per-Node Metrics:</strong> Latency, invocation count, error rate overlaid on each graph node</li>
+                        <li><strong>Feature Flag Integration:</strong> Toggle agent behaviors and model routing via LaunchDarkly flags</li>
+                        <li><strong>Multi-Framework:</strong> Works with any agent framework — language-agnostic instrumentation</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- OrchStack -->
+        <div class="tool-card">
+            <div class="tool-visual">
+                <div class="tool-logo">
+                    <svg viewBox="0 0 80 80"><rect rx="16" width="80" height="80" fill="#7c3aed"/><rect x="20" y="48" width="40" height="8" rx="4" fill="rgba(255,255,255,0.3)"/><rect x="20" y="36" width="40" height="8" rx="4" fill="rgba(255,255,255,0.5)"/><rect x="20" y="24" width="40" height="8" rx="4" fill="rgba(255,255,255,0.7)"/><circle cx="40" cy="16" r="4" fill="#fff"/></svg>
+                </div>
+                <div class="tool-screenshot">
+                    <div class="mockup">
+                        <div class="mockup-titlebar">
+                            <div class="mockup-dot" style="background:#ef4444"></div>
+                            <div class="mockup-dot" style="background:#fbbf24"></div>
+                            <div class="mockup-dot" style="background:#22c55e"></div>
+                        </div>
+                        <div class="mockup-body">
+                            <div class="mockup-sidebar" style="background:rgba(124,58,237,0.08)"></div>
+                            <div class="mockup-main">
+                                <div style="flex:1;background:rgba(124,58,237,0.06);border-radius:3px;position:relative;">
+                                    <div class="node" style="background:#7c3aed;left:20%;top:25%;width:14px;height:14px"></div>
+                                    <div class="node" style="background:#a78bfa;left:55%;top:20%;width:12px;height:12px"></div>
+                                    <div class="node" style="background:#7c3aed;left:40%;top:60%;width:14px;height:14px"></div>
+                                    <div class="node" style="background:#c4b5fd;left:70%;top:55%;width:10px;height:10px"></div>
+                                </div>
+                            </div>
+                            <div style="width:20%;background:rgba(255,255,255,0.03);border-radius:3px;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="tool-content">
+                <h3>OrchStack <span class="tool-type">SaaS</span> <span class="badge badge-enterprise">SOC2</span></h3>
+                <p class="tool-meta">Visual Agent Studio with React Flow infinite canvas, prompt studio, knowledge manager, and code export</p>
+                <div class="visual-features">
+                    <h4>Visual Features</h4>
+                    <ul>
+                        <li><strong>Agent Studio:</strong> React Flow infinite canvas for composing multi-agent architectures</li>
+                        <li><strong>Prompt Studio:</strong> Side-by-side prompt editor with version history and A/B testing</li>
+                        <li><strong>Knowledge Manager:</strong> Upload, chunk, and visualize document embeddings</li>
+                        <li><strong>Code Export:</strong> Generate production code (Python/TypeScript) from visual designs</li>
+                        <li><strong>Enterprise:</strong> SOC2 certified, SSO, audit logs, role-based access control</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mission Control -->
+        <div class="tool-card">
+            <div class="tool-visual">
+                <div class="tool-logo">
+                    <svg viewBox="0 0 80 80"><rect rx="16" width="80" height="80" fill="#dc2626"/><circle cx="40" cy="40" r="18" fill="none" stroke="#fff" stroke-width="2"/><circle cx="40" cy="40" r="6" fill="#fff"/><line x1="40" y1="22" x2="40" y2="14" stroke="#fff" stroke-width="2"/><line x1="40" y1="58" x2="40" y2="66" stroke="#fff" stroke-width="2"/><line x1="22" y1="40" x2="14" y2="40" stroke="#fff" stroke-width="2"/><line x1="58" y1="40" x2="66" y2="40" stroke="#fff" stroke-width="2"/></svg>
+                </div>
+                <div class="tool-screenshot">
+                    <div class="mockup">
+                        <div class="mockup-titlebar">
+                            <div class="mockup-dot" style="background:#ef4444"></div>
+                            <div class="mockup-dot" style="background:#fbbf24"></div>
+                            <div class="mockup-dot" style="background:#22c55e"></div>
+                        </div>
+                        <div class="mockup-body" style="flex-wrap:wrap;gap:3px;">
+                            <div style="width:48%;height:45%;background:rgba(220,38,38,0.08);border-radius:3px;"></div>
+                            <div style="width:48%;height:45%;background:rgba(220,38,38,0.06);border-radius:3px;"></div>
+                            <div style="width:48%;height:45%;background:rgba(220,38,38,0.04);border-radius:3px;"></div>
+                            <div style="width:48%;height:45%;background:rgba(220,38,38,0.08);border-radius:3px;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="tool-content">
+                <h3>Mission Control <span class="tool-type">Self-Hosted</span> <span class="badge badge-enterprise">32 PANELS</span></h3>
+                <p class="tool-meta">Self-hosted dashboard by builderz-labs with 32 panels: Kanban, agent monitoring, swarm management, hooks, and skills hub</p>
+                <div class="visual-features">
+                    <h4>Visual Features</h4>
+                    <ul>
+                        <li><strong>32 Dashboard Panels:</strong> Modular grid layout with Kanban board, agent monitor, task queue, and more</li>
+                        <li><strong>Swarm Management:</strong> Create, scale, and monitor agent swarms with real-time topology</li>
+                        <li><strong>Hooks System:</strong> Visual event hook editor for agent lifecycle events</li>
+                        <li><strong>Skills Hub:</strong> Browse, install, and configure agent skills from a visual marketplace</li>
+                        <li><strong>Self-Hosted:</strong> Full data sovereignty, Docker-based deployment</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- AIger's Universe -->
+        <div class="tool-card">
+            <div class="tool-visual">
+                <div class="tool-logo">
+                    <svg viewBox="0 0 80 80"><rect rx="16" width="80" height="80" fill="#0891b2"/><circle cx="40" cy="35" r="14" fill="none" stroke="#fff" stroke-width="2"/><circle cx="33" cy="32" r="3" fill="rgba(255,255,255,0.7)"/><circle cx="47" cy="32" r="3" fill="rgba(255,255,255,0.7)"/><circle cx="40" cy="42" r="2" fill="rgba(255,255,255,0.5)"/><path d="M26 52 Q40 62 54 52" stroke="#fff" stroke-width="2" fill="none"/></svg>
+                </div>
+                <div class="tool-screenshot">
+                    <div class="mockup">
+                        <div class="mockup-titlebar">
+                            <div class="mockup-dot" style="background:#ef4444"></div>
+                            <div class="mockup-dot" style="background:#fbbf24"></div>
+                            <div class="mockup-dot" style="background:#22c55e"></div>
+                        </div>
+                        <div class="mockup-body">
+                            <div class="mockup-graph">
+                                <div class="node" style="background:#0891b2;left:50%;top:40%;width:22px;height:22px;border-radius:50%"></div>
+                                <div class="node" style="background:#22d3ee;left:20%;top:20%"></div>
+                                <div class="node" style="background:#22d3ee;left:75%;top:25%"></div>
+                                <div class="node" style="background:#67e8f9;left:25%;top:65%"></div>
+                                <div class="node" style="background:#67e8f9;left:70%;top:60%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="tool-content">
+                <h3>AIger's Universe <span class="tool-type">React + ReactFlow</span> <span class="badge badge-new">NEW</span></h3>
+                <p class="tool-meta">Prompt-to-architecture orchestrator with ReactFlow workflow canvas, knowledge graph, and AI copilot</p>
+                <div class="visual-features">
+                    <h4>Visual Features</h4>
+                    <ul>
+                        <li><strong>ReactFlow Canvas:</strong> Prompt generates entire multi-agent architecture on an infinite canvas</li>
+                        <li><strong>Knowledge Graph Page:</strong> <code>/knowledge-graph</code> with spatial exploration of KB chunks and semantic relationships</li>
+                        <li><strong>AI Copilot:</strong> Chat-based interface to modify the visual architecture in natural language</li>
+                        <li><strong>Code Generation:</strong> Export visual designs as deployable agent code</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         SECTION 4: Knowledge Graph & Memory Visualization
+         ═══════════════════════════════════════════════════════════════ -->
+    <div class="section">
+        <h2>🧠 Knowledge Graph &amp; Memory Visualization</h2>
+        <p>Tools for visualizing agent memory, knowledge bases, entity relationships, and execution traces as interactive graphs.</p>
+
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:15px;">
+            <div style="background:rgba(0,0,0,0.25);border-radius:12px;padding:20px;border:1px solid rgba(255,255,255,0.08);">
+                <h3 style="color:#e879f9;margin:0 0 10px 0;font-size:1.1em;">Kumiho (inside Construct)</h3>
+                <p style="font-size:0.88em;opacity:0.8;margin:0 0 8px 0;">Neo4j-backed graph memory with a force-directed explorer. Agents store and retrieve knowledge as a navigable web of entities and relationships. Built in Rust for performance.</p>
+                <span class="badge badge-ga">Neo4j + Rust</span>
+            </div>
+
+            <div style="background:rgba(0,0,0,0.25);border-radius:12px;padding:20px;border:1px solid rgba(255,255,255,0.08);">
+                <h3 style="color:#e879f9;margin:0 0 10px 0;font-size:1.1em;">Cortivex Knowledge Graph</h3>
+                <p style="font-size:0.88em;opacity:0.8;margin:0 0 8px 0;">Interactive visualization of project entities, file relationships, and dependency structures. Built on Express + WebSocket for real-time graph updates as agents modify the codebase.</p>
+                <span class="badge badge-new">Real-time</span>
+            </div>
+
+            <div style="background:rgba(0,0,0,0.25);border-radius:12px;padding:20px;border:1px solid rgba(255,255,255,0.08);">
+                <h3 style="color:#e879f9;margin:0 0 10px 0;font-size:1.1em;">AIger's Universe Knowledge Graph</h3>
+                <p style="font-size:0.88em;opacity:0.8;margin:0 0 8px 0;">Dedicated <code>/knowledge-graph</code> page with spatial exploration of knowledge base chunks and their semantic relationships. Navigate by clicking nodes to expand related concepts.</p>
+                <span class="badge badge-new">Spatial Nav</span>
+            </div>
+
+            <div style="background:rgba(0,0,0,0.25);border-radius:12px;padding:20px;border:1px solid rgba(255,255,255,0.08);">
+                <h3 style="color:#e879f9;margin:0 0 10px 0;font-size:1.1em;">LangSmith Traces</h3>
+                <p style="font-size:0.88em;opacity:0.8;margin:0 0 8px 0;">Full execution tracing with graph visualization. See every LLM call, tool invocation, and agent decision as a tree. Filter by latency, cost, or error state. Industry standard for LLM observability.</p>
+                <span class="badge badge-enterprise">Industry Standard</span>
+            </div>
+
+            <div style="background:rgba(0,0,0,0.25);border-radius:12px;padding:20px;border:1px solid rgba(255,255,255,0.08);">
+                <h3 style="color:#e879f9;margin:0 0 10px 0;font-size:1.1em;">GraphMind</h3>
+                <p style="font-size:0.88em;opacity:0.8;margin:0 0 8px 0;">Knowledge graph + RAG dashboard built on Streamlit. Entity-relationship graph visualization with interactive node exploration and document retrieval context.</p>
+                <span class="badge badge-oss">Streamlit</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         SECTION 5: Comparison Matrix
+         ═══════════════════════════════════════════════════════════════ -->
+    <div class="section">
+        <h2>📊 UI Tools Feature Comparison Matrix</h2>
+        <div class="comparison-table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tool</th>
+                        <th>Real-time Updates</th>
+                        <th>Knowledge Graph</th>
+                        <th>Agent Progress</th>
+                        <th>Cost Tracking</th>
+                        <th>Multi-Agent Topology</th>
+                        <th>DAG/Workflow Viz</th>
+                        <th>Human-in-Loop UI</th>
+                        <th>Self-Hosted</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Paperclip</strong></td>
+                        <td class="winner">✅ WebSocket</td>
+                        <td>❌</td>
+                        <td class="winner">✅ Heartbeat</td>
+                        <td class="winner">✅ Per-agent</td>
+                        <td class="winner">✅ Org Chart</td>
+                        <td>❌</td>
+                        <td>✅ Task Board</td>
+                        <td>✅ Docker</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Cortivex</strong></td>
+                        <td class="winner">✅ WebSocket</td>
+                        <td class="winner">✅ Interactive</td>
+                        <td class="winner">✅ Per-node</td>
+                        <td>⚠️ Basic</td>
+                        <td class="winner">✅ Swarm View</td>
+                        <td class="winner">✅ DAG Editor</td>
+                        <td>❌</td>
+                        <td>✅ Docker</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Lattice</strong></td>
+                        <td class="winner">✅ Live Monitor</td>
+                        <td>❌</td>
+                        <td>✅ Log Timeline</td>
+                        <td class="winner">✅ Per-agent</td>
+                        <td class="winner">✅ Team Groups</td>
+                        <td class="winner">✅ Auto-generated</td>
+                        <td>❌</td>
+                        <td>✅ npm</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Construct</strong></td>
+                        <td>✅ Live DAG</td>
+                        <td class="winner">✅ Kumiho (Neo4j)</td>
+                        <td>✅ Timeline</td>
+                        <td class="winner">✅ Dashboard</td>
+                        <td class="winner">✅ Teams Graph</td>
+                        <td class="winner">✅ Interactive</td>
+                        <td>❌</td>
+                        <td>✅ Docker</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Orkestr</strong></td>
+                        <td>⚠️ Polling</td>
+                        <td>❌</td>
+                        <td class="winner">✅ Trace Timeline</td>
+                        <td>⚠️ Basic</td>
+                        <td>✅ Delegation</td>
+                        <td class="winner">✅ DAG Builder</td>
+                        <td>✅ Approval</td>
+                        <td>✅ Docker</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Agent World</strong></td>
+                        <td class="winner">✅ Canvas</td>
+                        <td>❌</td>
+                        <td>✅ Animation</td>
+                        <td>❌</td>
+                        <td>✅ RPG Map</td>
+                        <td>❌</td>
+                        <td>❌</td>
+                        <td>✅ Express</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Ruflo Planner</strong></td>
+                        <td>✅ Live Agents</td>
+                        <td>❌</td>
+                        <td class="winner">✅ GOAP Tree</td>
+                        <td>❌</td>
+                        <td>⚠️ Basic</td>
+                        <td>✅ Plan Tree</td>
+                        <td>❌</td>
+                        <td>✅ Docker</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Hermes Dashboard</strong></td>
+                        <td>✅ Streaming</td>
+                        <td>❌</td>
+                        <td>✅ Sessions</td>
+                        <td>❌</td>
+                        <td>❌</td>
+                        <td>❌</td>
+                        <td>✅ Chat UI</td>
+                        <td>✅ Docker</td>
+                    </tr>
+                    <tr>
+                        <td><strong>LaunchDarkly</strong></td>
+                        <td class="winner">✅ Real-time</td>
+                        <td>❌</td>
+                        <td>✅ Per-node</td>
+                        <td class="winner">✅ Metrics</td>
+                        <td class="winner">✅ Topology</td>
+                        <td>✅ Graph</td>
+                        <td>❌</td>
+                        <td>❌ SaaS</td>
+                    </tr>
+                    <tr>
+                        <td><strong>OrchStack</strong></td>
+                        <td>⚠️ Polling</td>
+                        <td>✅ Embeddings</td>
+                        <td>✅ Canvas</td>
+                        <td>✅ Usage</td>
+                        <td class="winner">✅ Infinite Canvas</td>
+                        <td class="winner">✅ React Flow</td>
+                        <td>✅ HITL</td>
+                        <td>❌ SaaS</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Mission Control</strong></td>
+                        <td class="winner">✅ Real-time</td>
+                        <td>❌</td>
+                        <td class="winner">✅ Kanban</td>
+                        <td>⚠️ Basic</td>
+                        <td class="winner">✅ Swarm Mgmt</td>
+                        <td>❌</td>
+                        <td>✅ Hooks</td>
+                        <td class="winner">✅ Self-Hosted</td>
+                    </tr>
+                    <tr>
+                        <td><strong>LangGraph Studio</strong></td>
+                        <td class="winner">✅ Time-travel</td>
+                        <td>❌</td>
+                        <td>✅ State View</td>
+                        <td>✅ LangSmith</td>
+                        <td>✅ Graph</td>
+                        <td class="winner">✅ Graph IDE</td>
+                        <td class="winner">✅ State Edit</td>
+                        <td>✅ Desktop</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         SECTION 6: Recommendations by Use Case
+         ═══════════════════════════════════════════════════════════════ -->
+    <div class="section">
+        <h2>🎯 Recommendations by Use Case</h2>
+        <div class="rec-grid">
+            <div class="rec-card">
+                <h4>RPG-Style Fun Visualization</h4>
+                <p><span class="rec-pick">Agent World</span> — Animated tile world where your agents walk to work, rest at home, and buildings light up with activity. Best for teams who want a playful, intuitive view of 100+ agents.</p>
+            </div>
+            <div class="rec-card">
+                <h4>Org Charts + Budget Governance</h4>
+                <p><span class="rec-pick">Paperclip</span> — Treats agents as employees with org chart hierarchy, heartbeat monitoring, and per-agent cost dashboards. Best for management-style oversight of agent teams.</p>
+            </div>
+            <div class="rec-card">
+                <h4>Neo4j Knowledge Graph</h4>
+                <p><span class="rec-pick">Construct (Kumiho)</span> — Force-directed Neo4j graph explorer for agent memory. Agents store knowledge as entities and relationships that you can navigate visually. Best for research-heavy workflows.</p>
+            </div>
+            <div class="rec-card">
+                <h4>GOAP Planning & Goal Trees</h4>
+                <p><span class="rec-pick">Ruflo Goal Planner</span> — Goal-Oriented Action Planning with A* pathfinding displayed as an interactive tree. Best for complex multi-step agent planning with dependencies.</p>
+            </div>
+            <div class="rec-card">
+                <h4>Multi-Framework Support</h4>
+                <p><span class="rec-pick">Lattice</span> or <span class="rec-pick">LaunchDarkly Agent Graphs</span> — Both work across agent frameworks. Lattice auto-generates graphs from project files; LaunchDarkly externalizes topology with metrics overlay.</p>
+            </div>
+            <div class="rec-card">
+                <h4>Docker-Based Self-Hosted</h4>
+                <p><span class="rec-pick">Cortivex</span> or <span class="rec-pick">Orkestr</span> — Both offer full Docker deployment with DAG editors, real-time execution, and no external dependencies. Cortivex adds knowledge graph; Orkestr adds skill library.</p>
+            </div>
+            <div class="rec-card">
+                <h4>Enterprise (SOC2, SSO)</h4>
+                <p><span class="rec-pick">CrewAI Studio</span> / <span class="rec-pick">OrchStack</span> / <span class="rec-pick">LaunchDarkly</span> — SOC2 certified with SSO, audit logs, and role-based access. Best for regulated industries and large teams.</p>
+            </div>
+            <div class="rec-card">
+                <h4>Visual On-Ramp for Non-Engineers</h4>
+                <p><span class="rec-pick">OrchStack Studio</span>, <span class="rec-pick">CrewAI Studio</span>, <span class="rec-pick">Dify</span>, <span class="rec-pick">Flowise</span> — Drag-and-drop canvas interfaces that require no coding. Generate production agents from visual designs.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer-section">
+        <p>Generated by VidiSmart AI — Visual Agent Orchestration UI Intelligence</p>
+        <p>Data as of June 2, 2026</p>
+        <div class="footer-links">
+            <a href="agentarmy.html">Agent Army Platforms</a>
+            <a href="visualai-tools.html">Visual AI Tools</a>
+            <a href="topmodels.html">Top Models</a>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

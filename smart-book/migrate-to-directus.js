@@ -76,6 +76,8 @@ const HTML_FILES = [
     // Agent & AI pages
     { path: 'vidismart.agentforce.presentation.html', category: 'landing_pages', title: 'VidiSmart Agentforce' },
     { path: 'Agent_Army_Orchestration_2026.html', category: 'documentation', title: 'Agent Army Orchestration 2026' },
+    { path: 'agentarmy.html', category: 'documentation', title: 'Agent Army Orchestration 2026' },
+    { path: 'agent-ui-tools.html', category: 'tools', title: 'Visual Agent UI Tools' },
     { path: 'Ai.Experts_Deploying_RAG_&_VRAG.html', category: 'documentation', title: 'AI Experts RAG & VRAG' },
     { path: 'AI_Models_2026.html', category: 'documentation', title: 'AI Models 2026' },
     { path: 'Ai_Models_OpenCode.2026.html', category: 'documentation', title: 'AI Models OpenCode 2026' },
