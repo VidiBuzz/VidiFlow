@@ -1301,7 +1301,7 @@ Status: Synthesized_Approved
             }
         }
 
-        // Render completed block segments stacking behind the task stations (growing to the right as video timeline clips)
+        // Render completed block segments stacking behind the task stations (anchored on the right next to station, growing leftwards)
         function renderFinishedStack(frameId, outflowTrack) {
             const box = document.getElementById(`finished-box-${frameId}-${outflowTrack}`);
             if (!box) return;
@@ -1310,9 +1310,10 @@ Status: Synthesized_Approved
             const flowEl = document.getElementById(`flow-container-${frameId}`);
             const W = flowEl ? Math.max(660, flowEl.clientWidth) : 660;
 
-            const fusionGateX = W * 0.48;
+            const fusionGateX = W * 0.36; // Shift fusion gate further left to give more track space
             const fusionGateWidth = 24;
             const outflowStartX = fusionGateX + fusionGateWidth;
+            const stationX = W - 180;
 
             // Add a gorgeous timeline track styling with subtle tick marks!
             box.style.background = 'repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.012) 0px, rgba(255, 255, 255, 0.012) 1px, transparent 1px, transparent 15px)';
@@ -1324,8 +1325,20 @@ Status: Synthesized_Approved
             const stack = finishedStacks[`${frameId}-${outflowTrack}`];
             const shape = globalShapeStyle === 'mixed' ? 'square' : globalShapeStyle;
             
-            const leftBound = outflowStartX + 8; // Start immediately to the right of the Fusion Gate
             const gap = 6;
+            const rightLimit = stationX - 8;
+
+            // Calculate total width of the completed stack
+            let totalWidth = 0;
+            stack.forEach(item => {
+                totalWidth += item.width;
+            });
+            if (stack.length > 0) {
+                totalWidth += (stack.length - 1) * gap;
+            }
+
+            // Anchor stack next to the station, growing left
+            const leftBound = Math.max(outflowStartX + 8, rightLimit - totalWidth);
             
             let currentLeft = leftBound;
             
@@ -1481,7 +1494,7 @@ Status: Synthesized_Approved
                 const ingressEndX = W * 0.16;
                 const roundaboutCenterX = ingressEndX + 25;
                 const egressStartX = roundaboutCenterX + 25;
-                const fusionGateX = W * 0.48;
+                const fusionGateX = W * 0.36; // Shifted left
                 const fusionGateWidth = 24;
                 const outflowStartX = fusionGateX + fusionGateWidth;
                 const stationX = W - 180;
@@ -1973,31 +1986,39 @@ Status: Synthesized_Approved
             return 5.0;
         }
 
-        // Dynamically spacing out finished stacks and traveling agents heading to a specific target outflow station (growing left-to-right - Responsive)
+        // Dynamically spacing out finished stacks and traveling agents heading to the station queue (anchored right, growing left)
         function getAgentOutflowStopX(a) {
+            // If already locked during vertical push, return the locked value
+            if (a.stopX !== undefined && a.stopX !== null) {
+                return a.stopX;
+            }
+
             const flowEl = document.getElementById(`flow-container-${a.frameId}`);
             const W = flowEl ? Math.max(660, flowEl.clientWidth) : 660;
 
-            const fusionGateX = W * 0.48;
+            const fusionGateX = W * 0.36; // Shifted left
             const fusionGateWidth = 24;
             const outflowStartX = fusionGateX + fusionGateWidth;
+            const stationX = W - 180;
 
             const stackKey = `${a.frameId}-${a.outflowTrack}`;
             const stack = finishedStacks[stackKey] || [];
-            const stackCount = stack.length;
 
-            const leftBound = outflowStartX + 8; // Starts immediately to the right of the Fusion Gate
             const gap = 6;
-            
-            let currentLeft = leftBound;
-            
-            // Calculate where the end of the stationed stack is
-            if (stackCount > 0) {
-                const lastStationed = stack[stackCount - 1];
-                if (lastStationed.calculatedLeft !== undefined) {
-                    currentLeft = lastStationed.calculatedLeft + lastStationed.width + gap;
-                }
+            const rightLimit = stationX - 8;
+
+            // Calculate current stack left boundary
+            let totalStackWidth = 0;
+            stack.forEach(item => {
+                totalStackWidth += item.width;
+            });
+            if (stack.length > 0) {
+                totalStackWidth += (stack.length - 1) * gap;
             }
+            const leftBound = Math.max(outflowStartX + 8, rightLimit - totalStackWidth);
+
+            // The rightmost limit of the traveling queue on the top rail
+            const queueRightLimit = stack.length > 0 ? leftBound - gap : rightLimit;
 
             // Find all traveling agents in outflow stage for the same track
             const traveling = activeAgents.filter(other => 
@@ -2012,20 +2033,17 @@ Status: Synthesized_Approved
             const idx = traveling.findIndex(other => other.id === a.id);
             const outflowIndex = idx !== -1 ? idx : traveling.length;
 
-            let targetLeft = currentLeft;
-            for (let i = 0; i <= outflowIndex; i++) {
+            // Stop coordinate is calculated by stacking behind queueRightLimit
+            let targetRight = queueRightLimit;
+            for (let i = 0; i < outflowIndex; i++) {
                 const travAgent = traveling[i];
-                if (!travAgent) continue;
-                
-                if (travAgent.id === a.id) {
-                    targetLeft = currentLeft;
-                    break;
-                } else {
-                    currentLeft = currentLeft + travAgent.width + gap;
+                if (travAgent) {
+                    targetRight = targetRight - travAgent.width - gap;
                 }
             }
 
-            return targetLeft + a.width / 2;
+            const computedStopX = targetRight - a.width / 2;
+            return Math.max(outflowStartX + a.width / 2 + 8, computedStopX);
         }
 
         // Analytical coordinate calculator along the entire 2D motion path based on continuous progression (Responsive & Bezier Aligned)
@@ -2036,7 +2054,7 @@ Status: Synthesized_Approved
             const ingressEndX = W * 0.16;
             const roundaboutCenterX = ingressEndX + 25;
             const egressStartX = roundaboutCenterX + 25;
-            const fusionGateX = W * 0.48;
+            const fusionGateX = W * 0.36; // Shifted left
             const fusionGateWidth = 24;
             const outflowStartX = fusionGateX + fusionGateWidth;
             const stationX = W - 180;
@@ -2094,13 +2112,21 @@ Status: Synthesized_Approved
                 stage = 'outflow';
                 progress = (s - 4.0) * 100;
                 
-                // Calculate stopX dynamically
-                const stopX = getAgentOutflowStopX(a);
-                
                 const outflowYs = [110, 135, 160];
                 const targetOutflowY = outflowYs[a.outflowTrack];
                 
                 const t = progress / 100;
+
+                // Lock stopX when we hit the vertical push phase (t >= 0.7)
+                if (t >= 0.7) {
+                    if (a.stopX === undefined || a.stopX === null) {
+                        a.stopX = getAgentOutflowStopX(a);
+                    }
+                }
+
+                // If stopX is not locked yet, calculate it dynamically
+                const stopX = (a.stopX !== undefined && a.stopX !== null) ? a.stopX : getAgentOutflowStopX(a);
+                
                 if (t < 0.7) {
                     const p = t / 0.7;
                     x = outflowStartX + (stopX - outflowStartX) * p;
@@ -2113,7 +2139,11 @@ Status: Synthesized_Approved
             } else {
                 stage = 'outflow';
                 progress = 100;
-                const stopX = getAgentOutflowStopX(a);
+                
+                if (a.stopX === undefined || a.stopX === null) {
+                    a.stopX = getAgentOutflowStopX(a);
+                }
+                const stopX = a.stopX;
                 const outflowYs = [110, 135, 160];
                 x = stopX;
                 y = outflowYs[a.outflowTrack];
@@ -2186,7 +2216,7 @@ Status: Synthesized_Approved
 
                 const flowEl = document.getElementById(`flow-container-${a.frameId}`);
                 const W = flowEl ? Math.max(660, flowEl.clientWidth) : 660;
-                const fusionGateX = W * 0.48;
+                const fusionGateX = W * 0.36; // Shifted left
 
                 // 1. INGRESS
                 if (a.stage === 'ingress') {
@@ -2247,7 +2277,7 @@ Status: Synthesized_Approved
 
                 // 5. OUTFLOW
                 else if (a.stage === 'outflow') {
-                    const stopX = getAgentOutflowStopX(a);
+                    const stopX = (a.stopX !== undefined && a.stopX !== null) ? a.stopX : getAgentOutflowStopX(a);
 
                     const t = a.progress / 100;
                     if (t >= 0.7) {
@@ -2318,6 +2348,7 @@ Status: Synthesized_Approved
                      a.progress = 0;
                      a.trackId = Math.floor(Math.random() * 4);
                      a.outflowTrack = Math.min(2, a.trackId);
+                     a.stopX = null; // Reset locked stopX
                 }
 
                 // Perfect Y-centering onto rail lines (height is 26, so offset is exactly 13px)
