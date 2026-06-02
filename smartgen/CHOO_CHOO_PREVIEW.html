@@ -1,0 +1,2573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Choo Choo Agent Flow - Pipeline Matrix</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap');
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --bg-primary: #030306;
+            --bg-secondary: #08080f;
+            --bg-card: rgba(16, 16, 28, 0.75);
+            --border: rgba(255, 255, 255, 0.05);
+            --border-hover: rgba(255, 255, 255, 0.12);
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-muted: #475569;
+            
+            --blue: #3b82f6;
+            --cyan: #06b6d4;
+            --purple: #8b5cf6;
+            --green: #10b981;
+            --yellow: #eab308;
+            --red: #ef4444;
+            --orange: #f97316;
+            --pink: #ec4899;
+            
+            --font-main: 'Outfit', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            overflow: hidden;
+            height: 100vh;
+            display: grid;
+            grid-template-rows: 60px 1fr;
+        }
+
+        /* ===== HEADER ===== */
+        header {
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+            z-index: 10;
+        }
+        .header-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 800;
+            font-size: 1.3em;
+            background: linear-gradient(90deg, #60a5fa, #a78bfa, #22d3ee);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.01em;
+        }
+
+        /* ===== MAIN WORKSPACE ===== */
+        .workspace {
+            display: grid;
+            grid-template-columns: 240px 1fr;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        /* ===== CONTROLS SIDEBAR ===== */
+        .panel {
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            overflow-y: auto;
+        }
+        .section-title {
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-secondary);
+            font-weight: 700;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            padding-bottom: 6px;
+            margin-bottom: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* AppFlowy integration status card */
+        .appflowy-card {
+            background: rgba(139, 92, 246, 0.04);
+            border: 1px solid rgba(139, 92, 246, 0.15);
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 0.72em;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .flowy-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .indicator-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--green);
+            box-shadow: 0 0 8px var(--green);
+        }
+        
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            background: rgba(255,255,255,0.01);
+            border: 1px solid var(--border);
+            padding: 10px 12px;
+            border-radius: 8px;
+        }
+        .control-label {
+            font-size: 0.76em;
+            color: var(--text-secondary);
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+        }
+        .control-slider {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 4px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 2px;
+            outline: none;
+        }
+        .control-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: currentColor;
+            cursor: pointer;
+            box-shadow: 0 0 8px currentColor;
+        }
+
+        .styles-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 6px;
+        }
+
+        /* Modality button specifics */
+        .btn-modality {
+            background: rgba(255,255,255,0.02);
+            color: var(--text-secondary);
+            border: 1px solid var(--border);
+            padding: 8px 6px;
+            border-radius: 6px;
+            font-size: 0.72em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            outline: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+        }
+        .btn-modality:hover {
+            background: rgba(255,255,255,0.05);
+            color: #fff;
+            border-color: var(--border-hover);
+        }
+        .btn-modality.active {
+            background: linear-gradient(135deg, var(--cyan), var(--blue));
+            color: #040407;
+            font-weight: 700;
+            border-color: transparent;
+            box-shadow: 0 0 10px rgba(6,182,212,0.35);
+        }
+
+        .btn-style {
+            background: rgba(255,255,255,0.02);
+            color: var(--text-secondary);
+            border: 1px solid var(--border);
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 0.75em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            outline: none;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .btn-style:hover {
+            background: rgba(255,255,255,0.05);
+            color: #fff;
+            border-color: var(--border-hover);
+        }
+        .btn-style.active {
+            background: rgba(139, 92, 246, 0.15);
+            color: var(--purple);
+            border-color: rgba(139, 92, 246, 0.4);
+            font-weight: 700;
+        }
+
+        .btn-action {
+            background: linear-gradient(135deg, var(--blue), var(--purple));
+            color: #fff;
+            border: none;
+            padding: 12px 14px;
+            border-radius: 8px;
+            font-size: 0.8em;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(139,92,246,0.2);
+            transition: all 0.2s;
+            outline: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        .btn-action:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(139,92,246,0.3);
+        }
+
+        /* ===== VIEWPORT CONTAINER ===== */
+        .viewport-wrapper {
+            position: relative;
+            display: grid;
+            grid-template-columns: 1fr;
+            height: 100%;
+            overflow: hidden;
+            transition: grid-template-columns 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .viewport-wrapper.has-inspect {
+            grid-template-columns: 1fr 340px;
+        }
+
+        .viewport {
+            background: #020204;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            position: relative;
+        }
+
+        /* ===== JUNCTION LANE FRAMES ===== */
+        .lane-frame {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            display: grid;
+            grid-template-columns: 200px 1fr;
+            min-height: 220px;
+            overflow: hidden;
+            position: relative;
+            backdrop-filter: blur(20px);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .lane-frame:hover {
+            border-color: var(--border-hover);
+            box-shadow: 0 10px 30px -10px rgba(0,0,0,0.8);
+        }
+        .lane-frame.active-simulation {
+            border-color: currentColor !important;
+            box-shadow: 0 0 25px currentColor !important;
+            background: rgba(255, 255, 255, 0.02) !important;
+        }
+
+        /* Lane Header/Profile block */
+        .lane-profile {
+            border-right: 1px solid var(--border);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            background: rgba(255,255,255,0.01);
+            position: relative;
+            z-index: 2;
+            gap: 12px;
+        }
+
+        .lane-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .lane-badge {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            align-self: flex-start;
+            transition: all 0.3s;
+        }
+
+        .lane-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-top: 4px;
+        }
+
+        .lane-desc {
+            font-size: 0.72rem;
+            color: var(--text-secondary);
+            line-height: 1.4;
+            transition: color 0.3s;
+        }
+
+        /* 3-Step Critical Path Zoom widget style */
+        .critical-path-svg {
+            width: 100%;
+            height: 65px;
+            background: rgba(0, 0, 0, 0.25);
+            border: 1px solid rgba(255,255,255,0.03);
+            border-radius: 8px;
+            padding: 4px;
+            overflow: visible;
+        }
+        .cp-node {
+            fill: #08080f;
+            stroke: var(--text-muted);
+            stroke-width: 1.5px;
+        }
+        .cp-node.active {
+            fill: rgba(139, 92, 246, 0.1);
+            stroke: var(--purple);
+            stroke-width: 2px;
+            transition: stroke 0.3s;
+        }
+        .cp-node.completed {
+            fill: rgba(255,255,255,0.03);
+            stroke: var(--text-secondary);
+        }
+        .cp-text {
+            font-family: var(--font-mono);
+            font-size: 7px;
+            font-weight: 700;
+            fill: var(--text-secondary);
+            text-anchor: middle;
+        }
+        .cp-text.active {
+            fill: #fff;
+        }
+        .cp-line {
+            stroke: var(--text-muted);
+            stroke-width: 1.2px;
+            fill: none;
+            transition: stroke 0.3s;
+        }
+        .cp-line.active {
+            stroke: var(--purple);
+            transition: stroke 0.3s;
+        }
+
+        .lane-stats {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            border-top: 1px solid rgba(255,255,255,0.05);
+            padding-top: 10px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+        }
+
+        /* Lane Visual flow track canvas */
+        .lane-flow {
+            position: relative;
+            background: repeating-linear-gradient(90deg, rgba(255,255,255,0.003) 0px, rgba(255,255,255,0.003) 1px, transparent 1px, transparent 40px);
+            overflow: visible;
+            min-width: 660px;
+        }
+
+        /* SVG Layout network inside visual flow */
+        .junction-svg {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: visible;
+        }
+
+        .rail-line {
+            fill: none;
+            stroke: rgba(255, 255, 255, 0.02);
+            stroke-width: 6px;
+            stroke-linecap: round;
+        }
+        .rail-line-glow {
+            fill: none;
+            stroke-width: 1px;
+            opacity: 0.25;
+            transition: stroke 0.3s;
+        }
+        .roundabout-rail {
+            fill: none;
+            stroke: rgba(255, 255, 255, 0.02);
+            stroke-width: 6px;
+        }
+        .roundabout-rail-glow {
+            fill: none;
+            stroke-width: 1.5px;
+            opacity: 0.4;
+            transition: stroke 0.3s;
+        }
+
+        /* Android Waveform Wiggle lines */
+        .wave-wiggle {
+            fill: none;
+            stroke-width: 1.5px;
+            stroke-linecap: round;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+        .wave-wiggle.active {
+            opacity: 0.8;
+            stroke-dasharray: 8 6;
+            animation: dashmove-wave 1.5s linear infinite;
+        }
+        @keyframes dashmove-wave {
+            to { stroke-dashoffset: -30; }
+        }
+
+        /* Spherical Spinner Node (Center Roundabout) */
+        .spinner-core {
+            position: absolute;
+            left: 162px;
+            top: 62px;
+            width: 46px;
+            height: 46px;
+            border-radius: 50%;
+            background: rgba(4, 4, 7, 0.55);
+            border: 2px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+            z-index: 3; /* Behind agent cars (z-index 5) */
+            opacity: 0.6; /* 50-60% transparent */
+            transition: border-color 0.3s, opacity 0.3s;
+        }
+        .spinner-core.active {
+            border-color: var(--purple);
+            opacity: 0.85; /* slightly less transparent when active */
+            animation: core-pulse 1.2s ease-in-out infinite;
+        }
+        @keyframes core-pulse {
+            0%, 100% { box-shadow: 0 0 10px rgba(139, 92, 246, 0.05); }
+            50% { box-shadow: 0 0 15px rgba(139, 92, 246, 0.15); }
+        }
+        .spinner-rotor {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            border: 2px dashed var(--text-muted);
+            transition: border-color 0.3s;
+        }
+        .spinner-core.active .spinner-rotor {
+            border-color: var(--purple);
+            animation: spin 8s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        @keyframes spin-reverse {
+            to { transform: rotate(-360deg); }
+        }
+        .spinner-core.active .gear-main {
+            animation: spin 6s linear infinite;
+        }
+        .spinner-core.active .gear-sub {
+            animation: spin-reverse 3s linear infinite;
+        }
+
+        /* Puffing Steam Clouds */
+        @keyframes steam-rise {
+            0% { transform: scale(0.6) translate(0, 0); opacity: 0.8; filter: blur(1px); }
+            100% { transform: scale(1.8) translate(8px, -12px); opacity: 0; filter: blur(5px); }
+        }
+        .steam-cloud {
+            position: absolute;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: radial-gradient(circle, var(--pink) 0%, rgba(236,72,153,0) 70%);
+            pointer-events: none;
+            z-index: 10;
+            animation: steam-rise 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        /* ===== FUSION CHAMBER / OUTPUT ASSEMBLER ===== */
+        .fusion-gate {
+            position: absolute;
+            left: 410px;
+            top: 15px;
+            bottom: 15px;
+            width: 24px;
+            border-radius: 6px;
+            background: rgba(5, 5, 10, 0.65);
+            border: 1px solid var(--border);
+            box-shadow: 0 0 15px rgba(0,0,0,0.4);
+            z-index: 3; /* Behind agent cars (z-index 5) */
+            opacity: 0.7; /* 50-60% transparent */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-main);
+            font-size: 8px;
+            font-weight: 800;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+            transition: border-color 0.3s, color 0.3s, box-shadow 0.3s, opacity 0.3s;
+        }
+        .fusion-gate.active {
+            border-color: var(--pink);
+            color: #fff;
+            opacity: 0.9;
+            box-shadow: 0 0 15px rgba(236,72,153,0.3);
+        }
+
+        /* Animated Task Station Icons */
+        .task-station {
+            position: absolute;
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            background: #040407;
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.6);
+            z-index: 15;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        .task-station.active {
+            box-shadow: 0 0 15px currentColor;
+            border-color: currentColor;
+        }
+
+        .ui-preview-box {
+            position: absolute;
+            right: 15px;
+            top: 6px;
+            width: 140px;
+            height: 76px;
+            background: rgba(10, 10, 20, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.5);
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .ui-preview-box.flash {
+            border-color: currentColor;
+            box-shadow: 0 0 15px currentColor;
+        }
+        .ui-browser-header {
+            height: 16px;
+            background: rgba(255, 255, 255, 0.03);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 6px;
+        }
+        .ui-dots {
+            display: flex;
+            gap: 3px;
+        }
+        .ui-dot {
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+        }
+        .ui-dot.red { background: #ef4444; }
+        .ui-dot.yellow { background: #eab308; }
+        .ui-dot.green { background: #10b981; }
+        .ui-browser-title {
+            font-family: var(--font-mono);
+            font-size: 5.5px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .ui-preview-content {
+            flex: 1;
+            padding: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            overflow: hidden;
+            position: relative;
+        }
+        /* Mock UI elements */
+        .ui-wireframe {
+            height: 10px;
+            background: rgba(255, 255, 255, 0.04);
+            border-radius: 2px;
+            border-left: 2px solid rgba(255, 255, 255, 0.1);
+            width: 100%;
+            transition: all 0.3s;
+        }
+        .ui-chat-bubble {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 4px;
+            padding: 3px 5px;
+            font-family: var(--font-mono);
+            font-size: 5.5px;
+            line-height: 1.25;
+            max-width: 90%;
+            align-self: flex-start;
+            transition: all 0.3s;
+        }
+        .ui-chat-bubble.right {
+            background: rgba(139, 92, 246, 0.1);
+            align-self: flex-end;
+            border-right: 2px solid var(--purple);
+        }
+        .ui-checkmark-row {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 5.5px;
+            font-family: var(--font-mono);
+            color: var(--text-secondary);
+            transition: all 0.3s;
+        }
+        .ui-checkmark-icon {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--text-muted);
+            transition: all 0.2s;
+        }
+        .ui-checkmark-icon.checked {
+            background: var(--green);
+            box-shadow: 0 0 5px var(--green);
+        }
+        .ui-chart-bar-container {
+            display: flex;
+            gap: 3px;
+            align-items: flex-end;
+            height: 28px;
+            padding-top: 2px;
+        }
+        .ui-chart-bar {
+            flex: 1;
+            height: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 2px 2px 0 0;
+            transition: height 0.5s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.3s;
+        }
+
+        /* SVG Icon animations */
+        .station-svg {
+            width: 20px;
+            height: 20px;
+            stroke: var(--text-muted);
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            transition: stroke 0.3s;
+        }
+        .task-station.active .station-svg {
+            stroke: currentColor;
+        }
+
+        @keyframes rotate-gear {
+            to { transform: rotate(360deg); }
+        }
+        .station-gear {
+            transform-origin: center;
+        }
+        .task-station.active .station-gear {
+            animation: rotate-gear 3s linear infinite;
+        }
+
+        @keyframes pulse-circle {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.2); opacity: 1; }
+        }
+        .station-pulse {
+            transform-origin: center;
+        }
+        .task-station.active .station-pulse {
+            animation: pulse-circle 1.5s ease-in-out infinite;
+        }
+
+        @keyframes draw-line {
+            0%, 100% { stroke-dashoffset: 0; }
+            50% { stroke-dashoffset: 10; }
+        }
+        .station-line {
+            stroke-dasharray: 12;
+        }
+        .task-station.active .station-line {
+            animation: draw-line 2s ease-in-out infinite;
+        }
+
+        /* ===== FLAT DENSITY AGENT DATA SEGMENTS ===== */
+        .agent-car {
+            position: absolute;
+            height: 26px;
+            display: flex;
+            flex-direction: column;
+            gap: 1px;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 5;
+            /* Center visual alignment onto rail coordinates */
+            transform-origin: center center;
+            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s;
+            overflow: hidden; /* Enforce strict visual containment */
+        }
+
+        /* Individual block segment stacks (Up to 3 high!) */
+        .car-block {
+            flex: 1;
+            width: 100%;
+            border: 1px solid currentColor;
+            background: #06060c;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            padding: 0 4px;
+        }
+
+        .car-label {
+            font-family: var(--font-mono);
+            font-size: 7px;
+            font-weight: 700;
+            color: #fff;
+            letter-spacing: -0.05em;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            overflow: hidden;
+        }
+
+        /* Shape Modifiers */
+        .shape-square .car-block { border-radius: 2px; }
+        .shape-round .car-block { border-radius: 8px; }
+        .shape-capsule .car-block { border-radius: 100px; }
+
+        /* Hover glows */
+        .agent-car:hover {
+            transform: scale(1.08);
+            z-index: 100;
+        }
+        .agent-car:hover .car-block {
+            box-shadow: 0 0 10px currentColor;
+        }
+        .agent-car.selected .car-block,
+        .agent-car.glow .car-block {
+            box-shadow: 0 0 12px currentColor;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        /* ===== SIDE INSPECT PANEL ===== */
+        .inspect-panel {
+            background: var(--bg-secondary);
+            border-left: 1px solid var(--border);
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            overflow-y: auto;
+            position: relative;
+            animation: slideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); }
+            to { transform: translateX(0); }
+        }
+
+        .inspect-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            padding-bottom: 15px;
+        }
+        .close-btn {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+        .inspect-title {
+            font-weight: 800;
+            font-size: 1.25rem;
+            color: var(--text-primary);
+        }
+
+        .inspect-widget {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .inspect-label {
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-secondary);
+            font-weight: 700;
+        }
+
+        .inspect-value {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            font-family: var(--font-mono);
+        }
+
+        .document-snippet {
+            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.03);
+            border-radius: 8px;
+            padding: 12px;
+            font-family: var(--font-mono);
+            font-size: 0.74em;
+            color: var(--text-secondary);
+            line-height: 1.45;
+            white-space: pre-wrap;
+        }
+
+        .legend-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+        .legend-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== HEADER ===== -->
+    <header>
+        <div class="header-title">
+            <span>🚂</span> Choo Choo Engine: High-Density Parallel Agent Flow Matrix
+        </div>
+        <div class="header-controls">
+            <span style="font-size: 0.74em; color: var(--text-secondary);" id="activeCountLabel">12 Active Agents · 16 Parallel Flows</span>
+            <div style="width:8px; height:8px; border-radius:50%; background:var(--green); box-shadow:0 0 8px var(--green); animation: pulse-ring 1.5s infinite;"></div>
+        </div>
+    </header>
+
+    <!-- ===== WORKSPACE ===== -->
+    <div class="workspace">
+        
+        <!-- Left Panel Controller -->
+        <div class="panel">
+            <div>
+                <div class="section-title">Matrix Orchestrator</div>
+                <p style="font-size:0.68rem; color:var(--text-secondary); line-height:1.45;">
+                    Configuring flat parallel agent channels. Spawns high-density straight data paths with a central roundabout processing spinner and egress compilation gates.
+                </p>
+            </div>
+
+            <!-- ===== ACTIVE MEDIA MODALITY SWEEP ===== -->
+            <div>
+                <div class="section-title">Active Media Modality</div>
+                <div class="styles-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px;">
+                    <button class="btn-modality active" id="btn-mod-ocr" onclick="setMediaModality('ocr')">📄 OCR Doc</button>
+                    <button class="btn-modality" id="btn-mod-video" onclick="setMediaModality('video')">🎬 Video Seg</button>
+                    <button class="btn-modality" id="btn-mod-voice" onclick="setMediaModality('voice')">🎙️ Voice/Aud</button>
+                    <button class="btn-modality" id="btn-mod-visual" onclick="setMediaModality('visual')">👁️ Visual Rec</button>
+                    <button class="btn-modality" style="grid-column: span 2;" id="btn-mod-image" onclick="setMediaModality('image')">🎨 Image Rec</button>
+                </div>
+            </div>
+
+            <!-- ===== AppFlowy Workspace Sync ===== -->
+            <div>
+                <div class="section-title">AppFlowy Workspace Sync</div>
+                <div class="appflowy-card">
+                    <div class="flowy-row">
+                        <span>Database Status</span>
+                        <div style="display:flex; align-items:center; gap:6px;">
+                            <span class="indicator-dot"></span>
+                            <strong style="color:var(--green); font-size:0.9em;">Synced</strong>
+                        </div>
+                    </div>
+                    <div class="flowy-row" style="color:var(--text-muted);">
+                        <span>SQLite Path</span>
+                        <span style="font-family:var(--font-mono); font-size:0.85em;">C:/appflowy/db</span>
+                    </div>
+                    <div class="flowy-row" style="color:var(--text-muted);">
+                        <span>AI Proxy (Flask)</span>
+                        <span style="color:#fff; font-family:var(--font-mono); font-size:0.85em;">Port 11435</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== GEOMETRY SHAPES ===== -->
+            <div>
+                <div class="section-title">Agent Shape Ecosystem</div>
+                <div class="styles-grid">
+                    <button class="btn-style active" id="btn-shape-mixed" onclick="setGlobalShape('mixed')">🤖 Mixed Grid (Industrial)</button>
+                    <button class="btn-style" id="btn-shape-square" onclick="setGlobalShape('square')">📐 Unified Minimalist (Square)</button>
+                    <button class="btn-style" id="btn-shape-capsule" onclick="setGlobalShape('capsule')">💊 Fluid Capsules (Round)</button>
+                </div>
+            </div>
+
+            <!-- ===== CONTROLLER SLIDERS ===== -->
+            <div class="control-group">
+                <div class="control-label">
+                    <span>Global Flow Speed</span>
+                    <span id="label-global-speed">0.3x (Majestic)</span>
+                </div>
+                <input type="range" class="control-slider" style="color: var(--cyan);" id="slider-speed" min="0.05" max="1.0" step="0.05" value="0.3" oninput="updateGlobalSpeed(this.value)">
+                <p style="font-size:0.6rem; color:var(--text-muted);">
+                    Throttle is adjusted 5x slower to enable smooth, majestic, low-distraction telemetry monitoring.
+                </p>
+            </div>
+
+            <div class="control-group">
+                <div class="control-label">
+                    <span>Max Agent Volume</span>
+                    <span id="label-agent-vol">12</span>
+                </div>
+                <input type="range" class="control-slider" style="color: var(--green);" id="slider-volume" min="4" max="24" step="2" value="12" oninput="updateAgentVolume(this.value)">
+            </div>
+
+            <!-- ===== WORKFLOW SIMULATION CONTROLLER ===== -->
+            <div class="control-group" style="background: rgba(139, 92, 246, 0.04); border: 1px solid rgba(139, 92, 246, 0.15); display: flex; flex-direction: column; gap: 8px;">
+                <div class="control-label" style="color: var(--purple);">
+                    <span>Live Workflow Sequencer</span>
+                    <span id="sequencer-step-label" style="color: #fff; font-weight: 800; font-family: var(--font-mono); text-transform: uppercase;">Idle</span>
+                </div>
+                <p style="font-size:0.62rem; color:var(--text-secondary); line-height:1.45;">
+                    Simulate real-time multi-agent execution pipeline passing step-by-step through our 4 key RAG & Release nodes.
+                </p>
+                <button class="btn-action" id="btn-run-simulation" style="background: linear-gradient(135deg, var(--purple), var(--pink)); box-shadow: 0 0 10px rgba(236,72,153,0.2); width: 100%; border: none;" onclick="runSequentialWorkflow()">
+                    🧬 Trigger Sequential Execution
+                </button>
+            </div>
+
+            <button class="btn-action" onclick="triggerFlashStimulus()">
+                ⚡ Inject Activity Stimulus
+            </button>
+        </div>
+
+        <!-- Scrollable Viewport Wrapper containing Side Inspect Panel -->
+        <div class="viewport-wrapper" id="viewport-wrapper">
+            
+            <!-- Main Lanes Viewport -->
+            <div class="viewport" id="viewport">
+                
+                <!-- FRAME 1: INTAKE RAG SYNCHRONIZER -->
+                <div class="lane-frame" id="frame-1">
+                    <div class="lane-profile">
+                        <div class="lane-meta">
+                            <span class="lane-badge" id="frame-badge-1" style="background: rgba(6,182,212,0.15); color: var(--cyan);">📄 OCR Document</span>
+                            <div class="lane-title">RAG Context Engine</div>
+                            <p class="lane-desc" id="frame-desc-1">OCR layout parser reading text nodes.</p>
+                        </div>
+                        
+                        <!-- Mini Critical Path SVG Grid with STAGGERED ORTHOGONAL paths -->
+                        <svg class="critical-path-svg">
+                            <!-- Orthogonal Connective lines H & V only -->
+                            <path d="M 40 13 H 50 V 31 H 60" class="cp-line active" id="cp-line-1a" style="stroke:var(--cyan);" />
+                            <path d="M 95 31 H 105 V 49 H 115" class="cp-line" id="cp-line-1b" />
+                            <!-- Nodes -->
+                            <rect x="10" y="6" width="30" height="14" rx="3" class="cp-node completed" />
+                            <text x="25" y="15" class="cp-text">File</text>
+                            
+                            <rect x="60" y="24" width="35" height="14" rx="4" class="cp-node active" id="cp-node-1" style="stroke:var(--cyan);" />
+                            <text x="77" y="33" class="cp-text active">Intake</text>
+                            
+                            <rect x="115" y="42" width="35" height="14" rx="3" class="cp-node" />
+                            <text x="132" y="51" class="cp-text">LLMCore</text>
+                        </svg>
+
+                        <div class="lane-stats">
+                            <div>Traces: <strong style="color:#fff;" id="stats-traces-1">1,482</strong></div>
+                            <div>Tokens/s: <strong style="color:var(--yellow);" id="token-rate-1">2.4K t/s</strong></div>
+                            <div style="grid-column: span 2;">Tokens Total: <strong style="color:#fff;" id="token-total-1">128,482</strong></div>
+                        </div>
+                    </div>
+                    <div class="lane-flow" id="flow-container-1">
+                        <!-- Custom layout built dynamically -->
+                    </div>
+                </div>
+
+                <!-- FRAME 2: HEAVY CORE REASONING -->
+                <div class="lane-frame" id="frame-2">
+                    <div class="lane-profile">
+                        <div class="lane-meta">
+                            <span class="lane-badge" id="frame-badge-2" style="background: rgba(139,92,246,0.15); color: var(--purple);">🧠 Synthesis</span>
+                            <div class="lane-title">LLM Multi-Agent Core</div>
+                            <p class="lane-desc" id="frame-desc-2">LLM core synthesizing text and named entities.</p>
+                        </div>
+                        
+                        <!-- Mini Critical Path SVG Grid with STAGGERED ORTHOGONAL paths -->
+                        <svg class="critical-path-svg">
+                            <path d="M 40 13 H 50 V 31 H 60" class="cp-line active" id="cp-line-2a" style="stroke:var(--purple);" />
+                            <path d="M 95 31 H 105 V 49 H 115" class="cp-line active" id="cp-line-2b" style="stroke:var(--purple);" />
+                            
+                            <rect x="10" y="6" width="30" height="14" rx="3" class="cp-node completed" />
+                            <text x="25" y="15" class="cp-text">Intake</text>
+                            
+                            <rect x="60" y="24" width="35" height="14" rx="4" class="cp-node active" id="cp-node-2" style="stroke:var(--purple);" />
+                            <text x="77" y="33" class="cp-text active">LLMCore</text>
+                            
+                            <rect x="115" y="42" width="35" height="14" rx="3" class="cp-node" />
+                            <text x="132" y="51" class="cp-text">Verify</text>
+                        </svg>
+
+                        <div class="lane-stats">
+                            <div>Traces: <strong style="color:#fff;" id="stats-traces-2">840</strong></div>
+                            <div>Tokens/s: <strong style="color:var(--yellow);" id="token-rate-2">4.8K t/s</strong></div>
+                            <div style="grid-column: span 2;">Tokens Total: <strong style="color:#fff;" id="token-total-2">842,482</strong></div>
+                        </div>
+                    </div>
+                    <div class="lane-flow" id="flow-container-2">
+                        <!-- Custom layout built dynamically -->
+                    </div>
+                </div>
+
+                <!-- FRAME 3: VERIFICATION LOOPS -->
+                <div class="lane-frame" id="frame-3">
+                    <div class="lane-profile">
+                        <div class="lane-meta">
+                            <span class="lane-badge" id="frame-badge-3" style="background: rgba(234,179,8,0.15); color: var(--yellow);">🚀 Verification</span>
+                            <div class="lane-title">CI/CD Compiler Loops</div>
+                            <p class="lane-desc" id="frame-desc-3">Validates regular expression bounds and formats.</p>
+                        </div>
+                        
+                        <!-- Mini Critical Path SVG Grid with STAGGERED ORTHOGONAL paths -->
+                        <svg class="critical-path-svg">
+                            <path d="M 40 13 H 50 V 31 H 60" class="cp-line active" id="cp-line-3a" style="stroke:var(--yellow);" />
+                            <path d="M 95 31 H 105 V 49 H 115" class="cp-line active" id="cp-line-3b" style="stroke:var(--yellow);" />
+                            
+                            <rect x="10" y="6" width="35" height="14" rx="3" class="cp-node completed" />
+                            <text x="27" y="15" class="cp-text">LLMCore</text>
+                            
+                            <rect x="60" y="24" width="35" height="14" rx="4" class="cp-node active" id="cp-node-3" style="stroke:var(--yellow);" />
+                            <text x="77" y="33" class="cp-text active">Verify</text>
+                            
+                            <rect x="115" y="42" width="35" height="14" rx="3" class="cp-node" />
+                            <text x="132" y="51" class="cp-text">Release</text>
+                        </svg>
+
+                        <div class="lane-stats">
+                            <div>Traces: <strong style="color:#fff;" id="stats-traces-3">2,109</strong></div>
+                            <div>Tokens/s: <strong style="color:var(--yellow);" id="token-rate-3">1.2K t/s</strong></div>
+                            <div style="grid-column: span 2;">Tokens Total: <strong style="color:#fff;" id="token-total-3">301,109</strong></div>
+                        </div>
+                    </div>
+                    <div class="lane-flow" id="flow-container-3">
+                        <!-- Custom layout -->
+                    </div>
+                </div>
+
+                <!-- FRAME 4: AUDITING & DEPLOYMENT -->
+                <div class="lane-frame" id="frame-4">
+                    <div class="lane-profile">
+                        <div class="lane-meta">
+                            <span class="lane-badge" id="frame-badge-4" style="background: rgba(16,185,129,0.15); color: var(--green);">📊 Production</span>
+                            <div class="lane-title">Release & Ops Auditing</div>
+                            <p class="lane-desc" id="frame-desc-4">Saves parsed text structures to production endpoints.</p>
+                        </div>
+                        
+                        <!-- Mini Critical Path SVG Grid with STAGGERED ORTHOGONAL paths -->
+                        <svg class="critical-path-svg">
+                            <path d="M 40 13 H 50 V 31 H 60" class="cp-line active" id="cp-line-4a" style="stroke:var(--green);" />
+                            <path d="M 95 31 H 105 V 49 H 115" class="cp-line active" id="cp-line-4b" style="stroke:var(--green);" />
+                            
+                            <rect x="10" y="6" width="30" height="14" rx="3" class="cp-node completed" />
+                            <text x="25" y="15" class="cp-text">Verify</text>
+                            
+                            <rect x="60" y="24" width="35" height="14" rx="4" class="cp-node active" id="cp-node-4" style="stroke:var(--green);" />
+                            <text x="77" y="33" class="cp-text active">Release</text>
+                            
+                            <rect x="115" y="42" width="35" height="14" rx="3" class="cp-node" />
+                            <text x="132" y="51" class="cp-text">UserCXO</text>
+                        </svg>
+
+                        <div class="lane-stats">
+                            <div>Traces: <strong style="color:#fff;" id="stats-traces-4">421</strong></div>
+                            <div>Tokens/s: <strong style="color:var(--yellow);" id="token-rate-4">0.9K t/s</strong></div>
+                            <div style="grid-column: span 2;">Tokens Total: <strong style="color:#fff;" id="token-total-4">98,421</strong></div>
+                        </div>
+                    </div>
+                    <div class="lane-flow" id="flow-container-4">
+                        <!-- Custom layout -->
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- RIGHT HAND INSPECTION DETAIL PANEL (Initially Hidden) -->
+            <div class="inspect-panel" id="inspect-panel" style="display: none;">
+                <div class="inspect-header">
+                    <div class="inspect-title" id="inspect-agent-title">Agent Telemetry</div>
+                    <button class="close-btn" onclick="closeInspectPanel()">×</button>
+                </div>
+
+                <div class="inspect-widget">
+                    <span class="inspect-label">Payload Type / Legenda</span>
+                    <div class="legend-badge">
+                        <div class="legend-indicator" id="inspect-legend-color"></div>
+                        <span id="inspect-agent-type">RAG Ingestion Scraper</span>
+                    </div>
+                </div>
+
+                <div class="inspect-widget">
+                    <span class="inspect-label">Data Node Segment</span>
+                    <span class="inspect-value" id="inspect-agent-label">DOC_094_PARSED</span>
+                </div>
+
+                <div class="inspect-widget">
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                        <div>
+                            <span class="inspect-label">Stack Tier</span>
+                            <div style="font-size:1.1rem; font-weight:700; color:#fff;" id="inspect-agent-stack">3 High</div>
+                        </div>
+                        <div>
+                            <span class="inspect-label">Task Latency</span>
+                            <div style="font-size:1.1rem; font-weight:700; color:#fff;" id="inspect-agent-latency">42 ms</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Discovered Research Knowledge snippet card -->
+                <div class="inspect-widget" style="border:1px solid rgba(139,92,246,0.3); background:rgba(139,92,246,0.02);">
+                    <span class="inspect-label" style="color:var(--purple);">AppFlowy Synced Database Record</span>
+                    <p style="font-size:0.75rem; color:var(--text-secondary); line-height:1.45; margin-bottom:8px;">
+                        This data segment is mapped directly to AppFlowy table ID <code style="font-family:var(--font-mono); color:#fff; background:rgba(0,0,0,0.3); padding:1px 4px; border-radius:3px;">af_research_vault_db</code>.
+                    </p>
+                    <div class="document-snippet" id="inspect-document-snippet">
+-- AppFlowy Row Segment --
+UUID: 4a2f-98c1-11ee-8f4b-0800200c9a66
+Title: Wasm Core Compiling research
+Findings: Verified that JIT Liftoff compilation translates bytecode at 100MB/s directly to linear RAM spaces without second stage network packages. Added references.
+Status: Synthesized_Approved
+                    </div>
+                </div>
+
+                <!-- Flask AI Proxy Payload Console -->
+                <div class="inspect-widget" style="border:1px solid rgba(6,182,212,0.3); background:rgba(6,182,212,0.02); margin-top: 10px;">
+                    <span class="inspect-label" style="color:var(--cyan); display: flex; justify-content: space-between; align-items: center;">
+                        <span>Flask AI Proxy Payload</span>
+                        <span style="font-size:0.85em; opacity:0.7;">PORT 11435</span>
+                    </span>
+                    <div class="document-snippet" id="inspect-flask-payload" style="max-height: 120px; overflow-y: auto; border-color: rgba(6,182,212,0.15); margin-top: 6px;">
+                        Waiting for active network trace...
+                    </div>
+                </div>
+
+                <!-- Terminal Thought Log -->
+                <div class="inspect-widget" style="background:#020204; border-color:var(--text-muted); margin-top: 10px;">
+                    <span class="inspect-label" style="color:var(--text-secondary);">Agent Thoughts Log</span>
+                    <div id="inspect-thoughts-log" style="font-family:var(--font-mono); font-size:0.72em; color:#4ade80; max-height:160px; overflow-y:auto; padding:8px; background:#000; border-radius:6px; border:1px solid #1e1e30; line-height:1.45; margin-top: 6px;">
+                        [SYSTEM]: Telemetry logger initialized...
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- ===== SVG DEFINITIONS FOR PREMIUM ANIMATED ICONS ===== -->
+    <svg style="display: none;">
+        <defs>
+            <!-- 1. Search Radar Station (RAG Scraper) -->
+            <g id="station-icon-search">
+                <circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="1.5" />
+                <line x1="10" y1="10" x2="15" y2="5" stroke="currentColor" stroke-width="1.5" class="station-gear" />
+                <circle cx="10" cy="10" r="3" fill="currentColor" class="station-pulse" />
+            </g>
+
+            <!-- 2. Neural Brain Node (LLM Mind) -->
+            <g id="station-icon-mind">
+                <circle cx="10" cy="5" r="2" fill="currentColor" />
+                <circle cx="5" cy="13" r="2" fill="currentColor" />
+                <circle cx="15" cy="13" r="2" fill="currentColor" />
+                <line x1="10" y1="5" x2="5" y2="13" stroke="currentColor" stroke-width="1.2" />
+                <line x1="10" y1="5" x2="15" y2="13" stroke="currentColor" stroke-width="1.2" />
+                <line x1="5" y1="13" x2="15" y2="13" stroke="currentColor" stroke-width="1.2" />
+                <circle cx="10" cy="10" r="1.5" fill="currentColor" class="station-pulse" />
+            </g>
+
+            <!-- 3. Compiler Sandbox (Verify) -->
+            <g id="station-icon-sandbox">
+                <path d="M10 2L3 5v6c0 5.5 3.5 10 7 11 3.5-1 7-5.5 7-11V5l-7-3z" stroke="currentColor" stroke-width="1.5" />
+                <circle cx="10" cy="11" r="2" fill="currentColor" class="station-pulse" />
+            </g>
+
+            <!-- 4. Deploy Cloud (Production) -->
+            <g id="station-icon-cloud">
+                <path d="M14.5 15.5A3.5 3.5 0 0 0 16 9h-.5A4.5 4.5 0 0 0 7 9.5H6a4 4 0 0 0 .5 8h8z" stroke="currentColor" stroke-width="1.5" />
+                <line x1="10" y1="15" x2="10" y2="10" stroke="currentColor" stroke-width="1.5" class="station-line" />
+                <polyline points="8 12 10 10 12 12" stroke="currentColor" stroke-width="1.5" />
+            </g>
+        </defs>
+    </svg>
+
+    <script>
+        // Visual configurations
+        let globalSpeed = 0.3; // 5x slower default
+        let maxAgents = 12;
+        let globalShapeStyle = 'mixed'; 
+        let currentModality = 'ocr'; 
+        const shapes = ['square', 'round', 'capsule'];
+
+        const frameConfigs = {
+            1: { color: 'var(--cyan)', colors: ['#0284c7', '#06b6d4', '#22d3ee', '#38bdf8'], icon: 'search' },
+            2: { color: 'var(--purple)', colors: ['#6d28d9', '#8b5cf6', '#a78bfa', '#c084fc'], icon: 'mind' },
+            3: { color: 'var(--yellow)', colors: ['#b45309', '#eab308', '#facc15', '#fef08a'], icon: 'sandbox' },
+            4: { color: 'var(--green)', colors: ['#047857', '#10b981', '#34d399', '#6ee7b7'], icon: 'cloud' }
+        };
+
+        const segmentDataList = {
+            1: {
+                titles: ['DOC_API', 'DB_SYNC', 'SCRAPER', 'JSON_GET', 'PDF_READ', 'RAW_BUF'],
+                metrics: ['45 KB', '12 KB', '920 B', '2.4 MB', '18 KB', '128 B'],
+                latencies: ['12 ms', '8 ms', '4 ms', '48 ms', '110 ms', '2 ms'],
+                desc: 'Intake scraper extracting active buffer vectors.'
+            },
+            2: {
+                titles: ['PLANNER', 'RESEARCH', 'COGNITIV', 'SYNTHES', 'REVIEWER', 'LLM_CORE'],
+                metrics: ['T_01', 'T_04', 'T_12', 'T_09', 'T_03', 'T_15'],
+                latencies: ['280 ms', '450 ms', '1.2 s', '840 ms', '310 ms', '950 ms'],
+                desc: 'Heavy cognitive model synthesising pipeline variables.'
+            },
+            3: {
+                titles: ['SANDBOX', 'COMPILER', 'UNIT_TST', 'SYNTAX', 'PY_TRACE', 'GIT_CHK'],
+                metrics: ['i = 1', 'i = 4', 'i = 12', 'i = 0', 'i = 7', 'i = 2'],
+                latencies: ['45 ms', '120 ms', '340 ms', '15 ms', '88 ms', '24 ms'],
+                desc: 'Sandboxed code compiling assertion algorithms.'
+            },
+            4: {
+                titles: ['SITEGRND', 'SFTP_PUT', 'SLACK_OK', 'OPS_LOG', 'PUBLISH', 'DISPATCH'],
+                metrics: ['v = 1.0', 'v = 2.4', 'v = 0.9', 'v = 1.2', 'v = 3.0', 'v = 1.8'],
+                latencies: ['65 ms', '320 ms', '40 ms', '12 ms', '180 ms', '90 ms'],
+                desc: 'Ops pipeline writing output structures to release nodes.'
+            }
+        };
+
+        const activeAgents = [];
+        const finishedStacks = {};
+        const finishedCounts = {};
+
+        // Initialize empty stack arrays and absolute counters for f (1-4) and outflowTrack (0-2)
+        function initFinishedStacks() {
+            for (let f = 1; f <= 4; f++) {
+                for (let t = 0; t < 3; t++) {
+                    finishedStacks[`${f}-${t}`] = [];
+                    finishedCounts[`${f}-${t}`] = 0;
+                }
+            }
+        }
+
+        // Render completed block segments stacking behind the task stations (growing to the right as video timeline clips)
+        function renderFinishedStack(frameId, outflowTrack) {
+            const box = document.getElementById(`finished-box-${frameId}-${outflowTrack}`);
+            if (!box) return;
+            box.innerHTML = '';
+            
+            const flowEl = document.getElementById(`flow-container-${frameId}`);
+            const W = flowEl ? Math.max(660, flowEl.clientWidth) : 660;
+
+            const fusionGateX = W * 0.48;
+            const fusionGateWidth = 24;
+            const outflowStartX = fusionGateX + fusionGateWidth;
+
+            // Add a gorgeous timeline track styling with subtle tick marks!
+            box.style.background = 'repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.012) 0px, rgba(255, 255, 255, 0.012) 1px, transparent 1px, transparent 15px)';
+            box.style.borderTop = '1px dashed rgba(255, 255, 255, 0.02)';
+            box.style.borderBottom = '1px dashed rgba(255, 255, 255, 0.02)';
+            box.style.borderRadius = '4px';
+            box.style.overflow = 'visible';
+            
+            const stack = finishedStacks[`${frameId}-${outflowTrack}`];
+            const shape = globalShapeStyle === 'mixed' ? 'square' : globalShapeStyle;
+            
+            const leftBound = outflowStartX + 8; // Start immediately to the right of the Fusion Gate
+            const gap = 6;
+            
+            let currentLeft = leftBound;
+            
+            stack.forEach((item, idx) => {
+                const el = document.createElement('div');
+                el.className = `agent-car shape-${shape}`;
+                el.style.width = item.width + 'px'; 
+                el.style.position = 'absolute';
+                
+                const leftPos = currentLeft;
+                el.style.left = leftPos + 'px';
+                el.style.top = '0px';
+                el.style.color = item.color;
+                
+                // Save calculated left position to stack item for render loop
+                item.calculatedLeft = leftPos;
+                
+                currentLeft = leftPos + item.width + gap;
+                
+                const block = document.createElement('div');
+                block.className = 'car-block';
+                block.style.background = '#06060c';
+                block.style.borderColor = item.color;
+                block.style.position = 'relative';
+                
+                // Filmstrip timeline styling!
+                // Add a tiny timecode text at top-right
+                const tc = document.createElement('span');
+                tc.style.position = 'absolute';
+                tc.style.right = '4px';
+                tc.style.top = '2px';
+                tc.style.fontSize = '5.5px';
+                tc.style.fontFamily = 'var(--font-mono)';
+                tc.style.color = 'var(--text-muted)';
+                tc.style.fontWeight = '700';
+                tc.textContent = `00:0${idx * 2}`;
+                block.appendChild(tc);
+                
+                const lblDiv = document.createElement('div');
+                lblDiv.className = 'car-label';
+                lblDiv.style.display = 'flex';
+                lblDiv.style.alignItems = 'center';
+                lblDiv.style.gap = '3px';
+                lblDiv.innerHTML = `🎞️ <span>${item.label}</span>`;
+                block.appendChild(lblDiv);
+                
+                el.appendChild(block);
+                box.appendChild(el);
+            });
+        }
+
+        // Multi-modal configs
+        const modalityConfigs = {
+            ocr: {
+                themeColor: 'var(--blue)',
+                badgeText: '📄 OCR Document',
+                badgeBg: 'rgba(59, 130, 246, 0.15)',
+                badgeColor: 'var(--blue)',
+                1: { titles: ['OCR_SCAN', 'TXT_LINE', 'PDF_READ', 'RAW_BUF', 'REG_EX', 'af_pdf'], metrics: ['45 KB', '12 KB', '920 B', '2.4 MB', '18 KB', '128 B'], latencies: ['12 ms', '8 ms', '4 ms', '48 ms', '110 ms', '2 ms'], desc: 'OCR layout parser reading text nodes.' },
+                2: { titles: ['PLANNER', 'TEXT_SYN', 'COGNITIV', 'NER_DATA', 'REVIEWER', 'LLM_OCR'], metrics: ['T_01', 'T_04', 'T_12', 'T_09', 'T_03', 'T_15'], latencies: ['280 ms', '450 ms', '1.2 s', '840 ms', '310 ms', '950 ms'], desc: 'LLM core synthesizing text and named entities.' },
+                3: { titles: ['SANDBOX', 'COMPILER', 'REGX_TST', 'SYNTAX', 'PY_TRACE', 'JSON_CHK'], metrics: ['i = 1', 'i = 4', 'i = 12', 'i = 0', 'i = 7', 'i = 2'], latencies: ['45 ms', '120 ms', '340 ms', '15 ms', '88 ms', '24 ms'], desc: 'Validates regular expression bounds and formats.' },
+                4: { titles: ['SITEGRND', 'SFTP_PUT', 'SLACK_OK', 'DB_WRITE', 'PUBLISH', 'DISPATCH'], metrics: ['v = 1.0', 'v = 2.4', 'v = 0.9', 'v = 1.2', 'v = 3.0', 'v = 1.8'], latencies: ['65 ms', '320 ms', '40 ms', '12 ms', '180 ms', '90 ms'], desc: 'Saves parsed text structures to production endpoints.' },
+                mockText: "-- AppFlowy Row Segment --\nUUID: af-ocr-8921-ee12\nTitle: OCR Layout Parsing\nFindings: Successfully parsed PDF pages. Extracted 8 key-value records. Verified layout structure via Regular Expressions.\nStatus: OCR_COMPLETE"
+            },
+            video: {
+                themeColor: 'var(--purple)',
+                badgeText: '🎬 Video Segment',
+                badgeBg: 'rgba(139, 92, 246, 0.15)',
+                badgeColor: 'var(--purple)',
+                1: { titles: ['MP4_READ', 'ffmpeg', 'SPLIT_MP', 'KEYFRAME', 'FPS_60', 'render_v'], metrics: ['18 MB', '4.2 MB', '120 KB', '45 MB', '1.8 MB', '240 B'], latencies: ['140 ms', '320 ms', '85 ms', '420 ms', '55 ms', '10 ms'], desc: 'Splitting video payloads into active render streams.' },
+                2: { titles: ['PLANNER', 'V_RECOG', 'MOTION_D', 'CLIP_EMB', 'REVIEWER', 'LLM_VID'], metrics: ['T_02', 'T_05', 'T_11', 'T_07', 'T_01', 'T_18'], latencies: ['310 ms', '620 ms', '1.5 s', '980 ms', '420 ms', '1.1 s'], desc: 'Heavy visual model analyzing video frames and motion pathings.' },
+                3: { titles: ['SANDBOX', 'ffmpeg.wasm', 'RENDER_T', 'SYNTAX', 'PY_TRACE', 'FF_CHECK'], metrics: ['i = 2', 'i = 8', 'i = 15', 'i = 1', 'i = 9', 'i = 3'], latencies: ['120 ms', '280 ms', '550 ms', '22 ms', '110 ms', '40 ms'], desc: 'Compiling render scripts in FFmpeg WebAssembly sandbox.' },
+                4: { titles: ['SITEGRND', 'SFTP_PUT', 'SLACK_OK', 'MP4_OUT', 'PUBLISH', 'DISPATCH'], metrics: ['v = 2.1', 'v = 4.2', 'v = 0.5', 'v = 1.0', 'v = 3.1', 'v = 2.2'], latencies: ['95 ms', '450 ms', '50 ms', '15 ms', '240 ms', '110 ms'], desc: 'Flushing assembled MP4 renders to SiteGround distributions.' },
+                mockText: "-- AppFlowy Row Segment --\nUUID: af-video-3301-ff89\nTitle: Video Scene Splitting\nFindings: Processed MP4 source file via ffmpeg.wasm. Split 12 sub-scenes. Extracted visual embedding vectors.\nStatus: VIDEO_STITCH_OK"
+            },
+            voice: {
+                themeColor: 'var(--green)',
+                badgeText: '🎙️ Voice Transcriber',
+                badgeBg: 'rgba(16, 185, 129, 0.15)',
+                badgeColor: 'var(--green)',
+                1: { titles: ['WAV_READ', 'WHISPER', 'AUDIO_HZ', 'denoise', 'SPEECH', 'WAV_BUF'], metrics: ['1.2 MB', '450 KB', '80 KB', '2.5 MB', '12 KB', '512 B'], latencies: ['95 ms', '180 ms', '35 ms', '240 ms', '15 ms', '4 ms'], desc: 'Ingesting audio stream files and running denoise modules.' },
+                2: { titles: ['PLANNER', 'TRANSCR', 'SPEECH_T', 'NLP_CORE', 'REVIEWER', 'LLM_VOX'], metrics: ['T_03', 'T_06', 'T_14', 'T_08', 'T_02', 'T_22'], latencies: ['240 ms', '510 ms', '1.1 s', '720 ms', '290 ms', '890 ms'], desc: 'LLM core translating Whisper phonetics into NLP records.' },
+                3: { titles: ['SANDBOX', 'COMPILER', 'VOX_TEST', 'SYNTAX', 'PY_TRACE', 'JSON_CHK'], metrics: ['i = 3', 'i = 6', 'i = 9', 'i = 2', 'i = 5', 'i = 1'], latencies: ['60 ms', '140 ms', '290 ms', '18 ms', '75 ms', '18 ms'], desc: 'Running regex verification matches on transcription structures.' },
+                4: { titles: ['SITEGRND', 'SFTP_PUT', 'SLACK_OK', 'TXT_OUT', 'PUBLISH', 'DISPATCH'], metrics: ['v = 1.2', 'v = 1.8', 'v = 0.8', 'v = 2.0', 'v = 1.5', 'v = 1.1'], latencies: ['55 ms', '280 ms', '35 ms', '10 ms', '150 ms', '75 ms'], desc: 'Saves compiled transcripts back to workspace tables.' },
+                mockText: "-- AppFlowy Row Segment --\nUUID: af-voice-4042-aa11\nTitle: Speech-to-Text Whisper\nFindings: Denoised wav audio. Transcribed 4 minutes of discussion. Extracted text embeddings using NLP pipelines.\nStatus: TRANSCR_COMPLETE"
+            },
+            visual: {
+                themeColor: 'var(--cyan)',
+                badgeText: '👁️ Visual Recognition',
+                badgeBg: 'rgba(6, 182, 212, 0.15)',
+                badgeColor: 'var(--cyan)',
+                1: { titles: ['CAM_FEED', 'YOLO_V8', 'OBJECT_D', 'BOUND_BX', 'CONFID_9', 'RTSP_IN'], metrics: ['640x480', '1.2 MB', '12 KB', '45 KB', '98.4%', '30 fps'], latencies: ['15 ms', '35 ms', '25 ms', '12 ms', '8 ms', '3 ms'], desc: 'Ingesting camera RTSP streams and segmenting frame bounds.' },
+                2: { titles: ['PLANNER', 'OBJECT_R', 'BOX_MATH', 'CLIP_VIS', 'REVIEWER', 'LLM_CAM'], metrics: ['T_04', 'T_08', 'T_15', 'T_10', 'T_05', 'T_24'], latencies: ['320 ms', '780 ms', '1.8 s', '1.1 s', '480 ms', '1.3 s'], desc: 'LLM core tracking multi-frame spatial coordinates.' },
+                3: { titles: ['SANDBOX', 'COMPILER', 'YOLO_TST', 'SYNTAX', 'PY_TRACE', 'BOX_CHK'], metrics: ['i = 4', 'i = 10', 'i = 20', 'i = 3', 'i = 12', 'i = 5'], latencies: ['140 ms', '320 ms', '650 ms', '28 ms', '130 ms', '55 ms'], desc: 'Verifies box intersection ratios in the calculation sandbox.' },
+                4: { titles: ['SITEGRND', 'SFTP_PUT', 'SLACK_OK', 'CAM_LOG', 'PUBLISH', 'DISPATCH'], metrics: ['v = 3.0', 'v = 5.4', 'v = 1.2', 'v = 2.5', 'v = 4.0', 'v = 2.8'], latencies: ['110 ms', '520 ms', '65 ms', '20 ms', '310 ms', '140 ms'], desc: 'Dispatches active alert vectors directly to Slack webhooks.' },
+                mockText: "-- AppFlowy Row Segment --\nUUID: af-visual-9081-dd23\nTitle: YOLOv8 Spatial Analysis\nFindings: Analyzed live RTSP camera frames. Detected 12 unique objects. Extracted spatial intersection matrices.\nStatus: OBJECTS_IDENTIFIED"
+            },
+            image: {
+                themeColor: 'var(--pink)',
+                badgeText: '🎨 Image Recognition',
+                badgeBg: 'rgba(236, 72, 153, 0.15)',
+                badgeColor: 'var(--pink)',
+                1: { titles: ['PNG_READ', 'CLIP_EMB', 'RECOG_OK', 'METADATA', 'PIXELS', 'IMG_BUF'], metrics: ['4.2 MB', '128 KB', '900 B', '8.4 MB', '12 KB', '128 B'], latencies: ['45 ms', '90 ms', '15 ms', '180 ms', '25 ms', '2 ms'], desc: 'Parsing PNG stream buffers and extracting embedded pixels.' },
+                2: { titles: ['PLANNER', 'CLIP_IMG', 'EMB_MATH', 'STYLE_D', 'REVIEWER', 'LLM_ART'], metrics: ['T_05', 'T_09', 'T_16', 'T_11', 'T_06', 'T_26'], latencies: ['290 ms', '580 ms', '1.3 s', '890 ms', '350 ms', '980 ms'], desc: 'LLM core identifying artistic style attributes.' },
+                3: { titles: ['SANDBOX', 'COMPILER', 'CLIP_TST', 'SYNTAX', 'PY_TRACE', 'EMB_CHK'], metrics: ['i = 5', 'i = 12', 'i = 25', 'i = 4', 'i = 15', 'i = 6'], latencies: ['85 ms', '190 ms', '420 ms', '20 ms', '98 ms', '28 ms'], desc: 'Verifies cosine similarity ratios inside sandbox arrays.' },
+                4: { titles: ['SITEGRND', 'SFTP_PUT', 'SLACK_OK', 'PNG_OUT', 'PUBLISH', 'DISPATCH'], metrics: ['v = 2.0', 'v = 3.6', 'v = 1.0', 'v = 1.5', 'v = 2.8', 'v = 1.6'], latencies: ['75 ms', '360 ms', '45 ms', '12 ms', '210 ms', '98 ms'], desc: 'Saves similarity indices back to directus databases.' },
+                mockText: "-- AppFlowy Row Segment --\nUUID: af-image-7023-cc89\nTitle: CLIP Embedding Rec\nFindings: Processed input PNG file. Generated image-text alignment vectors. Synced image metadata to local tables.\nStatus: IMAGE_VERIFIED"
+            }
+        };
+
+        // Dynamic Modality Switcher
+        function setMediaModality(modalityKey) {
+            currentModality = modalityKey;
+            
+            document.querySelectorAll('.btn-modality').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`btn-mod-${modalityKey}`).classList.add('active');
+
+            const mod = modalityConfigs[modalityKey];
+
+            // 1. Dynamic visual adapt on the 4 frames descriptions, badges and critical paths
+            for (let f = 1; f <= 4; f++) {
+                const badge = document.getElementById(`frame-badge-${f}`);
+                const desc = document.getElementById(`frame-desc-${f}`);
+                
+                badge.textContent = mod.badgeText;
+                badge.style.background = mod.badgeBg;
+                badge.style.color = mod.badgeColor;
+
+                desc.textContent = mod[f].desc;
+
+                const activeNode = document.getElementById(`cp-node-${f}`);
+                const activeLineA = document.getElementById(`cp-line-${f}a`);
+                const activeLineB = document.getElementById(`cp-line-${f}b`);
+                
+                if (activeNode) activeNode.style.stroke = mod.themeColor;
+                if (activeLineA && activeLineA.classList.contains('active')) activeLineA.style.stroke = mod.themeColor;
+                if (activeLineB && activeLineB.classList.contains('active')) activeLineB.style.stroke = mod.themeColor;
+            }
+
+            // 2. Re-spawn ecosystem. Automatically morphs all data labels and metrics!
+            spawnAgentEcosystem();
+        }
+
+        // Build the complex horizontal Junction Layouts: Ingress -> Roundabout -> Egress branches -> Fusion Gate -> Outflow tracks (Responsive)
+        function buildJunctionFlows() {
+            for (let f = 1; f <= 4; f++) {
+                const container = document.getElementById(`flow-container-${f}`);
+                if (!container) continue;
+                container.innerHTML = '';
+
+                const W = Math.max(660, container.clientWidth);
+
+                const ingressEndX = W * 0.16;
+                const roundaboutCenterX = ingressEndX + 25;
+                const egressStartX = roundaboutCenterX + 25;
+                const fusionGateX = W * 0.48;
+                const fusionGateWidth = 24;
+                const outflowStartX = fusionGateX + fusionGateWidth;
+                const stationX = W - 180;
+
+                // 1. Draw SVG Rails & Android Waveguide paths
+                const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+                svg.setAttribute('class', 'junction-svg');
+                
+                const lineIn = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                lineIn.setAttribute('class', 'rail-line');
+                lineIn.setAttribute('d', `M 0 85 L ${ingressEndX} 85`);
+                svg.appendChild(lineIn);
+
+                const circle = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                circle.setAttribute('class', 'roundabout-rail');
+                circle.setAttribute('d', `M ${roundaboutCenterX} 60 A 25 25 0 1 1 ${roundaboutCenterX - 0.1} 60`);
+                svg.appendChild(circle);
+
+                const circleGlow = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                circleGlow.setAttribute('class', 'roundabout-rail-glow');
+                circleGlow.setAttribute('id', `roundabout-glow-${f}`);
+                circleGlow.setAttribute('d', `M ${roundaboutCenterX} 60 A 25 25 0 1 1 ${roundaboutCenterX - 0.1} 60`);
+                circleGlow.setAttribute('style', `stroke: ${frameConfigs[f].color};`);
+                svg.appendChild(circleGlow);
+
+                const branchYs = [25, 65, 105, 145];
+                for (let t = 0; t < 4; t++) {
+                    const y = branchYs[t];
+                    
+                    const branch = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                    branch.setAttribute('class', 'rail-line');
+                    branch.setAttribute('d', `M ${egressStartX} 85 C ${egressStartX + (fusionGateX - egressStartX)*0.4} 85, ${egressStartX + (fusionGateX - egressStartX)*0.6} ${y}, ${fusionGateX} ${y}`);
+                    svg.appendChild(branch);
+
+                    const branchGlow = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                    branchGlow.setAttribute('class', 'rail-line-glow');
+                    branchGlow.setAttribute('d', `M ${egressStartX} 85 C ${egressStartX + (fusionGateX - egressStartX)*0.4} 85, ${egressStartX + (fusionGateX - egressStartX)*0.6} ${y}, ${fusionGateX} ${y}`);
+                    branchGlow.setAttribute('style', `stroke: ${frameConfigs[f].color};`);
+                    svg.appendChild(branchGlow);
+
+                    // Android Active Wiggle lines
+                    const wiggle = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                    wiggle.setAttribute('class', `wave-wiggle track-wiggle-${f}-${t}`);
+                    wiggle.setAttribute('d', `M ${egressStartX} 85 C ${egressStartX + (fusionGateX - egressStartX)*0.4} 85, ${egressStartX + (fusionGateX - egressStartX)*0.6} ${y}, ${fusionGateX} ${y}`);
+                    wiggle.setAttribute('style', `stroke: url(#wave-grad-${f}-${t});`);
+                    
+                    const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+                    const grad = document.createElementNS('http://www.w3.org/2000/svg', 'linearGradient');
+                    grad.setAttribute('id', `wave-grad-${f}-${t}`);
+                    grad.innerHTML = `
+                        <stop offset="0%" stop-color="${frameConfigs[f].color}" />
+                        <stop offset="50%" stop-color="var(--pink)" />
+                        <stop offset="100%" stop-color="${frameConfigs[f].color}" />
+                    `;
+                    defs.appendChild(grad);
+                    svg.appendChild(defs);
+                    svg.appendChild(wiggle);
+                }
+
+                // 1.5. Fusion Gate merging lines (S-curves to visual track center at outflowStartX)
+                for (let t = 0; t < 4; t++) {
+                    const y = branchYs[t];
+                    const fusionLine = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                    fusionLine.setAttribute('class', 'rail-line');
+                    fusionLine.setAttribute('d', `M ${fusionGateX} ${y} C ${fusionGateX + 10} ${y}, ${outflowStartX - 10} 85, ${outflowStartX} 85`);
+                    svg.appendChild(fusionLine);
+
+                    const fusionGlow = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                    fusionGlow.setAttribute('class', 'rail-line-glow');
+                    fusionGlow.setAttribute('d', `M ${fusionGateX} ${y} C ${fusionGateX + 10} ${y}, ${outflowStartX - 10} 85, ${outflowStartX} 85`);
+                    fusionGlow.setAttribute('style', `stroke: ${frameConfigs[f].color};`);
+                    svg.appendChild(fusionGlow);
+                }
+
+                // 2. Outflow tracks extending from Fusion Gate to Right Stations
+                // Top horizontal track at y = 85
+                const topOutLine = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                topOutLine.setAttribute('class', 'rail-line');
+                topOutLine.setAttribute('d', `M ${outflowStartX} 85 L ${stationX} 85`);
+                svg.appendChild(topOutLine);
+
+                const topOutGlow = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                topOutGlow.setAttribute('class', 'rail-line-glow');
+                topOutGlow.setAttribute('d', `M ${outflowStartX} 85 L ${stationX} 85`);
+                topOutGlow.setAttribute('style', `stroke: ${frameConfigs[f].color};`);
+                svg.appendChild(topOutGlow);
+
+                const outLine0 = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                outLine0.setAttribute('class', 'rail-line');
+                outLine0.setAttribute('d', `M ${outflowStartX} 110 L ${stationX} 110`);
+                svg.appendChild(outLine0);
+
+                const outGlow0 = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                outGlow0.setAttribute('class', 'rail-line-glow');
+                outGlow0.setAttribute('d', `M ${outflowStartX} 110 L ${stationX} 110`);
+                outGlow0.setAttribute('style', `stroke: ${frameConfigs[f].color};`);
+                svg.appendChild(outGlow0);
+
+                const outLine1 = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                outLine1.setAttribute('class', 'rail-line');
+                outLine1.setAttribute('d', `M ${outflowStartX} 135 L ${stationX} 135`);
+                svg.appendChild(outLine1);
+
+                const outGlow1 = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                outGlow1.setAttribute('class', 'rail-line-glow');
+                outGlow1.setAttribute('d', `M ${outflowStartX} 135 L ${stationX} 135`);
+                outGlow1.setAttribute('style', `stroke: ${frameConfigs[f].color};`);
+                svg.appendChild(outGlow1);
+
+                const outLine2 = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                outLine2.setAttribute('class', 'rail-line');
+                outLine2.setAttribute('d', `M ${outflowStartX} 160 L ${stationX} 160`);
+                svg.appendChild(outLine2);
+
+                const outGlow2 = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                outGlow2.setAttribute('class', 'rail-line-glow');
+                outGlow2.setAttribute('d', `M ${outflowStartX} 160 L ${stationX} 160`);
+                outGlow2.setAttribute('style', `stroke: ${frameConfigs[f].color};`);
+                svg.appendChild(outGlow2);
+
+                container.appendChild(svg);
+
+                // 3. Center Roundabout Spinner Node
+                const spinner = document.createElement('div');
+                spinner.className = 'spinner-core';
+                spinner.id = `spinner-${f}`;
+                spinner.style.left = (roundaboutCenterX - 23) + 'px';
+                spinner.style.top = '62px';
+                spinner.innerHTML = `
+                    <svg class="spinner-rotor" viewBox="0 0 100 100" style="width: 32px; height: 32px; overflow: visible;">
+                        <!-- Gear 1 (Main) -->
+                        <g class="gear-main" style="transform-origin: 38px 50px; color: currentColor;">
+                            <circle cx="38" cy="50" r="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-dasharray="6 3"/>
+                            <circle cx="38" cy="50" r="6" fill="none" stroke="currentColor" stroke-width="1.5"/>
+                        </g>
+                        <!-- Gear 2 (Interlocking Small) -->
+                        <g class="gear-sub" style="transform-origin: 66px 50px; color: var(--pink);">
+                            <circle cx="66" cy="50" r="10" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="4 2"/>
+                            <circle cx="66" cy="50" r="3" fill="none" stroke="currentColor" stroke-width="1"/>
+                        </g>
+                    </svg>
+                `;
+                container.appendChild(spinner);
+
+                // 4. Fusion Gate / Output Assembler block (covering all 4 branches)
+                const fusion = document.createElement('div');
+                fusion.className = 'fusion-gate';
+                fusion.id = `fusion-${f}`;
+                fusion.style.left = fusionGateX + 'px';
+                fusion.textContent = 'Fusion Gate';
+                container.appendChild(fusion);
+
+                // 5. Output Target Stations at Egress Right End (at Y=110, Y=135, Y=160)
+                const outYs = [110, 135, 160];
+                for (let t = 0; t < 3; t++) {
+                    const y = outYs[t];
+                    const station = document.createElement('div');
+                    station.className = 'task-station';
+                    station.id = `station-${f}-${t}`;
+                    station.style.left = stationX + 'px';
+
+                    station.style.top = (y - 18) + 'px';
+                    station.style.color = frameConfigs[f].color;
+                    station.innerHTML = `
+                        <svg class="station-svg" viewBox="0 0 20 20">
+                            <use href="#station-icon-${frameConfigs[f].icon}" />
+                        </svg>
+                    `;
+                    container.appendChild(station);
+
+                    // 6. Dynamic Accumulator Stack Boxes sitting behind the station targets (Perfect vertical center at y-13)
+                    const finishedBox = document.createElement('div');
+                    finishedBox.id = `finished-box-${f}-${t}`;
+                    finishedBox.style.position = 'absolute';
+                    finishedBox.style.left = '0';
+                    finishedBox.style.right = '0';
+                    finishedBox.style.top = (y - 13) + 'px';
+                    finishedBox.style.height = '26px';
+                    finishedBox.style.pointerEvents = 'none';
+                    container.appendChild(finishedBox);
+
+                    // 6.5. High-Tech Hydraulic Piston Pusher Elements
+                    const shaft = document.createElement('div');
+                    shaft.id = `piston-shaft-${f}-${t}`;
+                    shaft.style.position = 'absolute';
+                    shaft.style.left = '0px';
+                    shaft.style.top = '85px';
+                    shaft.style.width = '2px';
+                    shaft.style.height = '0px';
+                    shaft.style.background = `linear-gradient(180deg, var(--text-muted), ${frameConfigs[f].color})`;
+                    shaft.style.opacity = '0';
+                    shaft.style.zIndex = '4';
+                    shaft.style.pointerEvents = 'none';
+                    shaft.style.transition = 'height 0.05s, opacity 0.1s';
+                    container.appendChild(shaft);
+
+                    const head = document.createElement('div');
+                    head.id = `piston-head-${f}-${t}`;
+                    head.style.position = 'absolute';
+                    head.style.left = '0px';
+                    head.style.top = '85px';
+                    head.style.width = '10px';
+                    head.style.height = '4px';
+                    head.style.background = frameConfigs[f].color;
+                    head.style.borderRadius = '1px';
+                    head.style.opacity = '0';
+                    head.style.zIndex = '4';
+                    head.style.pointerEvents = 'none';
+                    head.style.transition = 'top 0.05s, opacity 0.1s';
+                    container.appendChild(head);
+                }
+
+                // 7. Dynamic UI Screen Zoom Preview Box at far right
+                const previewBox = document.createElement('div');
+                previewBox.className = 'ui-preview-box';
+                previewBox.id = `ui-preview-${f}`;
+                previewBox.style.color = frameConfigs[f].color;
+                
+                const uiHeader = document.createElement('div');
+                uiHeader.className = 'ui-browser-header';
+                uiHeader.innerHTML = `
+                    <div class="ui-dots">
+                        <div class="ui-dot red"></div>
+                        <div class="ui-dot yellow"></div>
+                        <div class="ui-dot green"></div>
+                    </div>
+                    <div class="ui-browser-title">${['RAG_Intake', 'LLM_Mind', 'Sandbox_Tests', 'Ops_Release'][f-1]}</div>
+                `;
+                previewBox.appendChild(uiHeader);
+                
+                const uiContent = document.createElement('div');
+                uiContent.className = 'ui-preview-content';
+                uiContent.id = `ui-preview-content-${f}`;
+                
+                if (f === 1) {
+                    uiContent.innerHTML = `
+                        <div class="ui-wireframe" style="border-color:var(--cyan);"></div>
+                        <div class="ui-wireframe"></div>
+                        <div class="ui-wireframe"></div>
+                        <div class="ui-wireframe"></div>
+                        <div style="font-family:var(--font-mono); font-size:4.5px; color:var(--text-muted); margin-top:2px;">[SCANNING DOC...]</div>
+                    `;
+                } else if (f === 2) {
+                    uiContent.innerHTML = `
+                        <div class="ui-chat-bubble" style="color:var(--cyan); border-left:1.5px solid var(--cyan)">> loading llm...</div>
+                        <div class="ui-chat-bubble right" style="color:var(--purple); border-right:1.5px solid var(--purple)">> system active</div>
+                    `;
+                } else if (f === 3) {
+                    uiContent.innerHTML = `
+                        <div class="ui-checkmark-row"><div class="ui-checkmark-icon checked"></div><span>lexer.py OK</span></div>
+                        <div class="ui-checkmark-row"><div class="ui-checkmark-icon checked"></div><span>parser.py OK</span></div>
+                        <div class="ui-checkmark-row"><div class="ui-checkmark-icon"></div><span>verify_bounds</span></div>
+                    `;
+                } else if (f === 4) {
+                    uiContent.innerHTML = `
+                        <div style="display:flex; justify-content:space-between; align-items:center; width:100%; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:2px; margin-bottom:2px;">
+                            <span style="font-size:5px; color:#fff; font-weight:700;">Live Web Dashboard</span>
+                            <span class="ui-dot green" style="width:3px; height:3px; box-shadow:0 0 3px var(--green)"></span>
+                        </div>
+                        <div class="ui-chart-bar-container">
+                            <div class="ui-chart-bar" style="height:12px; background:rgba(16,185,129,0.2);"></div>
+                            <div class="ui-chart-bar" style="height:25px; background:rgba(16,185,129,0.3);"></div>
+                            <div class="ui-chart-bar" style="height:15px; background:rgba(16,185,129,0.2);"></div>
+                            <div class="ui-chart-bar" style="height:8px; background:rgba(16,185,129,0.15);"></div>
+                        </div>
+                    `;
+                }
+                previewBox.appendChild(uiContent);
+                container.appendChild(previewBox);
+
+                // 8. Floating train car box
+                const carsBox = document.createElement('div');
+                carsBox.id = `cars-box-${f}`;
+                carsBox.style.position = 'absolute';
+                carsBox.style.inset = '0';
+                carsBox.style.pointerEvents = 'none';
+                container.appendChild(carsBox);
+            }
+        }
+
+        // Spawn agent train structures in the matrix
+        function spawnAgentEcosystem() {
+            activeAgents.forEach(a => a.dom.remove());
+            activeAgents.length = 0;
+            
+
+            const mod = modalityConfigs[currentModality];
+
+            for (let i = 0; i < maxAgents; i++) {
+                const frameId = Math.floor(Math.random() * 4) + 1;
+                const trackId = Math.floor(Math.random() * 4); // 0 to 3 branches
+                const boxEl = document.getElementById(`cars-box-${frameId}`);
+
+                // Config parameters
+                const speedMod = 0.5 + Math.random() * 0.8;
+                const width = 36 + Math.floor(Math.random() * 18);
+                const heightClass = Math.random() < 0.2 ? 3 : (Math.random() < 0.35 ? 2 : 1);
+                
+                let shape = 'square';
+                if (globalShapeStyle === 'mixed') {
+                    shape = shapes[Math.floor(Math.random() * shapes.length)];
+                } else {
+                    shape = globalShapeStyle === 'capsule' ? 'capsule' : 'square';
+                }
+
+                const initialStage = Math.random() < 0.35 ? 'ingress' : (Math.random() < 0.6 ? 'egress' : 'outflow');
+                const initialProgress = Math.random() * 100;
+
+                // Build agent capsule element
+                const car = document.createElement('div');
+                car.className = `agent-car shape-${shape}`;
+                car.style.width = width + 'px';
+                
+                const palette = frameConfigs[frameId].colors;
+                const carColor = palette[Math.floor(Math.random() * palette.length)];
+                car.style.color = carColor;
+
+                // Generate labels dynamically based on active Modality
+                const labels = [];
+                for (let h = 0; h < heightClass; h++) {
+                    let lbl = '';
+                    if (h === 0) {
+                        lbl = mod[frameId].titles[Math.floor(Math.random() * 6)];
+                    } else if (h === 1) {
+                        lbl = mod[frameId].metrics[Math.floor(Math.random() * 6)];
+                    } else {
+                        lbl = mod[frameId].latencies[Math.floor(Math.random() * 6)];
+                    }
+                    labels.push(lbl);
+                }
+
+                // Stack block elements internally - NO DEFAULT GLOW SHADOWS FOR READABILITY
+                for (let h = 0; h < heightClass; h++) {
+                    const block = document.createElement('div');
+                    block.className = 'car-block';
+                    block.style.background = '#06060c';
+                    block.style.borderColor = carColor;
+                    
+                    const labelDiv = document.createElement('div');
+                    labelDiv.className = 'car-label';
+                    labelDiv.textContent = labels[h];
+                    block.appendChild(labelDiv);
+
+                    car.appendChild(block);
+                }
+
+                boxEl.appendChild(car);
+ 
+                 const agentObj = {
+                     id: i,
+                     frameId: frameId,
+                     trackId: trackId,
+                     dom: car,
+                     stage: initialStage, // 'ingress', 'roundabout', 'egress', 'fusion', 'outflow', 'stationed'
+                     progress: initialProgress,
+                     speed: speedMod,
+                     width: width,
+                     stackHeight: heightClass,
+                     color: carColor,
+                     labels: labels,
+                     latency: mod[frameId].latencies[Math.floor(Math.random() * 6)],
+                     description: mod[frameId].desc,
+                     x: 0,
+                     y: 85,
+                     outflowTrack: Math.min(2, trackId)
+                 };
+ 
+                 car.addEventListener('click', (e) => {
+                     e.stopPropagation();
+                     inspectAgentNode(agentObj);
+                 });
+ 
+                 activeAgents.push(agentObj);
+             }
+ 
+             document.getElementById('activeCountLabel').textContent = `${maxAgents} Active Agents · 16 Parallel Flows`;
+         }
+
+        // Click Inspector
+        let selectedAgentId = null;
+        function inspectAgentNode(agent) {
+            activeAgents.forEach(a => a.dom.classList.remove('selected'));
+            agent.dom.classList.add('selected');
+            selectedAgentId = agent.id;
+
+            document.getElementById('viewport-wrapper').classList.add('has-inspect');
+            document.getElementById('inspect-panel').style.display = 'flex';
+
+            const frameNames = ['RAG Intake Scraper', 'LLM Multi-Agent Core', 'CI/CD Compiler Loops', 'Ops Release Engine'];
+            document.getElementById('inspect-agent-title').textContent = `Agent #${agent.id} Details`;
+            document.getElementById('inspect-agent-type').textContent = frameNames[agent.frameId - 1];
+            document.getElementById('inspect-legend-color').style.background = agent.color;
+            document.getElementById('inspect-agent-label').textContent = agent.labels.join(' ➔ ');
+            document.getElementById('inspect-agent-stack').textContent = `${agent.stackHeight} High Stack`;
+            document.getElementById('inspect-agent-latency').textContent = agent.latency;
+
+            const mod = modalityConfigs[currentModality];
+            document.getElementById('inspect-document-snippet').textContent = mod.mockText;
+
+            // Generate Flask AI Proxy mock request/response payload
+            const mockFlaskPayload = {
+                request: {
+                    endpoint: `/api/v1/modality/${currentModality}`,
+                    port: 11435,
+                    agent_id: agent.id,
+                    target_model: agent.frameId === 2 ? "ollama/qwen2.5:72b" : "ollama/gemma2:27b",
+                    payload_details: {
+                        label_signature: agent.labels[0],
+                        stack_height: agent.stackHeight,
+                        segments: 14
+                    }
+                },
+                response: {
+                    status: "success",
+                    latency_ms: parseInt(agent.latency),
+                    database_sync: "SQLite C:/appflowy/db synced",
+                    proxy_action: "AST compiled",
+                    tokens_processed: Math.floor(Math.random() * 400 + 200)
+                }
+            };
+            document.getElementById('inspect-flask-payload').textContent = JSON.stringify(mockFlaskPayload, null, 2);
+
+            // Generate terminal thought logs
+            const date = new Date();
+            const pad = (num) => String(num).padStart(2, '0');
+            const baseTime = `${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
+            
+            const thoughts = [
+                `[${baseTime}] [SYSTEM]: Telemetry scanner for Agent #${agent.id}...`,
+                `[${baseTime}] [AGENT]: Mapped segments: ${agent.labels.join(' ➔ ')}`,
+                `[${baseTime}] [AGENT]: Stack height level is ${agent.stackHeight}. Connecting DB...`,
+                `[${baseTime}] [DB]: SQLite path verified at C:/appflowy/db. Sync OK.`,
+                `[${baseTime}] [PROXY]: Sending RAG vectors to Flask AI Proxy (Port 11435)...`,
+                `[${baseTime}] [PROXY]: Ollama middleware responded in ${agent.latency}. Status 200 OK`,
+                `[${baseTime}] [SYSTEM]: Completed parsing frame. Flow state: ${agent.stage.toUpperCase()}`
+            ];
+            document.getElementById('inspect-thoughts-log').innerHTML = thoughts.join('<br>');
+        }
+
+        function closeInspectPanel() {
+            document.getElementById('viewport-wrapper').classList.remove('has-inspect');
+            document.getElementById('inspect-panel').style.display = 'none';
+            activeAgents.forEach(a => a.dom.classList.remove('selected'));
+            selectedAgentId = null;
+        }
+
+        // Global shape switch
+        function setGlobalShape(shapeStyle) {
+            globalShapeStyle = shapeStyle;
+            document.getElementById('btn-shape-mixed').classList.toggle('active', shapeStyle === 'mixed');
+            document.getElementById('btn-shape-square').classList.toggle('active', shapeStyle === 'square');
+            document.getElementById('btn-shape-capsule').classList.toggle('active', shapeStyle === 'capsule');
+            spawnAgentEcosystem();
+        }
+
+        // Adjust speed
+        function updateGlobalSpeed(val) {
+            globalSpeed = parseFloat(val);
+            document.getElementById('label-global-speed').textContent = val + 'x ' + (val < 0.5 ? '(Majestic)' : '(Fast)');
+        }
+
+        // Adjust volume
+        function updateAgentVolume(val) {
+            maxAgents = parseInt(val);
+            document.getElementById('label-agent-vol').textContent = val;
+            spawnAgentEcosystem();
+        }
+
+        // Stimulus spikes
+        function triggerFlashStimulus() {
+            activeAgents.forEach(a => {
+                if (Math.random() < 0.4) {
+                    a.dom.classList.add('jumping');
+                    setTimeout(() => {
+                        a.dom.classList.remove('jumping');
+                    }, 1500);
+                }
+            });
+        }
+
+
+        // Continuous pipeline progress mapping (ingress: 0..1, roundabout: 1..2, egress: 2..3, fusion: 3..4, outflow: 4..5)
+        function getPipelineProgress(a) {
+            if (a.stage === 'ingress') return a.progress / 100;
+            if (a.stage === 'roundabout') return 1.0 + a.progress / 100;
+            if (a.stage === 'egress') return 2.0 + a.progress / 100;
+            if (a.stage === 'fusion') return 3.0 + a.progress / 100;
+            if (a.stage === 'outflow') return 4.0 + a.progress / 100;
+            return 5.0;
+        }
+
+        // Dynamically spacing out finished stacks and traveling agents heading to a specific target outflow station (growing left-to-right - Responsive)
+        function getAgentOutflowStopX(a) {
+            const flowEl = document.getElementById(`flow-container-${a.frameId}`);
+            const W = flowEl ? Math.max(660, flowEl.clientWidth) : 660;
+
+            const fusionGateX = W * 0.48;
+            const fusionGateWidth = 24;
+            const outflowStartX = fusionGateX + fusionGateWidth;
+
+            const stackKey = `${a.frameId}-${a.outflowTrack}`;
+            const stack = finishedStacks[stackKey] || [];
+            const stackCount = stack.length;
+
+            const leftBound = outflowStartX + 8; // Starts immediately to the right of the Fusion Gate
+            const gap = 6;
+            
+            let currentLeft = leftBound;
+            
+            // Calculate where the end of the stationed stack is
+            if (stackCount > 0) {
+                const lastStationed = stack[stackCount - 1];
+                if (lastStationed.calculatedLeft !== undefined) {
+                    currentLeft = lastStationed.calculatedLeft + lastStationed.width + gap;
+                }
+            }
+
+            // Find all traveling agents in outflow stage for the same track
+            const traveling = activeAgents.filter(other => 
+                other.frameId === a.frameId && 
+                other.stage === 'outflow' && 
+                other.outflowTrack === a.outflowTrack
+            );
+            // Sort them descending by progress (frontmost first)
+            traveling.sort((p1, p2) => p2.progress - p1.progress);
+
+            // Find the index of our agent `a` in this list
+            const idx = traveling.findIndex(other => other.id === a.id);
+            const outflowIndex = idx !== -1 ? idx : traveling.length;
+
+            let targetLeft = currentLeft;
+            for (let i = 0; i <= outflowIndex; i++) {
+                const travAgent = traveling[i];
+                if (!travAgent) continue;
+                
+                if (travAgent.id === a.id) {
+                    targetLeft = currentLeft;
+                    break;
+                } else {
+                    currentLeft = currentLeft + travAgent.width + gap;
+                }
+            }
+
+            return targetLeft + a.width / 2;
+        }
+
+        // Analytical coordinate calculator along the entire 2D motion path based on continuous progression (Responsive & Bezier Aligned)
+        function computeAgentPosition(a, s) {
+            const flowEl = document.getElementById(`flow-container-${a.frameId}`);
+            const W = flowEl ? Math.max(660, flowEl.clientWidth) : 660;
+
+            const ingressEndX = W * 0.16;
+            const roundaboutCenterX = ingressEndX + 25;
+            const egressStartX = roundaboutCenterX + 25;
+            const fusionGateX = W * 0.48;
+            const fusionGateWidth = 24;
+            const outflowStartX = fusionGateX + fusionGateWidth;
+            const stationX = W - 180;
+
+            let x = 0, y = 85;
+            let stage = 'ingress';
+            let progress = 0;
+
+            if (s < 1.0) {
+                stage = 'ingress';
+                progress = s * 100;
+                x = (progress / 100) * ingressEndX;
+                y = 85;
+            } else if (s < 2.0) {
+                stage = 'roundabout';
+                progress = (s - 1.0) * 100;
+                const angleRad = (progress / 100) * Math.PI * 3 - Math.PI;
+                x = roundaboutCenterX + Math.cos(angleRad) * 25;
+                y = 85 + Math.sin(angleRad) * 25;
+            } else if (s < 3.0) {
+                stage = 'egress';
+                progress = (s - 2.0) * 100;
+                const t = progress / 100;
+                const branchYs = [25, 65, 105, 145];
+                const targetBranchY = branchYs[a.trackId];
+                
+                // Cubic Bezier curve tracking to ensure perfect center centering
+                const dx = fusionGateX - egressStartX;
+                const p0 = { x: egressStartX, y: 85 };
+                const p1 = { x: egressStartX + dx * 0.4, y: 85 };
+                const p2 = { x: egressStartX + dx * 0.6, y: targetBranchY };
+                const p3 = { x: fusionGateX, y: targetBranchY };
+
+                const mt = 1 - t;
+                x = mt*mt*mt*p0.x + 3*mt*mt*t*p1.x + 3*mt*t*t*p2.x + t*t*t*p3.x;
+                y = mt*mt*mt*p0.y + 3*mt*mt*t*p1.y + 3*mt*t*t*p2.y + t*t*t*p3.y;
+            } else if (s < 4.0) {
+                stage = 'fusion';
+                progress = (s - 3.0) * 100;
+                const t = progress / 100;
+                
+                const branchYs = [25, 65, 105, 145];
+                const targetBranchY = branchYs[a.trackId];
+                
+                // Cubic Bezier curve tracking for Fusion Gate S-merges
+                const p0 = { x: fusionGateX, y: targetBranchY };
+                const p1 = { x: fusionGateX + 10, y: targetBranchY };
+                const p2 = { x: outflowStartX - 10, y: 85 };
+                const p3 = { x: outflowStartX, y: 85 };
+
+                const mt = 1 - t;
+                x = mt*mt*mt*p0.x + 3*mt*mt*t*p1.x + 3*mt*t*t*p2.x + t*t*t*p3.x;
+                y = mt*mt*mt*p0.y + 3*mt*mt*t*p1.y + 3*mt*t*t*p2.y + t*t*t*p3.y;
+            } else if (s < 5.0) {
+                stage = 'outflow';
+                progress = (s - 4.0) * 100;
+                
+                // Calculate stopX dynamically
+                const stopX = getAgentOutflowStopX(a);
+                
+                const outflowYs = [110, 135, 160];
+                const targetOutflowY = outflowYs[a.outflowTrack];
+                
+                const t = progress / 100;
+                if (t < 0.7) {
+                    const p = t / 0.7;
+                    x = outflowStartX + (stopX - outflowStartX) * p;
+                    y = 85;
+                } else {
+                    const p = (t - 0.7) / 0.3;
+                    x = stopX;
+                    y = 85 + (targetOutflowY - 85) * p;
+                }
+            } else {
+                stage = 'outflow';
+                progress = 100;
+                const stopX = getAgentOutflowStopX(a);
+                const outflowYs = [110, 135, 160];
+                x = stopX;
+                y = outflowYs[a.outflowTrack];
+            }
+            return { x, y, stage, progress };
+        }
+
+        // Render loop
+
+        let lastTime = 0;
+        function renderLoop(timestamp) {
+            if (!lastTime) lastTime = timestamp;
+            const delta = (timestamp - lastTime) / 16;
+            lastTime = timestamp;
+
+            const activeJunctions = { 1: false, 2: false, 3: false, 4: false };
+            const activeFusions = { 1: false, 2: false, 3: false, 4: false };
+            const activeStations = {};
+            const activeWiggles = {};
+
+            // Move agent blocks smoothly along the pipeline stages
+            // 1. First, increment progress for all active agents based on their speeds
+            activeAgents.forEach(a => {
+                let increment = globalSpeed * a.speed * delta * (a.stage === 'ingress' ? 1.5 : (a.stage === 'roundabout' ? 2.0 : (a.stage === 'egress' ? 1.2 : (a.stage === 'fusion' ? 2.5 : 1.4))));
+                a.progress += increment;
+            });
+
+            // 2. Queueing and collision prevention formula: Continuous 2D coordinate-based overlap resolution
+            activeAgents.forEach(a => {
+                if (a.stage !== 'stationed') {
+                    a.pipelineProgress = getPipelineProgress(a);
+                }
+            });
+
+            for (let f = 1; f <= 4; f++) {
+                const laneAgents = activeAgents.filter(a => a.frameId === f && a.stage !== 'stationed');
+                // Sort descending by pipelineProgress so frontmost leader is first
+                laneAgents.sort((p1, p2) => p2.pipelineProgress - p1.pipelineProgress);
+
+                for (let i = 1; i < laneAgents.length; i++) {
+                    const leader = laneAgents[i - 1];
+                    const follower = laneAgents[i];
+
+                    // Check if follower is too close to leader
+                    const safetyDist = (leader.width + follower.width) / 2 + 10;
+                    const minProgressDiff = (safetyDist / 300); // 300px is approx stage length
+
+                    if (leader.pipelineProgress - follower.pipelineProgress < minProgressDiff) {
+                        // Clamp follower progress to maintain safety gap
+                        follower.pipelineProgress = Math.max(0, leader.pipelineProgress - minProgressDiff);
+                        follower.speed = leader.speed * 0.95; // Match and damp speed
+                    }
+                }
+
+                // Write the resolved stages and progress back before final rendering computes coordinates
+                laneAgents.forEach(a => {
+                    const resolved = computeAgentPosition(a, a.pipelineProgress);
+                    a.stage = resolved.stage;
+                    a.progress = resolved.progress;
+                });
+            }
+
+            // 3. Move and draw agents at their adjusted layout coordinates
+            activeAgents.forEach(a => {
+                const resolved = computeAgentPosition(a, a.pipelineProgress);
+                a.x = resolved.x;
+                a.y = resolved.y;
+                a.stage = resolved.stage;
+                a.progress = resolved.progress;
+
+                const flowEl = document.getElementById(`flow-container-${a.frameId}`);
+                const W = flowEl ? Math.max(660, flowEl.clientWidth) : 660;
+                const fusionGateX = W * 0.48;
+
+                // 1. INGRESS
+                if (a.stage === 'ingress') {
+                    a.dom.style.transform = 'none';
+
+                    if (a.progress >= 100) {
+                        a.stage = 'roundabout';
+                        a.progress = 0;
+                    }
+                }
+                
+                // 2. ROUNDABOUT
+                else if (a.stage === 'roundabout') {
+                    activeJunctions[a.frameId] = true;
+                    a.dom.style.transform = 'none';
+
+                    if (a.progress >= 100) {
+                        a.stage = 'egress';
+                        a.progress = 0;
+                    }
+                }
+
+                // 3. EGRESS BRANCHES
+                else if (a.stage === 'egress') {
+                    activeWiggles[`${a.frameId}-${a.trackId}`] = true;
+                    a.dom.style.transform = 'none';
+
+                    if (a.progress >= 100) {
+                        a.stage = 'fusion';
+                        a.progress = 0;
+                    }
+                }
+
+                // 4. FUSION GATE
+                else if (a.stage === 'fusion') {
+                    activeFusions[a.frameId] = true;
+
+                    // Neon pink steam puffing at the fusion gate!
+                    if (Math.random() < 0.12) {
+                        const flowContainer = document.getElementById(`flow-container-${a.frameId}`);
+                        if (flowContainer) {
+                            const steam = document.createElement('div');
+                            steam.className = 'steam-cloud';
+                            steam.style.left = (fusionGateX + 5) + 'px';
+                            steam.style.top = (a.y - 7) + 'px';
+                            flowContainer.appendChild(steam);
+                            setTimeout(() => steam.remove(), 700);
+                        }
+                    }
+
+                    a.dom.style.transform = 'none';
+
+                    if (a.progress >= 100) {
+                        a.stage = 'outflow';
+                        a.progress = 0;
+                    }
+                }
+
+                // 5. OUTFLOW
+                else if (a.stage === 'outflow') {
+                    const stopX = getAgentOutflowStopX(a);
+
+                    const t = a.progress / 100;
+                    if (t >= 0.7) {
+                        // Stretch high-tech hydraulic piston shaft and head down to push block!
+                        const shaft = document.getElementById(`piston-shaft-${a.frameId}-${a.outflowTrack}`);
+                        const head = document.getElementById(`piston-head-${a.frameId}-${a.outflowTrack}`);
+                        if (shaft && head) {
+                            shaft.style.left = stopX + 'px';
+                            shaft.style.height = (a.y - 85) + 'px';
+                            shaft.style.opacity = '0.8';
+                            
+                            head.style.left = (stopX - 4) + 'px';
+                            head.style.top = a.y + 'px';
+                            head.style.opacity = '1.0';
+                        }
+                    }
+
+                    a.dom.style.transform = 'none';
+
+                    if (a.progress >= 100) {
+                        a.stage = 'stationed';
+                        a.progress = 0;
+                    }
+                }
+
+                // 6. STATIONED
+                else if (a.stage === 'stationed') {
+                    const stackKey = `${a.frameId}-${a.outflowTrack}`;
+                    const currentStack = finishedStacks[stackKey];
+
+                    // Retract hydraulic piston shaft & head!
+                    const shaft = document.getElementById(`piston-shaft-${a.frameId}-${a.outflowTrack}`);
+                    const head = document.getElementById(`piston-head-${a.frameId}-${a.outflowTrack}`);
+                    if (shaft && head) {
+                        shaft.style.opacity = '0';
+                        shaft.style.height = '0px';
+                        head.style.opacity = '0';
+                        head.style.top = '85px';
+                    }
+
+                    // Push actual completed properties including its width!
+                    currentStack.push({
+                        color: a.color,
+                        label: a.labels[0] || 'OK',
+                        width: a.width
+                    });
+
+                    const stationEl = document.getElementById(`station-${a.frameId}-${a.outflowTrack}`);
+                    if (stationEl) {
+                        stationEl.classList.add('active');
+                        stationEl.style.boxShadow = `0 0 15px ${a.color}`;
+                        setTimeout(() => {
+                            stationEl.classList.remove('active');
+                            stationEl.style.boxShadow = 'none';
+                        }, 250);
+                    }
+
+                    renderFinishedStack(a.frameId, a.outflowTrack);
+                    updateMockUIPreview(a.frameId); // Trigger live screenshot developments!
+
+                    // Keep at most 4 stacked elements in the viewport to completely avoid Fusion Gate overlaps
+                    if (currentStack.length > 4) {
+                        currentStack.shift();
+                        renderFinishedStack(a.frameId, a.outflowTrack); // Re-render to slide elements left/right!
+                    }
+
+                     a.stage = 'ingress';
+                     a.progress = 0;
+                     a.trackId = Math.floor(Math.random() * 4);
+                     a.outflowTrack = Math.min(2, a.trackId);
+                }
+
+                // Perfect Y-centering onto rail lines (height is 26, so offset is exactly 13px)
+                a.dom.style.left = (a.x - a.width / 2) + 'px';
+                a.dom.style.top = (a.y - 13) + 'px';
+            });
+
+            // Toggle active visual states
+            for (let f = 1; f <= 4; f++) {
+                const spinner = document.getElementById(`spinner-${f}`);
+                if (spinner) spinner.classList.toggle('active', activeJunctions[f]);
+
+                const fusion = document.getElementById(`fusion-${f}`);
+                if (fusion) fusion.classList.toggle('active', activeFusions[f]);
+
+                for (let t = 0; t < 4; t++) {
+                    const wave = document.querySelector(`.track-wiggle-${f}-${t}`);
+                    if (wave) {
+                        wave.classList.toggle('active', activeWiggles[`${f}-${t}`]);
+                    }
+                }
+
+                for (let t = 0; t < 3; t++) {
+                    const stationEl = document.getElementById(`station-${f}-${t}`);
+                    if (stationEl) {
+                        const isActive = activeStations[`${f}-${t}`];
+                        stationEl.classList.toggle('active', isActive);
+                        if (isActive) {
+                            stationEl.style.boxShadow = `0 0 15px ${frameConfigs[f].color}`;
+                        } else {
+                            stationEl.style.boxShadow = 'none';
+                        }
+                    }
+                }
+            }
+
+            // Pulse stats
+            for (let f = 1; f <= 4; f++) {
+                const el = document.getElementById(`stats-traces-${f}`);
+                if (el) {
+                    let base = parseInt(el.textContent.replace(/,/g, ''));
+                    let deltaVal = Math.floor(Math.random() * 9) - 4;
+                    el.textContent = Math.max(10, base + deltaVal).toLocaleString();
+                }
+
+                const tokenRateEl = document.getElementById(`token-rate-${f}`);
+                const tokenTotalEl = document.getElementById(`token-total-${f}`);
+                if (tokenRateEl && tokenTotalEl) {
+                    let currentRate = 1.0 + Math.random() * 4.0;
+                    if (f === 2) currentRate *= 1.8;
+                    tokenRateEl.textContent = `${currentRate.toFixed(1)}K t/s`;
+
+                    let prevTotal = parseInt(tokenTotalEl.textContent.replace(/,/g, ''));
+                    let tokensAdded = Math.floor(currentRate * 35 * delta);
+                    tokenTotalEl.textContent = (prevTotal + tokensAdded).toLocaleString();
+                }
+            }
+
+            requestAnimationFrame(renderLoop);
+        }
+
+        // Dynamic UI Screenshot Zoom Animator
+        function updateMockUIPreview(frameId) {
+            const previewBox = document.getElementById(`ui-preview-${frameId}`);
+            if (!previewBox) return;
+
+            // Flash box border/shadow momentarily
+            previewBox.classList.add('flash');
+            setTimeout(() => previewBox.classList.remove('flash'), 300);
+
+            const content = document.getElementById(`ui-preview-content-${frameId}`);
+            if (!content) return;
+
+            if (frameId === 1) {
+                // RAG Intake: Highlight random wireframe lines
+                const wires = content.querySelectorAll('.ui-wireframe');
+                const randIdx = Math.floor(Math.random() * wires.length);
+                wires.forEach((w, idx) => {
+                    if (idx === randIdx) {
+                        w.style.background = 'rgba(6, 182, 212, 0.15)';
+                        w.style.borderColor = 'var(--cyan)';
+                    } else {
+                        w.style.background = 'rgba(255, 255, 255, 0.04)';
+                        w.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+                    }
+                });
+                // Update log trace
+                const log = content.querySelector('div:last-child');
+                const actions = ['INDEXING KEYWORDS...', 'PARSING TEXT BLOCKS...', 'VECTORIZING SENTENCES...', 'RESOLVING NODES...'];
+                if (log) log.textContent = `[${actions[Math.floor(Math.random() * actions.length)]}]`;
+            } 
+            else if (frameId === 2) {
+                // LLM Multi-Agent: Append and scroll typewriter chat prompts
+                const isRight = Math.random() < 0.5;
+                const bubble = document.createElement('div');
+                bubble.className = `ui-chat-bubble ${isRight ? 'right' : ''}`;
+                bubble.style.color = isRight ? 'var(--purple)' : 'var(--cyan)';
+                
+                const agentLogs = [
+                    'synthesizing RAG context...',
+                    'routing to ollama proxy...',
+                    'compiling AST branch...',
+                    'generating interface CSS...',
+                    'optimizing performance parameters...',
+                    'validating database schema...'
+                ];
+                bubble.textContent = isRight ? `> agent: ${agentLogs[Math.floor(Math.random() * agentLogs.length)]}` : `> llm: token batch OK`;
+                
+                content.appendChild(bubble);
+                if (content.children.length > 5) {
+                    content.removeChild(content.firstChild);
+                }
+            } 
+            else if (frameId === 3) {
+                // Sandbox Verify: Randomize test checkmark check list and flashes
+                const rows = content.querySelectorAll('.ui-checkmark-row');
+                rows.forEach((row, idx) => {
+                    const icon = row.querySelector('.ui-checkmark-icon');
+                    const text = row.querySelector('span');
+                    const isPassed = Math.random() < 0.8;
+                    
+                    icon.className = `ui-checkmark-icon ${isPassed ? 'checked' : ''}`;
+                    if (isPassed) {
+                        text.style.color = 'var(--text-primary)';
+                    } else {
+                        text.style.color = 'var(--text-muted)';
+                    }
+                });
+            } 
+            else if (frameId === 4) {
+                // Ops Release: Randomize bar chart heights
+                const bars = content.querySelectorAll('.ui-chart-bar');
+                bars.forEach(bar => {
+                    const h = 5 + Math.floor(Math.random() * 32);
+                    bar.style.height = `${h}px`;
+                    bar.style.background = `rgba(16, 185, 129, ${0.1 + (h / 40) * 0.6})`;
+                });
+            }
+        }
+
+        // Sequential Workflow Simulation Player
+        let activeSimulatedFrame = null;
+        
+        function runSequentialWorkflow() {
+            const btn = document.getElementById('btn-run-simulation');
+            const label = document.getElementById('sequencer-step-label');
+            if (!btn || !label) return;
+
+            btn.disabled = true;
+            btn.style.opacity = '0.5';
+            
+            const steps = [
+                { frameId: 1, labelText: 'RAG Ingest', color: 'var(--cyan)' },
+                { frameId: 2, labelText: 'Synthesis', color: 'var(--purple)' },
+                { frameId: 3, labelText: 'Verification', color: 'var(--yellow)' },
+                { frameId: 4, labelText: 'Deploy Release', color: 'var(--green)' }
+            ];
+
+            let stepIdx = 0;
+
+            function runStep() {
+                // Clear any previous highlights
+                document.querySelectorAll('.lane-frame').forEach(f => {
+                    f.classList.remove('active-simulation');
+                    f.style.color = '';
+                });
+
+                if (stepIdx >= steps.length) {
+                    label.textContent = 'Completed!';
+                    label.style.color = 'var(--green)';
+                    btn.disabled = false;
+                    btn.style.opacity = '1';
+                    activeSimulatedFrame = null;
+                    
+                    // Spawn a massive burst of stimulus on complete!
+                    triggerFlashStimulus();
+                    logConsole("Sequential multi-agent pipeline workflow run COMPLETED successfully.");
+                    
+                    setTimeout(() => {
+                        label.textContent = 'Idle';
+                        label.style.color = '#fff';
+                    }, 3000);
+                    return;
+                }
+
+                const s = steps[stepIdx];
+                activeSimulatedFrame = s.frameId;
+                
+                label.textContent = `[${stepIdx + 1}/4] ${s.labelText}`;
+                label.style.color = s.color;
+                
+                const frameEl = document.getElementById(`frame-${s.frameId}`);
+                if (frameEl) {
+                    frameEl.style.color = s.color;
+                    frameEl.classList.add('active-simulation');
+                    frameEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+
+                logConsole(`Executing Step ${stepIdx + 1}: [${s.labelText.toUpperCase()}] running on Agent Frame ${s.frameId}.`);
+
+                // Double the speed of agents flowing in this frame!
+                activeAgents.forEach(a => {
+                    if (a.frameId === s.frameId) {
+                        a.speed = 2.5; // High speed flow
+                        a.dom.classList.add('glow');
+                    } else {
+                        a.speed = 0.6 + Math.random() * 0.4;
+                        a.dom.classList.remove('glow');
+                    }
+                });
+
+                // Simulate land trigger UI previews multiple times!
+                let triggerCount = 0;
+                const interval = setInterval(() => {
+                    updateMockUIPreview(s.frameId);
+                    triggerCount++;
+                    if (triggerCount > 4) clearInterval(interval);
+                }, 800);
+
+                stepIdx++;
+                setTimeout(runStep, 3800);
+            }
+
+            runStep();
+        }
+
+        // Logger helper
+        function logConsole(msg) {
+            console.log(`[ORCHESTRATOR]: ${msg}`);
+        }
+
+        document.getElementById('viewport').addEventListener('click', () => {
+            closeInspectPanel();
+        });
+
+        // Initialize flows
+        initFinishedStacks();
+        buildJunctionFlows();
+        spawnAgentEcosystem();
+        requestAnimationFrame(renderLoop);
+
+        // Window resize responsive redrawing
+        window.addEventListener('resize', () => {
+            buildJunctionFlows();
+            for (let f = 1; f <= 4; f++) {
+                for (let t = 0; t < 3; t++) {
+                    renderFinishedStack(f, t);
+                }
+            }
+        });
+    </script>
+</body>
+</html>

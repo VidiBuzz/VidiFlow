@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebAssembly (Wasm) vs Electron: The Ultimate Team Guide</title>
+    <meta name="description" content="A premium interactive guide comparing WebAssembly, JavaScript, and Electron architectures for high-performance web and desktop engineering.">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;700&family=Kumbh+Sans:wght@100..900&display=swap');
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        /* ===== TOP NAV BRANDING ===== */
+        nav {
+            position: sticky;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            background: rgba(10, 10, 15, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 40px;
+            height: 60px;
+        }
+
+        .nav-brand {
+            font-family: 'Kumbh Sans', sans-serif;
+            font-size: 1.1rem;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+        }
+
+        .brand-vidi {
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            background: linear-gradient(135deg, #ffffff 40%, #a78bfa 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .brand-tag {
+            color: var(--accent-cyan);
+            font-weight: 400;
+            font-size: 0.85rem;
+            border-left: 1px solid rgba(255, 255, 255, 0.15);
+            padding-left: 8px;
+            margin-left: 2px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .nav-news-link {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--accent-cyan);
+            text-decoration: none;
+            border: 1px solid rgba(6, 182, 212, 0.4);
+            padding: 5px 12px;
+            border-radius: 6px;
+            transition: all 0.2s;
+            background: rgba(6, 182, 212, 0.03);
+        }
+
+        .nav-news-link:hover {
+            background: var(--accent-cyan);
+            color: #030303;
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 10px rgba(6, 182, 212, 0.3);
+        }
+
+        .nav-year {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            opacity: 0.7;
+            letter-spacing: 0.05em;
+        }
+        
+        :root {
+            --bg-primary: #030303;
+            --bg-secondary: #0a0a0f;
+            --bg-card: #12121e;
+            --bg-card-hover: #18182a;
+            --border: rgba(255, 255, 255, 0.06);
+            --border-hover: rgba(255, 255, 255, 0.12);
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-muted: #475569;
+            
+            --accent-purple: #8b5cf6;
+            --accent-purple-glow: rgba(139, 92, 246, 0.15);
+            --accent-cyan: #06b6d4;
+            --accent-cyan-glow: rgba(6, 182, 212, 0.15);
+            --accent-green: #10b981;
+            --accent-green-glow: rgba(16, 185, 129, 0.15);
+            --accent-orange: #f97316;
+            --accent-orange-glow: rgba(249, 115, 22, 0.15);
+            
+            --font-main: 'Outfit', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(139, 92, 246, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(6, 182, 212, 0.05) 0%, transparent 40%);
+            background-attachment: fixed;
+        }
+
+        /* ===== CONTAINER ===== */
+        .wrapper {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* ===== HEADER ===== */
+        header {
+            text-align: center;
+            margin-bottom: 60px;
+            position: relative;
+        }
+
+        .badge {
+            background: var(--accent-purple-glow);
+            color: var(--accent-purple);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            padding: 6px 16px;
+            border-radius: 100px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            display: inline-block;
+            margin-bottom: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        h1 {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #ffffff 30%, #a78bfa 70%, #22d3ee 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.02em;
+        }
+
+        .subtitle {
+            font-size: clamp(1.1rem, 2vw, 1.4rem);
+            color: var(--text-secondary);
+            max-width: 800px;
+            margin: 0 auto;
+            font-weight: 300;
+        }
+
+        /* ===== CORE SECTION ===== */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 60px;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 35px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(20px);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            border-color: var(--border-hover);
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.7);
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan));
+        }
+
+        .card.cyan::before {
+            background: linear-gradient(90deg, var(--accent-cyan), var(--accent-green));
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        p {
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+            font-weight: 400;
+        }
+
+        /* ===== INTERACTIVE DEMO (BENCHMARK) ===== */
+        .benchmark-section {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 40px;
+            margin-bottom: 60px;
+            position: relative;
+        }
+
+        .benchmark-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .benchmark-info {
+            max-width: 600px;
+        }
+
+        .benchmark-btn {
+            background: linear-gradient(135deg, var(--accent-purple) 0%, #7c3aed 100%);
+            color: white;
+            border: none;
+            padding: 16px 32px;
+            font-family: var(--font-main);
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 20px rgba(139, 92, 246, 0.4);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .benchmark-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 24px rgba(139, 92, 246, 0.6);
+        }
+
+        .benchmark-btn:active {
+            transform: translateY(0);
+        }
+
+        .benchmark-btn:disabled {
+            background: var(--text-muted);
+            box-shadow: none;
+            cursor: not-allowed;
+        }
+
+        .benchmark-visualizer {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        .bench-bar-container {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 25px;
+            position: relative;
+        }
+
+        .bench-title-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .bench-name {
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .bench-tag {
+            font-size: 0.75rem;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .tag-js { background: rgba(234, 179, 8, 0.15); color: #eab308; border: 1px solid rgba(234, 179, 8, 0.3); }
+        .tag-wasm { background: var(--accent-purple-glow); color: var(--accent-purple); border: 1px solid rgba(139, 92, 246, 0.3); }
+        .tag-native { background: var(--accent-cyan-glow); color: var(--accent-cyan); border: 1px solid rgba(6, 182, 212, 0.3); }
+
+        .progress-track {
+            width: 100%;
+            height: 12px;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 100px;
+            overflow: hidden;
+            margin-bottom: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            border-radius: 100px;
+            transition: width 0.1s linear;
+        }
+
+        .progress-js { background: linear-gradient(90deg, #eab308, #f59e0b); box-shadow: 0 0 10px rgba(234, 179, 8, 0.3); }
+        .progress-wasm { background: linear-gradient(90deg, var(--accent-purple), #a78bfa); box-shadow: 0 0 10px rgba(139, 92, 246, 0.3); }
+        .progress-native { background: linear-gradient(90deg, var(--accent-cyan), #22d3ee); box-shadow: 0 0 10px rgba(6, 182, 212, 0.3); }
+
+        .bench-stats {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .stat-value {
+            font-family: var(--font-mono);
+            color: var(--text-primary);
+            font-weight: 700;
+        }
+
+        /* ===== SPECS MATRIX / TABS ===== */
+        .tabs-section {
+            margin-bottom: 60px;
+        }
+
+        .tab-headers {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 10px;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-family: var(--font-main);
+            font-size: 1.1rem;
+            font-weight: 600;
+            padding: 10px 20px;
+            cursor: pointer;
+            position: relative;
+            transition: color 0.3s ease;
+        }
+
+        .tab-btn.active {
+            color: var(--text-primary);
+        }
+
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: -11px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: var(--accent-purple);
+            border-radius: 100px;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.4s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .comp-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 25px;
+        }
+
+        .comp-card h3 {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            color: var(--text-primary);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .comp-card ul {
+            list-style: none;
+        }
+
+        .comp-card li {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            margin-bottom: 12px;
+            position: relative;
+            padding-left: 20px;
+        }
+
+        .comp-card li::before {
+            content: "✦";
+            position: absolute;
+            left: 0;
+            color: var(--accent-purple);
+        }
+
+        .comp-card.highlight h3 {
+            color: var(--accent-cyan);
+        }
+        
+        .comp-card.highlight li::before {
+            color: var(--accent-cyan);
+        }
+
+        /* ===== LANGUAGE LABS ===== */
+        .languages-section {
+            background: linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 40px;
+            margin-bottom: 60px;
+        }
+
+        .lang-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .lang-card {
+            background: rgba(255, 255, 255, 0.01);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 25px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .lang-card:hover {
+            background: rgba(255, 255, 255, 0.03);
+            border-color: rgba(255, 255, 255, 0.15);
+            transform: scale(1.03);
+        }
+
+        .lang-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .lang-name {
+            font-weight: 700;
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+        }
+
+        .lang-status {
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            margin-bottom: 15px;
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 100px;
+        }
+
+        .status-gold { background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); }
+        .status-gc { background: rgba(6, 182, 212, 0.15); color: #06b6d4; border: 1px solid rgba(6, 182, 212, 0.3); }
+
+        .lang-desc {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        /* ===== ANALOGY CALLOUT ===== */
+        .analogy-callout {
+            background: radial-gradient(circle at top left, var(--accent-purple-glow), transparent 60%);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            border-radius: 24px;
+            padding: 40px;
+            display: flex;
+            align-items: center;
+            gap: 40px;
+            flex-wrap: wrap;
+            margin-bottom: 60px;
+        }
+
+        .analogy-graphic {
+            flex: 1;
+            min-width: 250px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .analogy-bar {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .analogy-label {
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            width: 100px;
+            color: var(--text-secondary);
+        }
+
+        .analogy-visual {
+            flex: 1;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .analogy-fill {
+            height: 100%;
+            background: var(--accent-purple);
+            border-radius: 10px;
+        }
+
+        .analogy-info {
+            flex: 2;
+            min-width: 300px;
+        }
+
+        .analogy-info h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: var(--text-primary);
+        }
+
+        .analogy-info ul {
+            list-style: none;
+            margin-top: 15px;
+        }
+
+        .analogy-info li {
+            margin-bottom: 10px;
+            padding-left: 20px;
+            position: relative;
+            color: var(--text-secondary);
+        }
+
+        .analogy-info li::before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: var(--accent-green);
+            font-weight: bold;
+        }
+
+        /* ===== FOOTER ===== */
+        footer {
+            text-align: center;
+            border-top: 1px solid var(--border);
+            padding-top: 40px;
+            margin-top: 80px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* ===== RESPONSIVE STYLE ===== */
+        @media (max-width: 768px) {
+            .benchmark-header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .benchmark-btn {
+                width: 100%;
+                justify-content: center;
+            }
+            .analogy-callout {
+                gap: 20px;
+                padding: 25px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="nav-brand"><a href="https://vidismart.com" style="color: inherit; text-decoration: none;"><span class="brand-vidi">VidiSmart</span></a><span class="brand-tag">Research Report</span></div>
+        <div class="nav-right">
+            <a href="https://vidi.news" target="_blank" class="nav-news-link">Vidi.NEWS ↗</a>
+            <span class="nav-year">TECHNICAL BRIEF</span>
+        </div>
+    </nav>
+
+<div class="wrapper">
+
+    <!-- ===== HEADER ===== -->
+    <header>
+        <span class="badge">Technical Briefing</span>
+        <h1>WebAssembly vs Electron</h1>
+        <p class="subtitle">The team guide to high-performance modular web architectures. How compiling once to an idealized sandboxed bytecode guarantees desktop-grade speed natively in any browser tab.</p>
+    </header>
+
+    <!-- ===== CORE DEFINITIONS ===== -->
+    <div class="grid-2">
+        <div class="card">
+            <h2>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent-purple)" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                What is WebAssembly?
+            </h2>
+            <p><strong>WebAssembly (Wasm)</strong> is a universal, sandboxed binary format designed to run compiled programming languages (like Rust, C++, and Go) inside web browsers at near-native execution speed.</p>
+            <p>Rather than replacing JavaScript or CSS, Wasm acts as a <strong>computational supercharger</strong>, running heavy mathematical operations, media transcoding, or physics modeling alongside standard JS UI logic.</p>
+        </div>
+        <div class="card cyan">
+            <h2>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent-cyan)" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                How It Fits Our Smart Stack
+            </h2>
+            <p>In our agent dashboards, CSS skews grids and translates paths smoothly via the GPU, which is highly efficient. JS handles web connections and simple UI telemetry routing.</p>
+            <p>For tools like <strong>Smartgen CXO</strong>, where we process video files, decode audio waveforms, or interact with FFmpeg, standard JavaScript is too slow. <strong>This is where we compile C++ media tools directly to WebAssembly to transcode video seamlessly inside the browser.</strong></p>
+        </div>
+    </div>
+
+    <!-- ===== THE SHEET MUSIC ANALOGY CALLOUT ===== -->
+    <div class="analogy-callout">
+        <div class="analogy-graphic">
+            <div class="analogy-bar">
+                <div class="analogy-label">Wasm File</div>
+                <div class="analogy-visual"><div class="analogy-fill" style="width: 15%"></div></div>
+                <div class="stat-value">1.2 MB</div>
+            </div>
+            <div class="analogy-bar">
+                <div class="analogy-label">Intel JIT</div>
+                <div class="analogy-visual"><div class="analogy-fill" style="width: 100%; background: var(--accent-cyan);"></div></div>
+                <div class="stat-value">Instant</div>
+            </div>
+            <div class="analogy-bar">
+                <div class="analogy-label">ARM JIT</div>
+                <div class="analogy-visual"><div class="analogy-fill" style="width: 100%; background: var(--accent-green);"></div></div>
+                <div class="stat-value">Instant</div>
+            </div>
+        </div>
+        <div class="analogy-info">
+            <h3>How Does One File Fit All CPUs?</h3>
+            <p>A WebAssembly file does <strong>not</strong> package separate binaries for Windows, macOS, Linux, and Android. If it did, files would be massive. Instead, think of it as <strong>universal sheet music</strong>:</p>
+            <ul>
+                <li><strong>The `.wasm` file</strong> is the sheet music—it only contains abstract, highly optimized logical instructions.</li>
+                <li><strong>The Web Browser</strong> is the expert musician already installed on the user's specific system (whether an Intel Windows PC or Apple M3 Mac).</li>
+                <li>The browser reads the abstract music and <strong>instantly translates it</strong> to the CPU's native language using its local, built-in compiler.</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- ===== LIVE BENCHMARK SIMULATOR ===== -->
+    <div class="benchmark-section">
+        <div class="benchmark-header">
+            <div class="benchmark-info">
+                <h2>Interactive Engine Benchmark</h2>
+                <p style="margin-bottom: 0;">Simulate running an intensive CPU calculations matrix (like video rendering frames or physics calculations) to see the execution speed difference in real-time.</p>
+            </div>
+            <button class="benchmark-btn" id="runBenchmarkBtn" onclick="runBenchmark()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                Run Benchmark
+            </button>
+        </div>
+
+        <div class="benchmark-visualizer">
+            <!-- JavaScript Bar -->
+            <div class="bench-bar-container">
+                <div class="bench-title-row">
+                    <span class="bench-name">Standard JavaScript</span>
+                    <span class="bench-tag tag-js">Dynamic / JIT</span>
+                </div>
+                <div class="progress-track">
+                    <div class="progress-bar progress-js" id="barJS"></div>
+                </div>
+                <div class="bench-stats">
+                    <span>Status: <strong id="statusJS" style="color: var(--text-secondary);">Idle</strong></span>
+                    <span>Time: <span class="stat-value" id="timeJS">0.00s</span></span>
+                </div>
+            </div>
+
+            <!-- WebAssembly Bar -->
+            <div class="bench-bar-container">
+                <div class="bench-title-row">
+                    <span class="bench-name">WebAssembly (Wasm)</span>
+                    <span class="bench-tag tag-wasm">Static / JIT</span>
+                </div>
+                <div class="progress-track">
+                    <div class="progress-bar progress-wasm" id="barWasm"></div>
+                </div>
+                <div class="bench-stats">
+                    <span>Status: <strong id="statusWasm" style="color: var(--text-secondary);">Idle</strong></span>
+                    <span>Time: <span class="stat-value" id="timeWasm">0.00s</span></span>
+                </div>
+            </div>
+
+            <!-- Native Native Code -->
+            <div class="bench-bar-container">
+                <div class="bench-title-row">
+                    <span class="bench-name">Native C++ / Rust</span>
+                    <span class="bench-tag tag-native">Pre-Compiled</span>
+                </div>
+                <div class="progress-track">
+                    <div class="progress-bar progress-native" id="barNative"></div>
+                </div>
+                <div class="bench-stats">
+                    <span>Status: <strong id="statusNative" style="color: var(--text-secondary);">Idle</strong></span>
+                    <span>Time: <span class="stat-value" id="timeNative">0.00s</span></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== ARCHITECTURE COMPARISON (TABS) ===== -->
+    <div class="tabs-section">
+        <div class="tab-headers">
+            <button class="tab-btn active" onclick="switchTab('vs', this)">Wasm vs Electron</button>
+            <button class="tab-btn" onclick="switchTab('ecosystem', this)">Language Ecosystem</button>
+            <button class="tab-btn" onclick="switchTab('benefits', this)">Why Wasm Wins the Web</button>
+        </div>
+
+        <!-- TAB 1: WASM VS ELECTRON -->
+        <div class="tab-content active" id="tab-vs">
+            <div class="comparison-grid">
+                <div class="comp-card">
+                    <h3>Electron Desktop Wrapper</h3>
+                    <ul>
+                        <li><strong>Host Engine</strong>: Bundles a full 100MB+ Chromium browser and Node.js process inside an installer.</li>
+                        <li><strong>System Integration</strong>: Has root-level access to the local machine files and terminal processes.</li>
+                        <li><strong>Distribution</strong>: Requires building and compiling separate installers for Windows, Mac ARM, Mac Intel, and Linux.</li>
+                        <li><strong>IPC Overhead</strong>: Communicating between the UI (Renderer) and backend (Main process) requires slow data copying (serialization).</li>
+                    </ul>
+                </div>
+                <div class="comp-card highlight">
+                    <h3>WebAssembly (Wasm)</h3>
+                    <ul>
+                        <li><strong>Execution Unit</strong>: A lightweight bytecode file loaded inside the browser's sandbox.</li>
+                        <li><strong>Maximum Portability</strong>: Runs natively in standard browsers (Chrome, Safari) AND inside desktop wraps like Electron.</li>
+                        <li><strong>Instant Compilation</strong>: Universal format compiled dynamically to local machine code by the browser JIT in milliseconds.</li>
+                        <li><strong>Zero Serialization</strong>: Runs directly in the web UI thread, interacting with JavaScript memory instantly.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 2: LANGUAGE ECOSYSTEM -->
+        <div class="tab-content" id="tab-ecosystem">
+            <div class="lang-grid">
+                <div class="lang-card">
+                    <span class="lang-icon">🦀</span>
+                    <div class="lang-name">Rust</div>
+                    <span class="lang-status status-gold">Gold Standard</span>
+                    <div class="lang-desc">No garbage collector. Compiles to tiny, exceptionally fast Wasm files. Perfect for core libraries.</div>
+                </div>
+                <div class="lang-card">
+                    <span class="lang-icon">🔧</span>
+                    <div class="lang-name">C / C++</div>
+                    <span class="lang-status status-gold">Gold Standard</span>
+                    <div class="lang-desc">Ideal for porting huge, historically optimized engines like Photoshop, Unreal, and FFmpeg directly to the web.</div>
+                </div>
+                <div class="lang-card">
+                    <span class="lang-icon">🐦</span>
+                    <div class="lang-name">Dart / Flutter</div>
+                    <span class="lang-status status-gc">WasmGC Supported</span>
+                    <div class="lang-desc">Flutter's modern rendering engine compiles to Wasm, providing buttery-smooth 60fps app animations on the web.</div>
+                </div>
+                <div class="lang-card">
+                    <span class="lang-icon">🐹</span>
+                    <div class="lang-name">Go (TinyGo)</div>
+                    <span class="lang-status status-gc">Supported</span>
+                    <div class="lang-desc">Utilizes TinyGo compilers to strip out background code, running lightweight microservices inside the browser.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 3: WHY WASM WINS -->
+        <div class="tab-content" id="tab-benefits">
+            <div class="comparison-grid">
+                <div class="comp-card">
+                    <h3>Security Sandbox</h3>
+                    <p>Unlike raw compiled native apps, WebAssembly runs in a strict security sandbox. A malicious script cannot access local user documents, keyboard presses, or system ports without explicit web-level permissions.</p>
+                </div>
+                <div class="comp-card">
+                    <h3>Instant Load Times</h3>
+                    <p>Because browser compilers compile bytecode on-the-fly at speeds of up to 100MB/s, Wasm files start running almost instantly. Through streaming compilation, the code is fully translated by the time the last packet downloads.</p>
+                </div>
+                <div class="comp-card">
+                    <h3>No App Store Gatekeepers</h3>
+                    <p>Instead of compiling separate applications, submitting to Mac/Windows app stores, and waiting for approvals, you deploy updates to Wasm instantly by simply replacing a single file on your web hosting platform.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== FOOTER ===== -->
+    <footer>
+        <p>Smartgen Engineering Architecture Group &copy; 2026. Built with modern glassmorphic web parameters.</p>
+    </footer>
+
+</div>
+
+<script>
+    // Tab switching logic
+    function switchTab(tabId, btn) {
+        // Toggle Buttons
+        const buttons = document.querySelectorAll('.tab-btn');
+        buttons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        // Toggle Content
+        const contents = document.querySelectorAll('.tab-content');
+        contents.forEach(c => c.classList.remove('active'));
+        document.getElementById('tab-' + tabId).classList.add('active');
+    }
+
+    // Benchmark simulation logic
+    function runBenchmark() {
+        const btn = document.getElementById('runBenchmarkBtn');
+        btn.disabled = true;
+
+        // Reset elements
+        const elements = {
+            js: { bar: document.getElementById('barJS'), status: document.getElementById('statusJS'), time: document.getElementById('timeJS'), target: 5.42, color: '#eab308' },
+            wasm: { bar: document.getElementById('barWasm'), status: document.getElementById('statusWasm'), time: document.getElementById('timeWasm'), target: 1.21, color: '#8b5cf6' },
+            native: { bar: document.getElementById('barNative'), status: document.getElementById('statusNative'), time: document.getElementById('timeNative'), target: 0.92, color: '#06b6d4' }
+        };
+
+        Object.values(elements).forEach(el => {
+            el.bar.style.width = '0%';
+            el.status.innerText = 'Queued...';
+            el.status.style.color = 'var(--text-muted)';
+            el.time.innerText = '0.00s';
+        });
+
+        // Run parallel simulations to represent real-time racing
+        let completedCount = 0;
+        const checkDone = () => {
+            completedCount++;
+            if (completedCount === 3) {
+                btn.disabled = false;
+            }
+        };
+
+        setTimeout(() => {
+            runSimulator('native', elements.native, checkDone);
+            runSimulator('wasm', elements.wasm, checkDone);
+            runSimulator('js', elements.js, checkDone);
+        }, 200);
+    }
+
+    function runSimulator(type, data, callback) {
+        data.status.innerText = 'Computing...';
+        data.status.style.color = data.color;
+
+        let current = 0.0;
+        const interval = 16; // ~60fps
+        const totalDuration = data.target * 1000;
+        const startTime = Date.now();
+
+        const timer = setInterval(() => {
+            const elapsed = (Date.now() - startTime) / 1000;
+            const percent = Math.min((elapsed / data.target) * 100, 100);
+            
+            data.bar.style.width = percent + '%';
+            data.time.innerText = Math.min(elapsed, data.target).toFixed(2) + 's';
+
+            if (percent >= 100) {
+                clearInterval(timer);
+                data.status.innerText = 'Done!';
+                data.status.style.color = 'var(--accent-green)';
+                if (callback) callback();
+            }
+        }, interval);
+    }
+</script>
+
+</body>
+</html>
