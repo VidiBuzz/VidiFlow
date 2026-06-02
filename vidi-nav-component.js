@@ -32,6 +32,7 @@
                     <a href="${pathPrefix}topmodels.html" class="vidi-nav-link" data-page="topmodels">Top Models</a>
                     <a href="${pathPrefix}directus-extensions.html" class="vidi-nav-link" data-page="directus-extensions">Extensions</a>
                     <a href="${pathPrefix}tariff/tariff-timeline.html" class="vidi-nav-link" data-page="tariff-timeline">Tariff Map</a>
+                    <a href="${pathPrefix}ClaudeNoMore.html" class="vidi-nav-link" data-page="claudenomore">Pricing</a>
                 </div>
                 
                 <div class="vidi-nav-actions">
@@ -80,7 +81,8 @@
                 (page === 'open-apps' && path.includes('open-apps')) ||
                 (page === 'visualai-tools' && path.includes('visualai-tools')) ||
                 (page === 'topmodels' && path.includes('topmodels')) ||
-                (page === 'directus-extensions' && path.includes('directus-extensions'))
+                (page === 'directus-extensions' && path.includes('directus-extensions')) ||
+                (page === 'claudenomore' && path.includes('ClaudeNoMore'))
             ) {
                 link.classList.add('active');
             }
