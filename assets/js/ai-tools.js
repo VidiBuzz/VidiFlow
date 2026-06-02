@@ -40,12 +40,12 @@ const TOOLS_DATA = [
 
     // — OpenAI —
     {
-        id: 2, category: "vlm", name: "GPT-5.4", provider: "OpenAI",
-        params: "Undisclosed", context_window: "128K", vision_capable: true,
+        id: 2, category: "vlm", name: "GPT-5.5", provider: "OpenAI",
+        params: "Undisclosed", context_window: "2M", vision_capable: true,
         pricing: "ChatGPT / API",
         open_source: false, license: "Proprietary",
         benchmark_score: 95.5,
-        description: "OpenAI's current flagship (Apr 2026). First general-purpose model with native computer-use capabilities. Includes GPT-5.4 mini and nano variants for speed/cost optimizations.",
+        description: "OpenAI's current flagship (Jun 2026). Native multimodal with 2M context, computer-use capabilities, and PhD-level reasoning. Includes GPT-5.5 mini and nano variants for speed/cost optimizations.",
         strengths: ["Native computer use", "Multimodal", "Agentic execution"],
         url: "https://openai.com",
         badge: "LATEST"
@@ -126,7 +126,7 @@ const TOOLS_DATA = [
     // — Moonshot AI —
     {
         id: 126, category: "vlm", name: "Kimi K2.6", provider: "Moonshot AI",
-        params: "1T total / 32B active (MoE)", context_window: "262K", vision_capable: true,
+        params: "1T total / 32B active (MoE)", context_window: "2M", vision_capable: true,
         pricing: "$0.60/1M input, $2.80/1M output",
         open_source: true, license: "Modified MIT",
         benchmark_score: 92.0,
@@ -146,6 +146,32 @@ const TOOLS_DATA = [
         description: "xAI's latest Grok model with strong real-time web access, deep reasoning, and frontier-level multimodal abilities. Positioned for enterprise and research use cases.",
         strengths: ["Real-time web", "Deep reasoning", "2M context"],
         url: "https://x.ai"
+    },
+
+    // — MiniMax —
+    {
+        id: 200, category: "vlm", name: "MiniMax M3.0", provider: "MiniMax",
+        params: "Undisclosed MoE", context_window: "1M", vision_capable: true,
+        pricing: "$0.30/1M input, $1.20/1M output",
+        open_source: false, license: "Proprietary",
+        benchmark_score: 90.0,
+        description: "MiniMax's frontier vision-language model (Jun 2026). Native multimodal with 1M context, strong agentic tool use, and competitive pricing. Supports image, video, and document understanding.",
+        strengths: ["Vision capable", "1M context", "Agentic tool use", "Cost effective"],
+        url: "https://minimax.io",
+        badge: "LATEST"
+    },
+
+    // — Xiaomi MiMo —
+    {
+        id: 201, category: "vlm", name: "MiMo 2.5 Omni", provider: "Xiaomi",
+        params: "Undisclosed MoE", context_window: "512K", vision_capable: true,
+        pricing: "$0.40/1M input, $2.00/1M output",
+        open_source: true, license: "Modified Apache 2.0",
+        benchmark_score: 89.0,
+        description: "Xiaomi's flagship omni-modal model — native vision, audio, and text understanding in a single architecture. Open-weight release with strong GUI perception and real-time visual reasoning. The practical choice for cost-sensitive multimodal deployments.",
+        strengths: ["Omni-modal", "Open weights", "GUI perception", "Real-time visual"],
+        url: "https://github.com/XiaomiMiMo",
+        badge: "OPEN SOURCE"
     },
 
     // — Meta —
