@@ -31,7 +31,6 @@
                     <a href="${pathPrefix}visualai-tools.html" class="vidi-nav-link" data-page="visualai-tools">AI Tools</a>
                     <a href="${pathPrefix}topmodels.html" class="vidi-nav-link" data-page="topmodels">Top Models</a>
                     <a href="${pathPrefix}directus-extensions.html" class="vidi-nav-link" data-page="directus-extensions">Extensions</a>
-                    <a href="${pathPrefix}tariff/tariff-timeline.html" class="vidi-nav-link" data-page="tariff-timeline">Tariff Map</a>
                     <a href="${pathPrefix}ClaudeNoMore.html" class="vidi-nav-link" data-page="claudenomore">Pricing</a>
                 </div>
                 
@@ -76,7 +75,6 @@
         links.forEach(link => {
             const page = link.getAttribute('data-page');
             if (
-                (page === 'tariff-timeline' && path.includes('tariff-timeline')) ||
                 (page === 'masterlist' && path.includes('vidismart.masterlist')) ||
                 (page === 'open-apps' && path.includes('open-apps')) ||
                 (page === 'visualai-tools' && path.includes('visualai-tools')) ||
