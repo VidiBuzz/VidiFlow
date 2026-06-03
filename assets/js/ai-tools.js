@@ -936,6 +936,16 @@ function closeModal() {
     document.getElementById("toolModal").classList.remove("visible");
 }
 
+function quickJump(cat) {
+    const tab = document.querySelector(`.tab[data-category="${cat}"]`);
+    if (!tab) return;
+    tab.click();
+    setTimeout(() => {
+        document.querySelector('.category-tabs-section')
+            ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 60);
+}
+
 function updatePipelineStatus() {
     document.getElementById("totalTools").textContent = TOOLS_DATA.length;
 
