@@ -211,6 +211,77 @@
                 display: none;
             }
         }
+
+        /* ── Local-Run Badge ── */
+        .local-chip-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 3px 8px 3px 5px;
+            background: rgba(74, 222, 128, 0.08);
+            border: 1px solid rgba(74, 222, 128, 0.38);
+            border-radius: 8px;
+            color: #4ade80;
+            font-size: 0.62rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            vertical-align: middle;
+            margin-left: 7px;
+            position: relative;
+            cursor: default;
+            animation: chipGlow 3s ease-in-out infinite;
+        }
+
+        .local-chip-badge::after {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border-radius: 11px;
+            border: 1px solid rgba(74, 222, 128, 0.5);
+            animation: chipRingExpand 3s ease-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes chipGlow {
+            0%, 100% { box-shadow: 0 0 6px rgba(74, 222, 128, 0.12); }
+            50%       { box-shadow: 0 0 16px rgba(74, 222, 128, 0.38); }
+        }
+
+        @keyframes chipRingExpand {
+            0%   { transform: scale(1);   opacity: 0.7; border-color: rgba(74, 222, 128, 0.5); }
+            80%  { transform: scale(1.35); opacity: 0;  border-color: rgba(74, 222, 128, 0); }
+            100% { transform: scale(1.35); opacity: 0;  border-color: rgba(74, 222, 128, 0); }
+        }
+
+        .local-chip-icon {
+            width: 12px;
+            height: 12px;
+            flex-shrink: 0;
+            animation: chipBlink 3s ease-in-out infinite;
+        }
+
+        @keyframes chipBlink {
+            0%, 100% { filter: drop-shadow(0 0 2px rgba(74, 222, 128, 0.5)); }
+            50%       { filter: drop-shadow(0 0 5px rgba(74, 222, 128, 1)); }
+        }
+
+        .local-vram {
+            opacity: 0.75;
+            font-weight: 600;
+            font-size: 0.58rem;
+        }
+
+        /* Highlight vision-focused rows */
+        .row-vision-highlight {
+            background: rgba(34, 211, 238, 0.025) !important;
+        }
+
+        .badge-new {
+            background: rgba(249, 115, 22, 0.15);
+            color: #fb923c;
+            border: 1px solid rgba(249, 115, 22, 0.3);
+        }
     </style>
 </head>
 
@@ -262,9 +333,8 @@
             <div class="glass-panel p-6 relative overflow-hidden group">
                 <div class="absolute -right-4 -top-4 w-24 h-24 bg-cyan-500/10 blur-3xl rounded-full"></div>
                 <div class="text-3xl mb-4">👁️</div>
-                <h3 class="text-lg font-bold text-white mb-2">Vision Handoff</h3>
-                <p class="text-slate-400 text-sm leading-relaxed">GLM-5V Turbo and MiMo 2.5 provide high-fidelity UI
-                    verification without the Claude-tier tax.</p>
+                <h3 class="text-lg font-bold text-white mb-2">Vision Stack</h3>
+                <p class="text-slate-400 text-sm leading-relaxed"><strong class="text-cyan-300">MiniMax M3</strong> for heavy Omni tasks. <strong class="text-cyan-300">MiMo 2.5 Omni</strong> runs locally for UI verification at near-zero cost. <strong class="text-cyan-300">MiMo 2.5 Pro</strong> steps up when precision matters.</p>
             </div>
             <div class="glass-panel p-6 relative overflow-hidden group">
                 <div class="absolute -right-4 -top-4 w-24 h-24 bg-amber-500/10 blur-3xl rounded-full"></div>
@@ -304,20 +374,20 @@
                                 <span class="badge badge-vision">Omni Vision/Audio</span>
                             </td>
                             <td class="p-6 font-medium text-slate-300">1.0M CTX</td>
-                            <td class="p-6 price-tag text-xs">$1.00 / $3.50</td>
+                            <td class="p-6 price-tag text-xs">$0.30 / $1.20</td>
                             <td class="p-6 text-slate-400 text-sm">Latest text+vision+audio Omni. High-throughput general agent.</td>
                         </tr>
                         <!-- DeepSeek 4 Pro -->
                         <tr class="model-row">
                             <td class="p-6">
-                                <span class="block text-white font-bold text-lg">DeepSeek 4 Pro</span>
+                                <span class="block text-white font-bold text-lg">DeepSeek V4 Pro</span>
                                 <span class="text-xs text-blue-400">Coding Superagent — Reasoning Specialist</span>
                             </td>
                             <td class="p-6 text-center">
                                 <span class="badge badge-text">Text</span>
                             </td>
                             <td class="p-6 font-medium text-slate-300">1.0M CTX</td>
-                            <td class="p-6 price-tag text-xs">$0.50 / $2.00</td>
+                            <td class="p-6 price-tag text-xs">$0.44 / $0.87</td>
                             <td class="p-6 text-slate-400 text-sm">Frontier code & recursive reasoning. Direct rival to Qwen 3.7 Max.</td>
                         </tr>
                         <!-- MiniMax 2.5 Pro -->
@@ -343,21 +413,79 @@
                                 <span class="badge badge-text">Text</span>
                             </td>
                             <td class="p-6 font-medium text-slate-300">256k CTX</td>
-                            <td class="p-6 price-tag text-xs">$0.60 / $2.80</td>
+                            <td class="p-6 price-tag text-xs">$0.68 / $3.42</td>
                             <td class="p-6 text-slate-400 text-sm">Long-context log analysis & code planning.</td>
                         </tr>
-                        <!-- Qwen 3.6 -->
+                        <!-- Qwen 3.7 Max — NEW -->
+                        <tr class="model-row">
+                            <td class="p-6">
+                                <span class="block text-white font-bold text-lg">
+                                    Qwen 3.7 Max
+                                    <span class="badge badge-new" style="font-size:0.6rem;padding:2px 7px;border-radius:6px;vertical-align:middle;margin-left:6px;">NEW</span>
+                                </span>
+                                <span class="text-xs text-orange-400">Coding Superagent — Frontier Reasoning</span>
+                            </td>
+                            <td class="p-6 text-center">
+                                <span class="badge badge-text">Text</span>
+                            </td>
+                            <td class="p-6 font-medium text-slate-300">128k CTX</td>
+                            <td class="p-6 price-tag text-xs">$1.25 / $3.75</td>
+                            <td class="p-6 text-slate-400 text-sm">Alibaba's frontier model. QwenWebBench ELO 1558. Dominates programming benchmarks & agentic tasks. Rival to DeepSeek V4 Pro.</td>
+                        </tr>
+                        <!-- Qwen 3.7 Plus — NEW -->
+                        <tr class="model-row">
+                            <td class="p-6">
+                                <span class="block text-white font-bold text-lg">
+                                    Qwen 3.7 Plus
+                                    <span class="badge badge-new" style="font-size:0.6rem;padding:2px 7px;border-radius:6px;vertical-align:middle;margin-left:6px;">NEW</span>
+                                </span>
+                                <span class="text-xs text-amber-400">Vision-Capable — Agentic Intelligence</span>
+                            </td>
+                            <td class="p-6 text-center">
+                                <span class="badge badge-instinct">Vision + Text</span>
+                            </td>
+                            <td class="p-6 font-medium text-slate-300">1.0M CTX</td>
+                            <td class="p-6 price-tag text-xs">$0.40 / $1.60</td>
+                            <td class="p-6 text-slate-400 text-sm">Latest Qwen Plus tier. Vision-capable with 1M context. Strong agentic coding and spatial layout reasoning. API only.</td>
+                        </tr>
+                        <!-- Qwen 3.6 Plus — API -->
                         <tr class="model-row">
                             <td class="p-6">
                                 <span class="block text-white font-bold text-lg">Qwen 3.6 Plus</span>
-                                <span class="text-xs text-amber-400">Agentic Native Intelligence</span>
+                                <span class="text-xs text-amber-400">Stable API — Proven Workhorse</span>
                             </td>
                             <td class="p-6 text-center">
-                                <span class="badge badge-instinct">Spatial Instinct</span>
+                                <span class="badge badge-instinct">Vision + Text</span>
                             </td>
                             <td class="p-6 font-medium text-slate-300">1.0M CTX</td>
                             <td class="p-6 price-tag text-xs">$0.32 / $1.95</td>
-                            <td class="p-6 text-slate-400 text-sm">High-tier "Vibe Coding" & architectural logic.</td>
+                            <td class="p-6 text-slate-400 text-sm">235B MoE (22B active). Proven production model. Use where Qwen 3.7 isn't available yet. GA on Alibaba Cloud.</td>
+                        </tr>
+                        <!-- Qwen 3.6 27B — LOCAL -->
+                        <tr class="model-row">
+                            <td class="p-6">
+                                <span class="block text-white font-bold text-lg">
+                                    Qwen 3.6 27B
+                                    <span class="local-chip-badge" title="Runs locally — ~17 GB VRAM required (Q4_K_M)">
+                                        <svg class="local-chip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                            <rect x="7" y="7" width="10" height="10" rx="1.5"/>
+                                            <line x1="10" y1="7" x2="10" y2="4"/><line x1="14" y1="7" x2="14" y2="4"/>
+                                            <line x1="10" y1="17" x2="10" y2="20"/><line x1="14" y1="17" x2="14" y2="20"/>
+                                            <line x1="7" y1="10" x2="4" y2="10"/><line x1="7" y1="14" x2="4" y2="14"/>
+                                            <line x1="17" y1="10" x2="20" y2="10"/><line x1="17" y1="14" x2="20" y2="14"/>
+                                            <rect x="10" y="10" width="4" height="4" rx="0.75" fill="currentColor" opacity="0.5"/>
+                                        </svg>
+                                        Local <span class="local-vram">~17 GB</span>
+                                    </span>
+                                </span>
+                                <span class="text-xs text-green-400">Running Locally — Ollama / llama.cpp</span>
+                            </td>
+                            <td class="p-6 text-center">
+                                <span class="badge badge-free">Open Weights</span>
+                            </td>
+                            <td class="p-6 font-medium text-slate-300">128k CTX</td>
+                            <td class="p-6 price-tag text-xs">Free (self-hosted)</td>
+                            <td class="p-6 text-slate-400 text-sm">Dense 27B local model. Q4_K_M fits comfortably on a single RTX 4090 (24 GB). Great for private offline coding and reasoning tasks.</td>
                         </tr>
                         <!-- GLM-5.1 -->
                         <tr class="model-row">
@@ -369,21 +497,47 @@
                                 <span class="badge badge-text">Text</span>
                             </td>
                             <td class="p-6 font-medium text-slate-300">200k CTX</td>
-                            <td class="p-6 price-tag text-xs">$1.40 / $4.40</td>
+                            <td class="p-6 price-tag text-xs">$0.98 / $3.08</td>
                             <td class="p-6 text-slate-400 text-sm">Complex recursive debugging & tool use.</td>
                         </tr>
-                        <!-- MiMo-V2 -->
-                        <tr class="model-row">
+                        <!-- MiMo 2.5 Omni — LOCAL -->
+                        <tr class="model-row row-vision-highlight">
                             <td class="p-6">
-                                <span class="block text-white font-bold text-lg">MiMo 2.5</span>
-                                <span class="text-xs text-cyan-400">Omni-modal Vision</span>
+                                <span class="block text-white font-bold text-lg">
+                                    MiMo 2.5 Omni
+                                    <span class="local-chip-badge" title="Runs locally — ~8 GB VRAM required (Q4)">
+                                        <svg class="local-chip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                            <rect x="7" y="7" width="10" height="10" rx="1.5"/>
+                                            <line x1="10" y1="7" x2="10" y2="4"/><line x1="14" y1="7" x2="14" y2="4"/>
+                                            <line x1="10" y1="17" x2="10" y2="20"/><line x1="14" y1="17" x2="14" y2="20"/>
+                                            <line x1="7" y1="10" x2="4" y2="10"/><line x1="7" y1="14" x2="4" y2="14"/>
+                                            <line x1="17" y1="10" x2="20" y2="10"/><line x1="17" y1="14" x2="20" y2="14"/>
+                                            <rect x="10" y="10" width="4" height="4" rx="0.75" fill="currentColor" opacity="0.5"/>
+                                        </svg>
+                                        Local <span class="local-vram">~8 GB</span>
+                                    </span>
+                                </span>
+                                <span class="text-xs text-cyan-400">Open-Weight Omni — Text + Vision + Audio</span>
+                            </td>
+                            <td class="p-6 text-center">
+                                <span class="badge badge-vision">Omni Vision</span>
+                            </td>
+                            <td class="p-6 font-medium text-slate-300">512k CTX</td>
+                            <td class="p-6 price-tag text-xs">$0.14 / $0.28</td>
+                            <td class="p-6 text-slate-400 text-sm">Open weights. Native vision, audio & text in one model. GUI perception, real-time visual reasoning. Run locally on a single GPU.</td>
+                        </tr>
+                        <!-- MiMo 2.5 Pro — Vision -->
+                        <tr class="model-row row-vision-highlight">
+                            <td class="p-6">
+                                <span class="block text-white font-bold text-lg">MiMo 2.5 Pro</span>
+                                <span class="text-xs text-cyan-400">Pro Vision Tier — Higher Precision</span>
                             </td>
                             <td class="p-6 text-center">
                                 <span class="badge badge-vision">Native Vision</span>
                             </td>
-                            <td class="p-6 font-medium text-slate-300">262k CTX</td>
-                            <td class="p-6 price-tag text-xs">$0.40 / $2.00</td>
-                            <td class="p-6 text-slate-400 text-sm">Real-time perception for GUI interaction.</td>
+                            <td class="p-6 font-medium text-slate-300">512k CTX</td>
+                            <td class="p-6 price-tag text-xs">$0.44 / $0.87</td>
+                            <td class="p-6 text-slate-400 text-sm">Pro tier with enhanced vision capabilities. Steps up from Omni when layout precision or complex diagram analysis is needed.</td>
                         </tr>
                         <!-- GLM-5V Turbo -->
                         <tr class="model-row">
@@ -408,7 +562,7 @@
                                 <span class="badge badge-vision opacity-50">Vision</span>
                             </td>
                             <td class="p-6 font-medium text-slate-500">1.0M CTX</td>
-                            <td class="p-6 text-red-400 text-xs font-mono">$15.00 / $75.00</td>
+                            <td class="p-6 text-red-400 text-xs font-mono">$5.00 / $25.00</td>
                             <td class="p-6 text-slate-500 text-sm">Tie-breaker for edge cases. Highest reasoning.</td>
                         </tr>
                         <tr class="model-row bg-white/5">
@@ -444,8 +598,8 @@
                                 <span class="badge badge-vision">Omni Vision/Audio</span>
                             </td>
                             <td class="p-6 font-medium text-slate-300">1.0M CTX</td>
-                            <td class="p-6 price-tag text-xs">$0.075 / $0.30</td>
-                            <td class="p-6 text-slate-400 text-sm">Ultra-fast multimodal inference. Best cost/perf for high-throughput agentic workflows.</td>
+                            <td class="p-6 price-tag text-xs">$1.50 / $9.00</td>
+                            <td class="p-6 text-slate-400 text-sm">Speed-optimized multimodal. Strong cost/perf for agentic workflows at scale.</td>
                         </tr>
                     </tbody>
                 </table>
@@ -498,8 +652,7 @@
                             2</div>
                         <div>
                             <p class="text-slate-200 font-semibold mb-1">UI / Component Build</p>
-                            <p class="text-sm text-slate-400">Use <strong>Qwen 3.6 Plus</strong>. Leverage its spatial
-                                instincts to build responsive CSS layouts.</p>
+                            <p class="text-sm text-slate-400">Use <strong>Qwen 3.7 Plus</strong> for vision-informed layouts. Fall back to <strong>Qwen 3.6 Plus</strong> for stable production pipelines. Run <strong>Qwen 3.6 27B</strong> locally for offline/private work.</p>
                         </div>
                     </div>
                     <div class="flex gap-4">
@@ -508,8 +661,7 @@
                             3</div>
                         <div>
                             <p class="text-slate-200 font-semibold mb-1">Visual QA (Screenshot Review)</p>
-                            <p class="text-sm text-slate-400">Send final screenshot to <strong>GLM-5V Turbo</strong> for
-                                verification. Iterate only on visual failure.</p>
+                            <p class="text-sm text-slate-400">Send final screenshot to <strong>MiMo 2.5 Omni</strong> (local, free) for quick passes. Escalate to <strong>MiMo 2.5 Pro</strong> or <strong>MiniMax M3</strong> for complex layout verification.</p>
                         </div>
                     </div>
                 </div>
@@ -519,7 +671,7 @@
         <footer class="mt-20 text-center">
             <div
                 class="inline-block px-4 py-2 bg-white/5 rounded-full border border-white/10 text-[10px] text-slate-500 uppercase tracking-widest">
-                Verification Hub | Monday, April 13, 2026
+                Verification Hub | June 2026 Edition &nbsp;·&nbsp; Prices via OpenRouter API
             </div>
         </footer>
     </div>

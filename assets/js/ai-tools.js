@@ -6,7 +6,7 @@ const TOOLS_DATA = [
 
     // — Anthropic —
     {
-        id: 1, category: "vlm", name: "Claude Opus 4.7", provider: "Anthropic",
+        id: 1, category: "vlm", name: "Claude Opus 4.8", provider: "Anthropic",
         params: "Undisclosed", context_window: "1M", vision_capable: true,
         pricing: "$5/1M input, $25/1M output",
         open_source: false, license: "Proprietary",
@@ -210,15 +210,15 @@ const TOOLS_DATA = [
         url: "https://chat.qwen.ai"
     },
     {
-        id: 129, category: "vlm", name: "Qwen3.6 Max (Preview)", provider: "Alibaba / Qwen",
+        id: 129, category: "vlm", name: "Qwen 3.7 Max", provider: "Alibaba / Qwen",
         params: "Undisclosed MoE", context_window: "128K", vision_capable: false,
-        pricing: "API preview (coming to Alibaba Cloud Studio)",
-        open_source: false, license: "Proprietary (preview)",
-        benchmark_score: 91.5,
-        description: "Qwen's frontier frontier model — beats Qwen3.6 Plus on raw reasoning, agentic tasks, and programming benchmarks. QwenWebBench ELO of 1558. No vision yet, 32K max output. Use for the hardest coding and reasoning workloads where Plus isn't enough.",
-        strengths: ["Programming benchmarks leader", "Agentic tasks", "Hard reasoning"],
+        pricing: "API via Alibaba Cloud Studio",
+        open_source: false, license: "Proprietary",
+        benchmark_score: 92.5,
+        description: "Qwen's frontier model — beats Qwen 3.6 Plus on raw reasoning, agentic tasks, and programming benchmarks. QwenWebBench ELO of 1558. No vision yet, 32K max output. The go-to for the hardest coding and reasoning workloads in the Qwen family.",
+        strengths: ["Programming benchmarks leader", "Agentic tasks", "Hard reasoning", "Code Arena top-5"],
         url: "https://chat.qwen.ai",
-        badge: "PREVIEW"
+        badge: "LATEST"
     },
 
 
@@ -729,6 +729,9 @@ function updateCounts() {
     document.getElementById("countAudio").textContent = counts.audio;
     document.getElementById("countWorkflow").textContent = counts.workflow;
     document.getElementById("countGPU").textContent = counts.gpu;
+
+    const heroCount = document.getElementById("heroToolCount");
+    if (heroCount) heroCount.textContent = TOOLS_DATA.length + "+";
 }
 
 function renderTools() {
@@ -765,7 +768,7 @@ function renderTools() {
             : `<span class="tool-card-badge ${cat.badgeClass}">${cat.label}</span>`;
 
         return `
-            <div class="tool-card" data-id="${tool.id}">
+            <div class="tool-card" data-id="${tool.id}" data-cat="${tool.category}">
                 <div class="tool-card-screenshot">
                     <div class="provider-icon-wrap">
                         ${iconContent}
