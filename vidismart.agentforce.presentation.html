@@ -474,6 +474,233 @@
             color: var(--text-muted);
         }
 
+        /* Enhanced Large Titles above Cards */
+        .phase-large-title {
+            font-size: clamp(2rem, 5vw, 3.8rem);
+            font-weight: 800;
+            line-height: 1.15;
+            letter-spacing: -0.03em;
+            margin-bottom: 25px;
+            opacity: 0;
+            transform: translateY(30px);
+            background: linear-gradient(135deg, #ffffff 0%, rgba(255,255,255,0.7) 50%, rgba(255,255,255,0.3) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* SVG Glow/Pulse Animations */
+        .animated-svg-icon {
+            width: 32px;
+            height: 32px;
+            stroke-width: 2;
+            stroke: var(--secondary);
+            fill: none;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            filter: drop-shadow(0 0 8px var(--secondary-glow));
+        }
+
+        .animated-svg-icon.primary {
+            stroke: var(--primary);
+            filter: drop-shadow(0 0 8px var(--primary-glow));
+        }
+        
+        .animated-svg-icon.accent {
+            stroke: var(--accent);
+            filter: drop-shadow(0 0 8px var(--accent-glow));
+        }
+
+        .animated-svg-icon path {
+            stroke-dasharray: 100;
+            stroke-dashoffset: 100;
+            animation: drawLine 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes drawLine {
+            to {
+                stroke-dashoffset: 0;
+            }
+        }
+
+        /* Interactive Decision Tree Container */
+        .decision-tree-container {
+            background: rgba(10, 10, 20, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 32px;
+            padding: 40px;
+            margin-top: 40px;
+            backdrop-filter: blur(20px);
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+            position: relative;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.6);
+        }
+
+        .tree-progress {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .tree-progress::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.05);
+            z-index: 1;
+            transform: translateY(-50%);
+        }
+
+        .tree-step-indicator {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--darker);
+            border: 2px solid rgba(255,255,255,0.1);
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            font-weight: 700;
+            z-index: 2;
+            transition: all 0.3s ease;
+        }
+
+        .tree-step-indicator.active {
+            border-color: var(--primary);
+            color: white;
+            background: var(--primary);
+            box-shadow: 0 0 15px var(--primary-glow);
+        }
+
+        .tree-step-indicator.completed {
+            border-color: var(--green);
+            color: white;
+            background: var(--green);
+        }
+
+        .question-card {
+            display: none;
+            animation: fadeIn 0.4s ease-out forwards;
+        }
+
+        .question-card.active {
+            display: block;
+        }
+
+        .question-text {
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin-bottom: 25px;
+            color: white;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+        }
+
+        .tree-options {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+
+        .tree-option-btn {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            font-size: 1.1rem;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .tree-option-btn:hover {
+            background: rgba(139, 92, 246, 0.08);
+            border-color: var(--primary);
+            transform: translateX(5px);
+        }
+
+        .tree-option-bullet {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 2px solid rgba(255,255,255,0.2);
+            display: inline-block;
+            flex-shrink: 0;
+        }
+
+        .tree-option-btn:hover .tree-option-bullet {
+            border-color: var(--primary);
+            background: var(--primary-glow);
+        }
+
+        .solution-card {
+            display: none;
+            text-align: center;
+            animation: scaleIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+
+        .solution-card.active {
+            display: block;
+        }
+
+        .solution-title {
+            font-size: 2.2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--green) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 15px;
+        }
+
+        .solution-desc {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .solution-badge-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 35px;
+        }
+
+        .sol-badge {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 12px;
+            padding: 15px;
+            font-size: 0.9rem;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes scaleIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
         @media (max-width: 768px) {
             .section { padding: 40px 20px; }
             .nav-dots { right: 15px; }
@@ -519,11 +746,14 @@
     <section class="section" id="section-1">
         <div class="content-box">
             <div class="phase-badge phase1">🟢 Phase 1: Lead Capture → CRM Automation</div>
+            <h2 class="phase-large-title">Instant funnel ingestion.<br>No customer left behind.</h2>
 
             <div class="agents-grid">
                 <div class="agent-card">
                     <div class="agent-header">
-                        <div class="agent-icon">🤖</div>
+                        <div class="agent-icon">
+                            <svg class="animated-svg-icon" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2zM22 6l-10 7L2 6"/></svg>
+                        </div>
                         <div>
                             <div class="agent-number">AGENT 1</div>
                             <div class="agent-name">Lead Processor</div>
@@ -541,7 +771,9 @@
 
                 <div class="agent-card">
                     <div class="agent-header">
-                        <div class="agent-icon">🔔</div>
+                        <div class="agent-icon">
+                            <svg class="animated-svg-icon primary" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                        </div>
                         <div>
                             <div class="agent-number">AGENT 2</div>
                             <div class="agent-name">Notification Bot</div>
@@ -557,7 +789,9 @@
 
                 <div class="agent-card">
                     <div class="agent-header">
-                        <div class="agent-icon">🎯</div>
+                        <div class="agent-icon">
+                            <svg class="animated-svg-icon accent" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 2v20M2 12h20"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+                        </div>
                         <div>
                             <div class="agent-number">AGENT 3</div>
                             <div class="agent-name">Lead Qualifier</div>
@@ -579,11 +813,14 @@
     <section class="section" id="section-2">
         <div class="content-box">
             <div class="phase-badge phase2">🔵 Phase 2: Follow-up Automation</div>
+            <h2 class="phase-large-title">Hyper-personalized follow-up cycles<br>running 24/7.</h2>
 
             <div class="agents-grid">
                 <div class="agent-card">
                     <div class="agent-header">
-                        <div class="agent-icon">✉️</div>
+                        <div class="agent-icon">
+                            <svg class="animated-svg-icon primary" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2zM2 6l10 7 10-7"/></svg>
+                        </div>
                         <div>
                             <div class="agent-number">AGENT 4</div>
                             <div class="agent-name">Email Sequence</div>
@@ -600,7 +837,9 @@ Day <span class="number">7</span>: Special offer</div>
 
                 <div class="agent-card">
                     <div class="agent-header">
-                        <div class="agent-icon">📅</div>
+                        <div class="agent-icon">
+                            <svg class="animated-svg-icon" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                        </div>
                         <div>
                             <div class="agent-number">AGENT 5</div>
                             <div class="agent-name">Smart Scheduler</div>
@@ -622,11 +861,14 @@ Day <span class="number">7</span>: Special offer</div>
     <section class="section" id="section-3">
         <div class="content-box">
             <div class="phase-badge phase3">🟠 Phase 3: Content Multiplication</div>
+            <h2 class="phase-large-title">One video source.<br>Multiplied into 30+ assets.</h2>
 
             <div class="agents-grid">
                 <div class="agent-card">
                     <div class="agent-header">
-                        <div class="agent-icon">🎬</div>
+                        <div class="agent-icon">
+                            <svg class="animated-svg-icon accent" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"/><line x1="7" y1="2" x2="7" y2="22"/><line x1="17" y1="2" x2="17" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="2" y1="7" x2="7" y2="7"/><line x1="2" y1="17" x2="7" y2="17"/><line x1="17" y1="17" x2="22" y2="17"/><line x1="17" y1="7" x2="22" y2="7"/></svg>
+                        </div>
                         <div>
                             <div class="agent-number">AGENT 6</div>
                             <div class="agent-name">Video Analyzer</div>
@@ -643,7 +885,9 @@ Day <span class="number">7</span>: Special offer</div>
 
                 <div class="agent-card">
                     <div class="agent-header">
-                        <div class="agent-icon">📢</div>
+                        <div class="agent-icon">
+                            <svg class="animated-svg-icon primary" viewBox="0 0 24 24"><path d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+                        </div>
                         <div>
                             <div class="agent-number">AGENT 7</div>
                             <div class="agent-name">Smart Channel Bot</div>
@@ -665,11 +909,14 @@ Day <span class="number">7</span>: Special offer</div>
     <section class="section" id="section-4">
         <div class="content-box">
             <div class="phase-badge phase4">🔴 Phase 4: Revenue Acceleration</div>
+            <h2 class="phase-large-title">Predictive usage intelligence<br>that unlocks upgrades.</h2>
 
             <div class="agents-grid">
                 <div class="agent-card">
                     <div class="agent-header">
-                        <div class="agent-icon">💰</div>
+                        <div class="agent-icon">
+                            <svg class="animated-svg-icon" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                        </div>
                         <div>
                             <div class="agent-number">AGENT 8</div>
                             <div class="agent-name">Upsell Detective</div>
@@ -686,7 +933,9 @@ Day <span class="number">7</span>: Special offer</div>
 
                 <div class="agent-card">
                     <div class="agent-header">
-                        <div class="agent-icon">🛡️</div>
+                        <div class="agent-icon">
+                            <svg class="animated-svg-icon accent" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                        </div>
                         <div>
                             <div class="agent-number">AGENT 9</div>
                             <div class="agent-name">Churn Preventer</div>
@@ -782,31 +1031,128 @@ Day <span class="number">7</span>: Special offer</div>
                     <div class="mcp-name">n8n</div>
                     <div class="mcp-status pending">
                         <span class="status-dot pending"></span> Pending
+                    </div>            <!-- Interactive 7-Question Decision Tree -->
+            <div class="decision-tree-container" id="decision-tree">
+                <div class="section-header" style="margin-bottom: 30px;">
+                    <h3 class="text-2xl font-bold text-white">AI Agent Stack Decision Flow</h3>
+                    <p style="color: var(--text-muted); font-size: 0.95rem;">Answer 7 quick operational questions to find your optimal agent architecture</p>
+                </div>
+
+                <div class="tree-progress">
+                    <div class="tree-step-indicator active" data-step="1">1</div>
+                    <div class="tree-step-indicator" data-step="2">2</div>
+                    <div class="tree-step-indicator" data-step="3">3</div>
+                    <div class="tree-step-indicator" data-step="4">4</div>
+                    <div class="tree-step-indicator" data-step="5">5</div>
+                    <div class="tree-step-indicator" data-step="6">6</div>
+                    <div class="tree-step-indicator" data-step="7">7</div>
+                </div>
+
+                <!-- Question Cards -->
+                <!-- Q1 -->
+                <div class="question-card active" data-q="1">
+                    <h4 class="question-text">1. What is your primary operational bottleneck?</h4>
+                    <div class="tree-options">
+                        <button class="tree-option-btn" onclick="nextQuestion(1, 'video')">
+                            <span class="tree-option-bullet"></span> Video &amp; Social Content Production
+                        </button>
+                        <button class="tree-option-btn" onclick="nextQuestion(1, 'crm')">
+                            <span class="tree-option-bullet"></span> Lead Response &amp; CRM Ingestion
+                        </button>
+                        <button class="tree-option-btn" onclick="nextQuestion(1, 'retention')">
+                            <span class="tree-option-bullet"></span> Customer Churn &amp; Expansion Sales
+                        </button>
                     </div>
                 </div>
-            </div>
 
-            <div class="cta-box">
-                <h3>What Agent Should We Build First?</h3>
-                <p style="color: var(--text-muted);">Choose your automation priority</p>
+                <!-- Q2 -->
+                <div class="question-card" data-q="2">
+                    <h4 class="question-text">2. Do you need public-facing AI human avatars (Virtual Presenters)?</h4>
+                    <div class="tree-options">
+                        <button class="tree-option-btn" onclick="nextQuestion(2, 'yes')">
+                            <span class="tree-option-bullet"></span> Yes, we need front-facing video/voice twins (VidiTwin)
+                        </button>
+                        <button class="tree-option-btn" onclick="nextQuestion(2, 'no')">
+                            <span class="tree-option-bullet"></span> No, strictly backend automation and data routing
+                        </button>
+                    </div>
+                </div>
 
-                <div class="cta-options">
-                    <div class="cta-option">
-                        <div class="cta-option-number">1</div>
-                        <div class="cta-option-label">GHL Auto-Contact</div>
+                <!-- Q3 -->
+                <div class="question-card" data-q="3">
+                    <h4 class="question-text">3. Where is your customer data stored?</h4>
+                    <div class="tree-options">
+                        <button class="tree-option-btn" onclick="nextQuestion(3, 'cloud')">
+                            <span class="tree-option-bullet"></span> Cloud CRMs (GoHighLevel, HubSpot, Salesforce)
+                        </button>
+                        <button class="tree-option-btn" onclick="nextQuestion(3, 'local')">
+                            <span class="tree-option-bullet"></span> Local files / private PostgreSQL database
+                        </button>
                     </div>
-                    <div class="cta-option">
-                        <div class="cta-option-number">2</div>
-                        <div class="cta-option-label">Email Sequence</div>
+                </div>
+
+                <!-- Q4 -->
+                <div class="question-card" data-q="4">
+                    <h4 class="question-text">4. What is your primary security / compliance stance?</h4>
+                    <div class="tree-options">
+                        <button class="tree-option-btn" onclick="nextQuestion(4, 'private')">
+                            <span class="tree-option-bullet"></span> 100% private offline hosting (local LLM/VRAM)
+                        </button>
+                        <button class="tree-option-btn" onclick="nextQuestion(4, 'api')">
+                            <span class="tree-option-bullet"></span> Frontier cloud APIs (Gemini/Claude)
+                        </button>
                     </div>
-                    <div class="cta-option">
-                        <div class="cta-option-number">3</div>
-                        <div class="cta-option-label">Slack Notifications</div>
+                </div>
+
+                <!-- Q5 -->
+                <div class="question-card" data-q="5">
+                    <h4 class="question-text">5. What scale of monthly leads do you process?</h4>
+                    <div class="tree-options">
+                        <button class="tree-option-btn" onclick="nextQuestion(5, 'high')">
+                            <span class="tree-option-bullet"></span> Over 1,000 leads (needs AI auto-scoring and routing)
+                        </button>
+                        <button class="tree-option-btn" onclick="nextQuestion(5, 'low')">
+                            <span class="tree-option-bullet"></span> Under 1,000 leads (needs simple round-robin routing)
+                        </button>
                     </div>
-                    <div class="cta-option">
-                        <div class="cta-option-number">4</div>
-                        <div class="cta-option-label">Video Multiplier</div>
+                </div>
+
+                <!-- Q6 -->
+                <div class="question-card" data-q="6">
+                    <h4 class="question-text">6. Do you need automated multi-channel social distribution?</h4>
+                    <div class="tree-options">
+                        <button class="tree-option-btn" onclick="nextQuestion(6, 'yes')">
+                            <span class="tree-option-bullet"></span> Yes, post automatically to YouTube, TikTok, and Slack
+                        </button>
+                        <button class="tree-option-btn" onclick="nextQuestion(6, 'no')">
+                            <span class="tree-option-bullet"></span> No, generate assets but queue them for human approval
+                        </button>
                     </div>
+                </div>
+
+                <!-- Q7 -->
+                <div class="question-card" data-q="7">
+                    <h4 class="question-text">7. What is your current system builder expertise?</h4>
+                    <div class="tree-options">
+                        <button class="tree-option-btn" onclick="showSolution('expert')">
+                            <span class="tree-option-bullet"></span> We have developers who build custom Node.js/Python micro-apps
+                        </button>
+                        <button class="tree-option-btn" onclick="showSolution('nocode')">
+                            <span class="tree-option-bullet"></span> We prefer visual flow editors like n8n and Directus configurations
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Solutions -->
+                <div class="solution-card" id="solution-card">
+                    <div class="solution-title" id="solution-title">VidiSmart Local Flow Stack</div>
+                    <p class="solution-desc" id="solution-desc">Your results suggest a highly secure offline orchestration stack utilizing local LLM inference engines and private knowledge vector graphs.</p>
+                    <div class="solution-badge-grid">
+                        <div class="sol-badge" id="sol-badge-1">🤖 Primary: Agent 1 &amp; 3</div>
+                        <div class="sol-badge" id="sol-badge-2">⚙️ Engine: Ollama / Local VRAM</div>
+                        <div class="sol-badge" id="sol-badge-3">📁 Storage: PostgreSQL + RAG</div>
+                    </div>
+                    <button class="btn btn-primary" onclick="resetTree()" style="width: auto; padding: 12px 30px; display: inline-block;">Start Over</button>
                 </div>
             </div>
         </div>
@@ -915,6 +1261,46 @@ Day <span class="number">7</span>: Special offer</div>
         const particles = new THREE.Points(particleGeometry, particleMaterial);
         scene.add(particles);
 
+        // --- Custom 3D Wireframe Objects representing AI modules ---
+        const shapesGroup = new THREE.Group();
+        scene.add(shapesGroup);
+
+        // Shape 1: Torus (Ecosystem Loop)
+        const torusGeom = new THREE.TorusGeometry(10, 2, 8, 24);
+        const wireframeMat1 = new THREE.MeshBasicMaterial({
+            color: 0x8b5cf6,
+            wireframe: true,
+            transparent: true,
+            opacity: 0.15
+        });
+        const torusMesh = new THREE.Mesh(torusGeom, wireframeMat1);
+        torusMesh.position.set(-30, 10, -10);
+        shapesGroup.add(torusMesh);
+
+        // Shape 2: Icosahedron (Core Reasoning Node)
+        const icoGeom = new THREE.IcosahedronGeometry(7, 1);
+        const wireframeMat2 = new THREE.MeshBasicMaterial({
+            color: 0x06b6d4,
+            wireframe: true,
+            transparent: true,
+            opacity: 0.15
+        });
+        const icoMesh = new THREE.Mesh(icoGeom, wireframeMat2);
+        icoMesh.position.set(30, -15, -15);
+        shapesGroup.add(icoMesh);
+
+        // Shape 3: Octahedron (Data Index Module)
+        const octGeom = new THREE.OctahedronGeometry(6, 1);
+        const wireframeMat3 = new THREE.MeshBasicMaterial({
+            color: 0xf43f5e,
+            wireframe: true,
+            transparent: true,
+            opacity: 0.15
+        });
+        const octMesh = new THREE.Mesh(octGeom, wireframeMat3);
+        octMesh.position.set(0, 20, -25);
+        shapesGroup.add(octMesh);
+
         // Mouse tracking
         let mouseX = 0, mouseY = 0;
         document.addEventListener('mousemove', (e) => {
@@ -935,6 +1321,18 @@ Day <span class="number">7</span>: Special offer</div>
                 agent.position.z = Math.sin(agent.userData.angle) * agent.userData.radius - 20;
                 agent.position.y = agent.userData.yOffset + Math.sin(time + i) * 3;
             });
+
+            // Update 3D shapes rotations
+            torusMesh.rotation.x += 0.003;
+            torusMesh.rotation.y += 0.005;
+            icoMesh.rotation.x += 0.004;
+            icoMesh.rotation.z += 0.002;
+            octMesh.rotation.y += 0.006;
+
+            // Move shapes group slightly with scroll
+            const scrollPercent = window.scrollY / (document.documentElement.scrollHeight - window.innerHeight);
+            shapesGroup.position.y = scrollPercent * 20;
+            shapesGroup.rotation.y = scrollPercent * Math.PI;
 
             // Update connections
             connections.forEach(line => {
@@ -986,6 +1384,17 @@ Day <span class="number">7</span>: Special offer</div>
             });
         });
 
+        // Phase Large Titles
+        document.querySelectorAll('.phase-large-title').forEach(title => {
+            ScrollTrigger.create({
+                trigger: title,
+                start: 'top 75%',
+                onEnter: () => {
+                    gsap.to(title, { opacity: 1, y: 0, duration: 1, ease: 'power3.out' });
+                }
+            });
+        });
+
         // Agent cards
         document.querySelectorAll('.agent-card').forEach((card, i) => {
             ScrollTrigger.create({
@@ -1020,6 +1429,15 @@ Day <span class="number">7</span>: Special offer</div>
                 gsap.to('.mcp-item', {
                     opacity: 1, scale: 1, duration: 0.5, stagger: 0.08, ease: 'back.out(1.2)'
                 });
+            }
+        });
+
+        // Interactive Decision Tree Container
+        ScrollTrigger.create({
+            trigger: '.decision-tree-container',
+            start: 'top 80%',
+            onEnter: () => {
+                gsap.to('.decision-tree-container', { opacity: 1, duration: 1 });
             }
         });
 
@@ -1070,6 +1488,87 @@ Day <span class="number">7</span>: Special offer</div>
                 document.getElementById(`section-${sectionIndex}`).scrollIntoView({ behavior: 'smooth' });
             });
         });
+
+        // --- Interactive 7-Question Decision Tree Logic ---
+        let answers = {};
+
+        window.nextQuestion = function(currentStep, value) {
+            answers[currentStep] = value;
+            
+            // Un-active current card
+            const currentCard = document.querySelector(`.question-card[data-q="${currentStep}"]`);
+            currentCard.classList.remove('active');
+            
+            // Mark step indicator as completed
+            const currentIndicator = document.querySelector(`.tree-step-indicator[data-step="${currentStep}"]`);
+            currentIndicator.classList.remove('active');
+            currentIndicator.classList.add('completed');
+            
+            const nextStep = currentStep + 1;
+            const nextCard = document.querySelector(`.question-card[data-q="${nextStep}"]`);
+            
+            if (nextCard) {
+                nextCard.classList.add('active');
+                const nextIndicator = document.querySelector(`.tree-step-indicator[data-step="${nextStep}"]`);
+                nextIndicator.classList.add('active');
+            }
+        };
+
+        window.showSolution = function(builderType) {
+            answers[7] = builderType;
+            
+            // Un-active last card
+            document.querySelector(`.question-card[data-q="7"]`).classList.remove('active');
+            const lastIndicator = document.querySelector(`.tree-step-indicator[data-step="7"]`);
+            lastIndicator.classList.remove('active');
+            lastIndicator.classList.add('completed');
+            
+            // Compute solution
+            const titleEl = document.getElementById('solution-title');
+            const descEl = document.getElementById('solution-desc');
+            const b1 = document.getElementById('sol-badge-1');
+            const b2 = document.getElementById('sol-badge-2');
+            const b3 = document.getElementById('sol-badge-3');
+            
+            if (answers[1] === 'video') {
+                titleEl.textContent = "Omni Media Creator Stack";
+                descEl.textContent = "Your bottleneck is video production, requiring intensive scene analysis and automated micro-distribution workflows. Recommended: Twelve Labs APIs + VidiTwin avatar nodes.";
+                b1.textContent = "🎬 Primary: Agent 6 & 7";
+                b2.textContent = "⚙️ Engine: Twelve Labs AI";
+                b3.textContent = "📁 Storage: Cloudflare R2";
+            } else if (answers[4] === 'private') {
+                titleEl.textContent = "Private Secure Local Stack";
+                descEl.textContent = "Your operations prioritize 100% offline data security. Recommended: Local fine-tuned Ollama LLM and VLM instances connected to a local vector store.";
+                b1.textContent = "🛡️ Primary: Agent 1 & 9";
+                b2.textContent = "⚙️ Engine: Local Ollama / VRAM";
+                b3.textContent = "📁 Storage: PostgreSQL + RAG";
+            } else {
+                titleEl.textContent = "VidiSmart Enterprise Cloud Stack";
+                descEl.textContent = "Your workflow targets cloud CRMs and high scale leads. Recommended: n8n workflow systems orchestrating Anthropic Claude / Gemini Advanced instances.";
+                b1.textContent = "🚀 Primary: Agent 1, 3 & 4";
+                b2.textContent = "⚙️ Engine: n8n Flow / Vertex AI";
+                b3.textContent = "📁 Storage: GoHighLevel CRM";
+            }
+            
+            document.getElementById('solution-card').classList.add('active');
+        };
+
+        window.resetTree = function() {
+            answers = {};
+            
+            // Reset indicators
+            document.querySelectorAll('.tree-step-indicator').forEach((ind, i) => {
+                ind.classList.remove('active', 'completed');
+                if (i === 0) ind.classList.add('active');
+            });
+            
+            // Reset cards
+            document.querySelectorAll('.question-card').forEach((card, i) => {
+                card.classList.toggle('active', i === 0);
+            });
+            
+            document.getElementById('solution-card').classList.remove('active');
+        };
     </script>
 </body>
 </html>
