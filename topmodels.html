@@ -266,6 +266,39 @@
             50%       { filter: drop-shadow(0 0 5px rgba(74, 222, 128, 1)); }
         }
 
+        /* ── VRAM column ─────────────────────────── */
+        .vram-th { min-width: 108px; }
+        .vram-cell { min-width: 108px; text-align: center; vertical-align: middle; }
+        .vram-local { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+        .vram-num {
+            font-size: 1.6rem;
+            font-weight: 900;
+            color: #4ade80;
+            line-height: 1;
+            font-family: 'JetBrains Mono', monospace;
+            letter-spacing: -0.02em;
+            text-shadow: 0 0 18px rgba(74,222,128,0.45);
+        }
+        .vram-quant {
+            font-size: 0.6rem;
+            color: #4ade80;
+            opacity: 0.65;
+            letter-spacing: 0.06em;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .vram-hw {
+            font-size: 0.58rem;
+            color: #475569;
+            margin-top: 1px;
+        }
+        .vram-api {
+            font-size: 0.68rem;
+            color: #334155;
+            font-weight: 600;
+            letter-spacing: 0.04em;
+        }
+        /* ── end VRAM column ──────────────────────── */
+
         .local-vram {
             opacity: 0.75;
             font-weight: 600;
@@ -503,11 +536,10 @@
                 <p class="text-slate-400 text-sm leading-relaxed"><strong class="text-cyan-300">MiniMax M3</strong> for heavy Omni tasks. <strong class="text-cyan-300">MiMo 2.5 Omni</strong> runs locally for UI verification at near-zero cost. <strong class="text-cyan-300">MiMo 2.5 Pro</strong> steps up when precision matters.</p>
             </div>
             <div class="glass-panel p-6 relative overflow-hidden group">
-                <div class="absolute -right-4 -top-4 w-24 h-24 bg-amber-500/10 blur-3xl rounded-full"></div>
-                <div class="text-3xl mb-4">💎</div>
-                <h3 class="text-lg font-bold text-white mb-2">Cost Equilibrium</h3>
-                <p class="text-slate-400 text-sm leading-relaxed">Save up to 88% by routing non-critical planning to
-                    Kimi and using VLM for final visual QA only.</p>
+                <div class="absolute -right-4 -top-4 w-24 h-24 bg-green-500/10 blur-3xl rounded-full"></div>
+                <div class="text-3xl mb-4">💻</div>
+                <h3 class="text-lg font-bold text-white mb-2">Run It Locally</h3>
+                <p class="text-slate-400 text-sm leading-relaxed">Open-weight models with a <strong class="text-green-400">Local VRAM</strong> column show the minimum GPU memory needed to run the full model via Ollama or llama.cpp — zero API cost, fully private. <strong class="text-green-400">8 GB</strong> fits a laptop GPU. <strong class="text-green-400">17 GB</strong> needs a desktop card like an RTX 4090.</p>
             </div>
         </div>
 
@@ -845,6 +877,42 @@
 <script src="assets/js/smartstack-widget.js"></script>
 <script>
 (function () {
+    // ── VRAM column injection ──────────────────────────────────────────
+    const VRAM_DATA = {
+        'Qwen 3.6 27B':   { gb: '17 GB', quant: 'Q4_K_M', hw: 'RTX 4090 / 3090' },
+        'MiMo 2.5 Omni':  { gb: '8 GB',  quant: 'Q4',     hw: 'Any 8 GB GPU / M-series' },
+    };
+
+    // Insert header th (after Modality = 2nd th)
+    const theadRow = document.querySelector('thead tr');
+    if (theadRow) {
+        const vramTh = document.createElement('th');
+        vramTh.className = 'p-4 vram-th text-xs uppercase tracking-widest font-semibold text-slate-500 text-center';
+        vramTh.textContent = 'Local VRAM';
+        theadRow.insertBefore(vramTh, theadRow.children[2]);
+    }
+
+    // Insert td into every model row (after Modality td, index 1)
+    document.querySelectorAll('.model-row').forEach(row => {
+        const nameEl = row.querySelector('[class*="font-bold"][class*="text-lg"]');
+        const raw = nameEl?.childNodes[0]?.textContent.trim() || '';
+        const v = VRAM_DATA[raw];
+        const td = document.createElement('td');
+        td.className = 'p-4 vram-cell';
+        if (v) {
+            td.innerHTML = `<div class="vram-local">
+                <div class="vram-num">${v.gb}</div>
+                <div class="vram-quant">${v.quant}</div>
+                <div class="vram-hw">${v.hw}</div>
+            </div>`;
+        } else {
+            td.innerHTML = `<span class="vram-api">API</span>`;
+        }
+        const cells = row.querySelectorAll('td');
+        if (cells.length >= 2) row.insertBefore(td, cells[2]);
+    });
+    // ── end VRAM column ────────────────────────────────────────────────
+
     // Tag map — what task(s) each model serves
     const TAGS = {
         'MiniMax M3':        'vision frontier budget',
