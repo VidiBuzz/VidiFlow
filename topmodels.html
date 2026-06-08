@@ -471,7 +471,17 @@
             letter-spacing: 0.03em;
         }
         .filter-hint.visible { display: block; }
-    </style>
+            /* ── Capability Ratings ── */
+        .cap-rating { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+        .cap-rating:last-child { margin-bottom: 0; }
+        .cap-label { width: 95px; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #94a3b8; display: flex; align-items: center; gap: 5px; flex-shrink: 0; }
+        .seg-bar { display: flex; gap: 2px; flex: 1; }
+        .seg { flex: 1; height: 8px; border-radius: 2px; background: rgba(255, 255, 255, 0.08); transition: all 0.3s ease; }
+        .seg.on-v { background: #22d3ee; box-shadow: 0 0 5px rgba(34, 211, 238, 0.5); }
+        .seg.on-r { background: #a78bfa; box-shadow: 0 0 5px rgba(167, 139, 250, 0.5); }
+        .seg.on-t { background: #34d399; box-shadow: 0 0 5px rgba(52, 211, 153, 0.5); }
+        .seg.on-i { background: #fbbf24; box-shadow: 0 0 5px rgba(251, 191, 36, 0.5); }
+
 </head>
 
 <body class="min-h-screen p-4 md:p-12 pt-20">
@@ -560,6 +570,13 @@
             </div>
         </div>
 
+        <!-- Capability Legend -->
+        <div class="glass-panel p-4 mb-6 flex flex-wrap gap-6 justify-center text-xs text-slate-400">
+            <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-sm bg-cyan-400 shadow-[0_0_6px_rgba(34,211,238,0.6)]"></span> Vision (VLM)</div>
+            <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-sm bg-purple-400 shadow-[0_0_6px_rgba(167,139,250,0.6)]"></span> Reasoning</div>
+            <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-sm bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.6)]"></span> Research / Tools</div>
+            <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-sm bg-amber-400 shadow-[0_0_6px_rgba(251,191,36,0.6)]"></span> Instruction Follow-through</div>
+        </div>
         <!-- The Comparison Matrix -->
         <div class="glass-panel overflow-hidden mb-12 shadow-2xl">
             <div class="overflow-x-auto">
@@ -570,7 +587,7 @@
                             <th class="py-4 px-4 text-xs uppercase tracking-widest font-semibold text-slate-500 text-center w-[10%]">Modality</th>
                             <th class="py-4 px-4 text-xs uppercase tracking-widest font-semibold text-slate-500 w-[10%]">Context</th>
                             <th class="py-4 px-4 text-xs uppercase tracking-widest font-semibold text-slate-500 w-[10%]">Efficiency</th>
-                            <th class="py-4 px-4 text-xs uppercase tracking-widest font-semibold text-slate-500 w-[40%]">Capabilities & Specialization</th>
+                            <th class="py-4 px-4 text-xs uppercase tracking-widest font-semibold text-slate-500 w-[45%]">Capability Ratings (10-Segment)</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -587,12 +604,23 @@
                             </td>
                             <td class="py-3 px-4 font-medium text-slate-300">1.0M CTX</td>
                             <td class="py-3 px-4 price-tag text-xs">$0.30 / $1.20</td>
-                            <td class="py-3 px-4 text-slate-400 text-sm">
-                                <span class="badge badge-vision">Vision</span>
-                                <span class="badge badge-reasoning">Reasoning</span>
-                                <span class="badge badge-hx">HX</span>
-                                <span class="badge badge-search">Auto-Search</span>
-                                <div class="mt-2">Latest text+vision+audio Omni. High-throughput general agent. Developed by MiniMax® AI.</div>
+                                                                                    <td class="py-3 px-4 text-slate-400 text-sm">
+                                <div class="cap-rating">
+                                    <span class="cap-label"><svg class="w-3.5 h-3.5 text-cyan-400" fill="currentColor" viewBox="0 0 20 20"><path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/><path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/></svg>Vision</span>
+                                    <div class="seg-bar"><div class="seg on-v"></div><div class="seg on-v"></div><div class="seg on-v"></div><div class="seg on-v"></div><div class="seg on-v"></div><div class="seg on-v"></div><div class="seg on-v"></div><div class="seg on-v"></div><div class="seg on-v"></div><div class="seg"></div></div>
+                                </div>
+                                <div class="cap-rating">
+                                    <span class="cap-label"><svg class="w-3.5 h-3.5 text-purple-400" fill="currentColor" viewBox="0 0 20 20"><path d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z"/></svg>Reasoning</span>
+                                    <div class="seg-bar"><div class="seg on-r"></div><div class="seg on-r"></div><div class="seg on-r"></div><div class="seg on-r"></div><div class="seg on-r"></div><div class="seg on-r"></div><div class="seg on-r"></div><div class="seg on-r"></div><div class="seg"></div><div class="seg"></div></div>
+                                </div>
+                                <div class="cap-rating">
+                                    <span class="cap-label"><svg class="w-3.5 h-3.5 text-emerald-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/></svg>Research</span>
+                                    <div class="seg-bar"><div class="seg on-t"></div><div class="seg on-t"></div><div class="seg on-t"></div><div class="seg on-t"></div><div class="seg on-t"></div><div class="seg on-t"></div><div class="seg on-t"></div><div class="seg on-t"></div><div class="seg"></div><div class="seg"></div></div>
+                                </div>
+                                <div class="cap-rating">
+                                    <span class="cap-label"><svg class="w-3.5 h-3.5 text-amber-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>Follow-through</span>
+                                    <div class="seg-bar"><div class="seg on-i"></div><div class="seg on-i"></div><div class="seg on-i"></div><div class="seg on-i"></div><div class="seg on-i"></div><div class="seg on-i"></div><div class="seg on-i"></div><div class="seg on-i"></div><div class="seg"></div><div class="seg"></div></div>
+                                </div>
                             </td>
                         </tr>
                         <!-- DeepSeek 4 Pro -->
@@ -608,10 +636,23 @@
                             </td>
                             <td class="py-3 px-4 font-medium text-slate-300">1.0M CTX</td>
                             <td class="py-3 px-4 price-tag text-xs">$0.44 / $0.87</td>
-                            <td class="py-3 px-4 text-slate-400 text-sm">
-                                <span class="badge badge-reasoning">Reasoning</span>
-                                <span class="badge badge-search">Auto-Search</span>
-                                <div class="mt-2">Frontier code & recursive reasoning. Direct rival to Qwen 3.7 Max. Built by DeepSeek® Inc.</div>
+                                                                                    <td class="py-3 px-4 text-slate-400 text-sm">
+                                <div class="cap-rating">
+                                    <span class="cap-label"><svg class="w-3.5 h-3.5 text-cyan-400" fill="currentColor" viewBox="0 0 20 20"><path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/><path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/></svg>Vision</span>
+                                    <div class="seg-bar"><div class="seg on-v"></div><div class="seg on-v"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div></div>
+                                </div>
+                                <div class="cap-rating">
+                                    <span class="cap-label"><svg class="w-3.5 h-3.5 text-purple-400" fill="currentColor" viewBox="0 0 20 20"><path d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z"/></svg>Reasoning</span>
+                                    <div class="seg-bar"><div class="seg on-r"></div><div class="seg on-r"></div><div class="seg on-r"></div><div class="seg on-r"></div><div class="seg on-r"></div><div class="seg on-r"></div><div class="seg on-r"></div><div class="seg on-r"></div><div class="seg on-r"></div><div class="seg on-r"></div></div>
+                                </div>
+                                <div class="cap-rating">
+                                    <span class="cap-label"><svg class="w-3.5 h-3.5 text-emerald-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/></svg>Research</span>
+                                    <div class="seg-bar"><div class="seg on-t"></div><div class="seg on-t"></div><div class="seg on-t"></div><div class="seg on-t"></div><div class="seg on-t"></div><div class="seg on-t"></div><div class="seg on-t"></div><div class="seg on-t"></div><div class="seg on-t"></div><div class="seg"></div></div>
+                                </div>
+                                <div class="cap-rating">
+                                    <span class="cap-label"><svg class="w-3.5 h-3.5 text-amber-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>Follow-through</span>
+                                    <div class="seg-bar"><div class="seg on-i"></div><div class="seg on-i"></div><div class="seg on-i"></div><div class="seg on-i"></div><div class="seg on-i"></div><div class="seg on-i"></div><div class="seg on-i"></div><div class="seg on-i"></div><div class="seg on-i"></div><div class="seg"></div></div>
+                                </div>
                             </td>
                         </tr>
                         <!-- MiniMax 2.5 Pro -->
@@ -627,10 +668,23 @@
                             </td>
                             <td class="py-3 px-4 font-medium text-slate-300">512k CTX</td>
                             <td class="py-3 px-4 price-tag text-xs">$0.80 / $2.50</td>
-                            <td class="py-3 px-4 text-slate-400 text-sm">
-                                <span class="badge badge-reasoning">Reasoning</span>
-                                <span class="badge badge-hx">HX</span>
-                                <div class="mt-2">Stable Pro-tier text model. Solid production pipeline backbone. Developed by MiniMax® AI.</div>
+                                                                                    <td class="py-3 px-4 text-slate-400 text-sm">
+                                <div class="cap-rating">
+                                    <span class="cap-label"><svg class="w-3.5 h-3.5 text-cyan-400" fill="currentColor" viewBox="0 0 20 20"><path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/><path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/></svg>Vision</span>
+                                    <div class="seg-bar"><div class="seg on-v"></div><div class="seg on-v"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div></div>
+                                </div>
+                                <div class="cap-rating">
+                                    <span class="cap-label"><svg class="w-3.5 h-3.5 text-purple-400" fill="currentColor" viewBox="0 0 20 20"><path d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z"/></svg>Reasoning</span>
+                                    <div class="seg-bar"><div class="seg on-r"></div><div class="seg on-r"></div><div class="seg on-r"></div><div class="seg on-r"></div><div class="seg on-r"></div><div class="seg on-r"></div><div class="seg on-r"></div><div class="seg on-r"></div><div class="seg"></div><div class="seg"></div></div>
+                                </div>
+                                <div class="cap-rating">
+                                    <span class="cap-label"><svg class="w-3.5 h-3.5 text-emerald-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/></svg>Research</span>
+                                    <div class="seg-bar"><div class="seg on-t"></div><div class="seg on-t"></div><div class="seg on-t"></div><div class="seg on-t"></div><div class="seg on-t"></div><div class="seg on-t"></div><div class="seg on-t"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div></div>
+                                </div>
+                                <div class="cap-rating">
+                                    <span class="cap-label"><svg class="w-3.5 h-3.5 text-amber-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>Follow-through</span>
+                                    <div class="seg-bar"><div class="seg on-i"></div><div class="seg on-i"></div><div class="seg on-i"></div><div class="seg on-i"></div><div class="seg on-i"></div><div class="seg on-i"></div><div class="seg on-i"></div><div class="seg on-i"></div><div class="seg"></div><div class="seg"></div></div>
+                                </div>
                             </td>
                         </tr>
                         <!-- Kimi -->
@@ -646,9 +700,23 @@
                             </td>
                             <td class="py-3 px-4 font-medium text-slate-300">256k CTX</td>
                             <td class="py-3 px-4 price-tag text-xs">$0.684 / $3.42</td>
-                            <td class="py-3 px-4 text-slate-400 text-sm">
-                                <span class="badge badge-search">Auto-Search</span>
-                                <div class="mt-2">Long-context log analysis & code planning. Powered by Moonshot AI® (Kimi™).</div>
+                                                                                    <td class="py-3 px-4 text-slate-400 text-sm">
+                                <div class="cap-rating">
+                                    <span class="cap-label"><svg class="w-3.5 h-3.5 text-cyan-400" fill="currentColor" viewBox="0 0 20 20"><path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/><path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/></svg>Vision</span>
+                                    <div class="seg-bar"><div class="seg on-v"></div><div class="seg on-v"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div></div>
+                                </div>
+                                <div class="cap-rating">
+                                    <span class="cap-label"><svg class="w-3.5 h-3.5 text-purple-400" fill="currentColor" viewBox="0 0 20 20"><path d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z"/></svg>Reasoning</span>
+                                    <div class="seg-bar"><div class="seg on-r"></div><div class="seg on-r"></div><div class="seg on-r"></div><div class="seg on-r"></div><div class="seg on-r"></div><div class="seg on-r"></div><div class="seg on-r"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div></div>
+                                </div>
+                                <div class="cap-rating">
+                                    <span class="cap-label"><svg class="w-3.5 h-3.5 text-emerald-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/></svg>Research</span>
+                                    <div class="seg-bar"><div class="seg on-t"></div><div class="seg on-t"></div><div class="seg on-t"></div><div class="seg on-t"></div><div class="seg on-t"></div><div class="seg on-t"></div><div class="seg on-t"></div><div class="seg on-t"></div><div class="seg on-t"></div><div class="seg"></div></div>
+                                </div>
+                                <div class="cap-rating">
+                                    <span class="cap-label"><svg class="w-3.5 h-3.5 text-amber-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>Follow-through</span>
+                                    <div class="seg-bar"><div class="seg on-i"></div><div class="seg on-i"></div><div class="seg on-i"></div><div class="seg on-i"></div><div class="seg on-i"></div><div class="seg on-i"></div><div class="seg on-i"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div></div>
+                                </div>
                             </td>
                         </tr>
                         <!-- Qwen 3.7 Max — NEW -->
@@ -665,11 +733,23 @@
                             </td>
                             <td class="py-3 px-4 font-medium text-slate-300">1M CTX</td>
                             <td class="py-3 px-4 price-tag text-xs">$1.25 / $3.75</td>
-                            <td class="py-3 px-4 text-slate-400 text-sm">
-                                <span class="badge badge-reasoning">Reasoning</span>
-                                <span class="badge badge-search">Auto-Search</span>
-                                <span class="badge badge-hx">HX</span>
-                                <div class="mt-2">Alibaba Cloud's® frontier model. QwenWebBench ELO 1558. Dominates programming benchmarks & agentic tasks.</div>
+                                                                                    <td class="py-3 px-4 text-slate-400 text-sm">
+                                <div class="cap-rating">
+                                    <span class="cap-label"><svg class="w-3.5 h-3.5 text-cyan-400" fill="currentColor" viewBox="0 0 20 20"><path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/><path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/></svg>Vision</span>
+                                    <div class="seg-bar"><div class="seg on-v"></div><div class="seg on-v"></div><div class="seg on-v"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div></div>
+                                </div>
+                                <div class="cap-rating">
+                                    <span class="cap-label"><svg class="w-3.5 h-3.5 text-purple-400" fill="currentColor" viewBox="0 0 20 20"><path d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z"/></svg>Reasoning</span>
+                                    <div class="seg-bar"><div class="seg on-r"></div><div class="seg on-r"></div><div class="seg on-r"></div><div class="seg on-r"></div><div class="seg on-r"></div><div class="seg on-r"></div><div class="seg on-r"></div><div class="seg on-r"></div><div class="seg on-r"></div><div class="seg on-r"></div></div>
+                                </div>
+                                <div class="cap-rating">
+                                    <span class="cap-label"><svg class="w-3.5 h-3.5 text-emerald-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/></svg>Research</span>
+                                    <div class="seg-bar"><div class="seg on-t"></div><div class="seg on-t"></div><div class="seg on-t"></div><div class="seg on-t"></div><div class="seg on-t"></div><div class="seg on-t"></div><div class="seg on-t"></div><div class="seg on-t"></div><div class="seg on-t"></div><div class="seg"></div></div>
+                                </div>
+                                <div class="cap-rating">
+                                    <span class="cap-label"><svg class="w-3.5 h-3.5 text-amber-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>Follow-through</span>
+                                    <div class="seg-bar"><div class="seg on-i"></div><div class="seg on-i"></div><div class="seg on-i"></div><div class="seg on-i"></div><div class="seg on-i"></div><div class="seg on-i"></div><div class="seg on-i"></div><div class="seg on-i"></div><div class="seg on-i"></div><div class="seg on-i"></div></div>
+                                </div>
                             </td>
                         </tr>
                         <!-- NVIDIA Nemotron 3 Ultra — NEW -->
@@ -686,7 +766,24 @@
                             </td>
                             <td class="py-3 px-4 font-medium text-slate-300">1.0M CTX</td>
                             <td class="py-3 px-4 price-tag text-xs">$0.30 / $0.90</td>
-                            <td class="py-3 px-4 text-slate-400 text-sm">Flagship Hybrid Transformer-Mamba MoE optimized for NVFP4. Outstanding accuracy for autonomous agentic orchestration.</td>
+                                                                                    <td class="py-3 px-4 text-slate-400 text-sm">
+                                <div class="cap-rating">
+                                    <span class="cap-label"><svg class="w-3.5 h-3.5 text-cyan-400" fill="currentColor" viewBox="0 0 20 20"><path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/><path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/></svg>Vision</span>
+                                    <div class="seg-bar"><div class="seg on-v"></div><div class="seg on-v"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div></div>
+                                </div>
+                                <div class="cap-rating">
+                                    <span class="cap-label"><svg class="w-3.5 h-3.5 text-purple-400" fill="currentColor" viewBox="0 0 20 20"><path d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z"/></svg>Reasoning</span>
+                                    <div class="seg-bar"><div class="seg on-r"></div><div class="seg on-r"></div><div class="seg on-r"></div><div class="seg on-r"></div><div class="seg on-r"></div><div class="seg on-r"></div><div class="seg on-r"></div><div class="seg on-r"></div><div class="seg on-r"></div><div class="seg"></div></div>
+                                </div>
+                                <div class="cap-rating">
+                                    <span class="cap-label"><svg class="w-3.5 h-3.5 text-emerald-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/></svg>Research</span>
+                                    <div class="seg-bar"><div class="seg on-t"></div><div class="seg on-t"></div><div class="seg on-t"></div><div class="seg on-t"></div><div class="seg on-t"></div><div class="seg on-t"></div><div class="seg on-t"></div><div class="seg on-t"></div><div class="seg"></div><div class="seg"></div></div>
+                                </div>
+                                <div class="cap-rating">
+                                    <span class="cap-label"><svg class="w-3.5 h-3.5 text-amber-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>Follow-through</span>
+                                    <div class="seg-bar"><div class="seg on-i"></div><div class="seg on-i"></div><div class="seg on-i"></div><div class="seg on-i"></div><div class="seg on-i"></div><div class="seg on-i"></div><div class="seg on-i"></div><div class="seg on-i"></div><div class="seg on-i"></div><div class="seg"></div></div>
+                                </div>
+                            </td>
                         </tr>
                         <!-- Qwen 3.7 Plus — NEW -->
                         <tr class="model-row">
@@ -702,11 +799,23 @@
                             </td>
                             <td class="py-3 px-4 font-medium text-slate-300">1.0M CTX</td>
                             <td class="py-3 px-4 price-tag text-xs">$0.40 / $1.60</td>
-                            <td class="py-3 px-4 text-slate-400 text-sm">
-                                <span class="badge badge-vision">Vision</span>
-                                <span class="badge badge-reasoning">Reasoning</span>
-                                <span class="badge badge-search">Auto-Search</span>
-                                <div class="mt-2">Latest Qwen Plus tier from Alibaba Cloud®. Vision-capable with 1M context. Strong agentic coding and spatial layout reasoning.</div>
+                                                                                    <td class="py-3 px-4 text-slate-400 text-sm">
+                                <div class="cap-rating">
+                                    <span class="cap-label"><svg class="w-3.5 h-3.5 text-cyan-400" fill="currentColor" viewBox="0 0 20 20"><path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/><path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/></svg>Vision</span>
+                                    <div class="seg-bar"><div class="seg on-v"></div><div class="seg on-v"></div><div class="seg on-v"></div><div class="seg on-v"></div><div class="seg on-v"></div><div class="seg on-v"></div><div class="seg on-v"></div><div class="seg on-v"></div><div class="seg"></div><div class="seg"></div></div>
+                                </div>
+                                <div class="cap-rating">
+                                    <span class="cap-label"><svg class="w-3.5 h-3.5 text-purple-400" fill="currentColor" viewBox="0 0 20 20"><path d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z"/></svg>Reasoning</span>
+                                    <div class="seg-bar"><div class="seg on-r"></div><div class="seg on-r"></div><div class="seg on-r"></div><div class="seg on-r"></div><div class="seg on-r"></div><div class="seg on-r"></div><div class="seg on-r"></div><div class="seg on-r"></div><div class="seg on-r"></div><div class="seg"></div></div>
+                                </div>
+                                <div class="cap-rating">
+                                    <span class="cap-label"><svg class="w-3.5 h-3.5 text-emerald-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/></svg>Research</span>
+                                    <div class="seg-bar"><div class="seg on-t"></div><div class="seg on-t"></div><div class="seg on-t"></div><div class="seg on-t"></div><div class="seg on-t"></div><div class="seg on-t"></div><div class="seg on-t"></div><div class="seg on-t"></div><div class="seg"></div><div class="seg"></div></div>
+                                </div>
+                                <div class="cap-rating">
+                                    <span class="cap-label"><svg class="w-3.5 h-3.5 text-amber-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>Follow-through</span>
+                                    <div class="seg-bar"><div class="seg on-i"></div><div class="seg on-i"></div><div class="seg on-i"></div><div class="seg on-i"></div><div class="seg on-i"></div><div class="seg on-i"></div><div class="seg on-i"></div><div class="seg on-i"></div><div class="seg on-i"></div><div class="seg"></div></div>
+                                </div>
                             </td>
                         </tr>
                         <!-- Qwen 3.6 Plus — API -->
@@ -722,10 +831,23 @@
                             </td>
                             <td class="py-3 px-4 font-medium text-slate-300">1.0M CTX</td>
                             <td class="py-3 px-4 price-tag text-xs">$0.32 / $1.95</td>
-                            <td class="py-3 px-4 text-slate-400 text-sm">
-                                <span class="badge badge-vision">Vision</span>
-                                <span class="badge badge-reasoning">Reasoning</span>
-                                <div class="mt-2">235B MoE (22B active). Proven production model. Use where Qwen 3.7 isn't available yet. GA on Alibaba Cloud®.</div>
+                                                                                    <td class="py-3 px-4 text-slate-400 text-sm">
+                                <div class="cap-rating">
+                                    <span class="cap-label"><svg class="w-3.5 h-3.5 text-cyan-400" fill="currentColor" viewBox="0 0 20 20"><path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/><path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/></svg>Vision</span>
+                                    <div class="seg-bar"><div class="seg on-v"></div><div class="seg on-v"></div><div class="seg on-v"></div><div class="seg on-v"></div><div class="seg on-v"></div><div class="seg on-v"></div><div class="seg on-v"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div></div>
+                                </div>
+                                <div class="cap-rating">
+                                    <span class="cap-label"><svg class="w-3.5 h-3.5 text-purple-400" fill="currentColor" viewBox="0 0 20 20"><path d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z"/></svg>Reasoning</span>
+                                    <div class="seg-bar"><div class="seg on-r"></div><div class="seg on-r"></div><div class="seg on-r"></div><div class="seg on-r"></div><div class="seg on-r"></div><div class="seg on-r"></div><div class="seg on-r"></div><div class="seg on-r"></div><div class="seg"></div><div class="seg"></div></div>
+                                </div>
+                                <div class="cap-rating">
+                                    <span class="cap-label"><svg class="w-3.5 h-3.5 text-emerald-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/></svg>Research</span>
+                                    <div class="seg-bar"><div class="seg on-t"></div><div class="seg on-t"></div><div class="seg on-t"></div><div class="seg on-t"></div><div class="seg on-t"></div><div class="seg on-t"></div><div class="seg on-t"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div></div>
+                                </div>
+                                <div class="cap-rating">
+                                    <span class="cap-label"><svg class="w-3.5 h-3.5 text-amber-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>Follow-through</span>
+                                    <div class="seg-bar"><div class="seg on-i"></div><div class="seg on-i"></div><div class="seg on-i"></div><div class="seg on-i"></div><div class="seg on-i"></div><div class="seg on-i"></div><div class="seg on-i"></div><div class="seg on-i"></div><div class="seg"></div><div class="seg"></div></div>
+                                </div>
                             </td>
                         </tr>
                         <!-- Qwen 3.6 27B — LOCAL -->
@@ -752,10 +874,23 @@
                             </td>
                             <td class="py-3 px-4 font-medium text-slate-300">128k CTX</td>
                             <td class="py-3 px-4 price-tag text-xs">Free (self-hosted)</td>
-                            <td class="py-3 px-4 text-slate-400 text-sm">
-                                <span class="badge badge-free">Local</span>
-                                <span class="badge badge-reasoning">Reasoning</span>
-                                <div class="mt-2">Dense 27B local model from Alibaba®. Q4_K_M fits comfortably on a single RTX 4090 (24 GB) or local NVIDIA® cards.</div>
+                                                                                    <td class="py-3 px-4 text-slate-400 text-sm">
+                                <div class="cap-rating">
+                                    <span class="cap-label"><svg class="w-3.5 h-3.5 text-cyan-400" fill="currentColor" viewBox="0 0 20 20"><path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/><path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/></svg>Vision</span>
+                                    <div class="seg-bar"><div class="seg on-v"></div><div class="seg on-v"></div><div class="seg on-v"></div><div class="seg on-v"></div><div class="seg on-v"></div><div class="seg on-v"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div></div>
+                                </div>
+                                <div class="cap-rating">
+                                    <span class="cap-label"><svg class="w-3.5 h-3.5 text-purple-400" fill="currentColor" viewBox="0 0 20 20"><path d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z"/></svg>Reasoning</span>
+                                    <div class="seg-bar"><div class="seg on-r"></div><div class="seg on-r"></div><div class="seg on-r"></div><div class="seg on-r"></div><div class="seg on-r"></div><div class="seg on-r"></div><div class="seg on-r"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div></div>
+                                </div>
+                                <div class="cap-rating">
+                                    <span class="cap-label"><svg class="w-3.5 h-3.5 text-emerald-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/></svg>Research</span>
+                                    <div class="seg-bar"><div class="seg on-t"></div><div class="seg on-t"></div><div class="seg on-t"></div><div class="seg on-t"></div><div class="seg on-t"></div><div class="seg on-t"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div></div>
+                                </div>
+                                <div class="cap-rating">
+                                    <span class="cap-label"><svg class="w-3.5 h-3.5 text-amber-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>Follow-through</span>
+                                    <div class="seg-bar"><div class="seg on-i"></div><div class="seg on-i"></div><div class="seg on-i"></div><div class="seg on-i"></div><div class="seg on-i"></div><div class="seg on-i"></div><div class="seg on-i"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div></div>
+                                </div>
                             </td>
                         </tr>
                         <!-- GLM-5.1 -->
@@ -771,10 +906,23 @@
                             </td>
                             <td class="py-3 px-4 font-medium text-slate-300">200k CTX</td>
                             <td class="py-3 px-4 price-tag text-xs">$0.98 / $3.08</td>
-                            <td class="py-3 px-4 text-slate-400 text-sm">
-                                <span class="badge badge-reasoning">Reasoning</span>
-                                <span class="badge badge-search">Auto-Search</span>
-                                <div class="mt-2">Complex recursive debugging & tool use. Developed by Zhipu AI® (GLM).</div>
+                                                                                    <td class="py-3 px-4 text-slate-400 text-sm">
+                                <div class="cap-rating">
+                                    <span class="cap-label"><svg class="w-3.5 h-3.5 text-cyan-400" fill="currentColor" viewBox="0 0 20 20"><path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/><path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/></svg>Vision</span>
+                                    <div class="seg-bar"><div class="seg on-v"></div><div class="seg on-v"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div></div>
+                                </div>
+                                <div class="cap-rating">
+                                    <span class="cap-label"><svg class="w-3.5 h-3.5 text-purple-400" fill="currentColor" viewBox="0 0 20 20"><path d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z"/></svg>Reasoning</span>
+                                    <div class="seg-bar"><div class="seg on-r"></div><div class="seg on-r"></div><div class="seg on-r"></div><div class="seg on-r"></div><div class="seg on-r"></div><div class="seg on-r"></div><div class="seg on-r"></div><div class="seg on-r"></div><div class="seg"></div><div class="seg"></div></div>
+                                </div>
+                                <div class="cap-rating">
+                                    <span class="cap-label"><svg class="w-3.5 h-3.5 text-emerald-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/></svg>Research</span>
+                                    <div class="seg-bar"><div class="seg on-t"></div><div class="seg on-t"></div><div class="seg on-t"></div><div class="seg on-t"></div><div class="seg on-t"></div><div class="seg on-t"></div><div class="seg on-t"></div><div class="seg on-t"></div><div class="seg"></div><div class="seg"></div></div>
+                                </div>
+                                <div class="cap-rating">
+                                    <span class="cap-label"><svg class="w-3.5 h-3.5 text-amber-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>Follow-through</span>
+                                    <div class="seg-bar"><div class="seg on-i"></div><div class="seg on-i"></div><div class="seg on-i"></div><div class="seg on-i"></div><div class="seg on-i"></div><div class="seg on-i"></div><div class="seg on-i"></div><div class="seg on-i"></div><div class="seg"></div><div class="seg"></div></div>
+                                </div>
                             </td>
                         </tr>
                         <!-- MiMo 2.5 Omni — LOCAL -->
@@ -801,11 +949,23 @@
                             </td>
                             <td class="py-3 px-4 font-medium text-slate-300">512k CTX</td>
                             <td class="py-3 px-4 price-tag text-xs">$0.14 / $0.28</td>
-                            <td class="py-3 px-4 text-slate-400 text-sm">
-                                <span class="badge badge-vision">Vision</span>
-                                <span class="badge badge-hx">HX</span>
-                                <span class="badge badge-free">Local</span>
-                                <div class="mt-2">Open weights. Native vision, audio & text in one model. Runs on local NVIDIA® GPUs for near-zero cost UI verification.</div>
+                                                                                    <td class="py-3 px-4 text-slate-400 text-sm">
+                                <div class="cap-rating">
+                                    <span class="cap-label"><svg class="w-3.5 h-3.5 text-cyan-400" fill="currentColor" viewBox="0 0 20 20"><path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/><path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/></svg>Vision</span>
+                                    <div class="seg-bar"><div class="seg on-v"></div><div class="seg on-v"></div><div class="seg on-v"></div><div class="seg on-v"></div><div class="seg on-v"></div><div class="seg on-v"></div><div class="seg on-v"></div><div class="seg on-v"></div><div class="seg"></div><div class="seg"></div></div>
+                                </div>
+                                <div class="cap-rating">
+                                    <span class="cap-label"><svg class="w-3.5 h-3.5 text-purple-400" fill="currentColor" viewBox="0 0 20 20"><path d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z"/></svg>Reasoning</span>
+                                    <div class="seg-bar"><div class="seg on-r"></div><div class="seg on-r"></div><div class="seg on-r"></div><div class="seg on-r"></div><div class="seg on-r"></div><div class="seg on-r"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div></div>
+                                </div>
+                                <div class="cap-rating">
+                                    <span class="cap-label"><svg class="w-3.5 h-3.5 text-emerald-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/></svg>Research</span>
+                                    <div class="seg-bar"><div class="seg on-t"></div><div class="seg on-t"></div><div class="seg on-t"></div><div class="seg on-t"></div><div class="seg on-t"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div></div>
+                                </div>
+                                <div class="cap-rating">
+                                    <span class="cap-label"><svg class="w-3.5 h-3.5 text-amber-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>Follow-through</span>
+                                    <div class="seg-bar"><div class="seg on-i"></div><div class="seg on-i"></div><div class="seg on-i"></div><div class="seg on-i"></div><div class="seg on-i"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div></div>
+                                </div>
                             </td>
                         </tr>
                         <!-- MiMo 2.5 Pro — Vision -->
@@ -821,10 +981,23 @@
                             </td>
                             <td class="py-3 px-4 font-medium text-slate-300">512k CTX</td>
                             <td class="py-3 px-4 price-tag text-xs">$0.44 / $0.87</td>
-                            <td class="py-3 px-4 text-slate-400 text-sm">
-                                <span class="badge badge-vision">Vision</span>
-                                <span class="badge badge-hx">HX</span>
-                                <div class="mt-2">Pro tier with enhanced vision capabilities. Steps up from Omni for complex diagram analysis.</div>
+                                                                                    <td class="py-3 px-4 text-slate-400 text-sm">
+                                <div class="cap-rating">
+                                    <span class="cap-label"><svg class="w-3.5 h-3.5 text-cyan-400" fill="currentColor" viewBox="0 0 20 20"><path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/><path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/></svg>Vision</span>
+                                    <div class="seg-bar"><div class="seg on-v"></div><div class="seg on-v"></div><div class="seg on-v"></div><div class="seg on-v"></div><div class="seg on-v"></div><div class="seg on-v"></div><div class="seg on-v"></div><div class="seg on-v"></div><div class="seg on-v"></div><div class="seg"></div></div>
+                                </div>
+                                <div class="cap-rating">
+                                    <span class="cap-label"><svg class="w-3.5 h-3.5 text-purple-400" fill="currentColor" viewBox="0 0 20 20"><path d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z"/></svg>Reasoning</span>
+                                    <div class="seg-bar"><div class="seg on-r"></div><div class="seg on-r"></div><div class="seg on-r"></div><div class="seg on-r"></div><div class="seg on-r"></div><div class="seg on-r"></div><div class="seg on-r"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div></div>
+                                </div>
+                                <div class="cap-rating">
+                                    <span class="cap-label"><svg class="w-3.5 h-3.5 text-emerald-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/></svg>Research</span>
+                                    <div class="seg-bar"><div class="seg on-t"></div><div class="seg on-t"></div><div class="seg on-t"></div><div class="seg on-t"></div><div class="seg on-t"></div><div class="seg on-t"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div></div>
+                                </div>
+                                <div class="cap-rating">
+                                    <span class="cap-label"><svg class="w-3.5 h-3.5 text-amber-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>Follow-through</span>
+                                    <div class="seg-bar"><div class="seg on-i"></div><div class="seg on-i"></div><div class="seg on-i"></div><div class="seg on-i"></div><div class="seg on-i"></div><div class="seg on-i"></div><div class="seg on-i"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div></div>
+                                </div>
                             </td>
                         </tr>
                         <!-- GLM-5V Turbo -->
@@ -840,10 +1013,23 @@
                             </td>
                             <td class="py-3 px-4 font-medium text-slate-300">202k CTX</td>
                             <td class="py-3 px-4 price-tag text-xs">$1.20 / $4.00</td>
-                            <td class="py-3 px-4 text-slate-400 text-sm">
-                                <span class="badge badge-vision">Vision</span>
-                                <span class="badge badge-reasoning">Reasoning</span>
-                                <div class="mt-2">Layout verification and visual QA. Powered by Zhipu AI® (GLM).</div>
+                                                                                    <td class="py-3 px-4 text-slate-400 text-sm">
+                                <div class="cap-rating">
+                                    <span class="cap-label"><svg class="w-3.5 h-3.5 text-cyan-400" fill="currentColor" viewBox="0 0 20 20"><path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/><path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/></svg>Vision</span>
+                                    <div class="seg-bar"><div class="seg on-v"></div><div class="seg on-v"></div><div class="seg on-v"></div><div class="seg on-v"></div><div class="seg on-v"></div><div class="seg on-v"></div><div class="seg on-v"></div><div class="seg on-v"></div><div class="seg"></div><div class="seg"></div></div>
+                                </div>
+                                <div class="cap-rating">
+                                    <span class="cap-label"><svg class="w-3.5 h-3.5 text-purple-400" fill="currentColor" viewBox="0 0 20 20"><path d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z"/></svg>Reasoning</span>
+                                    <div class="seg-bar"><div class="seg on-r"></div><div class="seg on-r"></div><div class="seg on-r"></div><div class="seg on-r"></div><div class="seg on-r"></div><div class="seg on-r"></div><div class="seg on-r"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div></div>
+                                </div>
+                                <div class="cap-rating">
+                                    <span class="cap-label"><svg class="w-3.5 h-3.5 text-emerald-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/></svg>Research</span>
+                                    <div class="seg-bar"><div class="seg on-t"></div><div class="seg on-t"></div><div class="seg on-t"></div><div class="seg on-t"></div><div class="seg on-t"></div><div class="seg on-t"></div><div class="seg on-t"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div></div>
+                                </div>
+                                <div class="cap-rating">
+                                    <span class="cap-label"><svg class="w-3.5 h-3.5 text-amber-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>Follow-through</span>
+                                    <div class="seg-bar"><div class="seg on-i"></div><div class="seg on-i"></div><div class="seg on-i"></div><div class="seg on-i"></div><div class="seg on-i"></div><div class="seg on-i"></div><div class="seg on-i"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div></div>
+                                </div>
                             </td>
                         </tr>
                         <!-- Reference Premiums -->
@@ -899,10 +1085,23 @@
                             </td>
                             <td class="py-3 px-4 font-medium text-slate-300">1.0M CTX</td>
                             <td class="py-3 px-4 price-tag text-xs">$1.50 / $9.00</td>
-                            <td class="py-3 px-4 text-slate-400 text-sm">
-                                <span class="badge badge-vision">Vision</span>
-                                <span class="badge badge-search">Auto-Search</span>
-                                <div class="mt-2">Speed-optimized multimodal. Strong cost/perf for agentic workflows. Developed by Google™.</div>
+                                                                                    <td class="py-3 px-4 text-slate-400 text-sm">
+                                <div class="cap-rating">
+                                    <span class="cap-label"><svg class="w-3.5 h-3.5 text-cyan-400" fill="currentColor" viewBox="0 0 20 20"><path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/><path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/></svg>Vision</span>
+                                    <div class="seg-bar"><div class="seg on-v"></div><div class="seg on-v"></div><div class="seg on-v"></div><div class="seg on-v"></div><div class="seg on-v"></div><div class="seg on-v"></div><div class="seg on-v"></div><div class="seg on-v"></div><div class="seg"></div><div class="seg"></div></div>
+                                </div>
+                                <div class="cap-rating">
+                                    <span class="cap-label"><svg class="w-3.5 h-3.5 text-purple-400" fill="currentColor" viewBox="0 0 20 20"><path d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z"/></svg>Reasoning</span>
+                                    <div class="seg-bar"><div class="seg on-r"></div><div class="seg on-r"></div><div class="seg on-r"></div><div class="seg on-r"></div><div class="seg on-r"></div><div class="seg on-r"></div><div class="seg on-r"></div><div class="seg on-r"></div><div class="seg"></div><div class="seg"></div></div>
+                                </div>
+                                <div class="cap-rating">
+                                    <span class="cap-label"><svg class="w-3.5 h-3.5 text-emerald-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/></svg>Research</span>
+                                    <div class="seg-bar"><div class="seg on-t"></div><div class="seg on-t"></div><div class="seg on-t"></div><div class="seg on-t"></div><div class="seg on-t"></div><div class="seg on-t"></div><div class="seg on-t"></div><div class="seg on-t"></div><div class="seg"></div><div class="seg"></div></div>
+                                </div>
+                                <div class="cap-rating">
+                                    <span class="cap-label"><svg class="w-3.5 h-3.5 text-amber-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>Follow-through</span>
+                                    <div class="seg-bar"><div class="seg on-i"></div><div class="seg on-i"></div><div class="seg on-i"></div><div class="seg on-i"></div><div class="seg on-i"></div><div class="seg on-i"></div><div class="seg on-i"></div><div class="seg on-i"></div><div class="seg"></div><div class="seg"></div></div>
+                                </div>
                             </td>
                         </tr>
                     </tbody>
@@ -1092,3 +1291,5 @@
 </body>
 
 </html>
+
+
