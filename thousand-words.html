@@ -892,6 +892,33 @@
       height: 400px;
     }
   }
+
+  /* Styled fill blanks */
+  input[type=text].fill-blank-input {
+    background: rgba(0, 0, 0, 0.04);
+    border: 1px dashed rgba(0, 0, 0, 0.25);
+    border-radius: 6px;
+    padding: 2px 8px;
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--cyan);
+    text-align: center;
+    outline: none;
+    transition: all 0.3s;
+  }
+  input[type=text].fill-blank-input:focus {
+    border-color: var(--cyan);
+    background: rgba(14, 165, 233, 0.04);
+    box-shadow: 0 0 8px rgba(14, 165, 233, 0.2);
+  }
+  input[type=text].fill-blank-input.correct {
+    border-color: var(--emerald) !important;
+    color: var(--emerald) !important;
+    background: rgba(16, 185, 129, 0.08) !important;
+    border-style: solid !important;
+    box-shadow: 0 0 10px rgba(16, 185, 129, 0.25) !important;
+  }
 </style>
 </head>
 <body>
@@ -910,6 +937,7 @@
   <div class="nav-tabs">
     <button class="nav-tab active" onclick="switchSection('test')">Glance Test</button>
     <button class="nav-tab" onclick="switchSection('dissolve')">Brisbane Slider</button>
+    <button class="nav-tab" onclick="switchSection('modality')">Flow &amp; Fill</button>
     <button class="nav-tab" onclick="switchSection('principles')">Rubric &amp; Principles</button>
   </div>
   <a href="agent-ui.html" class="back-dashboard">
@@ -1059,6 +1087,71 @@
     </div>
   </section>
 
+  <!-- ==================== SECTION 4: DYNAMIC FLOW & FILL ==================== -->
+  <section id="section-modality" class="view-section">
+    <div class="slider-layout">
+      
+      <div style="text-align: center; flex-shrink: 0;">
+        <span class="badge" style="background: rgba(16, 185, 129, 0.08); border-color: rgba(16, 185, 129, 0.2); color: var(--emerald); margin-bottom: 0.5rem;">Interactive Equivalence</span>
+        <h1 style="font-size: 1.8rem; margin-bottom: 0.25rem;">Multi-Modal Flow &amp; Fill Challenge</h1>
+        <p class="subtitle" style="margin-bottom: 0;">
+          Fill in the blanks to restore the text logic. Watch typing particles flow in real time to form the visual concept.
+        </p>
+      </div>
+
+      <div class="slider-panels-wrap">
+        <canvas id="modality-flow-canvas" style="position: absolute; inset: 0; pointer-events: none; z-index: 20;"></canvas>
+        
+        <div class="slider-panels">
+          
+          <!-- Left: Fill-in-the-Blank Paragraph -->
+          <div class="words-panel" id="modality-text-container" style="background: #fdfbf7; color: #1a202c; border-radius: 24px; padding: 2.2rem; display: flex; flex-direction: column; height: 100%; min-height: 0; overflow: hidden; position: relative;">
+            <span class="words-panel-label" style="color: #a0aec0;">1,000 Words (Interactive Input)</span>
+            <div class="words-panel-text" id="fill-text-box" style="font-family: var(--font-serif); font-size: 1rem; line-height: 1.8; color: #2d3748; overflow-y: auto; flex: 1; min-height: 0; padding-right: 12px;">
+              The concept of 
+              <input type="text" class="fill-blank-input" id="blank-visual" placeholder="[ modality? ]" data-target="visual" autocomplete="off" style="width: 110px;"> 
+              communication predates written language. The eye processes visual information at extraordinary speed. Neuroscientists estimate that the human brain can interpret a recognizable 
+              <input type="text" class="fill-blank-input" id="blank-image" placeholder="[ layout? ]" data-target="image" autocomplete="off" style="width: 100px;"> 
+              in as little as thirteen 
+              <input type="text" class="fill-blank-input" id="blank-milliseconds" placeholder="[ units? ]" data-target="milliseconds" autocomplete="off" style="width: 130px;">. 
+              Words must be decoded sequentially: letter by letter, syllable by syllable, sentence by sentence. An image lands whole. This is why Arthur Brisbane remarked in 1911 that a single picture is worth a 
+              <input type="text" class="fill-blank-input" id="blank-thousand" placeholder="[ quantity? ]" data-target="thousand" autocomplete="off" style="width: 110px;"> 
+              words. They are two different modalities representing the exact same underlying truth.
+              <br><br>
+              <span style="font-size: 0.8rem; font-family: var(--font-body); color: #718096; font-weight: 500;">
+                💡 <strong>Clues:</strong> 1. visual | 2. image | 3. milliseconds | 4. thousand
+              </span>
+            </div>
+          </div>
+
+          <!-- Right: Visual Eyeball Canvas Overlay -->
+          <div class="image-panel" id="modality-image-panel">
+            <span class="image-panel-label" style="z-index: 25;">Real-Time Typographic Blending</span>
+            <div class="image-glow-ring" id="modality-image-glow" style="position: absolute; inset: -2px; border-radius: 30px; background: linear-gradient(135deg, var(--emerald), var(--cyan)); z-index: 1; opacity: 0; filter: blur(20px); transition: opacity 0.5s ease, transform 0.5s ease;"></div>
+            <div class="image-container-3d" id="modality-image-box" style="width: 100%; height: 100%; border-radius: 28px; background: rgba(11, 15, 26, 0.6); border: 1px solid rgba(255, 255, 255, 0.08); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); display: flex; align-items: center; justify-content: center; position: relative; z-index: 10; transition: all 0.5s ease;">
+              <img id="modality-art-img" src="thousand-words.png" alt="Eyeball visual" style="width: 100%; height: 100%; object-fit: cover; border-radius: 26px; transition: filter 0.4s ease, opacity 0.4s ease;">
+            </div>
+            <span class="image-caption" id="modality-image-caption" style="z-index: 25; color: rgba(16, 185, 129, 0.6);">interactive canvas overlay</span>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Control Slider -->
+      <div class="slider-control-block">
+        <span class="slider-title" id="modality-slider-desc">Modality Balance: 100% Text / 0% Visual</span>
+        <div class="slider-wrap">
+          <input type="range" min="0" max="100" value="0" class="custom-slider" id="modality-slider" oninput="handleModalitySliderChange(this.value)">
+        </div>
+        <div class="slider-labels">
+          <span id="modality-label-text" class="active">Typography Outlines</span>
+          <span id="modality-label-visual">Fully Illustrated</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
   <!-- ==================== SECTION 3: PRINCIPLES & RUBRIC ==================== -->
   <section id="section-principles" class="view-section">
     
@@ -1179,13 +1272,25 @@
     const tabs = document.querySelectorAll('.nav-tab');
     if (sectId === 'test') tabs[0].classList.add('active');
     else if (sectId === 'dissolve') tabs[1].classList.add('active');
-    else if (sectId === 'principles') tabs[2].classList.add('active');
+    else if (sectId === 'modality') tabs[2].classList.add('active');
+    else if (sectId === 'principles') tabs[3].classList.add('active');
     
     document.getElementById(`section-${sectId}`).classList.add('active');
+    
+    // Stop modality animation if switching away
+    if (sectId !== 'modality') {
+      modActive = false;
+      if (modRafId) {
+        cancelAnimationFrame(modRafId);
+        modRafId = null;
+      }
+    }
     
     // Trigger canvas resize if showing dissolve
     if (sectId === 'dissolve') {
       setTimeout(initCanvas, 50);
+    } else if (sectId === 'modality') {
+      setTimeout(initModalityCanvas, 50);
     }
   }
 
@@ -1572,6 +1677,348 @@
     drawParticles();
     initCelebrationCanvas();
   };
+
+  // ==========================================
+  // STAGE 3: INTERACTIVE MODALITY FLOW & FILL
+  // ==========================================
+  
+  let modCanvas, modCtx;
+  let modParticles = [];
+  let modActive = false;
+  let modRafId = null;
+  
+  const modAnswers = {
+    visual: false,
+    image: false,
+    milliseconds: false,
+    thousand: false
+  };
+
+  function initModalityCanvas() {
+    modCanvas = document.getElementById('modality-flow-canvas');
+    if (!modCanvas) return;
+    modCtx = modCanvas.getContext('2d');
+    resizeModalityCanvas();
+    
+    // Bind resize handler
+    window.removeEventListener('resize', resizeModalityCanvas);
+    window.addEventListener('resize', resizeModalityCanvas);
+    
+    // Setup listeners on inputs
+    const inputs = document.querySelectorAll('.fill-blank-input');
+    inputs.forEach(input => {
+      input.removeEventListener('input', handleBlankInput);
+      input.addEventListener('input', handleBlankInput);
+    });
+    
+    modActive = true;
+    if (!modRafId) {
+      animateModality();
+    }
+    
+    // Initial slider change to sync UI states
+    handleModalitySliderChange(document.getElementById('modality-slider').value);
+  }
+  
+  function resizeModalityCanvas() {
+    if (!modCanvas) return;
+    const rect = modCanvas.parentElement.getBoundingClientRect();
+    modCanvas.width = rect.width;
+    modCanvas.height = rect.height;
+  }
+  
+  function handleBlankInput(e) {
+    const input = e.target;
+    const val = input.value.trim().toLowerCase();
+    const target = input.getAttribute('data-target');
+    
+    // Check correctness
+    if (val === target) {
+      if (!modAnswers[target]) {
+        modAnswers[target] = true;
+        input.classList.add('correct');
+        // Spawn success flash particles
+        spawnSuccessBurst(input);
+      }
+    } else {
+      if (modAnswers[target]) {
+        modAnswers[target] = false;
+        input.classList.remove('correct');
+      }
+    }
+    
+    // Spawn typing float particle for each letter typed/deleted
+    spawnTypeParticle(input, e.data || val.slice(-1) || 'x');
+  }
+  
+  function spawnTypeParticle(input, char) {
+    if (!modCanvas) return;
+    const rectInput = input.getBoundingClientRect();
+    const rectCanvas = modCanvas.getBoundingClientRect();
+    
+    // Spawn position: center of the input box
+    const startX = rectInput.left - rectCanvas.left + rectInput.width / 2;
+    const startY = rectInput.top - rectCanvas.top + rectInput.height / 2;
+    
+    // Target contour on the right
+    const targetType = input.getAttribute('data-target');
+    const targetCoord = getEyeContourPoint(targetType);
+    
+    // Spawn single letter particle
+    modParticles.push({
+      char: char.toUpperCase(),
+      x: startX,
+      y: startY,
+      startX: startX,
+      startY: startY,
+      targetX: targetCoord.x,
+      targetY: targetCoord.y,
+      progress: 0,
+      speed: 0.015 + Math.random() * 0.008,
+      size: 11 + Math.random() * 6,
+      color: targetType === 'visual' ? '#0ea5e9' : (targetType === 'image' ? '#a855f7' : (targetType === 'milliseconds' ? '#10b981' : '#f59e0b')),
+      curveX: (Math.random() - 0.5) * 150,
+      curveY: -80 - Math.random() * 120,
+      opacity: 1
+    });
+  }
+  
+  function spawnSuccessBurst(input) {
+    const targetType = input.getAttribute('data-target');
+    const colors = {
+      visual: '#0ea5e9',
+      image: '#a855f7',
+      milliseconds: '#10b981',
+      thousand: '#f59e0b'
+    };
+    const color = colors[targetType] || '#38bdf8';
+    
+    // Spawn particles that float directly to the eyeball
+    for (let i = 0; i < 20; i++) {
+      setTimeout(() => {
+        if (!modCanvas) return;
+        const rectInput = input.getBoundingClientRect();
+        const rectCanvas = modCanvas.getBoundingClientRect();
+        const startX = rectInput.left - rectCanvas.left + rectInput.width / 2;
+        const startY = rectInput.top - rectCanvas.top + rectInput.height / 2;
+        const targetCoord = getEyeContourPoint(targetType);
+        
+        modParticles.push({
+          char: '✦',
+          x: startX,
+          y: startY,
+          startX: startX,
+          startY: startY,
+          targetX: targetCoord.x,
+          targetY: targetCoord.y,
+          progress: 0,
+          speed: 0.01 + Math.random() * 0.01,
+          size: 8 + Math.random() * 12,
+          color: color,
+          curveX: (Math.random() - 0.5) * 220,
+          curveY: -50 - Math.random() * 180,
+          opacity: 1
+        });
+      }, i * 40);
+    }
+  }
+  
+  function getEyeContourPoint(type) {
+    const imgBox = document.getElementById('modality-image-box');
+    if (!imgBox || !modCanvas) return { x: 400, y: 300 };
+    
+    const rectImg = imgBox.getBoundingClientRect();
+    const rectCanvas = modCanvas.getBoundingClientRect();
+    
+    const cx = rectImg.left - rectCanvas.left + rectImg.width / 2;
+    const cy = rectImg.top - rectCanvas.top + rectImg.height / 2;
+    
+    const rLidW = rectImg.width * 0.38;
+    const rIris = rectImg.width * 0.16;
+    const rPupil = rectImg.width * 0.06;
+    
+    let x = cx;
+    let y = cy;
+    
+    if (type === 'visual') {
+      const t = Math.random();
+      const theta = t * Math.PI;
+      x = cx - rLidW + (2 * rLidW) * t;
+      y = cy - (rectImg.height * 0.18) * Math.sin(theta);
+    } else if (type === 'image') {
+      const t = Math.random();
+      const theta = t * Math.PI;
+      x = cx - rLidW + (2 * rLidW) * t;
+      y = cy + (rectImg.height * 0.18) * Math.sin(theta);
+    } else if (type === 'milliseconds') {
+      const theta = Math.random() * Math.PI * 2;
+      x = cx + rIris * Math.cos(theta);
+      y = cy + rIris * Math.sin(theta);
+    } else if (type === 'thousand') {
+      const theta = Math.random() * Math.PI * 2;
+      x = cx + rPupil * Math.cos(theta);
+      y = cy + rPupil * Math.sin(theta);
+    }
+    
+    return { x, y };
+  }
+  
+  function handleModalitySliderChange(val) {
+    const sliderDesc = document.getElementById('modality-slider-desc');
+    const labelText = document.getElementById('modality-label-text');
+    const labelVisual = document.getElementById('modality-label-visual');
+    const img = document.getElementById('modality-art-img');
+    const glow = document.getElementById('modality-image-glow');
+    const box = document.getElementById('modality-image-box');
+    const caption = document.getElementById('modality-image-caption');
+    const textContainer = document.getElementById('modality-text-container');
+    
+    const sliderPercent = val / 100;
+    
+    if (img) {
+      img.style.filter = `grayscale(${100 - val}%) brightness(${0.35 + sliderPercent * 0.65})`;
+      img.style.opacity = `${0.3 + sliderPercent * 0.7}`;
+    }
+    
+    if (box) box.style.transform = `scale(${1 + sliderPercent * 0.08})`;
+    if (glow) {
+      glow.style.transform = `scale(${1 + sliderPercent * 0.08})`;
+      glow.style.opacity = `${sliderPercent * 0.8}`;
+    }
+    
+    if (textContainer) {
+      textContainer.style.background = `rgba(253, 251, 247, ${1 - sliderPercent * 0.8})`;
+    }
+    
+    caption.style.color = `rgba(16, 185, 129, ${0.4 + sliderPercent * 0.6})`;
+    sliderDesc.innerText = `Modality Balance: ${(100 - val)}% Text / ${val}% Visual`;
+    
+    if (val > 50) {
+      labelText.classList.remove('active');
+      labelVisual.classList.add('active');
+    } else {
+      labelText.classList.add('active');
+      labelVisual.classList.remove('active');
+    }
+  }
+  
+  function drawTypographicContours() {
+    const imgBox = document.getElementById('modality-image-box');
+    if (!imgBox || !modCtx || !modCanvas) return;
+    
+    const rectImg = imgBox.getBoundingClientRect();
+    const rectCanvas = modCanvas.getBoundingClientRect();
+    
+    const cx = rectImg.left - rectCanvas.left + rectImg.width / 2;
+    const cy = rectImg.top - rectCanvas.top + rectImg.height / 2;
+    
+    const rLidW = rectImg.width * 0.38;
+    const rIris = rectImg.width * 0.16;
+    const rPupil = rectImg.width * 0.06;
+    
+    const sliderVal = document.getElementById('modality-slider').value;
+    const sliderPercent = sliderVal / 100;
+    
+    const baseAlpha = 1 - sliderPercent * 0.75;
+    
+    function drawTextRing(text, radius, isCorrect, colorCode) {
+      const charCount = Math.floor(radius * 0.35);
+      modCtx.save();
+      modCtx.translate(cx, cy);
+      modCtx.font = `900 ${Math.max(8, radius * 0.14)}px monospace`;
+      
+      const alpha = isCorrect ? baseAlpha : 0.06;
+      modCtx.fillStyle = isCorrect ? colorCode : `rgba(255, 255, 255, ${alpha})`;
+      if (isCorrect) {
+        modCtx.shadowColor = colorCode;
+        modCtx.shadowBlur = 10;
+      }
+      
+      const textToRepeat = text.toUpperCase() + " • ";
+      for (let i = 0; i < charCount; i++) {
+        const theta = (i / charCount) * Math.PI * 2 + (performance.now() * 0.0004 * (isCorrect ? 1 : 0.2));
+        const char = textToRepeat[i % textToRepeat.length];
+        
+        modCtx.save();
+        modCtx.rotate(theta);
+        modCtx.fillText(char, 0, -radius);
+        modCtx.restore();
+      }
+      modCtx.restore();
+    }
+    
+    function drawTextCurve(text, isTop, isCorrect, colorCode) {
+      const steps = 18;
+      modCtx.save();
+      modCtx.font = "900 11px monospace";
+      const alpha = isCorrect ? baseAlpha : 0.06;
+      modCtx.fillStyle = isCorrect ? colorCode : `rgba(255, 255, 255, ${alpha})`;
+      if (isCorrect) {
+        modCtx.shadowColor = colorCode;
+        modCtx.shadowBlur = 8;
+      }
+      
+      const textToRepeat = text.toUpperCase() + " • ";
+      
+      for (let i = 0; i <= steps; i++) {
+        const t = i / steps;
+        const theta = t * Math.PI;
+        const x = cx - rLidW + (2 * rLidW) * t;
+        const yOffset = (rectImg.height * 0.18) * Math.sin(theta);
+        const y = isTop ? cy - yOffset : cy + yOffset;
+        
+        const char = textToRepeat[i % textToRepeat.length];
+        
+        const dx = 2 * rLidW / steps;
+        const dy = (rectImg.height * 0.18) * Math.cos(theta) * Math.PI / steps * (isTop ? -1 : 1);
+        const angle = Math.atan2(dy, dx);
+        
+        modCtx.save();
+        modCtx.translate(x, y);
+        modCtx.rotate(angle);
+        modCtx.fillText(char, 0, 0);
+        modCtx.restore();
+      }
+      modCtx.restore();
+    }
+    
+    drawTextCurve("visual", true, modAnswers.visual, '#0ea5e9');
+    drawTextCurve("image", false, modAnswers.image, '#a855f7');
+    drawTextRing("milliseconds", rIris, modAnswers.milliseconds, '#10b981');
+    drawTextRing("thousand", rPupil, modAnswers.thousand, '#f59e0b');
+  }
+  
+  function animateModality() {
+    if (!modActive || !modCtx) return;
+    
+    modCtx.clearRect(0, 0, modCanvas.width, modCanvas.height);
+    drawTypographicContours();
+    
+    for (let i = modParticles.length - 1; i >= 0; i--) {
+      const p = modParticles[i];
+      p.progress += p.speed;
+      
+      const currentX = p.startX + (p.targetX - p.startX) * p.progress + Math.sin(p.progress * Math.PI) * p.curveX;
+      const currentY = p.startY + (p.targetY - p.startY) * p.progress + Math.sin(p.progress * Math.PI) * p.curveY;
+      
+      p.opacity = 1 - Math.max(0, p.progress - 0.7) * 3.3;
+      
+      modCtx.save();
+      modCtx.font = `900 ${p.size}px monospace`;
+      modCtx.fillStyle = p.color;
+      modCtx.globalAlpha = Math.max(0, Math.min(1, p.opacity));
+      modCtx.shadowColor = p.color;
+      modCtx.shadowBlur = 8;
+      modCtx.fillText(p.char, currentX, currentY);
+      modCtx.restore();
+      
+      if (p.progress >= 1) {
+        modParticles.splice(i, 1);
+      }
+    }
+    
+    modRafId = requestAnimationFrame(animateModality);
+  }
 </script>
 
 </body>
