@@ -1302,6 +1302,7 @@
   let digitalCompleted = 0;
   let analogicCompleted = 0;
   let countdownTimer;
+  let digitalInteractiveLocked = false;
   
   // Dummy log text to hide the error log - 24 rows, no highlighting
   const logEntries = [
@@ -1344,6 +1345,8 @@
     document.getElementById('screen-start').classList.add('hidden');
     document.getElementById('screen-digital').classList.remove('hidden');
     
+    digitalInteractiveLocked = false;
+    
     // Render logs
     const logBox = document.getElementById('text-log-box');
     logBox.innerHTML = '';
@@ -1360,11 +1363,16 @@
       row.className = 'vs-log-row';
       row.style.cursor = 'text';
       row.style.userSelect = 'none';
-      row.style.padding = '2px 0';
+      row.style.padding = '4px 8px';
+      row.style.borderRadius = '4px';
+      row.style.transition = 'all 0.2s ease';
       row.innerText = log;
       
       if (log.includes("crashed")) {
-        row.onclick = () => selectDigitalError();
+        row.setAttribute('data-correct', 'true');
+        row.onclick = () => handleLogClick(row, true);
+      } else {
+        row.onclick = () => handleLogClick(row, false);
       }
       logBox.appendChild(row);
     });
@@ -1373,7 +1381,7 @@
     logBox.scrollTop = 0;
 
     testStart = performance.now();
-    let timeLeft = 10;
+    let timeLeft = 30; // Increased to 30 seconds
     document.getElementById('digital-countdown').innerText = timeLeft;
     
     countdownTimer = setInterval(() => {
@@ -1381,19 +1389,80 @@
       document.getElementById('digital-countdown').innerText = timeLeft;
       if (timeLeft <= 0) {
         clearInterval(countdownTimer);
-        // Force fail/complete
-        selectDigitalError(true);
+        handleLogTimeout();
       }
     }, 1000);
   }
 
-  function selectDigitalError(failed = false) {
+  function handleLogClick(row, isCorrect) {
+    if (digitalInteractiveLocked) return;
+    digitalInteractiveLocked = true;
     clearInterval(countdownTimer);
-    const endTime = performance.now();
-    digitalCompleted = failed ? 10000 : (endTime - testStart);
     
-    document.getElementById('screen-digital').classList.add('hidden');
-    document.getElementById('screen-transition').classList.remove('hidden');
+    const logBox = document.getElementById('text-log-box');
+    const endTime = performance.now();
+    
+    if (isCorrect) {
+      // Highlight correct row in green with green light icon
+      row.style.background = 'rgba(16, 185, 129, 0.2)';
+      row.style.border = '1px solid var(--emerald)';
+      row.style.color = '#ffffff';
+      row.style.boxShadow = '0 0 10px rgba(16, 185, 129, 0.3)';
+      row.innerHTML = '🟢 ' + row.innerText;
+      
+      digitalCompleted = endTime - testStart;
+      
+      setTimeout(() => {
+        document.getElementById('screen-digital').classList.add('hidden');
+        document.getElementById('screen-transition').classList.remove('hidden');
+      }, 1200);
+    } else {
+      // Highlight wrong clicked row in desaturated red
+      row.style.background = 'rgba(239, 68, 68, 0.15)';
+      row.style.border = '1px dashed var(--rose)';
+      row.style.color = '#fecaca';
+      
+      // Point out the correct answer using a red alert block
+      const correctRow = logBox.querySelector('[data-correct="true"]');
+      if (correctRow) {
+        correctRow.style.background = 'rgba(239, 68, 68, 0.35)';
+        correctRow.style.border = '1px solid var(--rose)';
+        correctRow.style.color = '#ffffff';
+        correctRow.style.boxShadow = '0 0 14px var(--rose)';
+        correctRow.innerHTML = '🚨 [CRITICAL ALERT] ' + correctRow.innerText;
+      }
+      
+      digitalCompleted = 30000; // max penalty time
+      
+      setTimeout(() => {
+        document.getElementById('screen-digital').classList.add('hidden');
+        document.getElementById('screen-transition').classList.remove('hidden');
+      }, 3000);
+    }
+  }
+
+  function handleLogTimeout() {
+    if (digitalInteractiveLocked) return;
+    digitalInteractiveLocked = true;
+    
+    const logBox = document.getElementById('text-log-box');
+    
+    // Time expired: highlight the correct row in red alert
+    const correctRow = logBox.querySelector('[data-correct="true"]');
+    if (correctRow) {
+      correctRow.style.background = 'rgba(239, 68, 68, 0.35)';
+      correctRow.style.border = '1px solid var(--rose)';
+      correctRow.style.color = '#ffffff';
+      correctRow.style.boxShadow = '0 0 14px var(--rose)';
+      correctRow.innerHTML = '🚨 [TIME EXPIRED] ' + correctRow.innerText;
+    }
+    
+    digitalCompleted = 30000; // max penalty time
+    
+    setTimeout(() => {
+      document.getElementById('screen-digital').classList.add('hidden');
+      document.getElementById('screen-transition').classList.remove('hidden');
+    }, 3000);
   }
 
   function startAnalogicChallenge() {
