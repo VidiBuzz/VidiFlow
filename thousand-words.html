@@ -1882,21 +1882,38 @@
     modCanvas.height = rect.height;
   }
   
+  // State tracking for each blank and its letters
+  const blankStates = {
+    visual: { word: "visual", current: "", color: '#0ea5e9' },
+    image: { word: "image", current: "", color: '#a855f7' },
+    milliseconds: { word: "milliseconds", current: "", color: '#10b981' },
+    thousand: { word: "thousand", current: "", color: '#f59e0b' }
+  };
+
+  // Stores completed/landed letters at their respective indexes
+  const modAccumulated = {
+    visual: [],      // Array of size 6
+    image: [],       // Array of size 5
+    milliseconds: [], // Array of size 12
+    thousand: []     // Array of size 8
+  };
+
   function handleBlankInput(e) {
     const input = e.target;
-    const val = input.value.trim().toLowerCase();
+    const val = input.value;
     const target = input.getAttribute('data-target');
+    const state = blankStates[target];
+    
+    const prevVal = state.current;
+    state.current = val;
     
     // Check correctness
-    if (val === target) {
+    const isCorrect = val.trim().toLowerCase() === target;
+    if (isCorrect) {
       if (!modAnswers[target]) {
         modAnswers[target] = true;
         input.classList.add('correct');
-        
-        // Play success chime
         synthAudio.playSuccess();
-        
-        // Spawn success flash particles
         spawnSuccessBurst(input);
       }
     } else {
@@ -1906,12 +1923,33 @@
       }
     }
     
-    // Spawn typing float particle for each letter typed/deleted
-    spawnTypeParticle(input, e.data || val.slice(-1) || 'x');
+    const maxLen = state.word.length;
+    
+    // If characters were added
+    if (val.length > prevVal.length) {
+      for (let i = prevVal.length; i < val.length; i++) {
+        if (i < maxLen) {
+          const char = val[i];
+          spawnTypeParticleAtPos(target, char, i);
+        }
+      }
+    }
+    // If characters were deleted
+    else if (val.length < prevVal.length) {
+      for (let i = val.length; i < prevVal.length; i++) {
+        if (i < maxLen) {
+          modAccumulated[target][i] = null;
+        }
+      }
+    }
   }
-  
-  function spawnTypeParticle(input, char) {
+
+  function spawnTypeParticleAtPos(target, char, index) {
     if (!modCanvas) return;
+    
+    const input = document.getElementById(`blank-${target}`);
+    if (!input) return;
+    
     const rectInput = input.getBoundingClientRect();
     const rectCanvas = modCanvas.getBoundingClientRect();
     
@@ -1919,13 +1957,14 @@
     const startX = rectInput.left - rectCanvas.left + rectInput.width / 2;
     const startY = rectInput.top - rectCanvas.top + rectInput.height / 2;
     
-    // Target contour on the right
-    const targetType = input.getAttribute('data-target');
-    const targetCoord = getEyeContourPoint(targetType);
+    // Target coordinate: pre-calculated letter position on the right panel eyeball contour
+    const targetCoord = getLetterContourPoint(target, index);
+    const state = blankStates[target];
     
-    // Spawn single letter particle
     modParticles.push({
       char: char.toUpperCase(),
+      targetType: target,
+      targetIdx: index,
       x: startX,
       y: startY,
       startX: startX,
@@ -1933,15 +1972,15 @@
       targetX: targetCoord.x,
       targetY: targetCoord.y,
       progress: 0,
-      speed: 0.015 + Math.random() * 0.008,
-      size: 11 + Math.random() * 6,
-      color: targetType === 'visual' ? '#0ea5e9' : (targetType === 'image' ? '#a855f7' : (targetType === 'milliseconds' ? '#10b981' : '#f59e0b')),
-      curveX: (Math.random() - 0.5) * 150,
-      curveY: -80 - Math.random() * 120,
+      speed: 0.018 + Math.random() * 0.006, // Slightly faster transition
+      size: 13 + Math.random() * 3,
+      color: state.color,
+      curveX: (Math.random() - 0.5) * 120,
+      curveY: -60 - Math.random() * 80,
       opacity: 1
     });
   }
-  
+
   function spawnSuccessBurst(input) {
     const targetType = input.getAttribute('data-target');
     const colors = {
@@ -1952,7 +1991,6 @@
     };
     const color = colors[targetType] || '#38bdf8';
     
-    // Spawn particles that float directly to the eyeball
     for (let i = 0; i < 20; i++) {
       setTimeout(() => {
         if (!modCanvas) return;
@@ -1960,7 +1998,9 @@
         const rectCanvas = modCanvas.getBoundingClientRect();
         const startX = rectInput.left - rectCanvas.left + rectInput.width / 2;
         const startY = rectInput.top - rectCanvas.top + rectInput.height / 2;
-        const targetCoord = getEyeContourPoint(targetType);
+        
+        // Target random points on the eyeball
+        const targetCoord = getLetterContourPoint(targetType, Math.floor(Math.random() * blankStates[targetType].word.length));
         
         modParticles.push({
           char: '✦',
@@ -1981,8 +2021,8 @@
       }, i * 40);
     }
   }
-  
-  function getEyeContourPoint(type) {
+
+  function getLetterContourPoint(target, index) {
     const imgBox = document.getElementById('modality-image-box');
     if (!imgBox || !modCanvas) return { x: 400, y: 300 };
     
@@ -1996,32 +2036,40 @@
     const rIris = rectImg.width * 0.16;
     const rPupil = rectImg.width * 0.06;
     
+    const state = blankStates[target];
+    const N = state.word.length;
+    
     let x = cx;
     let y = cy;
     
-    if (type === 'visual') {
-      const t = Math.random();
+    // Distribute indices evenly
+    const t = (index + 0.5) / N;
+    
+    if (target === 'visual') {
+      // Top Eyelid Curve (left to right)
       const theta = t * Math.PI;
       x = cx - rLidW + (2 * rLidW) * t;
       y = cy - (rectImg.height * 0.18) * Math.sin(theta);
-    } else if (type === 'image') {
-      const t = Math.random();
+    } else if (target === 'image') {
+      // Bottom Eyelid Curve (left to right)
       const theta = t * Math.PI;
       x = cx - rLidW + (2 * rLidW) * t;
       y = cy + (rectImg.height * 0.18) * Math.sin(theta);
-    } else if (type === 'milliseconds') {
-      const theta = Math.random() * Math.PI * 2;
+    } else if (target === 'milliseconds') {
+      // Iris ring circle (clockwise starting from top)
+      const theta = t * Math.PI * 2 - Math.PI / 2;
       x = cx + rIris * Math.cos(theta);
       y = cy + rIris * Math.sin(theta);
-    } else if (type === 'thousand') {
-      const theta = Math.random() * Math.PI * 2;
+    } else if (target === 'thousand') {
+      // Pupil ring circle (clockwise starting from top)
+      const theta = t * Math.PI * 2 - Math.PI / 2;
       x = cx + rPupil * Math.cos(theta);
       y = cy + rPupil * Math.sin(theta);
     }
     
     return { x, y };
   }
-  
+
   function handleModalitySliderChange(val) {
     const sliderDesc = document.getElementById('modality-slider-desc');
     const labelText = document.getElementById('modality-label-text');
@@ -2060,99 +2108,68 @@
       labelVisual.classList.remove('active');
     }
   }
-  
+
   function drawTypographicContours() {
-    const imgBox = document.getElementById('modality-image-box');
-    if (!imgBox || !modCtx || !modCanvas) return;
-    
-    const rectImg = imgBox.getBoundingClientRect();
-    const rectCanvas = modCanvas.getBoundingClientRect();
-    
-    const cx = rectImg.left - rectCanvas.left + rectImg.width / 2;
-    const cy = rectImg.top - rectCanvas.top + rectImg.height / 2;
-    
-    const rLidW = rectImg.width * 0.38;
-    const rIris = rectImg.width * 0.16;
-    const rPupil = rectImg.width * 0.06;
+    if (!modCtx || !modCanvas) return;
     
     const sliderVal = document.getElementById('modality-slider').value;
     const sliderPercent = sliderVal / 100;
-    
     const baseAlpha = 1 - sliderPercent * 0.75;
     
-    function drawTextRing(text, radius, isCorrect, colorCode) {
-      const charCount = Math.floor(radius * 0.35);
-      modCtx.save();
-      modCtx.translate(cx, cy);
-      modCtx.font = `900 ${Math.max(8, radius * 0.14)}px monospace`;
+    // 1. Draw Faint Placeholder Outlines
+    for (const key in blankStates) {
+      const state = blankStates[key];
+      const word = state.word;
+      const isCorrect = modAnswers[key];
+      const arr = modAccumulated[key];
       
-      const alpha = isCorrect ? baseAlpha : 0.06;
-      modCtx.fillStyle = isCorrect ? colorCode : `rgba(255, 255, 255, ${alpha})`;
-      if (isCorrect) {
-        modCtx.shadowColor = colorCode;
-        modCtx.shadowBlur = 10;
+      // Only draw faint placeholder letters if not fully correct/illuminated
+      if (!isCorrect) {
+        for (let i = 0; i < word.length; i++) {
+          if (arr[i]) continue; // Don't draw placeholder if a letter has already landed here
+          
+          const pt = getLetterContourPoint(key, i);
+          modCtx.save();
+          modCtx.font = `900 11px monospace`;
+          modCtx.fillStyle = `rgba(255, 255, 255, 0.035)`; // Very faint outline guide
+          modCtx.fillText(word[i].toUpperCase(), pt.x, pt.y);
+          modCtx.restore();
+        }
       }
-      
-      const textToRepeat = text.toUpperCase() + " • ";
-      for (let i = 0; i < charCount; i++) {
-        const theta = (i / charCount) * Math.PI * 2 + (performance.now() * 0.0004 * (isCorrect ? 1 : 0.2));
-        const char = textToRepeat[i % textToRepeat.length];
-        
-        modCtx.save();
-        modCtx.rotate(theta);
-        modCtx.fillText(char, 0, -radius);
-        modCtx.restore();
-      }
-      modCtx.restore();
     }
     
-    function drawTextCurve(text, isTop, isCorrect, colorCode) {
-      const steps = 18;
-      modCtx.save();
-      modCtx.font = "900 11px monospace";
-      const alpha = isCorrect ? baseAlpha : 0.06;
-      modCtx.fillStyle = isCorrect ? colorCode : `rgba(255, 255, 255, ${alpha})`;
-      if (isCorrect) {
-        modCtx.shadowColor = colorCode;
-        modCtx.shadowBlur = 8;
-      }
+    // 2. Draw Accumulated Letters
+    for (const key in modAccumulated) {
+      const arr = modAccumulated[key];
+      const color = blankStates[key].color;
+      const isCorrect = modAnswers[key];
       
-      const textToRepeat = text.toUpperCase() + " • ";
-      
-      for (let i = 0; i <= steps; i++) {
-        const t = i / steps;
-        const theta = t * Math.PI;
-        const x = cx - rLidW + (2 * rLidW) * t;
-        const yOffset = (rectImg.height * 0.18) * Math.sin(theta);
-        const y = isTop ? cy - yOffset : cy + yOffset;
-        
-        const char = textToRepeat[i % textToRepeat.length];
-        
-        const dx = 2 * rLidW / steps;
-        const dy = (rectImg.height * 0.18) * Math.cos(theta) * Math.PI / steps * (isTop ? -1 : 1);
-        const angle = Math.atan2(dy, dx);
-        
+      arr.forEach((ap) => {
+        if (!ap) return;
         modCtx.save();
-        modCtx.translate(x, y);
-        modCtx.rotate(angle);
-        modCtx.fillText(char, 0, 0);
+        modCtx.font = `900 ${ap.size}px monospace`;
+        
+        // Glow if correct, otherwise draw in solid text color
+        modCtx.fillStyle = isCorrect ? color : `rgba(255, 255, 255, ${baseAlpha * 0.95})`;
+        if (isCorrect) {
+          modCtx.shadowColor = color;
+          modCtx.shadowBlur = 10;
+        }
+        modCtx.fillText(ap.char, ap.x, ap.y);
         modCtx.restore();
-      }
-      modCtx.restore();
+      });
     }
-    
-    drawTextCurve("visual", true, modAnswers.visual, '#0ea5e9');
-    drawTextCurve("image", false, modAnswers.image, '#a855f7');
-    drawTextRing("milliseconds", rIris, modAnswers.milliseconds, '#10b981');
-    drawTextRing("thousand", rPupil, modAnswers.thousand, '#f59e0b');
   }
-  
+
   function animateModality() {
     if (!modActive || !modCtx) return;
     
     modCtx.clearRect(0, 0, modCanvas.width, modCanvas.height);
+    
+    // Draw outlines and landed letters
     drawTypographicContours();
     
+    // Draw flying particles
     for (let i = modParticles.length - 1; i >= 0; i--) {
       const p = modParticles[i];
       p.progress += p.speed;
@@ -2172,6 +2189,16 @@
       modCtx.restore();
       
       if (p.progress >= 1) {
+        // When it lands, add it to the accumulated letters array!
+        if (p.targetType && p.targetIdx !== undefined) {
+          modAccumulated[p.targetType][p.targetIdx] = {
+            char: p.char,
+            x: p.targetX,
+            y: p.targetY,
+            size: p.size,
+            color: p.color
+          };
+        }
         modParticles.splice(i, 1);
       }
     }

@@ -1,3 +1,946 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Channel Technical Specification v1.0</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script type="module" src="https://unpkg.com/@splinetool/viewer@1.0.51/build/spline-viewer.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap"
+        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Kumbh+Sans:wght@700;800&display=swap" rel="stylesheet">
+    <!-- Sovereign Core Aesthetic: Dark Mode, Gold/Cyan Variables -->
+    <style>
+        .font-kumbh {
+            font-family: 'Kumbh Sans', sans-serif;
+        }
+
+        :root {
+            --gold: #D4AF37;
+            --ai-blue: #00f2ff;
+            --deep-black: #050505;
+            --glass: rgba(255, 255, 255, 0.02);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --neon-purple: #9d00ff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--deep-black);
+            color: #e2e8f0;
+            line-height: 1.6;
+            background-image:
+                radial-gradient(circle at 15% 50%, rgba(157, 0, 255, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 85% 30%, rgba(0, 242, 255, 0.05) 0%, transparent 50%);
+            background-attachment: fixed;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+
+        header {
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            letter-spacing: -0.05em;
+            text-transform: uppercase;
+        }
+
+        .nav-links {
+            display: none;
+            gap: 2.5rem;
+        }
+
+        .nav-link {
+            font-weight: 700;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-decoration: none;
+            color: #64748b;
+            transition: color 0.3s;
+            position: relative;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: var(--gold);
+        }
+
+        .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -6px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--gold);
+            box-shadow: 0 0 10px var(--gold);
+        }
+
+        .mobile-menu-button {
+            font-size: 1.5rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            display: block;
+            color: white;
+        }
+
+        .mobile-menu {
+            display: none;
+            background: #0a0a0a;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .mobile-menu.show {
+            display: block;
+        }
+
+        .mobile-menu a {
+            display: block;
+            padding: 0.75rem 0;
+            text-align: center;
+            text-decoration: none;
+            color: #e2e8f0;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 0.8rem;
+        }
+
+        main {
+            padding: 2rem 1.5rem;
+        }
+
+        section {
+            margin-bottom: 10rem;
+        }
+
+        h2 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            text-align: center;
+            letter-spacing: -0.02em;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            color: white;
+        }
+
+        h4 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: white;
+        }
+
+        h5 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #cbd5e1;
+        }
+
+        p {
+            margin-bottom: 1rem;
+            color: #94a3b8;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .max-w-3xl {
+            max-width: 48rem;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .grid {
+            display: grid;
+            gap: 2rem;
+        }
+
+        .grid-cols-2 {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .grid-cols-3 {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        .card {
+            padding: 2.5rem;
+            border-radius: 24px;
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            background: var(--glass);
+            backdrop-filter: blur(25px);
+            border: 1px solid var(--glass-border);
+            color: #e2e8f0;
+            position: relative;
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            border-color: rgba(212, 175, 55, 0.4);
+            box-shadow: 0 15px 40px rgba(212, 175, 55, 0.1);
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .panel-3d {
+            padding: 3rem;
+            border-radius: 24px;
+            background: rgba(10, 10, 10, 0.6);
+            backdrop-filter: blur(30px);
+            border: 1px solid var(--glass-border);
+            color: #e2e8f0;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1), box-shadow 0.4s ease, border-color 0.4s ease;
+        }
+
+        .panel-3d:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
+            border-color: rgba(0, 242, 255, 0.2);
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #fff 0%, var(--gold) 50%, #f1d37e 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .card .gradient-text,
+        .panel-3d .gradient-text {
+            background: linear-gradient(135deg, #fff 0%, var(--ai-blue) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .tab-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            margin-bottom: 3rem;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .tab {
+            padding: 1rem 2.5rem;
+            font-weight: 700;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #475569;
+            cursor: pointer;
+            background: none;
+            border: none;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .tab:hover {
+            color: #cbd5e1;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 8px 8px 0 0;
+        }
+
+        .tab.active {
+            color: var(--ai-blue);
+        }
+
+        .tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--ai-blue);
+            box-shadow: 0 0 10px var(--ai-blue);
+        }
+
+        .spec-section {
+            border-left: 2px solid var(--neon-purple);
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            background: var(--glass);
+            border-radius: 0 20px 20px 0;
+            color: #e2e8f0;
+            transition: all 0.3s ease;
+            border-top: 1px solid var(--glass-border);
+            border-right: 1px solid var(--glass-border);
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .spec-section:hover {
+            background: rgba(157, 0, 255, 0.05);
+            border-left-color: var(--gold);
+        }
+
+        .number-badge {
+            flex-shrink: 0;
+            width: 3.5rem;
+            height: 3.5rem;
+            background: rgba(0, 242, 255, 0.05);
+            border: 1px solid var(--ai-blue);
+            color: var(--ai-blue);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            margin-right: 2rem;
+            box-shadow: 0 0 15px rgba(0, 242, 255, 0.2);
+            font-size: 1.25rem;
+        }
+
+        .step-container {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 2rem;
+            background: var(--glass);
+            padding: 2rem;
+            border-radius: 20px;
+            border: 1px solid var(--glass-border);
+            transition: transform 0.3s cubic-bezier(0.165, 0.84, 0.44, 1), background 0.3s ease, border-color 0.3s ease;
+        }
+
+        .step-container:hover {
+            transform: translateX(8px);
+            background: rgba(255, 255, 255, 0.05);
+            border-color: var(--neon-purple);
+        }
+
+        .flex {
+            display: flex;
+        }
+
+        .items-center {
+            align-items: center;
+        }
+
+        .items-start {
+            align-items: flex-start;
+        }
+
+        .gap-8 {
+            gap: 2.5rem;
+        }
+
+        .space-y-6>*+* {
+            margin-top: 1.5rem;
+        }
+
+        .space-y-4>*+* {
+            margin-top: 1rem;
+        }
+
+        .space-y-2>*+* {
+            margin-top: 0.5rem;
+        }
+
+        .mb-12 {
+            margin-bottom: 4rem;
+        }
+
+        .mb-8 {
+            margin-bottom: 2rem;
+        }
+
+        .mb-6 {
+            margin-bottom: 1.5rem;
+        }
+
+        .mb-4 {
+            margin-bottom: 1rem;
+        }
+
+        .mb-2 {
+            margin-bottom: 0.5rem;
+        }
+
+        .bg-gray-50 {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+        }
+
+        .bg-gray-800 {
+            background-color: #000;
+            border-top: 1px solid var(--glass-border);
+        }
+
+        .text-white {
+            color: white !important;
+        }
+
+        .text-gray-600 {
+            color: #94a3b8 !important;
+        }
+
+        .text-gray-700 {
+            color: #cbd5e1 !important;
+        }
+
+        .text-gray-400 {
+            color: #64748b !important;
+        }
+
+        .text-sm {
+            font-size: 0.875rem;
+        }
+
+        .text-lg {
+            font-size: 1.125rem;
+        }
+
+        .text-xl {
+            font-size: 1.25rem;
+        }
+
+        .text-2xl {
+            font-size: 1.5rem;
+        }
+
+        .text-3xl {
+            font-size: 1.875rem;
+        }
+
+        .text-4xl {
+            font-size: 2.25rem;
+        }
+
+        .text-5xl {
+            font-size: 3rem;
+        }
+
+        .font-bold {
+            font-weight: 700;
+        }
+
+        .font-semibold {
+            font-weight: 600;
+        }
+
+        .font-medium {
+            font-weight: 500;
+        }
+
+        .rounded-lg {
+            border-radius: 0.5rem;
+        }
+
+        .rounded-xl {
+            border-radius: 1rem;
+        }
+
+        .p-4 {
+            padding: 1rem;
+        }
+
+        .p-6 {
+            padding: 1.5rem;
+        }
+
+        .p-8 {
+            padding: 2rem;
+        }
+
+        .py-8 {
+            padding-top: 2rem;
+            padding-bottom: 2rem;
+        }
+
+        .list-disc {
+            list-style-type: disc;
+        }
+
+        .list-inside {
+            list-style-position: inside;
+        }
+
+        .mt-2 {
+            margin-top: 0.5rem;
+        }
+
+        .mt-4 {
+            margin-top: 1rem;
+        }
+
+        ul {
+            padding-left: 1.5rem;
+        }
+
+        footer {
+            padding: 4rem 1.5rem;
+            text-align: center;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* SVG Icon & Chart Styles */
+        .section-icon {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 1.5rem;
+            display: block;
+        }
+
+        .card-icon {
+            width: 48px;
+            height: 48px;
+            margin: 0 auto 1.5rem;
+            display: block;
+        }
+
+        .flow-chart {
+            max-width: 100%;
+            height: auto;
+            margin: 4rem auto;
+            display: block;
+        }
+
+        .svg-connector {
+            stroke: var(--glass-border);
+            stroke-width: 2;
+            fill: none;
+            stroke-dasharray: 4, 4;
+            animation: dash 20s linear infinite;
+        }
+
+        .svg-connector-active {
+            stroke: var(--ai-blue);
+            stroke-width: 2;
+            fill: none;
+            stroke-dasharray: 4, 4;
+            animation: dash 10s linear infinite reverse;
+        }
+
+        @keyframes dash {
+            to {
+                stroke-dashoffset: 1000;
+            }
+        }
+
+        .flow-box {
+            fill: #0a0a0a;
+            stroke: var(--glass-border);
+            stroke-width: 2;
+        }
+
+        .flow-box:hover {
+            stroke: var(--ai-blue);
+            box-shadow: 0 0 20px rgba(0, 242, 255, 0.2);
+        }
+
+        .flow-text {
+            fill: #e2e8f0;
+            font-size: 14px;
+            font-weight: 600;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .flow-text-small {
+            fill: #94a3b8;
+            font-size: 11px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .arrow-marker {
+            fill: var(--ai-blue);
+        }
+
+        /* Decorative background elements */
+        .bg-decoration {
+            position: fixed;
+            pointer-events: none;
+            z-index: -1;
+            opacity: 0.15;
+            filter: blur(50px);
+        }
+
+        @media (min-width: 768px) {
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            h2 {
+                font-size: 3rem;
+            }
+
+            .nav-links {
+                display: flex;
+            }
+
+            .mobile-menu-button {
+                display: none;
+            }
+
+            main {
+                padding: 3rem 1.5rem;
+            }
+
+            section {
+                margin-bottom: 12rem;
+            }
+
+            .grid-cols-3 {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .grid-cols-2 {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .tab-container {
+                flex-direction: row;
+            }
+
+            .flex-row {
+                flex-direction: row;
+            }
+
+            .text-4xl {
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+</head>
+
+<body class="antialiased">
+
+    <!-- Decorative Animated Background SVG Elements -->
+    <svg class="bg-decoration" style="top: 10%; left: -5%; width: 400px; height: 400px;" viewBox="0 0 200 200"
+        xmlns="http://www.w3.org/2000/svg">
+        <defs>
+            <linearGradient id="bgGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style="stop-color:var(--neon-purple);stop-opacity:0.3">
+                    <animate attributeName="stop-opacity" values="0.3;0.6;0.3" dur="4s" repeatCount="indefinite" />
+                </stop>
+                <stop offset="100%" style="stop-color:var(--ai-blue);stop-opacity:0.3">
+                    <animate attributeName="stop-opacity" values="0.3;0.6;0.3" dur="4s" repeatCount="indefinite" />
+                </stop>
+            </linearGradient>
+        </defs>
+        <circle cx="100" cy="100" r="80" fill="url(#bgGrad1)">
+            <animate attributeName="r" values="80;90;80" dur="6s" repeatCount="indefinite" />
+        </circle>
+        <circle cx="100" cy="100" r="60" fill="none" stroke="url(#bgGrad1)" stroke-width="2">
+            <animate attributeName="r" values="60;70;60" dur="5s" repeatCount="indefinite" />
+        </circle>
+    </svg>
+
+    <svg class="bg-decoration" style="top: 50%; right: -5%; width: 350px; height: 350px;" viewBox="0 0 200 200"
+        xmlns="http://www.w3.org/2000/svg">
+        <defs>
+            <linearGradient id="bgGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style="stop-color:var(--gold);stop-opacity:0.2" />
+                <stop offset="100%" style="stop-color:#f1d37e;stop-opacity:0.2" />
+            </linearGradient>
+        </defs>
+        <polygon points="100,20 180,180 20,180" fill="url(#bgGrad2)" stroke="url(#bgGrad2)" stroke-width="3">
+            <animateTransform attributeName="transform" type="rotate" from="0 100 100" to="360 100 100" dur="30s"
+                repeatCount="indefinite" />
+        </polygon>
+    </svg>
+
+    <svg class="bg-decoration" style="bottom: 10%; left: 50%; width: 300px; height: 300px;" viewBox="0 0 200 200"
+        xmlns="http://www.w3.org/2000/svg">
+        <defs>
+            <linearGradient id="bgGrad3" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style="stop-color:var(--neon-purple);stop-opacity:0.25" />
+                <stop offset="100%" style="stop-color:var(--ai-blue);stop-opacity:0.25" />
+            </linearGradient>
+        </defs>
+        <rect x="50" y="50" width="100" height="100" fill="url(#bgGrad3)" rx="20">
+            <animate attributeName="rx" values="20;50;20" dur="8s" repeatCount="indefinite" />
+        </rect>
+    </svg>
+
+    <header id="header">
+        <nav class="container">
+            <h1 class="gradient-text font-kumbh">SmartChannel CX</h1>
+            <div class="nav-links">
+                <a href="#overview" class="nav-link">Overview</a>
+                <a href="#ingestion" class="nav-link">Ingestion</a>
+                <a href="#processing" class="nav-link">Processing & Storage</a>
+                <a href="#generation" class="nav-link">Content Generation</a>
+                <a href="#personas" class="nav-link">Persona Matrix</a>
+            </div>
+            <button id="mobile-menu-button" class="mobile-menu-button">☰</button>
+        </nav>
+        <div id="mobile-menu" class="mobile-menu hidden">
+            <a href="#overview" class="nav-link">Overview</a>
+            <a href="#ingestion" class="nav-link">Ingestion</a>
+            <a href="#processing" class="nav-link">Processing & Storage</a>
+            <a href="#generation" class="nav-link">Content Generation</a>
+            <a href="#personas" class="nav-link">Persona Matrix</a>
+        </div>
+    </header>
+
+    <div
+        style="width: 100%; position: relative; height: 50vh; overflow: hidden; border-bottom: 1px solid var(--glass-border);">
+        <img referrerpolicy="no-referrer" src="https://cdn.video.news/smart_channel_hero_wide.png" alt="Smart Channel Architecture"
+            style="width: 100%; height: 100%; object-fit: cover; opacity: 0.8;" />
+        <div
+            style="position: absolute; inset: 0; background: linear-gradient(to top, var(--deep-black) 0%, transparent 60%); pointer-events: none;">
+        </div>
+        <div style="position: absolute; bottom: 40px; left: 0; right: 0; text-align: center; padding: 0 20px;">
+            <h2 class="text-4xl md:text-5xl font-bold text-white mb-2" style="font-family: 'Kumbh Sans', sans-serif;">
+                Smart Channel CX</h2>
+            <p class="text-xl text-gray-700 max-w-3xl text-center" style="margin: 0 auto; color: #cbd5e1 !important;">
+                Hybrid Vector-Graph Database Architecture & Multimodal Generation</p>
+        </div>
+    </div>
+
+    <main class="container">
+
+        <section id="overview" class="text-center">
+            <h2 class="gradient-text font-kumbh">Project: SmartChannel CX</h2>
+            <p class="max-w-3xl text-lg text-gray-700 mb-8">
+                This document outlines the technical specification for the "Smart Channel," a generative content
+                platform powered by a hybrid vector-graph database architecture. The system is designed to ingest
+                multimodal content (text, images, video), process it into a rich, interconnected knowledge base, and
+                generate high-quality, contextually relevant content on demand for Generative Engine Optimization (GEO).
+            </p>
+            <div class="grid grid-cols-3">
+                <div class="card">
+                    <svg class="card-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M21 16V8C21 6.89543 20.1046 6 19 6H5C3.89543 6 3 6.89543 3 8V16C3 17.1046 3.89543 18 5 18H19C20.1046 18 21 17.1046 21 16Z"
+                            stroke="url(#gradient1)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                        <path d="M12 10L3 6L12 2L21 6L12 10Z" stroke="url(#gradient1)" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round" />
+                        <path d="M12 22V10" stroke="url(#gradient1)" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                        <defs>
+                            <linearGradient id="gradient1" x1="3" y1="2" x2="21" y2="22">
+                                <stop offset="0%" stop-color="#667eea" />
+                                <stop offset="100%" stop-color="#764ba2" />
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                    <h3 class="text-xl font-semibold mb-2 gradient-text">Automated Ingestion</h3>
+                    <p class="text-gray-600">Continuously process unstructured text, image, and video content into a
+                        machine-readable format.</p>
+                </div>
+                <div class="card">
+                    <svg class="card-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="12" cy="12" r="3" stroke="url(#gradient2)" stroke-width="2" />
+                        <circle cx="12" cy="4" r="2" fill="#667eea" />
+                        <circle cx="12" cy="20" r="2" fill="#764ba2" />
+                        <circle cx="4" cy="12" r="2" fill="#667eea" />
+                        <circle cx="20" cy="12" r="2" fill="#764ba2" />
+                        <circle cx="6" cy="6" r="1.5" fill="#f59e0b" />
+                        <circle cx="18" cy="6" r="1.5" fill="#f59e0b" />
+                        <circle cx="6" cy="18" r="1.5" fill="#f59e0b" />
+                        <circle cx="18" cy="18" r="1.5" fill="#f59e0b" />
+                        <line x1="12" y1="6" x2="12" y2="9" stroke="#667eea" stroke-width="1.5" />
+                        <line x1="12" y1="15" x2="12" y2="18" stroke="#764ba2" stroke-width="1.5" />
+                        <line x1="6" y1="12" x2="9" y2="12" stroke="#667eea" stroke-width="1.5" />
+                        <line x1="15" y1="12" x2="18" y2="12" stroke="#764ba2" stroke-width="1.5" />
+                        <defs>
+                            <linearGradient id="gradient2" x1="9" y1="9" x2="15" y2="15">
+                                <stop offset="0%" stop-color="#667eea" />
+                                <stop offset="100%" stop-color="#764ba2" />
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                    <h3 class="text-xl font-semibold mb-2 gradient-text">Semantic Understanding</h3>
+                    <p class="text-gray-600">Utilize a hybrid vector and graph database to understand deep semantic
+                        relationships between all content assets.</p>
+                </div>
+                <div class="card">
+                    <svg class="card-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M14 2H6C5.46957 2 4.96086 2.21071 4.58579 2.58579C4.21071 2.96086 4 3.46957 4 4V20C4 20.5304 4.21071 21.0391 4.58579 21.4142C4.96086 21.7893 5.46957 22 6 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V8L14 2Z"
+                            stroke="url(#gradient3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                        <path d="M14 2V8H20" stroke="url(#gradient3)" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                        <path d="M16 13H8" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" />
+                        <path d="M16 17H8" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" />
+                        <path d="M10 9H9H8" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" />
+                        <defs>
+                            <linearGradient id="gradient3" x1="4" y1="2" x2="20" y2="22">
+                                <stop offset="0%" stop-color="#667eea" />
+                                <stop offset="100%" stop-color="#764ba2" />
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                    <h3 class="text-xl font-semibold mb-2 gradient-text">Generative Output</h3>
+                    <p class="text-gray-600">Generate blog articles, video clips, and image suggestions based on queries
+                        and persona-driven narratives.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="ingestion">
+            <h2 class="gradient-text">Phase 1: Multimodal Ingestion & Embedding</h2>
+            <p class="max-w-3xl text-lg text-center text-gray-700 mb-12">
+                The foundation of the Smart Channel is its ability to convert raw unstructured media into meaningful
+                vector embeddings and visually model those relationships in a 3D neural network knowledge graph. Each
+                content type requires a specialized approach to capture its unique semantic information. This section
+                details the recommended models and platforms for text, image, and video processing, including cost
+                considerations.
+            </p>
+
+            <div class="panel-3d">
+                <h3 class="gradient-text">Embedding Model Options by Modality</h3>
+                <div class="tab-container">
+                    <button data-tab="text" class="tab active">Text & Text+Image</button>
+                    <button data-tab="image" class="tab">Image-Only</button>
+                    <button data-tab="video" class="tab">Video</button>
+                </div>
+
+                <div id="ingestion-content">
+                </div>
+            </div>
+        </section>
+
+        <section id="processing">
+            <h2 class="gradient-text">Phase 2: Processing & Storage Architecture</h2>
+            <p class="max-w-3xl text-lg text-center text-gray-700 mb-12">
+                To enable both semantic similarity search and complex relationship queries, we will implement a hybrid
+                database architecture. This combines the strengths of a vector database for nearest-neighbor search with
+                a graph database for understanding explicit connections, powered by a GraphRAG engine.
+            </p>
+
+            <div
+                style="margin-bottom: 3rem; border-radius: 24px; overflow: hidden; border: 1px solid var(--glass-border); position: relative; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);">
+                <img referrerpolicy="no-referrer" src="https://cdn.video.news/smart_channel_processing_wide.png" alt="AI Generative Engine Processing"
+                    style="width: 100%; height: auto; object-fit: cover; opacity: 0.9; display: block;" />
+                <div
+                    style="position: absolute; inset: 0; background: linear-gradient(to top, var(--deep-black) 0%, transparent 40%); pointer-events: none;">
+                </div>
+            </div>
+
+            <div class="panel-3d">
+                <h3 class="gradient-text">Hybrid Vector-Graph System</h3>
+
+                <div class="grid md:grid-cols-3 gap-6 my-10 relative">
+                    <!-- Connector Line -->
+                    <div
+                        class="hidden md:block absolute top-1/2 left-0 w-full h-1 bg-gradient-to-r from-[--ai-blue] to-[--neon-purple] transform -translate-y-1/2 opacity-30">
+                    </div>
+
+                    <!-- Qdrant Box -->
+                    <div
+                        class="glass-panel p-6 border-l-4 border-[--ai-blue] relative z-10 bg-slate-900/80 transform hover:-translate-y-2 transition duration-300">
+                        <div class="text-[--ai-blue] text-xs font-black uppercase tracking-widest mb-2">Vector Database
+                        </div>
+                        <h4 class="text-2xl font-bold text-white mb-2" style="font-family: 'Kumbh Sans', sans-serif;">
+                            Qdrant</h4>
+                        <p class="text-sm text-gray-400">Embeddings Storage & Semantic Search</p>
+                    </div>
+
+                    <!-- GraphRAG Engine Box -->
+                    <div
+                        class="glass-panel p-6 border-2 border-[--gold] relative z-10 bg-slate-900/90 transform hover:-translate-y-2 transition duration-300 shadow-[0_0_30px_rgba(212,175,55,0.2)]">
+                        <div class="text-[--gold] text-xs font-black uppercase tracking-widest mb-2 text-center">
+                            Orchestration Layer</div>
+                        <h4 class="text-2xl font-bold text-white mb-2 text-center"
+                            style="font-family: 'Kumbh Sans', sans-serif;">GraphRAG Engine</h4>
+                        <p class="text-sm text-gray-400 text-center">Fuses Vector + High-Res Graph</p>
+                    </div>
+
+                    <!-- Neo4j Box -->
+                    <div
+                        class="glass-panel p-6 border-r-4 border-[--neon-purple] relative z-10 bg-slate-900/80 transform hover:-translate-y-2 transition duration-300">
+                        <div class="text-[--neon-purple] text-xs font-black uppercase tracking-widest mb-2 text-right">
+                            Graph Database</div>
+                        <h4 class="text-2xl font-bold text-white mb-2 text-right"
+                            style="font-family: 'Kumbh Sans', sans-serif;">Neo4j</h4>
+                        <p class="text-sm text-gray-400 text-right">Explicit Connective Knowledge</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 items-center gap-8">
+                    <div class="spec-section border-slate-700">
+                        <h4 class="text-xl font-semibold mb-2">Vector Database: Qdrant</h4>
+                        <p class="mb-2"><strong>Role:</strong> Stores all multimodal vector embeddings (text, image,
+                            video).</p>
+                        <p class="mb-2"><strong>Function:</strong> Enables high-speed semantic search to find the most
+                            relevant content based on a query's meaning, using Approximate Nearest Neighbor (ANN)
+                            search.</p>
+                        <p><strong>Key Feature:</strong> Scalable and optimized for low-latency vector similarity
+                            operations.</p>
+                    </div>
+                    <div class="text-5xl text-center text-gray-300 font-bold">+</div>
+                    <div class="spec-section border-slate-700 md:col-start-1">
+                        <h4 class="text-xl font-semibold mb-2">Graph Database: Neo4j</h4>
+                        <p class="mb-2"><strong>Role:</strong> Stores entities (e.g., topics, people, products) and
+                            their explicit relationships.</p>
+                        <p class="mb-2"><strong>Function:</strong> Used to build a knowledge graph that provides context
+                            and factual grounding for the LLM. It answers "how" things are connected.</p>
+                        <p><strong>Key Feature:</strong> Allows for multi-hop queries and community detection to uncover
+                            non-obvious relationships.</p>
+                    </div>
+                    <div class="text-5xl text-center text-gray-300 font-bold">=</div>
+                    <div class="bg-slate-800 p-6 rounded-lg" style="grid-column: span 2;">
+                        <h4 class="text-xl font-semibold mb-2 text-center gradient-text">GraphRAG Engine</h4>
+                        <p class="text-center">This engine sits between the databases and the user. When a query is
+                            made, it first performs a vector search in Qdrant to find relevant items, then uses Neo4j to
+                            explore the relationships around those items, providing rich, grounded context to the
+                            generative AI for superior accuracy and relevance.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="generation">
+            <h2 class="gradient-text">Phase 3: Content Generation Pipeline</h2>
+            <p class="max-w-3xl text-lg text-center text-gray-700 mb-12">
+                The output side of the Smart Channel leverages the interconnected data to generate new content. This
+                automated workflow uses dedicated AI agents for different tasks, ensuring a cohesive and high-quality
+                final product, from blog posts to video clips.
+            </p>
+            <div class="panel-3d">
+                <h3 class="gradient-text">From Vector to Value: The Generation Flow</h3>
 
                 <div class="flex flex-col items-center gap-8 my-10">
                     <!-- Step 1 -->
@@ -103,7 +1046,7 @@
                     <div class="flex gap-2 mb-6" style="display: flex; gap: 0.5rem; margin-bottom: 1.5rem; border-bottom: 1px solid var(--glass-border); padding-bottom: 1rem; flex-wrap: wrap;">
                         <button onclick="switchGenModel('qwen36')" id="btn-qwen36" class="tab active" style="padding: 0.5rem 1rem; font-size: 0.75rem; cursor: pointer;">Qwen 3.6 Plus</button>
                         <button onclick="switchGenModel('nemotron')" id="btn-nemotron" class="tab" style="padding: 0.5rem 1rem; font-size: 0.75rem; cursor: pointer;">Nemotron 3 Nano Omni</button>
-                        <button onclick="switchGenModel('deepseek')" id="btn-deepseek" class="tab" style="padding: 0.5rem 1rem; font-size: 0.75rem; cursor: pointer;">DeepSeek-V4 Pro</button>
+                        <button onclick="switchGenModel('deepseek')" id="btn-deepseek" class="tab" style="padding: 0.5rem 1rem; font-size: 0.75rem; cursor: pointer;">DeepSeek-V3</button>
                     </div>
 
                     <div id="gen-model-details" class="space-y-4" style="margin-top: 1rem;">
@@ -162,603 +1105,71 @@
         </section>
 
         <section id="personas">
-            <h2 class="gradient-text">Personality Modeling Matrix</h2>
-            <p class="max-w-3xl text-lg text-center" style="margin: 0 auto 3.5rem; color: #64748b;">
-                Seven audience personas. One data source. Seven radically different voices — the AI adapts tone, depth, and delivery to match how each target actually thinks.
+            <h2 class="gradient-text">Critical Overlay: Personality Modeling Matrix</h2>
+            <p class="max-w-3xl text-lg text-center text-gray-700 mb-12">
+                To move beyond simple factual generation, a Personality Modeling Matrix will be applied as an
+                independent layer during the content generation phase. This matrix allows the system to tailor the tone,
+                style, and point-of-view of the generated content to specific target audience personas.
             </p>
-
-            <!-- ── 7 PERSONA ILLUSTRATED CARDS ── -->
-            <div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(190px,1fr)); gap:18px; max-width:1500px; margin:0 auto 60px; padding:0 8px;">
-
-                <!-- ① VICTORIA CHEN · C-Suite Executive -->
-                <div style="border-radius:18px;overflow:hidden;background:#130824;box-shadow:0 20px 50px rgba(0,0,0,0.6);">
-                    <svg viewBox="0 0 200 260" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block;">
-                        <defs>
-                            <linearGradient id="pmx1" x1="0" y1="0" x2="1" y2="1">
-                                <stop offset="0%" stop-color="#2d1b69"/>
-                                <stop offset="100%" stop-color="#0d0621"/>
-                            </linearGradient>
-                        </defs>
-                        <rect width="200" height="260" fill="url(#pmx1)"/>
-                        <circle cx="168" cy="25" r="40" fill="#4c1d95" opacity="0.3"/>
-                        <circle cx="32" cy="220" r="30" fill="#7c3aed" opacity="0.18"/>
-                        <!-- Mini bar chart bg decoration -->
-                        <rect x="148" y="58" width="7" height="38" rx="2" fill="#7c3aed" opacity="0.35"/>
-                        <rect x="158" y="70" width="7" height="26" rx="2" fill="#9f7aea" opacity="0.3"/>
-                        <rect x="168" y="48" width="7" height="48" rx="2" fill="#7c3aed" opacity="0.35"/>
-                        <!-- Body: blazer -->
-                        <path d="M0 260 L0 192 Q100 176 200 192 L200 260 Z" fill="#4c1d95"/>
-                        <!-- White shirt collar -->
-                        <polygon points="85,178 100,200 115,178 110,166 100,183 90,166" fill="white" opacity="0.92"/>
-                        <!-- Neck -->
-                        <rect x="85" y="148" width="30" height="26" rx="10" fill="#E8A87C"/>
-                        <!-- Head -->
-                        <ellipse cx="100" cy="112" rx="40" ry="44" fill="#E8A87C"/>
-                        <!-- Hair: dark sleek bun -->
-                        <ellipse cx="100" cy="88" rx="40" ry="24" fill="#1a0a00"/>
-                        <rect x="60" y="88" width="80" height="28" fill="#1a0a00"/>
-                        <circle cx="100" cy="73" r="17" fill="#1a0a00"/>
-                        <ellipse cx="100" cy="70" rx="12" ry="9" fill="#2d1500"/>
-                        <ellipse cx="62" cy="112" rx="8" ry="20" fill="#1a0a00"/>
-                        <ellipse cx="138" cy="112" rx="8" ry="20" fill="#1a0a00"/>
-                        <!-- Ears -->
-                        <ellipse cx="60" cy="112" rx="6" ry="9" fill="#E8A87C"/>
-                        <ellipse cx="140" cy="112" rx="6" ry="9" fill="#E8A87C"/>
-                        <!-- Gold drop earrings -->
-                        <circle cx="60" cy="112" r="3" fill="#f59e0b"/>
-                        <circle cx="60" cy="120" r="4" fill="#f59e0b"/>
-                        <circle cx="140" cy="112" r="3" fill="#f59e0b"/>
-                        <circle cx="140" cy="120" r="4" fill="#f59e0b"/>
-                        <!-- Eyes -->
-                        <ellipse cx="87" cy="110" rx="7.5" ry="8" fill="white"/>
-                        <ellipse cx="113" cy="110" rx="7.5" ry="8" fill="white"/>
-                        <circle cx="88" cy="110" r="4.5" fill="#2c1810"/>
-                        <circle cx="114" cy="110" r="4.5" fill="#2c1810"/>
-                        <circle cx="89.5" cy="108" r="1.5" fill="white"/>
-                        <circle cx="115.5" cy="108" r="1.5" fill="white"/>
-                        <!-- Sharp confident eyebrows -->
-                        <path d="M80 102 Q87 99 94 101" stroke="#1a0a00" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-                        <path d="M106 101 Q113 99 120 102" stroke="#1a0a00" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-                        <!-- Nose -->
-                        <path d="M97 120 Q100 125 103 120" stroke="#C68642" stroke-width="1.5" fill="none" stroke-linecap="round"/>
-                        <!-- Mouth: composed smile -->
-                        <path d="M88 131 Q100 137 112 131" stroke="#9b2335" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-                        <!-- Gold necklace -->
-                        <path d="M78 153 Q100 163 122 153" stroke="#f59e0b" stroke-width="1.5" fill="none"/>
-                        <circle cx="100" cy="165" r="3" fill="#f59e0b"/>
-                        <!-- Arms -->
-                        <path d="M0 195 Q-5 232 6 260 L38 260 L43 200 Z" fill="#4c1d95"/>
-                        <path d="M200 195 Q205 232 194 260 L162 260 L157 200 Z" fill="#4c1d95"/>
-                        <!-- Tablet in right arm -->
-                        <rect x="163" y="222" width="26" height="19" rx="3" fill="#1e293b"/>
-                        <rect x="165" y="224" width="22" height="15" rx="2" fill="#3b82f6" opacity="0.55"/>
-                        <line x1="167" y1="228" x2="185" y2="228" stroke="white" stroke-width="1" opacity="0.4"/>
-                        <line x1="167" y1="232" x2="183" y2="232" stroke="white" stroke-width="1" opacity="0.4"/>
-                        <line x1="167" y1="236" x2="180" y2="236" stroke="white" stroke-width="1" opacity="0.4"/>
-                    </svg>
-                    <div style="padding:14px 16px 18px;">
-                        <div style="font-size:0.63rem;letter-spacing:0.16em;color:#9f7aea;font-weight:700;text-transform:uppercase;margin-bottom:3px;">Persona 01</div>
-                        <div style="font-size:1.05rem;font-weight:800;color:white;margin-bottom:3px;">Victoria Chen</div>
-                        <div style="font-size:0.76rem;color:#c4b5fd;margin-bottom:10px;">C-Suite Executive</div>
-                        <div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:9px;">
-                            <span style="font-size:0.62rem;padding:3px 8px;background:rgba(139,92,246,0.18);border:1px solid rgba(139,92,246,0.4);border-radius:20px;color:#c4b5fd;">Strategic</span>
-                            <span style="font-size:0.62rem;padding:3px 8px;background:rgba(139,92,246,0.18);border:1px solid rgba(139,92,246,0.4);border-radius:20px;color:#c4b5fd;">ROI-Led</span>
-                            <span style="font-size:0.62rem;padding:3px 8px;background:rgba(139,92,246,0.18);border:1px solid rgba(139,92,246,0.4);border-radius:20px;color:#c4b5fd;">Time-Poor</span>
+            <div class="panel-3d flex flex-row items-center gap-8">
+                <div style="width: 50%;">
+                    <h3 class="font-bold mb-4 gradient-text">How the Matrix Works</h3>
+                    <p class="mb-4">The matrix is a configurable set of instructions and style guides that are injected
+                        into the prompts for the content generation agents. It acts as a final "lens" through which the
+                        retrieved data is interpreted and written.</p>
+                    <div class="space-y-4">
+                        <div class="step-container">
+                            <div class="number-badge" style="width: 2rem; height: 2rem; font-size: 0.875rem;">1</div>
+                            <p><strong>Persona Selection:</strong> Before generation, a target persona is selected
+                                (e.g., "Industry Expert," "Curious Novice," "Skeptical Analyst").</p>
                         </div>
-                        <p style="font-size:0.71rem;color:#94a3b8;line-height:1.5;margin:0;">Boardroom-ready insights. No jargon. Pure signal.</p>
+                        <div class="step-container">
+                            <div class="number-badge" style="width: 2rem; height: 2rem; font-size: 0.875rem;">2</div>
+                            <p><strong>Style Injection:</strong> The matrix provides persona-specific instructions to
+                                the AI agents (e.g., "Adopt a formal, academic tone," "Use simple language and
+                                analogies," "Focus on data and potential risks").</p>
+                        </div>
+                        <div class="step-container">
+                            <div class="number-badge" style="width: 2rem; height: 2rem; font-size: 0.875rem;">3</div>
+                            <p><strong>Tailored Output:</strong> The final content reflects the chosen personality,
+                                ensuring it resonates with the intended audience, even though it's based on the same
+                                underlying vector data.</p>
+                        </div>
                     </div>
                 </div>
+                <div class="px-6 py-10 bg-slate-800 rounded-lg" style="width: 50%;">
+                    <h4 class="font-bold text-lg mb-4 text-white" style="font-family: 'Kumbh Sans', sans-serif;">Live
+                        Persona Mapping</h4>
+                    <p class="mb-4 text-sm text-gray-400"><strong>Target Simulation:</strong> Human Digital Twin
+                        rendered in real-time, matching narrative delivery to executive audience profiles.</p>
 
-                <!-- ② MARCUS WEBB · Data Analyst -->
-                <div style="border-radius:18px;overflow:hidden;background:#040d1e;box-shadow:0 20px 50px rgba(0,0,0,0.6);">
-                    <svg viewBox="0 0 200 260" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block;">
-                        <defs>
-                            <linearGradient id="pmx2" x1="0" y1="0" x2="1" y2="1">
-                                <stop offset="0%" stop-color="#0f2d5c"/>
-                                <stop offset="100%" stop-color="#020919"/>
-                            </linearGradient>
-                        </defs>
-                        <rect width="200" height="260" fill="url(#pmx2)"/>
-                        <circle cx="170" cy="38" r="44" fill="#1e40af" opacity="0.22"/>
-                        <circle cx="20" cy="195" r="36" fill="#0ea5e9" opacity="0.13"/>
-                        <!-- Floating bar chart -->
-                        <rect x="143" y="56" width="9" height="38" rx="2" fill="#3b82f6" opacity="0.45"/>
-                        <rect x="155" y="70" width="9" height="24" rx="2" fill="#0ea5e9" opacity="0.4"/>
-                        <rect x="167" y="46" width="9" height="48" rx="2" fill="#3b82f6" opacity="0.45"/>
-                        <!-- X-axis line -->
-                        <line x1="140" y1="94" x2="180" y2="94" stroke="#3b82f6" stroke-width="1" opacity="0.3"/>
-                        <!-- Body: navy shirt -->
-                        <path d="M0 260 L0 192 Q100 176 200 192 L200 260 Z" fill="#1e3a5f"/>
-                        <!-- White collar -->
-                        <polygon points="85,178 100,200 115,178 110,165 100,184 90,165" fill="#f8fafc" opacity="0.94"/>
-                        <!-- Blue tie -->
-                        <polygon points="98,180 102,180 104,214 100,222 96,214" fill="#2563eb"/>
-                        <polygon points="96,180 104,180 100,187" fill="#1d4ed8"/>
-                        <!-- Neck -->
-                        <rect x="85" y="148" width="30" height="26" rx="10" fill="#D4956B"/>
-                        <!-- Head -->
-                        <ellipse cx="100" cy="112" rx="40" ry="44" fill="#D4956B"/>
-                        <!-- Hair: short neat dark -->
-                        <ellipse cx="100" cy="83" rx="40" ry="20" fill="#1a0a00"/>
-                        <rect x="60" y="83" width="80" height="18" fill="#1a0a00"/>
-                        <ellipse cx="63" cy="100" rx="6" ry="12" fill="#1a0a00"/>
-                        <ellipse cx="137" cy="100" rx="6" ry="12" fill="#1a0a00"/>
-                        <!-- Ears -->
-                        <ellipse cx="60" cy="112" rx="6" ry="9" fill="#D4956B"/>
-                        <ellipse cx="140" cy="112" rx="6" ry="9" fill="#D4956B"/>
-                        <!-- Glasses -->
-                        <rect x="76" y="104" width="20" height="15" rx="4" fill="none" stroke="#1e293b" stroke-width="2.5"/>
-                        <rect x="104" y="104" width="20" height="15" rx="4" fill="none" stroke="#1e293b" stroke-width="2.5"/>
-                        <line x1="96" y1="112" x2="104" y2="112" stroke="#1e293b" stroke-width="2"/>
-                        <line x1="66" y1="112" x2="76" y2="112" stroke="#1e293b" stroke-width="2"/>
-                        <line x1="124" y1="112" x2="134" y2="112" stroke="#1e293b" stroke-width="2"/>
-                        <rect x="76" y="104" width="20" height="15" rx="4" fill="#a5f3fc" opacity="0.1"/>
-                        <rect x="104" y="104" width="20" height="15" rx="4" fill="#a5f3fc" opacity="0.1"/>
-                        <!-- Eyes behind glasses -->
-                        <circle cx="86" cy="111" r="3.5" fill="#1e293b"/>
-                        <circle cx="114" cy="111" r="3.5" fill="#1e293b"/>
-                        <circle cx="87" cy="110" r="1.2" fill="white"/>
-                        <circle cx="115" cy="110" r="1.2" fill="white"/>
-                        <!-- Level analytical eyebrows -->
-                        <path d="M79 101 Q86 99 93 100" stroke="#1a0a00" stroke-width="2" fill="none" stroke-linecap="round"/>
-                        <path d="M107 100 Q114 99 121 101" stroke="#1a0a00" stroke-width="2" fill="none" stroke-linecap="round"/>
-                        <!-- Nose -->
-                        <path d="M97 121 Q100 126 103 121" stroke="#A0672A" stroke-width="1.5" fill="none" stroke-linecap="round"/>
-                        <!-- Thoughtful neutral mouth -->
-                        <path d="M89 131 Q100 134 111 131" stroke="#8D5524" stroke-width="2" fill="none" stroke-linecap="round"/>
-                        <!-- Arms -->
-                        <path d="M0 195 Q-5 232 6 260 L38 260 L43 200 Z" fill="#1e3a5f"/>
-                        <path d="M200 195 Q205 232 194 260 L162 260 L157 200 Z" fill="#1e3a5f"/>
-                        <!-- Pencil in hand -->
-                        <rect x="5" y="238" width="5" height="22" rx="2" fill="#fbbf24" transform="rotate(-12,7,249)"/>
-                        <ellipse cx="10" cy="255" rx="12" ry="8" fill="#D4956B"/>
-                    </svg>
-                    <div style="padding:14px 16px 18px;">
-                        <div style="font-size:0.63rem;letter-spacing:0.16em;color:#38bdf8;font-weight:700;text-transform:uppercase;margin-bottom:3px;">Persona 02</div>
-                        <div style="font-size:1.05rem;font-weight:800;color:white;margin-bottom:3px;">Marcus Webb</div>
-                        <div style="font-size:0.76rem;color:#7dd3fc;margin-bottom:10px;">Data Analyst</div>
-                        <div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:9px;">
-                            <span style="font-size:0.62rem;padding:3px 8px;background:rgba(14,165,233,0.18);border:1px solid rgba(14,165,233,0.4);border-radius:20px;color:#7dd3fc;">Skeptical</span>
-                            <span style="font-size:0.62rem;padding:3px 8px;background:rgba(14,165,233,0.18);border:1px solid rgba(14,165,233,0.4);border-radius:20px;color:#7dd3fc;">Evidence-Led</span>
-                            <span style="font-size:0.62rem;padding:3px 8px;background:rgba(14,165,233,0.18);border:1px solid rgba(14,165,233,0.4);border-radius:20px;color:#7dd3fc;">Detail-First</span>
+                    <!-- Spinning Persona Video / 3D Block -->
+                    <div
+                        style="width: 100%; height: 350px; border-radius: 12px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); position: relative; background: #000;">
+                        <!-- We utilize a looping video or Spline 3D embedded object here to simulate the animated human scanning -->
+                        <!-- The source points to spinning_persona.mp4, which you can replace with your preferred asset -->
+                        <video src="images/spinning_persona.mp4" autoplay loop muted playsinline
+                            style="width: 100%; height: 100%; object-fit: cover; opacity: 0.9;"></video>
+
+                        <!-- Spline Fallback (Interactive 3D) if no mp4 loaded -->
+                        <spline-viewer url="https://prod.spline.design/kS1rS-y19P13xKjW/scene.splinecode"
+                            style="position: absolute; inset:0; z-index: 0; pointer-events: none; opacity: 0.6; mix-blend-mode: screen;"></spline-viewer>
+
+                        <div style="position: absolute; bottom: 15px; left: 15px; z-index: 10;">
+                            <span
+                                class="bg-[--ai-blue]/20 border border-[--ai-blue]/40 text-[--ai-blue] px-3 py-1 rounded text-xs uppercase tracking-widest font-bold">Scanning
+                                Biometrics</span>
                         </div>
-                        <p style="font-size:0.71rem;color:#94a3b8;line-height:1.5;margin:0;">Reproducible methodology, sources cited, confidence intervals shown.</p>
                     </div>
-                </div>
-
-                <!-- ③ ZARA NOVA · Creative Director -->
-                <div style="border-radius:18px;overflow:hidden;background:#1a0220;box-shadow:0 20px 50px rgba(0,0,0,0.6);">
-                    <svg viewBox="0 0 200 260" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block;">
-                        <defs>
-                            <linearGradient id="pmx3" x1="0" y1="0" x2="1" y2="1">
-                                <stop offset="0%" stop-color="#4a044e"/>
-                                <stop offset="100%" stop-color="#0d0010"/>
-                            </linearGradient>
-                            <linearGradient id="pmxh3" x1="0" y1="0" x2="1" y2="1">
-                                <stop offset="0%" stop-color="#a855f7"/>
-                                <stop offset="100%" stop-color="#ec4899"/>
-                            </linearGradient>
-                        </defs>
-                        <rect width="200" height="260" fill="url(#pmx3)"/>
-                        <circle cx="30" cy="30" r="50" fill="#9333ea" opacity="0.22"/>
-                        <circle cx="180" cy="200" r="40" fill="#ec4899" opacity="0.16"/>
-                        <!-- Sparkles -->
-                        <circle cx="155" cy="35" r="3" fill="#f0abfc" opacity="0.7"/>
-                        <circle cx="140" cy="55" r="2" fill="#f0abfc" opacity="0.55"/>
-                        <circle cx="165" cy="55" r="1.5" fill="#ec4899" opacity="0.7"/>
-                        <circle cx="45" cy="65" r="2" fill="#c084fc" opacity="0.5"/>
-                        <circle cx="170" cy="80" r="1.5" fill="#f0abfc" opacity="0.45"/>
-                        <!-- Body: colorful top -->
-                        <path d="M0 260 L0 192 Q100 172 200 192 L200 260 Z" fill="#7c3aed"/>
-                        <path d="M60 192 Q100 178 140 192 L140 222 Q100 212 60 222 Z" fill="#ec4899"/>
-                        <!-- Neck -->
-                        <rect x="85" y="148" width="30" height="26" rx="10" fill="#F5C5A3"/>
-                        <!-- Head -->
-                        <ellipse cx="100" cy="112" rx="40" ry="44" fill="#F5C5A3"/>
-                        <!-- Hair: lavender/pink, full and flowing -->
-                        <ellipse cx="100" cy="82" rx="44" ry="26" fill="url(#pmxh3)"/>
-                        <!-- Left flowing hair -->
-                        <path d="M60 90 Q45 128 52 178 Q62 174 63 138 Q67 110 72 94 Z" fill="url(#pmxh3)"/>
-                        <!-- Right flowing hair -->
-                        <path d="M140 90 Q155 128 148 178 Q138 174 137 138 Q133 110 128 94 Z" fill="url(#pmxh3)"/>
-                        <!-- Hair top -->
-                        <ellipse cx="100" cy="73" rx="36" ry="20" fill="#a855f7"/>
-                        <!-- Ears -->
-                        <ellipse cx="60" cy="112" rx="6" ry="9" fill="#F5C5A3"/>
-                        <ellipse cx="140" cy="112" rx="6" ry="9" fill="#F5C5A3"/>
-                        <!-- Dangling earrings -->
-                        <circle cx="60" cy="112" r="3" fill="#f59e0b"/>
-                        <circle cx="60" cy="120" r="3" fill="#ec4899"/>
-                        <circle cx="60" cy="127" r="2" fill="#f59e0b"/>
-                        <circle cx="140" cy="112" r="3" fill="#f59e0b"/>
-                        <circle cx="140" cy="120" r="3" fill="#a855f7"/>
-                        <circle cx="140" cy="127" r="2" fill="#f59e0b"/>
-                        <!-- Headphones on head -->
-                        <path d="M62 96 Q62 70 100 70 Q138 70 138 96" stroke="#1e293b" stroke-width="5" fill="none" stroke-linecap="round"/>
-                        <rect x="57" y="94" width="12" height="16" rx="4" fill="#1e293b"/>
-                        <rect x="131" y="94" width="12" height="16" rx="4" fill="#1e293b"/>
-                        <rect x="59" y="96" width="8" height="12" rx="3" fill="#7c3aed"/>
-                        <rect x="133" y="96" width="8" height="12" rx="3" fill="#7c3aed"/>
-                        <!-- Large expressive eyes -->
-                        <ellipse cx="87" cy="112" rx="8.5" ry="9" fill="white"/>
-                        <ellipse cx="113" cy="112" rx="8.5" ry="9" fill="white"/>
-                        <circle cx="88" cy="112" r="5.5" fill="#4c1d95"/>
-                        <circle cx="114" cy="112" r="5.5" fill="#4c1d95"/>
-                        <circle cx="90" cy="110" r="2" fill="white"/>
-                        <circle cx="116" cy="110" r="2" fill="white"/>
-                        <!-- Arched expressive eyebrows -->
-                        <path d="M79 103 Q87 99 95 103" stroke="#7c3aed" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-                        <path d="M105 103 Q113 99 121 103" stroke="#7c3aed" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-                        <!-- Nose -->
-                        <path d="M97 121 Q100 126 103 121" stroke="#C68642" stroke-width="1.5" fill="none" stroke-linecap="round"/>
-                        <!-- Playful wide smile -->
-                        <path d="M86 132 Q100 141 114 132" stroke="#ec4899" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-                        <!-- Arms -->
-                        <path d="M0 195 Q-5 232 6 260 L38 260 L43 200 Z" fill="#7c3aed"/>
-                        <path d="M200 195 Q205 232 194 260 L162 260 L157 200 Z" fill="#7c3aed"/>
-                        <!-- Camera in left hand -->
-                        <rect x="3" y="234" width="30" height="22" rx="4" fill="#1e293b"/>
-                        <circle cx="18" cy="245" r="7.5" fill="#334155"/>
-                        <circle cx="18" cy="245" r="4.5" fill="#0f172a"/>
-                        <circle cx="18" cy="245" r="2" fill="#64748b"/>
-                        <rect x="25" y="231" width="7" height="5" rx="1" fill="#374151"/>
-                        <circle cx="7" cy="237" r="1.5" fill="#ef4444"/>
-                    </svg>
-                    <div style="padding:14px 16px 18px;">
-                        <div style="font-size:0.63rem;letter-spacing:0.16em;color:#d946ef;font-weight:700;text-transform:uppercase;margin-bottom:3px;">Persona 03</div>
-                        <div style="font-size:1.05rem;font-weight:800;color:white;margin-bottom:3px;">Zara Nova</div>
-                        <div style="font-size:0.76rem;color:#f0abfc;margin-bottom:10px;">Creative Director</div>
-                        <div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:9px;">
-                            <span style="font-size:0.62rem;padding:3px 8px;background:rgba(217,70,239,0.18);border:1px solid rgba(217,70,239,0.4);border-radius:20px;color:#f0abfc;">Expressive</span>
-                            <span style="font-size:0.62rem;padding:3px 8px;background:rgba(217,70,239,0.18);border:1px solid rgba(217,70,239,0.4);border-radius:20px;color:#f0abfc;">Visual-First</span>
-                            <span style="font-size:0.62rem;padding:3px 8px;background:rgba(217,70,239,0.18);border:1px solid rgba(217,70,239,0.4);border-radius:20px;color:#f0abfc;">Trend-Aware</span>
-                        </div>
-                        <p style="font-size:0.71rem;color:#94a3b8;line-height:1.5;margin:0;">Visceral hooks, cultural pulse, aesthetic-first storytelling.</p>
-                    </div>
-                </div>
-
-                <!-- ④ RYAN OKAFOR · Sales Champion -->
-                <div style="border-radius:18px;overflow:hidden;background:#021208;box-shadow:0 20px 50px rgba(0,0,0,0.6);">
-                    <svg viewBox="0 0 200 260" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block;">
-                        <defs>
-                            <linearGradient id="pmx4" x1="0" y1="0" x2="1" y2="1">
-                                <stop offset="0%" stop-color="#14532d"/>
-                                <stop offset="100%" stop-color="#021208"/>
-                            </linearGradient>
-                        </defs>
-                        <rect width="200" height="260" fill="url(#pmx4)"/>
-                        <circle cx="160" cy="30" r="50" fill="#16a34a" opacity="0.22"/>
-                        <circle cx="30" cy="210" r="40" fill="#22c55e" opacity="0.13"/>
-                        <circle cx="155" cy="30" r="3" fill="#4ade80" opacity="0.7"/>
-                        <circle cx="40" cy="50" r="2.5" fill="#86efac" opacity="0.5"/>
-                        <circle cx="170" cy="62" r="2" fill="#f59e0b" opacity="0.6"/>
-                        <!-- Body: dark suit -->
-                        <path d="M0 260 L0 192 Q100 174 200 192 L200 260 Z" fill="#1c2c1e"/>
-                        <!-- White shirt collar -->
-                        <polygon points="85,177 100,200 115,177 110,163 100,183 90,163" fill="white" opacity="0.94"/>
-                        <!-- Green tie -->
-                        <polygon points="98,180 102,180 105,220 100,230 95,220" fill="#16a34a"/>
-                        <polygon points="96,180 104,180 100,187" fill="#15803d"/>
-                        <!-- Neck -->
-                        <rect x="85" y="148" width="30" height="26" rx="10" fill="#8D5524"/>
-                        <!-- Head -->
-                        <ellipse cx="100" cy="112" rx="40" ry="44" fill="#8D5524"/>
-                        <!-- Hair: very short dark -->
-                        <ellipse cx="100" cy="85" rx="40" ry="18" fill="#0d0500"/>
-                        <rect x="60" y="85" width="80" height="16" fill="#0d0500"/>
-                        <ellipse cx="63" cy="96" rx="5" ry="8" fill="#0d0500"/>
-                        <ellipse cx="137" cy="96" rx="5" ry="8" fill="#0d0500"/>
-                        <!-- Ears -->
-                        <ellipse cx="60" cy="112" rx="6" ry="9" fill="#8D5524"/>
-                        <ellipse cx="140" cy="112" rx="6" ry="9" fill="#8D5524"/>
-                        <!-- Eyes: energetic, wide open -->
-                        <ellipse cx="87" cy="110" rx="8" ry="8.5" fill="white"/>
-                        <ellipse cx="113" cy="110" rx="8" ry="8.5" fill="white"/>
-                        <circle cx="88" cy="111" r="5" fill="#1c0a00"/>
-                        <circle cx="114" cy="111" r="5" fill="#1c0a00"/>
-                        <circle cx="89.5" cy="109" r="1.8" fill="white"/>
-                        <circle cx="115.5" cy="109" r="1.8" fill="white"/>
-                        <!-- High friendly eyebrows -->
-                        <path d="M80 101 Q87 97 94 100" stroke="#0d0500" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-                        <path d="M106 100 Q113 97 120 101" stroke="#0d0500" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-                        <!-- Nose -->
-                        <path d="M97 121 Q100 126 103 121" stroke="#6B3F1E" stroke-width="1.5" fill="none" stroke-linecap="round"/>
-                        <!-- Big genuine smile with teeth -->
-                        <path d="M82 131 Q100 145 118 131" stroke="#6B2F1A" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-                        <path d="M85 132 Q100 144 115 132 Q100 149 85 132 Z" fill="#c0392b" opacity="0.55"/>
-                        <path d="M88 134 Q100 141 112 134 Q100 139 88 134 Z" fill="white" opacity="0.88"/>
-                        <!-- Speech bubble -->
-                        <path d="M120 155 Q130 144 148 147 Q154 155 148 163 Q140 167 130 164 L123 172 Z" fill="#22c55e" opacity="0.82"/>
-                        <circle cx="131" cy="155" r="1.5" fill="white"/>
-                        <circle cx="137" cy="155" r="1.5" fill="white"/>
-                        <circle cx="143" cy="155" r="1.5" fill="white"/>
-                        <!-- Arms -->
-                        <path d="M0 195 Q-5 232 6 260 L38 260 L43 200 Z" fill="#1c2c1e"/>
-                        <path d="M200 195 Q205 232 194 260 L162 260 L157 200 Z" fill="#1c2c1e"/>
-                        <!-- Phone in right hand -->
-                        <rect x="163" y="224" width="18" height="30" rx="3" fill="#1e293b"/>
-                        <rect x="164" y="226" width="16" height="24" rx="2" fill="#22c55e" opacity="0.55"/>
-                        <circle cx="172" cy="252" r="2" fill="#4b5563"/>
-                    </svg>
-                    <div style="padding:14px 16px 18px;">
-                        <div style="font-size:0.63rem;letter-spacing:0.16em;color:#4ade80;font-weight:700;text-transform:uppercase;margin-bottom:3px;">Persona 04</div>
-                        <div style="font-size:1.05rem;font-weight:800;color:white;margin-bottom:3px;">Ryan Okafor</div>
-                        <div style="font-size:0.76rem;color:#86efac;margin-bottom:10px;">Sales Champion</div>
-                        <div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:9px;">
-                            <span style="font-size:0.62rem;padding:3px 8px;background:rgba(34,197,94,0.18);border:1px solid rgba(34,197,94,0.4);border-radius:20px;color:#86efac;">High Energy</span>
-                            <span style="font-size:0.62rem;padding:3px 8px;background:rgba(34,197,94,0.18);border:1px solid rgba(34,197,94,0.4);border-radius:20px;color:#86efac;">Deal-Closer</span>
-                            <span style="font-size:0.62rem;padding:3px 8px;background:rgba(34,197,94,0.18);border:1px solid rgba(34,197,94,0.4);border-radius:20px;color:#86efac;">Social-Proof</span>
-                        </div>
-                        <p style="font-size:0.71rem;color:#94a3b8;line-height:1.5;margin:0;">Urgency, wins, and social proof that converts fast.</p>
-                    </div>
-                </div>
-
-                <!-- ⑤ DEV KRISHNAN · Tech Pioneer -->
-                <div style="border-radius:18px;overflow:hidden;background:#020e14;box-shadow:0 20px 50px rgba(0,0,0,0.6);">
-                    <svg viewBox="0 0 200 260" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block;">
-                        <defs>
-                            <linearGradient id="pmx5" x1="0" y1="0" x2="1" y2="1">
-                                <stop offset="0%" stop-color="#0f3349"/>
-                                <stop offset="100%" stop-color="#020810"/>
-                            </linearGradient>
-                        </defs>
-                        <rect width="200" height="260" fill="url(#pmx5)"/>
-                        <circle cx="30" cy="40" r="50" fill="#0891b2" opacity="0.18"/>
-                        <circle cx="175" cy="192" r="36" fill="#06b6d4" opacity="0.13"/>
-                        <!-- Code snippets floating -->
-                        <text x="138" y="50" font-family="monospace" font-size="10" fill="#06b6d4" opacity="0.55">&lt;/&gt;</text>
-                        <text x="20" y="78" font-family="monospace" font-size="9" fill="#0ea5e9" opacity="0.45">{ }</text>
-                        <text x="153" y="78" font-family="monospace" font-size="8" fill="#38bdf8" opacity="0.45">fn()</text>
-                        <text x="22" y="55" font-family="monospace" font-size="8" fill="#22d3ee" opacity="0.35">[ ]</text>
-                        <!-- Body: dark hoodie -->
-                        <path d="M0 260 L0 188 Q100 170 200 188 L200 260 Z" fill="#0f172a"/>
-                        <!-- Hoodie pocket -->
-                        <rect x="74" y="218" width="52" height="38" rx="8" fill="#1e293b"/>
-                        <!-- Hoodie strings -->
-                        <line x1="92" y1="176" x2="88" y2="218" stroke="#334155" stroke-width="2.5"/>
-                        <line x1="108" y1="176" x2="112" y2="218" stroke="#334155" stroke-width="2.5"/>
-                        <!-- Neck -->
-                        <rect x="85" y="148" width="30" height="26" rx="10" fill="#C68642"/>
-                        <!-- Head -->
-                        <ellipse cx="100" cy="112" rx="40" ry="44" fill="#C68642"/>
-                        <!-- Hair: casual, medium length dark -->
-                        <ellipse cx="100" cy="83" rx="42" ry="22" fill="#0d0500"/>
-                        <rect x="58" y="83" width="84" height="24" fill="#0d0500"/>
-                        <!-- Slight hair flyaway -->
-                        <path d="M88 75 Q90 66 97 70" stroke="#0d0500" stroke-width="4" fill="none" stroke-linecap="round"/>
-                        <!-- Longer sides -->
-                        <ellipse cx="61" cy="110" rx="8" ry="22" fill="#0d0500"/>
-                        <ellipse cx="139" cy="110" rx="8" ry="22" fill="#0d0500"/>
-                        <!-- Ears -->
-                        <ellipse cx="61" cy="112" rx="6" ry="9" fill="#C68642"/>
-                        <ellipse cx="139" cy="112" rx="6" ry="9" fill="#C68642"/>
-                        <!-- Headphones around neck -->
-                        <path d="M72 150 Q100 140 128 150" stroke="#0f172a" stroke-width="7" fill="none" stroke-linecap="round"/>
-                        <circle cx="72" cy="150" r="8" fill="#1e293b"/>
-                        <circle cx="128" cy="150" r="8" fill="#1e293b"/>
-                        <circle cx="72" cy="150" r="5" fill="#06b6d4"/>
-                        <circle cx="128" cy="150" r="5" fill="#06b6d4"/>
-                        <!-- Eyes: intense focused -->
-                        <ellipse cx="87" cy="110" rx="7" ry="7.5" fill="white"/>
-                        <ellipse cx="113" cy="110" rx="7" ry="7.5" fill="white"/>
-                        <circle cx="88" cy="110" r="4.5" fill="#0c2a40"/>
-                        <circle cx="114" cy="110" r="4.5" fill="#0c2a40"/>
-                        <circle cx="89.5" cy="108" r="1.5" fill="white"/>
-                        <circle cx="115.5" cy="108" r="1.5" fill="white"/>
-                        <!-- Slightly furrowed eyebrows -->
-                        <path d="M80 101 Q87 99 94 102" stroke="#0d0500" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-                        <path d="M106 102 Q113 99 120 101" stroke="#0d0500" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-                        <!-- Nose -->
-                        <path d="M97 121 Q100 126 103 121" stroke="#A0672A" stroke-width="1.5" fill="none" stroke-linecap="round"/>
-                        <!-- Focused straight mouth -->
-                        <path d="M90 131 Q100 133 110 131" stroke="#8D5524" stroke-width="2" fill="none" stroke-linecap="round"/>
-                        <!-- Arms -->
-                        <path d="M0 192 Q-5 230 6 260 L38 260 L44 198 Z" fill="#0f172a"/>
-                        <path d="M200 192 Q205 230 194 260 L162 260 L156 198 Z" fill="#0f172a"/>
-                    </svg>
-                    <div style="padding:14px 16px 18px;">
-                        <div style="font-size:0.63rem;letter-spacing:0.16em;color:#22d3ee;font-weight:700;text-transform:uppercase;margin-bottom:3px;">Persona 05</div>
-                        <div style="font-size:1.05rem;font-weight:800;color:white;margin-bottom:3px;">Dev Krishnan</div>
-                        <div style="font-size:0.76rem;color:#67e8f9;margin-bottom:10px;">Tech Pioneer</div>
-                        <div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:9px;">
-                            <span style="font-size:0.62rem;padding:3px 8px;background:rgba(6,182,212,0.18);border:1px solid rgba(6,182,212,0.4);border-radius:20px;color:#67e8f9;">Early Adopter</span>
-                            <span style="font-size:0.62rem;padding:3px 8px;background:rgba(6,182,212,0.18);border:1px solid rgba(6,182,212,0.4);border-radius:20px;color:#67e8f9;">API-Native</span>
-                            <span style="font-size:0.62rem;padding:3px 8px;background:rgba(6,182,212,0.18);border:1px solid rgba(6,182,212,0.4);border-radius:20px;color:#67e8f9;">Depth-Seeker</span>
-                        </div>
-                        <p style="font-size:0.71rem;color:#94a3b8;line-height:1.5;margin:0;">Architecture diagrams, latency specs, raw GitHub access.</p>
-                    </div>
-                </div>
-
-                <!-- ⑥ ELENA SANTOS · SMB Owner -->
-                <div style="border-radius:18px;overflow:hidden;background:#140c02;box-shadow:0 20px 50px rgba(0,0,0,0.6);">
-                    <svg viewBox="0 0 200 260" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block;">
-                        <defs>
-                            <linearGradient id="pmx6" x1="0" y1="0" x2="1" y2="1">
-                                <stop offset="0%" stop-color="#451a03"/>
-                                <stop offset="100%" stop-color="#0d0600"/>
-                            </linearGradient>
-                            <linearGradient id="pmxh6" x1="0" y1="0" x2="1" y2="1">
-                                <stop offset="0%" stop-color="#78350f"/>
-                                <stop offset="100%" stop-color="#451a03"/>
-                            </linearGradient>
-                        </defs>
-                        <rect width="200" height="260" fill="url(#pmx6)"/>
-                        <circle cx="165" cy="35" r="45" fill="#d97706" opacity="0.2"/>
-                        <circle cx="25" cy="200" r="35" fill="#f59e0b" opacity="0.13"/>
-                        <!-- Small shop icon shapes -->
-                        <rect x="148" y="48" width="26" height="20" rx="3" fill="#f59e0b" opacity="0.3"/>
-                        <rect x="153" y="68" width="16" height="14" rx="2" fill="#f59e0b" opacity="0.25"/>
-                        <line x1="148" y1="48" x2="174" y2="48" stroke="#f59e0b" stroke-width="2" opacity="0.35"/>
-                        <!-- Body: warm business casual -->
-                        <path d="M0 260 L0 192 Q100 175 200 192 L200 260 Z" fill="#7c2d12"/>
-                        <path d="M62 192 Q100 180 138 192 L138 224 Q100 214 62 224 Z" fill="#f97316" opacity="0.55"/>
-                        <!-- Pendant necklace -->
-                        <path d="M80 155 Q100 165 120 155" stroke="#f59e0b" stroke-width="1.5" fill="none"/>
-                        <rect x="97" y="165" width="6" height="8" rx="1" fill="#f59e0b"/>
-                        <!-- Neck -->
-                        <rect x="85" y="148" width="30" height="26" rx="10" fill="#D4956B"/>
-                        <!-- Head -->
-                        <ellipse cx="100" cy="112" rx="40" ry="44" fill="#D4956B"/>
-                        <!-- Hair: wavy warm brown -->
-                        <ellipse cx="100" cy="84" rx="42" ry="24" fill="url(#pmxh6)"/>
-                        <rect x="58" y="84" width="84" height="28" fill="url(#pmxh6)"/>
-                        <!-- Left wavy hair -->
-                        <path d="M60 92 Q47 118 50 148 Q58 152 62 132 Q64 112 70 94 Z" fill="url(#pmxh6)"/>
-                        <!-- Right shorter hair -->
-                        <path d="M140 92 Q152 112 150 136 Q143 142 138 122 Q135 106 131 94 Z" fill="url(#pmxh6)"/>
-                        <!-- Hair highlight -->
-                        <path d="M80 84 Q100 80 118 84" stroke="#d97706" stroke-width="2" fill="none" opacity="0.45"/>
-                        <!-- Ears -->
-                        <ellipse cx="60" cy="112" rx="6" ry="9" fill="#D4956B"/>
-                        <ellipse cx="140" cy="112" rx="6" ry="9" fill="#D4956B"/>
-                        <!-- Small stud earrings -->
-                        <circle cx="60" cy="112" r="3.5" fill="#f59e0b"/>
-                        <circle cx="140" cy="112" r="3.5" fill="#f59e0b"/>
-                        <!-- Eyes: warm confident (slight laugh lines) -->
-                        <ellipse cx="87" cy="110" rx="7" ry="7.5" fill="white"/>
-                        <ellipse cx="113" cy="110" rx="7" ry="7.5" fill="white"/>
-                        <circle cx="88" cy="110" r="4.5" fill="#5c2e00"/>
-                        <circle cx="114" cy="110" r="4.5" fill="#5c2e00"/>
-                        <circle cx="89.5" cy="108" r="1.5" fill="white"/>
-                        <circle cx="115.5" cy="108" r="1.5" fill="white"/>
-                        <!-- Subtle laugh lines (experienced) -->
-                        <path d="M118 115 Q122 118 121 123" stroke="#B07040" stroke-width="1" fill="none" opacity="0.55"/>
-                        <path d="M82 115 Q78 118 79 123" stroke="#B07040" stroke-width="1" fill="none" opacity="0.55"/>
-                        <!-- Relaxed warm eyebrows -->
-                        <path d="M80 102 Q87 99 94 102" stroke="#78350f" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-                        <path d="M106 102 Q113 99 120 102" stroke="#78350f" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-                        <!-- Nose -->
-                        <path d="M97 121 Q100 126 103 121" stroke="#A0672A" stroke-width="1.5" fill="none" stroke-linecap="round"/>
-                        <!-- Genuine warm smile -->
-                        <path d="M87 130 Q100 138 113 130" stroke="#9b2335" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-                        <!-- Arms -->
-                        <path d="M0 195 Q-5 232 6 260 L38 260 L43 200 Z" fill="#7c2d12"/>
-                        <path d="M200 195 Q205 232 194 260 L162 260 L157 200 Z" fill="#7c2d12"/>
-                        <!-- Key ring in left hand -->
-                        <circle cx="12" cy="248" r="11" fill="none" stroke="#f59e0b" stroke-width="2.5"/>
-                        <circle cx="12" cy="248" r="3" fill="#f59e0b"/>
-                        <rect x="21" y="244" width="15" height="7" rx="2.5" fill="#f59e0b"/>
-                        <rect x="27" y="242" width="5" height="4" rx="1" fill="#fbbf24"/>
-                        <rect x="33" y="242" width="5" height="4" rx="1" fill="#fbbf24"/>
-                    </svg>
-                    <div style="padding:14px 16px 18px;">
-                        <div style="font-size:0.63rem;letter-spacing:0.16em;color:#fb923c;font-weight:700;text-transform:uppercase;margin-bottom:3px;">Persona 06</div>
-                        <div style="font-size:1.05rem;font-weight:800;color:white;margin-bottom:3px;">Elena Santos</div>
-                        <div style="font-size:0.76rem;color:#fdba74;margin-bottom:10px;">SMB Owner</div>
-                        <div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:9px;">
-                            <span style="font-size:0.62rem;padding:3px 8px;background:rgba(249,115,22,0.18);border:1px solid rgba(249,115,22,0.4);border-radius:20px;color:#fdba74;">Practical</span>
-                            <span style="font-size:0.62rem;padding:3px 8px;background:rgba(249,115,22,0.18);border:1px solid rgba(249,115,22,0.4);border-radius:20px;color:#fdba74;">Budget-Smart</span>
-                            <span style="font-size:0.62rem;padding:3px 8px;background:rgba(249,115,22,0.18);border:1px solid rgba(249,115,22,0.4);border-radius:20px;color:#fdba74;">Growth-Hungry</span>
-                        </div>
-                        <p style="font-size:0.71rem;color:#94a3b8;line-height:1.5;margin:0;">Fast, plain-English wins she can act on today.</p>
-                    </div>
-                </div>
-
-                <!-- ⑦ JAMIE PARK · Curious Explorer -->
-                <div style="border-radius:18px;overflow:hidden;background:#060b1e;box-shadow:0 20px 50px rgba(0,0,0,0.6);">
-                    <svg viewBox="0 0 200 260" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block;">
-                        <defs>
-                            <linearGradient id="pmx7" x1="0" y1="0" x2="1" y2="1">
-                                <stop offset="0%" stop-color="#1e1b4b"/>
-                                <stop offset="100%" stop-color="#030614"/>
-                            </linearGradient>
-                        </defs>
-                        <rect width="200" height="260" fill="url(#pmx7)"/>
-                        <circle cx="160" cy="30" r="50" fill="#4f46e5" opacity="0.22"/>
-                        <circle cx="30" cy="200" r="40" fill="#818cf8" opacity="0.13"/>
-                        <!-- Question marks floating -->
-                        <text x="150" y="52" font-family="sans-serif" font-size="20" fill="#818cf8" opacity="0.45" font-weight="bold">?</text>
-                        <text x="28" y="72" font-family="sans-serif" font-size="15" fill="#a5b4fc" opacity="0.38" font-weight="bold">?</text>
-                        <circle cx="155" cy="65" r="2.5" fill="#818cf8" opacity="0.6"/>
-                        <circle cx="140" cy="42" r="1.5" fill="#a78bfa" opacity="0.55"/>
-                        <!-- Body: casual youthful -->
-                        <path d="M0 260 L0 192 Q100 175 200 192 L200 260 Z" fill="#312e81"/>
-                        <path d="M72 192 Q100 180 128 192 L128 220 Q100 212 72 220 Z" fill="#4f46e5" opacity="0.52"/>
-                        <!-- Scoop neck -->
-                        <path d="M82 176 Q100 192 118 176" stroke="#6366f1" stroke-width="3" fill="none"/>
-                        <!-- Neck -->
-                        <rect x="85" y="148" width="30" height="26" rx="10" fill="#F0D0B4"/>
-                        <!-- Head -->
-                        <ellipse cx="100" cy="112" rx="40" ry="44" fill="#F0D0B4"/>
-                        <!-- Hair: bowl cut, youthful neat -->
-                        <ellipse cx="100" cy="83" rx="42" ry="22" fill="#1a0a00"/>
-                        <rect x="58" y="83" width="84" height="26" fill="#1a0a00"/>
-                        <!-- Straight bangs -->
-                        <rect x="68" y="90" width="64" height="11" rx="1" fill="#1a0a00"/>
-                        <!-- Bowl cut sides -->
-                        <ellipse cx="61" cy="104" rx="7" ry="14" fill="#1a0a00"/>
-                        <ellipse cx="139" cy="104" rx="7" ry="14" fill="#1a0a00"/>
-                        <!-- Ears -->
-                        <ellipse cx="60" cy="112" rx="6" ry="9" fill="#F0D0B4"/>
-                        <ellipse cx="140" cy="112" rx="6" ry="9" fill="#F0D0B4"/>
-                        <!-- WIDE curious eyes (main feature) -->
-                        <ellipse cx="87" cy="110" rx="9.5" ry="10.5" fill="white"/>
-                        <ellipse cx="113" cy="110" rx="9.5" ry="10.5" fill="white"/>
-                        <circle cx="88" cy="111" r="6.5" fill="#312e81"/>
-                        <circle cx="114" cy="111" r="6.5" fill="#312e81"/>
-                        <circle cx="90" cy="109" r="2.2" fill="white"/>
-                        <circle cx="116" cy="109" r="2.2" fill="white"/>
-                        <!-- Raised curious eyebrows -->
-                        <path d="M79 99 Q87 94 95 98" stroke="#1a0a00" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-                        <path d="M105 98 Q113 94 121 99" stroke="#1a0a00" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-                        <!-- Nose -->
-                        <path d="M97 121 Q100 126 103 121" stroke="#C68642" stroke-width="1.5" fill="none" stroke-linecap="round"/>
-                        <!-- Open curious smile -->
-                        <path d="M88 131 Q100 139 112 131" stroke="#c0392b" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-                        <path d="M90 131 Q100 137 110 131 Q100 142 90 131 Z" fill="#e74c3c" opacity="0.45"/>
-                        <!-- Arms -->
-                        <path d="M0 195 Q-5 232 6 260 L38 260 L43 200 Z" fill="#312e81"/>
-                        <path d="M200 195 Q205 232 194 260 L162 260 L157 200 Z" fill="#312e81"/>
-                        <!-- Notebook in right hand -->
-                        <rect x="157" y="220" width="28" height="36" rx="3" fill="#f1f5f9"/>
-                        <rect x="159" y="222" width="24" height="32" rx="2" fill="#f8fafc"/>
-                        <line x1="162" y1="229" x2="181" y2="229" stroke="#94a3b8" stroke-width="1"/>
-                        <line x1="162" y1="234" x2="181" y2="234" stroke="#94a3b8" stroke-width="1"/>
-                        <line x1="162" y1="239" x2="178" y2="239" stroke="#94a3b8" stroke-width="1"/>
-                        <line x1="162" y1="244" x2="180" y2="244" stroke="#94a3b8" stroke-width="1"/>
-                        <!-- Pencil -->
-                        <rect x="186" y="216" width="4" height="24" rx="2" fill="#fbbf24"/>
-                        <polygon points="186,240 190,240 188,248" fill="#f87171"/>
-                        <rect x="186" y="216" width="4" height="4" rx="1" fill="#9ca3af"/>
-                    </svg>
-                    <div style="padding:14px 16px 18px;">
-                        <div style="font-size:0.63rem;letter-spacing:0.16em;color:#818cf8;font-weight:700;text-transform:uppercase;margin-bottom:3px;">Persona 07</div>
-                        <div style="font-size:1.05rem;font-weight:800;color:white;margin-bottom:3px;">Jamie Park</div>
-                        <div style="font-size:0.76rem;color:#a5b4fc;margin-bottom:10px;">Curious Explorer</div>
-                        <div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:9px;">
-                            <span style="font-size:0.62rem;padding:3px 8px;background:rgba(99,102,241,0.18);border:1px solid rgba(99,102,241,0.4);border-radius:20px;color:#a5b4fc;">Discovery</span>
-                            <span style="font-size:0.62rem;padding:3px 8px;background:rgba(99,102,241,0.18);border:1px solid rgba(99,102,241,0.4);border-radius:20px;color:#a5b4fc;">Open-Minded</span>
-                            <span style="font-size:0.62rem;padding:3px 8px;background:rgba(99,102,241,0.18);border:1px solid rgba(99,102,241,0.4);border-radius:20px;color:#a5b4fc;">Story-Led</span>
-                        </div>
-                        <p style="font-size:0.71rem;color:#94a3b8;line-height:1.5;margin:0;">Wonder, clear narratives, and "aha" moments to engage.</p>
-                    </div>
-                </div>
-
-            </div><!-- /persona grid -->
-
-            <!-- ── How the Matrix Works (3-step strip) ── -->
-            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px;max-width:960px;margin:0 auto;padding:0 20px;">
-                <div class="step-container">
-                    <div class="number-badge" style="width:2rem;height:2rem;font-size:0.875rem;">1</div>
-                    <p><strong>Persona Selection:</strong> Target persona chosen before generation (Executive, Analyst, Creator…).</p>
-                </div>
-                <div class="step-container">
-                    <div class="number-badge" style="width:2rem;height:2rem;font-size:0.875rem;">2</div>
-                    <p><strong>Style Injection:</strong> Persona-specific tone guide injected into all agent prompts — formal vs. casual, data-dense vs. narrative-driven.</p>
-                </div>
-                <div class="step-container">
-                    <div class="number-badge" style="width:2rem;height:2rem;font-size:0.875rem;">3</div>
-                    <p><strong>Tailored Output:</strong> Same vector data, seven radically different content voices delivered to the right audience.</p>
                 </div>
             </div>
-
         </section>
 
     </main>
 
     <footer class="bg-gray-800 text-white">
         <div class="container text-center py-8">
-            <p>&copy; 2025 SmartChannel CX Project. All rights reserved.</p>
+            <p>&copy; 2025 Smart Channel Project. All rights reserved.</p>
             <p class="text-sm text-gray-400 mt-2">This interactive specification was generated based on provided project
                 documents.</p>
         </div>
@@ -846,7 +1257,7 @@
                     strength: "Extremely low latency on local CUDA RTX 4090 GPU acceleration, native voice/text multimodal stream."
                 },
                 deepseek: {
-                    title: "DeepSeek-V4 Pro (Reasoning Core)",
+                    title: "DeepSeek-V3 (Reasoning Core)",
                     latency: "1.2s (deep chain-of-thought)",
                     context: "64K Tokens",
                     cost: "$0.0002 / 1K tokens",
