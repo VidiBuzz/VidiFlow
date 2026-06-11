@@ -1263,6 +1263,77 @@
 
 <!-- ========== GLANCE TEST & DISSOLVE SLIDER LOGIC ========== -->
 <script>
+  // --- Web Audio API Synth Effects ---
+  const synthAudio = {
+    ctx: null,
+    
+    init() {
+      if (!this.ctx) {
+        this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (this.ctx.state === 'suspended') {
+        this.ctx.resume();
+      }
+    },
+    
+    playSuccess() {
+      try {
+        this.init();
+        const now = this.ctx.currentTime;
+        const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6 (clean major chime)
+        notes.forEach((freq, idx) => {
+          const time = now + idx * 0.08;
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(freq, time);
+          
+          gain.gain.setValueAtTime(0, time);
+          gain.gain.linearRampToValueAtTime(0.12, time + 0.02);
+          gain.gain.exponentialRampToValueAtTime(0.0001, time + 0.35);
+          
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          
+          osc.start(time);
+          osc.stop(time + 0.45);
+        });
+      } catch (e) {
+        console.warn("Web Audio API not supported or blocked: ", e);
+      }
+    },
+    
+    playFailure() {
+      try {
+        this.init();
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        const filter = this.ctx.createBiquadFilter();
+        
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(160, now);
+        osc.frequency.exponentialRampToValueAtTime(70, now + 0.25);
+        
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(350, now);
+        
+        gain.gain.setValueAtTime(0.15, now);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.35);
+        
+        osc.connect(filter);
+        filter.connect(gain);
+        gain.connect(this.ctx.destination);
+        
+        osc.start(now);
+        osc.stop(now + 0.38);
+      } catch (e) {
+        console.warn("Web Audio API failed: ", e);
+      }
+    }
+  };
+
   // --- Section Tabs Switching ---
   function switchSection(sectId) {
     document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
@@ -1345,6 +1416,9 @@
     document.getElementById('screen-start').classList.add('hidden');
     document.getElementById('screen-digital').classList.remove('hidden');
     
+    // Unlock Web Audio API context on user interaction
+    synthAudio.init();
+    
     digitalInteractiveLocked = false;
     
     // Render logs
@@ -1403,6 +1477,9 @@
     const endTime = performance.now();
     
     if (isCorrect) {
+      // Play success chime
+      synthAudio.playSuccess();
+      
       // Highlight correct row in green with green light icon
       row.style.background = 'rgba(16, 185, 129, 0.2)';
       row.style.border = '1px solid var(--emerald)';
@@ -1417,6 +1494,9 @@
         document.getElementById('screen-transition').classList.remove('hidden');
       }, 1200);
     } else {
+      // Play failure buzz
+      synthAudio.playFailure();
+      
       // Highlight wrong clicked row in desaturated red
       row.style.background = 'rgba(239, 68, 68, 0.15)';
       row.style.border = '1px dashed var(--rose)';
@@ -1444,6 +1524,9 @@
   function handleLogTimeout() {
     if (digitalInteractiveLocked) return;
     digitalInteractiveLocked = true;
+    
+    // Play failure buzz
+    synthAudio.playFailure();
     
     const logBox = document.getElementById('text-log-box');
     
@@ -1581,6 +1664,9 @@
   function selectAnalogicError() {
     const endTime = performance.now();
     analogicCompleted = endTime - testStart;
+    
+    // Play success chime
+    synthAudio.playSuccess();
     
     document.getElementById('screen-analogic').classList.add('hidden');
     document.getElementById('screen-results').classList.remove('hidden');
@@ -1806,6 +1892,10 @@
       if (!modAnswers[target]) {
         modAnswers[target] = true;
         input.classList.add('correct');
+        
+        // Play success chime
+        synthAudio.playSuccess();
+        
         // Spawn success flash particles
         spawnSuccessBurst(input);
       }
