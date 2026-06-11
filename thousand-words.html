@@ -1,0 +1,1314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VidiFlow — Zero-Read Analogics Principle</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Kumbh+Sans:wght@400;700;800;900&family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<style>
+  /* ========== RESET & BASE STYLES ========== */
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --bg-dark: #030508;
+    --card-bg: rgba(10, 15, 30, 0.4);
+    --border-color: rgba(255, 255, 255, 0.06);
+    --cyan: #0ea5e9;
+    --cyan-glow: rgba(14, 165, 233, 0.25);
+    --purple: #a855f7;
+    --purple-glow: rgba(168, 85, 247, 0.2);
+    --emerald: #10b981;
+    --rose: #ef4444;
+    --font-display: 'Kumbh Sans', sans-serif;
+    --font-body: 'Inter', sans-serif;
+    --font-serif: 'Playfair Display', Georgia, serif;
+  }
+  
+  body {
+    background-color: var(--bg-dark);
+    font-family: var(--font-body);
+    color: #f1f5f9;
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* ========== AURORA MESH BACKGROUND ========== */
+  .aurora-bg {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    z-index: -2;
+    overflow: hidden;
+    pointer-events: none;
+  }
+  .aurora-blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(130px);
+    opacity: 0.15;
+    animation: blob-float 25s ease-in-out infinite alternate;
+  }
+  .aurora-blob.cyan {
+    width: 600px; height: 600px;
+    background: var(--cyan);
+    top: -10%; left: -5%;
+  }
+  .aurora-blob.purple {
+    width: 500px; height: 500px;
+    background: var(--purple);
+    bottom: -10%; right: -5%;
+    animation-delay: -5s;
+  }
+  .aurora-blob.emerald {
+    width: 450px; height: 450px;
+    background: var(--emerald);
+    top: 40%; left: 30%;
+    animation-delay: -10s;
+  }
+  @keyframes blob-float {
+    0% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(60px, -40px) scale(1.1); }
+    100% { transform: translate(-30px, 50px) scale(0.9); }
+  }
+
+  /* Noise Overlay */
+  .noise-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    z-index: -1;
+    opacity: 0.025;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  }
+
+  /* ========== NAVIGATION BAR ========== */
+  .nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(3, 5, 8, 0.7);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border-color);
+    padding: 1.25rem 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .nav-brand {
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: 1.4rem;
+    color: #fff;
+    letter-spacing: -0.02em;
+  }
+  .nav-brand span { color: var(--cyan); }
+  
+  .nav-tabs {
+    display: flex;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border-color);
+    padding: 4px;
+    border-radius: 999px;
+  }
+  .nav-tab {
+    padding: 0.5rem 1.25rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #94a3b8;
+    background: none;
+    border: none;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+  }
+  .nav-tab:hover { color: #fff; }
+  .nav-tab.active {
+    background: rgba(56, 189, 248, 0.1);
+    color: #38bdf8;
+    border: 1px solid rgba(56, 189, 248, 0.15);
+  }
+
+  .back-dashboard {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #38bdf8;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-decoration: none;
+    padding: 0.5rem 1.2rem;
+    background: rgba(56, 189, 248, 0.06);
+    border: 1px solid rgba(56, 189, 248, 0.18);
+    border-radius: 999px;
+    transition: all 0.3s ease;
+  }
+  .back-dashboard:hover {
+    background: rgba(56, 189, 248, 0.15);
+    border-color: #38bdf8;
+    transform: translateX(-4px);
+  }
+
+  /* ========== CONTAINER ========== */
+  .container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2.5rem 2rem;
+  }
+
+  .view-section {
+    display: none;
+    animation: fade-in 0.5s ease-out forwards;
+  }
+  .view-section.active {
+    display: block;
+  }
+  @keyframes fade-in {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ========== VIEW 1: INTERACTIVE GLANCE TEST ========== */
+  .test-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    margin-top: 1.5rem;
+  }
+  
+  .test-intro {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  
+  .badge {
+    align-self: flex-start;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(56, 189, 248, 0.08);
+    border: 1px solid rgba(56, 189, 248, 0.2);
+    border-radius: 999px;
+    padding: 0.4rem 1rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--cyan);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+  }
+  
+  h1 {
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: clamp(2.2rem, 5vw, 3.8rem);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    color: #fff;
+    margin-bottom: 1.5rem;
+  }
+  h1 span {
+    background: linear-gradient(135deg, var(--cyan), var(--purple));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  
+  .subtitle {
+    font-size: 1.1rem;
+    color: #94a3b8;
+    line-height: 1.6;
+    margin-bottom: 2rem;
+  }
+
+  .test-panel {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 24px;
+    padding: 2.5rem;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    position: relative;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+    min-height: 480px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .test-screen {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+  .test-screen.hidden { display: none; }
+
+  .btn-trigger {
+    background: linear-gradient(135deg, var(--cyan), var(--purple));
+    border: none;
+    color: #030508;
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 1rem;
+    padding: 1.2rem 2.5rem;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 10px 25px rgba(14, 165, 233, 0.3);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .btn-trigger:hover {
+    transform: scale(1.04) translateY(-3px);
+    box-shadow: 0 15px 35px rgba(14, 165, 233, 0.5), 0 0 15px rgba(168, 85, 247, 0.4);
+    color: #fff;
+  }
+
+  /* Digital Text Challenge Screen */
+  .countdown {
+    font-family: var(--font-display);
+    font-size: 3.5rem;
+    font-weight: 900;
+    color: var(--cyan);
+    margin-bottom: 1rem;
+  }
+  .text-log-container {
+    background: rgba(0, 0, 0, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 1.5rem;
+    width: 100%;
+    font-family: monospace;
+    font-size: 0.8rem;
+    line-height: 1.5;
+    text-align: left;
+    color: #a7f3d0;
+    height: 200px;
+    overflow-y: auto;
+    margin-bottom: 2rem;
+  }
+  .text-log-container span.highlight {
+    color: var(--rose);
+    font-weight: bold;
+    background: rgba(239, 68, 68, 0.2);
+    padding: 1px 4px;
+    border-radius: 3px;
+  }
+
+  /* Analogic Visual Grid Screen */
+  .visual-agent-grid {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    gap: 8px;
+    width: min(100%, 360px);
+    margin: 1.5rem 0 2rem;
+  }
+  .agent-node {
+    aspect-ratio: 1;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    transition: all 0.2s ease;
+  }
+  .agent-node.green {
+    background: var(--emerald);
+    opacity: 0.6;
+    box-shadow: 0 0 4px var(--emerald);
+  }
+  .agent-node.gray {
+    background: #475569;
+    opacity: 0.3;
+  }
+  .agent-node.error-alert {
+    background: var(--rose);
+    opacity: 1;
+    cursor: pointer;
+    box-shadow: 0 0 15px var(--rose), 0 0 30px var(--rose);
+    animation: alert-pulse 0.8s infinite alternate;
+  }
+  @keyframes alert-pulse {
+    from { transform: scale(0.95); opacity: 0.7; }
+    to { transform: scale(1.15); opacity: 1; }
+  }
+
+  .test-status-text {
+    font-size: 1.1rem;
+    color: #94a3b8;
+    margin-bottom: 1.5rem;
+  }
+
+  /* Result screen */
+  .result-circle {
+    width: 120px; height: 120px;
+    border-radius: 50%;
+    background: rgba(16, 185, 129, 0.1);
+    border: 2px solid var(--emerald);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 30px rgba(16, 185, 129, 0.25);
+    margin-bottom: 2rem;
+  }
+  .result-val {
+    font-family: var(--font-display);
+    font-size: 2.2rem;
+    font-weight: 900;
+    color: var(--emerald);
+    line-height: 1;
+  }
+  .result-unit {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #6ee7b7;
+    margin-top: 2px;
+  }
+
+  /* ========== VIEW 2: DISSOLVE SLIDER ========== */
+  .slider-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    position: relative;
+  }
+  
+  .slider-panels {
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: 3rem;
+    position: relative;
+  }
+  
+  /* Canvas layer for particles */
+  #dissolve-canvas {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 20;
+  }
+
+  /* Left Panel: Brisbane text */
+  .words-panel {
+    background: #fdfbf7;
+    color: #1a202c;
+    border-radius: 24px;
+    padding: 3rem;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+    position: relative;
+    overflow: hidden;
+    min-height: 520px;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.4s ease, filter 0.4s ease, opacity 0.4s ease;
+  }
+  .words-panel-label {
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #a0aec0;
+    margin-bottom: 1.5rem;
+  }
+  .words-panel-text {
+    font-family: var(--font-serif);
+    font-size: 1.05rem;
+    line-height: 1.8;
+    color: #2d3748;
+    text-align: justify;
+    overflow-y: auto;
+    flex-1: 1;
+    padding-right: 10px;
+    transition: letter-spacing 0.8s ease, filter 0.8s ease, opacity 0.8s ease, transform 0.8s ease;
+  }
+  .words-panel-text::first-letter {
+    font-size: 3.5rem;
+    float: left;
+    line-height: 0.9;
+    font-weight: 900;
+    margin-right: 8px;
+    margin-top: 4px;
+    color: var(--cyan);
+    font-family: var(--font-display);
+  }
+
+  /* Right Panel: Picture */
+  .image-panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    min-height: 520px;
+  }
+  .image-panel-label {
+    position: absolute;
+    top: 20px;
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #4a5568;
+    z-index: 5;
+  }
+  .image-container-3d {
+    width: min(85%, 440px);
+    aspect-ratio: 1;
+    border-radius: 32px;
+    background: rgba(11, 15, 26, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    padding: 1.5rem;
+    box-shadow: 
+      0 30px 60px rgba(0, 0, 0, 0.6), 
+      inset 0 1px 0 rgba(255, 255, 255, 0.1),
+      0 0 50px rgba(56, 189, 248, 0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    z-index: 10;
+    transition: all 0.5s ease;
+  }
+  .image-container-3d img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+  }
+  .image-glow-ring {
+    position: absolute;
+    inset: -2px;
+    border-radius: 34px;
+    background: linear-gradient(135deg, var(--cyan), var(--purple));
+    z-index: -1;
+    opacity: 0;
+    filter: blur(12px);
+    transition: opacity 0.5s ease;
+  }
+  .image-caption {
+    position: absolute;
+    bottom: 20px;
+    color: #4a5568;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    z-index: 5;
+    transition: color 0.5s ease;
+  }
+
+  /* Controls Row: Slider block */
+  .slider-control-block {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    padding: 2rem;
+    backdrop-filter: blur(12px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+  .slider-title {
+    font-family: var(--font-display);
+    font-size: 0.95rem;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: #94a3b8;
+  }
+  .slider-wrap {
+    width: 100%;
+    max-width: 600px;
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+  
+  /* Range Input Styling */
+  input[type=range].custom-slider {
+    -webkit-appearance: none;
+    width: 100%;
+    background: transparent;
+  }
+  input[type=range].custom-slider:focus {
+    outline: none;
+  }
+  input[type=range].custom-slider::-webkit-slider-runnable-track {
+    width: 100%;
+    height: 8px;
+    cursor: pointer;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+  }
+  input[type=range].custom-slider::-webkit-slider-thumb {
+    height: 24px;
+    width: 24px;
+    border-radius: 50%;
+    background: #fff;
+    cursor: pointer;
+    -webkit-appearance: none;
+    margin-top: -8px;
+    box-shadow: 0 0 15px rgba(56, 189, 248, 0.8), 0 0 4px #fff;
+    border: 2px solid var(--cyan);
+    transition: transform 0.1s, background-color 0.2s;
+  }
+  input[type=range].custom-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.15);
+    background: #e0f2fe;
+  }
+  .slider-labels {
+    width: 100%;
+    max-width: 600px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #475569;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .slider-labels span.active {
+    color: var(--cyan);
+    text-shadow: 0 0 10px rgba(14, 165, 233, 0.3);
+  }
+
+  /* ========== VIEW 3: COGNITIVE PRINCIPLES ========== */
+  .rubric-header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+  .rubric-header h2 {
+    font-family: var(--font-display);
+    font-size: 2.2rem;
+    font-weight: 900;
+    color: #fff;
+    margin-bottom: 0.5rem;
+  }
+  .rubric-header p {
+    color: #94a3b8;
+    font-size: 1.1rem;
+  }
+
+  .grid-principles {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+    margin-bottom: 3.5rem;
+  }
+  
+  .principle-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    padding: 2.2rem;
+    backdrop-filter: blur(12px);
+    transition: all 0.3s ease;
+    display: flex;
+    gap: 1.5rem;
+  }
+  .principle-card:hover {
+    border-color: rgba(56, 189, 248, 0.25);
+    transform: translateY(-4px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4), 0 0 20px rgba(56, 189, 248, 0.05);
+  }
+  .principle-icon {
+    width: 48px; height: 48px;
+    border-radius: 12px;
+    background: rgba(56, 189, 248, 0.1);
+    border: 1px solid rgba(56, 189, 248, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--cyan);
+    font-size: 1.25rem;
+    flex-shrink: 0;
+  }
+  .principle-card.purple .principle-icon {
+    background: rgba(168, 85, 247, 0.1);
+    border-color: rgba(168, 85, 247, 0.2);
+    color: var(--purple);
+  }
+  .principle-content h3 {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 1.2rem;
+    color: #fff;
+    margin-bottom: 0.5rem;
+  }
+  .principle-content p {
+    font-size: 0.9rem;
+    color: #94a3b8;
+    line-height: 1.6;
+  }
+  .principle-content ul {
+    margin-top: 0.75rem;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .principle-content ul li {
+    font-size: 0.85rem;
+    color: #cbd5e1;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .principle-content ul li::before {
+    content: '✦';
+    color: var(--cyan);
+    font-size: 0.7rem;
+  }
+  .principle-card.purple .principle-content ul li::before {
+    color: var(--purple);
+  }
+
+  /* Rubric Grid Table */
+  .table-panel {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 24px;
+    overflow: hidden;
+    backdrop-filter: blur(12px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+  }
+  .table-title {
+    padding: 1.5rem 2rem;
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    font-weight: 900;
+    border-bottom: 1px solid var(--border-color);
+    color: #fff;
+  }
+  
+  table.rubric-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+  }
+  table.rubric-table th {
+    padding: 1rem 2rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #64748b;
+    border-bottom: 1px solid var(--border-color);
+    background: rgba(255, 255, 255, 0.01);
+  }
+  table.rubric-table td {
+    padding: 1.25rem 2rem;
+    font-size: 0.9rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    color: #e2e8f0;
+    vertical-align: top;
+  }
+  table.rubric-table tr:last-child td {
+    border-bottom: none;
+  }
+  table.rubric-table tr:hover td {
+    background: rgba(56, 189, 248, 0.01);
+  }
+  table.rubric-table td.cell-bold {
+    font-family: var(--font-display);
+    font-weight: 800;
+    color: #fff;
+    width: 180px;
+  }
+  
+  .badge-pass {
+    display: inline-block;
+    font-size: 0.65rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 3px 8px;
+    border-radius: 4px;
+    background: rgba(16, 185, 129, 0.12);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    color: #34d399;
+  }
+
+  /* ========== RESPONSIVE ========== */
+  @media(max-width: 1024px) {
+    .test-layout, .slider-panels {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+    .grid-principles {
+      grid-template-columns: 1fr;
+    }
+    .words-panel, .image-panel {
+      min-height: auto;
+    }
+    .container {
+      padding: 1.5rem 1rem;
+    }
+    .nav {
+      padding: 1rem 1.5rem;
+    }
+  }
+</style>
+</head>
+<body>
+
+<!-- AURORA BACKGROUNDS -->
+<div class="aurora-bg">
+  <div class="aurora-blob cyan"></div>
+  <div class="aurora-blob purple"></div>
+  <div class="aurora-blob emerald"></div>
+</div>
+<div class="noise-overlay"></div>
+
+<!-- HEADER NAVIGATION -->
+<nav class="nav">
+  <div class="nav-brand">Vidi<span>Flow</span></div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="switchSection('test')">Glance Test</button>
+    <button class="nav-tab" onclick="switchSection('dissolve')">Brisbane Slider</button>
+    <button class="nav-tab" onclick="switchSection('principles')">Rubric &amp; Principles</button>
+  </div>
+  <a href="agent-ui.html" class="back-dashboard">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+    Dashboard
+  </a>
+</nav>
+
+<div class="container">
+
+  <!-- ==================== SECTION 1: GLANCE TEST ==================== -->
+  <section id="section-test" class="view-section active">
+    <div class="test-layout">
+      
+      <div class="test-intro">
+        <span class="badge">Cognitive Challenge</span>
+        <h1>Beat the Vidi<span>Flow</span> Glance Test</h1>
+        <p class="subtitle">
+          Human perception processes visual states up to <strong>60,000 times faster</strong> than textual decoding. If your system dashboard requires reading text labels to identify an outage, you are losing valuable response seconds.
+        </p>
+        <p class="subtitle" style="font-size: 0.95rem;">
+          Take this comparative glance challenge. First, parse an alert hidden inside a digital text log. Second, try to spot the same alert using VidiFlow's Analogic Glance UI.
+        </p>
+      </div>
+
+      <div class="test-panel" id="test-panel-box">
+        <!-- Screen 1: Start -->
+        <div class="test-screen" id="screen-start">
+          <div class="result-circle" style="background: rgba(14,165,233,0.06); border-color: var(--cyan); box-shadow: 0 0 20px rgba(14,165,233,0.15); margin-bottom: 1.5rem;">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--cyan);"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </div>
+          <h2 style="font-family: var(--font-display); font-size: 1.5rem; font-weight: 800; margin-bottom: 0.75rem; color: #fff;">Test Your Perception Speed</h2>
+          <p style="color: #94a3b8; font-size: 0.88rem; max-width: 380px; margin-bottom: 2rem;">We will measure the milliseconds it takes your brain to locate the active error in both formats.</p>
+          <button class="btn-trigger" onclick="startDigitalChallenge()">Start Challenge</button>
+        </div>
+
+        <!-- Screen 2: Digital (Text Log) -->
+        <div class="test-screen hidden" id="screen-digital">
+          <div class="countdown" id="digital-countdown">5</div>
+          <p class="test-status-text">Locate the line describing a <strong>blockage / critical error</strong>: (Click on it!)</p>
+          <div class="text-log-container" id="text-log-box">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+
+        <!-- Screen 3: Transition -->
+        <div class="test-screen hidden" id="screen-transition">
+          <h2 style="font-family: var(--font-display); font-size: 1.5rem; font-weight: 800; margin-bottom: 0.5rem; color: #fff;">Get Ready for Stage 2</h2>
+          <p style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 2rem;">Now, spot the anomaly inside VidiFlow's 48-node Agent Grid.</p>
+          <button class="btn-trigger" onclick="startAnalogicChallenge()">Show Visual Grid</button>
+        </div>
+
+        <!-- Screen 4: Analogic (Visual Grid) -->
+        <div class="test-screen hidden" id="screen-analogic">
+          <p class="test-status-text">Click the <strong>pulsing red alert node</strong> instantly:</p>
+          <div class="visual-agent-grid" id="agent-grid-box">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+
+        <!-- Screen 5: Results -->
+        <div class="test-screen hidden" id="screen-results">
+          <div class="result-circle">
+            <span class="result-val" id="analogic-time-val">0.24</span>
+            <span class="result-unit">seconds</span>
+          </div>
+          <h2 style="font-family: var(--font-display); font-size: 1.6rem; font-weight: 900; margin-bottom: 0.75rem; color: #fff;" id="results-headline">Perception Speed: 23x Faster!</h2>
+          <p style="color: #94a3b8; font-size: 0.9rem; max-width: 440px; line-height: 1.6; margin-bottom: 2rem;" id="results-summary">
+            You processed the Visual state in 0.3s compared to 7.4s for text. This is why VidiFlow defaults to color, position, and shape over paragraphs.
+          </p>
+          <button class="btn-trigger" onclick="resetPerceptionTest()">Retake Test</button>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ==================== SECTION 2: DISSOLVE SLIDER ==================== -->
+  <section id="section-dissolve" class="view-section">
+    <div class="slider-layout">
+      
+      <div style="max-width: 750px; margin: 0 auto; text-align: center;">
+        <span class="badge" style="background: rgba(168, 85, 247, 0.08); border-color: rgba(168, 85, 247, 0.2); color: var(--purple);">The Power of Contrast</span>
+        <h1>Brisbane Editorial Converter</h1>
+        <p class="subtitle">
+          Drag the slider to compress Arthur Brisbane's <strong>1,000-word claim</strong> about visual cognition directly into a single, comprehensive conceptual image.
+        </p>
+      </div>
+
+      <div class="slider-panels-wrap">
+        <!-- Canvas for particle stream -->
+        <canvas id="dissolve-canvas"></canvas>
+        
+        <div class="slider-panels">
+          
+          <!-- Left: Brisbane Text -->
+          <div class="words-panel" id="text-container">
+            <span class="words-panel-label">1,000 Words (Digital Layer)</span>
+            <div class="words-panel-text" id="wall-of-text">
+              The concept of visual communication predates written language by tens of thousands of years. Cave paintings in Lascaux, France, dating back approximately seventeen thousand years, demonstrate the innate human drive to express meaning through imagery rather than inscription. Long before alphabets were devised or grammar systems formalized, our ancestors understood instinctively that a rendered bison conveyed something immediate and universal — something that transcended the boundaries of spoken dialect or tribal vocabulary. The eye processes visual information at extraordinary speed. Neuroscientists estimate that the human brain can identify and interpret a recognizable image in as little as thirteen milliseconds, a speed that no written or spoken language can approach. Words must be decoded sequentially: letter by letter, syllable by syllable, sentence by sentence. An image lands whole. It bypasses the logical, linguistic centers of the brain and speaks directly to the limbic system — the ancient seat of emotion, memory, and instinctive response. Consider the difference between reading a clinical description of grief — its physiological symptoms, its psychological stages, its duration and variability across individuals — and simply looking at a photograph of a mother holding a child she has just lost. The photograph needs no translation. It needs no footnote, no citation, no explanatory paragraph. It simply is. This is why the great photojournalists of the twentieth century changed history with single frames. Nick Ut's image of Kim Phuc running from a napalm strike in 1972 turned the tide of American public opinion on the Vietnam War more effectively than any editorial, speech, or report had managed. Kevin Carter's photograph of a vulture watching a starving Sudanese child won a Pulitzer Prize and sparked international humanitarian debate that continues to this day. These images were not translated. They were felt. The phrase itself — a picture is worth a thousand words — is commonly attributed to an American newspaper editor named Arthur Brisbane, who used a version of it in 1911. Some trace it to Chinese proverb. Others find echoes of it in Napoleon Bonaparte, who reportedly believed that a good sketch was worth more than a long report. But its origin matters less than its endurance. The phrase has survived for over a century because it describes something fundamental about human cognition — not a preference, not a cultural habit, but a neurological fact. We are visual creatures first. Language came later, and brilliantly, but it never replaced the older, faster, deeper channel through which images speak. Graphic designers know this. Filmmakers know this. Advertisers have built billion-dollar industries on it. A well-composed image compresses narrative, emotion, context, and meaning into a single glance. It does not ask for patience. It does not require literacy. It does not care what language you speak or what year you were born. It simply arrives, and it is understood. In an age of information saturation — where the average person is estimated to encounter between six and ten thousand advertising messages per day, where text floods every screen and surface — the image has not been diminished. It has become more powerful than ever. Because attention is now the scarcest resource on earth, and the image remains the fastest way to capture it. One picture. One moment. One truth. Instantly. Completely. Without a single word.
+            </div>
+          </div>
+
+          <!-- Right: Visual Outcome -->
+          <div class="image-panel">
+            <span class="image-panel-label">1 Picture (Analogic Layer)</span>
+            <div class="image-container-3d" id="image-box">
+              <div class="image-glow-ring" id="image-glow"></div>
+              <img src="thousand-words.png" alt="A picture is worth a thousand words representation">
+            </div>
+            <span class="image-caption" id="image-caption-text">understood instantly</span>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Slider controller -->
+      <div class="slider-control-block">
+        <span class="slider-title" id="slider-desc">Cognitive Balance: 100% Text / 0% Visual</span>
+        <div class="slider-wrap">
+          <input type="range" min="0" max="100" value="0" class="custom-slider" id="dissolve-slider" oninput="handleSliderChange(this.value)">
+        </div>
+        <div class="slider-labels">
+          <span id="label-text" class="active">1,000 Words</span>
+          <span id="label-visual">1 Picture</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ==================== SECTION 3: PRINCIPLES & RUBRIC ==================== -->
+  <section id="section-principles" class="view-section">
+    
+    <div class="rubric-header">
+      <span class="badge">Perception Rubric</span>
+      <h2>Zero-Read Analogics Framework</h2>
+      <p>The standard of design intelligence defining modern, high-speed agentic interfaces.</p>
+    </div>
+
+    <!-- 4 Principles Grid -->
+    <div class="grid-principles">
+      <!-- Card 1 -->
+      <div class="principle-card">
+        <div class="principle-icon">📊</div>
+        <div class="principle-content">
+          <h3>Analogic vs. Digital UI</h3>
+          <p>Digital UI forces viewers to parse labels, counts, and descriptions. Analogic UI encodes meaning into spatial dimensions, comparative scale, dynamic color states, and tempos.</p>
+          <ul>
+            <li>Speedometers communicate state before the exact speed value is read.</li>
+            <li>Node grids show system completeness without requiring item counts.</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Card 2 -->
+      <div class="principle-card purple">
+        <div class="principle-icon">⏱</div>
+        <div class="principle-content">
+          <h3>The Five-Second Rule</h3>
+          <p>A user must identify the category, process state, and critical value of the interface within 5 seconds of glance contact. If they have to search through bullets to understand, it fails.</p>
+          <ul>
+            <li>Significance is encoded by proportions and spatial emphasis.</li>
+            <li>Information is layered, prioritizing visual impact over textual density.</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Card 3 -->
+      <div class="principle-card purple">
+        <div class="principle-icon">🌊</div>
+        <div class="principle-content">
+          <h3>Glance-Level States</h3>
+          <p>Dashboards for massive AI agent networks cannot display terminal text streams. They must summarize health states (Running, blockages, rate limits) into breathing lights and visual paths.</p>
+          <ul>
+            <li>RGB lightbars show resource depletion/bandwidth queues.</li>
+            <li>Linked flow chains map blocking paths rather than timeline timestamps.</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Card 4 -->
+      <div class="principle-card">
+        <div class="principle-icon">✨</div>
+        <div class="principle-content">
+          <h3>Sublime Contrast</h3>
+          <p>Dramatize the core issue. By showcasing a visual collapsing a "sea of text" into an intuitive, breathing symbol, designs convey structural order and confidence.</p>
+          <ul>
+            <li>Avoid redundant decorations or decorative-only motions.</li>
+            <li>Make motion explain causality, pipeline velocity, or priority.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Table Rubric -->
+    <div class="table-panel">
+      <div class="table-title">VidiFlow Zero-Read Evaluation Criteria</div>
+      <table class="rubric-table">
+        <thead>
+          <tr>
+            <th>Test Dimension</th>
+            <th>Required Pass Condition</th>
+            <th>VidiFlow Implementation Signal</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="cell-bold">Five-Second Test</td>
+            <td>A new viewer infers what the company does or the state of the swarm in under 5 seconds without reading more than two words.</td>
+            <td>High-impact visual layout, hierarchy by scale, prominent system indicator orb.</td>
+            <td><span class="badge-pass">Verified Pass</span></td>
+          </tr>
+          <tr>
+            <td class="cell-bold">Zero-Read Test</td>
+            <td>Category, process, and outcome are communicated visually before copy is parsed.</td>
+            <td>Visual layout and graphics explain flow first; minimal supporting copy is parsed later.</td>
+            <td><span class="badge-pass">Verified Pass</span></td>
+          </tr>
+          <tr>
+            <td class="cell-bold">Significance Test</td>
+            <td>The viewer understands what matters most through spatial hierarchy and color contrast alone.</td>
+            <td>Focus mode filters and dims non-priority elements; color accents direct attention.</td>
+            <td><span class="badge-pass">Verified Pass</span></td>
+          </tr>
+          <tr>
+            <td class="cell-bold">Precision Test</td>
+            <td>Motion and composition suggest control, order, and intentionality rather than decorative noise.</td>
+            <td>Rotary dials, sparkline flows, and breathing agent indicators suggest live, calibrated systems.</td>
+            <td><span class="badge-pass">Verified Pass</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </section>
+
+</div>
+
+<!-- ========== GLANCE TEST & DISSOLVE SLIDER LOGIC ========== -->
+<script>
+  // --- Section Tabs Switching ---
+  function switchSection(sectId) {
+    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
+    
+    // Find tab button
+    const tabs = document.querySelectorAll('.nav-tab');
+    if (sectId === 'test') tabs[0].classList.add('active');
+    else if (sectId === 'dissolve') tabs[1].classList.add('active');
+    else if (sectId === 'principles') tabs[2].classList.add('active');
+    
+    document.getElementById(`section-${sectId}`).classList.add('active');
+    
+    // Trigger canvas resize if showing dissolve
+    if (sectId === 'dissolve') {
+      setTimeout(initCanvas, 50);
+    }
+  }
+
+  // ==========================================
+  // STAGE 1: PERCEPTION GAME (GLANCE TEST)
+  // ==========================================
+  
+  let testStart = 0;
+  let digitalCompleted = 0;
+  let analogicCompleted = 0;
+  let countdownTimer;
+  
+  // Dummy log text to hide the error log
+  const logEntries = [
+    "INFO [2026-06-10 20:01:05] Starting agent swarm dispatch layer.",
+    "INFO [2026-06-10 20:01:06] Agent 001 connected to vector store.",
+    "INFO [2026-06-10 20:01:06] Agent 002 connected to SQLite local DB.",
+    "INFO [2026-06-10 20:01:08] Processing data nodes for project Alpha...",
+    "DEBUG [2026-06-10 20:01:09] API response token count: 1845 tokens.",
+    "INFO [2026-06-10 20:01:10] Syncing database index with Directus node...",
+    "INFO [2026-06-10 20:01:11] 48 active agents reporting nominal CPU levels.",
+    "DEBUG [2026-06-10 20:01:12] Thread allocation: CPU cores 0-7, load 14%.",
+    "INFO [2026-06-10 20:01:14] Processing queue blocks. No blockages detected.",
+    "INFO [2026-06-10 20:01:15] Outbound emails queued: 0 pending.",
+    "INFO [2026-06-10 20:01:18] Checking rate limits for OpenAI/Gemini APIs.",
+    "CRITICAL [2026-06-10 20:01:19] <span class='highlight' onclick='selectDigitalError()'>ALERT: Swarm Node 024 crashed. Blockage on server 3. Queue locked!</span>",
+    "DEBUG [2026-06-10 20:01:20] Thermal throttling index: 44 degrees C.",
+    "INFO [2026-06-10 20:01:21] Keep-alive packets received from agents 003-023.",
+    "INFO [2026-06-10 20:01:22] Agent 025 is currently in idle state.",
+    "DEBUG [2026-06-10 20:01:23] Memory heap allocation: 114MB out of 512MB.",
+    "INFO [2026-06-10 20:01:25] Periodic database backup complete (appflowy_backup_20260514.dump)."
+  ];
+
+  function startDigitalChallenge() {
+    document.getElementById('screen-start').classList.add('hidden');
+    document.getElementById('screen-digital').classList.remove('hidden');
+    
+    // Render logs
+    const logBox = document.getElementById('text-log-box');
+    logBox.innerHTML = '';
+    
+    // Shuffle slightly to change vertical position
+    const scrambled = [...logEntries];
+    // Put alert at random place between 5 and 13
+    const alertEntry = scrambled.splice(11, 1)[0];
+    const targetIdx = Math.floor(Math.random() * 8) + 5;
+    scrambled.splice(targetIdx, 0, alertEntry);
+    
+    scrambled.forEach((log) => {
+      const row = document.createElement('div');
+      row.className = 'vs-log-row';
+      row.innerHTML = log;
+      logBox.appendChild(row);
+    });
+    
+    // Scroll logs slightly so alert is hidden offscreen and needs search
+    logBox.scrollTop = Math.floor(Math.random() * 50);
+
+    testStart = performance.now();
+    let timeLeft = 10;
+    document.getElementById('digital-countdown').innerText = timeLeft;
+    
+    countdownTimer = setInterval(() => {
+      timeLeft--;
+      document.getElementById('digital-countdown').innerText = timeLeft;
+      if (timeLeft <= 0) {
+        clearInterval(countdownTimer);
+        // Force fail/complete
+        selectDigitalError(true);
+      }
+    }, 1000);
+  }
+
+  function selectDigitalError(failed = false) {
+    clearInterval(countdownTimer);
+    const endTime = performance.now();
+    digitalCompleted = failed ? 10000 : (endTime - testStart);
+    
+    document.getElementById('screen-digital').classList.add('hidden');
+    document.getElementById('screen-transition').classList.remove('hidden');
+  }
+
+  function startAnalogicChallenge() {
+    document.getElementById('screen-transition').classList.add('hidden');
+    document.getElementById('screen-analogic').classList.remove('hidden');
+    
+    // Render Grid
+    const gridBox = document.getElementById('agent-grid-box');
+    gridBox.innerHTML = '';
+    
+    // 48 nodes
+    const errorIndex = Math.floor(Math.random() * 48);
+    for (let i = 0; i < 48; i++) {
+      const node = document.createElement('div');
+      node.className = 'agent-node';
+      if (i === errorIndex) {
+        node.className = 'agent-node error-alert';
+        node.setAttribute('onclick', 'selectAnalogicError()');
+      } else {
+        const rand = Math.random();
+        if (rand > 0.45) node.classList.add('green');
+        else node.classList.add('gray');
+      }
+      gridBox.appendChild(node);
+    }
+    
+    testStart = performance.now();
+  }
+
+  function selectAnalogicError() {
+    const endTime = performance.now();
+    analogicCompleted = endTime - testStart;
+    
+    document.getElementById('screen-analogic').classList.add('hidden');
+    document.getElementById('screen-results').classList.remove('hidden');
+    
+    // Compute stats
+    const digitalSec = (digitalCompleted / 1000).toFixed(2);
+    const analogicSec = (analogicCompleted / 1000).toFixed(2);
+    
+    document.getElementById('analogic-time-val').innerText = analogicSec;
+    
+    const speedRatio = Math.max(1.2, (digitalCompleted / analogicCompleted)).toFixed(0);
+    document.getElementById('results-headline').innerHTML = `Perception Speed: <span>${speedRatio}x Faster!</span>`;
+    
+    document.getElementById('results-summary').innerHTML = `
+      You identified the visual error state in <strong>${analogicSec} seconds</strong>, compared to <strong>${digitalSec} seconds</strong> to locate and click the error line inside the text logs.<br><br>
+      This is the core standard of <strong>Zero-Read Analogics</strong>: VidiFlow translates complex logical parameters into instant, glanceable shapes and colors so you act immediately.
+    `;
+  }
+
+  function resetPerceptionTest() {
+    document.getElementById('screen-results').classList.add('hidden');
+    document.getElementById('screen-start').classList.remove('hidden');
+  }
+
+
+  // ==========================================
+  // STAGE 2: TYPOGRAPHIC DISSOLVE SLIDER
+  // ==========================================
+  
+  let canvas, ctx;
+  let particles = [];
+  const textWords = [];
+  
+  function initCanvas() {
+    canvas = document.getElementById('dissolve-canvas');
+    if (!canvas) return;
+    ctx = canvas.getContext('2d');
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+  }
+  
+  function resizeCanvas() {
+    if (!canvas) return;
+    const box = canvas.parentElement.getBoundingClientRect();
+    canvas.width = box.width;
+    canvas.height = box.height;
+  }
+  
+  // Setup particles and word structures for dynamic dissolve
+  function handleSliderChange(val) {
+    const textContainer = document.getElementById('text-container');
+    const wallOfText = document.getElementById('wall-of-text');
+    const imageBox = document.getElementById('image-box');
+    const imageGlow = document.getElementById('image-glow');
+    const caption = document.getElementById('image-caption-text');
+    const labelText = document.getElementById('label-text');
+    const labelVisual = document.getElementById('label-visual');
+    const sliderDesc = document.getElementById('slider-desc');
+    
+    // Apply styling transformations
+    const textOpacity = 1 - (val / 100);
+    const blurAmount = (val / 10) * 0.75;
+    const letterSpacing = (val / 100) * 12; // disperse letters
+    
+    wallOfText.style.opacity = textOpacity;
+    wallOfText.style.filter = `blur(${blurAmount}px)`;
+    wallOfText.style.letterSpacing = `${letterSpacing}px`;
+    wallOfText.style.transform = `scale(${1 - (val/100)*0.03})`;
+    
+    // Left container transitions to translucent/black
+    textContainer.style.background = `rgba(253, 251, 247, ${textOpacity})`;
+    textContainer.style.borderColor = `rgba(0, 0, 0, ${textOpacity * 0.05})`;
+    
+    // Image glow & scaling transitions
+    const visualPercent = (val / 100);
+    imageBox.style.transform = `scale(${1 + (visualPercent * 0.08)}) rotateY(${15 * (1 - visualPercent)}deg)`;
+    imageGlow.style.opacity = visualPercent * 0.9;
+    caption.style.color = `rgba(56, 189, 248, ${0.3 + visualPercent * 0.7})`;
+    
+    // Title update
+    sliderDesc.innerText = `Cognitive Balance: ${(100 - val)}% Text / ${val}% Visual`;
+    
+    if (val > 50) {
+      labelText.classList.remove('active');
+      labelVisual.classList.add('active');
+    } else {
+      labelText.classList.add('active');
+      labelVisual.classList.remove('active');
+    }
+    
+    // Spawn particles on canvas moving from text container to image container
+    if (val > 0 && canvas) {
+      const rectText = textContainer.getBoundingClientRect();
+      const rectImg = imageBox.getBoundingClientRect();
+      const parentRect = canvas.getBoundingClientRect();
+      
+      const textX = rectText.right - parentRect.left;
+      const textY = rectText.top + (rectText.height / 2) - parentRect.top;
+      const imgX = rectImg.left + (rectImg.width / 2) - parentRect.left;
+      const imgY = rectImg.top + (rectImg.height / 2) - parentRect.top;
+      
+      const spawnCount = Math.floor(val / 8);
+      for(let i = 0; i < spawnCount; i++) {
+        particles.push({
+          x: textX - Math.random() * 80,
+          y: textY + (Math.random() - 0.5) * (rectText.height - 100),
+          targetX: imgX,
+          targetY: imgY,
+          vx: 2 + Math.random() * 6,
+          vy: (Math.random() - 0.5) * 4,
+          size: 1 + Math.random() * 3,
+          color: Math.random() > 0.4 ? '#38bdf8' : '#a78bfa',
+          alpha: 0.9,
+          progress: 0
+        });
+      }
+    }
+  }
+  
+  // Particle loop
+  function drawParticles() {
+    if (!ctx || !canvas) {
+      requestAnimationFrame(drawParticles);
+      return;
+    }
+    
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    for (let i = particles.length - 1; i >= 0; i--) {
+      const p = particles[i];
+      p.progress += 0.015;
+      
+      // Interpolate towards image center
+      const currentX = p.x + (p.targetX - p.x) * p.progress;
+      const currentY = p.y + (p.targetY - p.y) * p.progress;
+      
+      // Wave motion
+      const wave = Math.sin(p.progress * Math.PI * 2) * p.vy * 12;
+      
+      ctx.fillStyle = p.color;
+      ctx.globalAlpha = p.alpha * (1 - p.progress);
+      ctx.beginPath();
+      ctx.arc(currentX, currentY + wave, p.size, 0, Math.PI * 2);
+      ctx.fill();
+      
+      if (p.progress >= 1) {
+        particles.splice(i, 1);
+      }
+    }
+    
+    requestAnimationFrame(drawParticles);
+  }
+  
+  // Init
+  window.onload = function() {
+    initCanvas();
+    drawParticles();
+  };
+</script>
+
+</body>
+</html>

@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>VidiFlow - Pulsing Effects</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { 
+      background: #0a0a1a; 
+      overflow: hidden;
+      font-family: 'Inter', -apple-system, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    
+    .effects-container {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 40px;
+      padding: 40px;
+    }
+    
+    .effect {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+    }
+    
+    .effect-label {
+      color: #888;
+      font-size: 12px;
+      letter-spacing: 2px;
+    }
+    
+    /* Effect 1: Breathing Circle */
+    .breathing-circle {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #00ccff 0%, #0066aa 100%);
+      animation: breathing 2s ease-in-out infinite;
+    }
+    
+    @keyframes breathing {
+      0%, 100% { transform: scale(1); opacity: 0.6; }
+      50% { transform: scale(1.2); opacity: 1; }
+    }
+    
+    /* Effect 2: Pulsing Ring */
+    .pulsing-ring {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      border: 3px solid #00ff88;
+      animation: pulse-ring 1.5s ease-in-out infinite;
+    }
+    
+    @keyframes pulse-ring {
+      0% { transform: scale(0.8); opacity: 1; border-width: 3px; }
+      100% { transform: scale(1.5); opacity: 0; border-width: 1px; }
+    }
+    
+    /* Effect 3: Orbiting Dots */
+    .orbit-container {
+      width: 80px;
+      height: 80px;
+      position: relative;
+    }
+    
+    .orbit-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #ffaa00;
+      position: absolute;
+      animation: orbit 2s linear infinite;
+    }
+    
+    .orbit-dot:nth-child(2) { animation-delay: -0.5s; background: #ff6600; }
+    .orbit-dot:nth-child(3) { animation-delay: -1s; background: #ff4444; }
+    .orbit-dot:nth-child(4) { animation-delay: -1.5s; background: #ff0066; }
+    
+    @keyframes orbit {
+      0% { transform: rotate(0deg) translateX(30px) rotate(0deg); }
+      100% { transform: rotate(360deg) translateX(30px) rotate(-360deg); }
+    }
+    
+    /* Effect 4: Wave Bars */
+    .wave-bars {
+      display: flex;
+      gap: 4px;
+      align-items: center;
+      height: 80px;
+    }
+    
+    .wave-bar {
+      width: 8px;
+      background: #00ccff;
+      border-radius: 4px;
+      animation: wave 1s ease-in-out infinite;
+    }
+    
+    .wave-bar:nth-child(1) { animation-delay: 0s; }
+    .wave-bar:nth-child(2) { animation-delay: 0.1s; }
+    .wave-bar:nth-child(3) { animation-delay: 0.2s; }
+    .wave-bar:nth-child(4) { animation-delay: 0.3s; }
+    .wave-bar:nth-child(5) { animation-delay: 0.4s; }
+    .wave-bar:nth-child(6) { animation-delay: 0.5s; }
+    .wave-bar:nth-child(7) { animation-delay: 0.6s; }
+    .wave-bar:nth-child(8) { animation-delay: 0.7s; }
+    
+    @keyframes wave {
+      0%, 100% { height: 20px; }
+      50% { height: 60px; }
+    }
+    
+    /* Effect 5: Glowing Dot */
+    .glowing-dot {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #00ff88;
+      box-shadow: 0 0 20px #00ff88, 0 0 40px #00ff88, 0 0 60px #00ff88;
+      animation: glow 2s ease-in-out infinite;
+    }
+    
+    @keyframes glow {
+      0%, 100% { box-shadow: 0 0 20px #00ff88, 0 0 40px #00ff88; }
+      50% { box-shadow: 0 0 30px #00ff88, 0 0 60px #00ff88, 0 0 80px #00ff88; }
+    }
+    
+    /* Effect 6: Spinning Cross */
+    .spinning-cross {
+      width: 60px;
+      height: 60px;
+      position: relative;
+      animation: spin 3s linear infinite;
+    }
+    
+    .cross-arm {
+      position: absolute;
+      background: #ff4444;
+      border-radius: 2px;
+    }
+    
+    .cross-arm:nth-child(1) { width: 100%; height: 6px; top: 50%; transform: translateY(-50%); }
+    .cross-arm:nth-child(2) { width: 6px; height: 100%; left: 50%; transform: translateX(-50%); }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    .info {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      background: rgba(10, 10, 26, 0.9);
+      padding: 20px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.1);
+      color: #fff;
+      z-index: 100;
+      max-width: 300px;
+    }
+    
+    .info h3 { 
+      color: #00ccff; 
+      margin-bottom: 10px; 
+      font-size: 14px;
+    }
+    
+    .info p {
+      font-size: 12px;
+      color: #888;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+  <div class="info">
+    <h3>PULSING EFFECTS</h3>
+    <p>CSS-based pulsing and breathing effects for status indicators. These are lightweight alternatives to WebGL for simpler visual feedback.</p>
+    <ul style="margin-top: 10px; font-size: 11px; color: #666;">
+      <li>• Breathing Circle - scale + opacity pulse</li>
+      <li>• Pulsing Ring - expanding ring effect</li>
+      <li>• Orbiting Dots - circular motion</li>
+      <li>• Wave Bars - audio visualizer style</li>
+      <li>• Glowing Dot - box-shadow glow</li>
+      <li>• Spinning Cross - rotation animation</li>
+    </ul>
+  </div>
+  
+  <div class="effects-container">
+    <div class="effect">
+      <div class="breathing-circle"></div>
+      <div class="effect-label">BREATHING</div>
+    </div>
+    
+    <div class="effect">
+      <div class="pulsing-ring"></div>
+      <div class="effect-label">PULSE RING</div>
+    </div>
+    
+    <div class="effect">
+      <div class="orbit-container">
+        <div class="orbit-dot"></div>
+        <div class="orbit-dot"></div>
+        <div class="orbit-dot"></div>
+        <div class="orbit-dot"></div>
+      </div>
+      <div class="effect-label">ORBIT</div>
+    </div>
+    
+    <div class="effect">
+      <div class="wave-bars">
+        <div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+      </div>
+      <div class="effect-label">WAVE</div>
+    </div>
+    
+    <div class="effect">
+      <div class="glowing-dot"></div>
+      <div class="effect-label">GLOW</div>
+    </div>
+    
+    <div class="effect">
+      <div class="spinning-cross">
+        <div class="cross-arm"></div>
+        <div class="cross-arm"></div>
+      </div>
+      <div class="effect-label">SPIN</div>
+    </div>
+  </div>
+</body>
+</html>

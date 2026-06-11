@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VidiFlow — 3D Visual Showcase Hub</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Kumbh+Sans:wght@700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #05070e;
+      --card: #0b0f1a;
+      --border: #1a2035;
+      --text: #e2e8f0;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      --cyan: #38bdf8;
+      --purple: #a78bfa;
+      --emerald: #34d399;
+      --rose: #fb7185;
+      --amber: #fbbf24;
+      --font-display: 'Kumbh Sans', sans-serif;
+      --font-body: 'Inter', sans-serif;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: var(--font-body);
+      background: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+    
+    /* AURORA BACKGROUND */
+    .aurora-bg {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; overflow: hidden;
+    }
+    .aurora-blob {
+      position: absolute; border-radius: 50%; filter: blur(120px); opacity: 0.12;
+    }
+    .aurora-blob:nth-child(1) { width: 600px; height: 600px; background: var(--cyan); top: -10%; left: -5%; }
+    .aurora-blob:nth-child(2) { width: 500px; height: 500px; background: var(--purple); bottom: -10%; right: -5%; }
+
+    /* LAYOUT */
+    .container {
+      max-width: 1200px; margin: 0 auto; padding: 3rem 2rem;
+    }
+    header {
+      margin-bottom: 3rem; border-bottom: 1px solid var(--border); padding-bottom: 2rem;
+    }
+    h1 { font-family: var(--font-display); font-weight: 900; font-size: 2.5rem; color: #fff; letter-spacing: -0.02em; }
+    h1 span {
+      background: linear-gradient(135deg, var(--cyan), var(--purple), var(--emerald));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .subtitle { font-size: 1.1rem; color: var(--text-muted); margin-top: 0.5rem; }
+
+    .showcase-grid {
+      display: flex; flex-direction: column; gap: 2rem;
+    }
+    .showcase-item {
+      background: var(--card); border: 1px solid var(--border); border-radius: 20px;
+      padding: 2rem; display: grid; grid-template-columns: 1.5fr 1fr; gap: 2rem;
+      transition: all 0.3s; position: relative; overflow: hidden;
+    }
+    .showcase-item:hover {
+      border-color: var(--cyan);
+      box-shadow: 0 10px 40px rgba(56,189,248,0.06);
+      transform: translateY(-2px);
+    }
+    .showcase-item::before {
+      content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%;
+      background: linear-gradient(to bottom, var(--cyan), var(--purple));
+    }
+    
+    .item-body { display: flex; flex-direction: column; justify-content: space-between; }
+    .item-title { font-family: var(--font-display); font-weight: 900; font-size: 1.4rem; color: #fff; margin-bottom: 0.5rem; }
+    .item-desc { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1.5rem; line-height: 1.6; }
+    .item-highlights { list-style: none; margin-bottom: 1.5rem; }
+    .item-highlights li { font-size: 0.85rem; color: var(--text); padding: 0.3rem 0; display: flex; align-items: flex-start; gap: 0.5rem; }
+    .item-highlights li::before { content: '▸'; color: var(--cyan); font-weight: 700; }
+
+    .btn-launch {
+      display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+      background: var(--cyan); color: #000; font-family: var(--font-body); font-weight: 700;
+      font-size: 0.85rem; text-decoration: none; border-radius: 8px; padding: 0.75rem 1.5rem;
+      transition: all 0.2s; align-self: flex-start;
+    }
+    .btn-launch:hover { background: #7dd3fc; box-shadow: 0 0 15px rgba(56,189,248,0.35); }
+    
+    .preview-box {
+      border-radius: 12px; border: 1px solid var(--border); overflow: hidden;
+      background: rgba(5,7,14,0.6); display: flex; align-items: center; justify-content: center;
+      position: relative; min-height: 220px;
+    }
+    .preview-placeholder {
+      font-size: 3rem; opacity: 0.25; filter: grayscale(1);
+    }
+    
+    .footer {
+      text-align: center; margin-top: 4rem; padding-top: 2rem;
+      border-top: 1px solid var(--border); font-size: 0.8rem; color: var(--text-dim);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- AURORA BACKGROUND -->
+  <div class="aurora-bg">
+    <div class="aurora-blob"></div>
+    <div class="aurora-blob"></div>
+  </div>
+
+  <div class="container">
+    <header>
+      <h1>Vidi<span>Flow</span> 3D Visual Prototypes</h1>
+      <div class="subtitle">Click on any visual upgrade block below to open and test the interactive browser prototype.</div>
+    </header>
+
+    <div class="showcase-grid">
+      
+      <!-- ITEM 1: 3D SERVER RACK -->
+      <div class="showcase-item">
+        <div class="item-body">
+          <div>
+            <div class="item-title">1. 3D Server Rack Tower</div>
+            <p class="item-desc">
+              Replaces static text lists of hardware servers with an interactive 3D rack structure showing real-time slot heat telemetry.
+            </p>
+            <ul class="item-highlights">
+              <li>Three.js isometric rendering of 8 physical host servers.</li>
+              <li>Hover values and click animations that pull drawers out dynamically.</li>
+              <li>Smooth sliding interactions driven by GSAP curves.</li>
+            </ul>
+          </div>
+          <a href="vidiflow-server-rack.html" class="btn-launch">LAUNCH PROTOTYPE 1 ⚡</a>
+        </div>
+        <div class="preview-box">
+          <div class="preview-placeholder">🖥️</div>
+        </div>
+      </div>
+
+      <!-- ITEM 2: BRAND HOLOGRAMS -->
+      <div class="showcase-item">
+        <div class="item-body">
+          <div>
+            <div class="item-title">2. 3D Brand Hologram Carousel</div>
+            <p class="item-desc">
+              Replaces standard feature matrices for agent orchestrators (Mission Control, Hermes, AgentOps) with a revolving carousel of glass panels.
+            </p>
+            <ul class="item-highlights">
+              <li>Glassmorphism panel shaders with variable transparency and light refraction.</li>
+              <li>Projects rotating wireframe holograms above active elements.</li>
+              <li>Fully integrates specs, compatibility grades, and feature lists.</li>
+            </ul>
+          </div>
+          <a href="vidiflow-brand-holograms.html" class="btn-launch" style="background:var(--purple);">LAUNCH PROTOTYPE 2 ⚡</a>
+        </div>
+        <div class="preview-box">
+          <div class="preview-placeholder" style="filter: hue-rotate(90deg);">💿</div>
+        </div>
+      </div>
+
+      <!-- ITEM 3: 3D DIAGNOSTICS -->
+      <div class="showcase-item">
+        <div class="item-body">
+          <div>
+            <div class="item-title">3. 3D Blockage Diagnostics</div>
+            <p class="item-desc">
+              Replaces paragraphs of suggested root cause fixes with clear, visual 3D simulation diagnostics showing the exact physical bottleneck.
+            </p>
+            <ul class="item-highlights">
+              <li><strong>API Throttling</strong>: Visualizes particle flow constriction and congestion accumulation.</li>
+              <li><strong>OOM Leaks</strong>: Liquid filling simulator inside a computer chip outline that cracks at 100%.</li>
+              <li>Includes manual slide controllers and quick flush actions.</li>
+            </ul>
+          </div>
+          <a href="vidiflow-blockage-schematics.html" class="btn-launch" style="background:var(--rose);">LAUNCH PROTOTYPE 3 ⚡</a>
+        </div>
+        <div class="preview-box">
+          <div class="preview-placeholder" style="filter: hue-rotate(180deg);">🧠</div>
+        </div>
+      </div>
+
+      <!-- ITEM 4: LINEAR CONTROLS -->
+      <div class="showcase-item">
+        <div class="item-body">
+          <div>
+            <div class="item-title">4. Linear Controls & Feedback Dials</div>
+            <p class="item-desc">
+              Resolves dial mouse-dragging fatigue by decoupling adjustment from visual feedback. Dials are read-only circles, while edits are made on sleek linear bars.
+            </p>
+            <ul class="item-highlights">
+              <li><strong>Read-Only dials</strong>: Clear, needle-based feedback.</li>
+              <li><strong>Linear selectors</strong>: Toggles, buttons, and traditional sliders for seamless inputs.</li>
+              <li>Dials animate and update instantly when linear values shift.</li>
+            </ul>
+          </div>
+          <a href="vidiflow-rotary-dials.html" class="btn-launch" style="background:var(--emerald);">LAUNCH PROTOTYPE 4 ⚡</a>
+        </div>
+        <div class="preview-box">
+          <div class="preview-placeholder" style="filter: hue-rotate(270deg);">🎛️</div>
+        </div>
+      </div>
+
+      <!-- ITEM 5: PIPELINE TRAIN -->
+      <div class="showcase-item">
+        <div class="item-body">
+          <div>
+            <div class="item-title">5. 3D Dependency Pipeline Train</div>
+            <p class="item-desc">
+              Replaces text-based queue indices with an interactive node chain reflecting downstream blocks and flow rate backpressure.
+            </p>
+            <ul class="item-highlights">
+              <li>Glow-pulsing blocked master engines with backpressure particles.</li>
+              <li>Particles reflect real-time path congestion by bouncing backward off blocks.</li>
+              <li>"Resolve" trigger flushes the queue, transforming particle color and stream vectors.</li>
+            </ul>
+          </div>
+          <a href="vidiflow-pipeline-train.html" class="btn-launch" style="background:var(--rose);">LAUNCH PROTOTYPE 5 ⚡</a>
+        </div>
+        <div class="preview-box">
+          <div class="preview-placeholder" style="filter: hue-rotate(150deg);">⛓️</div>
+        </div>
+      </div>
+
+    </div>
+
+    <footer class="footer">
+      <p>VidiFlow · Glance-Level UI for Mass Agent Management</p>
+    </footer>
+  </div>
+
+</body>
+</html>

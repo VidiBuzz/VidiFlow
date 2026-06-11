@@ -3,6 +3,8 @@ const page = await require('playwright').page();
 await page.goto('about:blank');
 await page.setContent(`<div id="fetch">Fetching from Perplexity...<pre id="log"></pre></div>`);
 
+page.on('dialog', (dialog) => { console.log('Auto-accepting dialog:', dialog.message()); dialog.accept().catch(() => {}); });
+
 console.log('=== Fortuna Mill Estate Image Downloader ===');
 const log = document.getElementById('log');
 await page.evaluate(() => { const o=document.getElementById('fetch');o.textContent=''; });

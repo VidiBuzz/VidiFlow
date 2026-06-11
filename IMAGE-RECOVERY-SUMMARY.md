@@ -1,5 +1,7 @@
 # Image Recovery Summary — April 14, 2026
 
+> **Plain-language note for newcomers:** the path `C:\Users\James\.gemini\antigravity\brain\` is just a folder where Google's Gemini AI stores the images it generates on this machine. "Antigravity" is Google's internal codename for that storage location — it is not a separate service, a feature, or anything you have to "turn on". Whenever you see "antigravity" in this project, treat it as shorthand for "the Gemini image folder". See `GLOSSARY.md` for the full definition.
+
 ## What We Found
 
 Images were NOT deleted — they were spread across multiple locations and never missing from storage.

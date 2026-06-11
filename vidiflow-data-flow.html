@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>VidiFlow - Data Flow Particles</title>
+  <script src="https://unpkg.com/three"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { 
+      background: #0a0a1a; 
+      overflow: hidden;
+      font-family: 'Inter', -apple-system, sans-serif;
+    }
+    
+    .info {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      background: rgba(10, 10, 26, 0.9);
+      padding: 20px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.1);
+      color: #fff;
+      z-index: 100;
+      max-width: 300px;
+    }
+    
+    .info h3 { 
+      color: #00ff88; 
+      margin-bottom: 10px; 
+      font-size: 14px;
+    }
+    
+    .info p {
+      font-size: 12px;
+      color: #888;
+      line-height: 1.5;
+    }
+    
+    .legend {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      background: rgba(10, 10, 26, 0.9);
+      padding: 15px;
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.1);
+      color: #fff;
+      z-index: 100;
+      font-size: 11px;
+    }
+    
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 5px 0;
+    }
+    
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+  </style>
+</head>
+<body>
+  <div id="container"></div>
+  
+  <div class="info">
+    <h3>DATA FLOW PARTICLES</h3>
+    <p>Particles flowing along bezier curves between nodes. Each particle follows the path with ease-in/ease-out motion and orients to the direction of travel.</p>
+    <ul style="margin-top: 10px; font-size: 11px; color: #666;">
+      <li>• Particles follow cubic bezier curves</li>
+      <li>• Orient to direction of travel</li>
+      <li>• Staggered timing for continuous flow</li>
+      <li>• Color-coded by data type</li>
+    </ul>
+  </div>
+  
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background: #00ffff"></div> Embeddings</div>
+    <div class="legend-item"><div class="legend-dot" style="background: #00ff88"></div> Vectors</div>
+    <div class="legend-item"><div class="legend-dot" style="background: #ffaa00"></div> Results</div>
+    <div class="legend-item"><div class="legend-dot" style="background: #ff4444"></div> Metadata</div>
+  </div>
+
+  <script>
+    // ═══════════ SCENE SETUP ═══════════
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setClearColor(0x0a0a1a, 1);
+    document.getElementById('container').appendChild(renderer.domElement);
+
+    // ═══════════ NODE POSITIONS ═══════════
+    const nodeA = new THREE.Vector3(-5, 0, 0);
+    const nodeB = new THREE.Vector3(5, 0, 0);
+    const nodeC = new THREE.Vector3(0, 4, 2);
+    const nodeD = new THREE.Vector3(0, -4, -2);
+
+    // Control points for bezier curves
+    const controlAtoB1 = new THREE.Vector3(-2, 3, 2);
+    const controlAtoB2 = new THREE.Vector3(2, -3, -2);
+
+    const controlAtoC1 = new THREE.Vector3(-3, 2, 1);
+    const controlAtoC2 = new THREE.Vector3(-1, 3, 1.5);
+
+    const controlBtoD1 = new THREE.Vector3(3, -2, -1);
+    const controlBtoD2 = new THREE.Vector3(1, -3, -1.5);
+
+    // ═══════════ CREATE CURVES ═══════════
+    const curveAtoB = new THREE.CubicBezierCurve3(nodeA, controlAtoB1, controlAtoB2, nodeB);
+    const curveAtoC = new THREE.CubicBezierCurve3(nodeA, controlAtoC1, controlAtoC2, nodeC);
+    const curveBtoD = new THREE.CubicBezierCurve3(nodeB, controlBtoD1, controlBtoD2, nodeD);
+
+    // ═══════════ CREATE NODES ═══════════
+    const nodeGeometry = new THREE.SphereGeometry(0.5, 16, 16);
+    
+    const nodeMaterialA = new THREE.MeshBasicMaterial({ color: 0x00ff88 });
+    const nodeMaterialB = new THREE.MeshBasicMaterial({ color: 0xffaa00 });
+    const nodeMaterialC = new THREE.MeshBasicMaterial({ color: 0x00ccff });
+    const nodeMaterialD = new THREE.MeshBasicMaterial({ color: 0xff4444 });
+
+    const nodeMeshA = new THREE.Mesh(nodeGeometry, nodeMaterialA);
+    const nodeMeshB = new THREE.Mesh(nodeGeometry, nodeMaterialB);
+    const nodeMeshC = new THREE.Mesh(nodeGeometry, nodeMaterialC);
+    const nodeMeshD = new THREE.Mesh(nodeGeometry, nodeMaterialD);
+
+    nodeMeshA.position.copy(nodeA);
+    nodeMeshB.position.copy(nodeB);
+    nodeMeshC.position.copy(nodeC);
+    nodeMeshD.position.copy(nodeD);
+
+    scene.add(nodeMeshA);
+    scene.add(nodeMeshB);
+    scene.add(nodeMeshC);
+    scene.add(nodeMeshD);
+
+    // ═══════════ CREATE CURVE LINES ═══════════
+    const lineMaterialAtoB = new THREE.LineBasicMaterial({ color: 0x00ffff, transparent: true, opacity: 0.3 });
+    const lineMaterialAtoC = new THREE.LineBasicMaterial({ color: 0x00ff88, transparent: true, opacity: 0.3 });
+    const lineMaterialBtoD = new THREE.LineBasicMaterial({ color: 0xffaa00, transparent: true, opacity: 0.3 });
+
+    const lineGeometryAtoB = new THREE.BufferGeometry().setFromPoints(curveAtoB.getPoints(50));
+    const lineGeometryAtoC = new THREE.BufferGeometry().setFromPoints(curveAtoC.getPoints(50));
+    const lineGeometryBtoD = new THREE.BufferGeometry().setFromPoints(curveBtoD.getPoints(50));
+
+    const curveLineAtoB = new THREE.Line(lineGeometryAtoB, lineMaterialAtoB);
+    const curveLineAtoC = new THREE.Line(lineGeometryAtoC, lineMaterialAtoC);
+    const curveLineBtoD = new THREE.Line(lineGeometryBtoD, lineMaterialBtoD);
+
+    scene.add(curveLineAtoB);
+    scene.add(curveLineAtoC);
+    scene.add(curveLineBtoD);
+
+    // ═══════════ CREATE PARTICLES ═══════════
+    const particleCount = 30;
+    const particles = [];
+    const particleGeometry = new THREE.SphereGeometry(0.08, 8, 8);
+
+    function createParticlesForCurve(curve, color, offset) {
+      const particleMaterial = new THREE.MeshBasicMaterial({ 
+        color: color,
+        transparent: true,
+        opacity: 0.8
+      });
+
+      for (let i = 0; i < particleCount; i++) {
+        const particle = new THREE.Mesh(particleGeometry, particleMaterial.clone());
+        particle.userData = {
+          curve: curve,
+          offset: (i / particleCount + offset) % 1,
+          speed: 0.002 + Math.random() * 0.001
+        };
+        particles.push(particle);
+        scene.add(particle);
+      }
+    }
+
+    // Create particles for each curve
+    createParticlesForCurve(curveAtoB, 0x00ffff, 0);
+    createParticlesForCurve(curveAtoC, 0x00ff88, 0.33);
+    createParticlesForCurve(curveBtoD, 0xffaa00, 0.66);
+
+    // ═══════════ ANIMATION ═══════════
+    function animate() {
+      requestAnimationFrame(animate);
+      
+      particles.forEach(particle => {
+        const data = particle.userData;
+        
+        // Move particle along curve
+        data.offset = (data.offset + data.speed) % 1;
+        const position = data.curve.getPointAt(data.offset);
+        particle.position.copy(position);
+        
+        // Orient particle to direction of travel
+        const tangent = data.curve.getTangentAt(data.offset);
+        particle.lookAt(position.clone().add(tangent));
+        
+        // Pulse opacity
+        particle.material.opacity = 0.5 + Math.sin(Date.now() * 0.003 + data.offset * Math.PI * 2) * 0.3;
+      });
+      
+      // Rotate camera slowly
+      camera.position.x = Math.sin(Date.now() * 0.0001) * 8;
+      camera.position.z = Math.cos(Date.now() * 0.0001) * 8;
+      camera.lookAt(0, 0, 0);
+      
+      renderer.render(scene, camera);
+    }
+
+    // Handle resize
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    camera.position.z = 8;
+    animate();
+  </script>
+</body>
+</html>

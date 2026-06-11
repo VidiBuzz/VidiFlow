@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VidiFlow — 3D Dependency Pipeline Train</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Kumbh+Sans:wght@700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/three@0.128.0/build/three.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <style>
+    :root {
+      --bg: #05070e;
+      --card: #0b0f1a;
+      --border: #1a2035;
+      --text: #e2e8f0;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      --cyan: #38bdf8;
+      --purple: #a78bfa;
+      --emerald: #34d399;
+      --rose: #fb7185;
+      --amber: #fbbf24;
+      --font-display: 'Kumbh Sans', sans-serif;
+      --font-body: 'Inter', sans-serif;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: var(--font-body);
+      background: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+    
+    /* AURORA BACKGROUND */
+    .aurora-bg {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; overflow: hidden;
+    }
+    .aurora-blob {
+      position: absolute; border-radius: 50%; filter: blur(120px); opacity: 0.12;
+    }
+    .aurora-blob:nth-child(1) { width: 500px; height: 500px; background: var(--cyan); top: -10%; left: -5%; }
+    .aurora-blob:nth-child(2) { width: 450px; height: 450px; background: var(--purple); bottom: -10%; right: -5%; }
+
+    /* LAYOUT */
+    .container {
+      max-width: 1400px; margin: 0 auto; padding: 2rem;
+    }
+    header {
+      margin-bottom: 2rem; display: flex; align-items: center; justify-content: space-between;
+      border-bottom: 1px solid var(--border); padding-bottom: 1.5rem;
+    }
+    h1 { font-family: var(--font-display); font-weight: 900; font-size: 1.8rem; color: #fff; }
+    h1 span { color: var(--rose); }
+    .subtitle { font-size: 0.9rem; color: var(--text-muted); margin-top: 0.2rem; }
+    
+    .btn-back {
+      font-family: var(--font-body); font-weight: 700; font-size: 0.75rem; color: var(--rose);
+      background: rgba(251,113,133,0.08); border: 1px solid rgba(251,113,133,0.25);
+      border-radius: 6px; padding: 0.5rem 1rem; text-decoration: none; transition: all 0.2s;
+    }
+    .btn-back:hover { background: rgba(251,113,133,0.18); border-color: var(--rose); }
+
+    .main-grid {
+      display: grid; grid-template-columns: 1.3fr 1fr; gap: 2rem; height: 600px;
+    }
+    .canvas-container {
+      background: var(--card); border: 1px solid var(--border); border-radius: 20px;
+      position: relative; overflow: hidden; height: 100%;
+    }
+    #three-canvas { width: 100%; height: 100%; display: block; }
+
+    /* STATUS PANEL */
+    .status-panel {
+      background: var(--card); border: 1px solid var(--border); border-radius: 20px;
+      padding: 2rem; display: flex; flex-direction: column; justify-content: space-between;
+    }
+    .panel-header {
+      border-bottom: 1px solid var(--border); padding-bottom: 1rem; margin-bottom: 1.5rem;
+    }
+    .pipeline-title { font-family: var(--font-display); font-weight: 900; font-size: 1.4rem; color: #fff; }
+    
+    .status-alert-box {
+      background: rgba(251,113,133,0.05); border: 1px solid rgba(251,113,133,0.2); border-radius: 12px;
+      padding: 1.2rem; margin-bottom: 1.5rem;
+      animation: alert-glow 1.5s ease-in-out infinite alternate;
+    }
+    @keyframes alert-glow {
+      0% { border-color: rgba(251,113,133,0.15); box-shadow: 0 0 5px rgba(251,113,133,0.05); }
+      100% { border-color: rgba(251,113,133,0.35); box-shadow: 0 0 15px rgba(251,113,133,0.15); }
+    }
+
+    .btn-action {
+      font-family: var(--font-body); font-weight: 700; font-size: 0.75rem; color: #000;
+      background: var(--rose); border: none; border-radius: 6px; padding: 0.6rem;
+      cursor: pointer; transition: all 0.15s; text-align: center; width: 100%;
+    }
+    .btn-action:hover { background: #fda4af; box-shadow: 0 0 10px rgba(251,113,133,0.3); }
+    
+    .btn-overlay {
+      position: absolute; bottom: 1.5rem; left: 1.5rem; z-index: 10;
+      background: rgba(5,7,14,0.8); border: 1px solid var(--border); border-radius: 8px;
+      color: var(--text-muted); padding: 0.4rem 0.8rem; font-size: 0.7rem; font-weight: 700;
+      cursor: pointer; transition: all 0.15s; font-family: var(--font-body);
+    }
+    .btn-overlay:hover { border-color: var(--rose); color: #fff; }
+  </style>
+</head>
+<body>
+
+  <!-- AURORA BACKGROUND -->
+  <div class="aurora-bg">
+    <div class="aurora-blob"></div>
+    <div class="aurora-blob"></div>
+  </div>
+
+  <div class="container">
+    <header>
+      <div>
+        <h1>Vidi<span>Flow</span> — 3D Dependency Pipeline</h1>
+        <div class="subtitle">3D node chain illustrating cascade blocks and backpressure flow anomalies</div>
+      </div>
+      <a href="vidiflow-3d-showcase.html" class="btn-back">← Back to Showcase</a>
+    </header>
+
+    <div class="main-grid">
+      <!-- 3D PIPELINE CANVAS -->
+      <div class="canvas-container animate-in">
+        <canvas id="three-canvas"></canvas>
+        <button class="btn-overlay" onclick="resetPipelineSim()">REHEAT NODE SIM</button>
+      </div>
+
+      <!-- STATUS DATA PANEL -->
+      <div class="status-panel animate-in">
+        <div>
+          <div class="panel-header">
+            <div class="pipeline-title">CRITICAL PATH MONITOR</div>
+            <div style="font-size: 0.7rem; color: var(--text-dim); margin-top: 0.2rem;">CASCADE RESOLVER PIPELINE</div>
+          </div>
+          
+          <div class="status-alert-box" id="statusBox">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
+              <span style="font-weight:700; font-size:0.8rem; color:var(--rose);" id="statusBoxTitle">🔴 PIPELINE BLOCKAGE</span>
+              <span style="font-size:0.6rem; background:rgba(251,113,133,0.15); color:var(--rose); padding:0.15rem 0.4rem; border-radius:3px; font-weight:700;" id="statusBoxBadge">72 TASKS WAITING</span>
+            </div>
+            <p style="font-size:0.75rem; color:var(--text-muted); line-height:1.5;" id="statusBoxDesc">
+              <strong>agent-019</strong> is blocked due to API gateway throttling. Downstream tasks (020, 021, 023, 024, 047) are waiting on dependencies. Particles are currently experiencing backpressure congestion.
+            </p>
+          </div>
+
+          <div style="display:flex; flex-direction:column; gap:0.5rem; margin-bottom:1.5rem; background:rgba(255,255,255,0.01); border:1px solid var(--border); padding:1rem; border-radius:12px;">
+            <div style="display:flex; justify-content:space-between; font-size:0.75rem;"><span style="color:var(--text-dim)">Blocked Primary Node:</span><span style="color:var(--rose); font-weight:700;">agent-019</span></div>
+            <div style="display:flex; justify-content:space-between; font-size:0.75rem;"><span style="color:var(--text-dim)">Total Blocked Nodes:</span><span style="color:#fff; font-weight:700;" id="txtBlockedCount">6</span></div>
+            <div style="display:flex; justify-content:space-between; font-size:0.75rem;"><span style="color:var(--text-dim)">Backpressure Severity:</span><span style="color:var(--rose); font-weight:700;" id="txtSeverity">CRITICAL (92%)</span></div>
+          </div>
+        </div>
+
+        <button class="btn-action" id="btnResolve" onclick="resolveBlockage()">RESOLVE PIPELINE CONGESTION</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ═══════════ THREE.JS PIPELINE SETUP ═══════════
+    const container = document.querySelector('.canvas-container');
+    const canvas = document.getElementById('three-canvas');
+    const width = container.clientWidth;
+    const height = container.clientHeight;
+
+    const scene = new THREE.Scene();
+    scene.background = null;
+
+    const camera = new THREE.PerspectiveCamera(40, width / height, 0.1, 100);
+    camera.position.set(0, 3, 10);
+    camera.lookAt(0, 0.2, 0);
+
+    const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
+    renderer.setSize(width, height);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+    // Lights
+    scene.add(new THREE.AmbientLight(0xffffff, 0.5));
+    const mainLight = new THREE.DirectionalLight(0xffffff, 0.8);
+    mainLight.position.set(2, 8, 2);
+    scene.add(mainLight);
+
+    const lightBack = new THREE.DirectionalLight(0x38bdf8, 0.5);
+    lightBack.position.set(-2, -5, -2);
+    scene.add(lightBack);
+
+    // ═══════════ CREATE PIPELINE NODES ═══════════
+    const nodesGroup = new THREE.Group();
+    scene.add(nodesGroup);
+
+    // 6 Nodes in horizontal chain: Node 0 (agent-019), Node 1 (020), Node 2 (021), Node 3 (023), Node 4 (024), Node 5 (047)
+    const nodeCount = 6;
+    const nodeNames = ['019', '020', '021', '023', '024', '047'];
+    const nodes = [];
+    const nodeGeometry = new THREE.SphereGeometry(0.35, 32, 32);
+
+    const startX = -3.5;
+    const stepX = 1.4;
+
+    for (let i = 0; i < nodeCount; i++) {
+      const nodeObj = new THREE.Group();
+      nodeObj.position.set(startX + (i * stepX), 0, 0);
+      nodeObj.userData = { index: i, name: nodeNames[i], isBlocked: i === 0 };
+
+      // Inner Core Mesh
+      const coreMat = new THREE.MeshStandardMaterial({
+        color: i === 0 ? 0xfb7185 : 0xa78bfa, // Red for blocked engine, purple for waiting nodes
+        emissive: i === 0 ? 0xfb7185 : 0xa78bfa,
+        emissiveIntensity: i === 0 ? 0.6 : 0.1,
+        roughness: 0.1,
+        metalness: 0.8
+      });
+      const core = new THREE.Mesh(nodeGeometry, coreMat);
+      nodeObj.add(core);
+
+      // Outer wireframe ring around node
+      const ringGeo = new THREE.TorusGeometry(0.5, 0.02, 8, 32);
+      const ringMat = new THREE.MeshBasicMaterial({
+        color: i === 0 ? 0xfb7185 : 0xa78bfa,
+        transparent: true,
+        opacity: 0.4
+      });
+      const ring = new THREE.Mesh(ringGeo, ringMat);
+      ring.rotation.x = Math.PI / 2;
+      nodeObj.add(ring);
+
+      nodes.push(nodeObj);
+      nodesGroup.add(nodeObj);
+    }
+
+    // ═══════════ CREATE CONNECTION PIPES ═══════════
+    const pipes = [];
+    const pipePoints = [];
+    
+    // Generate pipe cylinders between nodes
+    for (let i = 0; i < nodeCount - 1; i++) {
+      const posA = nodes[i].position;
+      const posB = nodes[i + 1].position;
+      
+      const pipeGeo = new THREE.CylinderGeometry(0.06, 0.06, stepX - 0.7, 16);
+      pipeGeo.rotateZ(Math.PI / 2);
+      const pipeMat = new THREE.MeshStandardMaterial({
+        color: 0x1a2035,
+        transparent: true,
+        opacity: 0.8,
+        metalness: 0.8
+      });
+      const pipeMesh = new THREE.Mesh(pipeGeo, pipeMat);
+      pipeMesh.position.set(posA.x + stepX/2, 0, 0);
+      scene.add(pipeMesh);
+      pipes.push(pipeMesh);
+    }
+
+    // ═══════════ PARTICLES (FLOW DATA) ═══════════
+    const particles = [];
+    const pCount = 45;
+    const pGeo = new THREE.SphereGeometry(0.04, 8, 8);
+    const pMat = new THREE.MeshBasicMaterial({ color: 0xa78bfa });
+
+    for (let i = 0; i < pCount; i++) {
+      const p = new THREE.Mesh(pGeo, pMat.clone());
+      resetParticle(p);
+      particles.push(p);
+      scene.add(p);
+    }
+
+    let isBlocked = true;
+
+    function resetParticle(p) {
+      // Stagger along nodes
+      const nodeIdx = Math.floor(Math.random() * (nodeCount - 1)) + 1; // start from node 1..5
+      const sourceX = nodes[nodeIdx].position.x;
+      
+      p.position.set(sourceX, 0, 0);
+      p.userData = {
+        nodeIndex: nodeIdx,
+        speed: 0.015 + Math.random() * 0.01,
+        direction: -1, // moving left towards blockage (backpressure)
+        state: 'normal'
+      };
+      p.material.color.setHex(0xa78bfa); // normal waiting purple
+    }
+
+    // ═══════════ PIPELINE RESOLUTION EVENTS ═══════════
+    function resolveBlockage() {
+      if (!isBlocked) return;
+      isBlocked = false;
+
+      // Update indicators
+      document.getElementById('statusBox').className = 'status-alert-box';
+      document.getElementById('statusBox').style.animation = 'none';
+      document.getElementById('statusBox').style.background = 'rgba(52,211,153,0.06)';
+      document.getElementById('statusBox').style.borderColor = 'rgba(52,211,153,0.3)';
+      document.getElementById('statusBoxTitle').textContent = '🟢 PIPELINE NOMINAL';
+      document.getElementById('statusBoxBadge').textContent = 'COMPLETED';
+      document.getElementById('statusBoxBadge').style.background = 'rgba(52,211,153,0.15)';
+      document.getElementById('statusBoxBadge').style.color = 'var(--emerald)';
+      document.getElementById('statusBoxDesc').innerHTML = '<strong>agent-019</strong> resolved block state. Compute cycles nominal. Dependencies cleared and queued tasks executed successfully.';
+      
+      document.getElementById('txtBlockedCount').textContent = '0';
+      document.getElementById('txtSeverity').textContent = 'NOMINAL (0%)';
+      document.getElementById('txtSeverity').style.color = 'var(--emerald)';
+
+      // Turn block node green
+      gsap.to(nodes[0].children[0].material.color, { r: 0.2, g: 0.83, b: 0.6, duration: 0.5 });
+      gsap.to(nodes[0].children[0].material.emissive, { r: 0.2, g: 0.83, b: 0.6, duration: 0.5 });
+      gsap.to(nodes[0].children[1].material.color, { r: 0.2, g: 0.83, b: 0.6, duration: 0.5 });
+
+      // Change button state
+      const btn = document.getElementById('btnResolve');
+      btn.style.background = 'var(--emerald)';
+      btn.style.boxShadow = '0 0 10px rgba(52,211,153,0.3)';
+      btn.textContent = 'PIPELINE RUNNING NOMINAL';
+
+      // Switch particles direction to flow downstream (left to right)
+      particles.forEach(p => {
+        p.userData.direction = 1;
+        p.material.color.setHex(0x34d399); // green flow
+      });
+    }
+
+    function resetPipelineSim() {
+      isBlocked = true;
+      
+      // Reset text panel
+      document.getElementById('statusBox').className = 'status-alert-box';
+      document.getElementById('statusBox').style = '';
+      document.getElementById('statusBoxTitle').textContent = '🔴 PIPELINE BLOCKAGE';
+      document.getElementById('statusBoxBadge').textContent = '72 TASKS WAITING';
+      document.getElementById('statusBoxBadge').style = '';
+      document.getElementById('statusBoxDesc').innerHTML = '<strong>agent-019</strong> is blocked due to API gateway throttling. Downstream tasks (020, 021, 023, 024, 047) are waiting on dependencies. Particles are currently experiencing backpressure congestion.';
+      
+      document.getElementById('txtBlockedCount').textContent = '6';
+      document.getElementById('txtSeverity').textContent = 'CRITICAL (92%)';
+      document.getElementById('txtSeverity').style = '';
+
+      // Reset node colors (Red blocked, Purple waiting)
+      nodes[0].children[0].material.color.setHex(0xfb7185);
+      nodes[0].children[0].material.emissive.setHex(0xfb7185);
+      nodes[0].children[1].material.color.setHex(0xfb7185);
+
+      for (let i = 1; i < nodeCount; i++) {
+        nodes[i].children[0].material.color.setHex(0xa78bfa);
+        nodes[i].children[0].material.emissive.setHex(0xa78bfa);
+        nodes[i].children[1].material.color.setHex(0xa78bfa);
+      }
+
+      // Reset button
+      const btn = document.getElementById('btnResolve');
+      btn.style = '';
+      btn.textContent = 'RESOLVE PIPELINE CONGESTION';
+
+      // Reset particles flow direction
+      particles.forEach(p => resetParticle(p));
+    }
+
+    // ═══════════ ANIMATION LOOP ═══════════
+    const clock = new THREE.Clock();
+
+    function animate() {
+      requestAnimationFrame(animate);
+      const time = clock.getElapsedTime();
+
+      // --- Node Ring rotations & Node pulsing ---
+      nodes.forEach((n, idx) => {
+        n.children[1].rotation.z += 0.015 * (idx % 2 === 0 ? 1 : -1);
+        
+        // Blocked node pulses emissive intensity aggressively
+        if (n.userData.isBlocked && isBlocked) {
+          n.children[0].material.emissiveIntensity = 0.4 + Math.sin(time * 10) * 0.4;
+          n.scale.setScalar(1 + Math.sin(time * 10) * 0.05);
+        } else {
+          n.children[0].material.emissiveIntensity = 0.1 + Math.sin(time * 2 + idx) * 0.05;
+          n.scale.setScalar(1);
+        }
+      });
+
+      // --- Pipe Flow Particles physics ---
+      particles.forEach(p => {
+        // Normal state: moving left towards blockage (backpressure mode)
+        if (isBlocked) {
+          p.position.x += p.userData.speed * p.userData.direction;
+
+          // If particle hits the left boundary (the blocked Node 0)
+          if (p.position.x <= nodes[0].position.x + 0.3) {
+            p.userData.direction = 1; // bounce back
+            p.material.color.setHex(0xfb7185); // turn alert red
+          }
+
+          // If particle moves right and reaches the next node, redirect it back left
+          const nextNodeLimit = startX + (p.userData.nodeIndex * stepX);
+          if (p.userData.direction === 1 && p.position.x >= nextNodeLimit) {
+            p.userData.direction = -1; // flow left again
+            p.material.color.setHex(0xfbbf24); // turn congestion amber
+          }
+        } else {
+          // Flow Nominal mode: flow smoothly from left (node 0) to right (node 5)
+          p.position.x += p.userData.speed;
+          
+          if (p.position.x >= nodes[nodeCount - 1].position.x) {
+            p.position.x = nodes[0].position.x;
+          }
+        }
+      });
+
+      // Camera orbital float
+      camera.position.x = Math.sin(time * 0.2) * 1.5;
+
+      renderer.render(scene, camera);
+    }
+    animate();
+
+    // Resize handler
+    window.addEventListener('resize', () => {
+      const w = container.clientWidth;
+      const h = container.clientHeight;
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+      renderer.setSize(w, h);
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VidiFlow — Linear Controls & Feedback Dials</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Kumbh+Sans:wght@700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <style>
+    :root {
+      --bg: #05070e;
+      --card: #0b0f1a;
+      --border: #1a2035;
+      --text: #e2e8f0;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      --cyan: #38bdf8;
+      --purple: #a78bfa;
+      --emerald: #34d399;
+      --rose: #fb7185;
+      --amber: #fbbf24;
+      --font-display: 'Kumbh Sans', sans-serif;
+      --font-body: 'Inter', sans-serif;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: var(--font-body);
+      background: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+    
+    /* AURORA BACKGROUND */
+    .aurora-bg {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; overflow: hidden;
+    }
+    .aurora-blob {
+      position: absolute; border-radius: 50%; filter: blur(120px); opacity: 0.12;
+    }
+    .aurora-blob:nth-child(1) { width: 500px; height: 500px; background: var(--cyan); top: -10%; left: -5%; }
+    .aurora-blob:nth-child(2) { width: 450px; height: 450px; background: var(--emerald); bottom: -10%; right: -5%; }
+
+    /* LAYOUT */
+    .container {
+      max-width: 1400px; margin: 0 auto; padding: 2rem;
+    }
+    header {
+      margin-bottom: 2rem; display: flex; align-items: center; justify-content: space-between;
+      border-bottom: 1px solid var(--border); padding-bottom: 1.5rem;
+    }
+    h1 { font-family: var(--font-display); font-weight: 900; font-size: 1.8rem; color: #fff; }
+    h1 span { color: var(--emerald); }
+    .subtitle { font-size: 0.9rem; color: var(--text-muted); margin-top: 0.2rem; }
+    
+    .btn-back {
+      font-family: var(--font-body); font-weight: 700; font-size: 0.75rem; color: var(--emerald);
+      background: rgba(52,211,153,0.08); border: 1px solid rgba(52,211,153,0.25);
+      border-radius: 6px; padding: 0.5rem 1rem; text-decoration: none; transition: all 0.2s;
+    }
+    .btn-back:hover { background: rgba(52,211,153,0.18); border-color: var(--emerald); }
+
+    .control-grid {
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 2rem;
+    }
+    .control-card {
+      background: var(--card); border: 1px solid var(--border); border-radius: 20px;
+      padding: 2rem; display: flex; flex-direction: column; gap: 1.5rem; position: relative; overflow: hidden;
+    }
+    
+    /* DIAL INDICATOR VIEW */
+    .dial-area {
+      display: flex; align-items: center; gap: 1.5rem;
+    }
+    .dial-svg-box {
+      width: 100px; height: 100px; flex-shrink: 0; position: relative;
+    }
+    .dial-val-text {
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      font-family: var(--font-display); font-weight: 900; font-size: 1.15rem; color: #fff;
+    }
+    .dial-label {
+      font-family: var(--font-display); font-weight: 800; font-size: 0.85rem; color: var(--text-muted);
+      letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 0.2rem;
+    }
+    .dial-desc { font-size: 0.7rem; color: var(--text-dim); }
+
+    /* LINEAR ADJUSTMENT CONTROLS */
+    .adjustment-area {
+      border-top: 1px solid var(--border); padding-top: 1.5rem;
+    }
+    
+    /* Tab buttons group */
+    .linear-tabs {
+      display: flex; gap: 6px; width: 100%;
+    }
+    .tab-btn {
+      flex: 1; background: rgba(255,255,255,0.02); border: 1px solid var(--border);
+      border-radius: 8px; color: var(--text-muted); padding: 0.6rem; font-size: 0.75rem;
+      font-weight: 600; cursor: pointer; transition: all 0.15s; font-family: var(--font-body);
+      text-align: center;
+    }
+    .tab-btn:hover { background: rgba(255,255,255,0.05); color: #fff; }
+    .tab-btn.active {
+      background: rgba(52,211,153,0.1); border-color: rgba(52,211,153,0.3); color: var(--emerald);
+      box-shadow: 0 0 10px rgba(52,211,153,0.05);
+    }
+    
+    /* Slider layout */
+    .slider-track-wrap { position: relative; padding: 0.5rem 0; }
+    .slider-track {
+      width: 100%; height: 6px; -webkit-appearance: none; background: rgba(255,255,255,0.05);
+      border-radius: 3px; outline: none; margin: 0.4rem 0;
+    }
+    .slider-track::-webkit-slider-thumb {
+      -webkit-appearance: none; width: 14px; height: 14px; border-radius: 50%; background: var(--emerald);
+      cursor: pointer; box-shadow: 0 0 8px var(--emerald); transition: transform 0.1s;
+    }
+    .slider-track::-webkit-slider-thumb:active { transform: scale(1.3); }
+
+    .slider-ticks {
+      display: flex; justify-content: space-between; font-size: 0.6rem; color: var(--text-dim);
+      padding: 0 2px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- AURORA BACKGROUND -->
+  <div class="aurora-bg">
+    <div class="aurora-blob"></div>
+    <div class="aurora-blob ="></div>
+  </div>
+
+  <div class="container">
+    <header>
+      <div>
+        <h1>Vidi<span>Flow</span> — Linear Controls & Dials</h1>
+        <div class="subtitle">Read-only visual dials paired with standard click/slide controls for easy adjustments</div>
+      </div>
+      <a href="vidiflow-3d-showcase.html" class="btn-back">← Back to Showcase</a>
+    </header>
+
+    <div class="control-grid">
+      
+      <!-- CONTROL 1: SYSTEM MODE -->
+      <div class="control-card animate-in">
+        <div class="dial-area">
+          <div class="dial-svg-box">
+            <!-- SVG circular gauge needle -->
+            <svg width="100" height="100" viewBox="0 0 100 100">
+              <circle cx="50" cy="50" r="40" stroke="var(--border)" stroke-width="6" fill="none" stroke-dasharray="188" stroke-dashoffset="0" />
+              <circle id="gaugeModeCircle" cx="50" cy="50" r="40" stroke="var(--emerald)" stroke-width="6" fill="none" stroke-dasharray="251.2" stroke-dashoffset="188" stroke-linecap="round" style="transform: rotate(135deg); transform-origin: 50px 50px;" />
+              <line id="gaugeModeNeedle" x1="50" y1="50" x2="50" y2="18" stroke="var(--emerald)" stroke-width="3" stroke-linecap="round" style="transform: rotate(-135deg); transform-origin: 50px 50px;" />
+            </svg>
+            <div class="dial-val-text" id="dialModeVal" style="color:var(--emerald)">AUTO</div>
+          </div>
+          <div>
+            <div class="dial-label">SYSTEM MODE</div>
+            <div class="dial-desc">Adjusts global agent execution constraints and scheduling frequency priorities.</div>
+          </div>
+        </div>
+        <div class="adjustment-area">
+          <div style="font-size: 0.65rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.6rem;">LINEAR TOGGLE BUTTONS</div>
+          <div class="linear-tabs">
+            <button class="tab-btn" onclick="setSystemMode('SAFE', -135)">SAFE</button>
+            <button class="tab-btn active" onclick="setSystemMode('AUTO', -45)">AUTO</button>
+            <button class="tab-btn" onclick="setSystemMode('BOOST', 45)">BOOST</button>
+            <button class="tab-btn" onclick="setSystemMode('MAX', 135)">MAX</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- CONTROL 2: FUEL RATE -->
+      <div class="control-card animate-in">
+        <div class="dial-area">
+          <div class="dial-svg-box">
+            <svg width="100" height="100" viewBox="0 0 100 100">
+              <circle cx="50" cy="50" r="40" stroke="var(--border)" stroke-width="6" fill="none" />
+              <circle id="gaugeFuelCircle" cx="50" cy="50" r="40" stroke="var(--amber)" stroke-width="6" fill="none" stroke-dasharray="251.2" stroke-dashoffset="200" stroke-linecap="round" style="transform: rotate(135deg); transform-origin: 50px 50px;" />
+              <line id="gaugeFuelNeedle" x1="50" y1="50" x2="50" y2="18" stroke="var(--amber)" stroke-width="3" stroke-linecap="round" style="transform: rotate(-100deg); transform-origin: 50px 50px;" />
+            </svg>
+            <div class="dial-val-text" id="dialFuelVal" style="color:var(--amber)">42%</div>
+          </div>
+          <div>
+            <div class="dial-label">FUEL CAPACITY</div>
+            <div class="dial-desc">Telemetry rate modifier. Increasing limits query throughput at the expense of API costs.</div>
+          </div>
+        </div>
+        <div class="adjustment-area">
+          <div style="font-size: 0.65rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.4rem;">LINEAR SLIDER ADJUSTMENT</div>
+          <div class="slider-track-wrap">
+            <input type="range" class="slider-track" id="fuelInput" min="0" max="100" value="42" style="background: linear-gradient(90deg, var(--border), var(--amber))">
+            <div class="slider-ticks">
+              <span>0% (MIN)</span>
+              <span>50%</span>
+              <span>100% (MAX)</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CONTROL 3: BACKPRESSURE LEVEL -->
+      <div class="control-card animate-in">
+        <div class="dial-area">
+          <div class="dial-svg-box">
+            <svg width="100" height="100" viewBox="0 0 100 100">
+              <circle cx="50" cy="50" r="40" stroke="var(--border)" stroke-width="6" fill="none" />
+              <circle id="gaugeBbCircle" cx="50" cy="50" r="40" stroke="var(--cyan)" stroke-width="6" fill="none" stroke-dasharray="251.2" stroke-dashoffset="188" stroke-linecap="round" style="transform: rotate(135deg); transform-origin: 50px 50px;" />
+              <line id="gaugeBbNeedle" x1="50" y1="50" x2="50" y2="18" stroke="var(--cyan)" stroke-width="3" stroke-linecap="round" style="transform: rotate(-45deg); transform-origin: 50px 50px;" />
+            </svg>
+            <div class="dial-val-text" id="dialBbVal" style="color:var(--cyan)">4x</div>
+          </div>
+          <div>
+            <div class="dial-label">BB STEP MULTIPLIER</div>
+            <div class="dial-desc">Data window partition step size for Kafka broker routing partitions.</div>
+          </div>
+        </div>
+        <div class="adjustment-area">
+          <div style="font-size: 0.65rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.6rem;">TACTILE STEP SELECTOR</div>
+          <div class="linear-tabs">
+            <button class="tab-btn-bb tab-btn" onclick="setBbMode('1x', -135)">1x</button>
+            <button class="tab-btn-bb tab-btn" onclick="setBbMode('2x', -90)">2x</button>
+            <button class="tab-btn-bb tab-btn active" onclick="setBbMode('4x', -45)">4x</button>
+            <button class="tab-btn-bb tab-btn" onclick="setBbMode('8x', 45)">8x</button>
+            <button class="tab-btn-bb tab-btn" onclick="setBbMode('16x', 135)">16x</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- CONTROL 4: CURRENT LOAD -->
+      <div class="control-card animate-in">
+        <div class="dial-area">
+          <div class="dial-svg-box">
+            <svg width="100" height="100" viewBox="0 0 100 100">
+              <circle cx="50" cy="50" r="40" stroke="var(--border)" stroke-width="6" fill="none" />
+              <circle id="gaugeLoadCircle" cx="50" cy="50" r="40" stroke="var(--purple)" stroke-width="6" fill="none" stroke-dasharray="251.2" stroke-dashoffset="62.8" stroke-linecap="round" style="transform: rotate(135deg); transform-origin: 50px 50px;" />
+              <line id="gaugeLoadNeedle" x1="50" y1="50" x2="50" y2="18" stroke="var(--purple)" stroke-width="3" stroke-linecap="round" style="transform: rotate(100deg); transform-origin: 50px 50px;" />
+            </svg>
+            <div class="dial-val-text" id="dialLoadVal" style="color:var(--purple)">75%</div>
+          </div>
+          <div>
+            <div class="dial-label">CHARGE UTILIZATION</div>
+            <div class="dial-desc">Current compute usage threshold rate. Throttles nodes above set percentage value.</div>
+          </div>
+        </div>
+        <div class="adjustment-area">
+          <div style="font-size: 0.65rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.4rem;">LINEAR SLIDER ADJUSTMENT</div>
+          <div class="slider-track-wrap">
+            <input type="range" class="slider-track" id="loadInput" min="0" max="100" value="75" style="background: linear-gradient(90deg, var(--border), var(--purple))">
+            <div class="slider-ticks">
+              <span>0% (LOW)</span>
+              <span>50%</span>
+              <span>100% (HIGH)</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    // ═══════════ DIAL ROTATION LOGIC ═══════════
+    // Dial 1: Mode
+    function setSystemMode(label, deg) {
+      // Set active tab buttons
+      const buttons = document.querySelectorAll('.linear-tabs:first-of-type .tab-btn');
+      buttons.forEach(b => {
+        b.classList.toggle('active', b.textContent === label);
+      });
+
+      // Animate needle and text
+      gsap.to('#gaugeModeNeedle', {
+        duration: 0.4,
+        rotate: deg,
+        ease: 'power2.out'
+      });
+
+      // Animate circle stroke dash offset
+      // total dasharray: 251.2. Available angular sweep range: 270 deg (from -135 to 135)
+      // Map -135 to 135 deg to offset value
+      const pct = (deg + 135) / 270;
+      const offset = 251.2 - (251.2 * 0.75 * pct); // using 75% arc gauge
+      gsap.to('#gaugeModeCircle', {
+        duration: 0.4,
+        strokeDashoffset: offset,
+        ease: 'power2.out'
+      });
+
+      // Update text label
+      document.getElementById('dialModeVal').textContent = label;
+      
+      const colors = { SAFE: 'var(--cyan)', AUTO: 'var(--emerald)', BOOST: 'var(--amber)', MAX: 'var(--rose)' };
+      document.getElementById('dialModeVal').style.color = colors[label];
+      document.getElementById('gaugeModeCircle').style.stroke = colors[label];
+      document.getElementById('gaugeModeNeedle').style.stroke = colors[label];
+    }
+
+    // Dial 2: Fuel
+    const fuelInput = document.getElementById('fuelInput');
+    const fuelVal = document.getElementById('dialFuelVal');
+    
+    fuelInput.addEventListener('input', (e) => {
+      const val = parseInt(e.target.value);
+      fuelVal.textContent = val + '%';
+
+      // Sweep needle between -135 and 135 degrees
+      const deg = -135 + (270 * (val / 100));
+      gsap.to('#gaugeFuelNeedle', { duration: 0.1, rotate: deg, overwrite: 'auto' });
+
+      // Arc offset
+      const offset = 251.2 - (251.2 * 0.75 * (val / 100));
+      gsap.to('#gaugeFuelCircle', { duration: 0.1, strokeDashoffset: offset, overwrite: 'auto' });
+    });
+
+    // Dial 3: Backpressure Step Multiplier
+    function setBbMode(label, deg) {
+      const buttons = document.querySelectorAll('.linear-tabs .tab-btn-bb');
+      buttons.forEach(b => {
+        b.classList.toggle('active', b.textContent === label);
+      });
+
+      gsap.to('#gaugeBbNeedle', { duration: 0.4, rotate: deg, ease: 'power2.out' });
+
+      const pct = (deg + 135) / 270;
+      const offset = 251.2 - (251.2 * 0.75 * pct);
+      gsap.to('#gaugeBbCircle', { duration: 0.4, strokeDashoffset: offset, ease: 'power2.out' });
+
+      document.getElementById('dialBbVal').textContent = label;
+    }
+
+    // Dial 4: Charge
+    const loadInput = document.getElementById('loadInput');
+    const loadVal = document.getElementById('dialLoadVal');
+
+    loadInput.addEventListener('input', (e) => {
+      const val = parseInt(e.target.value);
+      loadVal.textContent = val + '%';
+
+      const deg = -135 + (270 * (val / 100));
+      gsap.to('#gaugeLoadNeedle', { duration: 0.1, rotate: deg, overwrite: 'auto' });
+
+      const offset = 251.2 - (251.2 * 0.75 * (val / 100));
+      gsap.to('#gaugeLoadCircle', { duration: 0.1, strokeDashoffset: offset, overwrite: 'auto' });
+    });
+    
+    // Initialize modes on load
+    setSystemMode('AUTO', -45);
+    setBbMode('4x', -45);
+  </script>
+</body>
+</html>

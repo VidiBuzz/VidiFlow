@@ -22,11 +22,15 @@
             --text-heading: #1A1A1A;
             --text-muted: #6B7280;
             --text-caption: #9CA3AF;
-            --bg-page: #FFFFFF;
+            --bg-page: #FFFBF5;
             --bg-context: #F8F6F0;
             --bg-quote: #F0F4F8;
+            --border-context: #FF6B35;
+            --surface-card: rgba(255, 255, 255, 0.6);
+            --surface-card-border: rgba(0, 0, 0, 0.06);
             --sidebar-width: 300px;
             --text-column-width: 680px;
+            color-scheme: light;
         }
 
         * {
@@ -44,6 +48,19 @@
             text-rendering: optimizeLegibility;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* Smooth crossfade for theme-affected elements */
+        .text-column,
+        .image-sidebar,
+        .toc-page,
+        .chapter,
+        .page-footer,
+        blockquote,
+        .strategic-context,
+        .persona-intro-panel {
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
         }
 
         /* ===== Persona Theming ===== */
@@ -60,8 +77,11 @@
             height: 3px;
             background: linear-gradient(90deg, var(--persona-color), var(--primary-dark));
             z-index: 10000;
-            transition: width 0.1s ease-out, background 0.4s ease;
+            transition: width 0.1s ease-out, background 0.4s ease, box-shadow 0.4s ease, height 0.3s ease;
             width: 0%;
+        }
+        .progress-bar.active {
+            box-shadow: 0 0 10px var(--persona-color), 0 0 4px var(--persona-color);
         }
 
         /* Cover */
@@ -273,6 +293,107 @@
             background: var(--accent);
         }
 
+        /* ===== Generate Button (Breathing Glow) ===== */
+        .btn-generate {
+            animation: breathe 2.5s ease-in-out infinite;
+        }
+        .btn-generate:hover {
+            animation-play-state: paused;
+        }
+        @keyframes breathe {
+            0%, 100% {
+                box-shadow: 0 0 0 0 rgba(255, 107, 53, 0.5);
+                transform: translateY(0);
+            }
+            50% {
+                box-shadow: 0 0 16px 4px rgba(255, 107, 53, 0.35);
+                transform: translateY(-1px);
+            }
+        }
+        .btn-generate:disabled {
+            animation: none;
+            opacity: 0.7;
+            cursor: wait;
+        }
+
+        /* ===== Reduced Motion Support ===== */
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+            .btn-generate { animation: none !important; }
+        }
+
+        /* ===== Chapter Enter Animation ===== */
+        .chapter {
+            opacity: 1;
+            transform: translateY(24px);
+            transition: opacity 0.7s ease, transform 0.7s ease;
+        }
+        .chapter.chapter-enter {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .js .chapter:not(.chapter-enter) {
+            opacity: 0;
+        }
+        .chapter.chapter-flash {
+            animation: chapterFlash 0.9s ease;
+        }
+        @keyframes chapterFlash {
+            0% {
+                box-shadow: inset 0 0 0 0 rgba(255, 107, 53, 0);
+            }
+            20% {
+                box-shadow: inset 0 0 0 3px rgba(255, 107, 53, 0.35);
+            }
+            100% {
+                box-shadow: inset 0 0 0 0 rgba(255, 107, 53, 0);
+            }
+        }
+
+        /* ===== Frosted-Glass Theme Toggle Pill ===== */
+        .theme-toggle {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.5rem 1rem;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            color: rgba(255, 255, 255, 0.92);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.78rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            transition: background 0.2s, border-color 0.2s, transform 0.2s;
+            white-space: nowrap;
+        }
+        .theme-toggle:hover {
+            background: rgba(255, 255, 255, 0.14);
+            border-color: rgba(255, 255, 255, 0.3);
+            transform: translateY(-1px);
+        }
+        .theme-toggle:active {
+            transform: translateY(0);
+        }
+        .theme-toggle .theme-icon {
+            font-size: 0.95rem;
+            line-height: 1;
+            display: inline-block;
+            transition: transform 0.4s ease;
+        }
+        .theme-toggle:hover .theme-icon {
+            transform: rotate(-15deg) scale(1.1);
+        }
+
         /* Edition Badge */
         .edition-badge {
             display: inline-flex;
@@ -405,6 +526,10 @@
             flex-shrink: 0;
             margin-top: 0.05rem;
         }
+        body.light .persona-intro-panel { background: linear-gradient(135deg, var(--persona-glow) 0%, rgba(255,251,245,0) 100%); }
+        body.light .pip-heading { color: #0F172A; }
+        body.light .pip-intro, body.light .pip-takeaways li { color: #1A1A1A; }
+        body.light .pip-takeaways li { border-bottom-color: rgba(0,0,0,0.08); }
         body.dark .persona-intro-panel { background: linear-gradient(135deg, var(--persona-glow) 0%, rgba(15,23,42,0) 100%); }
         body.dark .pip-heading { color: #F1F5F9; }
         body.dark .pip-intro, body.dark .pip-takeaways li { color: #CBD5E1; }
@@ -877,16 +1002,45 @@
             font-weight: 700;
         }
 
-        /* ===== Dark Mode ===== */
+        /* ===== Dark Mode (default) ===== */
         body.dark {
             background: #0F172A;
             color: #CBD5E1;
             --text-body: #CBD5E1;
             --text-heading: #F1F5F9;
             --text-muted: #94A3B8;
+            --text-caption: #94A3B8;
+            --bg-page: #0F172A;
             --bg-context: #1E293B;
             --bg-quote: #1E293B;
             --border-context: #FF6B35;
+            --surface-card: rgba(15, 23, 42, 0.6);
+            --surface-card-border: rgba(255, 255, 255, 0.06);
+            color-scheme: dark;
+        }
+
+        /* ===== Light Mode (warm cream) ===== */
+        body.light {
+            background: #FFFBF5;
+            color: #1A1A1A;
+            --text-body: #1A1A1A;
+            --text-heading: #0F172A;
+            --text-muted: #6B7280;
+            --bg-page: #FFFBF5;
+            --bg-context: #F8F6F0;
+            --bg-quote: #F0F4F8;
+            --border-context: #FF6B35;
+            --surface-card: rgba(255, 255, 255, 0.6);
+            --surface-card-border: rgba(0, 0, 0, 0.06);
+            color-scheme: light;
+        }
+
+        body.light .chapter-image-container img {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        body.light .page-footer {
+            border-top-color: #E5E7EB;
         }
 
         body.dark .chapter-image-container img {
@@ -1060,6 +1214,14 @@
                 display: none !important;
             }
 
+            .chapter {
+                opacity: 1 !important;
+                transform: none !important;
+                animation: none !important;
+            }
+            .chapter.chapter-flash { animation: none !important; }
+            .btn-generate { animation: none !important; box-shadow: none !important; }
+
             body.sidebar-open {
                 margin-left: 0 !important;
             }
@@ -1130,7 +1292,20 @@
     </style>
 </head>
 
-<body>
+<body class="dark">
+
+    <script>
+        // Pre-paint theme override (only fires if user previously selected light)
+        (function() {
+            try {
+                if (localStorage.getItem('smartbook-theme') === 'light') {
+                    document.body.classList.add('light');
+                    document.body.classList.remove('dark');
+                }
+            } catch (e) {}
+            document.documentElement.classList.add('js');
+        })();
+    </script>
 
     <!-- Reading Progress Bar -->
     <div class="progress-bar" id="progressBar"></div>
@@ -1170,10 +1345,10 @@
                 <option value="it_professional">&#128187; IT Professional</option>
                 <option value="executive_entrepreneur">&#128640; Executive</option>
             </select>
-            <button id="generateBtn" onclick="generateCustomBook()">&#9889; Generate</button>
+            <button id="generateBtn" class="btn-generate" onclick="generateCustomBook()">&#9889; Generate</button>
         </div>
         <div class="action-group">
-            <button class="btn-dark" onclick="document.body.classList.toggle('dark')">&#127769; Dark Mode</button>
+            <button id="themeToggleBtn" class="theme-toggle" onclick="toggleTheme()" title="Toggle light/dark mode" aria-label="Toggle theme"><span class="theme-icon" id="themeIcon">&#127769;</span><span id="themeLabel">Dark</span></button>
             <button class="btn-print" onclick="window.print()">&#128424;&#65039; Print / Save PDF</button>
         </div>
     </div>
@@ -1290,6 +1465,39 @@
             document.body.classList.toggle('sidebar-open');
         }
 
+        // ===== Theme Toggle (Dark/Light Mode) =====
+        const THEME_KEY = 'smartbook-theme';
+        function applyTheme(theme) {
+            const body = document.body;
+            const icon = document.getElementById('themeIcon');
+            const label = document.getElementById('themeLabel');
+            body.classList.remove('dark', 'light');
+            body.classList.add(theme);
+            if (icon && label) {
+                if (theme === 'light') {
+                    icon.innerHTML = '&#9728;&#65039;';
+                    label.textContent = 'Light';
+                } else {
+                    icon.innerHTML = '&#127769;';
+                    label.textContent = 'Dark';
+                }
+            }
+            try { localStorage.setItem(THEME_KEY, theme); } catch (e) {}
+        }
+        function toggleTheme() {
+            const isDark = document.body.classList.contains('dark');
+            applyTheme(isDark ? 'light' : 'dark');
+        }
+        function initTheme() {
+            let saved = null;
+            try { saved = localStorage.getItem(THEME_KEY); } catch (e) {}
+            if (saved === 'light' || saved === 'dark') {
+                applyTheme(saved);
+            } else {
+                applyTheme('dark');
+            }
+        }
+
         // ===== Lightbox Functions =====
         function openLightbox(index) {
             currentLightboxIndex = index;
@@ -1336,6 +1544,11 @@
             const docHeight = document.documentElement.scrollHeight - window.innerHeight;
             const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
             bar.style.width = progress + '%';
+            if (progress > 5) {
+                bar.classList.add('active');
+            } else {
+                bar.classList.remove('active');
+            }
         }
 
         // ===== Scroll Spy for Active Chapter =====
@@ -1568,6 +1781,34 @@
 
             // Re-init lightbox events after DOM update
             initLightboxEvents();
+            // Reveal chapters as they enter the viewport
+            initChapterEnter();
+        }
+
+        // ===== Chapter Enter Animation (IntersectionObserver) =====
+        let chapterObserver = null;
+        function initChapterEnter() {
+            const chapters = document.querySelectorAll('.chapter[id]');
+            if (!chapters.length) return;
+            if (chapterObserver) chapterObserver.disconnect();
+            if (!('IntersectionObserver' in window)) {
+                chapters.forEach(c => c.classList.add('chapter-enter'));
+                return;
+            }
+            chapterObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('chapter-enter');
+                        if (!entry.target.dataset.flashed) {
+                            entry.target.classList.add('chapter-flash');
+                            entry.target.dataset.flashed = '1';
+                            setTimeout(() => entry.target.classList.remove('chapter-flash'), 1000);
+                        }
+                        chapterObserver.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.12, rootMargin: '0px 0px -10% 0px' });
+            chapters.forEach(c => chapterObserver.observe(c));
         }
 
         // Auto-build on load with URL parameter support
@@ -1577,6 +1818,9 @@
                 console.error('BOOK_DATA is undefined — data.js failed to load');
                 return;
             }
+
+            // Sync the theme button label/icon with current body class
+            initTheme();
 
             try {
                 // Read URL parameters from index.html navigation

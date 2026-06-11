@@ -29,7 +29,7 @@ python batch_process_to_images.py all ../images/notebooklm_template.png ../image
 
 ### Process Everything
 ```bash
-cd m:/code/vidismart/brandswap-backend
+cd m:/code/vidismart/brandswap
 python batch_process_to_images.py all ../images/notebooklm_template.png ../images --threshold 0.4
 ```
 
@@ -39,7 +39,7 @@ python batch_process_to_images.py all ../images/notebooklm_template.png ../image
 
 ### Start Server
 ```bash
-cd m:/code/vidismart/brandswap-backend
+cd m:/code/vidismart/brandswap
 python server.py
 ```
 
@@ -65,7 +65,7 @@ m:/code/vidismart/
 │   ├── notebooklm_template.png      # Template (prepared)
 │   ├── rebranded/                    # Input folders
 │   └── out_brandswap/               # Output folders
-└── brandswap-backend/
+└── brandswap/
     ├── fix_logo_alignment.py        # Detection tool
     ├── batch_process_to_images.py   # Batch processor
     └── server.py                    # API server

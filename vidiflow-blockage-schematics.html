@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VidiFlow — 3D Blockage Diagnostics</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Kumbh+Sans:wght@700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/three@0.128.0/build/three.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <style>
+    :root {
+      --bg: #05070e;
+      --card: #0b0f1a;
+      --border: #1a2035;
+      --text: #e2e8f0;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      --cyan: #38bdf8;
+      --purple: #a78bfa;
+      --emerald: #34d399;
+      --rose: #fb7185;
+      --amber: #fbbf24;
+      --font-display: 'Kumbh Sans', sans-serif;
+      --font-body: 'Inter', sans-serif;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: var(--font-body);
+      background: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+    
+    /* AURORA BACKGROUND */
+    .aurora-bg {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; overflow: hidden;
+    }
+    .aurora-blob {
+      position: absolute; border-radius: 50%; filter: blur(120px); opacity: 0.12;
+    }
+    .aurora-blob:nth-child(1) { width: 500px; height: 500px; background: var(--rose); top: -10%; left: -5%; }
+    .aurora-blob:nth-child(2) { width: 450px; height: 450px; background: var(--amber); bottom: -10%; right: -5%; }
+
+    /* LAYOUT */
+    .container {
+      max-width: 1400px; margin: 0 auto; padding: 2rem;
+    }
+    header {
+      margin-bottom: 2rem; display: flex; align-items: center; justify-content: space-between;
+      border-bottom: 1px solid var(--border); padding-bottom: 1.5rem;
+    }
+    h1 { font-family: var(--font-display); font-weight: 900; font-size: 1.8rem; color: #fff; }
+    h1 span { color: var(--rose); }
+    .subtitle { font-size: 0.9rem; color: var(--text-muted); margin-top: 0.2rem; }
+    
+    .btn-back {
+      font-family: var(--font-body); font-weight: 700; font-size: 0.75rem; color: var(--rose);
+      background: rgba(251,113,133,0.08); border: 1px solid rgba(251,113,133,0.25);
+      border-radius: 6px; padding: 0.5rem 1rem; text-decoration: none; transition: all 0.2s;
+    }
+    .btn-back:hover { background: rgba(251,113,133,0.18); border-color: var(--rose); }
+
+    .sim-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;
+    }
+    .sim-card {
+      background: var(--card); border: 1px solid var(--border); border-radius: 20px;
+      padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem;
+    }
+    .sim-header {
+      border-bottom: 1px solid var(--border); padding-bottom: 0.8rem;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .sim-title { font-family: var(--font-display); font-weight: 900; font-size: 1.2rem; color: #fff; }
+    .sim-badge {
+      font-size: 0.6rem; font-weight: 700; padding: 0.2rem 0.5rem; border-radius: 4px;
+      letter-spacing: 0.05em; text-transform: uppercase;
+    }
+    .badge-ok { background: rgba(52,211,153,0.12); color: var(--emerald); border: 1px solid rgba(52,211,153,0.2); }
+    .badge-alert { background: rgba(251,113,133,0.15); color: var(--rose); border: 1px solid rgba(251,113,133,0.3); }
+
+    .canvas-box {
+      height: 300px; background: rgba(5,7,14,0.6); border-radius: 12px;
+      position: relative; overflow: hidden; border: 1px solid rgba(255,255,255,0.02);
+    }
+    .canvas-box canvas { width: 100%; height: 100%; display: block; }
+
+    .controls-box {
+      background: rgba(255,255,255,0.01); border: 1px solid var(--border); border-radius: 12px;
+      padding: 1rem; display: flex; flex-direction: column; gap: 0.8rem;
+    }
+    .slider-row { display: flex; flex-direction: column; gap: 0.3rem; }
+    .slider-header { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-muted); }
+    .slider-val { font-weight: 700; color: #fff; }
+    .slider-input {
+      width: 100%; height: 6px; -webkit-appearance: none; background: rgba(255,255,255,0.05);
+      border-radius: 3px; outline: none; margin: 0.4rem 0;
+    }
+    .slider-input::-webkit-slider-thumb {
+      -webkit-appearance: none; width: 14px; height: 14px; border-radius: 50%; background: var(--rose);
+      cursor: pointer; box-shadow: 0 0 8px var(--rose); transition: transform 0.1s;
+    }
+    .slider-input::-webkit-slider-thumb:active { transform: scale(1.3); }
+
+    .btn-flush {
+      font-family: var(--font-body); font-weight: 700; font-size: 0.75rem; color: #000;
+      background: var(--rose); border: none; border-radius: 6px; padding: 0.5rem;
+      cursor: pointer; transition: all 0.15s; text-align: center;
+    }
+    .btn-flush:hover { background: #fda4af; box-shadow: 0 0 10px rgba(251,113,133,0.3); }
+    .btn-flush:active { transform: scale(0.98); }
+  </style>
+</head>
+<body>
+
+  <!-- AURORA BACKGROUND -->
+  <div class="aurora-bg">
+    <div class="aurora-blob"></div>
+    <div class="aurora-blob"></div>
+  </div>
+
+  <div class="container">
+    <header>
+      <div>
+        <h1>Vidi<span>Flow</span> — 3D Diagnostics</h1>
+        <div class="subtitle">Interactive simulations modeling API bottlenecks and memory exhaustion</div>
+      </div>
+      <a href="vidiflow-3d-showcase.html" class="btn-back">← Back to Showcase</a>
+    </header>
+
+    <div class="sim-grid">
+      
+      <!-- SIM 1: API RATE LIMITING -->
+      <div class="sim-card animate-in">
+        <div class="sim-header">
+          <span class="sim-title">API Rate Limit (Backpressure)</span>
+          <span class="sim-badge badge-ok" id="apiBadge">NOMINAL FLOW</span>
+        </div>
+        <div class="canvas-box">
+          <canvas id="api-canvas"></canvas>
+        </div>
+        <div class="controls-box">
+          <div class="slider-row">
+            <div class="slider-header">
+              <span>Traffic Rate (Requests/Sec)</span>
+              <span class="slider-val" id="apiRateVal">200 RPS</span>
+            </div>
+            <input type="range" class="slider-input" id="apiRateInput" min="50" max="1000" value="200" style="background:linear-gradient(90deg, var(--cyan), var(--rose))">
+          </div>
+          <button class="btn-flush" id="btnFlushApi" style="background:var(--cyan); box-shadow:0 0 8px rgba(56,189,248,0.2);">CLEAR CONGESTION (FLUSH)</button>
+        </div>
+      </div>
+
+      <!-- SIM 2: OOM CRASH -->
+      <div class="sim-card animate-in">
+        <div class="sim-header">
+          <span class="sim-title">Out Of Memory (OOM) Leak</span>
+          <span class="sim-badge badge-ok" id="oomBadge">STABLE MEMORY</span>
+        </div>
+        <div class="canvas-box">
+          <canvas id="oom-canvas"></canvas>
+        </div>
+        <div class="controls-box">
+          <div class="slider-row">
+            <div class="slider-header">
+              <span>Memory Usage (MB)</span>
+              <span class="slider-val" id="oomVal">1.2 GB (12%)</span>
+            </div>
+            <input type="range" class="slider-input" id="oomInput" min="10" max="100" value="12">
+          </div>
+          <button class="btn-flush" id="btnPurgeOom">PURGE LEAKS (RESET)</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    // ═══════════ API CHOKE-POINT SIMULATION ═══════════
+    const apiCanvas = document.getElementById('api-canvas');
+    const apiWidth = apiCanvas.parentElement.clientWidth;
+    const apiHeight = apiCanvas.parentElement.clientHeight;
+
+    const apiScene = new THREE.Scene();
+    const apiCamera = new THREE.PerspectiveCamera(30, apiWidth / apiHeight, 0.1, 100);
+    apiCamera.position.set(0, 0, 10);
+
+    const apiRenderer = new THREE.WebGLRenderer({ canvas: apiCanvas, antialias: true, alpha: true });
+    apiRenderer.setSize(apiWidth, apiHeight);
+
+    // Lights
+    apiScene.add(new THREE.AmbientLight(0xffffff, 0.6));
+    const apiLight = new THREE.DirectionalLight(0x38bdf8, 1);
+    apiLight.position.set(2, 5, 2);
+    apiScene.add(apiLight);
+
+    // Choke Pipe
+    const pipeGeo = new THREE.CylinderGeometry(0.8, 0.25, 4, 32, 1, true);
+    pipeGeo.rotateZ(Math.PI / 2); // align horizontal
+    const pipeMat = new THREE.MeshPhysicalMaterial({
+      color: 0x1e293b,
+      transparent: true,
+      opacity: 0.25,
+      roughness: 0.1,
+      metalness: 0.1,
+      transmission: 0.6,
+      ior: 1.2,
+      side: THREE.DoubleSide
+    });
+    const pipe = new THREE.Mesh(pipeGeo, pipeMat);
+    apiScene.add(pipe);
+
+    // Outline pipe rings
+    const ringGeo1 = new THREE.TorusGeometry(0.81, 0.02, 8, 32);
+    ringGeo1.rotateY(Math.PI / 2);
+    const ringMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.3 });
+    const ringLeft = new THREE.Mesh(ringGeo1, ringMat);
+    ringLeft.position.set(-2, 0, 0);
+    const ringRight = new THREE.Mesh(new THREE.TorusGeometry(0.26, 0.02, 8, 32), ringMat);
+    ringRight.geometry.rotateY(Math.PI / 2);
+    ringRight.position.set(2, 0, 0);
+    apiScene.add(ringLeft);
+    apiScene.add(ringRight);
+
+    // Particles Group
+    const particles = [];
+    const particleCount = 120;
+    const particleGeo = new THREE.SphereGeometry(0.06, 8, 8);
+    const particleMat = new THREE.MeshBasicMaterial({ color: 0x34d399 });
+
+    for (let i = 0; i < particleCount; i++) {
+      const p = new THREE.Mesh(particleGeo, particleMat.clone());
+      resetParticle(p, true);
+      particles.push(p);
+      apiScene.add(p);
+    }
+
+    let limitThresh = 400; // RPS limit threshold
+    let currentRps = 200;
+
+    function resetParticle(p, initRandom) {
+      p.position.x = initRandom ? (Math.random() * 4 - 2) : -2.5;
+      p.position.y = (Math.random() - 0.5) * 0.4;
+      p.position.z = (Math.random() - 0.5) * 0.4;
+      p.userData = {
+        speed: 0.02 + Math.random() * 0.015,
+        stuck: false
+      };
+      p.material.color.setHex(0x34d399);
+    }
+
+    // Interactive slider API
+    const apiSlider = document.getElementById('apiRateInput');
+    const apiVal = document.getElementById('apiRateVal');
+    const apiBadge = document.getElementById('apiBadge');
+
+    apiSlider.addEventListener('input', (e) => {
+      currentRps = parseInt(e.target.value);
+      apiVal.textContent = currentRps + ' RPS';
+      if (currentRps > limitThresh) {
+        apiBadge.textContent = 'CONGESTED (THROTTLED)';
+        apiBadge.className = 'sim-badge badge-alert';
+        ringMat.color.setHex(0xfb7185);
+      } else {
+        apiBadge.textContent = 'NOMINAL FLOW';
+        apiBadge.className = 'sim-badge badge-ok';
+        ringMat.color.setHex(0x38bdf8);
+      }
+    });
+
+    document.getElementById('btnFlushApi').addEventListener('click', () => {
+      // Force all congested particles to shoot forward
+      particles.forEach(p => {
+        if (p.position.x < 1.0) {
+          gsap.to(p.position, { x: 2.5, duration: 0.4 + Math.random() * 0.3, ease: 'power2.in', onComplete: () => resetParticle(p) });
+        }
+      });
+      // Temp lower slider
+      currentRps = 200;
+      apiSlider.value = 200;
+      apiVal.textContent = '200 RPS';
+      apiBadge.textContent = 'NOMINAL FLOW';
+      apiBadge.className = 'sim-badge badge-ok';
+      ringMat.color.setHex(0x38bdf8);
+    });
+
+    // ═══════════ OOM MEMORY LEAK SIMULATION ═══════════
+    const oomCanvas = document.getElementById('oom-canvas');
+    const oomWidth = oomCanvas.parentElement.clientWidth;
+    const oomHeight = oomCanvas.parentElement.clientHeight;
+
+    const oomScene = new THREE.Scene();
+    const oomCamera = new THREE.PerspectiveCamera(30, oomWidth / oomHeight, 0.1, 100);
+    oomCamera.position.set(3, 3, 5.5);
+    oomCamera.lookAt(0, 0, 0);
+
+    const oomRenderer = new THREE.WebGLRenderer({ canvas: oomCanvas, antialias: true, alpha: true });
+    oomRenderer.setSize(oomWidth, oomHeight);
+
+    // Lights
+    oomScene.add(new THREE.AmbientLight(0xffffff, 0.4));
+    const oomLight = new THREE.DirectionalLight(0xffffff, 0.8);
+    oomLight.position.set(5, 10, 5);
+    oomScene.add(oomLight);
+
+    // Translucent Memory Chip Outer Case
+    const chipGeo = new THREE.BoxGeometry(1.6, 1.6, 1.6);
+    const chipEdges = new THREE.EdgesGeometry(chipGeo);
+    const chipOutlineMat = new THREE.LineBasicMaterial({ color: 0x1a2035, linewidth: 2 });
+    const chipWire = new THREE.LineSegments(chipEdges, chipOutlineMat);
+    oomScene.add(chipWire);
+
+    // Translucent outer face glass
+    const chipMat = new THREE.MeshPhysicalMaterial({
+      color: 0x0b0f1a,
+      roughness: 0.1,
+      metalness: 0.1,
+      transmission: 0.9,
+      ior: 1.4,
+      transparent: true,
+      opacity: 0.15
+    });
+    const chipMesh = new THREE.Mesh(chipGeo, chipMat);
+    oomScene.add(chipMesh);
+
+    // Glowing RAM pins below chip
+    const pinGeo = new THREE.BoxGeometry(0.1, 0.12, 1.4);
+    const pinMat = new THREE.MeshStandardMaterial({ color: 0x64748b, metalness: 0.9 });
+    for (let i = 0; i < 4; i++) {
+      const pin = new THREE.Mesh(pinGeo, pinMat);
+      pin.position.set(-0.6 + i * 0.4, -0.85, 0);
+      oomScene.add(pin);
+    }
+
+    // Glowing Liquid Fluid representation inside RAM cube
+    const fluidGeo = new THREE.BoxGeometry(1.56, 1.56, 1.56);
+    const fluidMat = new THREE.MeshStandardMaterial({
+      color: 0x38bdf8,
+      roughness: 0.2,
+      metalness: 0.1,
+      transparent: true,
+      opacity: 0.6,
+      emissive: 0x38bdf8,
+      emissiveIntensity: 0.25
+    });
+    const fluidMesh = new THREE.Mesh(fluidGeo, fluidMat);
+    fluidMesh.position.set(0, -0.78, 0); // start at bottom
+    fluidMesh.scale.set(1, 0.05, 1);
+    oomScene.add(fluidMesh);
+
+    // Interactive slider OOM
+    const oomSlider = document.getElementById('oomInput');
+    const oomVal = document.getElementById('oomVal');
+    const oomBadge = document.getElementById('oomBadge');
+
+    let currentMemPct = 12;
+
+    oomSlider.addEventListener('input', (e) => {
+      currentMemPct = parseInt(e.target.value);
+      updateOomVisuals();
+    });
+
+    function updateOomVisuals() {
+      const totalGB = (currentMemPct / 10).toFixed(1);
+      oomVal.textContent = totalGB + ' GB (' + currentMemPct + '%)';
+      
+      // Update scale and position of fluid Mesh
+      const newHeightScale = currentMemPct / 100;
+      gsap.to(fluidMesh.scale, { y: Math.max(0.01, newHeightScale), duration: 0.15, overwrite: 'auto' });
+      
+      // Adjust fluid position Y
+      // at scale 0: y is -0.78. at scale 1: y is 0.
+      const newY = -0.78 + (1.56 * newHeightScale * 0.5);
+      gsap.to(fluidMesh.position, { y: newY, duration: 0.15, overwrite: 'auto' });
+
+      // Change colors based on leak level
+      if (currentMemPct >= 90) {
+        oomBadge.textContent = 'OOM CRASH THREAT';
+        oomBadge.className = 'sim-badge badge-alert';
+        fluidMat.color.setHex(0xfb7185);
+        fluidMat.emissive.setHex(0xfb7185);
+        fluidMat.emissiveIntensity = 0.6;
+        chipOutlineMat.color.setHex(0xfb7185);
+      } else if (currentMemPct >= 70) {
+        oomBadge.textContent = 'HIGH UTILIZATION';
+        oomBadge.className = 'sim-badge badge-alert';
+        oomBadge.style.color = 'var(--amber)';
+        oomBadge.style.borderColor = 'rgba(251,191,36,0.3)';
+        oomBadge.style.background = 'rgba(251,191,36,0.15)';
+        fluidMat.color.setHex(0xfbbf24);
+        fluidMat.emissive.setHex(0xfbbf24);
+        fluidMat.emissiveIntensity = 0.4;
+        chipOutlineMat.color.setHex(0xfbbf24);
+      } else {
+        oomBadge.textContent = 'STABLE MEMORY';
+        oomBadge.className = 'sim-badge badge-ok';
+        oomBadge.style = '';
+        fluidMat.color.setHex(0x38bdf8);
+        fluidMat.emissive.setHex(0x38bdf8);
+        fluidMat.emissiveIntensity = 0.25;
+        chipOutlineMat.color.setHex(0x1a2035);
+      }
+    }
+
+    document.getElementById('btnPurgeOom').addEventListener('click', () => {
+      currentMemPct = 12;
+      oomSlider.value = 12;
+      updateOomVisuals();
+    });
+
+    // ═══════════ ANIMATION LOOPS ═══════════
+    const clock = new THREE.Clock();
+
+    function animate() {
+      requestAnimationFrame(animate);
+      const time = clock.getElapsedTime();
+
+      // --- Sim 1: API Pipeline physics ---
+      particles.forEach(p => {
+        if (!p.userData.stuck) {
+          p.position.x += p.userData.speed;
+          
+          // Bottleneck behavior: around x=0, constriction squeezes particles
+          if (p.position.x > -0.8 && p.position.x < 0.6) {
+            // High traffic rate increases congestion probability
+            if (currentRps > limitThresh && p.position.x < 0.2 && Math.random() < (currentRps / 1200)) {
+              p.userData.stuck = true;
+            } else {
+              // constrict coordinates
+              p.position.y *= 0.85;
+              p.position.z *= 0.85;
+            }
+          }
+          
+          // Reset when particle exits tube
+          if (p.position.x > 2.5) {
+            resetParticle(p, false);
+          }
+        } else {
+          // Congested particles jitter and turn red/orange
+          p.position.x += (Math.random() - 0.5) * 0.01;
+          p.position.y += (Math.random() - 0.5) * 0.01;
+          p.material.color.setHex(0xfb7185);
+          
+          // Small chance to break free
+          if (Math.random() < 0.008) {
+            p.userData.stuck = false;
+            p.userData.speed *= 1.5; // shoot out fast
+          }
+        }
+      });
+
+      // --- Sim 2: OOM Cube rotations ---
+      chipWire.rotation.y = time * 0.15;
+      chipWire.rotation.x = time * 0.08;
+      chipMesh.rotation.y = time * 0.15;
+      chipMesh.rotation.x = time * 0.08;
+      
+      fluidMesh.rotation.y = time * 0.15;
+      fluidMesh.rotation.x = time * 0.08;
+
+      // Pulse liquid glow
+      if (currentMemPct >= 90) {
+        fluidMat.emissiveIntensity = 0.5 + Math.sin(time * 12) * 0.3;
+      } else {
+        fluidMat.emissiveIntensity = 0.25 + Math.sin(time * 2) * 0.1;
+      }
+
+      apiRenderer.render(apiScene, apiCamera);
+      oomRenderer.render(oomScene, oomCamera);
+    }
+    
+    updateOomVisuals();
+    animate();
+
+    // Resize handlers
+    window.addEventListener('resize', () => {
+      const apiW = apiCanvas.parentElement.clientWidth;
+      const apiH = apiCanvas.parentElement.clientHeight;
+      apiCamera.aspect = apiW / apiH;
+      apiCamera.updateProjectionMatrix();
+      apiRenderer.setSize(apiW, apiH);
+
+      const oomW = oomCanvas.parentElement.clientWidth;
+      const oomH = oomCanvas.parentElement.clientHeight;
+      oomCamera.aspect = oomW / oomH;
+      oomCamera.updateProjectionMatrix();
+      oomRenderer.setSize(oomW, oomH);
+    });
+  </script>
+</body>
+</html>

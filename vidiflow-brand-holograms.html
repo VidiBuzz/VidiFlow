@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VidiFlow — 3D Brand Holograms</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Kumbh+Sans:wght@700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/three@0.128.0/build/three.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <style>
+    :root {
+      --bg: #05070e;
+      --card: #0b0f1a;
+      --border: #1a2035;
+      --text: #e2e8f0;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      --cyan: #38bdf8;
+      --purple: #a78bfa;
+      --emerald: #34d399;
+      --rose: #fb7185;
+      --amber: #fbbf24;
+      --font-display: 'Kumbh Sans', sans-serif;
+      --font-body: 'Inter', sans-serif;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: var(--font-body);
+      background: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+    
+    /* AURORA BACKGROUND */
+    .aurora-bg {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; overflow: hidden;
+    }
+    .aurora-blob {
+      position: absolute; border-radius: 50%; filter: blur(120px); opacity: 0.12;
+    }
+    .aurora-blob:nth-child(1) { width: 500px; height: 500px; background: var(--purple); top: -10%; right: -5%; }
+    .aurora-blob:nth-child(2) { width: 450px; height: 450px; background: var(--cyan); bottom: -10%; left: -5%; }
+
+    /* LAYOUT */
+    .container {
+      max-width: 1400px; margin: 0 auto; padding: 2rem;
+    }
+    header {
+      margin-bottom: 2rem; display: flex; align-items: center; justify-content: space-between;
+      border-bottom: 1px solid var(--border); padding-bottom: 1.5rem;
+    }
+    h1 { font-family: var(--font-display); font-weight: 900; font-size: 1.8rem; color: #fff; }
+    h1 span { color: var(--purple); }
+    .subtitle { font-size: 0.9rem; color: var(--text-muted); margin-top: 0.2rem; }
+    
+    .btn-back {
+      font-family: var(--font-body); font-weight: 700; font-size: 0.75rem; color: var(--purple);
+      background: rgba(167,139,250,0.08); border: 1px solid rgba(167,139,250,0.25);
+      border-radius: 6px; padding: 0.5rem 1rem; text-decoration: none; transition: all 0.2s;
+    }
+    .btn-back:hover { background: rgba(167,139,250,0.18); border-color: var(--purple); }
+
+    .main-grid {
+      display: grid; grid-template-columns: 1.2fr 1fr; gap: 2rem; height: 600px;
+    }
+    .canvas-container {
+      background: var(--card); border: 1px solid var(--border); border-radius: 20px;
+      position: relative; overflow: hidden; height: 100%;
+    }
+    #three-canvas { width: 100%; height: 100%; display: block; cursor: grab; }
+    #three-canvas:active { cursor: grabbing; }
+
+    /* CONTROLS OVERLAY */
+    .controls-overlay {
+      position: absolute; bottom: 1.5rem; left: 1.5rem; z-index: 10;
+      display: flex; gap: 0.5rem;
+    }
+    .btn-action {
+      background: rgba(5,7,14,0.8); border: 1px solid var(--border); border-radius: 8px;
+      color: var(--text-muted); padding: 0.4rem 0.8rem; font-size: 0.7rem; font-weight: 700;
+      cursor: pointer; transition: all 0.15s; font-family: var(--font-body);
+    }
+    .btn-action:hover { border-color: var(--purple); color: #fff; }
+    
+    .status-panel {
+      background: var(--card); border: 1px solid var(--border); border-radius: 20px;
+      padding: 2rem; display: flex; flex-direction: column; justify-content: space-between;
+    }
+    .panel-header {
+      border-bottom: 1px solid var(--border); padding-bottom: 1rem; margin-bottom: 1.5rem;
+    }
+    .tool-title { font-family: var(--font-display); font-weight: 900; font-size: 1.4rem; color: #fff; display: flex; align-items: center; gap: 0.6rem; }
+    .tool-category {
+      font-size: 0.65rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.1em;
+      border: 1px solid var(--border); border-radius: 4px; padding: 0.15rem 0.4rem; background: rgba(255,255,255,0.02);
+    }
+    
+    .feature-list { list-style: none; margin-bottom: 1.5rem; }
+    .feature-list li { font-size: 0.8rem; color: var(--text); padding: 0.4rem 0; display: flex; align-items: flex-start; gap: 0.6rem; }
+    .feature-list li::before { content: '✦'; color: var(--purple); font-weight: 700; flex-shrink: 0; }
+
+    .meta-box {
+      background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-radius: 12px;
+      padding: 1rem; margin-bottom: 1.5rem;
+    }
+    .meta-row { display: flex; justify-content: space-between; font-size: 0.75rem; padding: 0.35rem 0; }
+    .meta-label { color: var(--text-muted); }
+    .meta-val { color: #fff; font-weight: 600; }
+
+    .placeholder-msg { font-size: 0.9rem; color: var(--text-dim); text-align: center; margin: auto 0; }
+    
+    /* PROJECTOR LIGHT LINE ANIMATION */
+    .holo-indicator {
+      position: absolute; top: 1.5rem; right: 1.5rem;
+      font-size: 0.65rem; color: var(--purple); background: rgba(167,139,250,0.1);
+      border: 1px solid rgba(167,139,250,0.3); border-radius: 4px; padding: 0.3rem 0.6rem;
+      letter-spacing: 0.1em; text-transform: uppercase; font-weight: 700;
+      animation: indicator-pulse 1s ease-in-out infinite alternate;
+    }
+    @keyframes indicator-pulse {
+      0% { opacity: 0.6; } 100% { opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- AURORA BACKGROUND -->
+  <div class="aurora-bg">
+    <div class="aurora-blob"></div>
+    <div class="aurora-blob"></div>
+  </div>
+
+  <div class="container">
+    <header>
+      <div>
+        <h1>Vidi<span>Flow</span> — 3D Brand Holograms</h1>
+        <div class="subtitle">Rotating WebGL glass panels projecting tool capabilities</div>
+      </div>
+      <a href="vidiflow-3d-showcase.html" class="btn-back">← Back to Showcase</a>
+    </header>
+
+    <div class="main-grid">
+      <!-- 3D CAROUSEL CANVAS -->
+      <div class="canvas-container animate-in">
+        <canvas id="three-canvas"></canvas>
+        <div class="holo-indicator" id="holoStatus">HOLOGRAPHIC EMULATOR OFF</div>
+        <div class="controls-overlay">
+          <button class="btn-action" onclick="rotateLeft()">← ROTATE LEFT</button>
+          <button class="btn-action" onclick="rotateRight()">ROTATE RIGHT →</button>
+        </div>
+      </div>
+
+      <!-- SPEC PANEL -->
+      <div class="status-panel animate-in" id="detailPanel">
+        <div class="placeholder-msg" id="placeholder">
+          <p>✦ Click a glass card in the carousel to focus and project its holographic wireframe and integration specs.</p>
+        </div>
+        
+        <div id="dataContent" style="display: none; height: 100%; flex-direction: column; justify-content: space-between;">
+          <div>
+            <div class="panel-header">
+              <div class="tool-title">
+                <span id="toolName">MISSION CONTROL</span>
+                <span class="tool-category" id="toolCategory">FLEET MANAGEMENT</span>
+              </div>
+            </div>
+            
+            <div class="meta-box">
+              <div class="meta-row"><span class="meta-label">Integration State</span><span class="meta-val" id="toolState" style="color:var(--emerald)">VERIFIED</span></div>
+              <div class="meta-row"><span class="meta-label">Type</span><span class="meta-val" id="toolType">Dashboard / Client</span></div>
+              <div class="meta-row"><span class="meta-label">Rating</span><span class="meta-val" id="toolRating" style="color:var(--amber)">★★★★★</span></div>
+            </div>
+
+            <ul class="feature-list" id="toolFeatures">
+              <li>Handles massive multi-framework fleet metrics</li>
+              <li>Real-time telemetry and resource usage tracking</li>
+              <li>Integrated shell execution and agent hot reloads</li>
+            </ul>
+          </div>
+
+          <div style="font-size: 0.75rem; color: var(--text-muted); border-top: 1px solid var(--border); padding-top: 1rem;">
+            <strong>VidiFlow verdict:</strong> <span id="toolVerdict" style="color:var(--cyan)">Highly recommended core dashboard layer.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ═══════════ BRAND DATA MODEL ═══════════
+    const brandsData = [
+      { name: 'MISSION CONTROL', cat: 'FLEET MANAGEMENT', state: 'VERIFIED', rating: '★★★★★ (5.0)', type: 'Open-Source Fleet Dashboard', verdict: 'Best for visual high-level cluster overviews.', color: 0x38bdf8,
+        features: ['Aggregates metadata from multi-framework stacks', 'Visualizes active memory and CPU nodes at fleet scale', 'Low latency telemetry collection via local websocket']
+      },
+      { name: 'HERMES WEB UI', cat: 'PER-AGENT CONTROL', state: 'VERIFIED', rating: '★★★★☆ (4.2)', type: 'Agent Playground / Chat', verdict: 'Excellent for manually debugging single agent loops.', color: 0xa78bfa,
+        features: ['Interactive prompt tweaking and sandbox terminal', 'Visualizes tool execution and file reads inline', 'Easy chat workspace grouping for concurrent sessions']
+      },
+      { name: 'AGENTOPS', cat: 'OBSERVABILITY', state: 'INTEGRATED', rating: '★★★★★ (4.8)', type: 'Session Replay & Evals', verdict: 'Essential for tracking token costs and system evaluations.', color: 0xfb7185,
+        features: ['Step-by-step LLM call tracing and execution recording', 'Cost estimation and API error debugging dashboard', 'Automatic visual graphs for agent dependency resolution']
+      },
+      { name: 'N8N WORKFLOWS', cat: 'VISUAL CONSTRUCTORS', state: 'VERIFIED', rating: '★★★★★ (4.9)', type: 'No-Code / Low-Code IDE', verdict: 'Unmatched visual canvas for connecting APIs.', color: 0x34d399,
+        features: ['500+ pre-built integration nodes with custom JS blocks', 'Self-hosted execution queues with built-in retries', 'Perfect for deterministic, multi-step agent pipelines']
+      },
+      { name: 'DIFY.AI', cat: 'ORCHESTRATION', state: 'COMPATIBLE', rating: '★★★★☆ (4.5)', type: 'Visual RAG & Agent Stack', verdict: 'Great for rapid prototyping with integrated Vector DBs.', color: 0xfbbf24,
+        features: ['Visual prompt engineering and drag-and-drop workflows', 'Built-in RAG and knowledge base indexing pipelines', 'Ready-to-use API endpoints out of the box']
+      },
+      { name: 'MULTICA', cat: 'AGENT MANAGEMENT', state: 'COMPATIBLE', rating: '★★★★☆ (4.0)', type: 'Kanban Task Coordinator', verdict: 'Ideal for task assignment and manual pipeline handoffs.', color: 0x64748b,
+        features: ['Treats autonomous agents as columns/teammates', 'Drill-down workspace logs for specific issue queues', 'Drag and drop priority list for active task backlogs']
+      }
+    ];
+
+    // ═══════════ THREE.JS CAROUSEL SETUP ═══════════
+    const container = document.querySelector('.canvas-container');
+    const canvas = document.getElementById('three-canvas');
+    const width = container.clientWidth;
+    const height = container.clientHeight;
+
+    const scene = new THREE.Scene();
+    scene.background = null;
+
+    const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 100);
+    camera.position.set(0, 0, 8.5);
+
+    const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
+    renderer.setSize(width, height);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+    // Lights
+    scene.add(new THREE.AmbientLight(0xffffff, 0.5));
+    const pointLight = new THREE.PointLight(0xa78bfa, 1, 20);
+    pointLight.position.set(0, 0, 5);
+    scene.add(pointLight);
+
+    const topLight = new THREE.DirectionalLight(0xffffff, 0.6);
+    topLight.position.set(0, 5, 2);
+    scene.add(topLight);
+
+    // ═══════════ CONSTRUCT CAROUSEL ═══════════
+    const carousel = new THREE.Group();
+    scene.add(carousel);
+
+    const cards = [];
+    const count = brandsData.length;
+    const radius = 3.2;
+
+    // Projection beam effect geometry (Cone)
+    const beamGeo = new THREE.ConeGeometry(0.7, 1.8, 32, 1, true);
+    const beamMat = new THREE.MeshBasicMaterial({
+      color: 0x38bdf8,
+      transparent: true,
+      opacity: 0.0, // starts off
+      blending: THREE.AdditiveBlending,
+      side: THREE.DoubleSide
+    });
+    const beam = new THREE.Mesh(beamGeo, beamMat);
+    beam.position.set(0, 1.8, 0); // floats above active card slot
+    scene.add(beam);
+
+    // Hologram wireframe (Floating geometry)
+    const holoGeo = new THREE.IcosahedronGeometry(0.35, 1);
+    const holoEdge = new THREE.EdgesGeometry(holoGeo);
+    const holoMat = new THREE.LineBasicMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.0 });
+    const hologram = new THREE.LineSegments(holoEdge, holoMat);
+    hologram.position.set(0, 2.5, 0);
+    scene.add(hologram);
+
+    // Generate Card Meshes
+    for (let i = 0; i < count; i++) {
+      const brand = brandsData[i];
+      const cardGroup = new THREE.Group();
+      
+      // Angle around circle
+      const angle = (i / count) * Math.PI * 2;
+      cardGroup.position.set(Math.sin(angle) * radius, 0, Math.cos(angle) * radius);
+      
+      // Face card outward from center
+      cardGroup.rotation.y = angle;
+      cardGroup.userData = { index: i, angle: angle };
+
+      // Glass Plate (Physical Material with high transmission)
+      const plateGeo = new THREE.BoxGeometry(1.3, 1.8, 0.08);
+      const plateMat = new THREE.MeshPhysicalMaterial({
+        color: brand.color,
+        roughness: 0.1,
+        metalness: 0.1,
+        transmission: 0.9,
+        ior: 1.5,
+        thickness: 0.2,
+        transparent: true,
+        opacity: 0.45
+      });
+      const plateMesh = new THREE.Mesh(plateGeo, plateMat);
+      cardGroup.add(plateMesh);
+
+      // Inner geometric brand logo shape representation
+      let logoGeo;
+      if (i === 0) logoGeo = new THREE.TorusGeometry(0.24, 0.08, 8, 24); // Gear outline
+      else if (i === 1) logoGeo = new THREE.ConeGeometry(0.25, 0.4, 4); // Wings/Hat cone
+      else if (i === 2) logoGeo = new THREE.SphereGeometry(0.25, 16, 16); // Observability sphere
+      else if (i === 3) logoGeo = new THREE.TorusKnotGeometry(0.18, 0.06, 64, 8); // Infinity knot
+      else if (i === 4) logoGeo = new THREE.OctahedronGeometry(0.26); // Orchestration diamond
+      else logoGeo = new THREE.BoxGeometry(0.36, 0.36, 0.1); // Kanban tile
+
+      const logoMat = new THREE.MeshStandardMaterial({
+        color: brand.color,
+        roughness: 0.2,
+        metalness: 0.8,
+        emissive: brand.color,
+        emissiveIntensity: 0.4
+      });
+      const logoMesh = new THREE.Mesh(logoGeo, logoMat);
+      logoMesh.position.set(0, 0, 0.08);
+      cardGroup.add(logoMesh);
+
+      // Thin outline border
+      const borderGeo = new THREE.BoxGeometry(1.34, 1.84, 0.1);
+      const borderEdges = new THREE.EdgesGeometry(borderGeo);
+      const borderMat = new THREE.LineBasicMaterial({ color: brand.color, linewidth: 2 });
+      const borderMesh = new THREE.LineSegments(borderEdges, borderMat);
+      cardGroup.add(borderMesh);
+
+      cards.push(cardGroup);
+      carousel.add(cardGroup);
+    }
+
+    // ═══════════ ROTATION EVENTS ═══════════
+    let currentSlot = 0;
+    let targetRotationY = 0;
+    const raycaster = new THREE.Raycaster();
+    const mouse = new THREE.Vector2();
+
+    // Click to select
+    canvas.addEventListener('click', (event) => {
+      const rect = canvas.getBoundingClientRect();
+      mouse.x = ((event.clientX - rect.left) / canvas.clientWidth) * 2 - 1;
+      mouse.y = -((event.clientY - rect.top) / canvas.clientHeight) * 2 + 1;
+
+      raycaster.setFromCamera(mouse, camera);
+      const intersects = raycaster.intersectObjects(carousel.children, true);
+
+      if (intersects.length > 0) {
+        let obj = intersects[0].object;
+        while (obj.parent && obj.parent !== carousel) {
+          obj = obj.parent;
+        }
+        
+        const idx = obj.userData.index;
+        focusSlot(idx);
+      }
+    });
+
+    function focusSlot(idx) {
+      currentSlot = idx;
+      
+      // Calculate rotation to face camera (0 angle at front)
+      // Carousel rotation needs to be opposite of card angle
+      targetRotationY = -objAngle(idx);
+
+      // Smooth rotate carousel
+      gsap.to(carousel.rotation, {
+        y: targetRotationY,
+        duration: 0.8,
+        ease: 'power2.out',
+        onComplete: () => {
+          activateHologram(idx);
+        }
+      });
+
+      // Retract hologram during transition
+      deactivateHologram();
+      showDetails(brandsData[idx]);
+    }
+
+    function objAngle(idx) {
+      return (idx / count) * Math.PI * 2;
+    }
+
+    function rotateLeft() {
+      let nextSlot = (currentSlot - 1 + count) % count;
+      focusSlot(nextSlot);
+    }
+
+    function rotateRight() {
+      let nextSlot = (currentSlot + 1) % count;
+      focusSlot(nextSlot);
+    }
+
+    // ═══════════ HOLOGRAM GRAPHICS EMULATION ═══════════
+    const holoStatus = document.getElementById('holoStatus');
+
+    function activateHologram(idx) {
+      const data = brandsData[idx];
+      const color = new THREE.Color(data.color);
+
+      beam.material.color = color;
+      holoMat.color = color;
+
+      holoStatus.textContent = `HOLO EMULATOR ACTIVE: ${data.name}`;
+      holoStatus.style.color = data.color;
+      holoStatus.style.borderColor = data.color;
+
+      // Animate beam projection open
+      gsap.to(beam.material, { opacity: 0.18, duration: 0.3 });
+      gsap.to(holoMat, { opacity: 0.8, duration: 0.4 });
+      
+      // Float hologram geometry
+      hologram.position.y = 1.8;
+      gsap.to(hologram.position, { y: 2.3, duration: 0.8, ease: 'power2.out' });
+    }
+
+    function deactivateHologram() {
+      holoStatus.textContent = 'HOLOGRAPHIC EMULATOR STANDBY';
+      holoStatus.style.color = 'var(--text-dim)';
+      holoStatus.style.borderColor = 'var(--border)';
+
+      gsap.to(beam.material, { opacity: 0, duration: 0.2 });
+      gsap.to(holoMat, { opacity: 0, duration: 0.2 });
+    }
+
+    // ═══════════ DATA DETAILS DISPLAY ═══════════
+    const placeholder = document.getElementById('placeholder');
+    const content = document.getElementById('dataContent');
+
+    function showDetails(data) {
+      placeholder.style.display = 'none';
+      content.style.display = 'flex';
+
+      document.getElementById('toolName').textContent = data.name;
+      document.getElementById('toolName').style.color = data.color;
+      document.getElementById('toolCategory').textContent = data.cat;
+      document.getElementById('toolState').textContent = data.state;
+      document.getElementById('toolState').style.color = data.state === 'VERIFIED' ? 'var(--emerald)' : 'var(--cyan)';
+      document.getElementById('toolRating').textContent = data.rating;
+      document.getElementById('toolType').textContent = data.type;
+      document.getElementById('toolVerdict').textContent = data.verdict;
+
+      const list = document.getElementById('toolFeatures');
+      list.innerHTML = data.features.map(f => `<li>${f}</li>`).join('');
+    }
+
+    // ═══════════ RACK ROTATION MOUSE DRAG ═══════════
+    let isDragging = false;
+    let prevMouseX = 0;
+
+    canvas.addEventListener('mousedown', (e) => { isDragging = true; prevMouseX = e.offsetX; });
+    canvas.addEventListener('mousemove', (e) => {
+      if (isDragging) {
+        const deltaX = e.offsetX - prevMouseX;
+        carousel.rotation.y += deltaX * 0.008;
+        deactivateHologram();
+      }
+      prevMouseX = e.offsetX;
+    });
+    window.addEventListener('mouseup', () => { isDragging = false; });
+
+    // ═══════════ ANIMATION LOOP ═══════════
+    const clock = new THREE.Clock();
+
+    function animate() {
+      requestAnimationFrame(animate);
+      const time = clock.getElapsedTime();
+
+      // Subtle float active hologram
+      if (holoMat.opacity > 0) {
+        hologram.position.y = 2.2 + Math.sin(time * 3) * 0.06;
+        hologram.rotation.y += 0.015;
+        hologram.rotation.x += 0.005;
+      }
+
+      // Rotate cards self-spins slightly
+      cards.forEach((card, idx) => {
+        const logo = card.children.find(c => c.geometry.type !== 'BoxGeometry' && c.geometry.type !== 'EdgesGeometry');
+        if (logo) {
+          logo.rotation.y += 0.008;
+        }
+      });
+
+      renderer.render(scene, camera);
+    }
+    animate();
+
+    // Resize handler
+    window.addEventListener('resize', () => {
+      const w = container.clientWidth;
+      const h = container.clientHeight;
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+      renderer.setSize(w, h);
+    });
+  </script>
+</body>
+</html>

@@ -139,7 +139,7 @@ WhatsApp/Telegram/Slack/Discord/Signal/iMessage...
 - **22+ channel adapters** - WhatsApp, Telegram, Slack, Discord, Google Chat, Signal, iMessage, BlueBubbles, IRC, Microsoft Teams, Matrix, Feishu, LINE, Mattermost, Nextcloud Talk, Nostr, Synology Chat, Tlon, Twitch, Zalo, Zalo Personal, WebChat
 - **Voice Wake + Talk Mode** - wake words on macOS/iOS, continuous voice on Android
 - **Live Canvas** - agent-driven visual workspace with A2UI
-- **Browser control** - dedicated Chrome/Chromium with CDP control
+- **Browser control** - dedicated Chrome/Chromium with CDP (Chrome DevTools Protocol) control
 - **Companion apps** - macOS menu bar, iOS/Android nodes
 - **Skills platform** - bundled, managed, workspace skills
 - **Multi-agent routing** - route channels to isolated agents

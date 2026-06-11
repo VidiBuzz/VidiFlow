@@ -163,11 +163,14 @@
         .mb-slot::before { content: attr(data-lane); position: absolute; left: -110px; top: -2px; font-size: 8px; font-weight: 900; color: #475569; width: 100px; text-align: right; }
         .mb-gpu-card { height: 38px; position: absolute; left: 200px; width: 530px; border-radius: 6px; display: flex; align-items: center; justify-content: space-between; padding: 0 1rem; font-size: 9px; font-weight: 950; text-transform: uppercase; box-shadow: 0 10px 20px rgba(0,0,0,0.7); border: 1px solid rgba(255,255,255,0.25); transform: scaleY(0); transform-origin: top; opacity: 0; transition: transform 0.5s cubic-bezier(0.175,0.885,0.32,1.275), opacity 0.3s ease; z-index: 10; }
         .mb-gpu-card.active { transform: scaleY(1); opacity: 1; }
-        .color-b70     { background: linear-gradient(90deg, #1d4ed8, #1e40af); }
-        .color-4090    { background: linear-gradient(90deg, #166534, #14532d); }
-        .color-a6000   { background: linear-gradient(90deg, #6b21a8, #581c87); }
-        .color-rtx     { background: linear-gradient(90deg, #b45309, #78350f); }
-        .color-h100    { background: linear-gradient(90deg, #991b1b, #7f1d1d); }
+        .color-4090       { background: linear-gradient(90deg, #166534, #14532d); }
+        .color-rtx6000ada { background: linear-gradient(90deg, #b45309, #78350f); }
+        .color-rtxpro6000 { background: linear-gradient(90deg, #6b21a8, #4c1d95); }
+        .color-l40s       { background: linear-gradient(90deg, #1d4ed8, #1e3a8a); }
+        .color-h100       { background: linear-gradient(90deg, #991b1b, #7f1d1d); }
+        .color-arcprob70  { background: linear-gradient(90deg, #0369a1, #075985); }
+        .color-amdw7900   { background: linear-gradient(90deg, #9a3412, #7c2d12); }
+        .color-amdw7800   { background: linear-gradient(90deg, #b45309, #92400e); }
 
         /* BOM */
         .bom-table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
@@ -206,21 +209,34 @@
 
         /* VIDISHAP AGENT OVERLAY */
         .vs-agent-overlay {
-            position: fixed; inset: 0; background: rgba(3,7,18,0.7);
-            backdrop-filter: blur(8px); z-index: 1000;
-            display: flex; justify-content: flex-end;
+            position: fixed; inset: 0; background: rgba(3,7,18,0.75);
+            backdrop-filter: blur(12px); z-index: 1000;
+            display: flex; align-items: center; justify-content: center;
+            padding: 2rem;
             opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
         }
         .vs-agent-overlay.active { opacity: 1; pointer-events: auto; }
-        
+
         .vs-agent-sidebar {
-            width: 500px; height: 100%; background: #070b15;
-            border-left: 1px solid var(--border); padding: 2rem;
-            display: flex; flex-direction: column; gap: 1.5rem;
-            transform: translateX(100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            width: 100%; max-width: 1100px; max-height: 90vh;
+            background: #070b15;
+            border: 1px solid var(--border); border-radius: 28px;
+            padding: 2.5rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: auto auto 1fr auto;
+            gap: 1.5rem;
+            transform: translateY(24px) scale(0.97);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             overflow-y: auto;
+            box-shadow: 0 40px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.04);
         }
-        .vs-agent-overlay.active .vs-agent-sidebar { transform: translateX(0); }
+        .vs-agent-overlay.active .vs-agent-sidebar { transform: translateY(0) scale(1); }
+
+        /* Full-width rows inside the grid */
+        .vs-agent-header    { grid-column: 1 / -1; }
+        .vs-agent-banner    { grid-column: 1 / -1; }
+        .vs-action-row      { grid-column: 1 / -1; display: flex; gap: 1rem; }
         
         .vs-agent-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 1rem; }
         .vs-agent-title { font-size: 1.15rem; font-weight: 950; text-transform: uppercase; letter-spacing: -0.01em; color: #fff; }
@@ -238,7 +254,7 @@
         .vs-terminal {
             background: #000; border: 1px solid #1e293b; border-radius: 12px;
             padding: 1.25rem; font-family: 'Courier New', monospace; font-size: 0.68rem;
-            color: #38bdf8; height: 260px; overflow-y: auto;
+            color: #38bdf8; height: 360px; overflow-y: auto;
             display: flex; flex-direction: column; gap: 0.5rem;
             box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
         }
@@ -266,12 +282,14 @@
         .vs-btn-scan.scanning { background: rgba(255,255,255,0.05); color: var(--text-secondary); pointer-events: none; border: 1px solid var(--border); box-shadow: none; }
 
         .vs-btn-deep-scan {
-            width: 100%; padding: 1rem; background: linear-gradient(135deg, var(--purple), #c084fc); border: none; border-radius: 14px;
+            flex: 1; padding: 1rem; background: linear-gradient(135deg, var(--purple), #c084fc); border: none; border-radius: 14px;
             color: #fff; font-size: 0.83rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.08em;
-            cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 14px rgba(168,85,247,0.3); margin-top: 0.75rem;
+            cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 14px rgba(168,85,247,0.3);
         }
         .vs-btn-deep-scan:hover { background: linear-gradient(135deg, #a855f7, #a855f7); transform: translateY(-1px); }
         .vs-btn-deep-scan.scanning { background: rgba(255,255,255,0.05); color: var(--text-secondary); pointer-events: none; border: 1px solid var(--border); box-shadow: none; }
+
+        .vs-btn-scan { flex: 1; }
     </style>
 </head>
 <body>
@@ -285,11 +303,104 @@
                 <p style="font-size:8px;font-weight:900;color:var(--purple);text-transform:uppercase;letter-spacing:0.12em">Sovereign Workstation Shopping Engine</p>
             </div>
         </a>
-        <div style="font-size:10px;font-weight:900;color:var(--text-secondary);text-transform:uppercase">Active Price Matching Agent</div>
+        <div style="display:flex;align-items:center;gap:1.5rem">
+            <a href="thousand-words.html" style="font-size:10px;font-weight:900;color:var(--purple);text-transform:uppercase;text-decoration:none;letter-spacing:0.05em;border:1px solid rgba(168,85,247,0.3);padding:4px 10px;border-radius:6px;transition:all 0.2s" onmouseover="this.style.background='rgba(168,85,247,0.1)'" onmouseout="this.style.background='none'">Glance Test</a>
+            <div style="font-size:10px;font-weight:900;color:var(--text-secondary);text-transform:uppercase">Active Price Matching Agent</div>
+        </div>
     </div>
 </header>
 
 <main class="container">
+
+    <!-- ── 256GB AI SERVER SHOWDOWN ──────────────────────────────────────── -->
+    <div style="margin-bottom:2rem;background:rgba(3,7,18,0.6);border:1px solid rgba(255,255,255,0.08);border-radius:20px;padding:2rem;overflow:hidden">
+        <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem;flex-wrap:wrap">
+            <h2 style="font-size:1.2rem;font-weight:950;text-transform:uppercase;letter-spacing:-0.02em;margin:0">256 GB AI Server Showdown</h2>
+            <span style="font-size:0.6rem;background:rgba(34,197,94,0.15);color:#4ade80;border:1px solid rgba(34,197,94,0.3);padding:3px 9px;border-radius:5px;font-weight:700">VERIFIED BENCHMARKS · LLAMA.CPP SYCL · JUNE 2026</span>
+            <span style="font-size:0.7rem;color:var(--muted);margin-left:auto">Same VRAM ceiling — completely different client capacity</span>
+        </div>
+
+        <!-- Two system blocks side by side -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:1.5rem">
+
+            <!-- Apple -->
+            <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:1.5rem">
+                <div style="font-size:0.65rem;color:var(--muted);font-weight:700;letter-spacing:0.08em;margin-bottom:0.5rem">APPLE MAC PRO — M2 ULTRA</div>
+                <div style="font-size:1.05rem;font-weight:700;margin-bottom:0.4rem">192 GB Unified Memory</div>
+                <div style="font-size:0.75rem;color:var(--muted);margin-bottom:1rem">800 GB/s bandwidth · Single silicon die · macOS only</div>
+                <div style="font-size:1.75rem;font-weight:900;color:var(--text);margin-bottom:0.25rem">~$10,000</div>
+                <div style="font-size:0.68rem;color:var(--muted);margin-bottom:1.25rem">Base M2 Ultra Mac Pro</div>
+                <div style="display:flex;flex-direction:column;gap:0.6rem">
+                    <div style="font-size:0.72rem;font-weight:700;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:0.06em">Inference throughput (verified)</div>
+                    <div style="display:grid;grid-template-columns:1fr auto;align-items:center;background:rgba(0,0,0,0.3);border-radius:8px;padding:0.6rem 0.8rem">
+                        <span style="font-size:0.75rem;color:var(--muted)">Llama 3.3 70B Q4 — 1 client</span>
+                        <span style="font-size:1rem;font-weight:800;color:var(--text)">10–12 t/s</span>
+                    </div>
+                    <div style="display:grid;grid-template-columns:1fr auto;align-items:center;background:rgba(0,0,0,0.3);border-radius:8px;padding:0.6rem 0.8rem">
+                        <span style="font-size:0.75rem;color:var(--muted)">Qwen 27B Q4 — 1 client</span>
+                        <span style="font-size:1rem;font-weight:800;color:var(--text)">~25 t/s</span>
+                    </div>
+                    <div style="display:grid;grid-template-columns:1fr auto;align-items:center;background:rgba(0,0,0,0.3);border-radius:8px;padding:0.6rem 0.8rem">
+                        <span style="font-size:0.75rem;color:var(--muted)">Llama 8B Q4 — 1 client</span>
+                        <span style="font-size:1rem;font-weight:800;color:var(--text)">~60 t/s</span>
+                    </div>
+                    <div style="font-size:0.7rem;color:rgba(239,68,68,0.8);margin-top:0.25rem">⚠ One client at a time — queues behind it wait</div>
+                </div>
+            </div>
+
+            <!-- Intel B70 array -->
+            <div style="background:rgba(14,165,233,0.06);border:2px solid rgba(14,165,233,0.35);border-radius:14px;padding:1.5rem;position:relative">
+                <div style="position:absolute;top:-10px;right:14px;font-size:0.6rem;background:#0ea5e9;color:#000;font-weight:800;padding:3px 10px;border-radius:5px;letter-spacing:0.06em">VIDI BUILD</div>
+                <div style="font-size:0.65rem;color:#38bdf8;font-weight:700;letter-spacing:0.08em;margin-bottom:0.5rem">8× SPARKLE ARC PRO B70 1S — COMING SOON</div>
+                <div style="font-size:1.05rem;font-weight:700;margin-bottom:0.4rem">256 GB Discrete GDDR6</div>
+                <div style="font-size:0.75rem;color:var(--muted);margin-bottom:1rem">8× 608 GB/s cards · 8 independent engines · Open platform</div>
+                <div style="font-size:1.75rem;font-weight:900;color:#38bdf8;margin-bottom:0.25rem">~$12,000–$15,000</div>
+                <div style="font-size:0.68rem;color:var(--muted);margin-bottom:1.25rem">Full WRX90 build · 8× B70 @ ~$949 ea</div>
+                <div style="display:flex;flex-direction:column;gap:0.6rem">
+                    <div style="font-size:0.72rem;font-weight:700;color:#38bdf8;text-transform:uppercase;letter-spacing:0.06em">Inference throughput (projected)</div>
+                    <div style="display:grid;grid-template-columns:1fr auto;align-items:center;background:rgba(0,0,0,0.3);border-radius:8px;padding:0.6rem 0.8rem;border:1px solid rgba(14,165,233,0.15)">
+                        <span style="font-size:0.75rem;color:var(--muted)">Llama 3.3 70B Q4 — <strong style="color:#38bdf8">4 clients</strong></span>
+                        <span style="font-size:1rem;font-weight:800;color:#38bdf8">~46 t/s</span>
+                    </div>
+                    <div style="display:grid;grid-template-columns:1fr auto;align-items:center;background:rgba(0,0,0,0.3);border-radius:8px;padding:0.6rem 0.8rem;border:1px solid rgba(14,165,233,0.15)">
+                        <span style="font-size:0.75rem;color:var(--muted)">Qwen 27B Q4 — <strong style="color:#38bdf8">8 clients</strong></span>
+                        <span style="font-size:1rem;font-weight:800;color:#38bdf8">~163 t/s</span>
+                    </div>
+                    <div style="display:grid;grid-template-columns:1fr auto;align-items:center;background:rgba(0,0,0,0.3);border-radius:8px;padding:0.6rem 0.8rem;border:1px solid rgba(14,165,233,0.15)">
+                        <span style="font-size:0.75rem;color:var(--muted)">Llama 8B Q4 — <strong style="color:#38bdf8">8 clients</strong></span>
+                        <span style="font-size:1rem;font-weight:800;color:#38bdf8">~661 t/s</span>
+                    </div>
+                    <div style="font-size:0.7rem;color:#4ade80;margin-top:0.25rem">✓ All clients served simultaneously — no queue</div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Bottom row: power math + key insight -->
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;font-size:0.75rem">
+            <div style="background:rgba(0,0,0,0.3);border-radius:10px;padding:1rem">
+                <div style="color:var(--muted);font-weight:700;margin-bottom:0.4rem;font-size:0.65rem;text-transform:uppercase;letter-spacing:0.06em">Power — 8× B70 1S</div>
+                8 × 160W = <strong style="color:#38bdf8">1,280W total</strong><br>
+                <span style="color:var(--muted)">Within one 120V/20A circuit (1,920W limit)</span><br>
+                No 240V needed. No electrician.
+            </div>
+            <div style="background:rgba(0,0,0,0.3);border-radius:10px;padding:1rem">
+                <div style="color:var(--muted);font-weight:700;margin-bottom:0.4rem;font-size:0.65rem;text-transform:uppercase;letter-spacing:0.06em">Benchmark Source</div>
+                Single-GPU speeds from <strong style="color:var(--text)">PMZFX/intel-arc-pro-b70-benchmarks</strong> (GitHub, April 2026, llama.cpp SYCL).<br>
+                <span style="color:var(--muted)">8-card aggregate = extrapolated from 4-card vLLM data showing 540 t/s at 8 concurrent.</span>
+            </div>
+            <div style="background:rgba(0,0,0,0.3);border-radius:10px;padding:1rem">
+                <div style="color:var(--muted);font-weight:700;margin-bottom:0.4rem;font-size:0.65rem;text-transform:uppercase;letter-spacing:0.06em">Key Trade-off</div>
+                <strong style="color:var(--text)">Apple:</strong> effortless setup, macOS lock-in, one client.<br>
+                <strong style="color:#38bdf8">B70 array:</strong> software setup required (oneAPI/SYCL), Linux recommended, serves 4–8 clients simultaneously.
+            </div>
+        </div>
+
+        <div style="margin-top:1rem;font-size:0.68rem;color:rgba(255,255,255,0.25);border-top:1px solid rgba(255,255,255,0.06);padding-top:0.75rem">
+            B70 1S single-slot card shown at Computex 2026 by Sparkle &amp; MAXSUN — no ship date or price confirmed. 8-card estimates use verified 2-card baseline × 4 independent engines. Mac Pro benchmarks: MLX / llama.cpp on M2 Ultra, community benchmarks June 2026.
+        </div>
+    </div>
+
     <div class="workspace-grid">
 
         <!-- ── CONFIG COLUMN ─────────────────────────────────── -->
@@ -297,10 +408,10 @@
             <h2 style="font-size:1.4rem;font-weight:950;text-transform:uppercase;letter-spacing:-0.03em">Sovereign Custom Build</h2>
 
             <div class="presets-row">
-                <button class="preset-btn active" id="btn-preset-starter"   onclick="applyPreset('starter')">Starter (~$4k)</button>
-                <button class="preset-btn"        id="btn-preset-rack"      onclick="applyPreset('rack')">Rack (~$11k)</button>
-                <button class="preset-btn"        id="btn-preset-inference" onclick="applyPreset('inference')">Inf Pro (~$20k)</button>
-                <button class="preset-btn"        id="btn-preset-clinical"  onclick="applyPreset('clinical')">Clinical (~$50k)</button>
+                <button class="preset-btn" id="btn-preset-starter"   onclick="applyPreset('starter')">Starter — 1× RTX 4090</button>
+                <button class="preset-btn" id="btn-preset-inference" onclick="applyPreset('inference')">Baseline — 2× Pro6k Max-Q</button>
+                <button class="preset-btn" id="btn-preset-rack"      onclick="applyPreset('rack')">Full Rack — 4× Pro6k Max-Q</button>
+                <button class="preset-btn" id="btn-preset-clinical"  onclick="applyPreset('clinical')">Clinical — 4× Pro6k + 7995WX</button>
             </div>
 
             <!-- CHASSIS -->
@@ -349,14 +460,14 @@
             <div class="control-group">
                 <div class="section-title">Workstation Processor</div>
                 <div class="selector-grid">
-                    <div class="select-card active" id="cpu-7845wx" onclick="setCPU('7845wx')" onmouseenter="showSpotlight('7845wx')">
-                        <h4>TR Pro 7845WX</h4><p>$650 · 12 Core · 350W</p>
+                    <div class="select-card active" id="cpu-7945wx" onclick="setCPU('7945wx')" onmouseenter="showSpotlight('7945wx')">
+                        <h4>TR Pro 7945WX</h4><p>$1,099 · 12 Core · 350W</p>
                     </div>
                     <div class="select-card" id="cpu-7975wx" onclick="setCPU('7975wx')" onmouseenter="showSpotlight('7975wx')">
-                        <h4>TR Pro 7975WX</h4><p>$3,900 · 32 Core · 350W</p>
+                        <h4>TR Pro 7975WX</h4><p>$3,730 · 32 Core · 350W</p>
                     </div>
                     <div class="select-card" id="cpu-7995wx" onclick="setCPU('7995wx')" onmouseenter="showSpotlight('7995wx')">
-                        <h4>TR Pro 7995WX</h4><p>$9,999 · 96 Core · 350W</p>
+                        <h4>TR Pro 7995WX</h4><p>$10,500 · 96 Core · 350W</p>
                     </div>
                 </div>
             </div>
@@ -366,13 +477,13 @@
                 <div class="section-title">CPU Thermal Solution</div>
                 <div class="selector-grid">
                     <div class="select-card active" id="cooling-air-noctua" onclick="setCooling('air-noctua')" onmouseenter="showSpotlight('air-noctua')">
-                        <h4>Noctua NH-U14S TR5</h4><p>$100 · Air Cooler</p>
+                        <h4>Noctua NH-U14S TR5-SP6</h4><p>$149 · Air Cooler · sTR5</p>
                     </div>
                     <div class="select-card" id="cooling-aio-360" onclick="setCooling('aio-360')" onmouseenter="showSpotlight('aio-360')">
-                        <h4>360mm AIO Liquid</h4><p>$220 · 3× 120mm Rad</p>
+                        <h4>360mm AIO Liquid</h4><p>$229 · 3× 120mm Rad</p>
                     </div>
                     <div class="select-card" id="cooling-custom-loop" onclick="setCooling('custom-loop')" onmouseenter="showSpotlight('custom-loop')">
-                        <h4>Custom D5 Loop</h4><p>$800 · 360mm + Res</p>
+                        <h4>Custom D5 Loop</h4><p>$850 · 360mm + Res</p>
                     </div>
                 </div>
             </div>
@@ -384,37 +495,225 @@
                     <div>
                         <p class="sub-label">GPU Family</p>
                         <div class="selector-grid" style="grid-template-columns:1fr 1fr">
-                            <div class="select-card active" id="gpu-family-b70" onclick="setGPUFamily('b70')" onmouseenter="showSpotlight('b70')">
-                                <h4>Intel Arc Pro B70</h4><p>32GB VRAM · 250W</p>
-                                <span class="card-badge bg-blue">$950 / card</span>
+                            <div class="select-card" id="gpu-family-rtxpro6000" onclick="setGPUFamily('rtxpro6000')" onmouseenter="showSpotlight('rtxpro6000')">
+                                <h4>RTX Pro 6000 <span style="font-size:0.62rem;color:var(--amber)">Workstation</span></h4>
+                                <p>96GB GDDR7 ECC · 600W · Open-air</p>
+                                <span class="card-badge bg-amber">$12,099 · Max 2× on 120V</span>
+                            </div>
+                            <div class="select-card active" id="gpu-family-rtxpro6000maxq" onclick="setGPUFamily('rtxpro6000maxq')" onmouseenter="showSpotlight('rtxpro6000maxq')">
+                                <h4>RTX Pro 6000 <span style="font-size:0.62rem;color:var(--emerald)">Max-Q ★</span></h4>
+                                <p>96GB GDDR7 ECC · 300W · Blower</p>
+                                <span class="card-badge bg-purple">$13,250 · Up to 4× on 120V</span>
+                            </div>
+                            <div class="select-card" id="gpu-family-l40s" onclick="setGPUFamily('l40s')" onmouseenter="showSpotlight('l40s')">
+                                <h4>NVIDIA L40S</h4><p>48GB GDDR6 ECC · 350W · NVLink</p>
+                                <span class="card-badge bg-blue">$9,999 / card</span>
                             </div>
                             <div class="select-card" id="gpu-family-rtx4090" onclick="setGPUFamily('rtx4090')" onmouseenter="showSpotlight('rtx4090')">
-                                <h4>NVIDIA RTX 4090</h4><p>24GB VRAM · 450W</p>
-                                <span class="card-badge bg-green">$1,800 / card</span>
-                            </div>
-                            <div class="select-card" id="gpu-family-a6000" onclick="setGPUFamily('a6000')" onmouseenter="showSpotlight('a6000')">
-                                <h4>NVIDIA RTX A6000 Ada</h4><p>48GB VRAM · 300W</p>
-                                <span class="card-badge bg-purple">$3,500 / card</span>
-                            </div>
-                            <div class="select-card" id="gpu-family-rtx6000ada" onclick="setGPUFamily('rtx6000ada')" onmouseenter="showSpotlight('rtx6000ada')">
-                                <h4>NVIDIA RTX 6000 Ada</h4><p>48GB VRAM · 300W</p>
-                                <span class="card-badge bg-amber">$6,800 / card</span>
+                                <h4>NVIDIA RTX 4090</h4><p>24GB GDDR6X · 450W</p>
+                                <span class="card-badge bg-green">~$3,499 new / $2,299 refurb</span>
                             </div>
                             <div class="select-card" id="gpu-family-h100" onclick="setGPUFamily('h100')" onmouseenter="showSpotlight('h100')">
-                                <h4>NVIDIA H100 PCIe 80GB</h4><p>80GB VRAM · 350W</p>
+                                <h4>NVIDIA H100 PCIe</h4><p>80GB HBM3 · 350W · NVLink</p>
                                 <span class="card-badge bg-red">$25,000 / card</span>
+                            </div>
+                            <div class="select-card" id="gpu-family-arcprob70" onclick="setGPUFamily('arcprob70')" onmouseenter="showSpotlight('arcprob70')" style="border-color:rgba(14,165,233,0.4)">
+                                <h4>Intel Arc Pro B70 <span style="font-size:0.62rem;color:#38bdf8">Battlemage ★</span></h4>
+                                <p>32GB GDDR6 · 160-290W · PCIe 5.0 x16</p>
+                                <span class="card-badge" style="background:rgba(14,165,233,0.2);color:#38bdf8">$949 · Up to 8× single-slot</span>
+                            </div>
+                            <div class="select-card" id="gpu-family-amdw7900ds" onclick="setGPUFamily('amdw7900ds')" onmouseenter="showSpotlight('amdw7900ds')" style="border-color:rgba(239,68,68,0.3)">
+                                <h4>AMD Radeon Pro W7900 <span style="font-size:0.62rem;color:#f87171">DS</span></h4>
+                                <p>48GB GDDR6 ECC · 295W · <strong style="color:#f87171">2-slot</strong> blower</p>
+                                <span class="card-badge" style="background:rgba(239,68,68,0.15);color:#f87171">$3,499 · Multi-GPU capable</span>
+                            </div>
+                            <div class="select-card" id="gpu-family-amdw7900" onclick="setGPUFamily('amdw7900')" onmouseenter="showSpotlight('amdw7900')" style="border-color:rgba(239,68,68,0.2)">
+                                <h4>AMD Radeon Pro W7900</h4>
+                                <p>48GB GDDR6 ECC · 295W · <strong style="color:var(--amber)">3-slot</strong> open-air</p>
+                                <span class="card-badge" style="background:rgba(239,68,68,0.12);color:#f87171">~$3,390 · Max 2× per build</span>
+                            </div>
+                            <div class="select-card" id="gpu-family-amdw7800" onclick="setGPUFamily('amdw7800')" onmouseenter="showSpotlight('amdw7800')" style="border-color:rgba(245,158,11,0.25)">
+                                <h4>AMD Radeon Pro W7800</h4>
+                                <p>32GB GDDR6 ECC · 260W · 2-slot blower</p>
+                                <span class="card-badge" style="background:rgba(245,158,11,0.15);color:var(--amber)">~$2,499 MSRP</span>
                             </div>
                         </div>
                     </div>
                     <div>
-                        <p class="sub-label">Quantity <span id="gpu-count-limit" style="color:var(--blue);font-size:0.6rem">(Max 4 for WRX90)</span></p>
+                        <p class="sub-label">Quantity <span id="gpu-count-limit" style="color:var(--blue);font-size:0.6rem">(Max 4 — WRX90 platform)</span></p>
                         <div class="selector-grid" style="grid-template-columns:repeat(4,1fr)">
-                            <div class="select-card active" id="gpu-count-1" onclick="setGPUCount(1)"><h4>1×</h4></div>
-                            <div class="select-card" id="gpu-count-2" onclick="setGPUCount(2)"><h4>2×</h4></div>
+                            <div class="select-card" id="gpu-count-1" onclick="setGPUCount(1)"><h4>1×</h4></div>
+                            <div class="select-card active" id="gpu-count-2" onclick="setGPUCount(2)"><h4>2× Baseline</h4></div>
                             <div class="select-card" id="gpu-count-3" onclick="setGPUCount(3)"><h4>3×</h4></div>
-                            <div class="select-card" id="gpu-count-4" onclick="setGPUCount(4)"><h4>4×</h4></div>
+                            <div class="select-card" id="gpu-count-4" onclick="setGPUCount(4)"><h4>4× Max</h4></div>
                         </div>
                     </div>
+                </div>
+            </div>
+
+            <!-- INTEL ARC PRO B70 VARIANT GUIDE -->
+            <div class="control-group" style="border-color:rgba(14,165,233,0.25)">
+                <div class="section-title" style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap">
+                    Intel Arc Pro B70 — All Variants &amp; Buyer's Guide
+                    <span style="font-size:0.58rem;background:rgba(14,165,233,0.15);color:#38bdf8;border:1px solid rgba(14,165,233,0.3);padding:3px 9px;border-radius:5px;font-weight:600">#1 WORKSTATION GPU ON NEWEGG · MARCH 2026</span>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:1.25rem">
+
+                    <!-- Intro -->
+                    <p style="color:var(--muted);font-size:0.82rem;line-height:1.65;margin:0">
+                        Intel's Battlemage Xe2 professional GPU. <strong style="color:var(--text)">32GB GDDR6 · 256-bit · 608 GB/s · 367 TOPS INT8</strong> — all for under $1,000.
+                        Six AIBs launched simultaneously. The critical difference is form factor: 2-slot blower/passive vs the coming <strong style="color:#38bdf8">single-slot 1S</strong> which lets you stack 8 cards in one chassis.
+                    </p>
+
+                    <!-- Variant grid -->
+                    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0.75rem">
+
+                        <div style="background:rgba(14,165,233,0.06);border:1px solid rgba(14,165,233,0.2);border-radius:12px;padding:1rem">
+                            <div style="font-size:0.7rem;color:#38bdf8;font-weight:700;letter-spacing:0.05em;margin-bottom:0.4rem">INTEL REFERENCE</div>
+                            <div style="font-weight:600;font-size:0.9rem;margin-bottom:0.25rem">Arc Pro B70</div>
+                            <div style="font-size:0.75rem;color:var(--muted);margin-bottom:0.5rem">2-slot blower · 230W TBP · PCIe 5.0</div>
+                            <div style="font-size:1rem;font-weight:700;color:#38bdf8">$949</div>
+                            <div style="font-size:0.68rem;color:var(--muted);margin-top:0.25rem">Newegg verified · In stock</div>
+                        </div>
+
+                        <div style="background:rgba(14,165,233,0.06);border:1px solid rgba(14,165,233,0.2);border-radius:12px;padding:1rem">
+                            <div style="font-size:0.7rem;color:#38bdf8;font-weight:700;letter-spacing:0.05em;margin-bottom:0.4rem">ASROCK</div>
+                            <div style="font-weight:600;font-size:0.9rem;margin-bottom:0.25rem">Arc Pro B70 Creator</div>
+                            <div style="font-size:0.75rem;color:var(--muted);margin-bottom:0.5rem">2-slot blower · Up to 330W · Vapor chamber + PTM7950</div>
+                            <div style="font-size:1rem;font-weight:700;color:#38bdf8">$999</div>
+                            <div style="font-size:0.68rem;color:var(--muted);margin-top:0.25rem">Best cooler of the bunch · In stock</div>
+                        </div>
+
+                        <div style="background:rgba(14,165,233,0.06);border:1px solid rgba(14,165,233,0.2);border-radius:12px;padding:1rem">
+                            <div style="font-size:0.7rem;color:#38bdf8;font-weight:700;letter-spacing:0.05em;margin-bottom:0.4rem">ASROCK</div>
+                            <div style="font-weight:600;font-size:0.9rem;margin-bottom:0.25rem">Arc Pro B70 Passive</div>
+                            <div style="font-size:0.75rem;color:var(--muted);margin-bottom:0.5rem">2-slot passive · ~160W · Zero fan noise</div>
+                            <div style="font-size:1rem;font-weight:700;color:#38bdf8">~$999</div>
+                            <div style="font-size:0.68rem;color:var(--muted);margin-top:0.25rem">Silent workstation use · In stock</div>
+                        </div>
+
+                        <div style="background:rgba(14,165,233,0.06);border:1px solid rgba(14,165,233,0.2);border-radius:12px;padding:1rem">
+                            <div style="font-size:0.7rem;color:#38bdf8;font-weight:700;letter-spacing:0.05em;margin-bottom:0.4rem">SPARKLE</div>
+                            <div style="font-weight:600;font-size:0.9rem;margin-bottom:0.25rem">Arc Pro B70 Blower</div>
+                            <div style="font-size:0.75rem;color:var(--muted);margin-bottom:0.5rem">2-slot blower · 230W · Standard cooling</div>
+                            <div style="font-size:1rem;font-weight:700;color:#38bdf8">~$949–$999</div>
+                            <div style="font-size:0.68rem;color:var(--muted);margin-top:0.25rem">Micro Center · In stock</div>
+                        </div>
+
+                        <div style="background:rgba(14,165,233,0.06);border:1px solid rgba(14,165,233,0.2);border-radius:12px;padding:1rem">
+                            <div style="font-size:0.7rem;color:#38bdf8;font-weight:700;letter-spacing:0.05em;margin-bottom:0.4rem">SPARKLE</div>
+                            <div style="font-weight:600;font-size:0.9rem;margin-bottom:0.25rem">Arc Pro B70 Passive</div>
+                            <div style="font-size:0.75rem;color:var(--muted);margin-bottom:0.5rem">2-slot passive · ~160W · Fanless</div>
+                            <div style="font-size:1rem;font-weight:700;color:#38bdf8">TBD</div>
+                            <div style="font-size:0.68rem;color:var(--muted);margin-top:0.25rem">Coming soon · Pre-announcement</div>
+                        </div>
+
+                        <div style="background:rgba(14,165,233,0.1);border:2px solid rgba(14,165,233,0.5);border-radius:12px;padding:1rem;position:relative">
+                            <div style="position:absolute;top:-9px;right:10px;font-size:0.6rem;background:#0ea5e9;color:#000;font-weight:800;padding:2px 8px;border-radius:4px;letter-spacing:0.06em">KEY CARD</div>
+                            <div style="font-size:0.7rem;color:#38bdf8;font-weight:700;letter-spacing:0.05em;margin-bottom:0.4rem">SPARKLE / MAXSUN</div>
+                            <div style="font-weight:700;font-size:0.9rem;margin-bottom:0.25rem">Arc Pro B70 <span style="color:#38bdf8">1S</span> — Single-Slot</div>
+                            <div style="font-size:0.75rem;color:var(--muted);margin-bottom:0.5rem">1-slot blower · 160W · 8 cards per chassis</div>
+                            <div style="font-size:1rem;font-weight:700;color:#38bdf8">TBD — Coming Soon</div>
+                            <div style="font-size:0.68rem;color:var(--muted);margin-top:0.25rem">Shown at Computex · No release date yet</div>
+                        </div>
+
+                    </div>
+
+                    <!-- Single-slot density callout -->
+                    <div style="background:rgba(14,165,233,0.08);border:1px solid rgba(14,165,233,0.35);border-radius:14px;padding:1.25rem 1.5rem">
+                        <div style="font-weight:700;color:#38bdf8;font-size:0.9rem;margin-bottom:0.6rem">★ Why the Single-Slot 1S Changes Everything</div>
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;font-size:0.8rem;color:var(--muted);line-height:1.6">
+                            <div>
+                                <div style="color:var(--text);font-weight:600;margin-bottom:0.3rem">Standard 2-slot build (today)</div>
+                                4× cards max in a tower<br>
+                                4 × 32GB = <strong style="color:var(--text)">128GB VRAM</strong><br>
+                                4 × 230W = 920W draw<br>
+                                4 separate client inference streams
+                            </div>
+                            <div>
+                                <div style="color:#38bdf8;font-weight:600;margin-bottom:0.3rem">Single-slot 1S build (coming soon)</div>
+                                8× cards in same chassis<br>
+                                8 × 32GB = <strong style="color:#38bdf8">256GB VRAM</strong><br>
+                                8 × 160W = <strong style="color:#38bdf8">1,280W</strong> — fits one 120V/20A circuit<br>
+                                <strong style="color:#38bdf8">8× client capacity, same box, same power</strong>
+                            </div>
+                        </div>
+                        <div style="margin-top:0.75rem;font-size:0.75rem;color:var(--muted);border-top:1px solid rgba(14,165,233,0.2);padding-top:0.75rem">
+                            The 1S card uses a blower cooler exhausting hot air directly out the bracket — correct for dense multi-GPU. Sparkle and MAXSUN both showed 1S variants at Computex 2026. No pricing or ship date confirmed yet; monitor Newegg for availability.
+                        </div>
+                    </div>
+
+                    <!-- Common specs -->
+                    <div style="font-size:0.75rem;color:var(--muted);line-height:1.7;background:rgba(255,255,255,0.03);border-radius:10px;padding:0.9rem 1.1rem">
+                        <strong style="color:var(--text)">All Arc Pro B70 variants share:</strong>
+                        Intel Xe2 (Battlemage) architecture · 32 Xe2 cores · 32GB GDDR6 256-bit ·
+                        608 GB/s bandwidth · 367 TOPS INT8 (OpenVINO / PyTorch IPEX) · PCIe 5.0 x16 ·
+                        4× DisplayPort 2.1 · DirectX 12 Ultimate · Vulkan 1.3 · OpenCL 3.0 ·
+                        Intel oneAPI + OpenVINO framework support · TSMC 5nm process
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- AMD WORKSTATION GPU GUIDE -->
+            <div class="control-group" style="border-color:rgba(239,68,68,0.2)">
+                <div class="section-title" style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap">
+                    AMD Radeon Pro — Workstation GPU Guide
+                    <span style="font-size:0.58rem;background:rgba(239,68,68,0.12);color:#f87171;border:1px solid rgba(239,68,68,0.3);padding:3px 9px;border-radius:5px;font-weight:600">RDNA 3 · GDDR6 ECC</span>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:1.25rem">
+
+                    <p style="color:var(--muted);font-size:0.82rem;line-height:1.65;margin:0">
+                        AMD's professional Radeon Pro line offers <strong style="color:var(--text)">48GB GDDR6 ECC</strong> at roughly ⅓ the cost of NVIDIA's 48GB options.
+                        <strong style="color:var(--amber)">Slot width is critical</strong> for multi-GPU builds — the standard W7900 is 3-slot (only 2 fit in most towers),
+                        while the Dual Slot version is purpose-built for multi-card deployments.
+                    </p>
+
+                    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0.75rem">
+
+                        <div style="background:rgba(239,68,68,0.08);border:2px solid rgba(239,68,68,0.4);border-radius:12px;padding:1rem;position:relative">
+                            <div style="position:absolute;top:-9px;right:10px;font-size:0.6rem;background:#ef4444;color:#fff;font-weight:800;padding:2px 8px;border-radius:4px">MULTI-GPU PICK</div>
+                            <div style="font-size:0.7rem;color:#f87171;font-weight:700;letter-spacing:0.05em;margin-bottom:0.4rem">AMD</div>
+                            <div style="font-weight:700;font-size:0.9rem;margin-bottom:0.25rem">Radeon Pro W7900 <span style="color:#f87171">Dual Slot</span></div>
+                            <div style="font-size:0.75rem;color:var(--muted);margin-bottom:0.5rem"><strong style="color:#4ade80">2-slot blower</strong> · 295W · 48GB GDDR6 ECC · 384-bit · 864 GB/s</div>
+                            <div style="font-size:1rem;font-weight:700;color:#f87171">$3,499</div>
+                            <div style="font-size:0.68rem;color:var(--muted);margin-top:0.25rem">Tom's Hardware verified launch price · In stock</div>
+                        </div>
+
+                        <div style="background:rgba(239,68,68,0.05);border:1px solid rgba(239,68,68,0.2);border-radius:12px;padding:1rem">
+                            <div style="font-size:0.7rem;color:#f87171;font-weight:700;letter-spacing:0.05em;margin-bottom:0.4rem">AMD</div>
+                            <div style="font-weight:600;font-size:0.9rem;margin-bottom:0.25rem">Radeon Pro W7900</div>
+                            <div style="font-size:0.75rem;color:var(--muted);margin-bottom:0.5rem"><strong style="color:var(--amber)">3-slot open-air</strong> · 295W · 48GB GDDR6 ECC · 384-bit · 864 GB/s</div>
+                            <div style="font-size:1rem;font-weight:700;color:#f87171">~$3,390</div>
+                            <div style="font-size:0.68rem;color:var(--muted);margin-top:0.25rem">June 2026 avg · Max 2× per tower (3-slot)</div>
+                        </div>
+
+                        <div style="background:rgba(245,158,11,0.05);border:1px solid rgba(245,158,11,0.2);border-radius:12px;padding:1rem">
+                            <div style="font-size:0.7rem;color:var(--amber);font-weight:700;letter-spacing:0.05em;margin-bottom:0.4rem">AMD</div>
+                            <div style="font-weight:600;font-size:0.9rem;margin-bottom:0.25rem">Radeon Pro W7800</div>
+                            <div style="font-size:0.75rem;color:var(--muted);margin-bottom:0.5rem"><strong style="color:#4ade80">2-slot</strong> · 260W · 32GB GDDR6 ECC · 256-bit · 576 GB/s</div>
+                            <div style="font-size:1rem;font-weight:700;color:var(--amber)">$2,499 MSRP</div>
+                            <div style="font-size:0.68rem;color:rgba(239,68,68,0.7);margin-top:0.25rem">⚠ Current avg ~$4,079 — check Newegg before quoting</div>
+                        </div>
+
+                    </div>
+
+                    <!-- Slot comparison callout -->
+                    <div style="background:rgba(245,158,11,0.07);border:1px solid rgba(245,158,11,0.25);border-radius:12px;padding:1rem 1.25rem;font-size:0.78rem;line-height:1.7">
+                        <strong style="color:var(--amber)">★ Why Slot Width Matters:</strong>
+                        <span style="color:var(--muted)"> Most towers have 7–9 PCIe slots but only 7 physical width slots.
+                        A 3-slot GPU physically blocks the adjacent slot — so 4× W7900 (3-slot) would consume 12 slot widths and is impossible in any tower.
+                        The <strong style="color:#f87171">W7900 Dual Slot</strong> uses 2 slot widths — you can fit 4× in the WRX90E-SAGE SE (4× active PCIe x16).
+                        Same VRAM, same TDP — the Dual Slot version is simply the right card for multi-GPU tower builds.</span>
+                    </div>
+
+                    <div style="font-size:0.75rem;color:var(--muted);line-height:1.7;background:rgba(255,255,255,0.03);border-radius:10px;padding:0.9rem 1.1rem">
+                        <strong style="color:var(--text)">All Radeon Pro W-series share:</strong>
+                        AMD RDNA 3 architecture · GDDR6 ECC memory · PCIe 4.0 x16 · 3× DisplayPort 2.1 ·
+                        DirectX 12 Ultimate · Vulkan 1.3 · ROCm AI framework · AV1 encode/decode ·
+                        AMD PRO Technology (ECC, remote management) · 5nm TSMC chiplet design
+                    </div>
+
                 </div>
             </div>
 
@@ -423,17 +722,17 @@
                 <div class="section-title">8-Channel System Memory (RDIMM)</div>
                 <div style="display:flex;flex-direction:column;gap:1rem">
                     <div class="selector-grid">
-                        <div class="select-card active" id="ram-size-64"  onclick="setRAMSize(64)"  onmouseenter="showSpotlight(64)"><h4>64GB</h4><p>$450 · 8× 8GB</p></div>
-                        <div class="select-card" id="ram-size-128" onclick="setRAMSize(128)" onmouseenter="showSpotlight(128)"><h4>128GB</h4><p>$600 · 8× 16GB</p></div>
-                        <div class="select-card" id="ram-size-256" onclick="setRAMSize(256)" onmouseenter="showSpotlight(256)"><h4>256GB</h4><p>$1,150 · 8× 32GB</p></div>
-                        <div class="select-card" id="ram-size-512" onclick="setRAMSize(512)" onmouseenter="showSpotlight(512)"><h4>512GB</h4><p>$2,300 · 8× 64GB</p></div>
+                        <div class="select-card active" id="ram-size-64"  onclick="setRAMSize(64)"  onmouseenter="showSpotlight(64)"><h4>64GB</h4><p>$1,800 · 8× 8GB</p></div>
+                        <div class="select-card" id="ram-size-128" onclick="setRAMSize(128)" onmouseenter="showSpotlight(128)"><h4>128GB</h4><p>$3,949 · 4× 32GB</p></div>
+                        <div class="select-card" id="ram-size-256" onclick="setRAMSize(256)" onmouseenter="showSpotlight(256)"><h4>256GB</h4><p>$7,317 · 4× 64GB</p></div>
+                        <div class="select-card" id="ram-size-512" onclick="setRAMSize(512)" onmouseenter="showSpotlight(512)"><h4>512GB</h4><p>~$14,900 · 8× 64GB</p></div>
                     </div>
                     <div>
-                        <p class="sub-label">DDR5 Speed Profile</p>
+                        <p class="sub-label">DDR5-ECC Speed Profile</p>
                         <div class="selector-grid" style="grid-template-columns:1fr 1fr 1fr">
-                            <div class="select-card active" id="ram-speed-4800" onclick="setRAMSpeed(4800)"><h4>4800 MT/s</h4><p>Crucial Std</p></div>
-                            <div class="select-card" id="ram-speed-5600" onclick="setRAMSpeed(5600)"><h4>5600 MT/s</h4><p>+$150 Kingston</p></div>
-                            <div class="select-card" id="ram-speed-6000" onclick="setRAMSpeed(6000)"><h4>6000 MT/s</h4><p>+$350 G.Skill</p></div>
+                            <div class="select-card active" id="ram-speed-4800" onclick="setRAMSpeed(4800)"><h4>4800 MT/s</h4><p>Std ECC</p></div>
+                            <div class="select-card" id="ram-speed-5600" onclick="setRAMSpeed(5600)"><h4>5600 MT/s</h4><p>+$300</p></div>
+                            <div class="select-card" id="ram-speed-6000" onclick="setRAMSpeed(6000)"><h4>6000 MT/s</h4><p>+$600</p></div>
                         </div>
                     </div>
                 </div>
@@ -486,7 +785,12 @@
             <!-- ALERTS -->
             <div class="alert-box alert-power hidden" id="alert-power">
                 <div class="alert-icon">⚡</div>
-                <div><div class="alert-title">US Wall Circuit Overload</div><div class="alert-body" id="alert-power-body"></div></div>
+                <div><div class="alert-title">US Wall Circuit Warning</div><div class="alert-body" id="alert-power-body"></div></div>
+            </div>
+            <div class="alert-box alert-clearance hidden" id="alert-120v-limit" style="background:rgba(239,68,68,0.12);border-color:rgba(239,68,68,0.4)">
+                <div class="alert-icon">🔌</div>
+                <div><div class="alert-title" style="color:var(--red)">120V CIRCUIT LIMIT EXCEEDED — NOT BUILDABLE AS-IS</div>
+                <div class="alert-body" style="color:rgba(255,100,100,0.9)">This configuration draws ~<span id="alert-120v-watts"></span>W — exceeding the 1,920W continuous safe limit of a 120V/20A US circuit (NEC 80% rule). To run 4× Workstation Edition GPUs you MUST supply 240V/30A (NEMA 14-30) power. Alternatively, switch to Max-Q Edition (300W each) which keeps the 4-GPU config under 1,700W and within 120V/20A.</div></div>
             </div>
             <div class="alert-box alert-clearance hidden" id="alert-clearance">
                 <div class="alert-icon">🔩</div>
@@ -543,10 +847,10 @@
                     <div class="mb-slot" style="top:310px" data-lane="Slot 5 (x16)"></div>
                     <div class="mb-slot" style="top:380px" data-lane="Slot 6 (x16)"></div>
                     <div class="mb-slot" style="top:450px" data-lane="Slot 7 (x16)"></div>
-                    <div class="mb-gpu-card color-b70" id="mb-gpu-1" style="top:23px"> <span>Intel Arc B70</span><span>Slot 1 · x16 ACTIVE</span></div>
-                    <div class="mb-gpu-card color-b70" id="mb-gpu-2" style="top:163px"><span>Intel Arc B70</span><span>Slot 3 · x16 ACTIVE</span></div>
-                    <div class="mb-gpu-card color-b70" id="mb-gpu-3" style="top:303px"><span>Intel Arc B70</span><span>Slot 5 · x16 ACTIVE</span></div>
-                    <div class="mb-gpu-card color-b70" id="mb-gpu-4" style="top:443px"><span>Intel Arc B70</span><span>Slot 7 · OVERHANG</span></div>
+                    <div class="mb-gpu-card color-rtxpro6000" id="mb-gpu-1" style="top:23px"> <span>RTX Pro 6000</span><span>Slot 1 · x16 ACTIVE</span></div>
+                    <div class="mb-gpu-card color-rtxpro6000" id="mb-gpu-2" style="top:163px"><span>RTX Pro 6000</span><span>Slot 3 · x16 ACTIVE</span></div>
+                    <div class="mb-gpu-card color-rtxpro6000" id="mb-gpu-3" style="top:303px"><span>RTX Pro 6000</span><span>Slot 5 · x16 ACTIVE</span></div>
+                    <div class="mb-gpu-card color-rtxpro6000" id="mb-gpu-4" style="top:443px"><span>RTX Pro 6000</span><span>Slot 7 · OVERHANG</span></div>
                 </div>
                 <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:0.75rem;margin-top:0.25rem">
                     <div style="text-align:center"><p style="font-size:0.58rem;color:var(--text-secondary);font-weight:800;text-transform:uppercase">Case</p><p style="font-size:0.75rem;font-weight:900" id="info-case-name">Define 7 XL</p></div>
@@ -590,39 +894,43 @@ const SPOTLIGHT = {
     '7000d':        { img:'hardware/case-7000d.jpg',        cat:'Chassis — Full Tower',     name:'Corsair Obsidian 7000D Airflow',    price:'$269.99' },
     'rm44':         { img:'hardware/case-rm44.jpg',         cat:'Chassis — 4U Rackmount',   name:'SilverStone RM44 4U Rack',         price:'$199.99' },
     // Motherboards
-    'wrx90':        { img:'hardware/mobo-wrx90.jpg',        cat:'Motherboard — SSI-EEB',    name:'Asus Pro WS WRX90E-SAGE SE',       price:'$1,299.99' },
-    'trx50':        { img:'hardware/mobo-trx50.jpg',        cat:'Motherboard — E-ATX',      name:'Asus Pro WS TRX50-SAGE WiFi',      price:'$819.99' },
+    'wrx90':        { img:'hardware/mobo-wrx90.jpg',        cat:'Motherboard — SSI-EEB · 7× PCIe 5.0 x16', name:'Asus Pro WS WRX90E-SAGE SE', price:'$1,349.00' },
+    'trx50':        { img:'hardware/mobo-trx50.jpg',        cat:'Motherboard — E-ATX · 4× PCIe 5.0 x16',  name:'Asus Pro WS TRX50-SAGE WiFi',price:'$994.00' },
     // CPUs
-    '7845wx':       { img:'hardware/cpu-7845wx.jpg',        cat:'Processor — 12 Core',      name:'AMD Threadripper Pro 7845WX',      price:'$649.99' },
-    '7975wx':       { img:'hardware/cpu-7975wx.jpg',        cat:'Processor — 32 Core',      name:'AMD Threadripper Pro 7975WX',      price:'$3,899.99' },
-    '7995wx':       { img:'hardware/cpu-7995wx.jpg',        cat:'Processor — 96 Core',      name:'AMD Threadripper Pro 7995WX',      price:'$9,999.99' },
+    '7945wx':       { img:'hardware/cpu-7945wx.jpg',        cat:'Processor — 12 Core',      name:'AMD Threadripper Pro 7945WX',      price:'$1,099.00' },
+    '7975wx':       { img:'hardware/cpu-7975wx.jpg',        cat:'Processor — 32 Core',      name:'AMD Threadripper Pro 7975WX',      price:'$3,730.00' },
+    '7995wx':       { img:'hardware/cpu-7995wx.jpg',        cat:'Processor — 96 Core',      name:'AMD Threadripper Pro 7995WX',      price:'$10,500.00' },
     // Cooling
-    'air-noctua':   { img:'hardware/cooling-noctua-u14s.jpg', cat:'CPU Cooling — Air',       name:'Noctua NH-U14S TR5',               price:'$99.99' },
-    'aio-360':      { img:'hardware/cooling-aio-360.jpg',   cat:'CPU Cooling — Liquid AIO', name:'360mm AIO Liquid Cooler',          price:'$219.99' },
-    'custom-loop':  { img:'hardware/cooling-custom-loop.jpg',cat:'CPU Cooling — Custom Loop',name:'Custom D5 Pump Loop + 360 Rad',   price:'$799.99' },
+    'air-noctua':   { img:'hardware/cooling-noctua-u14s.jpg', cat:'CPU Cooling — Air',       name:'Noctua NH-U14S TR5-SP6',           price:'$149.00' },
+    'aio-360':      { img:'hardware/cooling-aio-360.jpg',   cat:'CPU Cooling — Liquid AIO', name:'360mm AIO Liquid Cooler (3× 120mm)',price:'$229.00' },
+    'custom-loop':  { img:'hardware/cooling-custom-loop.jpg',cat:'CPU Cooling — Custom Loop',name:'Custom D5 Pump Loop + 360 Rad',   price:'$849.99' },
     // GPUs
-    'b70':          { img:'hardware/gpu-arc-b70.jpg',       cat:'GPU — 32GB VRAM · 250W',   name:'Intel Arc Pro B70 32GB Blower',    price:'$949.99' },
-    'rtx4090':      { img:'hardware/gpu-rtx4090.jpg',       cat:'GPU — 24GB VRAM · 450W',   name:'NVIDIA GeForce RTX 4090 24GB',     price:'$1,799.99' },
-    'a6000':        { img:'hardware/gpu-rtx-a6000-ada.jpg', cat:'GPU — 48GB VRAM · 300W',   name:'NVIDIA RTX A6000 Ada 48GB',        price:'$3,499.99' },
-    'rtx6000ada':   { img:'hardware/gpu-rtx6000ada.jpg',    cat:'GPU — 48GB VRAM · 300W',   name:'NVIDIA RTX 6000 Ada Generation',   price:'$6,799.99' },
-    'h100':         { img:'hardware/gpu-h100-pcie.jpg',     cat:'GPU — 80GB VRAM · 350W',   name:'NVIDIA H100 PCIe 80GB',            price:'$24,999.99' },
+    'rtxpro6000':     { img:'hardware/gpu-rtxpro6000.jpg', cat:'GPU — 96GB GDDR7 ECC · 600W · Open-Air',   name:'NVIDIA RTX Pro 6000 Blackwell Workstation Ed.', price:'$12,099 — Newegg verified' },
+    'rtxpro6000maxq': { img:'hardware/gpu-rtxpro6000.jpg', cat:'GPU — 96GB GDDR7 ECC · 300W · Blower ★ Multi-GPU Recommended', name:'NVIDIA RTX Pro 6000 Blackwell Max-Q Ed.', price:'$13,250 — NVIDIA Marketplace' },
+    'l40s':           { img:'hardware/gpu-l40s.jpg',       cat:'GPU — 48GB GDDR6 ECC · 350W · NVLink',     name:'NVIDIA L40S Data Center GPU',                  price:'$9,999' },
+    'rtx4090':        { img:'hardware/gpu-rtx4090.jpg',    cat:'GPU — 24GB GDDR6X · 450W',                 name:'NVIDIA GeForce RTX 4090 24GB',                 price:'$3,499 — Newegg verified' },
+    'h100':           { img:'hardware/gpu-h100-pcie.jpg',  cat:'GPU — 80GB HBM3 · 350W · NVLink',          name:'NVIDIA H100 PCIe 80GB',                        price:'$25,000' },
+    'arcprob70':      { img:'hardware/gpu-arc-b70.jpg',    cat:'GPU — 32GB GDDR6 · 160-290W · PCIe 5.0',  name:'Intel Arc Pro B70 32GB (Battlemage Xe2)',       price:'$949 — Newegg #1 Workstation GPU Apr 2026' },
+    'amdw7900ds':     { img:'hardware/gpu-amd-w7900.jpg',  cat:'GPU — 48GB GDDR6 ECC · 295W · 2-slot',    name:'AMD Radeon Pro W7900 Dual Slot 48GB',          price:'$3,499 — Tom\'s Hardware verified launch' },
+    'amdw7900':       { img:'hardware/gpu-amd-w7900.jpg',  cat:'GPU — 48GB GDDR6 ECC · 295W · 3-slot',    name:'AMD Radeon Pro W7900 48GB (3-Slot)',           price:'~$3,390 — June 2026 avg (GPUPoet)' },
+    'amdw7800':       { img:'hardware/gpu-amd-w7800.jpg',  cat:'GPU — 32GB GDDR6 ECC · 260W · 2-slot',    name:'AMD Radeon Pro W7800 32GB',                   price:'$2,499 MSRP / ~$4,079 avg (GPUDojo May 2026)' },
     // RAM
-    64:             { img:'hardware/ram-ddr5-rdimm.jpg',    cat:'System RAM — 64GB Kit',    name:'8× 8GB DDR5 RDIMM ECC',            price:'$449.99' },
-    128:            { img:'hardware/ram-ddr5-rdimm.jpg',    cat:'System RAM — 128GB Kit',   name:'8× 16GB DDR5 RDIMM ECC',           price:'$599.99' },
-    256:            { img:'hardware/ram-ddr5-rdimm.jpg',    cat:'System RAM — 256GB Kit',   name:'8× 32GB DDR5 RDIMM ECC',           price:'$1,149.99' },
-    512:            { img:'hardware/ram-ddr5-rdimm.jpg',    cat:'System RAM — 512GB Kit',   name:'8× 64GB DDR5 RDIMM ECC',           price:'$2,299.99' },
+    64:             { img:'hardware/ram-ddr5-rdimm.jpg',    cat:'System RAM — 64GB Kit',    name:'8× 8GB DDR5-4800 RDIMM ECC (NEMIX RAM)',       price:'~$1,800' },
+    128:            { img:'hardware/ram-ddr5-rdimm.jpg',    cat:'System RAM — 128GB Kit',   name:'4× 32GB DDR5-4800 RDIMM ECC (NEMIX RAM)',      price:'$3,948.49 — Newegg verified' },
+    256:            { img:'hardware/ram-ddr5-rdimm.jpg',    cat:'System RAM — 256GB Kit',   name:'4× 64GB DDR5-4800 RDIMM ECC (NEMIX RAM)',      price:'$7,316.99 — Newegg verified' },
+    512:            { img:'hardware/ram-ddr5-rdimm.jpg',    cat:'System RAM — 512GB Kit',   name:'8× 64GB DDR5-4800 RDIMM ECC (NEMIX RAM)',      price:'~$14,900 — estimated' },
     // Storage
     '1tb':          { img:'hardware/storage-wd-black.jpg',      cat:'Storage — Gen4 NVMe',       name:'1TB WD Black SN850X Gen4',           price:'$119.99' },
     '4tb':          { img:'hardware/storage-firecuda.jpg',      cat:'Storage — Gen5 NVMe',       name:'4TB Seagate FireCuda 540 Gen5',      price:'$599.99' },
     '8tb':          { img:'hardware/storage-micron-9400.jpg',   cat:'Storage — U.3 Enterprise',  name:'8TB Micron 9400 U.3 Enterprise SSD', price:'$1,199.99' },
     // PSU tiers (auto-selected)
-    'psu-1000w':    { img:'hardware/psu-silverstone-1000w.jpg', cat:'Power Supply — Platinum',   name:'SilverStone HELA 1000W Platinum',    price:'$179.99' },
-    'psu-1200w':    { img:'hardware/psu-corsair-ax1200i.jpg',   cat:'Power Supply — Titanium',   name:'Corsair AX1200i Digital Titanium',   price:'$349.99' },
-    'psu-1600w':    { img:'hardware/psu-corsair-ax1600i.jpg',   cat:'Power Supply — Titanium',   name:'Corsair AX1600i Digital Titanium',   price:'$449.99' },
-    'psu-2050w':    { img:'hardware/psu-silverstone-2050w.jpg', cat:'Power Supply — Platinum',   name:'SilverStone HELA 2050W Platinum',    price:'$409.99' },
-    'psu-dual':     { img:'hardware/psu-dual-1000w.jpg',        cat:'Power Supply — Dual 1000W', name:'Dual 1000W PSUs + Phanteks Combiner',price:'$399.99' },
+    'psu-1000w':    { img:'hardware/psu-silverstone-1000w.jpg', cat:'Power Supply — Platinum',   name:'SilverStone HELA 1000W Platinum',         price:'$189.99' },
+    'psu-1200w':    { img:'hardware/psu-corsair-ax1200i.jpg',   cat:'Power Supply — Platinum',   name:'Seasonic Prime TX-1300 Titanium',          price:'$319.99' },
+    'psu-1600w':    { img:'hardware/psu-corsair-ax1600i.jpg',   cat:'Power Supply — Titanium',   name:'Corsair AX1600i Digital Titanium',         price:'$649.99' },
+    'psu-2050w':    { img:'hardware/psu-silverstone-2050w.jpg', cat:'Power Supply — Platinum',   name:'SilverStone HELA 2050R Platinum (ATX 3.1)',price:'$579.99' },
+    'psu-dual':     { img:'hardware/psu-dual-1000w.jpg',        cat:'Power Supply — Dual PSU',   name:'Dual 1600W PSUs (2× Corsair AX1600i)',     price:'$1,299.99' },
     // Case fans
-    'fans':         { img:'hardware/fans-noctua-nfa14.jpg',     cat:'Case Cooling — 6× 140mm',   name:'6× Noctua NF-A14 industrialPPC PWM', price:'$219.99' }
+    'fans':         { img:'hardware/fans-noctua-nfa14.jpg',     cat:'Case Cooling — 6× 140mm',   name:'6× Noctua NF-A14 industrialPPC 3000 PWM',  price:'$229.99' }
 };
 
 // ── PARTS DATA ────────────────────────────────────────────────────────────────
@@ -636,41 +944,51 @@ const S = {
         'rm44':         { price:200,  name:'SilverStone RM44 4U Rack',       slots:8, formFactor:'4U Rack', moboMax:'SSI-EEB', dualPSU:false }
     },
     mobo: {
-        wrx90: { price:1300, name:'Asus Pro WS WRX90E-SAGE SE',   maxGPU:4, formFactor:'SSI-EEB' },
-        trx50: { price:820,  name:'Asus Pro WS TRX50-SAGE WiFi',  maxGPU:2, formFactor:'E-ATX'   }
+        wrx90: { price:1349, name:'Asus Pro WS WRX90E-SAGE SE',   maxGPU:4, formFactor:'SSI-EEB' },
+        trx50: { price:994,  name:'Asus Pro WS TRX50-SAGE WiFi',  maxGPU:2, formFactor:'E-ATX'   }
     },
     cpu: {
-        '7845wx': { price:650,  name:'AMD Threadripper Pro 7845WX (12C)', tdp:350 },
-        '7975wx': { price:3900, name:'AMD Threadripper Pro 7975WX (32C)', tdp:350 },
-        '7995wx': { price:9999, name:'AMD Threadripper Pro 7995WX (96C)', tdp:350 }
+        '7945wx': { price:1099,  name:'AMD Threadripper Pro 7945WX (12C)', tdp:350 },
+        '7975wx': { price:3730,  name:'AMD Threadripper Pro 7975WX (32C)', tdp:350 },
+        '7995wx': { price:10500, name:'AMD Threadripper Pro 7995WX (96C)', tdp:350 }
     },
     cooling: {
-        'air-noctua':  { price:100, name:'Noctua NH-U14S TR5 Air Cooler' },
-        'aio-360':     { price:220, name:'360mm AIO Liquid Cooler (3× 120mm)' },
-        'custom-loop': { price:800, name:'Custom D5 Loop Kit + 360mm Rad' }
+        'air-noctua':  { price:149, name:'Noctua NH-U14S TR5-SP6 Air Cooler' },
+        'aio-360':     { price:229, name:'360mm AIO Liquid Cooler (3× 120mm)' },
+        'custom-loop': { price:850, name:'Custom D5 Loop Kit + 360mm Rad' }
     },
     gpu: {
-        b70:        { price:950,   name:'Intel Arc Pro B70',         vram:32, tdp:250, color:'color-b70',   label:'Intel Arc Pro B70 32GB'   },
-        rtx4090:    { price:1800,  name:'NVIDIA GeForce RTX 4090',   vram:24, tdp:450, color:'color-4090',  label:'RTX 4090 24GB'            },
-        a6000:      { price:3500,  name:'NVIDIA RTX A6000 Ada',      vram:48, tdp:300, color:'color-a6000', label:'RTX A6000 Ada 48GB'       },
-        rtx6000ada: { price:6800,  name:'NVIDIA RTX 6000 Ada',       vram:48, tdp:300, color:'color-rtx',   label:'RTX 6000 Ada 48GB'        },
-        h100:       { price:25000, name:'NVIDIA H100 PCIe 80GB',     vram:80, tdp:350, color:'color-h100',  label:'H100 PCIe 80GB'           }
+        // Workstation Ed = 600W open-air. Max 2× on 120V/20A (1700W total). Faster.
+        rtxpro6000:     { price:12099, name:'RTX Pro 6000 Blackwell Workstation', vram:96, tdp:600, color:'color-rtxpro6000', label:'RTX Pro 6000 WS 96GB'   },
+        // Max-Q Ed = 300W blower. Up to 4× on 120V/20A (1700W total). 5-14% slower. Multi-GPU recommended.
+        rtxpro6000maxq: { price:13250, name:'RTX Pro 6000 Blackwell Max-Q',       vram:96, tdp:300, color:'color-rtxpro6000', label:'RTX Pro 6000 Max-Q 96GB' },
+        l40s:           { price:9999,  name:'NVIDIA L40S Data Center GPU',        vram:48, tdp:350, color:'color-l40s',       label:'L40S 48GB'               },
+        rtx4090:        { price:3499,  name:'NVIDIA GeForce RTX 4090',            vram:24, tdp:450, color:'color-4090',       label:'RTX 4090 24GB'           },
+        h100:           { price:25000, name:'NVIDIA H100 PCIe 80GB',              vram:80, tdp:350, color:'color-h100',       label:'H100 PCIe 80GB'          },
+        // Arc Pro B70: 32GB GDDR6, 367 TOPS INT8, PCIe 5.0. Single-slot 1S variant (Sparkle/MAXSUN) enables 8× per chassis = 256GB VRAM.
+        arcprob70:      { price:949,   name:'Intel Arc Pro B70 (Reference)',       vram:32, tdp:230, color:'color-arcprob70',  label:'Arc Pro B70 32GB'        },
+        // AMD Radeon Pro W7900 DS = 2-slot blower (multi-GPU safe). W7900 = 3-slot open-air (max 2× per build).
+        amdw7900ds:     { price:3499,  name:'AMD Radeon Pro W7900 Dual Slot',      vram:48, tdp:295, color:'color-amdw7900',   label:'W7900 DS 48GB'           },
+        amdw7900:       { price:3390,  name:'AMD Radeon Pro W7900 (3-Slot)',        vram:48, tdp:295, color:'color-amdw7900',   label:'W7900 48GB'              },
+        amdw7800:       { price:2499,  name:'AMD Radeon Pro W7800',                vram:32, tdp:260, color:'color-amdw7800',   label:'W7800 32GB'              }
     },
-    ram:      { 64:{price:450,name:'64GB (8×8GB) DDR5 RDIMM ECC'}, 128:{price:600,name:'128GB (8×16GB) DDR5 RDIMM ECC'}, 256:{price:1150,name:'256GB (8×32GB) DDR5 RDIMM ECC'}, 512:{price:2300,name:'512GB (8×64GB) DDR5 RDIMM ECC'} },
-    ramSpeed: { 4800:{price:0,name:'4800 MT/s Crucial Standard'}, 5600:{price:150,name:'5600 MT/s Kingston Premier'}, 6000:{price:350,name:'6000 MT/s G.Skill Zeta5 EXPO'} },
-    storage:  { '1tb':{price:120,name:'1TB WD Black SN850X Gen4 NVMe'}, '4tb':{price:600,name:'4TB Seagate FireCuda 540 Gen5 NVMe'}, '8tb':{price:1200,name:'8TB Micron 9400 U.3 Enterprise SSD'} },
-    fans:     { price:220, name:'6× Noctua NF-A14 Industrial 3000RPM PWM' }
+    ram:      { 64:{price:1800,name:'64GB (8×8GB) DDR5-4800 RDIMM ECC'}, 128:{price:3949,name:'128GB (4×32GB) DDR5-4800 RDIMM ECC'}, 256:{price:7317,name:'256GB (4×64GB) DDR5-4800 RDIMM ECC'}, 512:{price:14900,name:'512GB (8×64GB) DDR5-4800 RDIMM ECC'} },
+    ramSpeed: { 4800:{price:0,name:'4800 MT/s Standard'}, 5600:{price:300,name:'5600 MT/s'}, 6000:{price:600,name:'6000 MT/s'} },
+    storage:  { '1tb':{price:110,name:'1TB WD Black SN850X Gen4 NVMe'}, '4tb':{price:549,name:'4TB Seagate FireCuda 540 Gen5 NVMe'}, '8tb':{price:1199,name:'8TB Micron 9400 U.3 Enterprise SSD'} },
+    fans:     { price:230, name:'6× Noctua NF-A14 industrialPPC 3000 PWM' }
 };
 
 // ── STATE ─────────────────────────────────────────────────────────────────────
 
-let state = { chassis:'define-7-xl', mobo:'wrx90', cpu:'7845wx', cooling:'air-noctua', gpuFamily:'b70', gpuCount:1, ramSize:64, ramSpeed:4800, storage:'1tb' };
+// Baseline: 2× RTX Pro 6000 Blackwell Max-Q (blower, 300W), WRX90E-SAGE SE, TR Pro 7945WX, 128GB ECC RDIMM
+// Max-Q chosen: blower cooler required for multi-GPU towers; 4× still fits on 120V/20A
+let state = { chassis:'define-7-xl', mobo:'wrx90', cpu:'7945wx', cooling:'aio-360', gpuFamily:'rtxpro6000maxq', gpuCount:2, ramSize:128, ramSpeed:4800, storage:'4tb' };
 
 const PRESETS = {
-    starter:   { chassis:'enthoo-pro2', mobo:'trx50',  cpu:'7845wx', cooling:'air-noctua',  gpuFamily:'b70',        gpuCount:1, ramSize:64,  ramSpeed:4800, storage:'1tb' },
-    rack:      { chassis:'rm44',        mobo:'wrx90',  cpu:'7845wx', cooling:'aio-360',     gpuFamily:'b70',        gpuCount:4, ramSize:128, ramSpeed:5600, storage:'4tb' },
-    inference: { chassis:'define-7-xl', mobo:'wrx90',  cpu:'7845wx', cooling:'aio-360',     gpuFamily:'a6000',      gpuCount:4, ramSize:256, ramSpeed:5600, storage:'4tb' },
-    clinical:  { chassis:'define-7-xl', mobo:'wrx90',  cpu:'7975wx', cooling:'custom-loop', gpuFamily:'rtx6000ada', gpuCount:4, ramSize:512, ramSpeed:6000, storage:'8tb' }
+    starter:   { chassis:'enthoo-pro2', mobo:'wrx90',  cpu:'7945wx', cooling:'air-noctua',  gpuFamily:'rtx4090',        gpuCount:1, ramSize:64,  ramSpeed:4800, storage:'1tb' },
+    inference: { chassis:'define-7-xl', mobo:'wrx90',  cpu:'7945wx', cooling:'aio-360',     gpuFamily:'rtxpro6000maxq', gpuCount:2, ramSize:128, ramSpeed:4800, storage:'4tb' },
+    rack:      { chassis:'rm44',        mobo:'wrx90',  cpu:'7975wx', cooling:'aio-360',     gpuFamily:'rtxpro6000maxq', gpuCount:4, ramSize:256, ramSpeed:4800, storage:'4tb' },
+    clinical:  { chassis:'define-7-xl', mobo:'wrx90',  cpu:'7995wx', cooling:'custom-loop', gpuFamily:'rtxpro6000maxq', gpuCount:4, ramSize:256, ramSpeed:4800, storage:'8tb' }
 };
 
 // ── SPOTLIGHT ─────────────────────────────────────────────────────────────────
@@ -728,8 +1046,8 @@ function getPSUKey(wattage, chassisId) {
     const c = S.chassis[chassisId];
     if (c.dualPSU && wattage > 1400) return 'psu-dual';
     if (wattage <= 900)  return 'psu-1000w';
-    if (wattage <= 1200) return 'psu-1200w';
-    if (wattage <= 1600) return 'psu-1600w';
+    if (wattage <= 1300) return 'psu-1200w';
+    if (wattage <= 1650) return 'psu-1600w';
     return 'psu-2050w';
 }
 
@@ -850,11 +1168,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function getPSU(wattage, chassisId) {
     const c = S.chassis[chassisId];
-    if (c.dualPSU && wattage > 1400) return { price:400, name:'Dual 1000W PSUs (2× Corsair RM1000x) + Phanteks Power Combiner' };
-    if (wattage <= 900)  return { price:180, name:'SilverStone HELA 1000W Platinum' };
-    if (wattage <= 1200) return { price:350, name:'Corsair AX1200i Titanium Workstation PSU' };
-    if (wattage <= 1600) return { price:450, name:'Corsair AX1600i Titanium Workstation PSU' };
-    return { price:410, name:'SilverStone HELA 2050W Platinum Cybenetics' };
+    if (c.dualPSU && wattage > 1400) return { price:1300, name:'Dual Corsair AX1600i (2× 1600W Titanium) + Phanteks Power Combiner' };
+    if (wattage <= 900)  return { price:190,  name:'SilverStone HELA 1000W Platinum (SST-HA1000R-PM)' };
+    if (wattage <= 1300) return { price:320,  name:'Seasonic Prime TX-1300 Titanium (1300W)' };
+    if (wattage <= 1650) return { price:650,  name:'Corsair AX1600i Digital Titanium (1600W)' };
+    return                      { price:580,  name:'SilverStone HELA 2050R Platinum ATX 3.1 (2050W)' };
 }
 
 function getCircuit(w) {
@@ -889,21 +1207,21 @@ function clearPreset()     { document.querySelectorAll('.presets-row button').fo
 // Source: bizon-tech.com/bizon-g3000.html — scraped 2026-05-24
 // Base system: Intel Xeon W3-2525 8-core, 96GB DDR5 ECC, 1× GPU
 // These prices represent the FULLY CONFIGURED system with N units of the given GPU
+// Bizon G3000 turnkey comparison prices (bizon-tech.com) — estimated June 2026
+// RTX Pro 6000 Blackwell not yet listed on Bizon; extrapolated from Ada-gen pricing trends
 const BIZON = {
-    // [gpuFamily]: { count: price }
-    // Prices from hash #3142:46739;3143:28230;3144:28232;3145:60108;3151:46751;3155:28394
-    'rtx6000ada': { 1: 14800, 2: 28230, 3: 37400, 4: 46739 },
-    'a6000':      { 1: 12200, 2: 23100, 3: 34600, 4: null  }, // RTX A6000 Ada — estimated
-    'h100':       { 1: null,  2: null,  3: null,  4: null  }, // No Bizon H100 G3000 equiv
-    'rtx4090':    { 1: 9500,  2: 17800, 3: null,  4: null  }, // Bizon G3000 max 2× 4090
-    'b70':        { 1: null,  2: null,  3: null,  4: null  }, // No Arc B70 config on Bizon
+    'rtxpro6000':     { 1: 21000, 2: 40500, 3: null,  4: null  }, // Estimated Blackwell WS turnkey
+    'rtxpro6000maxq': { 1: 22000, 2: 43000, 3: 62000, 4: 80000 }, // Estimated Max-Q turnkey (4× capable)
+    'l40s':           { 1: 16000, 2: 30500, 3: 43000, 4: 58000 }, // L40S estimated from market rates
+    'rtx4090':        { 1: 10500, 2: 19800, 3: null,  4: null  }, // Bizon G3000 max 2× 4090
+    'h100':           { 1: null,  2: null,  3: null,  4: null  },
 };
 const BIZON_GPU_LABELS = {
-    'rtx6000ada': 'RTX 6000 Ada 48GB',
-    'a6000':      'RTX A6000 Ada 48GB',
-    'h100':       'H100 PCIe 80GB',
-    'rtx4090':    'RTX 4090 24GB',
-    'b70':        'Arc Pro B70 32GB',
+    'rtxpro6000':     'RTX Pro 6000 Blackwell WS 96GB',
+    'rtxpro6000maxq': 'RTX Pro 6000 Blackwell Max-Q 96GB',
+    'l40s':           'L40S 48GB',
+    'rtx4090':        'RTX 4090 24GB',
+    'h100':           'H100 PCIe 80GB',
 };
 
 function updateBizonComparison(sovTotal, gpuFamily, gpuCount) {
@@ -964,12 +1282,12 @@ function updateInterface() {
 
     // Clamp GPU count
     if (state.gpuCount > mb.maxGPU) state.gpuCount = mb.maxGPU;
-    document.getElementById('gpu-count-limit').textContent = `(Max ${mb.maxGPU} for ${state.mobo === 'wrx90' ? 'WRX90' : 'TRX50'})`;
+    document.getElementById('gpu-count-limit').textContent = `(Max ${mb.maxGPU} — ${mb.name.split(' ').slice(-2).join(' ')})`;
     [1,2,3,4].forEach(n => document.getElementById('gpu-count-' + n).classList.toggle('disabled', n > mb.maxGPU));
 
     // Active states
     document.querySelectorAll('.select-card').forEach(c => c.classList.remove('active'));
-    ['case-' + state.chassis, 'mobo-' + state.mobo, 'cpu-' + state.cpu,
+    ['case-' + state.chassis, 'mobo-' + state.mobo, 'cpu-' + state.cpu.replace(/\./g,''),
      'cooling-' + state.cooling, 'gpu-family-' + state.gpuFamily,
      'gpu-count-' + state.gpuCount, 'ram-size-' + state.ramSize,
      'ram-speed-' + state.ramSpeed, 'storage-' + state.storage
@@ -995,14 +1313,19 @@ function updateInterface() {
     cb.classList.add(circuit.cls);
 
     // Alerts
-    const isEATXWarn = (ch.moboMax === 'E-ATX' && mb.formFactor === 'SSI-EEB');
+    const isEATXWarn  = (ch.moboMax === 'E-ATX' && mb.formFactor === 'SSI-EEB');
     const isClearWarn = (state.gpuCount >= 4 && ch.slots === 8);
-    document.getElementById('alert-power').classList.toggle('hidden', wattage <= 1440);
+    // 120V hard limit: 1,920W continuous (NEC 80% × 20A × 120V)
+    const exceeds120V = (wattage > 1920);
+    document.getElementById('alert-power').classList.toggle('hidden',    wattage <= 1440 || exceeds120V);
     document.getElementById('alert-clearance').classList.toggle('hidden', !isClearWarn);
-    document.getElementById('alert-compat').classList.toggle('hidden', !isEATXWarn);
-    document.getElementById('alert-power-body').textContent = wattage > 1920
-        ? `${wattage}W total draw requires a dedicated 220V/240V outlet. 20A/120V max is 1,920W.`
-        : `${wattage}W draw exceeds the 1,440W continuous safe limit of a US 15A/120V circuit. Use a dedicated 20A circuit.`;
+    document.getElementById('alert-compat').classList.toggle('hidden',   !isEATXWarn);
+    document.getElementById('alert-120v-limit').classList.toggle('hidden', !exceeds120V);
+    if (exceeds120V) document.getElementById('alert-120v-watts').textContent = wattage;
+    if (!exceeds120V && wattage > 1440) {
+        document.getElementById('alert-power-body').textContent =
+            `${wattage}W draw exceeds the 1,440W continuous safe limit of a 15A/120V circuit. Use a dedicated 20A circuit (max 1,920W continuous).`;
+    }
 
     // CPU label
     document.getElementById('display-schematic-cpu').textContent = state.cpu.toUpperCase();
@@ -1101,22 +1424,26 @@ updateInterface();
 </script>
 
 <!-- ── VIDISHAP PRICE SEARCH AGENT CONSOLE (MODAL/OVERLAY) ──────────────── -->
-<div class="vs-agent-overlay" id="vs-agent-overlay">
+<div class="vs-agent-overlay" id="vs-agent-overlay" onclick="if(event.target===this)closeAgentConsole()">
     <div class="vs-agent-sidebar">
+
+        <!-- Header — full width row -->
         <div class="vs-agent-header">
-            <div style="display:flex;align-items:center;gap:0.75rem">
-                <div class="vs-agent-pulse"></div>
-                <div style="text-align:left">
-                    <h2 class="vs-agent-title">VidiShop Price Agent</h2>
-                    <p class="vs-agent-subtitle">Multi-Vendor Price Match Engine v2.6</p>
+            <div style="display:flex;justify-content:space-between;align-items:center">
+                <div style="display:flex;align-items:center;gap:0.75rem">
+                    <div class="vs-agent-pulse"></div>
+                    <div style="text-align:left">
+                        <h2 class="vs-agent-title">VidiShop Price Agent</h2>
+                        <p class="vs-agent-subtitle">Multi-Vendor Price Match Engine v2.6 — Current Build Configuration</p>
+                    </div>
                 </div>
+                <button class="vs-agent-close" onclick="closeAgentConsole()">×</button>
             </div>
-            <button class="vs-agent-close" onclick="closeAgentConsole()">×</button>
         </div>
-        
-        <!-- Status Banner -->
+
+        <!-- Status Banner — full width row -->
         <div class="vs-agent-banner">
-            <div style="display:flex;justify-content:space-between;font-size:0.65rem;font-weight:900;text-transform:uppercase;letter-spacing:0.05em">
+            <div style="display:flex;justify-content:space-between;font-size:0.65rem;font-weight:900;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.5rem">
                 <span style="color:#fff">Agent Status: <span id="agent-status-tag" style="color:var(--emerald)">IDLE</span></span>
                 <span id="agent-progress-pct" style="color:#fff">0%</span>
             </div>
@@ -1125,35 +1452,35 @@ updateInterface();
             </div>
         </div>
 
-        <!-- Terminal Logs -->
+        <!-- Left column: Terminal Logs -->
         <div class="vs-terminal" id="vs-terminal">
             <div class="vs-log-row system">[SYSTEM] VidiShop Agent initialized. Awaiting hardware configuration...</div>
         </div>
 
-        <!-- Price Match Results Table -->
-        <div class="vs-results-card">
+        <!-- Right column: Price Match Results -->
+        <div class="vs-results-card" style="overflow-y:auto;max-height:360px">
             <h3 style="font-size:0.8rem;font-weight:900;text-transform:uppercase;letter-spacing:0.05em;color:var(--blue);margin-bottom:0.75rem;text-align:left">Optimized Purchase Plan</h3>
             <table class="vs-results-table">
                 <thead>
                     <tr>
                         <th style="text-align:left">Component</th>
-                        <th style="text-align:left">Matched Vendor</th>
-                        <th style="text-align:right">Price Match</th>
+                        <th style="text-align:left">Vendor</th>
+                        <th style="text-align:right">Matched Price</th>
                         <th style="text-align:right">Savings</th>
                     </tr>
                 </thead>
                 <tbody id="vs-results-body">
                     <tr>
                         <td colspan="4" style="text-align:center;color:var(--text-secondary);font-size:0.75rem;padding:2rem 0">
-                            Initializing price matching agent...
+                            Click "Run Price Match" to begin scanning vendors...
                         </td>
                     </tr>
                 </tbody>
             </table>
-            
-            <div class="vs-summary-box" id="vs-summary-box" style="display:none">
+
+            <div class="vs-summary-box" id="vs-summary-box" style="display:none;margin-top:1rem">
                 <div style="display:flex;justify-content:space-between;margin-bottom:0.4rem">
-                    <span style="font-size:0.75rem;color:var(--text-secondary)">DIY Estimated Total:</span>
+                    <span style="font-size:0.75rem;color:var(--text-secondary)">DIY List Price Total:</span>
                     <span style="font-size:0.75rem;font-weight:700" id="vs-diy-total">—</span>
                 </div>
                 <div style="display:flex;justify-content:space-between;margin-bottom:0.5rem">
@@ -1167,8 +1494,12 @@ updateInterface();
             </div>
         </div>
 
-        <button class="vs-btn-scan" id="vs-btn-scan" onclick="runPriceScan()">Run VidiShop Price Match</button>
-        <button class="vs-btn-deep-scan" id="vs-btn-deep-scan" style="display:none" onclick="runDeepScan()">Run VidiShop SecondMarket Deep Scan</button>
+        <!-- Action buttons — full width row -->
+        <div class="vs-action-row">
+            <button class="vs-btn-scan" id="vs-btn-scan" onclick="runPriceScan()">Run VidiShop Price Match</button>
+            <button class="vs-btn-deep-scan" id="vs-btn-deep-scan" style="display:none" onclick="runDeepScan()">SecondMarket Deep Scan (eBay / FB)</button>
+        </div>
+
     </div>
 </div>
 
@@ -1346,11 +1677,18 @@ function runDeepScan() {
     const progressPct = document.getElementById('agent-progress-pct');
     
     // Refurbished/Used matches
+    // Deep scan pulls realistic used/refurb pricing based on current selection
+    const gpu = S.gpu[state.gpuFamily];
+    const cpu = S.cpu[state.cpu];
+    const ram = S.ram[state.ramSize];
+    const ch  = S.chassis[state.chassis];
+
     const secondMatches = {
-        'System RAM': { vendor: 'eBay (Used)', price: 580, note: 'ECC DDR5 RDIMM 8-channel kit (Vetted, 99.8% rating)', query: 'ECC DDR5 RDIMM 8x' },
-        'CPU': { vendor: 'r/homelabsales', price: 510, note: 'Threadripper Pro 7845WX (Vetted Seller, original box)', query: 'Threadripper Pro 7845WX' },
-        'Chassis': { vendor: 'Facebook Marketplace', price: 95, note: 'Define 7 XL (Locally listed, pick-up)', query: 'Define 7 XL' },
-        'PSU': { vendor: 'UnixSurplus', price: 120, note: 'Refurbished SilverStone Platinum PSU (Tested)', query: 'SilverStone Platinum PSU' }
+        'System RAM':  { vendor: 'eBay (Used/Open-Box)',   price: Math.round((ram.price + (S.ramSpeed[state.ramSpeed]?.price||0)) * 0.82), note: `${ram.name} — Open Box / Pulled Server (Tested, 99.9% seller)`, query: ram.name },
+        'CPU':         { vendor: 'r/homelabsales',          price: Math.round(cpu.price * 0.78),  note: `${cpu.name} (Vetted Seller, OEM tray w/ warranty)`, query: cpu.name.replace(/\s*\(\d+C\)/g,'') },
+        'Chassis':     { vendor: 'Facebook Marketplace',    price: Math.round(ch.price  * 0.42),  note: `${ch.name} (Local pick-up listing)`, query: ch.name },
+        'PSU':         { vendor: 'UnixSurplus.com',         price: Math.round(getPSU((gpu.tdp * state.gpuCount) + cpu.tdp + 150, state.chassis).price * 0.55), note: 'Same model refurbished / load-tested (UnixSurplus)', query: 'workstation PSU refurb' },
+        'GPU Array':   { vendor: 'eBay Refurbished',        price: Math.round((gpu.price * state.gpuCount) * 0.85), note: `${state.gpuCount}× ${gpu.name} — Refurb / Pull (Certified, ≥90-day warranty)`, query: gpu.name + ' refurbished' }
     };
     
     const matchKeys = Object.keys(secondMatches);

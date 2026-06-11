@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const http = require('http');
 
 const app = express();
 const PORT = process.env.PORT || 3007;
@@ -25,19 +26,46 @@ app.use(cors({
 
 app.use(express.json({ limit: '10mb' }));
 
+// Wrap with HTTP server for socket.io compatibility
+const server = http.createServer(app);
+const io = require('socket.io')(server, {
+  cors: {
+    origin: '*',
+    methods: ['GET', 'POST']
+  }
+});
+
+// Store io instance on app context for access in route handlers
+app.set('io', io);
+
+// WebSockets Connection Hook
+io.on('connection', (socket) => {
+  console.log(`🔌 Client connected to WebSockets: ${socket.id}`);
+  
+  socket.on('join-session', (data) => {
+    socket.join(data.sessionId || 'default');
+    console.log(`🔌 Client ${socket.id} joined session room: ${data.sessionId || 'default'}`);
+  });
+
+  socket.on('disconnect', () => {
+    console.log(`🔌 Client disconnected: ${socket.id}`);
+  });
+});
+
 // Health check
-app.get('/health', (req, res) => res.json({ status: 'ok', ts: Date.now() }));
+app.get('/health', (req, res) => res.json({ status: 'ok', ts: Date.now(), socketsConnected: io.sockets.sockets.size }));
 
 // Routes
-app.use('/api/generate', require('./routes/generate'));
-app.use('/api/keys',     require('./routes/keys'));
-app.use('/api/profile',  require('./routes/profile'));
-app.use('/api/sessions', require('./routes/sessions'));
+app.use('/api/generate',  require('./routes/generate'));
+app.use('/api/keys',      require('./routes/keys'));
+app.use('/api/profile',   require('./routes/profile'));
+app.use('/api/sessions',  require('./routes/sessions'));
+app.use('/api/workflows', require('./routes/workflows'));
 
 // 404 catch-all
 app.use((req, res) => res.status(404).json({ error: 'Not found' }));
 
-app.listen(PORT, () => {
-  console.log(`\n🚀 VidiPitch Agent Backend running at http://localhost:${PORT}`);
+server.listen(PORT, () => {
+  console.log(`\n🚀 VidiPitch Agent Backend running with WebSockets at http://localhost:${PORT}`);
   console.log(`   Health: http://localhost:${PORT}/health\n`);
 });

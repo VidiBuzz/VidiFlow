@@ -107,7 +107,7 @@ These are NOT needed for BrandSwap but could enhance it:
 
 ### Fresh Install (All at Once)
 ```bash
-cd m:\code\vidismart\brandswap-backend
+cd m:\code\vidismart\brandswap
 python -m pip install -r requirements.txt
 ```
 

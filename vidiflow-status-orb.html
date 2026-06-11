@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>VidiFlow - Glowing Status Orb</title>
+  <script src="https://unpkg.com/three"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { 
+      background: #0a0a1a; 
+      overflow: hidden;
+      font-family: 'Inter', -apple-system, sans-serif;
+    }
+    canvas { display: block; }
+    
+    .controls {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 10px;
+      z-index: 100;
+    }
+    
+    .state-btn {
+      padding: 10px 20px;
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 8px;
+      background: rgba(10, 10, 26, 0.8);
+      color: #fff;
+      cursor: pointer;
+      font-size: 12px;
+      font-family: 'Inter', sans-serif;
+      transition: all 0.3s ease;
+    }
+    
+    .state-btn:hover {
+      background: rgba(255,255,255,0.1);
+      border-color: rgba(255,255,255,0.4);
+    }
+    
+    .state-btn.active {
+      border-color: #00ccff;
+      background: rgba(0, 204, 255, 0.1);
+    }
+    
+    .info {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      background: rgba(10, 10, 26, 0.9);
+      padding: 20px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.1);
+      color: #fff;
+      z-index: 100;
+      max-width: 300px;
+    }
+    
+    .info h3 { 
+      color: #00ccff; 
+      margin-bottom: 10px; 
+      font-size: 14px;
+    }
+    
+    .info p {
+      font-size: 12px;
+      color: #888;
+      line-height: 1.5;
+    }
+    
+    .state-label {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 24px;
+      font-weight: 900;
+      color: #fff;
+      text-transform: uppercase;
+      letter-spacing: 8px;
+      z-index: 100;
+      pointer-events: none;
+      text-shadow: 0 0 20px currentColor;
+    }
+  </style>
+</head>
+<body>
+  <div id="container"></div>
+  
+  <div class="info">
+    <h3>VIDIFLOW STATUS ORB</h3>
+    <p>State-driven glowing orb that changes color and animation based on agent status. Each state has unique visual properties:</p>
+    <ul style="margin-top: 10px; font-size: 11px; color: #666;">
+      <li><span style="color: #666">●</span> IDLE - Slow pulse, dim glow</li>
+      <li><span style="color: #00ccff">●</span> THINKING - Medium pulse, cyan glow, 2 rings</li>
+      <li><span style="color: #00ff88">●</span> RUNNING - Fast pulse, green glow, 3 rings</li>
+      <li><span style="color: #ffaa00">●</span> HOT - Fast pulse, amber glow, 3 rings</li>
+      <li><span style="color: #ff4444">●</span> ERROR - Very fast pulse, red glow, 4 rings</li>
+    </ul>
+  </div>
+  
+  <div class="state-label" id="stateLabel">IDLE</div>
+  
+  <div class="controls">
+    <button class="state-btn active" onclick="setState('idle')">IDLE</button>
+    <button class="state-btn" onclick="setState('thinking')">THINKING</button>
+    <button class="state-btn" onclick="setState('running')">RUNNING</button>
+    <button class="state-btn" onclick="setState('hot')">HOT</button>
+    <button class="state-btn" onclick="setState('error')">ERROR</button>
+  </div>
+
+  <script>
+    // ═══════════ STATE CONFIGURATION ═══════════
+    const STATES = {
+      idle: { 
+        color: 0x666666, 
+        pulseSpeed: 0.001, 
+        ringCount: 0, 
+        particleCount: 0,
+        label: 'IDLE'
+      },
+      thinking: { 
+        color: 0x00ccff, 
+        pulseSpeed: 0.003, 
+        ringCount: 2, 
+        particleCount: 50,
+        label: 'THINKING'
+      },
+      running: { 
+        color: 0x00ff88, 
+        pulseSpeed: 0.005, 
+        ringCount: 3, 
+        particleCount: 100,
+        label: 'RUNNING'
+      },
+      hot: { 
+        color: 0xffaa00, 
+        pulseSpeed: 0.006, 
+        ringCount: 3, 
+        particleCount: 150,
+        label: 'HOT'
+      },
+      error: { 
+        color: 0xff4444, 
+        pulseSpeed: 0.008, 
+        ringCount: 4, 
+        particleCount: 200,
+        label: 'ERROR'
+      }
+    };
+
+    let currentState = 'idle';
+    let orb, rings = [], particles = [];
+    let scene, camera, renderer;
+
+    // ═══════════ THREE.JS SETUP ═══════════
+    function init() {
+      scene = new THREE.Scene();
+      camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+      renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setClearColor(0x0a0a1a, 1);
+      document.getElementById('container').appendChild(renderer.domElement);
+
+      // Create orb
+      const orbGeometry = new THREE.SphereGeometry(1, 32, 32);
+      const orbMaterial = new THREE.MeshBasicMaterial({ 
+        color: STATES.idle.color,
+        transparent: true,
+        opacity: 0.9
+      });
+      orb = new THREE.Mesh(orbGeometry, orbMaterial);
+      scene.add(orb);
+
+      // Create inner glow
+      const glowGeometry = new THREE.SphereGeometry(1.2, 32, 32);
+      const glowMaterial = new THREE.MeshBasicMaterial({ 
+        color: STATES.idle.color,
+        transparent: true,
+        opacity: 0.3,
+        side: THREE.BackSide
+      });
+      const glow = new THREE.Mesh(glowGeometry, glowMaterial);
+      orb.add(glow);
+
+      // Create rings
+      for (let i = 0; i < 5; i++) {
+        const ringGeometry = new THREE.RingGeometry(1.3 + i * 0.2, 1.4 + i * 0.2, 64);
+        const ringMaterial = new THREE.MeshBasicMaterial({ 
+          color: STATES.idle.color, 
+          transparent: true, 
+          opacity: 0.4,
+          side: THREE.DoubleSide
+        });
+        const ring = new THREE.Mesh(ringGeometry, ringMaterial);
+        ring.rotation.x = Math.PI / 2;
+        ring.visible = false;
+        rings.push(ring);
+        scene.add(ring);
+      }
+
+      // Create particles
+      createParticles(0);
+
+      camera.position.z = 5;
+      
+      // Handle resize
+      window.addEventListener('resize', onWindowResize);
+      
+      animate();
+    }
+
+    function createParticles(count) {
+      // Remove existing particles
+      particles.forEach(p => scene.remove(p));
+      particles = [];
+
+      if (count === 0) return;
+
+      const particleGeometry = new THREE.SphereGeometry(0.05, 8, 8);
+      
+      for (let i = 0; i < count; i++) {
+        const particleMaterial = new THREE.MeshBasicMaterial({ 
+          color: STATES[currentState].color,
+          transparent: true,
+          opacity: 0.6
+        });
+        const particle = new THREE.Mesh(particleGeometry, particleMaterial);
+        
+        // Random position around orb
+        const radius = 2 + Math.random() * 2;
+        const theta = Math.random() * Math.PI * 2;
+        const phi = Math.random() * Math.PI;
+        
+        particle.position.x = radius * Math.sin(phi) * Math.cos(theta);
+        particle.position.y = radius * Math.sin(phi) * Math.sin(theta);
+        particle.position.z = radius * Math.cos(phi);
+        
+        particle.userData = {
+          radius: radius,
+          theta: theta,
+          phi: phi,
+          speed: 0.01 + Math.random() * 0.02
+        };
+        
+        particles.push(particle);
+        scene.add(particle);
+      }
+    }
+
+    function onWindowResize() {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    }
+
+    // ═══════════ ANIMATION ═══════════
+    function animate() {
+      requestAnimationFrame(animate);
+      
+      const time = Date.now() * STATES[currentState].pulseSpeed;
+      
+      // Pulse orb
+      const scale = 1 + Math.sin(time) * 0.15;
+      orb.scale.set(scale, scale, scale);
+      
+      // Rotate orb
+      orb.rotation.y += 0.005;
+      
+      // Animate rings
+      rings.forEach((ring, i) => {
+        if (ring.visible) {
+          ring.rotation.z = time * (i + 1) * 0.3;
+          ring.material.opacity = 0.3 + Math.sin(time + i * 0.5) * 0.2;
+          
+          // Scale rings
+          const ringScale = 1 + Math.sin(time * 0.5 + i) * 0.1;
+          ring.scale.set(ringScale, ringScale, 1);
+        }
+      });
+      
+      // Animate particles
+      particles.forEach(particle => {
+        const data = particle.userData;
+        data.theta += data.speed;
+        
+        particle.position.x = data.radius * Math.sin(data.phi) * Math.cos(data.theta);
+        particle.position.y = data.radius * Math.sin(data.phi) * Math.sin(data.theta);
+        particle.position.z = data.radius * Math.cos(data.phi);
+        
+        // Pulse particle opacity
+        particle.material.opacity = 0.3 + Math.sin(time * 2 + data.theta) * 0.3;
+      });
+      
+      renderer.render(scene, camera);
+    }
+
+    // ═══════════ STATE CHANGE ═══════════
+    window.setState = function(state) {
+      currentState = state;
+      const config = STATES[state];
+      
+      // Update orb color
+      orb.material.color.setHex(config.color);
+      
+      // Update rings
+      rings.forEach((ring, i) => {
+        ring.visible = i < config.ringCount;
+        ring.material.color.setHex(config.color);
+      });
+      
+      // Update particles
+      createParticles(config.particleCount);
+      
+      // Update label
+      document.getElementById('stateLabel').textContent = config.label;
+      document.getElementById('stateLabel').style.color = '#' + config.color.toString(16).padStart(6, '0');
+      
+      // Update buttons
+      document.querySelectorAll('.state-btn').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.textContent.toLowerCase() === state) {
+          btn.classList.add('active');
+        }
+      });
+    };
+
+    // Initialize
+    init();
+  </script>
+</body>
+</html>
