@@ -17,6 +17,13 @@ RewriteRule ^.*$ smb-ai.html [R=301,L]
 AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript application/javascript application/json
 </IfModule>
 
+# HTML must revalidate so deployed updates show immediately
+<IfModule mod_headers.c>
+<FilesMatch "\.html$">
+Header set Cache-Control "no-cache, must-revalidate"
+</FilesMatch>
+</IfModule>
+
 # Browser caching
 <IfModule mod_expires.c>
 ExpiresActive On
