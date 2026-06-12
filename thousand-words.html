@@ -226,6 +226,39 @@
     margin-bottom: 1.5rem;
   }
 
+  .test-layout, .slider-panels {
+    perspective: 1200px;
+  }
+
+  .tilt-card {
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.25s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.3s ease, background-color 0.4s ease, border-color 0.4s ease;
+  }
+
+  .sheen-overlay {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 99;
+    opacity: 0;
+    mix-blend-mode: overlay;
+    transition: opacity 0.4s ease;
+    border-radius: inherit;
+  }
+
+  .tilt-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 98;
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.12) 50%), linear-gradient(90deg, rgba(56, 189, 248, 0.015), rgba(168, 85, 247, 0.005), rgba(56, 189, 248, 0.015));
+    background-size: 100% 4px, 6px 100%;
+    opacity: 0.35;
+    border-radius: inherit;
+  }
+
   .test-panel {
     background: var(--card-bg);
     border: 1px solid var(--border-color);
@@ -242,6 +275,7 @@
     justify-content: center;
     align-items: center;
     overflow: hidden;
+    transform-style: preserve-3d;
   }
   
   .test-screen {
@@ -477,7 +511,8 @@
     min-height: 0;
     overflow: hidden;
     position: relative;
-    transition: background-color 0.4s ease, border-color 0.4s ease;
+    transition: background-color 0.4s ease, border-color 0.4s ease, transform 0.25s cubic-bezier(0.25, 1, 0.5, 1);
+    transform-style: preserve-3d;
   }
   .words-panel-label {
     font-size: 0.75rem;
@@ -572,7 +607,8 @@
     justify-content: center;
     position: relative;
     z-index: 10;
-    transition: all 0.5s ease;
+    transition: background-color 0.4s ease, border-color 0.4s ease, transform 0.25s cubic-bezier(0.25, 1, 0.5, 1);
+    transform-style: preserve-3d;
   }
   .image-container-3d img {
     width: 100%;
@@ -867,6 +903,174 @@
     color: #34d399;
   }
 
+  /* ========== HERO STAT SCOREBOARD ========== */
+  .stat-strip {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+  }
+  .stat-cell {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    padding: 0.9rem 0.5rem;
+    text-align: center;
+    backdrop-filter: blur(8px);
+  }
+  .stat-num {
+    display: block;
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: 1.5rem;
+    line-height: 1.1;
+    color: #fff;
+    margin-bottom: 0.3rem;
+  }
+  .stat-num.cyan { color: #38bdf8; text-shadow: 0 0 16px rgba(56, 189, 248, 0.4); }
+  .stat-num.purple { color: #c084fc; text-shadow: 0 0 16px rgba(168, 85, 247, 0.4); }
+  .stat-num.emerald { color: #34d399; text-shadow: 0 0 16px rgba(16, 185, 129, 0.4); }
+  .stat-num.rose { color: #f87171; text-shadow: 0 0 16px rgba(239, 68, 68, 0.4); }
+  .stat-label {
+    font-size: 0.6rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: #64748b;
+    line-height: 1.35;
+  }
+
+  /* ========== VIEW: THE GAP (LIVE DEMO) ========== */
+  #section-gap {
+    overflow-y: auto;
+    height: 100%;
+    padding-right: 10px;
+  }
+  #section-gap::-webkit-scrollbar { width: 8px; }
+  #section-gap::-webkit-scrollbar-track { background: rgba(3, 5, 8, 0.3); }
+  #section-gap::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 4px; }
+  #section-gap::-webkit-scrollbar-thumb:hover { background: var(--cyan); }
+
+  .gap-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+    align-items: stretch;
+  }
+  .gap-reader {
+    background: #fdfbf7;
+    color: #1a202c;
+    border-radius: 24px;
+    padding: 2rem;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+    min-height: 380px;
+  }
+  .gap-reader-text {
+    font-family: var(--font-serif);
+    font-size: 1.05rem;
+    line-height: 1.9;
+    color: #2d3748;
+  }
+  .gap-reader-text span.read-now {
+    background: rgba(14, 165, 233, 0.25);
+    border-radius: 3px;
+    box-shadow: 0 0 0 2px rgba(14, 165, 233, 0.25);
+  }
+  .gap-reader-text span.read-done {
+    color: #a0aec0;
+  }
+  .gap-live {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 24px;
+    padding: 2rem;
+    backdrop-filter: blur(12px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1.25rem;
+    min-height: 380px;
+  }
+  .gap-counter-num {
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: 3.4rem;
+    line-height: 1;
+    color: #f87171;
+    text-shadow: 0 0 24px rgba(239, 68, 68, 0.45);
+  }
+  .gap-counter-label {
+    font-size: 0.7rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: #94a3b8;
+    text-align: center;
+  }
+
+  /* Bandwidth race bars */
+  .bw-panel {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 24px;
+    padding: 2rem;
+    backdrop-filter: blur(12px);
+    margin-bottom: 2rem;
+  }
+  .bw-row { margin-bottom: 1.4rem; }
+  .bw-row:last-child { margin-bottom: 0; }
+  .bw-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 0.5rem;
+  }
+  .bw-name {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 0.85rem;
+    color: #e2e8f0;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .bw-rate { font-size: 0.75rem; font-weight: 700; color: #64748b; }
+  .bw-track {
+    height: 16px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--border-color);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+  .bw-fill {
+    height: 100%;
+    width: 0%;
+    border-radius: 999px;
+  }
+  .bw-fill.eye { background: linear-gradient(90deg, var(--cyan), var(--emerald)); box-shadow: 0 0 14px rgba(16, 185, 129, 0.5); }
+  .bw-fill.read { background: linear-gradient(90deg, #475569, #64748b); }
+
+  /* Video block */
+  .gap-video-panel {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 24px;
+    padding: 2rem;
+    backdrop-filter: blur(12px);
+    margin-bottom: 2.5rem;
+    text-align: center;
+  }
+  .gap-video-panel video {
+    width: 100%;
+    max-width: 860px;
+    border-radius: 16px;
+    border: 1px solid rgba(56, 189, 248, 0.15);
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.55), 0 0 40px rgba(56, 189, 248, 0.08);
+    display: block;
+    margin: 0 auto;
+  }
+
   /* ========== RESPONSIVE ========== */
   @media(max-width: 1024px) {
     body {
@@ -890,6 +1094,12 @@
     }
     .words-panel, .image-panel {
       height: 400px;
+    }
+    .stat-strip {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .gap-grid {
+      grid-template-columns: 1fr;
     }
   }
 
@@ -935,10 +1145,11 @@
 <nav class="nav">
   <div class="nav-brand">Vidi<span>Flow</span></div>
   <div class="nav-tabs">
-    <button class="nav-tab active" onclick="switchSection('test')">Glance Test</button>
-    <button class="nav-tab" onclick="switchSection('dissolve')">Brisbane Slider</button>
-    <button class="nav-tab" onclick="switchSection('modality')">Flow &amp; Fill</button>
-    <button class="nav-tab" onclick="switchSection('principles')">Rubric &amp; Principles</button>
+    <button class="nav-tab active" data-sect="test" onclick="switchSection('test')">Glance Test</button>
+    <button class="nav-tab" data-sect="gap" onclick="switchSection('gap')">The Gap</button>
+    <button class="nav-tab" data-sect="dissolve" onclick="switchSection('dissolve')">Brisbane Slider</button>
+    <button class="nav-tab" data-sect="modality" onclick="switchSection('modality')">Flow &amp; Fill</button>
+    <button class="nav-tab" data-sect="principles" onclick="switchSection('principles')">Rubric &amp; Principles</button>
   </div>
   <a href="agent-ui.html" class="back-dashboard">
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
@@ -955,16 +1166,34 @@
       
       <div class="test-intro">
         <span class="badge">Cognitive Challenge</span>
-        <h1>Beat the Vidi<span>Flow</span> Glance Test</h1>
+        <h1>Your Eye Decodes an Image in <span>13 Milliseconds</span>. Text Can't Keep Up.</h1>
         <p class="subtitle">
-          Human perception processes visual states up to <strong>60,000 times faster</strong> than textual decoding. If your system dashboard requires reading text labels to identify an outage, you are losing response seconds.
+          You just spent four seconds reading that headline. Reading is a serial decoder — letter by letter, line by line. Vision is parallel hardware. If your dashboard makes you <em>read</em> an outage instead of <em>see</em> it, you've already lost.
         </p>
+        <div class="stat-strip">
+          <div class="stat-cell">
+            <span class="stat-num cyan" data-count="13" data-suffix="ms">0ms</span>
+            <span class="stat-label">To recognize an image</span>
+          </div>
+          <div class="stat-cell">
+            <span class="stat-num rose" data-count="250" data-suffix=" wpm">0 wpm</span>
+            <span class="stat-label">Human reading ceiling</span>
+          </div>
+          <div class="stat-cell">
+            <span class="stat-num purple" data-count="60000" data-suffix="&times;" data-comma="true">0&times;</span>
+            <span class="stat-label">Faster visual processing</span>
+          </div>
+          <div class="stat-cell">
+            <span class="stat-num emerald" data-count="90" data-suffix="%">0%</span>
+            <span class="stat-label">Of brain input is visual</span>
+          </div>
+        </div>
         <p class="subtitle" style="font-size: 0.9rem;">
-          Take this comparative glance challenge. First, parse an alert hidden inside a digital text log. Second, try to spot the same alert using VidiFlow's Analogic Glance UI.
+          Don't take our word for it — race yourself. First, find an alert buried in a raw text log. Then spot the same alert in VidiFlow's Analogic Glance UI.
         </p>
       </div>
 
-      <div class="test-panel" id="test-panel-box">
+      <div class="test-panel tilt-card" id="test-panel-box">
         <!-- Screen 1: Start -->
         <div class="test-screen" id="screen-start">
           <div class="result-circle" style="background: rgba(14,165,233,0.06); border-color: var(--cyan); box-shadow: 0 0 20px rgba(14,165,233,0.15); margin-bottom: 1.5rem;">
@@ -992,11 +1221,9 @@
         </div>
 
         <!-- Screen 4: Analogic (Visual Grid) -->
-        <div class="test-screen hidden" id="screen-analogic">
+        <div class="test-screen hidden" id="screen-analogic" style="position: relative;">
           <p class="test-status-text">Click the <strong>pulsing red alert node</strong> instantly:</p>
-          <div class="visual-agent-grid" id="agent-grid-box">
-            <!-- Populated by JS -->
-          </div>
+          <canvas id="swarm-3d-canvas" style="width: 100%; height: 380px; max-width: 460px; margin: 0.5rem 0; cursor: pointer;"></canvas>
         </div>
 
         <!-- Screen 5: Results -->
@@ -1033,15 +1260,73 @@
     </div>
   </section>
 
+  <!-- ==================== SECTION: THE GAP (LIVE DEMO) ==================== -->
+  <section id="section-gap" class="view-section">
+
+    <div class="rubric-header" style="margin-bottom: 2rem;">
+      <span class="badge" style="background: rgba(239, 68, 68, 0.08); border-color: rgba(239, 68, 68, 0.2); color: #f87171;">Live Demonstration</span>
+      <h2>While You Were Reading&hellip;</h2>
+      <p>The paragraph below highlights at real human reading speed. The swarm beside it keeps moving. Count what you miss.</p>
+    </div>
+
+    <div class="gap-grid">
+      <!-- Left: paragraph at human reading speed -->
+      <div class="gap-reader">
+        <span class="words-panel-label">You, reading at 250 wpm</span>
+        <div class="gap-reader-text" id="gap-reader-text"></div>
+      </div>
+
+      <!-- Right: live mutating swarm + missed counter -->
+      <div class="gap-live">
+        <span class="words-panel-label" style="color: #64748b;">The swarm, in the same seconds</span>
+        <div class="visual-agent-grid" id="gap-agent-grid" style="margin: 0;"></div>
+        <div>
+          <div class="gap-counter-num" id="gap-missed-counter" style="text-align:center;">0</div>
+          <div class="gap-counter-label">State changes while you read</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bandwidth race -->
+    <div class="bw-panel">
+      <div class="table-title" style="padding: 0 0 1.25rem 0; border-bottom: none;">The Bandwidth Gap, Drawn to Scale</div>
+      <div class="bw-row">
+        <div class="bw-head">
+          <span class="bw-name" style="color: #34d399;">Optic Nerve (Vision)</span>
+          <span class="bw-rate">&asymp; 10,000,000 bits / second</span>
+        </div>
+        <div class="bw-track"><div class="bw-fill eye" id="bw-fill-eye"></div></div>
+      </div>
+      <div class="bw-row">
+        <div class="bw-head">
+          <span class="bw-name" style="color: #94a3b8;">Reading Text</span>
+          <span class="bw-rate">&asymp; 50 bits / second</span>
+        </div>
+        <div class="bw-track"><div class="bw-fill read" id="bw-fill-read"></div></div>
+      </div>
+      <p style="font-size: 0.8rem; color: #64748b; margin-top: 1rem; line-height: 1.5;">
+        Same clock, same scale. By the time reading transfers one sentence, vision has already delivered the entire scene &mdash; roughly <strong style="color:#e2e8f0;">200,000&times;</strong> more data per second.
+      </p>
+    </div>
+
+    <!-- Video -->
+    <div class="gap-video-panel">
+      <div class="table-title" style="padding: 0 0 0.5rem 0; border-bottom: none;">See It in Motion</div>
+      <p style="font-size: 0.85rem; color: #94a3b8; margin-bottom: 1.25rem;">Visual vector search: the agentic eye finding answers at machine speed.</p>
+      <video controls preload="metadata" src="https://cdn.vidi.news/visual-vector-smart-search.mp4"></video>
+    </div>
+
+  </section>
+
   <!-- ==================== SECTION 2: DISSOLVE SLIDER ==================== -->
   <section id="section-dissolve" class="view-section">
     <div class="slider-layout">
       
       <div style="text-align: center; flex-shrink: 0;">
         <span class="badge" style="background: rgba(168, 85, 247, 0.08); border-color: rgba(168, 85, 247, 0.2); color: var(--purple); margin-bottom: 0.5rem;">The Power of Contrast</span>
-        <h1 style="font-size: 1.8rem; margin-bottom: 0.25rem;">Brisbane Editorial Converter</h1>
+        <h1 style="font-size: 1.8rem; margin-bottom: 0.25rem;">1,000 Words. Or <span>One Glance</span>.</h1>
         <p class="subtitle" style="margin-bottom: 0;">
-          Drag the slider to compress Arthur Brisbane's <strong>1,000-word claim</strong> about visual cognition directly into a single visual.
+          Arthur Brisbane made the claim in 1911. Drag the slider and watch his <strong>1,000-word argument</strong> collapse into a single visual your brain reads instantly.
         </p>
       </div>
 
@@ -1052,7 +1337,7 @@
         <div class="slider-panels">
           
           <!-- Left: Brisbane Text -->
-          <div class="words-panel" id="text-container">
+          <div class="words-panel tilt-card" id="text-container">
             <span class="words-panel-label">1,000 Words (Digital Layer)</span>
             <div class="words-panel-text" id="wall-of-text">
               The concept of visual communication predates written language by tens of thousands of years. Cave paintings in Lascaux, France, dating back approximately seventeen thousand years, demonstrate the innate human drive to express meaning through imagery rather than inscription. Long before alphabets were devised or grammar systems formalized, our ancestors understood instinctively that a rendered bison conveyed something immediate and universal — something that transcended the boundaries of spoken dialect or tribal vocabulary. The eye processes visual information at extraordinary speed. Neuroscientists estimate that the human brain can identify and interpret a recognizable image in as little as thirteen milliseconds, a speed that no written or spoken language can approach. Words must be decoded sequentially: letter by letter, syllable by syllable, sentence by sentence. An image lands whole. It bypasses the logical, linguistic centers of the brain and speaks directly to the limbic system — the ancient seat of emotion, memory, and instinctive response. Consider the difference between reading a clinical description of grief — its physiological symptoms, its psychological stages, its duration and variability across individuals — and simply looking at a photograph of a mother holding a child she has just lost. The photograph needs no translation. It needs no footnote, no citation, no explanatory paragraph. It simply is. This is why the great photojournalists of the twentieth century changed history with single frames. Nick Ut's image of Kim Phuc running from a napalm strike in 1972 turned the tide of American public opinion on the Vietnam War more effectively than any editorial, speech, or report had managed. Kevin Carter's photograph of a vulture watching a starving Sudanese child won a Pulitzer Prize and sparked international humanitarian debate that continues to this day. These images were not translated. They were felt. The phrase itself — a picture is worth a thousand words — is commonly attributed to an American newspaper editor named Arthur Brisbane, who used a version of it in 1911. Some trace it to Chinese proverb. Others find echoes of it in Napoleon Bonaparte, who reportedly believed that a good sketch was worth more than a long report. But its origin matters less than its endurance. The phrase has survived for over a century because it describes something fundamental about human cognition — not a preference, not a cultural habit, but a neurological fact. We are visual creatures first. Language came later, and brilliantly, but it never replaced the older, faster, deeper channel through which images speak. Graphic designers know this. Filmmakers know this. Advertisers have built billion-dollar industries on it. A well-composed image compresses narrative, emotion, context, and meaning into a single glance. It does not ask for patience. It does not require literacy. It does not care what language you speak or what year you were born. It simply arrives, and it is understood. In an age of information saturation — where the average person is estimated to encounter between six and ten thousand advertising messages per day, where text floods every screen and surface — the image has not been diminished. It has become more powerful than ever. Because attention is now the scarcest resource on earth, and the image remains the fastest way to capture it. One picture. One moment. One truth. Instantly. Completely. Without a single word.
@@ -1063,7 +1348,7 @@
           <div class="image-panel">
             <span class="image-panel-label">1 Picture (Analogic Layer)</span>
             <div class="image-glow-ring" id="image-glow"></div>
-            <div class="image-container-3d" id="image-box">
+            <div class="image-container-3d tilt-card" id="image-box">
               <img src="thousand-words.png" alt="A picture is worth a thousand words representation">
             </div>
             <span class="image-caption" id="image-caption-text">understood instantly</span>
@@ -1105,7 +1390,7 @@
         <div class="slider-panels">
           
           <!-- Left: Fill-in-the-Blank Paragraph -->
-          <div class="words-panel" id="modality-text-container" style="background: #fdfbf7; color: #1a202c; border-radius: 24px; padding: 2.2rem; display: flex; flex-direction: column; height: 100%; min-height: 0; overflow: hidden; position: relative;">
+          <div class="words-panel tilt-card" id="modality-text-container" style="background: #fdfbf7; color: #1a202c; border-radius: 24px; padding: 2.2rem; display: flex; flex-direction: column; height: 100%; min-height: 0; overflow: hidden; position: relative;">
             <span class="words-panel-label" style="color: #a0aec0;">1,000 Words (Interactive Input)</span>
             <div class="words-panel-text" id="fill-text-box" style="font-family: var(--font-serif); font-size: 1rem; line-height: 1.8; color: #2d3748; overflow-y: auto; flex: 1; min-height: 0; padding-right: 12px;">
               The concept of 
@@ -1128,7 +1413,7 @@
           <div class="image-panel" id="modality-image-panel">
             <span class="image-panel-label" style="z-index: 25;">Real-Time Typographic Blending</span>
             <div class="image-glow-ring" id="modality-image-glow" style="position: absolute; inset: -2px; border-radius: 30px; background: linear-gradient(135deg, var(--emerald), var(--cyan)); z-index: 1; opacity: 0; filter: blur(20px); transition: opacity 0.5s ease, transform 0.5s ease;"></div>
-            <div class="image-container-3d" id="modality-image-box" style="width: 100%; height: 100%; border-radius: 28px; background: rgba(11, 15, 26, 0.6); border: 1px solid rgba(255, 255, 255, 0.08); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); display: flex; align-items: center; justify-content: center; position: relative; z-index: 10; transition: all 0.5s ease;">
+            <div class="image-container-3d tilt-card" id="modality-image-box" style="width: 100%; height: 100%; border-radius: 28px; background: rgba(11, 15, 26, 0.6); border: 1px solid rgba(255, 255, 255, 0.08); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); display: flex; align-items: center; justify-content: center; position: relative; z-index: 10; transition: all 0.5s ease;">
               <img id="modality-art-img" src="thousand-words.png" alt="Eyeball visual" style="width: 100%; height: 100%; object-fit: cover; border-radius: 26px; transition: filter 0.4s ease, opacity 0.4s ease;">
             </div>
             <span class="image-caption" id="modality-image-caption" style="z-index: 25; color: rgba(16, 185, 129, 0.6);">interactive canvas overlay</span>
@@ -1266,6 +1551,8 @@
   // --- Web Audio API Synth Effects ---
   const synthAudio = {
     ctx: null,
+    droneOsc: null,
+    droneGain: null,
     
     init() {
       if (!this.ctx) {
@@ -1276,11 +1563,19 @@
       }
     },
     
-    playSuccess() {
+    playSuccess(pan = 0) {
       try {
         this.init();
         const now = this.ctx.currentTime;
         const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6 (clean major chime)
+        
+        let panner = null;
+        if (this.ctx.createStereoPanner) {
+          panner = this.ctx.createStereoPanner();
+          panner.pan.setValueAtTime(Math.max(-1, Math.min(1, pan)), now);
+          panner.connect(this.ctx.destination);
+        }
+        
         notes.forEach((freq, idx) => {
           const time = now + idx * 0.08;
           const osc = this.ctx.createOscillator();
@@ -1294,7 +1589,11 @@
           gain.gain.exponentialRampToValueAtTime(0.0001, time + 0.35);
           
           osc.connect(gain);
-          gain.connect(this.ctx.destination);
+          if (panner) {
+            gain.connect(panner);
+          } else {
+            gain.connect(this.ctx.destination);
+          }
           
           osc.start(time);
           osc.stop(time + 0.45);
@@ -1304,13 +1603,20 @@
       }
     },
     
-    playFailure() {
+    playFailure(pan = 0) {
       try {
         this.init();
         const now = this.ctx.currentTime;
         const osc = this.ctx.createOscillator();
         const gain = this.ctx.createGain();
         const filter = this.ctx.createBiquadFilter();
+        
+        let panner = null;
+        if (this.ctx.createStereoPanner) {
+          panner = this.ctx.createStereoPanner();
+          panner.pan.setValueAtTime(Math.max(-1, Math.min(1, pan)), now);
+          panner.connect(this.ctx.destination);
+        }
         
         osc.type = 'sawtooth';
         osc.frequency.setValueAtTime(160, now);
@@ -1324,30 +1630,116 @@
         
         osc.connect(filter);
         filter.connect(gain);
-        gain.connect(this.ctx.destination);
+        if (panner) {
+          gain.connect(panner);
+        } else {
+          gain.connect(this.ctx.destination);
+        }
         
         osc.start(now);
         osc.stop(now + 0.38);
       } catch (e) {
         console.warn("Web Audio API failed: ", e);
       }
+    },
+
+    playDrone() {
+      try {
+        this.init();
+        if (this.droneOsc) return;
+        
+        const now = this.ctx.currentTime;
+        this.droneOsc = this.ctx.createOscillator();
+        this.droneGain = this.ctx.createGain();
+        
+        this.droneOsc.type = 'sine';
+        this.droneOsc.frequency.setValueAtTime(55, now); // A1 base hum
+        
+        const filter = this.ctx.createBiquadFilter();
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(120, now);
+        
+        this.droneGain.gain.setValueAtTime(0, now);
+        this.droneGain.gain.linearRampToValueAtTime(0.18, now + 1.2); // smooth fade in
+        
+        this.droneOsc.connect(filter);
+        filter.connect(this.droneGain);
+        this.droneGain.connect(this.ctx.destination);
+        
+        this.droneOsc.start(now);
+      } catch (e) {
+        console.warn("Web Audio drone failed: ", e);
+      }
+    },
+
+    stopDrone() {
+      try {
+        if (!this.droneOsc) return;
+        const now = this.ctx.currentTime;
+        const currentGain = this.droneGain;
+        const currentOsc = this.droneOsc;
+        
+        currentGain.gain.cancelScheduledValues(now);
+        currentGain.gain.setValueAtTime(currentGain.gain.value, now);
+        currentGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.8);
+        
+        setTimeout(() => {
+          try {
+            currentOsc.stop();
+            currentOsc.disconnect();
+            currentGain.disconnect();
+          } catch(err){}
+        }, 900);
+        
+        this.droneOsc = null;
+        this.droneGain = null;
+      } catch(e){}
+    },
+
+    playTabSweep() {
+      try {
+        this.init();
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        const filter = this.ctx.createBiquadFilter();
+        
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(280, now);
+        osc.frequency.exponentialRampToValueAtTime(950, now + 0.14);
+        
+        filter.type = 'bandpass';
+        filter.frequency.setValueAtTime(500, now);
+        filter.frequency.exponentialRampToValueAtTime(1800, now + 0.14);
+        
+        gain.gain.setValueAtTime(0, now);
+        gain.gain.linearRampToValueAtTime(0.05, now + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.14);
+        
+        osc.connect(filter);
+        filter.connect(gain);
+        gain.connect(this.ctx.destination);
+        
+        osc.start(now);
+        osc.stop(now + 0.16);
+      } catch(e){}
     }
   };
 
   // --- Section Tabs Switching ---
   function switchSection(sectId) {
+    try {
+      synthAudio.playTabSweep();
+    } catch(err){}
+    
     document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
     document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
-    
-    // Find tab button
-    const tabs = document.querySelectorAll('.nav-tab');
-    if (sectId === 'test') tabs[0].classList.add('active');
-    else if (sectId === 'dissolve') tabs[1].classList.add('active');
-    else if (sectId === 'modality') tabs[2].classList.add('active');
-    else if (sectId === 'principles') tabs[3].classList.add('active');
-    
+
+    const tabBtn = document.querySelector(`.nav-tab[data-sect="${sectId}"]`);
+    if (tabBtn) tabBtn.classList.add('active');
+
     document.getElementById(`section-${sectId}`).classList.add('active');
-    
+
     // Stop modality animation if switching away
     if (sectId !== 'modality') {
       modActive = false;
@@ -1356,13 +1748,146 @@
         modRafId = null;
       }
     }
-    
+
+    // Start/stop the Gap live demo
+    if (sectId === 'gap') {
+      startGapDemo();
+    } else {
+      stopGapDemo();
+    }
+
     // Trigger canvas resize if showing dissolve
     if (sectId === 'dissolve') {
       setTimeout(initCanvas, 50);
     } else if (sectId === 'modality') {
       setTimeout(initModalityCanvas, 50);
     }
+  }
+
+  // ==========================================
+  // HERO STAT SCOREBOARD COUNT-UP
+  // ==========================================
+  function animateStatCounters() {
+    document.querySelectorAll('.stat-num[data-count]').forEach(el => {
+      const target = parseInt(el.getAttribute('data-count'), 10);
+      const suffix = el.getAttribute('data-suffix') || '';
+      const useComma = el.getAttribute('data-comma') === 'true';
+      const duration = 1600;
+      const start = performance.now();
+
+      function tick(now) {
+        const t = Math.min(1, (now - start) / duration);
+        const eased = 1 - Math.pow(1 - t, 3);
+        let val = Math.round(target * eased);
+        el.innerHTML = (useComma ? val.toLocaleString('en-US') : val) + suffix;
+        if (t < 1) requestAnimationFrame(tick);
+      }
+      requestAnimationFrame(tick);
+    });
+  }
+
+  // ==========================================
+  // THE GAP: READING SPEED vs SWARM SPEED
+  // ==========================================
+
+  const gapParagraph = "While your eyes crawl across this sentence one word at a time, the agent swarm on the right is mutating, reallocating, throttling and recovering. Reading is a single-lane road. Vision is a sixteen-lane highway. Every second you spend decoding characters, dozens of state changes slip past unobserved. A text log makes you the bottleneck. A visual interface makes you the witness. By the time you finish this short paragraph, the counter beside you will have told the whole story without using a single word.";
+
+  let gapTimers = [];
+  let gapRunning = false;
+  let gapMissed = 0;
+
+  function startGapDemo() {
+    if (gapRunning) return;
+    gapRunning = true;
+    gapMissed = 0;
+
+    // Build word spans
+    const readerBox = document.getElementById('gap-reader-text');
+    readerBox.innerHTML = '';
+    const words = gapParagraph.split(' ');
+    const spans = words.map(w => {
+      const s = document.createElement('span');
+      s.textContent = w + ' ';
+      readerBox.appendChild(s);
+      return s;
+    });
+
+    // Build 24-node grid
+    const grid = document.getElementById('gap-agent-grid');
+    grid.innerHTML = '';
+    const nodes = nodeNames.map(name => {
+      const d = document.createElement('div');
+      d.className = 'agent-node ' + (Math.random() > 0.45 ? 'green' : 'gray');
+      d.textContent = name;
+      grid.appendChild(d);
+      return d;
+    });
+
+    // Highlight words at ~250 wpm (240ms per word), loop forever
+    let wIdx = 0;
+    gapTimers.push(setInterval(() => {
+      spans.forEach((s, i) => {
+        s.classList.toggle('read-now', i === wIdx);
+        s.classList.toggle('read-done', i < wIdx);
+      });
+      wIdx++;
+      if (wIdx > spans.length) {
+        wIdx = 0;
+        spans.forEach(s => s.classList.remove('read-done', 'read-now'));
+      }
+    }, 240));
+
+    // Mutate swarm state every 120ms
+    const counterEl = document.getElementById('gap-missed-counter');
+    gapTimers.push(setInterval(() => {
+      const flips = 1 + Math.floor(Math.random() * 3);
+      for (let i = 0; i < flips; i++) {
+        const n = nodes[Math.floor(Math.random() * nodes.length)];
+        if (n.classList.contains('error-alert')) continue;
+        const toGreen = Math.random() > 0.4;
+        n.classList.toggle('green', toGreen);
+        n.classList.toggle('gray', !toGreen);
+        gapMissed++;
+      }
+      counterEl.innerText = gapMissed.toLocaleString('en-US');
+    }, 120));
+
+    // Occasionally flash a critical alert that self-heals
+    gapTimers.push(setInterval(() => {
+      const n = nodes[Math.floor(Math.random() * nodes.length)];
+      n.classList.remove('green', 'gray');
+      n.classList.add('error-alert');
+      gapMissed++;
+      setTimeout(() => {
+        n.classList.remove('error-alert');
+        n.classList.add('green');
+      }, 1400);
+    }, 4200));
+
+    // Bandwidth race: loops every 6 seconds
+    const eyeFill = document.getElementById('bw-fill-eye');
+    const readFill = document.getElementById('bw-fill-read');
+    function runBandwidthRace() {
+      if (!gapRunning) return;
+      eyeFill.style.transition = 'none';
+      readFill.style.transition = 'none';
+      eyeFill.style.width = '0%';
+      readFill.style.width = '0%';
+      setTimeout(() => {
+        eyeFill.style.transition = 'width 0.45s cubic-bezier(0.2, 0.8, 0.3, 1)';
+        readFill.style.transition = 'width 5s linear';
+        eyeFill.style.width = '100%';
+        readFill.style.width = '2.5%';
+      }, 60);
+    }
+    runBandwidthRace();
+    gapTimers.push(setInterval(runBandwidthRace, 6000));
+  }
+
+  function stopGapDemo() {
+    gapRunning = false;
+    gapTimers.forEach(t => clearInterval(t));
+    gapTimers = [];
   }
 
   // ==========================================
@@ -1418,6 +1943,9 @@
     
     // Unlock Web Audio API context on user interaction
     synthAudio.init();
+    try {
+      synthAudio.playDrone();
+    } catch(err){}
     
     digitalInteractiveLocked = false;
     
@@ -1444,9 +1972,9 @@
       
       if (log.includes("crashed")) {
         row.setAttribute('data-correct', 'true');
-        row.onclick = () => handleLogClick(row, true);
+        row.onclick = (e) => handleLogClick(row, true, e);
       } else {
-        row.onclick = () => handleLogClick(row, false);
+        row.onclick = (e) => handleLogClick(row, false, e);
       }
       logBox.appendChild(row);
     });
@@ -1468,17 +1996,23 @@
     }, 1000);
   }
 
-  function handleLogClick(row, isCorrect) {
+  function handleLogClick(row, isCorrect, e) {
     if (digitalInteractiveLocked) return;
     digitalInteractiveLocked = true;
     clearInterval(countdownTimer);
     
+    try {
+      synthAudio.stopDrone();
+    } catch(err){}
+    
     const logBox = document.getElementById('text-log-box');
     const endTime = performance.now();
     
+    const pan = e ? (e.clientX - window.innerWidth / 2) / (window.innerWidth / 2) : 0;
+    
     if (isCorrect) {
       // Play success chime
-      synthAudio.playSuccess();
+      synthAudio.playSuccess(pan);
       
       // Highlight correct row in green with green light icon
       row.style.background = 'rgba(16, 185, 129, 0.2)';
@@ -1495,7 +2029,7 @@
       }, 1200);
     } else {
       // Play failure buzz
-      synthAudio.playFailure();
+      synthAudio.playFailure(pan);
       
       // Highlight wrong clicked row in desaturated red
       row.style.background = 'rgba(239, 68, 68, 0.15)';
@@ -1525,8 +2059,12 @@
     if (digitalInteractiveLocked) return;
     digitalInteractiveLocked = true;
     
+    try {
+      synthAudio.stopDrone();
+    } catch(err){}
+    
     // Play failure buzz
-    synthAudio.playFailure();
+    synthAudio.playFailure(0);
     
     const logBox = document.getElementById('text-log-box');
     
@@ -1548,32 +2086,261 @@
     }, 3000);
   }
 
+  let sphereNodes = [];
+  let sphereCanvas = null;
+  let sphereCtx = null;
+  let sphereActive = false;
+  let sphereSpinX = 0.003;
+  let sphereSpinY = 0.005;
+  let sphereDragActive = false;
+  let sphereLastX = 0;
+  let sphereLastY = 0;
+  let sphereFlash = 0;
+  let sphereOrbitPulse = 0;
+  let sphereRafId = null;
+
   function startAnalogicChallenge() {
     document.getElementById('screen-transition').classList.add('hidden');
     document.getElementById('screen-analogic').classList.remove('hidden');
     
-    // Render Grid
-    const gridBox = document.getElementById('agent-grid-box');
-    gridBox.innerHTML = '';
+    sphereCanvas = document.getElementById('swarm-3d-canvas');
+    if (!sphereCanvas) return;
+    sphereCtx = sphereCanvas.getContext('2d');
     
-    // 24 nodes (6x4 grid)
-    const errorIndex = Math.floor(Math.random() * 24);
-    for (let i = 0; i < 24; i++) {
-      const node = document.createElement('div');
-      node.className = 'agent-node';
-      node.innerText = nodeNames[i];
-      if (i === errorIndex) {
-        node.className = 'agent-node error-alert';
-        node.setAttribute('onclick', 'selectAnalogicError()');
-      } else {
-        const rand = Math.random();
-        if (rand > 0.45) node.classList.add('green');
-        else node.classList.add('gray');
-      }
-      gridBox.appendChild(node);
+    // Set internal resolution
+    sphereCanvas.width = 460;
+    sphereCanvas.height = 380;
+    
+    // Distribute 24 nodes on a sphere
+    sphereNodes = [];
+    const numNodes = 24;
+    const errorIndex = Math.floor(Math.random() * numNodes);
+    const rSphere = 135;
+    
+    for (let i = 0; i < numNodes; i++) {
+      const y = 1 - (i / (numNodes - 1)) * 2;
+      const radius = Math.sqrt(1 - y * y);
+      
+      const goldenRatio = (1 + Math.sqrt(5)) / 2;
+      const theta = goldenRatio * Math.PI * 2 * i;
+      
+      const x = Math.cos(theta) * radius;
+      const z = Math.sin(theta) * radius;
+      
+      sphereNodes.push({
+        name: nodeNames[i],
+        x3d: x * rSphere,
+        y3d: y * rSphere,
+        z3d: z * rSphere,
+        isAlert: (i === errorIndex),
+        status: (i === errorIndex) ? 'alert' : (Math.random() > 0.45 ? 'green' : 'gray'),
+        projX: 0,
+        projY: 0,
+        projRadius: 0
+      });
     }
     
+    // Mouse drag handlers to spin the sphere
+    sphereCanvas.onmousedown = function(e) {
+      const rect = sphereCanvas.getBoundingClientRect();
+      sphereDragActive = true;
+      sphereLastX = e.clientX - rect.left;
+      sphereLastY = e.clientY - rect.top;
+    };
+    
+    window.addEventListener('mousemove', handleSphereMouseMove);
+    window.addEventListener('mouseup', handleSphereMouseUp);
+    
+    function handleSphereMouseMove(e) {
+      if (!sphereDragActive) return;
+      const rect = sphereCanvas.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      
+      const dx = x - sphereLastX;
+      const dy = y - sphereLastY;
+      
+      sphereSpinY += dx * 0.0008;
+      sphereSpinX += dy * 0.0008;
+      
+      sphereLastX = x;
+      sphereLastY = y;
+    }
+    
+    function handleSphereMouseUp() {
+      sphereDragActive = false;
+    }
+    
+    // Click detection on nodes
+    sphereCanvas.onclick = function(e) {
+      const rect = sphereCanvas.getBoundingClientRect();
+      const clickX = (e.clientX - rect.left) * (sphereCanvas.width / rect.width);
+      const clickY = (e.clientY - rect.top) * (sphereCanvas.height / rect.height);
+      
+      const alertNode = sphereNodes.find(n => n.isAlert);
+      if (alertNode) {
+        const dx = clickX - alertNode.projX;
+        const dy = clickY - alertNode.projY;
+        const dist = Math.sqrt(dx*dx + dy*dy);
+        
+        if (dist < Math.max(22, alertNode.projRadius + 14)) {
+          window.removeEventListener('mousemove', handleSphereMouseMove);
+          window.removeEventListener('mouseup', handleSphereMouseUp);
+          sphereActive = false;
+          if (sphereRafId) cancelAnimationFrame(sphereRafId);
+          selectAnalogicError();
+          return;
+        }
+      }
+      
+      synthAudio.playFailure();
+      sphereFlash = 8;
+    };
+    
     testStart = performance.now();
+    sphereActive = true;
+    animateSphereSwarm();
+  }
+
+  function animateSphereSwarm() {
+    if (!sphereActive || !sphereCtx || !sphereCanvas) return;
+    
+    if (!sphereDragActive) {
+      sphereSpinX += (0.003 - sphereSpinX) * 0.05;
+      sphereSpinY += (0.005 - sphereSpinY) * 0.05;
+    } else {
+      sphereSpinX *= 0.95;
+      sphereSpinY *= 0.95;
+    }
+    
+    sphereCtx.clearRect(0, 0, sphereCanvas.width, sphereCanvas.height);
+    
+    if (sphereFlash > 0) {
+      sphereCtx.fillStyle = `rgba(239, 68, 68, ${sphereFlash * 0.035})`;
+      sphereCtx.fillRect(0, 0, sphereCanvas.width, sphereCanvas.height);
+      sphereFlash--;
+    }
+    
+    const cosX = Math.cos(sphereSpinX);
+    const sinX = Math.sin(sphereSpinX);
+    const cosY = Math.cos(sphereSpinY);
+    const sinY = Math.sin(sphereSpinY);
+    
+    sphereNodes.forEach(node => {
+      let x1 = node.x3d * cosY - node.z3d * sinY;
+      let z1 = node.x3d * sinY + node.z3d * cosY;
+      
+      let y2 = node.y3d * cosX - z1 * sinX;
+      let z2 = node.y3d * sinX + z1 * cosX;
+      
+      node.x3d = x1;
+      node.y3d = y2;
+      node.z3d = z2;
+      
+      const cx = sphereCanvas.width / 2;
+      const cy = sphereCanvas.height / 2;
+      const focalLength = 320;
+      const scale = focalLength / (focalLength + node.z3d);
+      
+      node.projX = cx + node.x3d * scale;
+      node.projY = cy + node.y3d * scale;
+      node.projRadius = (node.isAlert ? 10 : 7) * scale;
+    });
+    
+    const sortedNodes = [...sphereNodes].sort((a, b) => b.z3d - a.z3d);
+    
+    sphereCtx.lineWidth = 1.0;
+    const sphereRadius = 135;
+    const distLimitSq = (sphereRadius * 1.6) * (sphereRadius * 1.6);
+    
+    for (let i = 0; i < sortedNodes.length; i++) {
+      const n1 = sortedNodes[i];
+      for (let j = i + 1; j < sortedNodes.length; j++) {
+        const n2 = sortedNodes[j];
+        
+        const dx = n1.x3d - n2.x3d;
+        const dy = n1.y3d - n2.y3d;
+        const dz = n1.z3d - n2.z3d;
+        const distSq = dx*dx + dy*dy + dz*dz;
+        
+        if (distSq < distLimitSq) {
+          const avgZ = (n1.z3d + n2.z3d) / 2;
+          const scale = 320 / (320 + avgZ);
+          const alpha = 0.08 * scale * (n1.isAlert || n2.isAlert ? 2.5 : 1.0);
+          
+          sphereCtx.strokeStyle = (n1.isAlert || n2.isAlert) 
+            ? `rgba(239, 68, 68, ${alpha})` 
+            : `rgba(56, 189, 248, ${alpha})`;
+            
+          sphereCtx.beginPath();
+          sphereCtx.moveTo(n1.projX, n1.projY);
+          sphereCtx.lineTo(n2.projX, n2.projY);
+          sphereCtx.stroke();
+        }
+      }
+    }
+    
+    sphereOrbitPulse += 0.07;
+    
+    sortedNodes.forEach(node => {
+      const scale = 320 / (320 + node.z3d);
+      const alpha = Math.max(0.15, Math.min(1.0, 0.4 + (1 - (node.z3d + 135)/270) * 0.6));
+      
+      sphereCtx.save();
+      sphereCtx.globalAlpha = alpha;
+      
+      if (node.isAlert) {
+        const numRings = 2;
+        sphereCtx.strokeStyle = 'rgba(239, 68, 68, 0.7)';
+        
+        for (let rIdx = 0; rIdx < numRings; rIdx++) {
+          const rOffset = (sphereOrbitPulse + rIdx * 1.5) % 3.0;
+          const ringRad = node.projRadius * (1 + rOffset * 0.8);
+          sphereCtx.lineWidth = 1.5 * (1 - rOffset / 3.0);
+          sphereCtx.beginPath();
+          sphereCtx.arc(node.projX, node.projY, ringRad, 0, Math.PI * 2);
+          sphereCtx.stroke();
+        }
+        
+        const alertPulse = 1.0 + Math.sin(sphereOrbitPulse * 2) * 0.15;
+        sphereCtx.fillStyle = '#ef4444';
+        sphereCtx.shadowColor = '#ef4444';
+        sphereCtx.shadowBlur = 18 * scale;
+        
+        sphereCtx.beginPath();
+        sphereCtx.arc(node.projX, node.projY, node.projRadius * alertPulse, 0, Math.PI * 2);
+        sphereCtx.fill();
+        
+        sphereCtx.fillStyle = '#ffffff';
+        sphereCtx.shadowBlur = 0;
+        sphereCtx.beginPath();
+        sphereCtx.arc(node.projX, node.projY, node.projRadius * alertPulse * 0.4, 0, Math.PI * 2);
+        sphereCtx.fill();
+        
+      } else {
+        const isGreen = (node.status === 'green');
+        const nodeColor = isGreen ? '#10b981' : '#475569';
+        
+        sphereCtx.fillStyle = nodeColor;
+        if (isGreen) {
+          sphereCtx.shadowColor = '#10b981';
+          sphereCtx.shadowBlur = 8 * scale;
+        }
+        
+        sphereCtx.beginPath();
+        sphereCtx.arc(node.projX, node.projY, node.projRadius, 0, Math.PI * 2);
+        sphereCtx.fill();
+        sphereCtx.shadowBlur = 0;
+      }
+      
+      sphereCtx.font = `bold ${Math.round(8.5 * scale)}px 'Inter', sans-serif`;
+      sphereCtx.fillStyle = node.isAlert ? '#ffffff' : (node.status === 'green' ? '#38bdf8' : '#64748b');
+      sphereCtx.fillText(node.name, node.projX + node.projRadius + 4, node.projY + 3);
+      
+      sphereCtx.restore();
+    });
+    
+    sphereRafId = requestAnimationFrame(animateSphereSwarm);
   }
 
   let celebrationCanvas, celebrationCtx;
@@ -1680,11 +2447,11 @@
     document.getElementById('analogic-time-report').innerText = `${analogicSec}s`;
     
     const speedRatio = Math.max(1.2, (digitalCompleted / analogicCompleted)).toFixed(1);
-    document.getElementById('results-headline').innerHTML = `Perception Speed: <span>${speedRatio}x Faster!</span>`;
-    
+    document.getElementById('results-headline').innerHTML = `You Saw It <span style="color: var(--emerald); text-shadow: 0 0 16px rgba(16,185,129,0.4);">${speedRatio}&times; Faster</span> &mdash; Without Reading a Word`;
+
     document.getElementById('results-summary').innerHTML = `
-      You identified the visual node blockage in <strong>${analogicSec} seconds</strong>, compared to <strong>${digitalSec} seconds</strong> to locate and click the error line inside the raw text logs.<br><br>
-      This is the core standard of <strong>Zero-Read Analogics</strong>: VidiFlow translates complex logical parameters into instant, glanceable shapes and colors so you act immediately.
+      The grid took you <strong>${analogicSec} seconds</strong>. The text log took <strong>${digitalSec} seconds</strong> &mdash; and that was just 24 lines. Your agents write thousands per minute.<br><br>
+      This is <strong>Zero-Read Analogics</strong>: VidiFlow translates complex logical parameters into instant, glanceable shapes and colors so you act immediately.
     `;
 
     // Trigger celebration sparkles
@@ -1692,6 +2459,11 @@
   }
 
   function resetPerceptionTest() {
+    sphereActive = false;
+    if (sphereRafId) {
+      cancelAnimationFrame(sphereRafId);
+      sphereRafId = null;
+    }
     document.getElementById('screen-results').classList.add('hidden');
     document.getElementById('screen-start').classList.remove('hidden');
   }
@@ -1763,36 +2535,62 @@
       labelVisual.classList.remove('active');
     }
     
-    // Spawn particles on canvas moving from text container to image container
+    // Spawn particles on canvas moving from text container to image container in 3D
     if (val > 0 && canvas) {
       const rectText = textContainer.getBoundingClientRect();
       const rectImg = imageBox.getBoundingClientRect();
       const parentRect = canvas.getBoundingClientRect();
       
-      const textX = rectText.right - parentRect.left;
-      const textY = rectText.top + (rectText.height / 2) - parentRect.top;
-      const imgX = rectImg.left + (rectImg.width / 2) - parentRect.left;
-      const imgY = rectImg.top + (rectImg.height / 2) - parentRect.top;
+      const cx = canvas.width / 2;
+      const cy = canvas.height / 2;
+      
+      const sx_screen = rectText.right - parentRect.left;
+      const sy_screen = rectText.top + (rectText.height / 2) - parentRect.top;
+      const ex_screen = rectImg.left + (rectImg.width / 2) - parentRect.left;
+      const ey_screen = rectImg.top + (rectImg.height / 2) - parentRect.top;
       
       const spawnCount = Math.floor(val / 8);
+      const chars = "VISUALCOMMUNICATIONWORTHATHOUSANDWORDS";
+      
       for(let i = 0; i < spawnCount; i++) {
+        const startZ = 350 + Math.random() * 250;
+        const focalLength = 300;
+        const scaleStart = focalLength / (focalLength + startZ);
+        
+        // Target screen start point: sx_screen - Math.random() * 80
+        // We calculate startX3d/startY3d so that they project EXACTLY onto the screen target coordinates at t = 0
+        const targetScreenX = sx_screen - Math.random() * 80;
+        const targetScreenY = sy_screen + (Math.random() - 0.5) * (rectText.height - 100);
+        
+        const startX3d = (targetScreenX - cx) / scaleStart;
+        const startY3d = (targetScreenY - cy) / scaleStart;
+        
+        // Destination is screen plane Z = 0 (scale = 1)
+        const endX3d = ex_screen - cx;
+        const endY3d = ey_screen - cy;
+        
         particles.push({
-          x: textX - Math.random() * 80,
-          y: textY + (Math.random() - 0.5) * (rectText.height - 100),
-          targetX: imgX,
-          targetY: imgY,
-          vx: 2 + Math.random() * 6,
-          vy: (Math.random() - 0.5) * 4,
-          size: 1 + Math.random() * 3,
+          startX3d: startX3d,
+          startY3d: startY3d,
+          startZ: startZ,
+          endX3d: endX3d,
+          endY3d: endY3d,
+          endZ: 0,
+          focalLength: focalLength,
+          angleOffset: Math.random() * Math.PI * 2,
+          vortexRadius: 40 + Math.random() * 100,
+          baseSize: 8 + Math.random() * 12,
           color: Math.random() > 0.4 ? '#38bdf8' : '#a78bfa',
-          alpha: 0.9,
-          progress: 0
+          alpha: 0.95,
+          char: chars[Math.floor(Math.random() * chars.length)],
+          progress: 0,
+          speed: 0.01 + Math.random() * 0.01
         });
       }
     }
   }
   
-  // Particle loop
+  // Particle loop (3D Perspective Projection)
   function drawParticles() {
     if (!ctx || !canvas) {
       requestAnimationFrame(drawParticles);
@@ -1801,22 +2599,43 @@
     
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     
+    const cx = canvas.width / 2;
+    const cy = canvas.height / 2;
+    
     for (let i = particles.length - 1; i >= 0; i--) {
       const p = particles[i];
-      p.progress += 0.015;
+      p.progress += p.speed;
       
-      // Interpolate towards image center
-      const currentX = p.x + (p.targetX - p.x) * p.progress;
-      const currentY = p.y + (p.targetY - p.y) * p.progress;
+      const progress = p.progress;
+      const z3d = p.startZ + (p.endZ - p.startZ) * progress;
+      const scale = p.focalLength / (p.focalLength + z3d);
       
-      // Wave motion
-      const wave = Math.sin(p.progress * Math.PI * 2) * p.vy * 12;
+      // Interpolate base 3D coordinates
+      const baseX3d = p.startX3d + (p.endX3d - p.startX3d) * progress;
+      const baseY3d = p.startY3d + (p.endY3d - p.startY3d) * progress;
       
+      // 3D Vortex / Helix spiral offset
+      const r = Math.sin(progress * Math.PI) * p.vortexRadius;
+      const theta = progress * Math.PI * 4 + p.angleOffset;
+      
+      const x3d = baseX3d + r * Math.cos(theta);
+      const y3d = baseY3d + r * Math.sin(theta);
+      
+      // Perspective projection
+      const projX = cx + x3d * scale;
+      const projY = cy + y3d * scale;
+      
+      const projSize = p.baseSize * scale;
+      const currentAlpha = p.alpha * scale * (1 - progress);
+      
+      // Render typographic letters instead of dots
       ctx.fillStyle = p.color;
-      ctx.globalAlpha = p.alpha * (1 - p.progress);
-      ctx.beginPath();
-      ctx.arc(currentX, currentY + wave, p.size, 0, Math.PI * 2);
-      ctx.fill();
+      ctx.globalAlpha = Math.max(0, Math.min(1, currentAlpha));
+      ctx.font = `900 ${Math.ceil(projSize)}px monospace`;
+      ctx.shadowColor = p.color;
+      ctx.shadowBlur = 6 * scale;
+      ctx.fillText(p.char, projX, projY);
+      ctx.shadowBlur = 0; // Reset
       
       if (p.progress >= 1) {
         particles.splice(i, 1);
@@ -1826,11 +2645,48 @@
     requestAnimationFrame(drawParticles);
   }
   
+  // 3D Perspective Tilt Effect
+  function initTilt() {
+    const targets = document.querySelectorAll('.tilt-card');
+    targets.forEach(el => {
+      let sheen = el.querySelector('.sheen-overlay');
+      if (!sheen) {
+        sheen = document.createElement('div');
+        sheen.className = 'sheen-overlay';
+        el.appendChild(sheen);
+      }
+
+      el.addEventListener('mousemove', (e) => {
+        const rect = el.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const w = rect.width;
+        const h = rect.height;
+        
+        const rotateX = -((y - h/2) / (h/2)) * 8;
+        const rotateY = ((x - w/2) / (w/2)) * 8;
+        
+        el.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
+        
+        const angle = Math.atan2(y - h/2, x - w/2) * (180 / Math.PI);
+        sheen.style.background = `linear-gradient(${angle + 90}deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0) 60%)`;
+        sheen.style.opacity = '1';
+      });
+
+      el.addEventListener('mouseleave', () => {
+        el.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)`;
+        sheen.style.opacity = '0';
+      });
+    });
+  }
+
   // Init
   window.onload = function() {
     initCanvas();
     drawParticles();
     initCelebrationCanvas();
+    initTilt();
+    animateStatCounters();
   };
 
   // ==========================================
@@ -1841,6 +2697,11 @@
   let modParticles = [];
   let modActive = false;
   let modRafId = null;
+  
+  let targetModRotX = 0;
+  let targetModRotY = 0;
+  let modRotX = 0;
+  let modRotY = 0;
   
   const modAnswers = {
     visual: false,
@@ -1858,6 +2719,25 @@
     // Bind resize handler
     window.removeEventListener('resize', resizeModalityCanvas);
     window.addEventListener('resize', resizeModalityCanvas);
+    
+    // Bind mouse move handlers for 3D eyeball rotation
+    const imgBox = document.getElementById('modality-image-box');
+    if (imgBox) {
+      imgBox.addEventListener('mousemove', (e) => {
+        const rect = imgBox.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const w = rect.width;
+        const h = rect.height;
+        
+        targetModRotY = ((x - w/2) / (w/2)) * 0.35; // yaw in radians
+        targetModRotX = -((y - h/2) / (h/2)) * 0.35; // pitch in radians
+      });
+      imgBox.addEventListener('mouseleave', () => {
+        targetModRotX = 0;
+        targetModRotY = 0;
+      });
+    }
     
     // Setup listeners on inputs
     const inputs = document.querySelectorAll('.fill-blank-input');
@@ -1913,7 +2793,9 @@
       if (!modAnswers[target]) {
         modAnswers[target] = true;
         input.classList.add('correct');
-        synthAudio.playSuccess();
+        const rect = input.getBoundingClientRect();
+        const pan = (rect.left + rect.width/2 - window.innerWidth/2) / (window.innerWidth/2);
+        synthAudio.playSuccess(pan);
         spawnSuccessBurst(input);
       }
     } else {
@@ -1953,31 +2835,24 @@
     const rectInput = input.getBoundingClientRect();
     const rectCanvas = modCanvas.getBoundingClientRect();
     
-    // Spawn position: center of the input box
     const startX = rectInput.left - rectCanvas.left + rectInput.width / 2;
     const startY = rectInput.top - rectCanvas.top + rectInput.height / 2;
     
-    // Target coordinate: pre-calculated letter position on the right panel eyeball contour
-    const targetCoord = getLetterContourPoint(target, index);
     const state = blankStates[target];
     
     modParticles.push({
       char: char.toUpperCase(),
       targetType: target,
       targetIdx: index,
-      x: startX,
-      y: startY,
-      startX: startX,
-      startY: startY,
-      targetX: targetCoord.x,
-      targetY: targetCoord.y,
+      startX3d: startX - (modCanvas.width / 2),
+      startY3d: startY - (modCanvas.height / 2),
+      startZ: 0,
       progress: 0,
-      speed: 0.018 + Math.random() * 0.006, // Slightly faster transition
+      speed: 0.018 + Math.random() * 0.006,
       size: 13 + Math.random() * 3,
       color: state.color,
-      curveX: (Math.random() - 0.5) * 120,
-      curveY: -60 - Math.random() * 80,
-      opacity: 1
+      curveX: (Math.random() - 0.5) * 60,
+      curveY: -40 - Math.random() * 60
     });
   }
 
@@ -1999,32 +2874,78 @@
         const startX = rectInput.left - rectCanvas.left + rectInput.width / 2;
         const startY = rectInput.top - rectCanvas.top + rectInput.height / 2;
         
-        // Target random points on the eyeball
-        const targetCoord = getLetterContourPoint(targetType, Math.floor(Math.random() * blankStates[targetType].word.length));
-        
         modParticles.push({
           char: '✦',
-          x: startX,
-          y: startY,
-          startX: startX,
-          startY: startY,
-          targetX: targetCoord.x,
-          targetY: targetCoord.y,
+          targetType: targetType,
+          targetIdx: Math.floor(Math.random() * blankStates[targetType].word.length),
+          startX3d: startX - (modCanvas.width / 2),
+          startY3d: startY - (modCanvas.height / 2),
+          startZ: 0,
           progress: 0,
           speed: 0.01 + Math.random() * 0.01,
           size: 8 + Math.random() * 12,
           color: color,
-          curveX: (Math.random() - 0.5) * 220,
-          curveY: -50 - Math.random() * 180,
-          opacity: 1
+          curveX: (Math.random() - 0.5) * 120,
+          curveY: -30 - Math.random() * 90
         });
       }, i * 40);
     }
   }
 
+  function getEyeballCenterOffset3D(target, index) {
+    const imgBox = document.getElementById('modality-image-box');
+    if (!imgBox) return { x3d: 0, y3d: 0, z3d: 0 };
+    
+    const rectImg = imgBox.getBoundingClientRect();
+    const rLidW = rectImg.width * 0.38;
+    const rIris = rectImg.width * 0.16;
+    const rPupil = rectImg.width * 0.06;
+    
+    const state = blankStates[target];
+    const N = state.word.length;
+    const t = (index + 0.5) / N;
+    
+    let x3d = 0;
+    let y3d = 0;
+    
+    if (target === 'visual') {
+      const theta = t * Math.PI;
+      x3d = -rLidW + (2 * rLidW) * t;
+      y3d = -(rectImg.height * 0.18) * Math.sin(theta);
+    } else if (target === 'image') {
+      const theta = t * Math.PI;
+      x3d = -rLidW + (2 * rLidW) * t;
+      y3d = (rectImg.height * 0.18) * Math.sin(theta);
+    } else if (target === 'milliseconds') {
+      const theta = t * Math.PI * 2 - Math.PI / 2;
+      x3d = rIris * Math.cos(theta);
+      y3d = rIris * Math.sin(theta);
+    } else if (target === 'thousand') {
+      const theta = t * Math.PI * 2 - Math.PI / 2;
+      x3d = rPupil * Math.cos(theta);
+      y3d = rPupil * Math.sin(theta);
+    }
+    
+    const rEye = rectImg.width * 0.4;
+    const distSq = x3d*x3d + y3d*y3d;
+    const z3d = -Math.sqrt(Math.max(0, rEye*rEye - distSq));
+    
+    const cosY = Math.cos(modRotY);
+    const sinY = Math.sin(modRotY);
+    let xRot = x3d * cosY - z3d * sinY;
+    let zRot = x3d * sinY + z3d * cosY;
+    
+    const cosX = Math.cos(modRotX);
+    const sinX = Math.sin(modRotX);
+    let yRot = y3d * cosX - zRot * sinX;
+    let zRot2 = y3d * sinX + zRot * cosX;
+    
+    return { x3d: xRot, y3d: yRot, z3d: zRot2 };
+  }
+
   function getLetterContourPoint(target, index) {
     const imgBox = document.getElementById('modality-image-box');
-    if (!imgBox || !modCanvas) return { x: 400, y: 300 };
+    if (!imgBox || !modCanvas) return { x: 400, y: 300, scale: 1 };
     
     const rectImg = imgBox.getBoundingClientRect();
     const rectCanvas = modCanvas.getBoundingClientRect();
@@ -2032,42 +2953,16 @@
     const cx = rectImg.left - rectCanvas.left + rectImg.width / 2;
     const cy = rectImg.top - rectCanvas.top + rectImg.height / 2;
     
-    const rLidW = rectImg.width * 0.38;
-    const rIris = rectImg.width * 0.16;
-    const rPupil = rectImg.width * 0.06;
+    const pt3d = getEyeballCenterOffset3D(target, index);
     
-    const state = blankStates[target];
-    const N = state.word.length;
+    const focalLength = 350;
+    const scale = focalLength / (focalLength + pt3d.z3d);
     
-    let x = cx;
-    let y = cy;
-    
-    // Distribute indices evenly
-    const t = (index + 0.5) / N;
-    
-    if (target === 'visual') {
-      // Top Eyelid Curve (left to right)
-      const theta = t * Math.PI;
-      x = cx - rLidW + (2 * rLidW) * t;
-      y = cy - (rectImg.height * 0.18) * Math.sin(theta);
-    } else if (target === 'image') {
-      // Bottom Eyelid Curve (left to right)
-      const theta = t * Math.PI;
-      x = cx - rLidW + (2 * rLidW) * t;
-      y = cy + (rectImg.height * 0.18) * Math.sin(theta);
-    } else if (target === 'milliseconds') {
-      // Iris ring circle (clockwise starting from top)
-      const theta = t * Math.PI * 2 - Math.PI / 2;
-      x = cx + rIris * Math.cos(theta);
-      y = cy + rIris * Math.sin(theta);
-    } else if (target === 'thousand') {
-      // Pupil ring circle (clockwise starting from top)
-      const theta = t * Math.PI * 2 - Math.PI / 2;
-      x = cx + rPupil * Math.cos(theta);
-      y = cy + rPupil * Math.sin(theta);
-    }
-    
-    return { x, y };
+    return {
+      x: cx + pt3d.x3d * scale,
+      y: cy + pt3d.y3d * scale,
+      scale: scale
+    };
   }
 
   function handleModalitySliderChange(val) {
@@ -2116,46 +3011,43 @@
     const sliderPercent = sliderVal / 100;
     const baseAlpha = 1 - sliderPercent * 0.75;
     
-    // 1. Draw Faint Placeholder Outlines
     for (const key in blankStates) {
       const state = blankStates[key];
       const word = state.word;
       const isCorrect = modAnswers[key];
       const arr = modAccumulated[key];
       
-      // Only draw faint placeholder letters if not fully correct/illuminated
       if (!isCorrect) {
         for (let i = 0; i < word.length; i++) {
-          if (arr[i]) continue; // Don't draw placeholder if a letter has already landed here
+          if (arr[i]) continue;
           
           const pt = getLetterContourPoint(key, i);
           modCtx.save();
-          modCtx.font = `900 11px monospace`;
-          modCtx.fillStyle = `rgba(255, 255, 255, 0.035)`; // Very faint outline guide
+          modCtx.font = `900 ${Math.ceil(11 * pt.scale)}px monospace`;
+          modCtx.fillStyle = `rgba(255, 255, 255, 0.035)`;
           modCtx.fillText(word[i].toUpperCase(), pt.x, pt.y);
           modCtx.restore();
         }
       }
     }
     
-    // 2. Draw Accumulated Letters
     for (const key in modAccumulated) {
       const arr = modAccumulated[key];
       const color = blankStates[key].color;
       const isCorrect = modAnswers[key];
       
-      arr.forEach((ap) => {
+      arr.forEach((ap, idx) => {
         if (!ap) return;
+        const pt = getLetterContourPoint(key, idx);
         modCtx.save();
-        modCtx.font = `900 ${ap.size}px monospace`;
+        modCtx.font = `900 ${Math.ceil(ap.size * pt.scale)}px monospace`;
         
-        // Glow if correct, otherwise draw in solid text color
         modCtx.fillStyle = isCorrect ? color : `rgba(255, 255, 255, ${baseAlpha * 0.95})`;
         if (isCorrect) {
           modCtx.shadowColor = color;
-          modCtx.shadowBlur = 10;
+          modCtx.shadowBlur = 10 * pt.scale;
         }
-        modCtx.fillText(ap.char, ap.x, ap.y);
+        modCtx.fillText(ap.char, pt.x, pt.y);
         modCtx.restore();
       });
     }
@@ -2164,37 +3056,51 @@
   function animateModality() {
     if (!modActive || !modCtx) return;
     
+    modRotX += (targetModRotX - modRotX) * 0.1;
+    modRotY += (targetModRotY - modRotY) * 0.1;
+    
     modCtx.clearRect(0, 0, modCanvas.width, modCanvas.height);
     
-    // Draw outlines and landed letters
     drawTypographicContours();
     
-    // Draw flying particles
+    const cx = modCanvas.width / 2;
+    const cy = modCanvas.height / 2;
+    
     for (let i = modParticles.length - 1; i >= 0; i--) {
       const p = modParticles[i];
       p.progress += p.speed;
       
-      const currentX = p.startX + (p.targetX - p.startX) * p.progress + Math.sin(p.progress * Math.PI) * p.curveX;
-      const currentY = p.startY + (p.targetY - p.startY) * p.progress + Math.sin(p.progress * Math.PI) * p.curveY;
+      const progress = p.progress;
       
-      p.opacity = 1 - Math.max(0, p.progress - 0.7) * 3.3;
+      const ptTarget3d = getEyeballCenterOffset3D(p.targetType, p.targetIdx);
+      
+      const x3d = p.startX3d + (ptTarget3d.x3d - p.startX3d) * progress;
+      const y3d = p.startY3d + (ptTarget3d.y3d - p.startY3d) * progress;
+      
+      const z3d = p.startZ + (ptTarget3d.z3d - p.startZ) * progress + Math.sin(progress * Math.PI) * (-120);
+      
+      const focalLength = 350;
+      const scale = focalLength / (focalLength + z3d);
+      
+      const projX = cx + x3d * scale + Math.sin(progress * Math.PI) * p.curveX;
+      const projY = cy + y3d * scale + Math.sin(progress * Math.PI) * p.curveY;
+      
+      const projSize = p.size * scale;
+      const opacity = 1 - Math.max(0, progress - 0.7) * 3.3;
       
       modCtx.save();
-      modCtx.font = `900 ${p.size}px monospace`;
+      modCtx.font = `900 ${Math.ceil(projSize)}px monospace`;
       modCtx.fillStyle = p.color;
-      modCtx.globalAlpha = Math.max(0, Math.min(1, p.opacity));
+      modCtx.globalAlpha = Math.max(0, Math.min(1, opacity));
       modCtx.shadowColor = p.color;
-      modCtx.shadowBlur = 8;
-      modCtx.fillText(p.char, currentX, currentY);
+      modCtx.shadowBlur = 8 * scale;
+      modCtx.fillText(p.char, projX, projY);
       modCtx.restore();
       
       if (p.progress >= 1) {
-        // When it lands, add it to the accumulated letters array!
         if (p.targetType && p.targetIdx !== undefined) {
           modAccumulated[p.targetType][p.targetIdx] = {
             char: p.char,
-            x: p.targetX,
-            y: p.targetY,
             size: p.size,
             color: p.color
           };
