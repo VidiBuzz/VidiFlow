@@ -2175,6 +2175,34 @@ a:hover{color:#7dd3fc}
   </div>
 </section>
 
+<!-- ═══════════ LIVE SWARM SPHERE ═══════════ -->
+<section class="container" style="margin-bottom:4rem" id="swarm-sphere">
+  <div class="section-header">
+    <h2>Live Swarm</h2>
+    <p>24 agents distributed across the swarm. Drag to rotate. Green = active, Red = alert. Connecting lines show coordination paths.</p>
+  </div>
+  <div style="display:flex;justify-content:center">
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:1.5rem;position:relative;overflow:hidden;width:100%;max-width:560px">
+      <div style="position:absolute;top:0;left:0;width:100%;height:2px;overflow:hidden">
+        <div style="width:100%;height:100%;background:linear-gradient(90deg,transparent 0%,var(--emerald) 20%,var(--cyan) 50%,var(--emerald) 80%,transparent 100%);background-size:200% 100%;animation:data-flow 3s linear infinite"></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:1rem">
+        <span style="color:var(--emerald)">◉</span>
+        <span style="font-family:var(--font-display);font-weight:700;font-size:.85rem;color:#fff">Live Swarm — 24 Agents</span>
+        <span style="margin-left:auto;font-size:.6rem;color:var(--text-dim);letter-spacing:.06em">DRAG TO ROTATE</span>
+      </div>
+      <div style="display:flex;justify-content:center">
+        <canvas id="swarmCanvas" width="480" height="380" style="border-radius:12px;background:rgba(5,7,14,.6);cursor:grab;max-width:100%;display:block"></canvas>
+      </div>
+      <div style="display:flex;justify-content:center;gap:1.5rem;margin-top:.8rem;font-size:.6rem;color:var(--text-dim)">
+        <span><span style="color:var(--emerald)">●</span> Active</span>
+        <span><span style="color:var(--text-dim)">●</span> Standby</span>
+        <span><span style="color:var(--rose)">●</span> Alert</span>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- ═══════════ TACTICAL QUEUE ═══════════ -->
 <section class="container" style="margin-bottom:4rem">
   <div class="section-header">
@@ -5758,6 +5786,397 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 });
+</script>
+
+<!-- ═══════════ FEATURE 1: BREATHING PROGRESS BARS ═══════════ -->
+<script>
+(function initBreathingBars() {
+  // Collect all fill elements that should breathe
+  // We tag them so we can animate independently
+  function getBarColor(pct) {
+    if (pct >= 80) return 'var(--rose)';
+    if (pct >= 60) return 'var(--amber)';
+    return 'var(--emerald)';
+  }
+
+  function animateBar(el) {
+    const target = 15 + Math.random() * 80; // 15–95%
+    const color = getBarColor(target);
+    const duration = 1.2;
+
+    gsap.to(el, {
+      width: target + '%',
+      duration: duration,
+      ease: 'power2.inOut',
+      onUpdate: function() {
+        const current = parseFloat(el.style.width) || target;
+        const c = getBarColor(current);
+        // Only update background if it's not a gradient class (rainbow)
+        if (!el.classList.contains('rainbow') && !el.classList.contains('ind-bar-fill')) {
+          el.style.background = c;
+        }
+      },
+      onComplete: function() {
+        // Pulse glow if > 80%
+        if (target >= 80) {
+          gsap.to(el, {
+            boxShadow: '0 0 12px ' + (target >= 80 ? 'var(--rose)' : 'var(--amber)'),
+            duration: 0.3,
+            yoyo: true,
+            repeat: 3,
+            ease: 'power2.inOut',
+            onComplete: function() { el.style.boxShadow = ''; }
+          });
+        }
+        // Schedule next breath
+        const delay = 2 + Math.random() * 2; // 2–4 seconds
+        setTimeout(function() { animateBar(el); }, delay * 1000);
+      }
+    });
+  }
+
+  // Wait for DOM ready
+  window.addEventListener('load', function() {
+    // Heat fills
+    document.querySelectorAll('.heat-fill').forEach(function(el) {
+      const delay = Math.random() * 3;
+      setTimeout(function() { animateBar(el); }, delay * 1000);
+    });
+
+    // Mini fills (inside agent grid cube backs)
+    document.querySelectorAll('.mini-fill').forEach(function(el) {
+      const delay = Math.random() * 4;
+      setTimeout(function() { animateBar(el); }, delay * 1000);
+    });
+
+    // ind-bar-fill elements (live indicator panel) - also apply GSAP for color changes
+    document.querySelectorAll('.ind-bar-fill:not(.rainbow)').forEach(function(el) {
+      // Don't reset widths but do apply color transitions
+      function breatheIndBar() {
+        const target = 15 + Math.random() * 80;
+        const color = getBarColor(target);
+        const colorVar = color === 'var(--rose)' ? 'rose' : color === 'var(--amber)' ? 'amber' : 'emerald';
+        // Replace the color class
+        el.classList.remove('cyan', 'emerald', 'amber', 'rose', 'purple');
+        el.classList.add(colorVar);
+        gsap.to(el, {
+          width: target + '%',
+          duration: 1.2,
+          ease: 'power2.inOut',
+          onComplete: function() {
+            if (target >= 80) {
+              gsap.to(el, {
+                boxShadow: '0 0 10px currentColor',
+                duration: 0.25,
+                yoyo: true, repeat: 3,
+                onComplete: function() { el.style.boxShadow = ''; }
+              });
+            }
+            setTimeout(breatheIndBar, 2000 + Math.random() * 2000);
+          }
+        });
+      }
+      setTimeout(breatheIndBar, Math.random() * 3000);
+    });
+  });
+})();
+</script>
+
+<!-- ═══════════ FEATURE 2: AMBIENT IDLE ANIMATION ═══════════ -->
+<script>
+(function initAmbientLife() {
+  window.addEventListener('load', function() {
+
+    // 2a. Agent node breathing opacity (f1-btn elements)
+    var agentBtns = document.querySelectorAll('#agentGrid .f1-btn');
+    agentBtns.forEach(function(btn, i) {
+      // Stagger the start so they don't all pulse together
+      var delay = (i * 0.18) % 3;
+      gsap.to(btn, {
+        opacity: function() { return btn.classList.contains('dim') ? 0.35 : 0.75; },
+        duration: 1.5,
+        ease: 'sine.inOut',
+        repeat: -1,
+        yoyo: true,
+        delay: delay,
+        // Don't override focused/dimmed states
+        onUpdate: function() {
+          if (btn.classList.contains('focused')) {
+            gsap.set(btn, { opacity: 1 });
+          }
+        }
+      });
+    });
+
+    // 2b. Queue item cyan left-border glow flash
+    function flashRandomQueueItem() {
+      var items = document.querySelectorAll('.queue-item');
+      if (items.length === 0) return;
+      var item = items[Math.floor(Math.random() * items.length)];
+      var originalBorder = item.style.borderLeft;
+      // Store current border-left color
+      item.style.setProperty('--flash-border', 'rgba(56,189,248,0.85)');
+      gsap.to(item, {
+        boxShadow: 'inset 4px 0 16px rgba(56,189,248,0.25)',
+        borderLeftColor: 'rgba(56,189,248,0.9)',
+        duration: 0.15,
+        ease: 'power2.out',
+        onComplete: function() {
+          gsap.to(item, {
+            boxShadow: 'none',
+            borderLeftColor: '',
+            duration: 0.4,
+            ease: 'power2.in',
+            clearProps: 'boxShadow'
+          });
+        }
+      });
+    }
+
+    // Flash a random queue item every 6–10 seconds
+    function scheduleFlash() {
+      var delay = 6000 + Math.random() * 4000;
+      setTimeout(function() {
+        flashRandomQueueItem();
+        scheduleFlash();
+      }, delay);
+    }
+    scheduleFlash();
+
+    // 2c. Aurora blobs — make them livelier
+    var blobs = document.querySelectorAll('.aurora-blob');
+    blobs.forEach(function(blob, i) {
+      // Override the CSS animation speed with a slightly faster one via JS
+      var speeds = ['14s', '11s', '9s', '13s'];
+      blob.style.animationDuration = speeds[i] || '12s';
+      blob.style.animationPlayState = 'running';
+    });
+
+  });
+})();
+</script>
+
+<!-- ═══════════ FEATURE 3: 3D SWARM SPHERE (2D canvas perspective) ═══════════ -->
+<script>
+(function initSwarmSphere() {
+  var canvas = document.getElementById('swarmCanvas');
+  if (!canvas) return;
+  var ctx = canvas.getContext('2d');
+  var W = canvas.width, H = canvas.height;
+  var CX = W / 2, CY = H / 2;
+
+  // Build 24 nodes on sphere using golden ratio
+  var numNodes = 24;
+  var rSphere = 140;
+  var nodes = [];
+  for (var i = 0; i < numNodes; i++) {
+    var y = 1 - (i / (numNodes - 1)) * 2;
+    var radius = Math.sqrt(1 - y * y);
+    var theta = ((1 + Math.sqrt(5)) / 2) * Math.PI * 2 * i;
+    nodes.push({
+      x: Math.cos(theta) * radius * rSphere,
+      y: y * rSphere,
+      z: Math.sin(theta) * radius * rSphere,
+      isAlert: i === 7,
+      status: i === 7 ? 'alert' : (Math.random() > 0.3 ? 'active' : 'standby'),
+      pulse: Math.random() * Math.PI * 2  // phase offset for alert pulse
+    });
+  }
+
+  // Auto-rotation
+  var spinX = 0.003;
+  var spinY = 0.005;
+  var rotX = 0.3;
+  var rotY = 0;
+
+  // Drag state
+  var dragging = false;
+  var lastX = 0, lastY = 0;
+
+  canvas.addEventListener('mousedown', function(e) {
+    dragging = true;
+    lastX = e.clientX;
+    lastY = e.clientY;
+    canvas.style.cursor = 'grabbing';
+  });
+  window.addEventListener('mousemove', function(e) {
+    if (!dragging) return;
+    var dx = e.clientX - lastX;
+    var dy = e.clientY - lastY;
+    rotY += dx * 0.008;
+    rotX += dy * 0.008;
+    lastX = e.clientX;
+    lastY = e.clientY;
+  });
+  window.addEventListener('mouseup', function() {
+    dragging = false;
+    canvas.style.cursor = 'grab';
+  });
+  canvas.addEventListener('touchstart', function(e) {
+    dragging = true;
+    lastX = e.touches[0].clientX;
+    lastY = e.touches[0].clientY;
+    e.preventDefault();
+  }, { passive: false });
+  canvas.addEventListener('touchmove', function(e) {
+    if (!dragging) return;
+    var dx = e.touches[0].clientX - lastX;
+    var dy = e.touches[0].clientY - lastY;
+    rotY += dx * 0.008;
+    rotX += dy * 0.008;
+    lastX = e.touches[0].clientX;
+    lastY = e.touches[0].clientY;
+    e.preventDefault();
+  }, { passive: false });
+  canvas.addEventListener('touchend', function() { dragging = false; });
+
+  // CSS var resolver (read actual color from computed style)
+  var _cssPalette = {};
+  function getCSSVar(v) {
+    if (!_cssPalette[v]) {
+      _cssPalette[v] = getComputedStyle(document.documentElement).getPropertyValue(v).trim() || v;
+    }
+    return _cssPalette[v];
+  }
+  // Invalidate cache on palette switch
+  document.addEventListener('paletteChange', function() { _cssPalette = {}; });
+
+  function rotatePoint(p, rx, ry) {
+    // Rotate around Y axis
+    var cosY = Math.cos(ry), sinY = Math.sin(ry);
+    var x1 = p.x * cosY + p.z * sinY;
+    var z1 = -p.x * sinY + p.z * cosY;
+    // Rotate around X axis
+    var cosX = Math.cos(rx), sinX = Math.sin(rx);
+    var y2 = p.y * cosX - z1 * sinX;
+    var z2 = p.y * sinX + z1 * cosX;
+    return { x: x1, y: y2, z: z2 };
+  }
+
+  function project(p) {
+    var fov = 600;
+    var scale = fov / (fov + p.z + rSphere);
+    return {
+      sx: CX + p.x * scale,
+      sy: CY + p.y * scale,
+      scale: scale,
+      z: p.z
+    };
+  }
+
+  var alertPulseT = 0;
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+
+    // Auto-rotate when not dragging
+    if (!dragging) {
+      rotY += spinY;
+      rotX += spinX * 0.4;
+    }
+    alertPulseT += 0.05;
+
+    // Project all nodes
+    var projected = nodes.map(function(n) {
+      var r = rotatePoint(n, rotX, rotY);
+      var proj = project(r);
+      return { n: n, proj: proj, rz: r.z };
+    });
+
+    // Draw edges between nearby nodes (dim cyan lines)
+    var edgeDist = rSphere * 1.05;
+    for (var a = 0; a < numNodes; a++) {
+      for (var b = a + 1; b < numNodes; b++) {
+        var na = nodes[a], nb = nodes[b];
+        var dx = na.x - nb.x, dy = na.y - nb.y, dz = na.z - nb.z;
+        var dist = Math.sqrt(dx*dx + dy*dy + dz*dz);
+        if (dist < edgeDist) {
+          var pa = projected[a].proj, pb = projected[b].proj;
+          // Fade by z-depth
+          var avgZ = (projected[a].rz + projected[b].rz) / 2;
+          var alpha = Math.max(0, Math.min(0.25, 0.25 + avgZ / (rSphere * 4)));
+          ctx.beginPath();
+          ctx.strokeStyle = 'rgba(56,189,248,' + alpha + ')';
+          ctx.lineWidth = 0.7;
+          ctx.moveTo(pa.sx, pa.sy);
+          ctx.lineTo(pb.sx, pb.sy);
+          ctx.stroke();
+        }
+      }
+    }
+
+    // Sort by z for painter's algorithm
+    projected.sort(function(a, b) { return a.rz - b.rz; });
+
+    // Draw nodes
+    projected.forEach(function(item) {
+      var n = item.n;
+      var p = item.proj;
+      var r = Math.max(4, 7 * p.scale);
+      var alpha = Math.max(0.4, Math.min(1, 0.7 + item.rz / (rSphere * 2)));
+
+      if (n.isAlert) {
+        // Alert node: pulsing red with expanding rings
+        var pulse = (Math.sin(alertPulseT + n.pulse) + 1) / 2;
+        // Expanding ring
+        var ringR = r + pulse * 14;
+        ctx.beginPath();
+        ctx.arc(p.sx, p.sy, ringR, 0, Math.PI * 2);
+        ctx.strokeStyle = 'rgba(251,113,133,' + (0.6 * (1 - pulse)) + ')';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        // Second ring
+        var ring2R = r + pulse * 22;
+        ctx.beginPath();
+        ctx.arc(p.sx, p.sy, ring2R, 0, Math.PI * 2);
+        ctx.strokeStyle = 'rgba(251,113,133,' + (0.3 * (1 - pulse)) + ')';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+        // Glow
+        var grd = ctx.createRadialGradient(p.sx, p.sy, 0, p.sx, p.sy, r * 2.5);
+        grd.addColorStop(0, 'rgba(251,113,133,' + (0.6 * alpha) + ')');
+        grd.addColorStop(1, 'rgba(251,113,133,0)');
+        ctx.beginPath();
+        ctx.arc(p.sx, p.sy, r * 2.5, 0, Math.PI * 2);
+        ctx.fillStyle = grd;
+        ctx.fill();
+        // Core
+        ctx.beginPath();
+        ctx.arc(p.sx, p.sy, r, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(251,113,133,' + (0.9 * alpha) + ')';
+        ctx.fill();
+      } else if (n.status === 'active') {
+        // Green active node with glow
+        var grd2 = ctx.createRadialGradient(p.sx, p.sy, 0, p.sx, p.sy, r * 2);
+        grd2.addColorStop(0, 'rgba(52,211,153,' + (0.4 * alpha) + ')');
+        grd2.addColorStop(1, 'rgba(52,211,153,0)');
+        ctx.beginPath();
+        ctx.arc(p.sx, p.sy, r * 2, 0, Math.PI * 2);
+        ctx.fillStyle = grd2;
+        ctx.fill();
+        // Core dot
+        ctx.beginPath();
+        ctx.arc(p.sx, p.sy, r, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(52,211,153,' + (0.85 * alpha) + ')';
+        ctx.fill();
+      } else {
+        // Standby — dim gray
+        ctx.beginPath();
+        ctx.arc(p.sx, p.sy, r * 0.7, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(100,116,139,' + (0.5 * alpha) + ')';
+        ctx.fill();
+      }
+    });
+
+    requestAnimationFrame(draw);
+  }
+
+  // Invalidate CSS var cache when palette changes (palette switcher sets data-palette)
+  var observer = new MutationObserver(function() { _cssPalette = {}; });
+  observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-palette'] });
+
+  draw();
+})();
 </script>
 
 </body>
