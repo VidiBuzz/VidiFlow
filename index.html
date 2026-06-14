@@ -282,24 +282,12 @@
 
     .hero-section {
       padding: 10rem 0 6rem;
-      background: linear-gradient(135deg, #1e3a8a 0%, #1d4ed8 25%, #2563eb 50%, #3b82f6 75%, #60a5fa 100%);
+      background: transparent;
       position: relative;
       overflow: hidden;
     }
 
-    .hero-section::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background:
-        radial-gradient(ellipse at 20% 30%, rgba(96, 165, 250, 0.2) 0%, transparent 50%),
-        radial-gradient(ellipse at 80% 20%, rgba(52, 211, 153, 0.12) 0%, transparent 50%),
-        radial-gradient(ellipse at 50% 80%, rgba(147, 197, 253, 0.15) 0%, transparent 50%);
-      pointer-events: none;
-    }
+    /* hero::before removed - WebGL shader replaces static background */
 
     .hero-section::after {
       content: '';
@@ -312,13 +300,9 @@
       pointer-events: none;
     }
 
-    /* Floating Orbs */
+    /* Floating Orbs - hidden; WebGL shader replaces them */
     .hero-orb {
-      position: absolute;
-      border-radius: 50%;
-      filter: blur(60px);
-      pointer-events: none;
-      animation: float-orb 8s ease-in-out infinite;
+      display: none !important;
     }
 
     .hero-orb-1 {
@@ -1190,9 +1174,61 @@
       outline-offset: 2px;
       border-radius: 0.25rem;
     }
+
+    /* ============================================
+       WEBGL SHADER CANVAS
+       ============================================ */
+
+    #webgl-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    /* ============================================
+       SCROLL-REVEAL ANIMATIONS
+       ============================================ */
+
+    .reveal-card {
+      opacity: 0;
+      transform: translateY(32px);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+
+    .reveal-card.is-visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .reveal-heading {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+
+    .reveal-heading.is-visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .reveal-card,
+      .reveal-heading {
+        opacity: 1 !important;
+        transform: none !important;
+        transition: none !important;
+      }
+    }
   </style>
 </head>
 <body>
+
+  <!-- WebGL Background Canvas -->
+  <canvas id="webgl-bg" aria-hidden="true"></canvas>
 
   <!-- ============================================
        NAVIGATION
@@ -1391,14 +1427,14 @@
   <section id="features" class="features-section">
     <div class="max-w-7xl mx-auto px-6">
       <div class="text-center">
-        <span class="section-label">Features</span>
-        <h2 class="section-title">Everything You Need to Build a Smart Stack</h2>
-        <p class="section-subtitle">Our AI-powered platform analyzes your current technology and recommends the optimal stack for your business.</p>
+        <span class="section-label reveal-heading">Features</span>
+        <h2 class="section-title reveal-heading">Everything You Need to Build a Smart Stack</h2>
+        <p class="section-subtitle reveal-heading">Our AI-powered platform analyzes your current technology and recommends the optimal stack for your business.</p>
       </div>
 
       <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
         <!-- Feature 1 -->
-        <div class="feature-card">
+        <div class="feature-card reveal-card">
           <div class="feature-icon feature-icon-blue">
             <i class="fas fa-search"></i>
           </div>
@@ -1407,7 +1443,7 @@
         </div>
 
         <!-- Feature 2 -->
-        <div class="feature-card">
+        <div class="feature-card reveal-card">
           <div class="feature-icon feature-icon-green">
             <i class="fas fa-shield-alt"></i>
           </div>
@@ -1416,7 +1452,7 @@
         </div>
 
         <!-- Feature 3 -->
-        <div class="feature-card">
+        <div class="feature-card reveal-card">
           <div class="feature-icon feature-icon-purple">
             <i class="fas fa-bolt"></i>
           </div>
@@ -1425,7 +1461,7 @@
         </div>
 
         <!-- Feature 4 -->
-        <div class="feature-card">
+        <div class="feature-card reveal-card">
           <div class="feature-icon feature-icon-blue">
             <i class="fas fa-plug"></i>
           </div>
@@ -1434,7 +1470,7 @@
         </div>
 
         <!-- Feature 5 -->
-        <div class="feature-card">
+        <div class="feature-card reveal-card">
           <div class="feature-icon feature-icon-green">
             <i class="fas fa-chart-line"></i>
           </div>
@@ -1443,7 +1479,7 @@
         </div>
 
         <!-- Feature 6 -->
-        <div class="feature-card">
+        <div class="feature-card reveal-card">
           <div class="feature-icon feature-icon-purple">
             <i class="fas fa-robot"></i>
           </div>
@@ -1460,14 +1496,14 @@
   <section id="how-it-works" class="how-it-works-section">
     <div class="max-w-7xl mx-auto px-6 relative">
       <div class="text-center">
-        <span class="section-label">How It Works</span>
-        <h2 class="section-title">Four Simple Steps</h2>
-        <p class="section-subtitle">From analysis to deployment in under 10 minutes.</p>
+        <span class="section-label reveal-heading">How It Works</span>
+        <h2 class="section-title reveal-heading">Four Simple Steps</h2>
+        <p class="section-subtitle reveal-heading">From analysis to deployment in under 10 minutes.</p>
       </div>
 
       <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
         <!-- Step 1 -->
-        <div class="step-card">
+        <div class="step-card reveal-card">
           <div class="step-connector"></div>
           <div class="step-number">1</div>
           <h3 class="step-title">AI Discovery</h3>
@@ -1476,7 +1512,7 @@
         </div>
 
         <!-- Step 2 -->
-        <div class="step-card">
+        <div class="step-card reveal-card">
           <div class="step-connector"></div>
           <div class="step-number">2</div>
           <h3 class="step-title">Omni Search</h3>
@@ -1485,7 +1521,7 @@
         </div>
 
         <!-- Step 3 -->
-        <div class="step-card">
+        <div class="step-card reveal-card">
           <div class="step-connector"></div>
           <div class="step-number">3</div>
           <h3 class="step-title">Stack Generation</h3>
@@ -1494,7 +1530,7 @@
         </div>
 
         <!-- Step 4 -->
-        <div class="step-card">
+        <div class="step-card reveal-card">
           <div class="step-number">4</div>
           <h3 class="step-title">Instant Deploy</h3>
           <p class="step-description">One-click deployment with pre-configured integrations, data migration, and training resources.</p>
@@ -1510,14 +1546,14 @@
   <section id="pricing" class="comparison-section">
     <div class="max-w-5xl mx-auto px-6">
       <div class="text-center">
-        <span class="section-label">Comparison</span>
-        <h2 class="section-title">Smart Stack vs. Traditional</h2>
-        <p class="section-subtitle">See the difference AI-powered optimization makes.</p>
+        <span class="section-label reveal-heading">Comparison</span>
+        <h2 class="section-title reveal-heading">Smart Stack vs. Traditional</h2>
+        <p class="section-subtitle reveal-heading">See the difference AI-powered optimization makes.</p>
       </div>
 
       <div class="grid md:grid-cols-2 gap-8">
         <!-- Traditional -->
-        <div class="comparison-card">
+        <div class="comparison-card reveal-card">
           <h3 class="comparison-title">Traditional Approach</h3>
           <p class="comparison-subtitle">Manual research and consulting</p>
           <ul class="comparison-list">
@@ -1530,7 +1566,7 @@
         </div>
 
         <!-- VidiSmart -->
-        <div class="comparison-card featured">
+        <div class="comparison-card featured reveal-card">
           <span class="comparison-badge">Recommended</span>
           <h3 class="comparison-title">VidiSmart Smart Stack</h3>
           <p class="comparison-subtitle">AI-powered optimization</p>
@@ -1554,19 +1590,19 @@
     <div class="max-w-7xl mx-auto px-6">
       <div class="grid md:grid-cols-4 gap-8">
         <div class="stat-item">
-          <div class="stat-number" data-count="36">0</div>
+          <div class="stat-number" data-count="36" data-suffix="M+">36M+</div>
           <div class="stat-label">Million+ Small Businesses</div>
         </div>
         <div class="stat-item">
-          <div class="stat-number" data-count="481">0</div>
+          <div class="stat-number" data-count="481">481</div>
           <div class="stat-label">Vetted Technologies</div>
         </div>
         <div class="stat-item">
-          <div class="stat-number" data-count="10">0</div>
+          <div class="stat-number" data-count="10">10</div>
           <div class="stat-label">Minutes to Smart Stack</div>
         </div>
         <div class="stat-item">
-          <div class="stat-number" data-count="1000">0</div>
+          <div class="stat-number" data-count="1000" data-suffix="%">1000%</div>
           <div class="stat-label">% Max Efficiency Gain</div>
         </div>
       </div>
@@ -1578,7 +1614,7 @@
        ============================================ -->
   <section class="cta-section">
     <div class="max-w-4xl mx-auto px-6">
-      <div class="cta-card">
+      <div class="cta-card reveal-card">
         <h2 class="cta-title">Ready to Transform Your Business?</h2>
         <p class="cta-subtitle">Join 2,847+ businesses on the waitlist. Get early access to AI-powered Smart Stack recommendations.</p>
         <div class="flex flex-col sm:flex-row gap-4 justify-center">
@@ -1634,14 +1670,125 @@
        JAVASCRIPT
        ============================================ -->
   <script>
-    // Mobile Menu Toggle
-    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-    const mobileMenu = document.getElementById('mobileMenu');
+    // ============================================
+    // WEBGL FRAGMENT SHADER BACKGROUND
+    // ============================================
+    (function () {
+      var canvas = document.getElementById('webgl-bg');
+      var gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+
+      if (!gl) {
+        canvas.style.background = 'linear-gradient(135deg, #1e3a8a 0%, #1d4ed8 50%, #2563eb 100%)';
+        return;
+      }
+
+      var vertSrc = [
+        'attribute vec2 a_position;',
+        'void main() {',
+        '  gl_Position = vec4(a_position, 0.0, 1.0);',
+        '}'
+      ].join('\n');
+
+      var fragSrc = [
+        'precision mediump float;',
+        'uniform float u_time;',
+        'uniform vec2 u_resolution;',
+        '',
+        'vec3 palette(float t) {',
+        '  vec3 a = vec3(0.02, 0.02, 0.05);',
+        '  vec3 b = vec3(0.03, 0.08, 0.15);',
+        '  vec3 c = vec3(0.0, 0.3, 0.5);',
+        '  vec3 d = vec3(0.0, 0.15, 0.35);',
+        '  return a + b * cos(6.28318 * (c * t + d));',
+        '}',
+        '',
+        'void main() {',
+        '  vec2 uv = (gl_FragCoord.xy * 2.0 - u_resolution) / min(u_resolution.x, u_resolution.y);',
+        '  vec2 uv0 = uv;',
+        '  vec3 finalColor = vec3(0.0);',
+        '  for (float i = 0.0; i < 3.0; i++) {',
+        '    uv = fract(uv * 1.5) - 0.5;',
+        '    float d = length(uv) * exp(-length(uv0));',
+        '    vec3 col = palette(length(uv0) + i * 0.4 + u_time * 0.08);',
+        '    d = sin(d * 8.0 + u_time * 0.5) / 8.0;',
+        '    d = abs(d);',
+        '    d = pow(0.012 / d, 1.5);',
+        '    finalColor += col * d;',
+        '  }',
+        '  gl_FragColor = vec4(finalColor * 0.6, 1.0);',
+        '}'
+      ].join('\n');
+
+      function compileShader(type, src) {
+        var s = gl.createShader(type);
+        gl.shaderSource(s, src);
+        gl.compileShader(s);
+        if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) {
+          console.warn('Shader compile error:', gl.getShaderInfoLog(s));
+          gl.deleteShader(s);
+          return null;
+        }
+        return s;
+      }
+
+      var vert = compileShader(gl.VERTEX_SHADER, vertSrc);
+      var frag = compileShader(gl.FRAGMENT_SHADER, fragSrc);
+      if (!vert || !frag) return;
+
+      var program = gl.createProgram();
+      gl.attachShader(program, vert);
+      gl.attachShader(program, frag);
+      gl.linkProgram(program);
+      if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+        console.warn('Program link error:', gl.getProgramInfoLog(program));
+        return;
+      }
+      gl.useProgram(program);
+
+      var buf = gl.createBuffer();
+      gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
+        -1, -1,  1, -1, -1,  1,
+        -1,  1,  1, -1,  1,  1
+      ]), gl.STATIC_DRAW);
+
+      var posLoc = gl.getAttribLocation(program, 'a_position');
+      gl.enableVertexAttribArray(posLoc);
+      gl.vertexAttribPointer(posLoc, 2, gl.FLOAT, false, 0, 0);
+
+      var uTime = gl.getUniformLocation(program, 'u_time');
+      var uRes  = gl.getUniformLocation(program, 'u_resolution');
+
+      function resize() {
+        canvas.width  = window.innerWidth;
+        canvas.height = window.innerHeight;
+        gl.viewport(0, 0, canvas.width, canvas.height);
+      }
+      resize();
+      window.addEventListener('resize', resize);
+
+      var startTime = performance.now();
+
+      function render() {
+        var elapsed = (performance.now() - startTime) / 1000 * 0.5;
+        gl.uniform1f(uTime, elapsed);
+        gl.uniform2f(uRes, canvas.width, canvas.height);
+        gl.drawArrays(gl.TRIANGLES, 0, 6);
+        requestAnimationFrame(render);
+      }
+      render();
+    })();
+
+    // ============================================
+    // MOBILE MENU TOGGLE
+    // ============================================
+    var mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    var mobileMenu = document.getElementById('mobileMenu');
 
     if (mobileMenuBtn) {
-      mobileMenuBtn.addEventListener('click', () => {
+      mobileMenuBtn.addEventListener('click', function () {
         mobileMenu.classList.toggle('hidden');
-        const icon = mobileMenuBtn.querySelector('i');
+        var icon = mobileMenuBtn.querySelector('i');
         if (mobileMenu.classList.contains('hidden')) {
           icon.classList.remove('fa-times');
           icon.classList.add('fa-bars');
@@ -1652,9 +1799,11 @@
       });
     }
 
-    // Navbar Scroll Effect
-    const nav = document.getElementById('mainNav');
-    window.addEventListener('scroll', () => {
+    // ============================================
+    // NAVBAR SCROLL EFFECT
+    // ============================================
+    var nav = document.getElementById('mainNav');
+    window.addEventListener('scroll', function () {
       if (window.pageYOffset > 50) {
         nav.classList.add('scrolled');
       } else {
@@ -1662,50 +1811,90 @@
       }
     });
 
-    // Animated Counters
-    function animateCounter(element, target, duration = 2000) {
-      let start = 0;
-      const increment = target / (duration / 16);
-      const timer = setInterval(() => {
-        start += increment;
-        if (start >= target) {
-          element.textContent = target.toLocaleString();
-          clearInterval(timer);
-        } else {
-          element.textContent = Math.floor(start).toLocaleString();
+    // ============================================
+    // SCROLL-REVEAL: CARDS & HEADINGS
+    // ============================================
+    var cardObserver = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          var el = entry.target;
+          var siblings = el.parentElement.querySelectorAll('.reveal-card');
+          var idx = 0;
+          siblings.forEach(function (sib, i) { if (sib === el) idx = i; });
+          el.style.transitionDelay = (idx * 100) + 'ms';
+          el.classList.add('is-visible');
+          cardObserver.unobserve(el);
         }
-      }, 16);
+      });
+    }, { threshold: 0.12 });
+
+    document.querySelectorAll('.reveal-card').forEach(function (el) {
+      cardObserver.observe(el);
+    });
+
+    var headingObserver = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+          headingObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.2 });
+
+    document.querySelectorAll('.reveal-heading').forEach(function (el) {
+      headingObserver.observe(el);
+    });
+
+    // ============================================
+    // STATS COUNT-UP (RAF-based, 1.5s, eased)
+    // ============================================
+    function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
+
+    function animateStatCountUp(el) {
+      var rawCount = parseInt(el.dataset.count, 10);
+      var suffix   = el.dataset.suffix || '';
+      var duration = 1500;
+      var startTs  = null;
+
+      function step(ts) {
+        if (!startTs) startTs = ts;
+        var progress = Math.min((ts - startTs) / duration, 1);
+        var current  = Math.round(easeOutCubic(progress) * rawCount);
+        el.textContent = current.toLocaleString() + suffix;
+        if (progress < 1) {
+          requestAnimationFrame(step);
+        } else {
+          el.textContent = rawCount.toLocaleString() + suffix;
+        }
+      }
+      requestAnimationFrame(step);
     }
 
-    // Intersection Observer for stats
-    const statsObserver = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
+    var statsObserver = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
         if (entry.isIntersecting) {
-          const statNumber = entry.target;
-          const target = parseInt(statNumber.dataset.count);
-          if (target) {
-            animateCounter(statNumber, target);
-          }
-          statsObserver.unobserve(statNumber);
+          animateStatCountUp(entry.target);
+          statsObserver.unobserve(entry.target);
         }
       });
     }, { threshold: 0.5 });
 
-    document.querySelectorAll('.stat-number[data-count]').forEach(stat => {
+    document.querySelectorAll('.stat-number[data-count]').forEach(function (stat) {
       statsObserver.observe(stat);
     });
 
-    // Smooth Scroll for Anchor Links
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    // ============================================
+    // SMOOTH SCROLL FOR ANCHOR LINKS
+    // ============================================
+    document.querySelectorAll('a[href^="#"]').forEach(function (anchor) {
       anchor.addEventListener('click', function (e) {
         e.preventDefault();
-        const target = document.querySelector(this.getAttribute('href'));
+        var target = document.querySelector(this.getAttribute('href'));
         if (target) {
           target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          // Close mobile menu if open
-          if (!mobileMenu.classList.contains('hidden')) {
+          if (mobileMenu && !mobileMenu.classList.contains('hidden')) {
             mobileMenu.classList.add('hidden');
-            const icon = mobileMenuBtn.querySelector('i');
+            var icon = mobileMenuBtn.querySelector('i');
             icon.classList.remove('fa-times');
             icon.classList.add('fa-bars');
           }
