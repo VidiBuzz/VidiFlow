@@ -391,11 +391,15 @@ a:hover{color:#7dd3fc}
 
 /* Brand Logo Styles */
 .brand-logo{display:flex;align-items:center;gap:.6rem;margin-bottom:.5rem}
-.brand-logo img{height:28px;width:auto;filter:brightness(0) invert(1);transition:filter .3s}
-.brand-logo:hover img{filter:brightness(1.2) invert(1) drop-shadow(0 0 8px currentColor)}
+.brand-logo img{
+  height:28px;width:auto;
+  filter: none !important; /* Force original colors to show (e.g., Hermes logo details) */
+  transition: filter .3s;
+}
+.brand-logo:hover img{filter: drop-shadow(0 0 8px currentColor) brightness(1.1)}
 .brand-logo-text{font-family:var(--font-display);font-weight:800;font-size:1.3rem;color:#fff}
 .brand-badge{display:inline-flex;align-items:center;gap:.4rem;padding:.3rem .6rem;border-radius:8px;font-size:.7rem;font-weight:600;letter-spacing:.03em}
-.brand-badge img{height:16px;width:auto}
+.brand-badge img{height:16px;width:auto;filter: none !important;}
 
 .pick-card .tagline{font-size:.85rem;color:var(--text-muted);margin-bottom:1rem}
 .pick-card .features{list-style:none;margin-bottom:1.5rem}
@@ -1166,9 +1170,59 @@ a:hover{color:#7dd3fc}
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-5px); }
 }
+
+/* ========== HERO VIDEO BACKGROUND ========== */
+.hero-video-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -2; /* Behind the aurora-bg (z-index: -1) */
+  overflow: hidden;
+  background: #000000; /* Fallback pure black */
+}
+
+.hero-video-container video {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  min-width: 100%;
+  min-height: 100%;
+  width: auto;
+  height: auto;
+  transform: translate(-50%, -50%);
+  object-fit: cover;
+  opacity: 0.6; /* Blends beautifully with your existing dark theme */
+}
+
+.video-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at center, transparent 0%, var(--bg) 90%);
+  pointer-events: none;
+}
 </style>
 </head>
 <body>
+
+<!-- HERO VIDEO BACKGROUND -->
+<div class="hero-video-container">
+  <video
+    id="vidismart-hero-video"
+    autoplay
+    loop
+    muted
+    playsinline
+    poster="path-to-your-base-image.jpg"
+  >
+    <source src="path-to-your-final-20s-video.mp4" type="video/mp4">
+  </video>
+  <div class="video-overlay"></div>
+</div>
 
 <!-- AURORA BACKGROUND -->
 <div class="aurora-bg">
