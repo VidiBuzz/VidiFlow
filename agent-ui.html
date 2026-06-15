@@ -40,7 +40,7 @@
 *,*::before,*::after{transition:background-color .35s,border-color .35s,color .35s}
 
 /* ── Palette switcher widget ── */
-#ps-widget{position:fixed;bottom:1.4rem;right:1.4rem;z-index:9999;display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+/* #ps-widget now lives inside #control-stack */
 .ps-toggle{
   width:42px;height:42px;border-radius:50%;background:var(--card);border:1px solid var(--border-light);
   cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.1rem;
@@ -65,8 +65,11 @@
 .ps-dots span{width:10px;height:10px;border-radius:50%;display:block}
 .ps-sw-name{font-size:.58rem;font-weight:700;color:var(--text-dim);letter-spacing:.04em}
 
-/* ── Shared corner orb widgets ── */
-.orb-widget{position:fixed;z-index:9999;display:flex;gap:8px}
+/* ── Control stack — single bottom-right cluster ── */
+#control-stack{position:fixed;bottom:1.4rem;right:1.4rem;z-index:9999;display:flex;flex-direction:column;align-items:center;gap:10px}
+.ctrl-orb{position:relative;display:flex;flex-direction:column;align-items:center;gap:3px}
+.ctrl-orb .orb-panel,.ctrl-orb .ps-panel{position:absolute;right:calc(100% + 14px);bottom:0;width:210px}
+/* Shared panel styles */
 .orb-panel{background:var(--card);border:1px solid var(--border-light);border-radius:14px;padding:.75rem .8rem;display:none;width:210px;box-shadow:0 8px 32px rgba(0,0,0,.7)}
 .orb-panel.open{display:block}
 .orb-heading{font-size:.6rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--text-dim);margin-bottom:.6rem}
@@ -87,10 +90,7 @@
 .health-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
 .health-name{color:var(--text-muted);flex:1}
 .health-status{font-weight:700;font-size:.65rem;letter-spacing:.04em}
-/* Corner positions */
-#spd-widget{bottom:1.4rem;left:1.4rem;flex-direction:column;align-items:flex-start}
-#health-widget{top:1.4rem;left:1.4rem;flex-direction:column;align-items:flex-start}
-#view-widget{top:1.4rem;right:1.4rem;flex-direction:column;align-items:flex-end}
+/* (corner positions now handled by #control-stack) */
 /* View mode: Exec — hide agent task/log text, boost numbers */
 body.view-exec .f1-task{opacity:0;font-size:0;margin:0!important;height:0;overflow:hidden}
 body.view-exec .f1-log-wrap{display:none!important}
@@ -2462,113 +2462,100 @@ a:hover{color:#7dd3fc}
   <p><span>VidiSmart</span> · Glance-Level UI for Mass Agent Management</p>
 </footer>
 
-<!-- UI STYLE SWITCHER — 3D Sphere -->
-<div id="ps-widget">
-  <div class="ps-panel" id="psPanel">
-    <div class="ps-heading">UI Style Control</div>
-    <div class="ps-swatches">
-      <div class="ps-sw active" data-p="midnight" onclick="switchPalette('midnight')">
-        <div class="ps-dots">
-          <span style="background:#38bdf8"></span>
-          <span style="background:#a78bfa"></span>
-          <span style="background:#34d399"></span>
-        </div>
-        <div class="ps-sw-name">MIDNIGHT</div>
-      </div>
-      <div class="ps-sw" data-p="void" onclick="switchPalette('void')">
-        <div class="ps-dots">
-          <span style="background:#39d353"></span>
-          <span style="background:#a8ff78"></span>
-          <span style="background:#d4f5c4"></span>
-        </div>
-        <div class="ps-sw-name">VOID</div>
-      </div>
-      <div class="ps-sw" data-p="dusk" onclick="switchPalette('dusk')">
-        <div class="ps-dots">
-          <span style="background:#c084fc"></span>
-          <span style="background:#e879f9"></span>
-          <span style="background:#34d399"></span>
-        </div>
-        <div class="ps-sw-name">DUSK</div>
-      </div>
-      <div class="ps-sw" data-p="carbon" onclick="switchPalette('carbon')">
-        <div class="ps-dots">
-          <span style="background:#fbbf24"></span>
-          <span style="background:#fb923c"></span>
-          <span style="background:#84cc16"></span>
-        </div>
-        <div class="ps-sw-name">CARBON</div>
-      </div>
-    </div>
-  </div>
-  <canvas id="psSphere" width="56" height="56" onclick="togglePsPanel()" title="UI Style Control"
-    style="cursor:pointer;display:block;border-radius:50%;border:1px solid var(--border-light);background:var(--card);box-shadow:0 4px 24px rgba(0,0,0,.6);transition:transform .2s"
-    onmouseenter="this.style.transform='scale(1.12)'" onmouseleave="this.style.transform='scale(1)'">
-  </canvas>
-  <div style="font-size:.5rem;color:var(--text-dim);text-align:center;letter-spacing:.08em;font-weight:700;margin-top:3px">UI STYLE</div>
-</div>
+<!-- CONTROL STACK — all four orbs, bottom-right corner -->
+<div id="control-stack">
 
-<!-- SPEED CONTROL ORB — bottom-left -->
-<div id="spd-widget" class="orb-widget">
-  <canvas id="spdSphere" width="56" height="56" class="orb-canvas" onclick="toggleSpdPanel()" title="Animation Speed"
-    onmouseenter="this.style.transform='scale(1.12)'" onmouseleave="this.style.transform='scale(1)'"></canvas>
-  <div style="font-size:.5rem;color:var(--text-dim);letter-spacing:.08em;font-weight:700;margin-top:3px">SPEED</div>
-  <div class="orb-panel" id="spdPanel">
-    <div class="orb-heading">Animation Speed</div>
-    <div class="orb-opt" data-spd="slow" onclick="setSpeed('slow',this)">
-      <div class="orb-opt-dot"></div>
-      <div><div class="orb-opt-name">SLOW</div><div class="orb-opt-desc">Deliberate, presentation mode</div></div>
-    </div>
-    <div class="orb-opt active" data-spd="normal" onclick="setSpeed('normal',this)">
-      <div class="orb-opt-dot"></div>
-      <div><div class="orb-opt-name">NORMAL</div><div class="orb-opt-desc">Default speed</div></div>
-    </div>
-    <div class="orb-opt" data-spd="fast" onclick="setSpeed('fast',this)">
-      <div class="orb-opt-dot"></div>
-      <div><div class="orb-opt-name">FAST</div><div class="orb-opt-desc">Energized, high activity</div></div>
-    </div>
-    <div class="orb-opt" data-spd="frantic" onclick="setSpeed('frantic',this)">
-      <div class="orb-opt-dot"></div>
-      <div><div class="orb-opt-name">FRANTIC</div><div class="orb-opt-desc">Maximum chaos — demo wow</div></div>
+  <!-- UI Style -->
+  <div class="ctrl-orb">
+    <canvas id="psSphere" width="56" height="56" class="orb-canvas" onclick="togglePsPanel()" title="UI Style"
+      onmouseenter="this.style.transform='scale(1.12)'" onmouseleave="this.style.transform='scale(1)'"></canvas>
+    <div class="orb-label">UI STYLE</div>
+    <div class="ps-panel" id="psPanel">
+      <div class="ps-heading">UI Style Control</div>
+      <div class="ps-swatches">
+        <div class="ps-sw active" data-p="midnight" onclick="switchPalette('midnight')">
+          <div class="ps-dots"><span style="background:#38bdf8"></span><span style="background:#a78bfa"></span><span style="background:#34d399"></span></div>
+          <div class="ps-sw-name">MIDNIGHT</div>
+        </div>
+        <div class="ps-sw" data-p="void" onclick="switchPalette('void')">
+          <div class="ps-dots"><span style="background:#39d353"></span><span style="background:#a8ff78"></span><span style="background:#d4f5c4"></span></div>
+          <div class="ps-sw-name">VOID</div>
+        </div>
+        <div class="ps-sw" data-p="dusk" onclick="switchPalette('dusk')">
+          <div class="ps-dots"><span style="background:#c084fc"></span><span style="background:#e879f9"></span><span style="background:#34d399"></span></div>
+          <div class="ps-sw-name">DUSK</div>
+        </div>
+        <div class="ps-sw" data-p="carbon" onclick="switchPalette('carbon')">
+          <div class="ps-dots"><span style="background:#fbbf24"></span><span style="background:#fb923c"></span><span style="background:#84cc16"></span></div>
+          <div class="ps-sw-name">CARBON</div>
+        </div>
+      </div>
     </div>
   </div>
-</div>
 
-<!-- AGENT HEALTH BEACON — top-left -->
-<div id="health-widget" class="orb-widget">
-  <canvas id="healthSphere" width="56" height="56" class="orb-canvas" onclick="toggleHealthPanel()" title="System Health"
-    onmouseenter="this.style.transform='scale(1.12)'" onmouseleave="this.style.transform='scale(1)'"></canvas>
-  <div style="font-size:.5rem;color:var(--text-dim);letter-spacing:.08em;font-weight:700;margin-top:3px">HEALTH</div>
-  <div class="orb-panel" id="healthPanel">
-    <div class="orb-heading">System Health</div>
-    <div id="healthOverall" style="font-size:.78rem;font-weight:800;margin-bottom:.6rem;padding:4px 8px;border-radius:6px;display:inline-block">● HEALTHY</div>
-    <div class="health-row"><div class="health-dot" id="hd0"></div><div class="health-name">Cluster α</div><div class="health-status" id="hs0">HEALTHY</div></div>
-    <div class="health-row"><div class="health-dot" id="hd1"></div><div class="health-name">Cluster β</div><div class="health-status" id="hs1">HEALTHY</div></div>
-    <div class="health-row"><div class="health-dot" id="hd2"></div><div class="health-name">Data Pipeline</div><div class="health-status" id="hs2">WARNING</div></div>
-    <div class="health-row"><div class="health-dot" id="hd3"></div><div class="health-name">Orchestrator</div><div class="health-status" id="hs3">HEALTHY</div></div>
+  <!-- Speed -->
+  <div class="ctrl-orb">
+    <canvas id="spdSphere" width="56" height="56" class="orb-canvas" onclick="toggleSpdPanel()" title="Animation Speed"
+      onmouseenter="this.style.transform='scale(1.12)'" onmouseleave="this.style.transform='scale(1)'"></canvas>
+    <div class="orb-label">SPEED</div>
+    <div class="orb-panel" id="spdPanel">
+      <div class="orb-heading">Animation Speed</div>
+      <div class="orb-opt" data-spd="slow" onclick="setSpeed('slow',this)">
+        <div class="orb-opt-dot"></div>
+        <div><div class="orb-opt-name">SLOW</div><div class="orb-opt-desc">Deliberate, presentation mode</div></div>
+      </div>
+      <div class="orb-opt active" data-spd="normal" onclick="setSpeed('normal',this)">
+        <div class="orb-opt-dot"></div>
+        <div><div class="orb-opt-name">NORMAL</div><div class="orb-opt-desc">Default speed</div></div>
+      </div>
+      <div class="orb-opt" data-spd="fast" onclick="setSpeed('fast',this)">
+        <div class="orb-opt-dot"></div>
+        <div><div class="orb-opt-name">FAST</div><div class="orb-opt-desc">Energized, high activity</div></div>
+      </div>
+      <div class="orb-opt" data-spd="frantic" onclick="setSpeed('frantic',this)">
+        <div class="orb-opt-dot"></div>
+        <div><div class="orb-opt-name">FRANTIC</div><div class="orb-opt-desc">Maximum chaos — demo wow</div></div>
+      </div>
+    </div>
   </div>
-</div>
 
-<!-- VIEW MODE SWITCHER — top-right -->
-<div id="view-widget" class="orb-widget">
-  <canvas id="viewSphere" width="56" height="56" class="orb-canvas" onclick="toggleViewPanel()" title="Dashboard View"
-    onmouseenter="this.style.transform='scale(1.12)'" onmouseleave="this.style.transform='scale(1)'"></canvas>
-  <div style="font-size:.5rem;color:var(--text-dim);letter-spacing:.08em;font-weight:700;margin-top:3px">VIEW</div>
-  <div class="orb-panel" id="viewPanel">
-    <div class="orb-heading">Dashboard View</div>
-    <div class="orb-opt active" data-view="command" onclick="setView('command',this)">
-      <div class="orb-opt-dot"></div>
-      <div><div class="orb-opt-name">COMMAND</div><div class="orb-opt-desc">Full detail, all panels</div></div>
-    </div>
-    <div class="orb-opt" data-view="exec" onclick="setView('exec',this)">
-      <div class="orb-opt-dot"></div>
-      <div><div class="orb-opt-name">EXEC</div><div class="orb-opt-desc">Key metrics, minimal text</div></div>
-    </div>
-    <div class="orb-opt" data-view="focus" onclick="setView('focus',this)">
-      <div class="orb-opt-dot"></div>
-      <div><div class="orb-opt-name">FOCUS</div><div class="orb-opt-desc">Hover a section to spotlight</div></div>
+  <!-- Health -->
+  <div class="ctrl-orb">
+    <canvas id="healthSphere" width="56" height="56" class="orb-canvas" onclick="toggleHealthPanel()" title="System Health"
+      onmouseenter="this.style.transform='scale(1.12)'" onmouseleave="this.style.transform='scale(1)'"></canvas>
+    <div class="orb-label">HEALTH</div>
+    <div class="orb-panel" id="healthPanel">
+      <div class="orb-heading">System Health</div>
+      <div id="healthOverall" style="font-size:.78rem;font-weight:800;margin-bottom:.6rem;padding:4px 8px;border-radius:6px;display:inline-block">● HEALTHY</div>
+      <div class="health-row"><div class="health-dot" id="hd0"></div><div class="health-name">Cluster α</div><div class="health-status" id="hs0">HEALTHY</div></div>
+      <div class="health-row"><div class="health-dot" id="hd1"></div><div class="health-name">Cluster β</div><div class="health-status" id="hs1">HEALTHY</div></div>
+      <div class="health-row"><div class="health-dot" id="hd2"></div><div class="health-name">Data Pipeline</div><div class="health-status" id="hs2">WARNING</div></div>
+      <div class="health-row"><div class="health-dot" id="hd3"></div><div class="health-name">Orchestrator</div><div class="health-status" id="hs3">HEALTHY</div></div>
     </div>
   </div>
+
+  <!-- View -->
+  <div class="ctrl-orb">
+    <canvas id="viewSphere" width="56" height="56" class="orb-canvas" onclick="toggleViewPanel()" title="Dashboard View"
+      onmouseenter="this.style.transform='scale(1.12)'" onmouseleave="this.style.transform='scale(1)'"></canvas>
+    <div class="orb-label">VIEW</div>
+    <div class="orb-panel" id="viewPanel">
+      <div class="orb-heading">Dashboard View</div>
+      <div class="orb-opt active" data-view="command" onclick="setView('command',this)">
+        <div class="orb-opt-dot"></div>
+        <div><div class="orb-opt-name">COMMAND</div><div class="orb-opt-desc">Full detail, all panels</div></div>
+      </div>
+      <div class="orb-opt" data-view="exec" onclick="setView('exec',this)">
+        <div class="orb-opt-dot"></div>
+        <div><div class="orb-opt-name">EXEC</div><div class="orb-opt-desc">Key metrics, minimal text</div></div>
+      </div>
+      <div class="orb-opt" data-view="focus" onclick="setView('focus',this)">
+        <div class="orb-opt-dot"></div>
+        <div><div class="orb-opt-name">FOCUS</div><div class="orb-opt-desc">Hover a section to spotlight</div></div>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <!-- AGENT DETAIL MODAL -->
@@ -3033,8 +3020,9 @@ setInterval(() => {
   };
 
   document.addEventListener('click', function(e) {
-    const w = document.getElementById('ps-widget');
-    if (w && !w.contains(e.target)) document.getElementById('psPanel').classList.remove('open');
+    const stack = document.getElementById('control-stack');
+    if (stack && !stack.contains(e.target))
+      document.querySelectorAll('#control-stack .orb-panel, #control-stack .ps-panel').forEach(p => p.classList.remove('open'));
   });
 })();
 
@@ -3084,13 +3072,7 @@ setInterval(() => {
     return canvas;
   }
 
-  /* ── Click-outside helper ── */
-  function outsideClick(widgetId, panelId) {
-    document.addEventListener('click', function(e) {
-      const w = document.getElementById(widgetId);
-      if (w && !w.contains(e.target)) document.getElementById(panelId).classList.remove('open');
-    });
-  }
+  /* click-outside handled by palette IIFE's consolidated listener on #control-stack */
 
   /* ══════════════════════════════════
      SPEED CONTROL ORB
@@ -3122,7 +3104,6 @@ setInterval(() => {
       : '';
   };
 
-  outsideClick('spd-widget', 'spdPanel');
 
   /* ══════════════════════════════════
      AGENT HEALTH BEACON
@@ -3178,7 +3159,6 @@ setInterval(() => {
     document.getElementById('healthPanel').classList.toggle('open');
   };
 
-  outsideClick('health-widget', 'healthPanel');
 
   /* ══════════════════════════════════
      VIEW MODE SWITCHER
@@ -3205,7 +3185,6 @@ setInterval(() => {
     document.getElementById('viewPanel').classList.remove('open');
   };
 
-  outsideClick('view-widget', 'viewPanel');
 
 })();
 
