@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VidiSmart Pro — Advanced Command Center</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Kumbh+Sans:wght@400;700;800;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/three@0.128.0/build/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<style>
+/* ========== RESET & BASE ========== */
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root,[data-palette="midnight"]{
+  --bg:#05070e;--card:#0b0f1a;--border:#1a2035;--border-light:#253050;
+  --text:#e2e8f0;--text-muted:#94a3b8;--text-dim:#64748b;
+  --cyan:#38bdf8;--purple:#a78bfa;--emerald:#34d399;--rose:#fb7185;--amber:#fbbf24;
+  --font-display:'Kumbh Sans',sans-serif;--font-body:'Inter',sans-serif;
+}
+[data-palette="void"]{
+  --bg:#000000;--card:#080808;--border:#181818;--border-light:#262626;
+  --text:#d4f5c4;--text-muted:#7ab868;--text-dim:#3f6035;
+  --cyan:#39d353;--purple:#a8ff78;--emerald:#39d353;--rose:#ff6b6b;--amber:#ffd700;
+}
+[data-palette="dusk"]{
+  --bg:#060212;--card:#0c0620;--border:#1c1040;--border-light:#2c1a5a;
+  --text:#ede4ff;--text-muted:#9b7fd4;--text-dim:#5a3f88;
+  --cyan:#c084fc;--purple:#e879f9;--emerald:#34d399;--rose:#f472b6;--amber:#fbbf24;
+}
+[data-palette="carbon"]{
+  --bg:#0c0904;--card:#131008;--border:#2a2010;--border-light:#3d3018;
+  --text:#f5e8c8;--text-muted:#b09060;--text-dim:#6a5030;
+  --cyan:#fbbf24;--purple:#fb923c;--emerald:#84cc16;--rose:#f87171;--amber:#fcd34d;
+}
+*,*::before,*::after{transition:background-color .35s,border-color .35s,color .35s}
+
+html{scroll-behavior:smooth;font-size:16px}
+body{
+  font-family:var(--font-body);color:var(--text);background:var(--bg);
+  line-height:1.6;overflow-x:hidden;
+}
+a{color:var(--cyan);text-decoration:none;transition:color .2s}
+a:hover{color:#7dd3fc}
+
+/* ========== AURORA MESH BACKGROUND ========== */
+.aurora-bg{
+  position:fixed;top:0;left:0;width:100%;height:100%;z-index:-1;overflow:hidden;
+}
+.aurora-blob{
+  position:absolute;border-radius:50%;filter:blur(120px);opacity:.15;
+  animation:aurora-float 20s ease-in-out infinite alternate;
+}
+.aurora-blob:nth-child(1){width:600px;height:600px;background:var(--cyan);top:-10%;left:-5%;animation-delay:0s}
+.aurora-blob:nth-child(2){width:500px;height:500px;background:var(--purple);top:30%;right:-10%;animation-delay:-5s}
+.aurora-blob:nth-child(3){width:450px;height:450px;background:var(--emerald);bottom:-5%;left:30%;animation-delay:-10s}
+.aurora-blob:nth-child(4){width:350px;height:350px;background:var(--rose);top:60%;left:10%;animation-delay:-15s}
+@keyframes aurora-float{
+  0%{transform:translate(0,0) scale(1)}
+  33%{transform:translate(40px,-30px) scale(1.1)}
+  66%{transform:translate(-30px,40px) scale(.9)}
+  100%{transform:translate(20px,20px) scale(1.05)}
+}
+
+/* ========== GLASS NAV ========== */
+.nav{
+  position:sticky;top:0;z-index:100;
+  background:rgba(5,7,14,.85);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+  padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;
+}
+.nav-brand{font-family:var(--font-display);font-weight:900;font-size:1.4rem;color:#fff;letter-spacing:-.02em}
+.nav-brand span{color:var(--amber)}
+.nav-links{display:flex;gap:2rem}
+.nav-links a{font-size:.85rem;font-weight:600;color:var(--text-muted);transition:color .2s}
+.nav-links a:hover{color:var(--amber)}
+
+/* ========== CONTAINER ========== */
+.container{max-width:1400px;margin:0 auto;padding:0 2rem}
+
+/* ========== PRO GATE ========== */
+.pro-gate{
+  min-height:80vh;display:flex;align-items:center;justify-content:center;
+  padding:4rem 2rem;text-align:center;
+}
+.gate-card{
+  background:var(--card);border:1px solid var(--border);border-radius:24px;
+  padding:3rem;max-width:560px;width:100%;position:relative;overflow:hidden;
+}
+.gate-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:4px;
+  background:linear-gradient(90deg,var(--amber),var(--rose),var(--purple));
+}
+.gate-badge{
+  display:inline-flex;align-items:center;gap:.5rem;
+  background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.2);
+  border-radius:999px;padding:.4rem 1.2rem;font-size:.75rem;font-weight:700;
+  color:var(--amber);letter-spacing:.08em;text-transform:uppercase;margin-bottom:1.5rem;
+}
+.gate-card h1{
+  font-family:var(--font-display);font-weight:900;font-size:2.5rem;color:#fff;
+  letter-spacing:-.02em;margin-bottom:1rem;
+}
+.gate-card p{font-size:1rem;color:var(--text-muted);margin-bottom:2rem;line-height:1.7}
+.gate-form{display:flex;flex-direction:column;gap:1rem}
+.gate-input{
+  background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:10px;
+  padding:.8rem 1rem;font-size:.9rem;color:#fff;font-family:var(--font-body);
+  outline:none;transition:border-color .2s;
+}
+.gate-input:focus{border-color:var(--amber)}
+.gate-btn{
+  background:linear-gradient(135deg,var(--amber),#f59e0b);color:#000;
+  font-family:var(--font-display);font-weight:800;font-size:1rem;
+  padding:.8rem;border-radius:10px;border:none;cursor:pointer;
+  transition:transform .2s,box-shadow .2s;
+}
+.gate-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(251,191,36,.25)}
+
+/* ========== SECTION HEADERS ========== */
+.section-header{margin-bottom:2.5rem}
+.section-header h2{
+  font-family:var(--font-display);font-weight:900;font-size:2.2rem;color:#fff;
+  letter-spacing:-.02em;margin-bottom:.5rem;
+}
+.section-header p{color:var(--text-muted);font-size:1rem}
+
+/* ========== ANIMATED INDICATOR COMPONENTS ========== */
+.ind-bar-track{width:100%;height:8px;background:var(--border);border-radius:4px;overflow:hidden;position:relative}
+.ind-bar-fill{height:100%;border-radius:4px;position:relative;transition:width .6s cubic-bezier(.4,0,.2,1)}
+.ind-bar-fill::after{content:'';position:absolute;top:0;left:0;right:0;bottom:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.3),transparent);animation:bar-shimmer 2s infinite}
+.ind-bar-fill.cyan{background:linear-gradient(90deg,var(--cyan),#0ea5e9)}
+.ind-bar-fill.emerald{background:linear-gradient(90deg,var(--emerald),#10b981)}
+.ind-bar-fill.amber{background:linear-gradient(90deg,var(--amber),#f59e0b)}
+.ind-bar-fill.rose{background:linear-gradient(90deg,var(--rose),#e11d48)}
+.ind-bar-fill.purple{background:linear-gradient(90deg,var(--purple),#8b5cf6)}
+.ind-bar-fill.rainbow{background:linear-gradient(90deg,var(--rose),var(--amber),var(--emerald),var(--cyan),var(--purple));background-size:200% 100%;animation:bar-shimmer 2s infinite,rainbow-shift 3s linear infinite}
+
+.ind-ring{position:relative;display:inline-flex;align-items:center;justify-content:center}
+.ind-ring svg{transform:rotate(-90deg)}
+.ind-ring circle{fill:none;stroke-linecap:round;transition:stroke-dashoffset 1s cubic-bezier(.4,0,.2,1)}
+.ind-ring .track{stroke:var(--border);stroke-width:6}
+.ind-ring .fill{stroke-width:6;filter:drop-shadow(0 0 6px currentColor)}
+.ind-ring .label{position:absolute;font-family:var(--font-display);font-weight:800;font-size:1.1rem;color:#fff}
+
+.ind-orbital{position:relative;width:120px;height:120px;display:flex;align-items:center;justify-content:center}
+.ind-orbital .core{width:40px;height:40px;border-radius:50%;background:radial-gradient(circle,var(--cyan),var(--purple));animation:orbital-pulse 2s ease-in-out infinite;box-shadow:0 0 30px var(--cyan)}
+.ind-orbital .ring{position:absolute;border:2px solid;border-radius:50%;border-style:dashed;animation:orbital-spin linear infinite}
+.ind-orbital .ring:nth-child(2){width:70px;height:70px;border-color:rgba(56,189,248,.4);animation-duration:4s}
+.ind-orbital .ring:nth-child(3){width:90px;height:90px;border-color:rgba(167,139,250,.3);animation-duration:6s;animation-direction:reverse}
+.ind-orbital .ring:nth-child(4){width:110px;height:110px;border-color:rgba(52,211,153,.2);animation-duration:8s}
+.ind-orbital .dot{position:absolute;width:8px;height:8px;border-radius:50%;background:var(--cyan);box-shadow:0 0 10px var(--cyan)}
+
+.ind-tool-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1rem;position:relative;overflow:hidden}
+.ind-tool-card::before{content:'';position:absolute;top:0;left:0;width:4px;height:100%;animation:tool-status-pulse 1.5s ease-in-out infinite}
+.ind-tool-card.thinking::before{background:var(--amber)}
+.ind-tool-card.running::before{background:var(--cyan)}
+.ind-tool-card.done::before{background:var(--emerald)}
+.ind-tool-card.error::before{background:var(--rose)}
+.ind-tool-card .tool-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.1rem}
+.ind-tool-card .tool-name{font-family:var(--font-display);font-weight:700;font-size:.85rem;color:#fff}
+.ind-tool-card .tool-status{font-size:.7rem;color:var(--text-dim);display:flex;align-items:center;gap:.4rem}
+.ind-tool-card .tool-status .dot{width:6px;height:6px;border-radius:50%;animation:pulse-dot 1.2s infinite}
+
+.ind-waveform{display:flex;align-items:center;gap:3px;height:40px}
+.ind-waveform .bar{width:4px;background:var(--cyan);border-radius:2px;animation:waveform-dance 1.2s ease-in-out infinite}
+.ind-waveform .bar:nth-child(1){animation-delay:0s;height:60%}
+.ind-waveform .bar:nth-child(2){animation-delay:.1s;height:80%}
+.ind-waveform .bar:nth-child(3){animation-delay:.2s;height:40%}
+.ind-waveform .bar:nth-child(4){animation-delay:.3s;height:100%}
+.ind-waveform .bar:nth-child(5){animation-delay:.4s;height:70%}
+.ind-waveform .bar:nth-child(6){animation-delay:.5s;height:50%}
+.ind-waveform .bar:nth-child(7){animation-delay:.6s;height:90%}
+.ind-waveform .bar:nth-child(8){animation-delay:.7s;height:30%}
+.ind-waveform .bar:nth-child(9){animation-delay:.8s;height:75%}
+.ind-waveform .bar:nth-child(10){animation-delay:.9s;height:55%}
+.ind-waveform .bar:nth-child(11){animation-delay:1s;height:85%}
+.ind-waveform .bar:nth-child(12){animation-delay:1.1s;height:45%}
+
+.ind-thermo{position:relative;height:24px;background:var(--border);border-radius:12px;overflow:hidden}
+.ind-thermo .fill{height:100%;border-radius:12px;position:relative;transition:width 1.5s cubic-bezier(.4,0,.2,1),background 1.5s ease}
+.ind-thermo .fill::after{content:'';position:absolute;top:0;left:0;right:0;bottom:0;background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,.25) 50%,transparent 100%);animation:thermo-shine 2s infinite}
+
+.ind-stream{display:flex;align-items:center;gap:4px;height:6px;border-radius:3px;overflow:hidden;background:var(--border)}
+.ind-stream .chunk{height:100%;border-radius:3px;animation:stream-chunk 1.5s linear infinite}
+.ind-stream .chunk:nth-child(1){width:15%;background:var(--cyan);animation-delay:0s}
+.ind-stream .chunk:nth-child(2){width:10%;background:var(--emerald);animation-delay:.3s}
+.ind-stream .chunk:nth-child(3){width:20%;background:var(--purple);animation-delay:.6s}
+.ind-stream .chunk:nth-child(4){width:8%;background:var(--amber);animation-delay:.9s}
+.ind-stream .chunk:nth-child(5){width:12%;background:var(--rose);animation-delay:1.2s}
+
+.ind-pulse-grid{display:grid;grid-template-columns:repeat(8,1fr);gap:4px}
+.ind-pulse-grid .cell{aspect-ratio:1;border-radius:4px;animation:cell-pulse 2s ease-in-out infinite}
+
+.ind-counter{font-family:var(--font-display);font-weight:900;font-size:2rem;color:#fff;display:flex;align-items:baseline;gap:2px}
+.ind-counter .digit{display:inline-block;animation:counter-roll 4s ease-in-out infinite}
+.ind-counter .unit{font-size:.8rem;color:var(--text-dim);font-weight:500;font-family:var(--font-body)}
+
+.ind-activity{display:flex;flex-direction:column;gap:6px;max-height:200px;overflow:hidden}
+.ind-activity .item{display:flex;align-items:center;gap:.6rem;padding:.5rem .8rem;border-radius:8px;background:rgba(255,255,255,.02);border:1px solid var(--border);animation:activity-slide-in .5s ease-out forwards;opacity:0;transform:translateX(-20px)}
+.ind-activity .item .time{font-size:.65rem;color:var(--text-dim);min-width:50px}
+.ind-activity .item .icon{width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:.7rem;flex-shrink:0}
+.ind-activity .item .msg{font-size:.75rem;color:var(--text-muted);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+.ind-conf-orb{width:100px;height:100px;border-radius:50%;position:relative;display:flex;align-items:center;justify-content:center}
+.ind-conf-orb .glow{position:absolute;width:100%;height:100%;border-radius:50%;animation:conf-orb-glow 3s ease-in-out infinite}
+.ind-conf-orb .inner{width:60px;height:60px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:900;font-size:1.2rem;color:#fff;position:relative;z-index:1}
+.ind-conf-orb .ring1,.ind-conf-orb .ring2,.ind-conf-orb .ring3{position:absolute;border-radius:50%;border:1px solid;animation:conf-ring-spin linear infinite}
+.ind-conf-orb .ring1{width:80px;height:80px;border-color:rgba(56,189,248,.3);animation-duration:4s}
+.ind-conf-orb .ring2{width:95px;height:95px;border-color:rgba(167,139,250,.2);animation-duration:6s;animation-direction:reverse}
+.ind-conf-orb .ring3{width:110px;height:110px;border-color:rgba(52,211,153,.15);animation-duration:8s}
+
+@keyframes waveform-dance{0%,100%{transform:scaleY(.3)}50%{transform:scaleY(1)}}
+@keyframes orbital-pulse{0%,100%{transform:scale(1);box-shadow:0 0 20px var(--cyan)}50%{transform:scale(1.15);box-shadow:0 0 40px var(--cyan),0 0 80px rgba(56,189,248,.3)}}
+@keyframes orbital-spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+@keyframes tool-status-pulse{0%,100%{opacity:1}50%{opacity:.4}}
+@keyframes stream-chunk{0%{transform:translateX(-200%)}100%{transform:translateX(400%)}}
+@keyframes cell-pulse{0%,100%{opacity:.2;transform:scale(.8)}50%{opacity:1;transform:scale(1)}}
+@keyframes counter-roll{0%,100%{transform:translateY(0)}25%{transform:translateY(-2px)}75%{transform:translateY(2px)}}
+@keyframes activity-slide-in{to{opacity:1;transform:translateX(0)}}
+@keyframes conf-orb-glow{0%,100%{box-shadow:0 0 20px currentColor,0 0 40px currentColor;opacity:.6}50%{box-shadow:0 0 40px currentColor,0 0 80px currentColor,0 0 120px currentColor;opacity:1}}
+@keyframes conf-ring-spin{0%{transform:rotate(0deg) scale(1)}50%{transform:rotate(180deg) scale(1.05)}100%{transform:rotate(360deg) scale(1)}}
+@keyframes thermo-shine{0%{transform:translateX(-100%)}100%{transform:translateX(200%)}}
+@keyframes rainbow-shift{0%{background-position:0% 50%}100%{background-position:200% 50%}}
+@keyframes pulse-orbit{0%{transform:rotate(0deg) translateX(45px) rotate(0deg)}100%{transform:rotate(360deg) translateX(45px) rotate(-360deg)}}
+@keyframes bar-shimmer{0%,100%{opacity:.85}50%{opacity:1}}
+@keyframes pulse-dot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.5)}}
+
+/* ========== COMPARISON MATRIX ========== */
+.tmf-row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:2rem;align-items:center}
+.tmf-btn{
+  padding:.42rem 1rem;border-radius:999px;font-size:.75rem;font-weight:700;
+  border:1px solid var(--border);background:transparent;color:var(--text-muted);
+  cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:.4rem;
+  font-family:var(--font-body);
+}
+.tmf-btn .cnt{font-size:.64rem;background:var(--border);border-radius:999px;padding:.05rem .4rem;color:var(--text-dim)}
+.tmf-btn.active,.tmf-btn:hover{border-color:var(--cyan);color:var(--cyan);background:rgba(56,189,248,.06)}
+.tmf-btn.active .cnt{background:rgba(56,189,248,.18);color:var(--cyan)}
+
+.tool-matrix-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px}
+.tmcard{
+  background:var(--card);border:1px solid var(--border);border-radius:16px;
+  overflow:hidden;transition:transform .25s,box-shadow .25s,border-color .25s;position:relative;
+}
+.tmcard:hover{transform:translateY(-5px);border-color:var(--border-light);box-shadow:0 24px 48px rgba(0,0,0,.5)}
+.tmcard.hidden{display:none}
+
+.tmcard-header{
+  padding:1rem 1.2rem .85rem;display:flex;align-items:center;justify-content:space-between;
+  border-bottom:1px solid var(--border);position:relative;overflow:hidden;
+}
+.tmcard-header::before{content:'';position:absolute;inset:0;opacity:.08;}
+.tmcard[data-cat=fleet] .tmcard-header::before{background:radial-gradient(circle at 20% 50%,var(--emerald),transparent 70%)}
+.tmcard[data-cat=builder] .tmcard-header::before{background:radial-gradient(circle at 20% 50%,var(--cyan),transparent 70%)}
+.tmcard[data-cat=orchestration] .tmcard-header::before{background:radial-gradient(circle at 20% 50%,var(--purple),transparent 70%)}
+.tmcard[data-cat=observe] .tmcard-header::before{background:radial-gradient(circle at 20% 50%,var(--rose),transparent 70%)}
+.tmcard[data-cat=monitor] .tmcard-header::before{background:radial-gradient(circle at 20% 50%,var(--amber),transparent 70%)}
+.tmcard[data-cat=dashboard] .tmcard-header::before{background:radial-gradient(circle at 20% 50%,var(--amber),transparent 70%)}
+
+.tmcard-logo-wrap{display:flex;align-items:center;gap:.65rem;position:relative;z-index:1}
+.tmcard-logo{width:38px;height:38px;object-fit:contain;border-radius:9px;padding:5px;background:rgba(255,255,255,.05);flex-shrink:0}
+.tmcard-logo-fb{
+  width:38px;height:38px;border-radius:9px;background:var(--border);flex-shrink:0;
+  display:none;align-items:center;justify-content:center;font-size:.62rem;font-weight:900;
+  color:var(--text-muted);letter-spacing:-.03em;text-align:center;line-height:1.1;
+}
+.tmcard-title{font-family:var(--font-display);font-weight:800;font-size:.9rem;color:#fff;line-height:1.2}
+.tmcard-cat{
+  font-size:.59rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;
+  padding:.22rem .6rem;border-radius:999px;white-space:nowrap;position:relative;z-index:1;
+}
+.cat-e{background:rgba(52,211,153,.15);color:var(--emerald);border:1px solid rgba(52,211,153,.3)}
+.cat-c{background:rgba(56,189,248,.15);color:var(--cyan);border:1px solid rgba(56,189,248,.3)}
+.cat-p{background:rgba(167,139,250,.15);color:var(--purple);border:1px solid rgba(167,139,250,.3)}
+.cat-r{background:rgba(251,113,133,.15);color:var(--rose);border:1px solid rgba(251,113,133,.3)}
+.cat-a{background:rgba(251,191,36,.15);color:var(--amber);border:1px solid rgba(251,191,36,.3)}
+
+.tmcard-body{padding:.9rem 1.2rem 1.1rem}
+.tmcard-stars-row{display:flex;align-items:center;gap:.55rem;margin-bottom:.85rem}
+.tmcard-bar{flex:1;height:4px;background:var(--border);border-radius:999px;overflow:hidden}
+.tmcard-bar-fill{height:100%;border-radius:999px;transition:width 1.4s cubic-bezier(.4,0,.2,1)}
+.tmcard-sc{font-size:.75rem;font-weight:800;color:#e2e8f0;white-space:nowrap;min-width:36px;font-family:var(--font-display)}
+.tmcard-max{font-size:.58rem;font-weight:600;color:var(--text-dim);white-space:nowrap;opacity:.5}
+.tmcard-meta{display:flex;align-items:center;justify-content:space-between;padding:.32rem 1.2rem;border-bottom:1px solid var(--border);background:rgba(255,255,255,.015)}
+.tmcard-oss{font-size:.61rem;font-weight:700}
+.oss-open{color:var(--emerald)}
+.oss-src{color:var(--amber)}
+.oss-ent{color:var(--cyan)}
+.tmcard-year{font-size:.61rem;color:var(--text-dim);font-family:var(--font-display)}
+.tmcard-hype{font-size:.71rem;color:var(--text-muted);line-height:1.55;border-left:2px solid rgba(255,255,255,.07);padding:.25rem .65rem;margin-bottom:.8rem}
+.tmcard-tags{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:.8rem}
+.lic{font-size:.6rem;font-weight:700;padding:.2rem .55rem;border-radius:6px}
+.lic-mit{background:rgba(52,211,153,.12);color:var(--emerald);border:1px solid rgba(52,211,153,.25)}
+.lic-apache{background:rgba(56,189,248,.1);color:var(--cyan);border:1px solid rgba(56,189,248,.22)}
+.lic-sus{background:rgba(251,191,36,.1);color:var(--amber);border:1px solid rgba(251,191,36,.22)}
+.stk{font-size:.59rem;font-weight:600;padding:.18rem .48rem;border-radius:5px;background:rgba(255,255,255,.03);border:1px solid var(--border);color:var(--text-dim)}
+.tmcard-best{background:rgba(255,255,255,.025);border:1px solid var(--border);border-radius:8px;padding:.55rem .75rem;margin-bottom:.85rem}
+.tmcard-best-lbl{display:block;font-size:.55rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-dim);margin-bottom:.18rem}
+.tmcard-best-txt{font-size:.76rem;color:var(--text);line-height:1.4}
+.tmcard-links{display:flex;gap:7px}
+.tmcard-links a{
+  flex:1;text-align:center;font-size:.7rem;font-weight:700;padding:.38rem;
+  border-radius:7px;border:1px solid var(--border);color:var(--text-muted);
+  transition:all .2s;text-decoration:none;
+}
+.tmcard-links a:hover{border-color:var(--cyan);color:var(--cyan);background:rgba(56,189,248,.06)}
+
+/* ========== STACK DIAGRAM ========== */
+.stack-section{margin-bottom:4rem}
+.stack-diagram{
+  background:var(--card);border:1px solid var(--border);border-radius:20px;
+  padding:2.5rem;position:relative;overflow:hidden;
+}
+.stack-layer{
+  display:flex;align-items:center;gap:1.5rem;padding:1.2rem 1.5rem;
+  border-radius:14px;margin-bottom:1rem;position:relative;
+}
+.stack-layer:last-child{margin-bottom:0}
+.stack-layer::before{
+  content:'';position:absolute;left:50%;top:-1rem;width:2px;height:1rem;
+  background:var(--border);
+}
+.stack-layer:first-child::before{display:none}
+.stack-layer.layer-fleet{background:rgba(52,211,153,.05);border:1px solid rgba(52,211,153,.15)}
+.stack-layer.layer-agent{background:rgba(56,189,248,.05);border:1px solid rgba(56,189,248,.15)}
+.stack-layer.layer-observe{background:rgba(251,113,133,.05);border:1px solid rgba(251,113,133,.15)}
+.stack-layer .layer-icon{
+  width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;
+  font-size:1.4rem;flex-shrink:0;
+}
+.layer-fleet .layer-icon{background:rgba(52,211,153,.15);color:var(--emerald)}
+.layer-agent .layer-icon{background:rgba(56,189,248,.15);color:var(--cyan)}
+.layer-observe .layer-icon{background:rgba(251,113,133,.15);color:var(--rose)}
+.stack-layer .layer-content h4{font-family:var(--font-display);font-weight:800;font-size:1.05rem;color:#fff}
+.stack-layer .layer-content p{font-size:.82rem;color:var(--text-muted)}
+.stack-layer .layer-tools{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.5rem}
+.stack-layer .layer-tools span{
+  font-size:.7rem;font-weight:700;padding:.2rem .5rem;border-radius:6px;
+  background:rgba(255,255,255,.04);border:1px solid var(--border);color:var(--text-dim);
+}
+
+/* ========== VERDICT ========== */
+.verdict-section{margin-bottom:4rem}
+.verdict-card{
+  background:var(--card);border:1px solid var(--border);border-radius:20px;
+  padding:3rem;position:relative;overflow:hidden;
+}
+.verdict-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:4px;
+  background:linear-gradient(90deg,var(--cyan),var(--purple),var(--emerald),var(--rose));
+}
+.verdict-card h2{
+  font-family:var(--font-display);font-weight:900;font-size:2rem;color:#fff;margin-bottom:1.2rem;
+}
+.verdict-card p{font-size:1rem;color:var(--text-muted);line-height:1.8;max-width:900px}
+.verdict-card .highlight{color:var(--cyan);font-weight:700}
+
+/* ========== FULL TOOL CARDS ========== */
+.tools-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:4rem}
+.tool-card{
+  background:var(--card);border:1px solid var(--border);border-radius:20px;
+  padding:2rem;transition:transform .3s,box-shadow .3s;position:relative;overflow:hidden;
+}
+.tool-card:hover{transform:translateY(-4px);box-shadow:0 8px 32px rgba(0,0,0,.3)}
+.tool-card .card-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1rem}
+.tool-card h3{font-family:var(--font-display);font-weight:800;font-size:1.3rem;color:#fff}
+.tool-card .stars{
+  display:inline-flex;align-items:center;gap:.3rem;
+  background:rgba(255,255,255,.04);border:1px solid var(--border);
+  border-radius:999px;padding:.25rem .6rem;font-size:.7rem;font-weight:700;color:var(--amber);
+}
+.tool-card .summary{font-size:.88rem;color:var(--text-muted);margin-bottom:1.2rem;line-height:1.65}
+.tool-card .feats{list-style:none;margin-bottom:1.2rem}
+.tool-card .feats li{font-size:.82rem;color:var(--text);padding:.25rem 0;display:flex;align-items:flex-start;gap:.5rem}
+.tool-card .feats li::before{content:'◆';font-size:.5rem;margin-top:.35rem;flex-shrink:0}
+.tool-card.cat-cyan .feats li::before{color:var(--cyan)}
+.tool-card.cat-purple .feats li::before{color:var(--purple)}
+.tool-card.cat-rose .feats li::before{color:var(--rose)}
+.tool-card.cat-emerald .feats li::before{color:var(--emerald)}
+.tool-card.cat-amber .feats li::before{color:var(--amber)}
+.tool-card .verdict{display:flex;gap:.8rem;flex-wrap:wrap;margin-bottom:1rem}
+.verdict-tag{font-size:.72rem;font-weight:700;padding:.3rem .7rem;border-radius:8px;letter-spacing:.03em}
+.verdict-best{background:rgba(52,211,153,.1);color:var(--emerald);border:1px solid rgba(52,211,153,.2)}
+.verdict-skip{background:rgba(251,113,133,.08);color:var(--rose);border:1px solid rgba(251,113,133,.15)}
+.tool-card .card-links{display:flex;gap:.6rem}
+.tool-card .card-links a{
+  font-size:.78rem;font-weight:700;padding:.35rem .8rem;border-radius:8px;
+  border:1px solid var(--border);color:var(--text-muted);transition:all .2s;
+}
+.tool-card .card-links a:hover{border-color:var(--cyan);color:var(--cyan)}
+
+.brand-logo{display:flex;align-items:center;gap:.6rem;margin-bottom:.5rem}
+.brand-logo img{height:32px;width:auto;filter:none !important;transition:filter .3s}
+.brand-logo:hover img{filter:drop-shadow(0 0 8px currentColor) brightness(1.1)}
+
+/* ========== FOOTER ========== */
+.footer{
+  text-align:center;padding:3rem 0;border-top:1px solid var(--border);
+  font-size:.8rem;color:var(--text-dim);
+}
+.footer span{color:var(--amber);font-weight:700}
+
+/* ========== RESPONSIVE ========== */
+@media(max-width:1024px){
+  .tools-grid{grid-template-columns:1fr}
+}
+@media(max-width:640px){
+  .nav-links{display:none}
+  .container{padding:0 1rem}
+}
+</style>
+</head>
+<body>
+
+<!-- AURORA BACKGROUND -->
+<div class="aurora-bg">
+  <div class="aurora-blob"></div>
+  <div class="aurora-blob"></div>
+  <div class="aurora-blob"></div>
+  <div class="aurora-blob"></div>
+</div>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-brand">Vidi<span>Smart</span> Pro</div>
+  <div class="nav-links">
+    <a href="agent-ui.html">← Back to Glance View</a>
+    <a href="#indicators">Live Indicators</a>
+    <a href="#comparison">Comparison</a>
+    <a href="#stack">Stack</a>
+    <a href="https://vidi.news" target="_blank" rel="noopener" style="color:var(--amber)">vidi.news ↗</a>
+  </div>
+</nav>
+
+<!-- SIGNUP GATE -->
+<section class="pro-gate" id="proGate">
+  <div class="gate-card">
+    <div class="gate-badge">Early Access — Free</div>
+    <h1>Join VidiSmart</h1>
+    <p>Get instant access to the AI Stack Command Center — and subscribe to <a href="https://vidi.news" target="_blank" rel="noopener" style="color:var(--amber);font-weight:700">vidi.news</a> for weekly AI stack intelligence, curated by our team.</p>
+    <form class="gate-form" action="https://formsubmit.co/vidistudios@gmail.com" method="POST">
+      <input type="hidden" name="_subject" value="New VidiSmart Signup">
+      <input type="hidden" name="_next" value="https://vidismart.com/agent-ui-pro.html?unlocked=1">
+      <input type="hidden" name="_captcha" value="false">
+      <input type="text" name="name" class="gate-input" placeholder="Your name" required autocomplete="name">
+      <input type="email" name="email" class="gate-input" placeholder="Your email" required autocomplete="email">
+      <button type="submit" class="gate-btn">Get Free Access →</button>
+    </form>
+    <p style="font-size:.75rem;color:var(--text-dim);margin-top:1.5rem;margin-bottom:0">No spam. Unsubscribe any time. Also on <a href="https://vidi.news" target="_blank" rel="noopener" style="color:var(--amber)">vidi.news</a>.</p>
+  </div>
+</section>
+
+<!-- PRO CONTENT (Hidden until gate passed) -->
+<div id="proContent" style="display:none">
+
+<!-- LIVE INDICATORS -->
+<section id="indicators" class="container" style="margin-bottom:4rem;padding-top:4rem">
+  <div class="section-header">
+    <h2>Live Indicators Library</h2>
+    <p>Every element moves. Nothing is static. Progress bars fill, orbs pulse, particles flow, confidence builds.</p>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1.5rem">
+    <!-- 1. Progress Bars -->
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.5rem">
+      <div style="font-family:var(--font-display);font-weight:700;font-size:.85rem;color:#fff;margin-bottom:1rem;display:flex;align-items:center;gap:.5rem"><span style="color:var(--cyan)">◉</span> Task Progress</div>
+      <div style="display:flex;flex-direction:column;gap:1rem">
+        <div><div style="display:flex;justify-content:space-between;font-size:.7rem;margin-bottom:.3rem"><span style="color:var(--text-dim)">Research Agent</span><span style="color:var(--emerald)">87%</span></div><div class="ind-bar-track"><div class="ind-bar-fill emerald" style="width:87%"></div></div></div>
+        <div><div style="display:flex;justify-content:space-between;font-size:.7rem;margin-bottom:.3rem"><span style="color:var(--text-dim)">Code Generator</span><span style="color:var(--cyan)">64%</span></div><div class="ind-bar-track"><div class="ind-bar-fill cyan" style="width:64%"></div></div></div>
+        <div><div style="display:flex;justify-content:space-between;font-size:.7rem;margin-bottom:.3rem"><span style="color:var(--text-dim)">Data Pipeline</span><span style="color:var(--amber)">42%</span></div><div class="ind-bar-track"><div class="ind-bar-fill amber" style="width:42%"></div></div></div>
+        <div><div style="display:flex;justify-content:space-between;font-size:.7rem;margin-bottom:.3rem"><span style="color:var(--text-dim)">Error Handler</span><span style="color:var(--rose)">91%</span></div><div class="ind-bar-track"><div class="ind-bar-fill rose" style="width:91%"></div></div></div>
+      </div>
+    </div>
+    <!-- 2. Progress Rings -->
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.5rem">
+      <div style="font-family:var(--font-display);font-weight:700;font-size:.85rem;color:#fff;margin-bottom:1rem;display:flex;align-items:center;gap:.5rem"><span style="color:var(--purple)">◉</span> Circular Progress</div>
+      <div style="display:flex;justify-content:space-around;flex-wrap:wrap;gap:1rem">
+        <div class="ind-ring"><svg width="80" height="80"><circle class="track" cx="40" cy="40" r="34"/><circle class="fill" cx="40" cy="40" r="34" stroke="var(--emerald)" stroke-dasharray="213.6" stroke-dashoffset="27.8" style="color:var(--emerald)"/></svg><div class="label" style="color:var(--emerald)">87%</div></div>
+        <div class="ind-ring"><svg width="80" height="80"><circle class="track" cx="40" cy="40" r="34"/><circle class="fill" cx="40" cy="40" r="34" stroke="var(--cyan)" stroke-dasharray="213.6" stroke-dashoffset="76.9" style="color:var(--cyan)"/></svg><div class="label" style="color:var(--cyan)">64%</div></div>
+        <div class="ind-ring"><svg width="80" height="80"><circle class="track" cx="40" cy="40" r="34"/><circle class="fill" cx="40" cy="40" r="34" stroke="var(--amber)" stroke-dasharray="213.6" stroke-dashoffset="123.9" style="color:var(--amber)"/></svg><div class="label" style="color:var(--amber)">42%</div></div>
+      </div>
+    </div>
+    <!-- 3. Orbital Thinking -->
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.5rem">
+      <div style="font-family:var(--font-display);font-weight:700;font-size:.85rem;color:#fff;margin-bottom:1rem;display:flex;align-items:center;gap:.5rem"><span style="color:var(--amber)">◉</span> Orbital Thinking</div>
+      <div style="display:flex;justify-content:center;gap:2rem;flex-wrap:wrap">
+        <div style="text-align:center"><div class="ind-orbital"><div class="ring"></div><div class="ring"></div><div class="ring"></div><div class="core"></div><div class="dot" style="animation:pulse-orbit 4s linear infinite"></div></div><div style="font-size:.65rem;color:var(--text-dim);margin-top:.5rem">Processing</div></div>
+        <div style="text-align:center"><div class="ind-orbital"><div class="ring" style="border-color:rgba(52,211,153,.4)"></div><div class="ring" style="border-color:rgba(251,191,36,.3)"></div><div class="ring" style="border-color:rgba(251,113,133,.2)"></div><div class="core" style="background:radial-gradient(circle,var(--emerald),var(--amber));animation-duration:1.5s"></div><div class="dot" style="background:var(--emerald);box-shadow:0 0 10px var(--emerald);animation:pulse-orbit 3s linear infinite"></div></div><div style="font-size:.65rem;color:var(--text-dim);margin-top:.5rem">High Priority</div></div>
+      </div>
+    </div>
+    <!-- 4. Thinking Waveform -->
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.5rem">
+      <div style="font-family:var(--font-display);font-weight:700;font-size:.85rem;color:#fff;margin-bottom:1rem;display:flex;align-items:center;gap:.5rem"><span style="color:var(--emerald)">◉</span> Thinking Waveform</div>
+      <div style="display:flex;flex-direction:column;gap:1.5rem">
+        <div><div style="font-size:.65rem;color:var(--text-dim);margin-bottom:.5rem">GPT-4o · Reasoning</div><div class="ind-waveform" style="justify-content:center"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div></div>
+        <div><div style="font-size:.65rem;color:var(--text-dim);margin-bottom:.5rem">Claude · Analyzing</div><div class="ind-waveform" style="justify-content:center"><div class="bar" style="background:var(--purple)"></div><div class="bar" style="background:var(--purple)"></div><div class="bar" style="background:var(--purple)"></div><div class="bar" style="background:var(--purple)"></div><div class="bar" style="background:var(--purple)"></div><div class="bar" style="background:var(--purple)"></div><div class="bar" style="background:var(--purple)"></div><div class="bar" style="background:var(--purple)"></div><div class="bar" style="background:var(--purple)"></div><div class="bar" style="background:var(--purple)"></div><div class="bar" style="background:var(--purple)"></div><div class="bar" style="background:var(--purple)"></div></div></div>
+      </div>
+    </div>
+    <!-- 5. Confidence Thermometer -->
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.5rem">
+      <div style="font-family:var(--font-display);font-weight:700;font-size:.85rem;color:#fff;margin-bottom:1rem;display:flex;align-items:center;gap:.5rem"><span style="color:var(--rose)">◉</span> Confidence Thermometer</div>
+      <div style="display:flex;flex-direction:column;gap:1rem">
+        <div><div style="display:flex;justify-content:space-between;font-size:.7rem;margin-bottom:.3rem"><span style="color:var(--text-dim)">Code Review Agent</span><span style="color:var(--emerald)">94%</span></div><div class="ind-thermo"><div class="fill" style="width:94%;background:linear-gradient(90deg,#059669,var(--emerald))"></div></div></div>
+        <div><div style="display:flex;justify-content:space-between;font-size:.7rem;margin-bottom:.3rem"><span style="color:var(--text-dim)">Security Scanner</span><span style="color:var(--cyan)">72%</span></div><div class="ind-thermo"><div class="fill" style="width:72%;background:linear-gradient(90deg,#0284c7,var(--cyan))"></div></div></div>
+        <div><div style="display:flex;justify-content:space-between;font-size:.7rem;margin-bottom:.3rem"><span style="color:var(--text-dim)">Data Analyzer</span><span style="color:var(--amber)">55%</span></div><div class="ind-thermo"><div class="fill" style="width:55%;background:linear-gradient(90deg,#d97706,var(--amber))"></div></div></div>
+      </div>
+    </div>
+    <!-- 6. Tool Call Cards -->
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.5rem">
+      <div style="font-family:var(--font-display);font-weight:700;font-size:.85rem;color:#fff;margin-bottom:1rem;display:flex;align-items:center;gap:.5rem"><span style="color:var(--cyan)">◉</span> Live Tool Calls</div>
+      <div style="display:flex;flex-direction:column;gap:.6rem">
+        <div class="ind-tool-card running"><div style="display:flex;align-items:center;gap:.6rem"><div class="tool-icon" style="background:rgba(56,189,248,.15);color:var(--cyan)">⚡</div><div style="flex:1"><div class="tool-name">web_search</div><div class="tool-status"><div class="dot" style="background:var(--cyan);box-shadow:0 0 4px var(--cyan)"></div><span style="color:var(--cyan)">Executing</span> · querying API</div></div></div></div>
+        <div class="ind-tool-card thinking"><div style="display:flex;align-items:center;gap:.6rem"><div class="tool-icon" style="background:rgba(251,191,36,.15);color:var(--amber)">🧠</div><div style="flex:1"><div class="tool-name">code_analysis</div><div class="tool-status"><div class="dot" style="background:var(--amber);box-shadow:0 0 4px var(--amber)"></div><span style="color:var(--amber)">Thinking</span> · parsing AST</div></div></div></div>
+        <div class="ind-tool-card done"><div style="display:flex;align-items:center;gap:.6rem"><div class="tool-icon" style="background:rgba(52,211,153,.15);color:var(--emerald)">✓</div><div style="flex:1"><div class="tool-name">file_read</div><div class="tool-status"><div class="dot" style="background:var(--emerald);box-shadow:0 0 4px var(--emerald)"></div><span style="color:var(--emerald)">Complete</span> · 2.4KB loaded</div></div></div></div>
+        <div class="ind-tool-card error"><div style="display:flex;align-items:center;gap:.6rem"><div class="tool-icon" style="background:rgba(251,113,133,.15);color:var(--rose)">✕</div><div style="flex:1"><div class="tool-name">api_call</div><div class="tool-status"><div class="dot" style="background:var(--rose);box-shadow:0 0 4px var(--rose)"></div><span style="color:var(--rose)">Failed</span> · 429 rate limit</div></div></div></div>
+      </div>
+    </div>
+    <!-- 7. Data Streams -->
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.5rem">
+      <div style="font-family:var(--font-display);font-weight:700;font-size:.85rem;color:#fff;margin-bottom:1rem;display:flex;align-items:center;gap:.5rem"><span style="color:var(--amber)">◉</span> Data Streams</div>
+      <div style="display:flex;flex-direction:column;gap:1.2rem">
+        <div><div style="font-size:.65rem;color:var(--text-dim);margin-bottom:.3rem">Kafka → Agent Pool</div><div class="ind-stream"><div class="chunk"></div><div class="chunk"></div><div class="chunk"></div><div class="chunk"></div><div class="chunk"></div></div></div>
+        <div><div style="font-size:.65rem;color:var(--text-dim);margin-bottom:.3rem">Agent → Output Queue</div><div class="ind-stream"><div class="chunk" style="background:var(--emerald)"></div><div class="chunk" style="background:var(--amber)"></div><div class="chunk" style="background:var(--rose)"></div><div class="chunk" style="background:var(--cyan)"></div><div class="chunk" style="background:var(--purple)"></div></div></div>
+      </div>
+    </div>
+    <!-- 8. Confidence Orb -->
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.5rem">
+      <div style="font-family:var(--font-display);font-weight:700;font-size:.85rem;color:#fff;margin-bottom:1rem;display:flex;align-items:center;gap:.5rem"><span style="color:var(--emerald)">◉</span> Confidence Orb</div>
+      <div style="display:flex;justify-content:space-around;align-items:center;flex-wrap:wrap;gap:1rem">
+        <div style="text-align:center"><div class="ind-conf-orb" style="color:var(--emerald)"><div class="glow" style="background:radial-gradient(circle,rgba(52,211,153,.3),transparent)"></div><div class="ring1"></div><div class="ring2"></div><div class="ring3"></div><div class="inner" style="background:radial-gradient(circle,rgba(52,211,153,.2),rgba(5,7,14,.8));display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:8px 6px"><div style="display:flex;align-items:flex-end;justify-content:center;gap:2px;height:30px"><div style="width:3px;height:70%;background:rgba(52,211,153,.25);border-radius:2px"></div><div style="width:3px;height:100%;background:rgba(52,211,153,.25);border-radius:2px"></div><div style="width:3px;height:100%;background:rgba(52,211,153,.35);border-radius:2px"></div><div style="width:3px;height:100%;background:rgba(52,211,153,.45);border-radius:2px"></div><div style="width:3px;height:100%;background:rgba(52,211,153,.55);border-radius:2px"></div><div style="width:3px;height:100%;background:rgba(52,211,153,.65);border-radius:2px"></div><div style="width:3px;height:100%;background:rgba(52,211,153,.75);border-radius:2px"></div><div style="width:3px;height:100%;background:rgba(52,211,153,.85);border-radius:2px"></div><div style="width:3px;height:100%;background:var(--emerald);border-radius:2px;box-shadow:0 0 6px var(--emerald)"></div><div style="width:3px;height:100%;background:var(--emerald);border-radius:2px;box-shadow:0 0 6px var(--emerald)"></div></div><div style="font-size:.7rem;font-weight:700;color:var(--emerald)">94%</div></div></div><div style="font-size:.65rem;color:var(--text-dim);margin-top:.5rem">High</div></div>
+        <div style="text-align:center"><div class="ind-conf-orb" style="color:var(--amber)"><div class="glow" style="background:radial-gradient(circle,rgba(251,191,36,.3),transparent)"></div><div class="ring1" style="border-color:rgba(251,191,36,.3)"></div><div class="ring2" style="border-color:rgba(251,191,36,.2)"></div><div class="ring3" style="border-color:rgba(251,191,36,.1)"></div><div class="inner" style="background:radial-gradient(circle,rgba(251,191,36,.2),rgba(5,7,14,.8));display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:8px 6px"><div style="display:flex;align-items:flex-end;justify-content:center;gap:2px;height:30px"><div style="width:3px;height:40%;background:rgba(251,191,36,.25);border-radius:2px"></div><div style="width:3px;height:60%;background:rgba(251,191,36,.35);border-radius:2px"></div><div style="width:3px;height:100%;background:rgba(251,191,36,.45);border-radius:2px"></div><div style="width:3px;height:100%;background:rgba(251,191,36,.55);border-radius:2px"></div><div style="width:3px;height:100%;background:rgba(251,191,36,.65);border-radius:2px"></div><div style="width:3px;height:100%;background:rgba(251,191,36,.75);border-radius:2px"></div><div style="width:3px;height:40%;background:rgba(251,191,36,.2);border-radius:2px"></div><div style="width:3px;height:25%;background:rgba(251,191,36,.15);border-radius:2px"></div><div style="width:3px;height:20%;background:rgba(251,191,36,.1);border-radius:2px"></div><div style="width:3px;height:15%;background:rgba(251,191,36,.08);border-radius:2px"></div></div><div style="font-size:.7rem;font-weight:700;color:var(--amber)">61%</div></div></div><div style="font-size:.65rem;color:var(--text-dim);margin-top:.5rem">Medium</div></div>
+      </div>
+    </div>
+    <!-- 9. Live Counters -->
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.5rem">
+      <div style="font-family:var(--font-display);font-weight:700;font-size:.85rem;color:#fff;margin-bottom:1rem;display:flex;align-items:center;gap:.5rem"><span style="color:var(--rose)">◉</span> Live Counters</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+        <div style="text-align:center;padding:1rem;background:rgba(52,211,153,.05);border-radius:12px;border:1px solid rgba(52,211,153,.1)"><div class="ind-counter" style="justify-content:center;color:var(--emerald)">847<span class="unit">agents</span></div><div style="font-size:.65rem;color:var(--text-dim);margin-top:.3rem">Active Now</div></div>
+        <div style="text-align:center;padding:1rem;background:rgba(251,191,36,.05);border-radius:12px;border:1px solid rgba(251,191,36,.1)"><div class="ind-counter" style="justify-content:center;color:var(--amber)">12<span class="unit">alerts</span></div><div style="font-size:.65rem;color:var(--text-dim);margin-top:.3rem">Need Attention</div></div>
+        <div style="text-align:center;padding:1rem;background:rgba(56,189,248,.05);border-radius:12px;border:1px solid rgba(56,189,248,.1)"><div class="ind-counter" style="justify-content:center;color:var(--cyan)">2.4<span class="unit">M tok</span></div><div style="font-size:.65rem;color:var(--text-dim);margin-top:.3rem">Tokens Used</div></div>
+        <div style="text-align:center;padding:1rem;background:rgba(251,113,133,.05);border-radius:12px;border:1px solid rgba(251,113,133,.1)"><div class="ind-counter" style="justify-content:center;color:var(--rose)">$101<span class="unit">/hr</span></div><div style="font-size:.65rem;color:var(--text-dim);margin-top:.3rem">Cost Rate</div></div>
+      </div>
+    </div>
+    <!-- 10. Activity Feed -->
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.5rem">
+      <div style="font-family:var(--font-display);font-weight:700;font-size:.85rem;color:#fff;margin-bottom:1rem;display:flex;align-items:center;gap:.5rem"><span style="color:var(--purple)">◉</span> Activity Feed</div>
+      <div class="ind-activity">
+        <div class="item" style="animation-delay:0s"><span class="time">00:03</span><span class="icon" style="background:rgba(52,211,153,.15);color:var(--emerald)">✓</span><span class="msg">Agent-019 completed code review</span></div>
+        <div class="item" style="animation-delay:.1s"><span class="time">00:02</span><span class="icon" style="background:rgba(56,189,248,.15);color:var(--cyan)">⚡</span><span class="msg">Agent-023 started API integration</span></div>
+        <div class="item" style="animation-delay:.2s"><span class="time">00:01</span><span class="icon" style="background:rgba(251,191,36,.15);color:var(--amber)">⚠</span><span class="msg">Agent-007 hitting rate limits</span></div>
+        <div class="item" style="animation-delay:.3s"><span class="time">00:00</span><span class="icon" style="background:rgba(167,139,250,.15);color:var(--purple)">↻</span><span class="msg">Agent-031 retrying failed request</span></div>
+      </div>
+    </div>
+    <!-- 11. Pulse Grid -->
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.5rem">
+      <div style="font-family:var(--font-display);font-weight:700;font-size:.85rem;color:#fff;margin-bottom:1rem;display:flex;align-items:center;gap:.5rem"><span style="color:var(--cyan)">◉</span> Status Heatmap</div>
+      <div class="ind-pulse-grid" id="pulseGrid"></div>
+      <div style="display:flex;justify-content:center;gap:1rem;margin-top:.8rem;font-size:.6rem;color:var(--text-dim)"><span>🟢 Active</span><span>🟡 Warm</span><span>🔴 Alert</span><span>⚫ Idle</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- COMPARISON MATRIX -->
+<section id="comparison" class="container" style="margin-bottom:4rem">
+  <div class="section-header">
+    <h2>Tool Comparison Matrix</h2>
+    <p>21 tools — honest ratings. Stars ≠ usefulness. Check the Heat Index and read the hype line before assuming bigger = better.</p>
+  </div>
+  <div class="tmf-row">
+    <button class="tmf-btn active" onclick="tmFilter(this,'all')">All <span class="cnt">27</span></button>
+    <button class="tmf-btn" onclick="tmFilter(this,'fleet')">🚀 Fleet <span class="cnt">3</span></button>
+    <button class="tmf-btn" onclick="tmFilter(this,'builder')">⚡ Builder <span class="cnt">6</span></button>
+    <button class="tmf-btn" onclick="tmFilter(this,'orchestration')">🧠 Orchestration <span class="cnt">6</span></button>
+    <button class="tmf-btn" onclick="tmFilter(this,'observe')">🔭 Observability <span class="cnt">4</span></button>
+    <button class="tmf-btn" onclick="tmFilter(this,'monitor')">📊 Monitoring <span class="cnt">3</span></button>
+    <button class="tmf-btn" onclick="tmFilter(this,'dashboard')">🖥 Dashboard <span class="cnt">5</span></button>
+  </div>
+  <div class="tool-matrix-grid">
+    <!-- n8n -->
+    <div class="tmcard" data-cat="builder">
+      <div class="tmcard-header">
+        <div class="tmcard-logo-wrap">
+          <img class="tmcard-logo" src="https://unpkg.com/@lobehub/icons-static-svg@latest/icons/n8n.svg" alt="n8n" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div class="tmcard-logo-fb">n8n</div>
+          <div class="tmcard-title">n8n</div>
+        </div>
+        <span class="tmcard-cat cat-c">Workflow Builder</span>
+      </div>
+      <div class="tmcard-meta"><span class="tmcard-oss oss-src">◈ Source Available</span><span class="tmcard-year">Est. 2019</span></div>
+      <div class="tmcard-body">
+        <div class="tmcard-stars-row">
+          <span class="tmcard-sc">191K</span>
+          <div class="tmcard-bar"><div class="tmcard-bar-fill" style="width:100%;background:linear-gradient(90deg,var(--cyan),#0ea5e9)"></div></div>
+          <span class="tmcard-max">191K ★ max</span>
+        </div>
+        <div class="tmcard-tags"><span class="lic lic-sus">Sustainable Use</span><span class="stk">Node.js</span><span class="stk">TypeScript</span></div>
+        <div class="tmcard-best"><span class="tmcard-best-lbl">Best For</span><span class="tmcard-best-txt">Visual workflow automation + AI agent orchestration</span></div>
+        <div class="tmcard-hype">191K stars but a real problem: n8n's own team admits multi-agent runs "burn through budgets, coordination gets complex, and debugging gets harder." Good for simple workflows — wrong tool for managing 50 concurrent agents.</div>
+        <div class="tmcard-links"><a href="https://github.com/n8n-io/n8n" target="_blank">GitHub</a><a href="https://n8n.io" target="_blank">Website</a></div>
+      </div>
+    </div>
+    <!-- Langflow -->
+    <div class="tmcard" data-cat="builder">
+      <div class="tmcard-header">
+        <div class="tmcard-logo-wrap">
+          <img class="tmcard-logo" src="https://unpkg.com/@lobehub/icons-static-svg@latest/icons/langflow.svg" alt="Langflow" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div class="tmcard-logo-fb">LF</div>
+          <div class="tmcard-title">Langflow</div>
+        </div>
+        <span class="tmcard-cat cat-c">Visual Builder</span>
+      </div>
+      <div class="tmcard-meta"><span class="tmcard-oss oss-open">⊕ Open Source</span><span class="tmcard-year">Est. 2023</span></div>
+      <div class="tmcard-body">
+        <div class="tmcard-stars-row">
+          <span class="tmcard-sc">148K</span>
+          <div class="tmcard-bar"><div class="tmcard-bar-fill" style="width:77%;background:linear-gradient(90deg,var(--cyan),#0ea5e9)"></div></div>
+          <span class="tmcard-max">191K ★ max</span>
+        </div>
+        <div class="tmcard-tags"><span class="lic lic-mit">MIT</span><span class="stk">Python</span><span class="stk">LangChain</span></div>
+        <div class="tmcard-best"><span class="tmcard-best-lbl">Best For</span><span class="tmcard-best-txt">Custom Python components with drag-and-drop visual design</span></div>
+        <div class="tmcard-hype">148K stars in under 2 years — Langflow nailed the sweet spot between no-code speed and full Python customization that every engineer actually wanted.</div>
+        <div class="tmcard-links"><a href="https://github.com/langflow-ai/langflow" target="_blank">GitHub</a><a href="https://langflow.org" target="_blank">Website</a></div>
+      </div>
+    </div>
+    <!-- Dify -->
+    <div class="tmcard" data-cat="builder">
+      <div class="tmcard-header">
+        <div class="tmcard-logo-wrap">
+          <img class="tmcard-logo" src="https://unpkg.com/@lobehub/icons-static-svg@latest/icons/dify.svg" alt="Dify" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div class="tmcard-logo-fb">Dify</div>
+          <div class="tmcard-title">Dify</div>
+        </div>
+        <span class="tmcard-cat cat-c">AI Platform</span>
+      </div>
+      <div class="tmcard-meta"><span class="tmcard-oss oss-open">⊕ Open Source</span><span class="tmcard-year">Est. 2023</span></div>
+      <div class="tmcard-body">
+        <div class="tmcard-stars-row">
+          <span class="tmcard-sc">140K</span>
+          <div class="tmcard-bar"><div class="tmcard-bar-fill" style="width:73%;background:linear-gradient(90deg,var(--cyan),#0ea5e9)"></div></div>
+          <span class="tmcard-max">191K ★ max</span>
+        </div>
+        <div class="tmcard-tags"><span class="lic lic-apache">Apache 2.0</span><span class="stk">Go</span><span class="stk">Python</span></div>
+        <div class="tmcard-best"><span class="tmcard-best-lbl">Best For</span><span class="tmcard-best-txt">Full-stack AI apps with RAG, agents, and API publishing</span></div>
+        <div class="tmcard-hype">The only single self-hosted tool that handles RAG, agents, model routing, and API publishing in one install — enterprise teams love not needing five separate tools.</div>
+        <div class="tmcard-links"><a href="https://github.com/langgenius/dify" target="_blank">GitHub</a><a href="https://dify.ai" target="_blank">Website</a></div>
+      </div>
+    </div>
+    <!-- CrewAI AMP -->
+    <div class="tmcard" data-cat="orchestration">
+      <div class="tmcard-header">
+        <div class="tmcard-logo-wrap">
+          <img class="tmcard-logo" src="https://unpkg.com/@lobehub/icons-static-svg@latest/icons/crewai.svg" alt="CrewAI" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div class="tmcard-logo-fb">Crew</div>
+          <div class="tmcard-title">CrewAI AMP</div>
+        </div>
+        <span class="tmcard-cat cat-p">Orchestration</span>
+      </div>
+      <div class="tmcard-meta"><span class="tmcard-oss oss-ent">⊕ OSS + Enterprise</span><span class="tmcard-year">Est. 2023</span></div>
+      <div class="tmcard-body">
+        <div class="tmcard-stars-row">
+          <span class="tmcard-sc">51K</span>
+          <div class="tmcard-bar"><div class="tmcard-bar-fill" style="width:27%;background:linear-gradient(90deg,var(--purple),#8b5cf6)"></div></div>
+          <span class="tmcard-max">191K ★ max</span>
+        </div>
+        <div class="tmcard-tags"><span class="lic lic-ent">MIT + Enterprise</span><span class="stk">Python</span></div>
+        <div class="tmcard-best"><span class="tmcard-best-lbl">Best For</span><span class="tmcard-best-txt">Role-based multi-agent crews at 450M+ workflows/mo</span></div>
+        <div class="tmcard-hype">450M+ agent tasks run monthly — role-based crews with defined goals, backstories, and tool access has become the enterprise-standard pattern for multi-agent AI.</div>
+        <div class="tmcard-links"><a href="https://github.com/crewAIInc/crewAI" target="_blank">GitHub</a><a href="https://crewai.com" target="_blank">Website</a></div>
+      </div>
+    </div>
+    <!-- Langfuse -->
+    <div class="tmcard" data-cat="observe" style="border-color:rgba(251,113,133,.35);box-shadow:0 0 0 1px rgba(251,113,133,.15)">
+      <div class="tmcard-header" style="background:linear-gradient(135deg,rgba(251,113,133,.1),rgba(251,113,133,.03))">
+        <div class="tmcard-logo-wrap">
+          <img class="tmcard-logo" src="https://unpkg.com/@lobehub/icons-static-svg@latest/icons/langfuse.svg" alt="Langfuse" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div class="tmcard-logo-fb" style="background:rgba(251,113,133,.18);color:var(--rose)">LF</div>
+          <div>
+            <div class="tmcard-title">Langfuse</div>
+            <div style="font-size:.55rem;font-weight:700;color:var(--rose);letter-spacing:.06em;margin-top:.1rem">⚡ CLICKHOUSE STREAMING</div>
+          </div>
+        </div>
+        <span class="tmcard-cat cat-r">Observability</span>
+      </div>
+      <div class="tmcard-meta"><span class="tmcard-oss oss-open">⊕ Open Source</span><span class="tmcard-year">Est. 2023</span></div>
+      <div class="tmcard-body">
+        <div class="tmcard-stars-row">
+          <span class="tmcard-sc">15K</span>
+          <div class="tmcard-bar"><div class="tmcard-bar-fill" style="width:8%;background:linear-gradient(90deg,var(--rose),#e11d48)"></div></div>
+          <span class="tmcard-max">191K ★ max</span>
+        </div>
+        <div class="tmcard-tags"><span class="lic lic-mit">MIT</span><span class="stk">Next.js</span><span class="stk">Python</span><span class="stk" style="background:rgba(251,113,133,.1);border-color:rgba(251,113,133,.3);color:var(--rose)">ClickHouse</span></div>
+        <div class="tmcard-best"><span class="tmcard-best-lbl">Best For</span><span class="tmcard-best-txt">Real-time LLM trace streaming for concurrent agent fleets at any scale</span></div>
+        <div class="tmcard-hype">ClickHouse as the data engine is the difference between watching your agents 5 minutes later vs. right now. Billions of trace rows, sub-second queries, live dashboards — this is the closest any open-source tool gets to solving the 50-agent visibility problem.</div>
+        <div class="tmcard-links"><a href="https://github.com/langfuse/langfuse" target="_blank">GitHub</a><a href="https://langfuse.com" target="_blank">Website</a></div>
+      </div>
+    </div>
+    <!-- Mission Control -->
+    <div class="tmcard" data-cat="fleet">
+      <div class="tmcard-header">
+        <div class="tmcard-logo-wrap">
+          <img class="tmcard-logo" src="https://agentmissioncontrol.com/favicon.ico" alt="Mission Control" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div class="tmcard-logo-fb" style="background:rgba(52,211,153,.12);color:var(--emerald)">MC</div>
+          <div class="tmcard-title">Mission Control</div>
+        </div>
+        <span class="tmcard-cat cat-e">Fleet Mgmt</span>
+      </div>
+      <div class="tmcard-meta"><span class="tmcard-oss oss-open">⊕ Open Source</span><span class="tmcard-year">Est. 2024</span></div>
+      <div class="tmcard-body">
+        <div class="tmcard-stars-row">
+          <span class="tmcard-sc">5.1K</span>
+          <div class="tmcard-bar"><div class="tmcard-bar-fill" style="width:3%;background:linear-gradient(90deg,var(--emerald),#10b981)"></div></div>
+          <span class="tmcard-max">191K ★ max</span>
+        </div>
+        <div class="tmcard-tags"><span class="lic lic-mit">MIT</span><span class="stk">Next.js</span><span class="stk">SQLite</span></div>
+        <div class="tmcard-best"><span class="tmcard-best-lbl">Best For</span><span class="tmcard-best-txt">Multi-framework agent fleet — 32 visual panels, 12+ runtimes</span></div>
+        <div class="tmcard-hype">32 visual panels and cross-framework support for 12+ agent runtimes — built for teams that use Claude, GPT, Gemini, and local models simultaneously from one pane.</div>
+        <div class="tmcard-links"><a href="https://github.com/builderz-labs/mission-control" target="_blank">GitHub</a><a href="https://mc.builderz.dev" target="_blank">Website</a></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ALL TOOLS DEEP DIVE -->
+<section id="all-tools" class="container" style="margin-bottom:4rem">
+  <div class="section-header">
+    <h2>All Tools — Deep Dive</h2>
+    <p>Detailed breakdown of every tool with features, verdict, and links</p>
+  </div>
+  <div class="tools-grid">
+    <!-- n8n -->
+    <div class="tool-card cat-cyan">
+      <div class="card-top">
+        <div class="brand-logo">
+          <img src="https://unpkg.com/@lobehub/icons-static-svg@latest/icons/n8n.svg" alt="n8n" style="height:32px" onerror="this.style.display='none'">
+          <h3>n8n</h3>
+        </div>
+        <span class="stars">⭐ 191K</span>
+      </div>
+      <div class="summary">Visual workflow automation with native AI agent support. Drag-and-drop node editor with 500+ integrations, multi-agent orchestration, and MCP support. Self-hostable or cloud.</div>
+      <ul class="feats">
+        <li>Visual + code hybrid — JS/Python when needed</li>
+        <li>Dedicated AI Agent nodes with memory + tools</li>
+        <li>500+ integrations, MCP client/server</li>
+        <li>Human-in-the-loop guardrails</li>
+      </ul>
+      <div class="verdict">
+        <span class="verdict-tag verdict-best">Best for: workflow automation + agents</span>
+        <span class="verdict-tag verdict-skip">Skip if: you need pure agent fleet management</span>
+      </div>
+      <div class="card-links">
+        <a href="https://github.com/n8n-io/n8n" target="_blank">GitHub</a>
+        <a href="https://n8n.io" target="_blank">Website</a>
+      </div>
+    </div>
+    <!-- Dify -->
+    <div class="tool-card cat-cyan">
+      <div class="card-top">
+        <div class="brand-logo">
+          <img src="https://unpkg.com/@lobehub/icons-static-svg@latest/icons/dify.svg" alt="Dify" style="height:32px" onerror="this.style.display='none'">
+          <h3>Dify</h3>
+        </div>
+        <span class="stars">⭐ 140K</span>
+      </div>
+      <div class="summary">Full-stack LLMOps platform. Visual workflow orchestration, built-in RAG, agent reasoning, one-click API publishing. Go backend for high concurrency, Python for LLM logic.</div>
+      <ul class="feats">
+        <li>Chatbot, Agent, Workflow, Completion modes</li>
+        <li>Built-in knowledge base + RAG pipeline</li>
+        <li>50+ LLM support, MCP runtime</li>
+        <li>RBAC, SSO, audit trails (enterprise)</li>
+      </ul>
+      <div class="verdict">
+        <span class="verdict-tag verdict-best">Best for: production AI apps with RAG</span>
+        <span class="verdict-tag verdict-skip">Skip if: you need multi-framework fleet mgmt</span>
+      </div>
+      <div class="card-links">
+        <a href="https://github.com/langgenius/dify" target="_blank">GitHub</a>
+        <a href="https://dify.ai" target="_blank">Website</a>
+      </div>
+    </div>
+    <!-- CrewAI AMP -->
+    <div class="tool-card cat-purple">
+      <div class="card-top">
+        <div class="brand-logo">
+          <img src="https://unpkg.com/@lobehub/icons-static-svg@latest/icons/crewai.svg" alt="CrewAI" style="height:32px" onerror="this.style.display='none'">
+          <h3>CrewAI AMP</h3>
+        </div>
+        <span class="stars">⭐ 51K</span>
+      </div>
+      <div class="summary">Multi-agent orchestration with role-based crews. Visual Studio editor, AI copilot, real-time tracing, agent training. Enterprise-grade with 450M+ workflows/month.</div>
+      <ul class="feats">
+        <li>Visual editor + API for agent crews</li>
+        <li>Planning, reasoning, memory, tools</li>
+        <li>Real-time tracing + hallucination scores</li>
+        <li>A2A + MCP protocol support</li>
+      </ul>
+      <div class="verdict">
+        <span class="verdict-tag verdict-best">Best for: role-based multi-agent teams</span>
+        <span class="verdict-tag verdict-skip">Skip if: you need multi-framework support</span>
+      </div>
+      <div class="card-links">
+        <a href="https://github.com/crewAIInc/crewAI" target="_blank">GitHub</a>
+        <a href="https://crewai.com" target="_blank">Website</a>
+      </div>
+    </div>
+    <!-- LangGraph Studio -->
+    <div class="tool-card cat-purple">
+      <div class="card-top">
+        <div class="brand-logo">
+          <img src="https://unpkg.com/@lobehub/icons-static-svg@latest/icons/langgraph.svg" alt="LangGraph" style="height:32px" onerror="this.style.display='none'">
+          <h3>LangGraph Studio</h3>
+        </div>
+        <span class="stars">LangChain</span>
+      </div>
+      <div class="summary">First dedicated agent IDE. Visual graph editor, real-time state visualization, time-travel debugging. Tightly coupled to LangChain ecosystem.</div>
+      <ul class="feats">
+        <li>Visual StateGraph editor with live state</li>
+        <li>Time-travel debugging, breakpoints</li>
+        <li>MCP + A2A protocol support</li>
+        <li>Guardrail nodes (content filter, rate limiter)</li>
+      </ul>
+      <div class="verdict">
+        <span class="verdict-tag verdict-best">Best for: LangGraph agent development</span>
+        <span class="verdict-tag verdict-skip">Skip if: not using LangChain ecosystem</span>
+      </div>
+      <div class="card-links">
+        <a href="https://github.com/langchain-ai/langgraph-studio" target="_blank">GitHub</a>
+        <a href="https://langchain.com/langgraph" target="_blank">Website</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STACK DIAGRAM -->
+<section id="stack" class="container stack-section">
+  <div class="section-header">
+    <h2>Recommended Stack</h2>
+    <p>How these tools layer together for complete visual agent management</p>
+  </div>
+  <div class="stack-diagram">
+    <div class="stack-layer layer-fleet">
+      <div class="layer-icon">🎯</div>
+      <div class="layer-content">
+        <h4>Layer 1: Fleet Management</h4>
+        <p>Unified dashboard to see, dispatch, and manage all agents across frameworks</p>
+        <div class="layer-tools">
+          <span class="brand-badge" style="background:rgba(52,211,153,.15);color:var(--emerald)"><img src="https://unpkg.com/@lobehub/icons-static-svg@latest/icons/mission-control.svg" alt="" style="height:14px" onerror="this.style.display='none'"> Mission Control</span>
+          <span class="brand-badge" style="background:rgba(167,139,250,.15);color:var(--purple)"><img src="https://unpkg.com/@lobehub/icons-static-svg@latest/icons/multica.svg" alt="" style="height:14px" onerror="this.style.display='none'"> Multica</span>
+          <span class="brand-badge" style="background:rgba(251,191,36,.15);color:var(--amber)"><img src="https://unpkg.com/@lobehub/icons-static-svg@latest/icons/lobehub.svg" alt="" style="height:14px" onerror="this.style.display='none'"> LobeHub</span>
+        </div>
+      </div>
+    </div>
+    <div class="stack-layer layer-agent">
+      <div class="layer-icon">🤖</div>
+      <div class="layer-content">
+        <h4>Layer 2: Agent Dashboards</h4>
+        <p>Per-agent control planes — chat, config, skills, channels, terminal access</p>
+        <div class="layer-tools">
+          <span class="brand-badge" style="background:rgba(251,191,36,.15);color:var(--amber)"><img src="https://hermes-agent.nousresearch.com/icon.png" alt="" style="height:14px" onerror="this.style.display='none'"> Hermes Web UI</span>
+          <span class="brand-badge" style="background:rgba(251,191,36,.15);color:var(--amber)"><img src="https://hermes-agent.nousresearch.com/icon.png" alt="" style="height:14px" onerror="this.style.display='none'"> Hermes Control Interface</span>
+          <span>OpenClaw Dashboard</span>
+        </div>
+      </div>
+    </div>
+    <div class="stack-layer layer-agent">
+      <div class="layer-icon">⚡</div>
+      <div class="layer-content">
+        <h4>Layer 3: Visual Builders</h4>
+        <p>Design and build agent workflows visually — drag-and-drop node editors</p>
+        <div class="layer-tools">
+          <span class="brand-badge" style="background:rgba(56,189,248,.15);color:var(--cyan)"><img src="https://unpkg.com/@lobehub/icons-static-svg@latest/icons/n8n.svg" alt="" style="height:14px" onerror="this.style.display='none'"> n8n</span>
+          <span class="brand-badge" style="background:rgba(56,189,248,.15);color:var(--cyan)"><img src="https://unpkg.com/@lobehub/icons-static-svg@latest/icons/dify.svg" alt="" style="height:14px" onerror="this.style.display='none'"> Dify</span>
+          <span class="brand-badge" style="background:rgba(56,189,248,.15);color:var(--cyan)"><img src="https://unpkg.com/@lobehub/icons-static-svg@latest/icons/flowise.svg" alt="" style="height:14px" onerror="this.style.display='none'"> Flowise</span>
+          <span class="brand-badge" style="background:rgba(56,189,248,.15);color:var(--cyan)"><img src="https://unpkg.com/@lobehub/icons-static-svg@latest/icons/langflow.svg" alt="" style="height:14px" onerror="this.style.display='none'"> Langflow</span>
+          <span class="brand-badge" style="background:rgba(167,139,250,.15);color:var(--purple)"><img src="https://unpkg.com/@lobehub/icons-static-svg@latest/icons/crewai.svg" alt="" style="height:14px" onerror="this.style.display='none'"> CrewAI Studio</span>
+        </div>
+      </div>
+    </div>
+    <div class="stack-layer layer-observe">
+      <div class="layer-icon">📊</div>
+      <div class="layer-content">
+        <h4>Layer 4: Observability</h4>
+        <p>Trace, debug, and monitor agent behavior — session replay, cost tracking, evals</p>
+        <div class="layer-tools">
+          <span class="brand-badge" style="background:rgba(251,113,133,.15);color:var(--rose)"><img src="https://unpkg.com/@lobehub/icons-static-svg@latest/icons/agentops.svg" alt="" style="height:14px" onerror="this.style.display='none'"> AgentOps</span>
+          <span class="brand-badge" style="background:rgba(251,113,133,.15);color:var(--rose)"><img src="https://unpkg.com/@lobehub/icons-static-svg@latest/icons/arize-phoenix.svg" alt="" style="height:14px" onerror="this.style.display='none'"> Arize Phoenix</span>
+          <span class="brand-badge" style="background:rgba(167,139,250,.15);color:var(--purple)"><img src="https://raw.githubusercontent.com/sgl-project/sglang/main/assets/logo.png" alt="" style="height:14px" onerror="this.src='https://unpkg.com/@lobehub/icons-static-svg@latest/icons/sglang.svg';this.onerror=null;"> SGLang Dashboard</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- VERDICT -->
+<section id="verdict" class="container verdict-section">
+  <div class="section-header">
+    <h2>Final Verdict</h2>
+  </div>
+  <div class="verdict-card">
+    <h2>The Bottom Line</h2>
+    <p>
+      For managing <span class="highlight">hundreds of agents across multiple frameworks</span>, there's no single silver bullet yet. But the combination of <span class="highlight">Mission Control</span> (fleet management), <span class="highlight">Hermes Web UI</span> (per-agent control), and <span class="highlight">AgentOps</span> (observability) gives you the closest thing to a unified visual command center.
+    </p>
+    <p style="margin-top:1rem">
+      If your agents are coding-focused, <span class="highlight">Multica</span> is unmatched — it treats agents like teammates on a Kanban board. For workflow agents, <span class="highlight">n8n</span> or <span class="highlight">Dify</span> give you visual builders with production-grade deployment.
+    </p>
+    <p style="margin-top:1rem">
+      The key insight: <span class="highlight">don't pick one tool — layer them</span>. Fleet dashboard on top, agent-specific dashboards in the middle, observability underneath. That's how you manage scale without drowning in text.
+    </p>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer container">
+  <p><span>VidiSmart Pro</span> · Advanced Command Center for Mass Agent Management · <a href="https://vidi.news" target="_blank" rel="noopener" style="color:var(--amber);font-weight:600">vidi.news</a></p>
+</footer>
+
+</div> <!-- /proContent -->
+
+<script>
+// Auto-skip gate if returning subscriber
+if (new URLSearchParams(location.search).get('unlocked') === '1') {
+  const g = document.getElementById('proGate');
+  const c = document.getElementById('proContent');
+  if (g) g.style.display = 'none';
+  if (c) c.style.display = 'block';
+}
+
+function tmFilter(btn,cat){
+  document.querySelectorAll('.tmf-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.tmcard').forEach(c=>{
+    c.classList.toggle('hidden', cat!=='all' && c.dataset.cat!==cat);
+  });
+}
+
+// Pulse Grid
+const pulseGrid = document.getElementById('pulseGrid');
+const gridColors = ['var(--emerald)','var(--emerald)','var(--emerald)','var(--amber)','var(--amber)','var(--rose)','var(--text-dim)','var(--emerald)','var(--emerald)','var(--cyan)','var(--amber)','var(--emerald)','var(--emerald)','var(--emerald)','var(--text-dim)','var(--emerald)','var(--emerald)','var(--emerald)','var(--amber)','var(--emerald)','var(--rose)','var(--emerald)','var(--emerald)','var(--amber)','var(--emerald)','var(--emerald)','var(--emerald)','var(--emerald)','var(--amber)','var(--emerald)','var(--emerald)','var(--text-dim)'];
+for (let i = 0; i < 32; i++) {
+  const cell = document.createElement('div');
+  cell.className = 'cell';
+  cell.style.background = gridColors[i] || 'var(--text-dim)';
+  cell.style.animationDelay = (Math.random() * 2) + 's';
+  cell.style.animationDuration = (1.5 + Math.random() * 2) + 's';
+  pulseGrid.appendChild(cell);
+}
+
+// Animate progress bar widths periodically
+setInterval(() => {
+  document.querySelectorAll('.ind-bar-fill').forEach(bar => {
+    const current = parseFloat(bar.style.width);
+    const delta = (Math.random() - 0.5) * 10;
+    const newWidth = Math.max(5, Math.min(98, current + delta));
+    bar.style.width = newWidth + '%';
+  });
+}, 3000);
+</script>
+
+</body>
+</html>
