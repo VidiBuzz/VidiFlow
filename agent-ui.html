@@ -1163,29 +1163,118 @@ a:hover{color:#7dd3fc}
   </div>
 
   <!-- Live state cycling demo -->
-  <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:2rem;position:relative;overflow:hidden" id="genUiDemo">
+  <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:2rem;position:relative;overflow:hidden">
     <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--cyan),var(--purple),var(--emerald));animation:flow-sweep 3s linear infinite"></div>
 
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem">
       <div>
-        <div style="font-family:var(--font-display);font-size:.7rem;font-weight:700;color:var(--text-dim);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.3rem">Live Concept Demo</div>
+        <div style="font-family:var(--font-display);font-size:.7rem;font-weight:700;color:var(--text-dim);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.3rem">Live Concept Demo — Auto-cycles every 4 seconds</div>
         <div style="font-family:var(--font-display);font-size:1.1rem;font-weight:900;color:#fff">State In → Layout Out</div>
       </div>
-      <div id="genUiStateLabel" style="font-family:var(--font-display);font-weight:800;font-size:.8rem;letter-spacing:.08em;padding:.5rem 1.2rem;border-radius:999px;transition:all .5s ease;background:rgba(251,113,133,.12);color:var(--rose);border:1px solid rgba(251,113,133,.3)">⚠ ALERT STATE</div>
+      <div id="genUiStateLabel" style="font-family:var(--font-display);font-weight:800;font-size:.8rem;letter-spacing:.08em;padding:.5rem 1.2rem;border-radius:999px;transition:background .5s,color .5s,border-color .5s;background:rgba(251,113,133,.15);color:#fb7185;border:1px solid rgba(251,113,133,.35)">⚠ ALERT STATE</div>
     </div>
 
-    <!-- Mini dashboard grid that changes layout per state -->
-    <div id="genUiGrid" style="display:grid;grid-template-columns:repeat(6,1fr);grid-template-rows:auto auto;gap:.5rem;min-height:100px">
-      <!-- Populated by JS -->
+    <!-- STATE 0: ALERT — pre-built panel -->
+    <div class="gu-state" id="guState0" style="display:grid;grid-template-columns:2fr 1fr;grid-template-rows:1fr 1fr;gap:.75rem;min-height:160px">
+      <!-- Big alert card -->
+      <div style="grid-row:span 2;background:rgba(251,113,133,.1);border:1px solid rgba(251,113,133,.35);border-radius:12px;padding:1.25rem;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden">
+        <div style="position:absolute;top:0;left:0;right:0;height:3px;background:var(--rose);animation:flow-sweep 1.5s linear infinite"></div>
+        <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:.75rem">
+          <div style="width:12px;height:12px;border-radius:50%;background:var(--rose);box-shadow:0 0 12px var(--rose);animation:pulse-dot .7s ease-in-out infinite;flex-shrink:0"></div>
+          <div style="font-family:var(--font-display);font-weight:800;font-size:.85rem;color:var(--rose);letter-spacing:.04em">CRITICAL ALERT</div>
+        </div>
+        <div style="font-family:var(--font-display);font-weight:700;font-size:1.05rem;color:#fff;line-height:1.4;margin-bottom:.5rem">Agent Cluster 3<br><span style="color:var(--rose)">Unresponsive</span></div>
+        <div style="font-size:.75rem;color:rgba(251,113,133,.75);line-height:1.5">47 tasks queued · 0 completing · Last heartbeat 4m ago</div>
+        <div style="margin-top:.75rem;background:rgba(251,113,133,.12);border-radius:6px;height:6px;overflow:hidden">
+          <div style="width:94%;height:100%;background:var(--rose);border-radius:6px;animation:bar-breathe 1s ease-in-out infinite"></div>
+        </div>
+      </div>
+      <!-- Small dim metric cards -->
+      <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:.9rem;display:flex;flex-direction:column;justify-content:space-between">
+        <div style="font-size:.65rem;color:var(--text-dim);font-weight:700;letter-spacing:.06em">CPU LOAD</div>
+        <div style="font-family:var(--font-display);font-weight:900;font-size:1.4rem;color:#fff;line-height:1">94%</div>
+        <div style="background:rgba(255,255,255,.06);border-radius:3px;height:4px"><div style="width:94%;height:100%;background:rgba(251,113,133,.6);border-radius:3px"></div></div>
+      </div>
+      <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:.9rem;display:flex;flex-direction:column;justify-content:space-between">
+        <div style="font-size:.65rem;color:var(--text-dim);font-weight:700;letter-spacing:.06em">MEMORY</div>
+        <div style="font-family:var(--font-display);font-weight:900;font-size:1.4rem;color:#fff;line-height:1">88%</div>
+        <div style="background:rgba(255,255,255,.06);border-radius:3px;height:4px"><div style="width:88%;height:100%;background:rgba(251,191,36,.6);border-radius:3px"></div></div>
+      </div>
     </div>
 
-    <p style="font-size:.8rem;color:var(--text-dim);text-align:center;margin-top:1.25rem">Cycles every 4 seconds — alert → operational → decision pending. This is what a custom VidiFlow build responds to in real time.</p>
+    <!-- STATE 1: OPERATIONAL — pre-built panel -->
+    <div class="gu-state" id="guState1" style="display:none;grid-template-columns:repeat(3,1fr);gap:.75rem;min-height:160px">
+      <!-- 6 metric cards -->
+      <div style="background:rgba(52,211,153,.08);border:1px solid rgba(52,211,153,.25);border-radius:10px;padding:1rem">
+        <div style="font-size:.62rem;color:rgba(52,211,153,.7);font-weight:700;letter-spacing:.07em;margin-bottom:.4rem">ACTIVE AGENTS</div>
+        <div style="font-family:var(--font-display);font-weight:900;font-size:1.6rem;color:var(--emerald);line-height:1;margin-bottom:.5rem">127</div>
+        <div style="display:flex;gap:2px">${'<div style="flex:1;height:4px;background:rgba(52,211,153,.35);border-radius:2px"></div>'.repeat(8)}</div>
+      </div>
+      <div style="background:rgba(56,189,248,.08);border:1px solid rgba(56,189,248,.25);border-radius:10px;padding:1rem">
+        <div style="font-size:.62rem;color:rgba(56,189,248,.7);font-weight:700;letter-spacing:.07em;margin-bottom:.4rem">TASKS / HR</div>
+        <div style="font-family:var(--font-display);font-weight:900;font-size:1.6rem;color:var(--cyan);line-height:1;margin-bottom:.5rem">1.4K</div>
+        <div style="background:rgba(56,189,248,.12);border-radius:3px;height:4px"><div style="width:72%;height:100%;background:var(--cyan);border-radius:3px;animation:bar-breathe 3s ease-in-out infinite"></div></div>
+      </div>
+      <div style="background:rgba(52,211,153,.08);border:1px solid rgba(52,211,153,.25);border-radius:10px;padding:1rem">
+        <div style="font-size:.62rem;color:rgba(52,211,153,.7);font-weight:700;letter-spacing:.07em;margin-bottom:.4rem">UPTIME</div>
+        <div style="font-family:var(--font-display);font-weight:900;font-size:1.6rem;color:var(--emerald);line-height:1;margin-bottom:.5rem">99.2%</div>
+        <div style="display:flex;align-items:center;gap:.3rem"><div style="width:7px;height:7px;border-radius:50%;background:var(--emerald);box-shadow:0 0 6px var(--emerald);animation:pulse-dot 2s infinite"></div><span style="font-size:.6rem;color:rgba(52,211,153,.6)">All clusters healthy</span></div>
+      </div>
+      <div style="background:rgba(56,189,248,.06);border:1px solid rgba(56,189,248,.18);border-radius:10px;padding:1rem">
+        <div style="font-size:.62rem;color:rgba(56,189,248,.7);font-weight:700;letter-spacing:.07em;margin-bottom:.5rem">PIPELINE HEALTH</div>
+        <div style="display:flex;flex-direction:column;gap:.3rem">
+          <div style="background:rgba(56,189,248,.1);border-radius:3px;height:5px"><div style="width:89%;height:100%;background:var(--cyan);border-radius:3px"></div></div>
+          <div style="background:rgba(56,189,248,.1);border-radius:3px;height:5px"><div style="width:76%;height:100%;background:var(--cyan);border-radius:3px"></div></div>
+          <div style="background:rgba(56,189,248,.1);border-radius:3px;height:5px"><div style="width:94%;height:100%;background:var(--cyan);border-radius:3px"></div></div>
+        </div>
+      </div>
+      <div style="background:rgba(52,211,153,.06);border:1px solid rgba(52,211,153,.18);border-radius:10px;padding:1rem">
+        <div style="font-size:.62rem;color:rgba(52,211,153,.7);font-weight:700;letter-spacing:.07em;margin-bottom:.5rem">THROUGHPUT</div>
+        <div style="display:flex;align-items:flex-end;gap:3px;height:40px">
+          ${[55,70,60,85,75,90,80,95].map(h=>`<div style="flex:1;height:${h}%;background:rgba(52,211,153,${(h/100*.6+.2).toFixed(2)});border-radius:2px 2px 0 0"></div>`).join('')}
+        </div>
+      </div>
+      <div style="background:rgba(167,139,250,.06);border:1px solid rgba(167,139,250,.18);border-radius:10px;padding:1rem">
+        <div style="font-size:.62rem;color:rgba(167,139,250,.7);font-weight:700;letter-spacing:.07em;margin-bottom:.4rem">QUEUE DEPTH</div>
+        <div style="font-family:var(--font-display);font-weight:900;font-size:1.6rem;color:var(--purple);line-height:1;margin-bottom:.3rem">312</div>
+        <div style="font-size:.6rem;color:rgba(167,139,250,.5)">↓ clearing at 1.4K/hr</div>
+      </div>
+    </div>
+
+    <!-- STATE 2: DECISION PENDING — pre-built panel -->
+    <div class="gu-state" id="guState2" style="display:none;grid-template-columns:1fr 1fr;grid-template-rows:1fr auto;gap:.75rem;min-height:160px">
+      <!-- Option A -->
+      <div style="background:rgba(56,189,248,.09);border:2px solid rgba(56,189,248,.3);border-radius:12px;padding:1.25rem">
+        <div style="font-size:.62rem;color:rgba(56,189,248,.7);font-weight:800;letter-spacing:.08em;margin-bottom:.5rem">OPTION A</div>
+        <div style="font-family:var(--font-display);font-weight:800;font-size:.95rem;color:#fff;margin-bottom:.5rem">Parallel Deploy</div>
+        <div style="font-size:.75rem;color:var(--text-muted);line-height:1.5;margin-bottom:.75rem">All 12 nodes simultaneously. Faster — higher rollback risk.</div>
+        <div style="display:flex;gap:.4rem;flex-wrap:wrap">
+          <span style="font-size:.6rem;background:rgba(56,189,248,.12);color:var(--cyan);border:1px solid rgba(56,189,248,.25);padding:.2rem .5rem;border-radius:4px;font-weight:700">~4 min</span>
+          <span style="font-size:.6rem;background:rgba(251,191,36,.1);color:var(--amber);border:1px solid rgba(251,191,36,.2);padding:.2rem .5rem;border-radius:4px;font-weight:700">High risk</span>
+        </div>
+      </div>
+      <!-- Option B -->
+      <div style="background:rgba(167,139,250,.09);border:2px solid rgba(167,139,250,.3);border-radius:12px;padding:1.25rem">
+        <div style="font-size:.62rem;color:rgba(167,139,250,.7);font-weight:800;letter-spacing:.08em;margin-bottom:.5rem">OPTION B</div>
+        <div style="font-family:var(--font-display);font-weight:800;font-size:.95rem;color:#fff;margin-bottom:.5rem">Sequential Rollout</div>
+        <div style="font-size:.75rem;color:var(--text-muted);line-height:1.5;margin-bottom:.75rem">Node-by-node with validation gates. Safer — takes longer.</div>
+        <div style="display:flex;gap:.4rem;flex-wrap:wrap">
+          <span style="font-size:.6rem;background:rgba(167,139,250,.12);color:var(--purple);border:1px solid rgba(167,139,250,.25);padding:.2rem .5rem;border-radius:4px;font-weight:700">~18 min</span>
+          <span style="font-size:.6rem;background:rgba(52,211,153,.1);color:var(--emerald);border:1px solid rgba(52,211,153,.2);padding:.2rem .5rem;border-radius:4px;font-weight:700">Low risk</span>
+        </div>
+      </div>
+      <!-- Awaiting decision bar -->
+      <div style="grid-column:span 2;background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.25);border-radius:10px;padding:.75rem 1rem;display:flex;align-items:center;gap:.75rem">
+        <div style="width:8px;height:8px;border-radius:50%;background:var(--amber);box-shadow:0 0 8px var(--amber);animation:pulse-dot 1.2s infinite;flex-shrink:0"></div>
+        <div style="font-size:.75rem;color:var(--amber);font-weight:700">3 agents paused — awaiting your decision before proceeding</div>
+      </div>
+    </div>
   </div>
 
   <!-- CTA line -->
   <p style="text-align:center;color:var(--text-muted);margin-top:2rem;font-size:.95rem">
-    Everything below is built from this vocabulary. —
-    <a href="agent-ui-pro.html" style="color:var(--purple);font-weight:700">Request a custom Gen UI build →</a>
+    Everything on this page is built from that vocabulary. —
+    <a href="agent-ui-pro.html?unlocked=1" style="color:var(--purple);font-weight:700">See the full tool comparison →</a>
   </p>
 </section>
 
@@ -2692,86 +2781,35 @@ setInterval(() => {
 
 // ── GEN UI STATE CYCLING DEMO ──────────────────────────────────────────────
 (function() {
-  const grid = document.getElementById('genUiGrid');
+  const panels = [
+    document.getElementById('guState0'),
+    document.getElementById('guState1'),
+    document.getElementById('guState2')
+  ];
   const label = document.getElementById('genUiStateLabel');
-  if (!grid || !label) return;
+  if (!panels[0] || !label) return;
 
-  // [r,g,b] values for each named color
-  const C = {
-    rose:    [251,113,133],
-    emerald: [52,211,153],
-    cyan:    [56,189,248],
-    purple:  [167,139,250],
-    amber:   [251,191,36],
-    dim:     [100,116,139]
-  };
-  const bg  = (c,a) => `rgba(${C[c]},${a})`;
-  const txt = (c)   => `rgb(${C[c]})`;
-
-  const states = [
-    {
-      name: '⚠ ALERT STATE', key: 'rose',
-      cells: [
-        // [colspan, colorKey, bgAlpha, label]
-        [4, 'rose',  .15, '⚠ Critical — Agent cluster 3 unresponsive'],
-        [2, 'dim',   .07, 'CPU 94%'],
-        [2, 'dim',   .07, 'MEM 88%'],
-      ]
-    },
-    {
-      name: '✓ OPERATIONAL', key: 'emerald',
-      cells: [
-        [2, 'emerald', .12, '127 Active'],
-        [2, 'cyan',    .10, '1.4K Tasks/hr'],
-        [2, 'emerald', .08, '99.2% Uptime'],
-        [3, 'emerald', .06, 'Pipeline Health'],
-        [3, 'cyan',    .06, 'Throughput'],
-      ]
-    },
-    {
-      name: '⚖ DECISION PENDING', key: 'amber',
-      cells: [
-        [3, 'cyan',   .12, 'Option A — Parallel deploy'],
-        [3, 'purple', .12, 'Option B — Sequential rollout'],
-        [6, 'amber',  .07, '↑ 3 agents awaiting decision'],
-      ]
-    }
+  const META = [
+    { text: '⚠ ALERT STATE',       bg: 'rgba(251,113,133,.15)', color: '#fb7185', border: 'rgba(251,113,133,.35)' },
+    { text: '✓ OPERATIONAL',        bg: 'rgba(52,211,153,.15)',  color: '#34d399', border: 'rgba(52,211,153,.35)'  },
+    { text: '⚖ DECISION PENDING',   bg: 'rgba(251,191,36,.15)', color: '#fbbf24', border: 'rgba(251,191,36,.35)'  }
   ];
 
-  let current = 0;
+  let cur = 0;
 
-  function render(s) {
-    const c = s.key;
-    label.style.background = bg(c, .12);
-    label.style.color       = txt(c);
-    label.style.borderColor = bg(c, .3);
-    label.textContent = s.name;
-
-    grid.innerHTML = '';
-    s.cells.forEach(([cs, ck, ba, cellTxt]) => {
-      const el = document.createElement('div');
-      el.style.cssText = [
-        `grid-column:span ${cs}`,
-        `background:${bg(ck, ba)}`,
-        `border:1px solid ${bg(ck, .25)}`,
-        `color:${txt(ck)}`,
-        'border-radius:8px',
-        'display:flex','align-items:center','justify-content:center',
-        'font-size:.65rem','font-weight:700',
-        'font-family:var(--font-display)','letter-spacing:.04em',
-        'min-height:38px','padding:.3rem .5rem','text-align:center',
-        'transition:all .6s ease'
-      ].join(';');
-      el.textContent = cellTxt;
-      grid.appendChild(el);
+  function show(idx) {
+    panels.forEach((p, i) => {
+      p.style.display = i === idx ? 'grid' : 'none';
     });
+    const m = META[idx];
+    label.style.background   = m.bg;
+    label.style.color        = m.color;
+    label.style.borderColor  = m.border;
+    label.textContent        = m.text;
   }
 
-  render(states[0]);
-  setInterval(() => {
-    current = (current + 1) % states.length;
-    render(states[current]);
-  }, 4000);
+  show(0);
+  setInterval(() => { cur = (cur + 1) % panels.length; show(cur); }, 4000);
 })();
 
 // ══════════════════════════════════════════════════════════════════════════════
