@@ -65,6 +65,41 @@
 .ps-dots span{width:10px;height:10px;border-radius:50%;display:block}
 .ps-sw-name{font-size:.58rem;font-weight:700;color:var(--text-dim);letter-spacing:.04em}
 
+/* ── Shared corner orb widgets ── */
+.orb-widget{position:fixed;z-index:9999;display:flex;gap:8px}
+.orb-panel{background:var(--card);border:1px solid var(--border-light);border-radius:14px;padding:.75rem .8rem;display:none;width:210px;box-shadow:0 8px 32px rgba(0,0,0,.7)}
+.orb-panel.open{display:block}
+.orb-heading{font-size:.6rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--text-dim);margin-bottom:.6rem}
+.orb-canvas{cursor:pointer;display:block;border-radius:50%;border:1px solid var(--border-light);background:var(--card);box-shadow:0 4px 24px rgba(0,0,0,.6);transition:transform .2s}
+.orb-canvas:hover{transform:scale(1.12)}
+.orb-label{font-size:.5rem;color:var(--text-dim);text-align:center;letter-spacing:.08em;font-weight:700;margin-top:3px}
+/* Orb option rows */
+.orb-opt{display:flex;align-items:center;gap:8px;padding:7px 8px;border-radius:8px;cursor:pointer;margin-bottom:4px;border:1px solid transparent;transition:border-color .15s,background .15s}
+.orb-opt:hover{background:rgba(255,255,255,.04)}
+.orb-opt.active{border-color:var(--cyan);background:rgba(56,189,248,.06)}
+.orb-opt-dot{width:9px;height:9px;border-radius:50%;border:2px solid var(--text-dim);flex-shrink:0;transition:background .15s,border-color .15s}
+.orb-opt.active .orb-opt-dot{background:var(--cyan);border-color:var(--cyan)}
+.orb-opt-name{font-size:.78rem;font-weight:700;color:var(--text);line-height:1.2}
+.orb-opt-desc{font-size:.66rem;color:var(--text-dim);margin-top:1px}
+/* Health rows */
+.health-row{display:flex;align-items:center;gap:6px;padding:5px 0;border-bottom:1px solid var(--border);font-size:.72rem}
+.health-row:last-child{border-bottom:none}
+.health-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.health-name{color:var(--text-muted);flex:1}
+.health-status{font-weight:700;font-size:.65rem;letter-spacing:.04em}
+/* Corner positions */
+#spd-widget{bottom:1.4rem;left:1.4rem;flex-direction:column;align-items:flex-start}
+#health-widget{top:1.4rem;left:1.4rem;flex-direction:column;align-items:flex-start}
+#view-widget{top:1.4rem;right:1.4rem;flex-direction:column;align-items:flex-end}
+/* View mode: Exec — hide agent task/log text, boost numbers */
+body.view-exec .f1-task{opacity:0;font-size:0;margin:0!important;height:0;overflow:hidden}
+body.view-exec .f1-log-wrap{display:none!important}
+body.view-exec .f1-num{font-size:2.2rem!important;line-height:1!important}
+/* View mode: Focus — dim all sections, highlight hovered */
+body.view-focus .container{opacity:.25;transition:opacity .4s}
+body.view-focus .container:hover{opacity:1;transition:opacity .15s}
+/* Speed mode: inject via JS */
+
 html{scroll-behavior:smooth;font-size:16px}
 body{
   font-family:var(--font-body);color:var(--text);background:var(--bg);
@@ -2487,6 +2522,69 @@ a:hover{color:#7dd3fc}
   <div style="font-size:.5rem;color:var(--text-dim);text-align:center;letter-spacing:.08em;font-weight:700;margin-top:3px">UI STYLE</div>
 </div>
 
+<!-- SPEED CONTROL ORB — bottom-left -->
+<div id="spd-widget" class="orb-widget">
+  <canvas id="spdSphere" width="56" height="56" class="orb-canvas" onclick="toggleSpdPanel()" title="Animation Speed"
+    onmouseenter="this.style.transform='scale(1.12)'" onmouseleave="this.style.transform='scale(1)'"></canvas>
+  <div style="font-size:.5rem;color:var(--text-dim);letter-spacing:.08em;font-weight:700;margin-top:3px">SPEED</div>
+  <div class="orb-panel" id="spdPanel">
+    <div class="orb-heading">Animation Speed</div>
+    <div class="orb-opt" data-spd="slow" onclick="setSpeed('slow',this)">
+      <div class="orb-opt-dot"></div>
+      <div><div class="orb-opt-name">SLOW</div><div class="orb-opt-desc">Deliberate, presentation mode</div></div>
+    </div>
+    <div class="orb-opt active" data-spd="normal" onclick="setSpeed('normal',this)">
+      <div class="orb-opt-dot"></div>
+      <div><div class="orb-opt-name">NORMAL</div><div class="orb-opt-desc">Default speed</div></div>
+    </div>
+    <div class="orb-opt" data-spd="fast" onclick="setSpeed('fast',this)">
+      <div class="orb-opt-dot"></div>
+      <div><div class="orb-opt-name">FAST</div><div class="orb-opt-desc">Energized, high activity</div></div>
+    </div>
+    <div class="orb-opt" data-spd="frantic" onclick="setSpeed('frantic',this)">
+      <div class="orb-opt-dot"></div>
+      <div><div class="orb-opt-name">FRANTIC</div><div class="orb-opt-desc">Maximum chaos — demo wow</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- AGENT HEALTH BEACON — top-left -->
+<div id="health-widget" class="orb-widget">
+  <canvas id="healthSphere" width="56" height="56" class="orb-canvas" onclick="toggleHealthPanel()" title="System Health"
+    onmouseenter="this.style.transform='scale(1.12)'" onmouseleave="this.style.transform='scale(1)'"></canvas>
+  <div style="font-size:.5rem;color:var(--text-dim);letter-spacing:.08em;font-weight:700;margin-top:3px">HEALTH</div>
+  <div class="orb-panel" id="healthPanel">
+    <div class="orb-heading">System Health</div>
+    <div id="healthOverall" style="font-size:.78rem;font-weight:800;margin-bottom:.6rem;padding:4px 8px;border-radius:6px;display:inline-block">● HEALTHY</div>
+    <div class="health-row"><div class="health-dot" id="hd0"></div><div class="health-name">Cluster α</div><div class="health-status" id="hs0">HEALTHY</div></div>
+    <div class="health-row"><div class="health-dot" id="hd1"></div><div class="health-name">Cluster β</div><div class="health-status" id="hs1">HEALTHY</div></div>
+    <div class="health-row"><div class="health-dot" id="hd2"></div><div class="health-name">Data Pipeline</div><div class="health-status" id="hs2">WARNING</div></div>
+    <div class="health-row"><div class="health-dot" id="hd3"></div><div class="health-name">Orchestrator</div><div class="health-status" id="hs3">HEALTHY</div></div>
+  </div>
+</div>
+
+<!-- VIEW MODE SWITCHER — top-right -->
+<div id="view-widget" class="orb-widget">
+  <canvas id="viewSphere" width="56" height="56" class="orb-canvas" onclick="toggleViewPanel()" title="Dashboard View"
+    onmouseenter="this.style.transform='scale(1.12)'" onmouseleave="this.style.transform='scale(1)'"></canvas>
+  <div style="font-size:.5rem;color:var(--text-dim);letter-spacing:.08em;font-weight:700;margin-top:3px">VIEW</div>
+  <div class="orb-panel" id="viewPanel">
+    <div class="orb-heading">Dashboard View</div>
+    <div class="orb-opt active" data-view="command" onclick="setView('command',this)">
+      <div class="orb-opt-dot"></div>
+      <div><div class="orb-opt-name">COMMAND</div><div class="orb-opt-desc">Full detail, all panels</div></div>
+    </div>
+    <div class="orb-opt" data-view="exec" onclick="setView('exec',this)">
+      <div class="orb-opt-dot"></div>
+      <div><div class="orb-opt-name">EXEC</div><div class="orb-opt-desc">Key metrics, minimal text</div></div>
+    </div>
+    <div class="orb-opt" data-view="focus" onclick="setView('focus',this)">
+      <div class="orb-opt-dot"></div>
+      <div><div class="orb-opt-name">FOCUS</div><div class="orb-opt-desc">Hover a section to spotlight</div></div>
+    </div>
+  </div>
+</div>
+
 <!-- AGENT DETAIL MODAL -->
 <div id="agentModal" class="modal-overlay" onclick="if(event.target===this)closeModal()">
   <div class="modal-panel">
@@ -2952,6 +3050,177 @@ setInterval(() => {
     const w = document.getElementById('ps-widget');
     if (w && !w.contains(e.target)) document.getElementById('psPanel').classList.remove('open');
   });
+})();
+
+// ── SPEED / HEALTH / VIEW ORBS ────────────────────────────────────────────
+(function() {
+
+  /* ── Shared sphere renderer ── */
+  function makeSphere(canvasId, getColorFn) {
+    const canvas = document.getElementById(canvasId);
+    if (!canvas) return null;
+    const ctx = canvas.getContext('2d');
+    const W = 56, H = 56, R = 21, N = 22;
+    const pts = [];
+    const PHI = Math.PI * (3 - Math.sqrt(5));
+    for (let i = 0; i < N; i++) {
+      const y = 1 - (i / (N - 1)) * 2;
+      const r = Math.sqrt(Math.max(0, 1 - y * y));
+      pts.push([r * Math.cos(PHI * i), y, r * Math.sin(PHI * i)]);
+    }
+    let angle = 0;
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+      const [cr, cg, cb] = getColorFn();
+      const cos = Math.cos(angle), sin = Math.sin(angle);
+      const sorted = pts
+        .map(([x, y, z]) => ({ x: x * cos - z * sin, y, z: x * sin + z * cos }))
+        .sort((a, b) => a.z - b.z);
+      sorted.forEach(({ x, y, z }) => {
+        const scale = (z + 2) / 3;
+        ctx.beginPath();
+        ctx.arc(W / 2 + x * R, H / 2 - y * R, 2.2 * scale, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(${cr},${cg},${cb},${(0.25 + 0.75 * scale).toFixed(2)})`;
+        ctx.shadowColor = `rgb(${cr},${cg},${cb})`;
+        ctx.shadowBlur = 5 * scale;
+        ctx.fill();
+      });
+      ctx.beginPath();
+      ctx.ellipse(W/2, H/2, R, R * Math.abs(Math.sin(angle * 0.5 + 0.3)) * 0.3 + 2, 0, 0, Math.PI * 2);
+      ctx.strokeStyle = `rgba(${cr},${cg},${cb},0.12)`;
+      ctx.lineWidth = 1;
+      ctx.stroke();
+      ctx.shadowBlur = 0;
+      angle += 0.018;
+      requestAnimationFrame(draw);
+    }
+    draw();
+    return canvas;
+  }
+
+  /* ── Click-outside helper ── */
+  function outsideClick(widgetId, panelId) {
+    document.addEventListener('click', function(e) {
+      const w = document.getElementById(widgetId);
+      if (w && !w.contains(e.target)) document.getElementById(panelId).classList.remove('open');
+    });
+  }
+
+  /* ══════════════════════════════════
+     SPEED CONTROL ORB
+  ══════════════════════════════════ */
+  const SPD_COLORS = {
+    slow:    [100, 120, 200],
+    normal:  [56, 189, 248],
+    fast:    [251, 191, 36],
+    frantic: [251, 113, 133]
+  };
+  let currentSpeed = 'normal';
+
+  makeSphere('spdSphere', () => SPD_COLORS[currentSpeed]);
+
+  window.toggleSpdPanel = function() {
+    document.getElementById('spdPanel').classList.toggle('open');
+  };
+
+  window.setSpeed = function(level, el) {
+    currentSpeed = level;
+    document.querySelectorAll('#spd-widget .orb-opt').forEach(o => o.classList.remove('active'));
+    el.classList.add('active');
+    document.getElementById('spdPanel').classList.remove('open');
+    let styleEl = document.getElementById('__speedStyle');
+    if (!styleEl) { styleEl = document.createElement('style'); styleEl.id = '__speedStyle'; document.head.appendChild(styleEl); }
+    const durations = { slow: '6s', normal: null, fast: '0.25s', frantic: '0.07s' };
+    styleEl.textContent = durations[level]
+      ? `*,*::before,*::after{animation-duration:${durations[level]}!important;transition-duration:0.05s!important}`
+      : '';
+  };
+
+  outsideClick('spd-widget', 'spdPanel');
+
+  /* ══════════════════════════════════
+     AGENT HEALTH BEACON
+  ══════════════════════════════════ */
+  const HEALTH_STATES = ['HEALTHY', 'WARNING', 'CRITICAL'];
+  const HEALTH_COLORS = {
+    HEALTHY:  [52, 211, 153],
+    WARNING:  [251, 191, 36],
+    CRITICAL: [251, 113, 133]
+  };
+  const HEALTH_TEXT_COLORS = { HEALTHY: '#34d399', WARNING: '#fbbf24', CRITICAL: '#fb7185' };
+
+  let clusterStates = ['HEALTHY', 'HEALTHY', 'WARNING', 'HEALTHY'];
+
+  function worstState() {
+    if (clusterStates.includes('CRITICAL')) return 'CRITICAL';
+    if (clusterStates.includes('WARNING'))  return 'WARNING';
+    return 'HEALTHY';
+  }
+
+  function renderHealth() {
+    const ids = ['hd0','hd1','hd2','hd3'];
+    const sids = ['hs0','hs1','hs2','hs3'];
+    clusterStates.forEach((s, i) => {
+      const dot = document.getElementById(ids[i]);
+      const stat = document.getElementById(sids[i]);
+      if (dot)  dot.style.background = HEALTH_TEXT_COLORS[s];
+      if (stat) { stat.textContent = s; stat.style.color = HEALTH_TEXT_COLORS[s]; }
+    });
+    const overall = document.getElementById('healthOverall');
+    const worst = worstState();
+    if (overall) {
+      const icons = { HEALTHY: '✓', WARNING: '⚠', CRITICAL: '✕' };
+      overall.textContent = icons[worst] + ' ' + worst;
+      overall.style.color = HEALTH_TEXT_COLORS[worst];
+      overall.style.background = `rgba(${HEALTH_COLORS[worst].join(',')},0.1)`;
+      overall.style.borderColor = `rgba(${HEALTH_COLORS[worst].join(',')},0.3)`;
+      overall.style.border = '1px solid';
+    }
+  }
+
+  makeSphere('healthSphere', () => HEALTH_COLORS[worstState()]);
+  renderHealth();
+
+  setInterval(() => {
+    const idx = Math.floor(Math.random() * clusterStates.length);
+    const states = HEALTH_STATES;
+    clusterStates[idx] = states[Math.floor(Math.random() * states.length)];
+    renderHealth();
+  }, 9000 + Math.random() * 6000);
+
+  window.toggleHealthPanel = function() {
+    document.getElementById('healthPanel').classList.toggle('open');
+  };
+
+  outsideClick('health-widget', 'healthPanel');
+
+  /* ══════════════════════════════════
+     VIEW MODE SWITCHER
+  ══════════════════════════════════ */
+  const VIEW_COLORS = {
+    command: [56, 189, 248],
+    exec:    [52, 211, 153],
+    focus:   [167, 139, 250]
+  };
+  let currentView = 'command';
+
+  makeSphere('viewSphere', () => VIEW_COLORS[currentView]);
+
+  window.toggleViewPanel = function() {
+    document.getElementById('viewPanel').classList.toggle('open');
+  };
+
+  window.setView = function(mode, el) {
+    document.body.classList.remove('view-exec', 'view-focus');
+    if (mode !== 'command') document.body.classList.add('view-' + mode);
+    currentView = mode;
+    document.querySelectorAll('#view-widget .orb-opt').forEach(o => o.classList.remove('active'));
+    el.classList.add('active');
+    document.getElementById('viewPanel').classList.remove('open');
+  };
+
+  outsideClick('view-widget', 'viewPanel');
+
 })();
 
 // ── GEN UI STATE CYCLING DEMO ──────────────────────────────────────────────
