@@ -99,6 +99,11 @@ body.view-exec .f1-num{font-size:2.2rem!important;line-height:1!important}
 body.view-focus .container{opacity:.25;transition:opacity .4s}
 body.view-focus .container:hover{opacity:1;transition:opacity .15s}
 /* Speed mode: inject via JS */
+/* ── 3D card tilt sheen ── */
+.feature-card{transform-style:preserve-3d;will-change:transform}
+.card-sheen{position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:0;transition:opacity .3s;z-index:2;background:linear-gradient(105deg,transparent 40%,rgba(255,255,255,.07) 50%,transparent 60%)}
+/* ── Particle stream canvas ── */
+#particle-stream{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;opacity:.35}
 
 html{scroll-behavior:smooth;font-size:16px}
 body{
@@ -1067,6 +1072,23 @@ a:hover{color:#7dd3fc}
   <p style="font-size:1.1rem;color:var(--text-muted);max-width:720px;margin:0 auto 1.5rem;line-height:1.7">
     Lost in a sea of text — reports, news releases, hundreds of new documents to review every single week. Each one a small part of a very complex process that only the billion-dollar companies seem to have access to running profitably.
   </p>
+
+  <!-- LIVE HERO METRICS -->
+  <div style="display:flex;justify-content:center;align-items:center;gap:0;margin:0 auto 2rem;max-width:540px;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:14px;overflow:hidden">
+    <div style="flex:1;text-align:center;padding:.9rem .5rem;border-right:1px solid var(--border)">
+      <div id="hm-agents" style="font-family:var(--font-display);font-size:1.8rem;font-weight:900;color:var(--emerald);letter-spacing:-.03em;line-height:1">127</div>
+      <div style="font-size:.58rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text-dim);margin-top:4px">Agents Active</div>
+    </div>
+    <div style="flex:1;text-align:center;padding:.9rem .5rem;border-right:1px solid var(--border)">
+      <div id="hm-tasks" style="font-family:var(--font-display);font-size:1.8rem;font-weight:900;color:var(--cyan);letter-spacing:-.03em;line-height:1">1,247</div>
+      <div style="font-size:.58rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text-dim);margin-top:4px">Tasks / hr</div>
+    </div>
+    <div style="flex:1;text-align:center;padding:.9rem .5rem">
+      <div id="hm-cost" style="font-family:var(--font-display);font-size:1.8rem;font-weight:900;color:var(--amber);letter-spacing:-.03em;line-height:1">$0.18</div>
+      <div style="font-size:.58rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text-dim);margin-top:4px">Avg Cost / task</div>
+    </div>
+  </div>
+
   <div style="
     max-width:720px;margin:0 auto 2rem;
     padding:1.8rem 2.2rem;
@@ -1255,57 +1277,34 @@ a:hover{color:#7dd3fc}
     </div>
 
     <!-- STATE 1: OPERATIONAL — pre-built panel -->
-    <div class="gu-state" id="guState1" style="display:none;grid-template-columns:repeat(3,1fr);gap:.75rem;min-height:160px">
-      <!-- 6 metric cards -->
+    <div class="gu-state" id="guState1" style="display:none;grid-template-columns:repeat(3,1fr);grid-template-rows:auto auto;gap:.75rem;min-height:160px">
+      <!-- Row 1: Key metrics -->
       <div style="background:rgba(52,211,153,.08);border:1px solid rgba(52,211,153,.25);border-radius:10px;padding:1rem">
         <div style="font-size:.62rem;color:rgba(52,211,153,.7);font-weight:700;letter-spacing:.07em;margin-bottom:.4rem">ACTIVE AGENTS</div>
-        <div style="font-family:var(--font-display);font-weight:900;font-size:1.6rem;color:var(--emerald);line-height:1;margin-bottom:.5rem">127</div>
-        <div style="display:flex;gap:2px">
-          <div style="flex:1;height:4px;background:rgba(52,211,153,.35);border-radius:2px"></div>
-          <div style="flex:1;height:4px;background:rgba(52,211,153,.35);border-radius:2px"></div>
-          <div style="flex:1;height:4px;background:rgba(52,211,153,.35);border-radius:2px"></div>
-          <div style="flex:1;height:4px;background:rgba(52,211,153,.35);border-radius:2px"></div>
-          <div style="flex:1;height:4px;background:rgba(52,211,153,.35);border-radius:2px"></div>
-          <div style="flex:1;height:4px;background:rgba(52,211,153,.35);border-radius:2px"></div>
-          <div style="flex:1;height:4px;background:rgba(52,211,153,.35);border-radius:2px"></div>
-          <div style="flex:1;height:4px;background:rgba(52,211,153,.35);border-radius:2px"></div>
-        </div>
+        <div id="guAgents" style="font-family:var(--font-display);font-weight:900;font-size:1.6rem;color:var(--emerald);line-height:1;margin-bottom:.3rem">127</div>
+        <div style="font-size:.6rem;color:rgba(52,211,153,.5)">↑ +3 last 60s</div>
       </div>
       <div style="background:rgba(56,189,248,.08);border:1px solid rgba(56,189,248,.25);border-radius:10px;padding:1rem">
         <div style="font-size:.62rem;color:rgba(56,189,248,.7);font-weight:700;letter-spacing:.07em;margin-bottom:.4rem">TASKS / HR</div>
-        <div style="font-family:var(--font-display);font-weight:900;font-size:1.6rem;color:var(--cyan);line-height:1;margin-bottom:.5rem">1.4K</div>
-        <div style="background:rgba(56,189,248,.12);border-radius:3px;height:4px"><div style="width:72%;height:100%;background:var(--cyan);border-radius:3px;animation:bar-breathe 3s ease-in-out infinite"></div></div>
+        <div id="guTasks" style="font-family:var(--font-display);font-weight:900;font-size:1.6rem;color:var(--cyan);line-height:1;margin-bottom:.3rem">1,412</div>
+        <div style="font-size:.6rem;color:rgba(56,189,248,.5)">avg 11.1 tok/s per task</div>
       </div>
-      <div style="background:rgba(52,211,153,.08);border:1px solid rgba(52,211,153,.25);border-radius:10px;padding:1rem">
-        <div style="font-size:.62rem;color:rgba(52,211,153,.7);font-weight:700;letter-spacing:.07em;margin-bottom:.4rem">UPTIME</div>
-        <div style="font-family:var(--font-display);font-weight:900;font-size:1.6rem;color:var(--emerald);line-height:1;margin-bottom:.5rem">99.2%</div>
-        <div style="display:flex;align-items:center;gap:.3rem"><div style="width:7px;height:7px;border-radius:50%;background:var(--emerald);box-shadow:0 0 6px var(--emerald);animation:pulse-dot 2s infinite"></div><span style="font-size:.6rem;color:rgba(52,211,153,.6)">All clusters healthy</span></div>
-      </div>
-      <div style="background:rgba(56,189,248,.06);border:1px solid rgba(56,189,248,.18);border-radius:10px;padding:1rem">
-        <div style="font-size:.62rem;color:rgba(56,189,248,.7);font-weight:700;letter-spacing:.07em;margin-bottom:.5rem">PIPELINE HEALTH</div>
-        <div style="display:flex;flex-direction:column;gap:.3rem">
-          <div style="background:rgba(56,189,248,.1);border-radius:3px;height:5px"><div style="width:89%;height:100%;background:var(--cyan);border-radius:3px"></div></div>
-          <div style="background:rgba(56,189,248,.1);border-radius:3px;height:5px"><div style="width:76%;height:100%;background:var(--cyan);border-radius:3px"></div></div>
-          <div style="background:rgba(56,189,248,.1);border-radius:3px;height:5px"><div style="width:94%;height:100%;background:var(--cyan);border-radius:3px"></div></div>
-        </div>
-      </div>
-      <div style="background:rgba(52,211,153,.06);border:1px solid rgba(52,211,153,.18);border-radius:10px;padding:1rem">
-        <div style="font-size:.62rem;color:rgba(52,211,153,.7);font-weight:700;letter-spacing:.07em;margin-bottom:.5rem">THROUGHPUT</div>
-        <div style="display:flex;align-items:flex-end;gap:3px;height:40px">
-          <div style="flex:1;height:55%;background:rgba(52,211,153,.53);border-radius:2px 2px 0 0"></div>
-          <div style="flex:1;height:70%;background:rgba(52,211,153,.62);border-radius:2px 2px 0 0"></div>
-          <div style="flex:1;height:60%;background:rgba(52,211,153,.56);border-radius:2px 2px 0 0"></div>
-          <div style="flex:1;height:85%;background:rgba(52,211,153,.71);border-radius:2px 2px 0 0"></div>
-          <div style="flex:1;height:75%;background:rgba(52,211,153,.65);border-radius:2px 2px 0 0"></div>
-          <div style="flex:1;height:90%;background:rgba(52,211,153,.74);border-radius:2px 2px 0 0"></div>
-          <div style="flex:1;height:80%;background:rgba(52,211,153,.68);border-radius:2px 2px 0 0"></div>
-          <div style="flex:1;height:95%;background:rgba(52,211,153,.77);border-radius:2px 2px 0 0"></div>
-        </div>
-      </div>
-      <div style="background:rgba(167,139,250,.06);border:1px solid rgba(167,139,250,.18);border-radius:10px;padding:1rem">
+      <div style="background:rgba(167,139,250,.08);border:1px solid rgba(167,139,250,.25);border-radius:10px;padding:1rem">
         <div style="font-size:.62rem;color:rgba(167,139,250,.7);font-weight:700;letter-spacing:.07em;margin-bottom:.4rem">QUEUE DEPTH</div>
-        <div style="font-family:var(--font-display);font-weight:900;font-size:1.6rem;color:var(--purple);line-height:1;margin-bottom:.3rem">312</div>
-        <div style="font-size:.6rem;color:rgba(167,139,250,.5)">↓ clearing at 1.4K/hr</div>
+        <div id="guQueue" style="font-family:var(--font-display);font-weight:900;font-size:1.6rem;color:var(--purple);line-height:1;margin-bottom:.3rem">312</div>
+        <div style="font-size:.6rem;color:rgba(167,139,250,.5)">↓ draining fast</div>
+      </div>
+      <!-- Row 2: Live server load graph -->
+      <div style="grid-column:span 3;background:rgba(11,15,26,.8);border:1px solid rgba(56,189,248,.15);border-radius:10px;padding:.75rem 1rem">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.4rem">
+          <div style="font-size:.6rem;color:rgba(56,189,248,.7);font-weight:700;letter-spacing:.08em">SERVER LOAD — LIVE</div>
+          <div style="display:flex;gap:1rem">
+            <span style="font-size:.58rem;color:rgba(52,211,153,.8);font-weight:600">● Cluster α</span>
+            <span style="font-size:.58rem;color:rgba(56,189,248,.8);font-weight:600">● Cluster β</span>
+            <span style="font-size:.58rem;color:rgba(167,139,250,.8);font-weight:600">● Cluster γ</span>
+          </div>
+        </div>
+        <canvas id="serverLoadGraph" style="width:100%;height:72px;display:block"></canvas>
       </div>
     </div>
 
@@ -3281,6 +3280,214 @@ setInterval(() => {
 
   // Start ticking every second
   setInterval(tickTimers, 1000);
+})();
+
+// ── 1. MOUSE-REACTIVE AURORA ──────────────────────────────────────────────
+(function() {
+  const blobs = document.querySelectorAll('.aurora-blob');
+  if (!blobs.length) return;
+  blobs.forEach(b => b.style.animation = 'none');
+  const state = [
+    { t:0, factor:0.06,  vx:0, vy:0 },
+    { t:5, factor:-0.04, vx:0, vy:0 },
+    { t:10, factor:0.05, vx:0, vy:0 },
+    { t:15, factor:-0.03,vx:0, vy:0 }
+  ];
+  let mx = window.innerWidth/2, my = window.innerHeight/2;
+  document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+  function tick() {
+    const cx = window.innerWidth/2, cy = window.innerHeight/2;
+    state.forEach((s, i) => {
+      s.t += 0.007;
+      const floatX = Math.sin(s.t) * 45 + Math.cos(s.t * 0.6) * 20;
+      const floatY = Math.cos(s.t * 0.8) * 35 + Math.sin(s.t * 0.5) * 15;
+      const targetX = (mx - cx) * s.factor;
+      const targetY = (my - cy) * s.factor;
+      s.vx += (targetX + floatX - s.vx) * 0.028;
+      s.vy += (targetY + floatY - s.vy) * 0.028;
+      blobs[i].style.transform = `translate(${s.vx}px,${s.vy}px) scale(${1 + Math.sin(s.t*0.4)*0.08})`;
+    });
+    requestAnimationFrame(tick);
+  }
+  tick();
+})();
+
+// ── 2. LIVE HERO COUNTERS ─────────────────────────────────────────────────
+(function() {
+  let agents = 127, tasks = 1247, cost = 0.18;
+  function update() {
+    agents = Math.max(80, Math.min(199, agents + Math.round((Math.random()-.42)*4)));
+    tasks  = Math.max(900, Math.min(1999, tasks  + Math.round((Math.random()-.45)*28)));
+    cost   = Math.max(0.06, Math.min(0.98, +(cost + (Math.random()-.5)*.025).toFixed(2)));
+    const ae = document.getElementById('hm-agents');
+    const te = document.getElementById('hm-tasks');
+    const ce = document.getElementById('hm-cost');
+    if (ae) { ae.textContent = agents; ae.style.transform='scale(1.06)'; setTimeout(()=>ae.style.transform='',200); }
+    if (te) { te.textContent = tasks.toLocaleString(); te.style.transform='scale(1.06)'; setTimeout(()=>te.style.transform='',200); }
+    if (ce) ce.textContent = '$'+cost.toFixed(2);
+  }
+  setInterval(update, 2800);
+})();
+
+// ── 2b. SERVER LOAD GRAPH (Gen UI demo) ──────────────────────────────────
+(function() {
+  function initGraph() {
+    const canvas = document.getElementById('serverLoadGraph');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const MAX = 90;
+    const clusters = [
+      { v:45, pts:[], color:'52,211,153'  },
+      { v:62, pts:[], color:'56,189,248'  },
+      { v:33, pts:[], color:'167,139,250' }
+    ];
+    // Pre-fill history
+    for (let i=0; i<MAX; i++) clusters.forEach(c => {
+      c.v = Math.max(8, Math.min(95, c.v + (Math.random()-.48)*12));
+      c.pts.push(c.v);
+    });
+
+    let guAgents = 127, guTasks = 1412, guQueue = 312;
+
+    function addPoints() {
+      clusters.forEach(c => {
+        c.v = Math.max(8, Math.min(95, c.v + (Math.random()-.47)*10));
+        c.pts.push(c.v);
+        if (c.pts.length > MAX) c.pts.shift();
+      });
+      guAgents = Math.max(80, Math.min(199, guAgents + Math.round((Math.random()-.45)*3)));
+      guTasks  = Math.max(900, Math.min(1999, guTasks  + Math.round((Math.random()-.45)*22)));
+      guQueue  = Math.max(50,  Math.min(600,  guQueue  + Math.round((Math.random()-.5)*15)));
+      const ae = document.getElementById('guAgents');
+      const te = document.getElementById('guTasks');
+      const qe = document.getElementById('guQueue');
+      if (ae) ae.textContent = guAgents;
+      if (te) te.textContent = guTasks.toLocaleString();
+      if (qe) qe.textContent = guQueue;
+    }
+
+    function draw() {
+      const W = canvas.offsetWidth || 500;
+      const H = 72;
+      if (canvas.width !== W) canvas.width = W;
+      canvas.height = H;
+      ctx.clearRect(0, 0, W, H);
+
+      // Grid lines
+      ctx.strokeStyle = 'rgba(255,255,255,.05)';
+      ctx.lineWidth = 1;
+      [0,.25,.5,.75,1].forEach(f => {
+        ctx.beginPath(); ctx.moveTo(0, f*H); ctx.lineTo(W, f*H); ctx.stroke();
+      });
+
+      clusters.forEach(c => {
+        if (c.pts.length < 2) return;
+        const step = W / (MAX - 1);
+        const toY = v => H - (v/100)*H;
+
+        // Area fill
+        const grad = ctx.createLinearGradient(0,0,0,H);
+        grad.addColorStop(0, `rgba(${c.color},.2)`);
+        grad.addColorStop(1, `rgba(${c.color},0)`);
+        ctx.beginPath();
+        ctx.moveTo(0, H);
+        c.pts.forEach((v,i) => ctx.lineTo(i*step, toY(v)));
+        ctx.lineTo((c.pts.length-1)*step, H);
+        ctx.closePath();
+        ctx.fillStyle = grad;
+        ctx.fill();
+
+        // Line with smooth curve
+        ctx.beginPath();
+        c.pts.forEach((v,i) => {
+          if (i===0) { ctx.moveTo(0, toY(v)); return; }
+          const px = (i-1)*step, py = toY(c.pts[i-1]);
+          const cx1 = px+step*.4, cy1 = py;
+          const cx2 = i*step-step*.4, cy2 = toY(v);
+          ctx.bezierCurveTo(cx1,cy1,cx2,cy2,i*step,toY(v));
+        });
+        ctx.strokeStyle = `rgba(${c.color},.9)`;
+        ctx.lineWidth = 1.8;
+        ctx.shadowColor = `rgba(${c.color},.6)`;
+        ctx.shadowBlur = 5;
+        ctx.stroke();
+        ctx.shadowBlur = 0;
+      });
+    }
+
+    setInterval(() => { addPoints(); draw(); }, 160);
+    draw();
+  }
+  // Wait for DOM then init (also re-init when guState1 becomes visible)
+  setTimeout(initGraph, 500);
+})();
+
+// ── 3. 3D CARD TILT + GLASS SHEEN ────────────────────────────────────────
+(function() {
+  document.querySelectorAll('.feature-card').forEach(card => {
+    card.onmouseover = null; card.onmouseout = null;
+    const sheen = document.createElement('div');
+    sheen.className = 'card-sheen';
+    card.appendChild(sheen);
+    card.addEventListener('mousemove', e => {
+      const r = card.getBoundingClientRect();
+      const dx = (e.clientX - r.left - r.width/2)  / (r.width/2);
+      const dy = (e.clientY - r.top  - r.height/2) / (r.height/2);
+      card.style.transform = `perspective(900px) rotateX(${dy*-7}deg) rotateY(${dx*7}deg) translateY(-4px)`;
+      const angle = Math.atan2(dy, dx) * 57.3 + 90;
+      sheen.style.background = `linear-gradient(${angle}deg,transparent 30%,rgba(255,255,255,.08) 50%,transparent 70%)`;
+      sheen.style.opacity = '1';
+    });
+    card.addEventListener('mouseleave', () => {
+      card.style.transform = '';
+      card.style.boxShadow = '';
+      sheen.style.opacity = '0';
+    });
+  });
+})();
+
+// ── 4. PARTICLE DATA STREAMS ──────────────────────────────────────────────
+(function() {
+  const canvas = document.createElement('canvas');
+  canvas.id = 'particle-stream';
+  document.body.insertBefore(canvas, document.body.firstChild);
+  const ctx = canvas.getContext('2d');
+  function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+  resize();
+  window.addEventListener('resize', resize);
+  const COLORS = ['56,189,248','167,139,250','52,211,153','251,191,36','251,113,133'];
+  const streams = Array.from({length:10}, (_, i) => ({
+    x: (i/10)*window.innerWidth + 40 + Math.random()*60,
+    color: COLORS[i % COLORS.length],
+    particles: [],
+    timer: Math.random()*60
+  }));
+  function tick() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    streams.forEach(s => {
+      s.timer++;
+      if (s.timer > 8 + Math.random()*20) {
+        s.timer = 0;
+        s.particles.push({ y:-8, x:s.x+(Math.random()-.5)*24, vy:0.9+Math.random()*1.4, size:1+Math.random()*1.2, opacity:0 });
+      }
+      s.particles = s.particles.filter(p => {
+        p.y += p.vy;
+        p.opacity = Math.min(0.7, p.opacity+0.06);
+        if (p.y > canvas.height*.65) p.opacity -= 0.025;
+        if (p.opacity <= 0) return false;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI*2);
+        ctx.fillStyle = `rgba(${s.color},${p.opacity.toFixed(2)})`;
+        ctx.shadowColor = `rgba(${s.color},.5)`;
+        ctx.shadowBlur = 5;
+        ctx.fill();
+        ctx.shadowBlur = 0;
+        return p.y < canvas.height;
+      });
+    });
+    requestAnimationFrame(tick);
+  }
+  tick();
 })();
 </script>
 
