@@ -102,6 +102,14 @@ body.view-focus .container:hover{opacity:1;transition:opacity .15s}
 /* ── 3D card tilt sheen ── */
 .feature-card{transform-style:preserve-3d;will-change:transform}
 .card-sheen{position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:0;transition:opacity .3s;z-index:2;background:linear-gradient(105deg,transparent 40%,rgba(255,255,255,.07) 50%,transparent 60%)}
+/* ── Gen UI agent rows ── */
+.agent-row{display:flex;align-items:center;gap:.45rem;padding:3px 0}
+.agent-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0}
+.agent-id{font-size:.6rem;font-weight:700;color:var(--text-dim);width:28px;flex-shrink:0;font-variant-numeric:tabular-nums}
+.agent-task{flex:1;font-size:.6rem;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.agent-bar-wrap{width:52px;height:3px;background:rgba(255,255,255,.07);border-radius:2px;flex-shrink:0}
+.agent-bar{height:100%;border-radius:2px;transition:width .7s ease}
+.agent-pct{width:24px;text-align:right;font-size:.58rem;color:var(--text-dim);font-variant-numeric:tabular-nums}
 /* ── Particle stream canvas ── */
 #particle-stream{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;opacity:.35}
 
@@ -1277,34 +1285,33 @@ a:hover{color:#7dd3fc}
     </div>
 
     <!-- STATE 1: OPERATIONAL — pre-built panel -->
-    <div class="gu-state" id="guState1" style="display:none;grid-template-columns:repeat(3,1fr);grid-template-rows:auto auto;gap:.75rem;min-height:160px">
-      <!-- Row 1: Key metrics -->
-      <div style="background:rgba(52,211,153,.08);border:1px solid rgba(52,211,153,.25);border-radius:10px;padding:1rem">
-        <div style="font-size:.62rem;color:rgba(52,211,153,.7);font-weight:700;letter-spacing:.07em;margin-bottom:.4rem">ACTIVE AGENTS</div>
-        <div id="guAgents" style="font-family:var(--font-display);font-weight:900;font-size:1.6rem;color:var(--emerald);line-height:1;margin-bottom:.3rem">127</div>
-        <div style="font-size:.6rem;color:rgba(52,211,153,.5)">↑ +3 last 60s</div>
+    <div class="gu-state" id="guState1" style="display:none;grid-template-columns:1fr 1fr;grid-template-rows:auto auto;gap:.75rem">
+      <!-- Left panel: Debugging Team -->
+      <div style="background:rgba(251,191,36,.05);border:1px solid rgba(251,191,36,.18);border-radius:12px;padding:.85rem 1rem">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.65rem">
+          <div style="font-size:.6rem;font-weight:800;color:var(--amber);letter-spacing:.09em">🔧 DEBUGGING TEAM</div>
+          <div style="font-size:.55rem;background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.2);border-radius:999px;padding:1px 7px;color:rgba(251,191,36,.7);font-weight:700">6 agents</div>
+        </div>
+        <div id="debugTeam"></div>
       </div>
-      <div style="background:rgba(56,189,248,.08);border:1px solid rgba(56,189,248,.25);border-radius:10px;padding:1rem">
-        <div style="font-size:.62rem;color:rgba(56,189,248,.7);font-weight:700;letter-spacing:.07em;margin-bottom:.4rem">TASKS / HR</div>
-        <div id="guTasks" style="font-family:var(--font-display);font-weight:900;font-size:1.6rem;color:var(--cyan);line-height:1;margin-bottom:.3rem">1,412</div>
-        <div style="font-size:.6rem;color:rgba(56,189,248,.5)">avg 11.1 tok/s per task</div>
+      <!-- Right panel: Content Team -->
+      <div style="background:rgba(52,211,153,.05);border:1px solid rgba(52,211,153,.18);border-radius:12px;padding:.85rem 1rem">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.65rem">
+          <div style="font-size:.6rem;font-weight:800;color:var(--emerald);letter-spacing:.09em">✦ CONTENT TEAM</div>
+          <div style="font-size:.55rem;background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.2);border-radius:999px;padding:1px 7px;color:rgba(52,211,153,.7);font-weight:700">6 agents</div>
+        </div>
+        <div id="contentTeam"></div>
       </div>
-      <div style="background:rgba(167,139,250,.08);border:1px solid rgba(167,139,250,.25);border-radius:10px;padding:1rem">
-        <div style="font-size:.62rem;color:rgba(167,139,250,.7);font-weight:700;letter-spacing:.07em;margin-bottom:.4rem">QUEUE DEPTH</div>
-        <div id="guQueue" style="font-family:var(--font-display);font-weight:900;font-size:1.6rem;color:var(--purple);line-height:1;margin-bottom:.3rem">312</div>
-        <div style="font-size:.6rem;color:rgba(167,139,250,.5)">↓ draining fast</div>
-      </div>
-      <!-- Row 2: Live server load graph -->
-      <div style="grid-column:span 3;background:rgba(11,15,26,.8);border:1px solid rgba(56,189,248,.15);border-radius:10px;padding:.75rem 1rem">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.4rem">
-          <div style="font-size:.6rem;color:rgba(56,189,248,.7);font-weight:700;letter-spacing:.08em">SERVER LOAD — LIVE</div>
-          <div style="display:flex;gap:1rem">
-            <span style="font-size:.58rem;color:rgba(52,211,153,.8);font-weight:600">● Cluster α</span>
-            <span style="font-size:.58rem;color:rgba(56,189,248,.8);font-weight:600">● Cluster β</span>
-            <span style="font-size:.58rem;color:rgba(167,139,250,.8);font-weight:600">● Cluster γ</span>
+      <!-- Bottom: Live team load graph -->
+      <div style="grid-column:span 2;background:rgba(11,15,26,.9);border:1px solid rgba(56,189,248,.12);border-radius:10px;padding:.7rem 1rem">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.35rem">
+          <div style="font-size:.58rem;color:rgba(56,189,248,.65);font-weight:700;letter-spacing:.09em">TEAM LOAD — LIVE</div>
+          <div style="display:flex;gap:1.2rem">
+            <span style="font-size:.56rem;color:rgba(251,191,36,.85);font-weight:600">● Debug</span>
+            <span style="font-size:.56rem;color:rgba(52,211,153,.85);font-weight:600">● Content</span>
           </div>
         </div>
-        <canvas id="serverLoadGraph" style="width:100%;height:72px;display:block"></canvas>
+        <canvas id="serverLoadGraph" style="width:100%;height:60px;display:block"></canvas>
       </div>
     </div>
 
@@ -3329,97 +3336,112 @@ setInterval(() => {
   setInterval(update, 2800);
 })();
 
-// ── 2b. SERVER LOAD GRAPH (Gen UI demo) ──────────────────────────────────
+// ── 2b. GEN UI TEAM PANELS + LIVE GRAPH ──────────────────────────────────
 (function() {
-  function initGraph() {
+  const DEBUG_AGENTS = [
+    {id:'D-01', task:'auth-validator',  v:80, color:'251,191,36'},
+    {id:'D-02', task:'test-runner',     v:28, color:'251,113,133'},
+    {id:'D-03', task:'lint-check',      v:94, color:'52,211,153'},
+    {id:'D-04', task:'error-trace',     v:55, color:'251,191,36'},
+    {id:'D-05', task:'stack-analyzer',  v:70, color:'251,191,36'},
+    {id:'D-06', task:'dep-resolver',    v:14, color:'251,113,133'},
+  ];
+  const CONTENT_AGENTS = [
+    {id:'C-01', task:'blog-writer',     v:92, color:'52,211,153'},
+    {id:'C-02', task:'seo-optimizer',   v:51, color:'56,189,248'},
+    {id:'C-03', task:'image-tagger',    v:38, color:'52,211,153'},
+    {id:'C-04', task:'meta-builder',    v:74, color:'56,189,248'},
+    {id:'C-05', task:'copy-editor',     v:86, color:'52,211,153'},
+    {id:'C-06', task:'brand-scanner',   v:22, color:'167,139,250'},
+  ];
+
+  function buildRows(containerId, agents) {
+    const el = document.getElementById(containerId);
+    if (!el) return;
+    el.innerHTML = '';
+    agents.forEach(a => {
+      const row = document.createElement('div');
+      row.className = 'agent-row';
+      row.id = 'row-' + a.id;
+      row.innerHTML = `
+        <div class="agent-dot" style="background:rgba(${a.color},1);box-shadow:0 0 4px rgba(${a.color},.6)"></div>
+        <div class="agent-id">${a.id}</div>
+        <div class="agent-task">${a.task}</div>
+        <div class="agent-bar-wrap"><div class="agent-bar" id="bar-${a.id}" style="width:${a.v}%;background:rgba(${a.color},.8)"></div></div>
+        <div class="agent-pct" id="pct-${a.id}">${a.v}%</div>`;
+      el.appendChild(row);
+    });
+  }
+
+  function updateAgents(agents) {
+    agents.forEach(a => {
+      a.v = Math.max(5, Math.min(99, a.v + (Math.random()-.46)*12));
+      const bar = document.getElementById('bar-'+a.id);
+      const pct = document.getElementById('pct-'+a.id);
+      if (bar) bar.style.width = Math.round(a.v) + '%';
+      if (pct) pct.textContent = Math.round(a.v) + '%';
+    });
+  }
+
+  function avgV(agents) { return agents.reduce((s,a) => s+a.v, 0) / agents.length; }
+
+  // Graph
+  const MAX = 80;
+  const teams = [
+    { agents: DEBUG_AGENTS,   color:'251,191,36', pts:[], v:55 },
+    { agents: CONTENT_AGENTS, color:'52,211,153',  pts:[], v:62 },
+  ];
+  for (let i=0; i<MAX; i++) teams.forEach(t => {
+    t.v = Math.max(10, Math.min(92, t.v + (Math.random()-.48)*11));
+    t.pts.push(t.v);
+  });
+
+  function drawGraph() {
     const canvas = document.getElementById('serverLoadGraph');
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
-    const MAX = 90;
-    const clusters = [
-      { v:45, pts:[], color:'52,211,153'  },
-      { v:62, pts:[], color:'56,189,248'  },
-      { v:33, pts:[], color:'167,139,250' }
-    ];
-    // Pre-fill history
-    for (let i=0; i<MAX; i++) clusters.forEach(c => {
-      c.v = Math.max(8, Math.min(95, c.v + (Math.random()-.48)*12));
-      c.pts.push(c.v);
+    const W = canvas.offsetWidth || 500, H = 60;
+    if (canvas.width !== W) canvas.width = W;
+    canvas.height = H;
+    ctx.clearRect(0, 0, W, H);
+    ctx.strokeStyle = 'rgba(255,255,255,.04)'; ctx.lineWidth = 1;
+    [0,.33,.66,1].forEach(f => { ctx.beginPath(); ctx.moveTo(0,f*H); ctx.lineTo(W,f*H); ctx.stroke(); });
+    teams.forEach(t => {
+      if (t.pts.length < 2) return;
+      const step = W/(MAX-1), toY = v => H-(v/100)*H;
+      const grad = ctx.createLinearGradient(0,0,0,H);
+      grad.addColorStop(0,`rgba(${t.color},.18)`); grad.addColorStop(1,`rgba(${t.color},0)`);
+      ctx.beginPath(); ctx.moveTo(0,H);
+      t.pts.forEach((v,i) => ctx.lineTo(i*step, toY(v)));
+      ctx.lineTo((t.pts.length-1)*step, H); ctx.closePath();
+      ctx.fillStyle = grad; ctx.fill();
+      ctx.beginPath();
+      t.pts.forEach((v,i) => {
+        if (i===0){ctx.moveTo(0,toY(v));return;}
+        const px=(i-1)*step, py=toY(t.pts[i-1]);
+        ctx.bezierCurveTo(px+step*.4,py,i*step-step*.4,toY(v),i*step,toY(v));
+      });
+      ctx.strokeStyle=`rgba(${t.color},.9)`; ctx.lineWidth=1.8;
+      ctx.shadowColor=`rgba(${t.color},.5)`; ctx.shadowBlur=4; ctx.stroke(); ctx.shadowBlur=0;
     });
-
-    let guAgents = 127, guTasks = 1412, guQueue = 312;
-
-    function addPoints() {
-      clusters.forEach(c => {
-        c.v = Math.max(8, Math.min(95, c.v + (Math.random()-.47)*10));
-        c.pts.push(c.v);
-        if (c.pts.length > MAX) c.pts.shift();
-      });
-      guAgents = Math.max(80, Math.min(199, guAgents + Math.round((Math.random()-.45)*3)));
-      guTasks  = Math.max(900, Math.min(1999, guTasks  + Math.round((Math.random()-.45)*22)));
-      guQueue  = Math.max(50,  Math.min(600,  guQueue  + Math.round((Math.random()-.5)*15)));
-      const ae = document.getElementById('guAgents');
-      const te = document.getElementById('guTasks');
-      const qe = document.getElementById('guQueue');
-      if (ae) ae.textContent = guAgents;
-      if (te) te.textContent = guTasks.toLocaleString();
-      if (qe) qe.textContent = guQueue;
-    }
-
-    function draw() {
-      const W = canvas.offsetWidth || 500;
-      const H = 72;
-      if (canvas.width !== W) canvas.width = W;
-      canvas.height = H;
-      ctx.clearRect(0, 0, W, H);
-
-      // Grid lines
-      ctx.strokeStyle = 'rgba(255,255,255,.05)';
-      ctx.lineWidth = 1;
-      [0,.25,.5,.75,1].forEach(f => {
-        ctx.beginPath(); ctx.moveTo(0, f*H); ctx.lineTo(W, f*H); ctx.stroke();
-      });
-
-      clusters.forEach(c => {
-        if (c.pts.length < 2) return;
-        const step = W / (MAX - 1);
-        const toY = v => H - (v/100)*H;
-
-        // Area fill
-        const grad = ctx.createLinearGradient(0,0,0,H);
-        grad.addColorStop(0, `rgba(${c.color},.2)`);
-        grad.addColorStop(1, `rgba(${c.color},0)`);
-        ctx.beginPath();
-        ctx.moveTo(0, H);
-        c.pts.forEach((v,i) => ctx.lineTo(i*step, toY(v)));
-        ctx.lineTo((c.pts.length-1)*step, H);
-        ctx.closePath();
-        ctx.fillStyle = grad;
-        ctx.fill();
-
-        // Line with smooth curve
-        ctx.beginPath();
-        c.pts.forEach((v,i) => {
-          if (i===0) { ctx.moveTo(0, toY(v)); return; }
-          const px = (i-1)*step, py = toY(c.pts[i-1]);
-          const cx1 = px+step*.4, cy1 = py;
-          const cx2 = i*step-step*.4, cy2 = toY(v);
-          ctx.bezierCurveTo(cx1,cy1,cx2,cy2,i*step,toY(v));
-        });
-        ctx.strokeStyle = `rgba(${c.color},.9)`;
-        ctx.lineWidth = 1.8;
-        ctx.shadowColor = `rgba(${c.color},.6)`;
-        ctx.shadowBlur = 5;
-        ctx.stroke();
-        ctx.shadowBlur = 0;
-      });
-    }
-
-    setInterval(() => { addPoints(); draw(); }, 160);
-    draw();
   }
-  // Wait for DOM then init (also re-init when guState1 becomes visible)
-  setTimeout(initGraph, 500);
+
+  function tick() {
+    updateAgents(DEBUG_AGENTS);
+    updateAgents(CONTENT_AGENTS);
+    teams[0].v = avgV(DEBUG_AGENTS);   teams[0].pts.push(teams[0].v); if(teams[0].pts.length>MAX) teams[0].pts.shift();
+    teams[1].v = avgV(CONTENT_AGENTS); teams[1].pts.push(teams[1].v); if(teams[1].pts.length>MAX) teams[1].pts.shift();
+    drawGraph();
+  }
+
+  function init() {
+    buildRows('debugTeam', DEBUG_AGENTS);
+    buildRows('contentTeam', CONTENT_AGENTS);
+    drawGraph();
+    setInterval(tick, 900);
+  }
+
+  setTimeout(init, 400);
 })();
 
 // ── 3. 3D CARD TILT + GLASS SHEEN ────────────────────────────────────────
