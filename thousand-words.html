@@ -2831,6 +2831,126 @@
     
     modRafId = requestAnimationFrame(animateModality);
   }
+
+  // ═══════════════════════════════════════════════════════════
+  // AUTO-PLAY LOOP — Self-running demo that cycles through words
+  // Shows letters flying to eyeball, spelling out each word, then loops
+  // ═══════════════════════════════════════════════════════════
+  let autoPlayActive = false;
+  let autoPlayTimer = null;
+  let autoPlayWordIndex = 0;
+  let autoPlayLetterIndex = 0;
+  const autoPlayWords = ['visual', 'image', 'milliseconds', 'thousand'];
+  const AUTO_PLAY_DELAY = 200; // ms between letters
+  const AUTO_PLAY_PAUSE = 2500; // ms pause after word completes before moving to next
+
+  function startAutoPlay() {
+    if (autoPlayActive) return;
+    autoPlayActive = true;
+    autoPlayWordIndex = 0;
+    autoPlayLetterIndex = 0;
+    
+    // Clear all inputs and accumulated letters
+    clearAllBlanks();
+    
+    // Start the loop
+    autoPlayNextLetter();
+  }
+
+  function stopAutoPlay() {
+    autoPlayActive = false;
+    if (autoPlayTimer) {
+      clearTimeout(autoPlayTimer);
+      autoPlayTimer = null;
+    }
+  }
+
+  function clearAllBlanks() {
+    for (const key in blankStates) {
+      blankStates[key].current = '';
+      modAnswers[key] = false;
+      modAccumulated[key] = [];
+      const input = document.getElementById(`blank-${key}`);
+      if (input) {
+        input.value = '';
+        input.classList.remove('correct');
+      }
+    }
+    // Clear particles
+    modParticles.length = 0;
+  }
+
+  function autoPlayNextLetter() {
+    if (!autoPlayActive) return;
+    
+    const currentWord = autoPlayWords[autoPlayWordIndex];
+    const state = blankStates[currentWord];
+    const input = document.getElementById(`blank-${currentWord}`);
+    
+    if (!input) {
+      autoPlayActive = false;
+      return;
+    }
+    
+    // If we've completed this word, pause then move to next
+    if (autoPlayLetterIndex >= state.word.length) {
+      autoPlayTimer = setTimeout(() => {
+        if (!autoPlayActive) return;
+        
+        // Move to next word
+        autoPlayWordIndex = (autoPlayWordIndex + 1) % autoPlayWords.length;
+        autoPlayLetterIndex = 0;
+        
+        // Clear current word for fresh animation
+        blankStates[currentWord].current = '';
+        modAnswers[currentWord] = false;
+        modAccumulated[currentWord] = [];
+        input.value = '';
+        input.classList.remove('correct');
+        modParticles.length = 0;
+        
+        autoPlayNextLetter();
+      }, AUTO_PLAY_PAUSE);
+      return;
+    }
+    
+    // Type the next letter
+    const letter = state.word[autoPlayLetterIndex];
+    state.current += letter;
+    input.value = state.current;
+    
+    // Spawn particle for this letter
+    spawnTypeParticleAtPos(currentWord, letter, autoPlayLetterIndex);
+    
+    // Check if word is complete
+    if (state.current.toLowerCase() === currentWord) {
+      modAnswers[currentWord] = true;
+      input.classList.add('correct');
+      spawnSuccessBurst(input);
+    }
+    
+    autoPlayLetterIndex++;
+    autoPlayTimer = setTimeout(autoPlayNextLetter, AUTO_PLAY_DELAY);
+  }
+
+  // Start auto-play when Flow & Fill tab is activated
+  const flowTab = document.getElementById('tab-flow');
+  if (flowTab) {
+    flowTab.addEventListener('click', () => {
+      setTimeout(() => {
+        initModalityCanvas();
+        startAutoPlay();
+      }, 300);
+    });
+  }
+
+  // Also start if Flow & Fill is the default active tab
+  if (document.getElementById('tab-flow') && document.getElementById('tab-flow').classList.contains('active')) {
+    setTimeout(() => {
+      initModalityCanvas();
+      startAutoPlay();
+    }, 500);
+  }
 </script>
 
 </body>
