@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="referrer" content="no-referrer">
+<title>VidiSmart Smart Book — Expansion Plan Deck</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600;700&family=Kumbh+Sans:wght@700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --fire:#FF6B35; --fire-dark:#D4551F; --gold:#C8A951;
+  --teal:#10B981; --purple:#8B5CF6; --blue:#3B82F6;
+  --bg:#060914; --bg2:#0a0f1e; --bg-card:rgba(255,255,255,.04);
+  --border:rgba(255,255,255,.09); --border-bright:rgba(255,255,255,.18);
+  --text:#E2E8F0; --text-dim:rgba(255,255,255,.55); --text-faint:rgba(255,255,255,.35);
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text)}
+
+/* ── Slide system ── */
+#deck{position:fixed;inset:0;display:flex;flex-direction:column}
+.slide{position:absolute;inset:0;display:none;flex-direction:column;
+  padding:2.5rem 3.5rem 3.5rem;overflow-y:auto}
+.slide.active{display:flex;animation:slideIn .4s ease}
+@keyframes slideIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── Nav bar ── */
+.nav-bar{position:fixed;bottom:0;left:0;right:0;z-index:100;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:.65rem 1.5rem;background:rgba(6,9,20,.92);
+  backdrop-filter:blur(16px);border-top:1px solid var(--border)}
+.nav-left,.nav-right{display:flex;align-items:center;gap:.6rem}
+.nav-btn{background:var(--bg-card);border:1px solid var(--border);color:var(--text);
+  padding:.4rem .9rem;border-radius:6px;font-size:.78rem;font-weight:600;
+  cursor:pointer;transition:all .15s;font-family:inherit}
+.nav-btn:hover{border-color:var(--fire);color:#fff;background:rgba(255,107,53,.1)}
+.nav-btn:disabled{opacity:.3;cursor:default}
+.nav-counter{font-size:.78rem;font-weight:700;color:var(--gold);letter-spacing:1px;min-width:70px;text-align:center}
+.nav-title{font-size:.72rem;font-weight:600;color:var(--text-faint);letter-spacing:2px;text-transform:uppercase}
+
+/* ── Progress bar ── */
+.progress-bar{position:fixed;top:0;left:0;height:3px;
+  background:linear-gradient(90deg,var(--fire),var(--gold));z-index:101;
+  transition:width .3s ease}
+
+/* ── Typography ── */
+.eyebrow{font-size:.65rem;font-weight:700;letter-spacing:4px;
+  text-transform:uppercase;color:var(--fire);margin-bottom:.6rem}
+.slide-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(2.2rem,4.5vw,3.8rem);
+  letter-spacing:1.5px;color:#fff;line-height:.95;margin-bottom:.5rem}
+.slide-title .accent{color:var(--fire)}
+.slide-sub{font-family:'DM Serif Display',serif;font-style:italic;
+  font-size:clamp(1rem,1.6vw,1.25rem);color:var(--text-dim);margin-bottom:2rem}
+.slide-body{flex:1;font-size:clamp(.9rem,1.1vw,1.05rem);line-height:1.65}
+
+/* ── Card grids ── */
+.grid{display:grid;gap:1rem;width:100%}
+.grid-2{grid-template-columns:repeat(2,1fr)}
+.grid-3{grid-template-columns:repeat(3,1fr)}
+.grid-4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:900px){.grid-3,.grid-4{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){.grid-2,.grid-3,.grid-4{grid-template-columns:1fr}}
+
+.card{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;
+  padding:1.1rem 1.25rem;transition:border-color .2s}
+.card:hover{border-color:var(--border-bright)}
+.card-num{font-family:'Kumbh Sans',sans-serif;font-size:.7rem;font-weight:800;
+  letter-spacing:2px;color:var(--gold);margin-bottom:.4rem}
+.card-title{font-size:.95rem;font-weight:700;color:#fff;margin-bottom:.4rem}
+.card-desc{font-size:.82rem;color:var(--text-dim);line-height:1.5}
+
+/* ── Stat blocks ── */
+.stat-row{display:flex;gap:2rem;flex-wrap:wrap;margin:1.5rem 0}
+.stat{text-align:left}
+.stat-num{font-family:'Bebas Neue',sans-serif;font-size:clamp(2rem,3.5vw,3rem);
+  color:var(--fire);line-height:1}
+.stat-label{font-size:.75rem;color:var(--text-dim);margin-top:.2rem;max-width:140px}
+
+/* ── Table ── */
+.tbl{width:100%;border-collapse:collapse;font-size:.82rem;margin-top:.5rem}
+.tbl th{text-align:left;padding:.5rem .7rem;font-weight:700;font-size:.68rem;
+  letter-spacing:1px;text-transform:uppercase;color:var(--gold);
+  border-bottom:1px solid var(--border)}
+.tbl td{padding:.5rem .7rem;border-bottom:1px solid rgba(255,255,255,.04);color:var(--text-dim)}
+.tbl td strong{color:#fff}
+
+/* ── Pill ── */
+.pill{display:inline-block;font-size:.62rem;font-weight:700;letter-spacing:1px;
+  text-transform:uppercase;padding:.2rem .6rem;border-radius:20px}
+.pill-fire{background:rgba(255,107,53,.15);color:var(--fire)}
+.pill-gold{background:rgba(200,169,81,.15);color:var(--gold)}
+.pill-teal{background:rgba(16,185,129,.15);color:var(--teal)}
+.pill-purple{background:rgba(139,92,246,.15);color:var(--purple)}
+.pill-blue{background:rgba(59,130,246,.15);color:var(--blue)}
+
+/* ── Tier card ── */
+.tier{border:1px solid var(--border);border-radius:12px;padding:1.25rem;overflow:hidden;position:relative}
+.tier-free{border-color:rgba(16,185,129,.3)}
+.tier-builder{border-color:rgba(59,130,246,.3)}
+.tier-business{border-color:rgba(255,107,53,.3)}
+.tier-enterprise{border-color:rgba(200,169,81,.3)}
+.tier-name{font-family:'Kumbh Sans',sans-serif;font-size:1.1rem;font-weight:800;color:#fff;margin-bottom:.2rem}
+.tier-price{font-family:'Bebas Neue',sans-serif;font-size:2.2rem;line-height:1;margin-bottom:.8rem}
+.tier-free .tier-price{color:var(--teal)}
+.tier-builder .tier-price{color:var(--blue)}
+.tier-business .tier-price{color:var(--fire)}
+.tier-enterprise .tier-price{color:var(--gold)}
+.tier-price small{font-size:.8rem;font-family:'DM Sans',sans-serif;font-weight:400;color:var(--text-faint)}
+.tier-list{list-style:none;padding:0;margin:0}
+.tier-list li{font-size:.78rem;color:var(--text-dim);padding:.25rem 0;
+  padding-left:1.2rem;position:relative;line-height:1.4}
+.tier-list li::before{content:'✓';position:absolute;left:0;color:var(--teal);font-weight:700}
+
+/* ── Two-column ── */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-top:1rem}
+@media(max-width:700px){.two-col{grid-template-columns:1fr}}
+.col-box{border:1px solid var(--border);border-radius:12px;padding:1.25rem}
+.col-box h4{font-family:'Kumbh Sans',sans-serif;font-size:.85rem;font-weight:800;
+  letter-spacing:1px;text-transform:uppercase;margin-bottom:.6rem}
+.col-box p{font-size:.82rem;color:var(--text-dim);line-height:1.5}
+
+/* ── Build order ── */
+.step-list{list-style:none;padding:0;counter-reset:step}
+.step-list li{display:flex;align-items:flex-start;gap:1rem;padding:.7rem 0;
+  counter-increment:step;border-bottom:1px solid rgba(255,255,255,.04)}
+.step-list li::before{content:counter(step);flex-shrink:0;width:2rem;height:2rem;
+  display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,var(--fire),var(--gold));
+  border-radius:50%;font-family:'Kumbh Sans',sans-serif;font-weight:800;
+  font-size:.8rem;color:#fff}
+.step-text strong{display:block;color:#fff;font-size:.9rem;margin-bottom:.1rem}
+.step-text span{font-size:.78rem;color:var(--text-dim)}
+.step-meta{margin-left:auto;font-size:.68rem;font-weight:700;color:var(--gold);
+  white-space:nowrap;align-self:center}
+
+/* ── Misc ── */
+.callout{border-left:3px solid var(--fire);padding:.8rem 1.2rem;margin:1rem 0;
+  background:rgba(255,107,53,.06);border-radius:0 8px 8px 0;font-size:.85rem;color:var(--text-dim)}
+.callout strong{color:#fff}
+.surface-badge{display:inline-flex;align-items:center;gap:.4rem;font-size:.7rem;
+  font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gold);margin-bottom:.3rem}
+.surface-badge .dot{width:8px;height:8px;border-radius:50%;background:var(--gold)}
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progressBar"></div>
+<div id="deck"></div>
+
+<div class="nav-bar">
+  <div class="nav-left">
+    <button class="nav-btn" id="prevBtn" onclick="go(-1)">← Prev</button>
+  </div>
+  <div class="nav-title" id="navTitle">VidiSmart Expansion Plan</div>
+  <div class="nav-counter" id="navCounter">1 / 1</div>
+  <div class="nav-right">
+    <button class="nav-btn" id="nextBtn" onclick="go(1)">Next →</button>
+  </div>
+</div>
+
+<script>
+var SLIDES = [
+
+// ── 1. TITLE ──────────────────────────────────────────
+{ title: "Expansion Plan",
+  render: function(){ return `
+    <div class="eyebrow">VidiSmart · Smart Book · 2026</div>
+    <h1 class="slide-title">The Expansion <span class="accent">Plan</span></h1>
+    <p class="slide-sub">From 3 role-based personas to 8 priority agenda paths, a graphic knowledge base, and a tiered product bundle</p>
+    <div class="stat-row">
+      <div class="stat"><div class="stat-num">8</div><div class="stat-label">priority agenda paths</div></div>
+      <div class="stat"><div class="stat-num">3</div><div class="stat-label">VidiFlow surfaces</div></div>
+      <div class="stat"><div class="stat-num">4</div><div class="stat-label">pricing tiers</div></div>
+      <div class="stat"><div class="stat-num">52+</div><div class="stat-label">chapters + new content</div></div>
+    </div>
+    <div class="callout"><strong>Goal:</strong> make the book <em>do something</em> the moment a reader lands, demystify AI starting with the words themselves, and convert readers into builders, teams, and enterprise customers.</div>
+    <p style="color:var(--text-faint);font-size:.75rem;margin-top:1.5rem">Use ← → arrow keys to navigate · Sources: UPDATE_REPORT.md · VIDISMART_BUNDLE.md · SAAS_INVENTORY.md</p>
+  `}},
+
+// ── 2. CONSOLIDATION THESIS ───────────────────────────
+{ title: "The Consolidation",
+  render: function(){ return `
+    <div class="eyebrow">§0a — Lead Framing</div>
+    <h1 class="slide-title">The <span class="accent">Consolidation</span></h1>
+    <p class="slide-sub">Where do you fit? Every business category is splitting into two groups.</p>
+    <div class="two-col">
+      <div class="col-box" style="border-color:rgba(255,107,53,.25)">
+        <span class="pill pill-fire">Aggregators</span>
+        <h4 style="color:var(--fire);margin-top:.5rem">The AI Leaders</h4>
+        <p>Upgrade first, build agent stacks, compound data + speed advantages, and use that position to <strong style="color:#fff">acquire the rest</strong>. They set the terms.</p>
+      </div>
+      <div class="col-box" style="border-color:rgba(200,169,81,.25)">
+        <span class="pill pill-gold">The Acquired</span>
+        <h4 style="color:var(--gold);margin-top:.5rem">Those Who Don't Upgrade</h4>
+        <p>Stay on legacy SaaS, manual workflows, human-only throughput. They don't vanish — they get <strong style="color:#fff">rolled up</strong>. Their value is their customers, territory, licenses.</p>
+      </div>
+    </div>
+    <div class="callout"><strong>The only open question:</strong> are you building the stack that does the acquiring, or are you operating the asset someone else will eventually buy? The 8 paths are how you choose your seat.</div>
+    <p style="font-size:.8rem;color:var(--text-faint);margin-top:.8rem">Deliverable: standalone video + 13-slide companion deck + landing-page section above the persona grid.</p>
+  `}},
+
+// ── 3. THE 8 PATHS ─────────────────────────────────────
+{ title: "8 Priority Paths",
+  render: function(){ return `
+    <div class="eyebrow">§4 — The Agenda Paths</div>
+    <h1 class="slide-title">8 Priority <span class="accent">Agenda Paths</span></h1>
+    <p class="slide-sub">Each path = a strategic decision, why now, ROI estimate, and brass-tacks indicators.</p>
+    <div class="grid grid-4">
+      <div class="card"><div class="card-num">PATH 1</div><div class="card-title">SmartGen</div><div class="card-desc">Generate content at scale. ROI: 5× output, 60% cost cut.</div><span class="pill pill-fire">Builder</span></div>
+      <div class="card"><div class="card-num">PATH 2</div><div class="card-title">HR / HX</div><div class="card-desc">Onboard + upskill + run people better. Sub-paths: 2a onboarding, 2b upskill.</div><span class="pill pill-gold">Business</span></div>
+      <div class="card"><div class="card-num">PATH 3</div><div class="card-title">Kill SaaS Bill</div><div class="card-desc">Replace 25-30 apps with 30-40 agents. ROI: $19K/mo → &lt;$200/mo.</div><span class="pill pill-gold">Business</span></div>
+      <div class="card"><div class="card-num">PATH 4</div><div class="card-title">Local &amp; Private AI</div><div class="card-desc">Keep data on-prem. ROI: zero data egress risk + latency.</div><span class="pill pill-blue">Builder→Biz</span></div>
+      <div class="card"><div class="card-num">PATH 5</div><div class="card-title">Build Smart Stack</div><div class="card-desc">The 5-layer architecture. From pilot to production.</div><span class="pill pill-blue">Builder→Biz</span></div>
+      <div class="card"><div class="card-num">PATH 6</div><div class="card-title">VidiShop / CX</div><div class="card-desc">Context-aware product personalization. Semantic search.</div><span class="pill pill-purple">Biz→Enterprise</span></div>
+      <div class="card"><div class="card-num">PATH 7</div><div class="card-title">Velocity / 90-Day</div><div class="card-desc">Time-boxed sprint from zero to first agents live.</div><span class="pill pill-gold">Business</span></div>
+      <div class="card"><div class="card-num">PATH 8</div><div class="card-title">Strategy / Moats</div><div class="card-desc">Set AI strategy, build compounding data + speed moats.</div><span class="pill pill-gold">Enterprise</span></div>
+    </div>
+  `}},
+
+// ── 4. VIDIFLOW ────────────────────────────────────────
+{ title: "VidiFlow",
+  render: function(){ return `
+    <div class="eyebrow">§2 — Graphic Knowledge Base &amp; Blueprint</div>
+    <h1 class="slide-title"><span class="accent">VidiFlow</span></h1>
+    <p class="slide-sub">Demystify AI and any system that embodies it — starting with the words themselves. Three surfaces, one knowledge graph.</p>
+    <div class="grid grid-3">
+      <div class="card" style="border-color:rgba(16,185,129,.2)">
+        <div class="surface-badge"><span class="dot" style="background:var(--teal)"></span>Surface 1 · Free</div>
+        <div class="card-title">Browser Overlay</div>
+        <div class="card-desc">Hover any term in any document → instant video explanation + visual map of related tech. Works in every web page, PDF, email, Google Doc. Local term dictionary (500-2,000 terms), video from CDN. The book's knowledge graph rendered as a browser overlay.</div>
+      </div>
+      <div class="card" style="border-color:rgba(255,107,53,.2)">
+        <div class="surface-badge"><span class="dot" style="background:var(--fire)"></span>Surface 2 · Paid Tiers</div>
+        <div class="card-title">Agent Dashboard</div>
+        <div class="card-desc">Real-time 20-50 agents across one or many deployments. WIP Kanban, live metrics, event stream, per-path KPI tiles. "Show, don't tell" — the artifact that makes the system legible at a glance.</div>
+      </div>
+      <div class="card" style="border-color:rgba(200,169,81,.2)">
+        <div class="surface-badge"><span class="dot" style="background:var(--gold)"></span>Surface 3 · 1 Free Stamp</div>
+        <div class="card-title">The Blueprint</div>
+        <div class="card-desc">Rubber-stamp static snapshot: your stack layers, SaaS spend (active/replaced/needed), agent roster, path progress, indicators. Print it. Share it. Stamp a new one next quarter — the delta is your progress.</div>
+      </div>
+    </div>
+    <div class="callout"><strong>Why it matters:</strong> the dictionary (term → video → related-graph) is the moat, not the extension code. Every term video recorded for the book is automatically VidiFlow content — one content pipeline, two products.</div>
+  `}},
+
+// ── 5. EDUCATIONAL ENTRY ───────────────────────────────
+{ title: "Educational Entry",
+  render: function(){ return `
+    <div class="eyebrow">§1 — Primary Educational Needs</div>
+    <h1 class="slide-title">The <span class="accent">2-Question Starter</span></h1>
+    <p class="slide-sub">An immediate entry point with less than three questions that generates an output. No email wall on first value.</p>
+    <div class="two-col">
+      <div class="col-box">
+        <h4 style="color:var(--fire)">The Two Questions</h4>
+        <p style="margin-bottom:.6rem"><strong style="color:#fff">1. "What are you trying to do?"</strong><br>8 choices → maps to the 8 agenda paths</p>
+        <p><strong style="color:#fff">2. "Where are you today?"</strong><br>4 choices → calibrates maturity (exploring → in production)</p>
+        <p style="margin-top:.6rem;font-size:.72rem;color:var(--text-faint)">8 × 4 = 32 distinct outputs. Under 15 seconds to answer.</p>
+      </div>
+      <div class="col-box">
+        <h4 style="color:var(--gold)">The Generated Output</h4>
+        <p style="margin-bottom:.4rem"><strong style="color:#fff">"First 30 Days" action card</strong> (HTML + print-to-PDF):</p>
+        <ul style="font-size:.78rem;color:var(--text-dim);list-style:none;padding:0;line-height:1.8">
+          <li>▸ Your priority path + thesis</li>
+          <li>▸ Your starting chapter</li>
+          <li>▸ Your first 3 brass-tacks actions</li>
+          <li>▸ Estimated impact (ROI range)</li>
+          <li>▸ One indicator to watch</li>
+          <li>▸ Upgrade CTA → Path Selector</li>
+          <li>▸ VidiFlow install prompt</li>
+        </ul>
+      </div>
+    </div>
+    <div class="callout"><strong>Three layers of friction:</strong> A) 2-Question Starter (zero friction, no email) → B) Path Selector (email capture after value) → C) VidiFlow (ambient, zero friction, always-on). The book currently only has Layer B.</div>
+  `}},
+
+// ── 6. SAAS INVENTORY ──────────────────────────────────
+{ title: "SaaS Inventory",
+  render: function(){ return `
+    <div class="eyebrow">Appendix — The "From" Side of the SaaSpocalypse</div>
+    <h1 class="slide-title">The 500-App <span class="accent">Sprawl</span></h1>
+    <p class="slide-sub">~80 common SaaS apps across 16 business functions — each paired with the agent that replaces it, the cost eliminated, and the path it maps to.</p>
+    <table class="tbl">
+      <tr><th>Category</th><th>Example Apps</th><th>Cost/mo</th><th>Replaced by Agent</th></tr>
+      <tr><td><strong>CRM &amp; Sales</strong></td><td>Salesforce, HubSpot, Pipedrive</td><td>$50-300/seat</td><td>CRM Agent</td></tr>
+      <tr><td><strong>Marketing</strong></td><td>Mailchimp, Semrush, Jasper</td><td>$13-500+</td><td>Marketing / Content Agent</td></tr>
+      <tr><td><strong>Support</strong></td><td>Zendesk, Intercom, Freshdesk</td><td>$15-199/seat</td><td>Support Agent</td></tr>
+      <tr><td><strong>Work Mgmt</strong></td><td>Asana, Monday, Jira</td><td>$5-25/seat</td><td>Workflow Agent</td></tr>
+      <tr><td><strong>Comms</strong></td><td>Slack, Teams, Zoom</td><td>$7-21/seat</td><td>Comms / Meeting Agent</td></tr>
+      <tr><td><strong>HR &amp; People</strong></td><td>Workday, BambooHR, Gusto</td><td>$6-200/seat</td><td>HR / Payroll Agent</td></tr>
+      <tr><td><strong>Finance</strong></td><td>QuickBooks, NetSuite, Expensify</td><td>$30-10K+</td><td>Accounting / Expense Agent</td></tr>
+      <tr><td><strong>BI &amp; Data</strong></td><td>Tableau, Power BI, Looker</td><td>$10-5K+</td><td>Analytics Agent</td></tr>
+    </table>
+    <div class="callout" style="margin-top:.8rem"><strong>The math:</strong> a 30-seat mid-size business pays ≈ <strong>$19,830/mo ($238K/yr)</strong> across ~25-30 apps. Replace with ~30-40 agents at <strong>&lt;$200/mo</strong>. The SaaS Audit worksheet = "circle what you pay for, sum the column." That's your agent-replacement backlog.</div>
+  `}},
+
+// ── 7. BUNDLE MENU ─────────────────────────────────────
+{ title: "The Bundle",
+  render: function(){ return `
+    <div class="eyebrow">§3 — Product Menu</div>
+    <h1 class="slide-title">The VidiSmart <span class="accent">Bundle</span></h1>
+    <p class="slide-sub">12 assets around the book. The book is free top-of-funnel; everything else is the monetized bundle the book educates the reader to want.</p>
+    <div class="grid grid-4">
+      <div class="card"><div class="card-num">1</div><div class="card-title">Smart Book</div><span class="pill pill-teal">exists</span></div>
+      <div class="card"><div class="card-num">2</div><div class="card-title">2-Q Starter</div><span class="pill pill-fire">NEW</span></div>
+      <div class="card"><div class="card-num">3</div><div class="card-title">VidiFlow</div><span class="pill pill-fire">NEW</span></div>
+      <div class="card"><div class="card-num">4</div><div class="card-title">Stack Generator</div><span class="pill pill-teal">exists</span></div>
+      <div class="card"><div class="card-num">5</div><div class="card-title">SmartGen</div><span class="pill pill-gold">planned</span></div>
+      <div class="card"><div class="card-num">6</div><div class="card-title">VidiShop</div><span class="pill pill-gold">planned</span></div>
+      <div class="card"><div class="card-num">7</div><div class="card-title">VidiPitch</div><span class="pill pill-teal">exists</span></div>
+      <div class="card"><div class="card-num">8</div><div class="card-title">Vidi.NEWS</div><span class="pill pill-teal">exists</span></div>
+      <div class="card"><div class="card-num">9</div><div class="card-title">SaaS Audit</div><span class="pill pill-fire">NEW</span></div>
+      <div class="card"><div class="card-num">10</div><div class="card-title">Consolidation Video</div><span class="pill pill-gold">planned</span></div>
+      <div class="card"><div class="card-num">11</div><div class="card-title">Done-With-You</div><span class="pill pill-fire">NEW</span></div>
+      <div class="card"><div class="card-num">12</div><div class="card-title">Intention→Outcome</div><span class="pill pill-gold">planned</span></div>
+    </div>
+  `}},
+
+// ── 8. TIERED PRICING ──────────────────────────────────
+{ title: "Pricing Tiers",
+  render: function(){ return `
+    <div class="eyebrow">§3 — Tier Ladder</div>
+    <h1 class="slide-title">Tiered <span class="accent">Pricing</span></h1>
+    <p class="slide-sub">Free → Builder → Business → Enterprise. Each price anchored against the SaaS bill being killed.</p>
+    <div class="grid grid-4">
+      <div class="tier tier-free">
+        <div class="tier-name">Tier 0 · Free</div>
+        <div class="tier-price">$0</div>
+        <ul class="tier-list">
+          <li>Smart Book (web + PDF)</li>
+          <li>2-Question Starter</li>
+          <li>VidiFlow browser overlay</li>
+          <li>VidiFlow blueprint (1 stamp)</li>
+          <li>Smart Stack Generator</li>
+          <li>SaaS Audit worksheet</li>
+          <li>Podcast + Consolidation video</li>
+        </ul>
+      </div>
+      <div class="tier tier-builder">
+        <div class="tier-name">Tier 1 · Builder</div>
+        <div class="tier-price">$29<small>/mo</small></div>
+        <ul class="tier-list">
+          <li>VidiFlow dashboard (10 agents)</li>
+          <li>Unlimited blueprint stamps</li>
+          <li>Private term dictionary</li>
+          <li>Saved stack configs</li>
+          <li>SmartGen starter templates</li>
+          <li>Action checklists</li>
+        </ul>
+      </div>
+      <div class="tier tier-business">
+        <div class="tier-name">Tier 2 · Business</div>
+        <div class="tier-price">$290<small>/mo · per team</small></div>
+        <ul class="tier-list">
+          <li>VidiFlow (50 agents, multi-deploy)</li>
+          <li>Team blueprint rollups</li>
+          <li>Team dictionary sync</li>
+          <li>Team workspaces</li>
+          <li>VidiShop starter</li>
+          <li>90-Day guided playbook</li>
+        </ul>
+      </div>
+      <div class="tier tier-enterprise">
+        <div class="tier-name">Tier 3 · Enterprise</div>
+        <div class="tier-price">from $2,900<small>/mo</small></div>
+        <ul class="tier-list">
+          <li>Unlimited VidiFlow</li>
+          <li>Board-ready blueprints</li>
+          <li>Enterprise dict + SSO + audit</li>
+          <li>Org-wide governance</li>
+          <li>Strategy workshop (Path 8)</li>
+          <li>Dedicated success mgr</li>
+          <li>Done-with-you hours included</li>
+        </ul>
+      </div>
+    </div>
+    <div class="callout"><strong>Service add-on (all paid tiers):</strong> Stack Mapping Session $2.5K · First-Agent Deployment $7.5K · Full Path Execution $25K-$75K</div>
+  `}},
+
+// ── 9. BUILD ORDER ─────────────────────────────────────
+{ title: "Build Order",
+  render: function(){ return `
+    <div class="eyebrow">§4 — What To Do Next</div>
+    <h1 class="slide-title">Build <span class="accent">Order</span></h1>
+    <p class="slide-sub">Ranked by leverage, not by sequence dependency.</p>
+    <ol class="step-list">
+      <li><div class="step-text"><strong>2-Question Starter</strong><span>Pure client-side. Two selects → 32 output variants → instant action card. No backend needed. Insert above persona grid.</span></div><div class="step-meta">~1-2 days</div></li>
+      <li><div class="step-text"><strong>VidiFlow v1 — Browser Overlay</strong><span>Manifest V3 extension + 50-term local dictionary + 50 videos (reuse book pipeline). Ship to one store. Open code, proprietary data.</span></div><div class="step-meta">~1-2 weeks</div></li>
+      <li><div class="step-text"><strong>SaaS Audit Worksheet</strong><span>Interactive wrapper over SAAS_INVENTORY.md. Circle-what-you-pay, auto-sum, → savings + agents. Standalone at vidismart.com/saas-audit.</span></div><div class="step-meta">~1 day</div></li>
+      <li><div class="step-text"><strong>VidiFlow v2 — Agent Dashboard (demo)</strong><span>20-50 simulated agents, WIP Kanban, metrics strip, event stream. The surface Business/Enterprise tiers sell.</span></div><div class="step-meta">~1-2 weeks</div></li>
+      <li><div class="step-text"><strong>VidiFlow v3 — Blueprint Generator</strong><span>Static snapshot from SaaS Audit + Stack Generator + agent roster. HTML + JSON. Versioned, diffable.</span></div><div class="step-meta">~2-3 days</div></li>
+      <li><div class="step-text"><strong>Tier 1 + Tier 2 Gating</strong><span>Auth + billing (Stripe). Wire existing tools behind tier gates. This is when revenue starts.</span></div><div class="step-meta">~1 week</div></li>
+      <li><div class="step-text"><strong>Data layer: 8 paths + new chapters</strong><span>Add 8 path entries to data.js, author "Intention to Outcome" chapter + SaaS Inventory appendix, expand PERSONAS to 8 paths in index.html.</span></div><div class="step-meta">~3-5 days</div></li>
+      <li><div class="step-text"><strong>Consolidation Video + Deck</strong><span>Script, 13-slide deck, produce video. Landing-page "Where do you fit?" section.</span></div><div class="step-meta">~1 week</div></li>
+      <li><div class="step-text"><strong>VidiFlow dictionary expansion</strong><span>Ongoing weekly, fed by book video pipeline + hover telemetry. The compounding moat.</span></div><div class="step-meta">ongoing</div></li>
+    </ol>
+  `}},
+
+// ── 10. DECISIONS NEEDED ───────────────────────────────
+{ title: "Decisions",
+  render: function(){ return `
+    <div class="eyebrow">§5 — Needs a Decision</div>
+    <h1 class="slide-title">Decisions <span class="accent">Needed</span></h1>
+    <p class="slide-sub">Five open questions blocking build or pricing.</p>
+    <div class="grid grid-2">
+      <div class="card">
+        <div class="card-title">1. VidiFlow video format</div>
+        <div class="card-desc">Pre-recorded 15-90s clips (higher quality, builds the moat) vs AI-generated explainers on demand (faster to scale). <strong style="color:var(--gold)">Rec:</strong> pre-recorded top 200 terms, AI-gen for the long tail.</div>
+      </div>
+      <div class="card">
+        <div class="card-title">2. Starter output format</div>
+        <div class="card-desc">HTML card with shareable URL vs PDF download vs both. <strong style="color:var(--gold)">Rec:</strong> HTML with one-click print-to-PDF.</div>
+      </div>
+      <div class="card">
+        <div class="card-title">3. Auth &amp; billing mechanism</div>
+        <div class="card-desc">Extend VidiPitch's existing lead-capture API or stand up a separate billing/auth service (Stripe + auth). <strong style="color:var(--gold)">Rec:</strong> Stripe + separate auth — VidiPitch stays lead-capture only.</div>
+      </div>
+      <div class="card">
+        <div class="card-title">4. VidiFlow open-source posture</div>
+        <div class="card-desc">Extension code open + dictionary/video proprietary (trust + installs) vs fully closed. <strong style="color:var(--gold)">Rec:</strong> open code, proprietary data — the dictionary is the moat.</div>
+      </div>
+      <div class="card">
+        <div class="card-title">5. Blueprint export format</div>
+        <div class="card-desc">Static HTML only vs structured JSON + rendered view for tool integrations. <strong style="color:var(--gold)">Rec:</strong> both — HTML for humans, JSON for integrations.</div>
+      </div>
+      <div class="card" style="border-color:rgba(255,107,53,.25)">
+        <div class="card-title" style="color:var(--fire)">Immediate next action</div>
+        <div class="card-desc">Build the 2-Question Starter. It's pure client-side, 1-2 days, and it's the generative entry point the book is missing. Everything else flows from it.</div>
+      </div>
+    </div>
+  `}},
+
+// ── 11. SUMMARY ────────────────────────────────────────
+{ title: "Summary",
+  render: function(){ return `
+    <div class="eyebrow">Putting it together</div>
+    <h1 class="slide-title">The Full <span class="accent">Picture</span></h1>
+    <p class="slide-sub">Reader lands → gets instant value → learns by doing → installs VidiFlow → upgrades to builder → team deploys → enterprise aligns.</p>
+    <div class="callout"><strong>The funnel:</strong> 2-Question Starter (instant, no email) → Path Selector (email, filtered edition) → VidiFlow overlay (ambient demystification, free, installs everywhere) → SaaS Audit (circle what you pay for) → Stack Generator (configure your agents) → VidiFlow dashboard (see them work) → VidiFlow blueprint (stamp where you stand) → Tier upgrade → Done-with-you service.</div>
+    <div class="stat-row">
+      <div class="stat"><div class="stat-num">1</div><div class="stat-label">free book = the asset</div></div>
+      <div class="stat"><div class="stat-num">3</div><div class="stat-label">VidiFlow surfaces</div></div>
+      <div class="stat"><div class="stat-num">8</div><div class="stat-label">agenda paths</div></div>
+      <div class="stat"><div class="stat-num">4</div><div class="stat-label">pricing tiers</div></div>
+      <div class="stat"><div class="stat-num">12</div><div class="stat-label">bundle assets</div></div>
+    </div>
+    <p style="color:var(--text-faint);font-size:.75rem;margin-top:2rem;text-align:center">Full specs: UPDATE_REPORT.md · VIDISMART_BUNDLE.md · SAAS_INVENTORY.md · CHAPTER_SUMMARY.md</p>
+  `}},
+
+];
+
+// ── Deck engine ────────────────────────────────────────
+var idx = 0;
+var deck = document.getElementById('deck');
+
+function buildSlides(){
+  deck.innerHTML = '';
+  SLIDES.forEach(function(s, i){
+    var el = document.createElement('div');
+    el.className = 'slide';
+    el.setAttribute('data-idx', i);
+    el.innerHTML = s.render();
+    deck.appendChild(el);
+  });
+  show(0);
+}
+
+function show(n){
+  idx = Math.max(0, Math.min(SLIDES.length - 1, n));
+  document.querySelectorAll('.slide').forEach(function(el, i){
+    el.classList.toggle('active', i === idx);
+  });
+  var pct = ((idx + 1) / SLIDES.length) * 100;
+  document.getElementById('progressBar').style.width = pct + '%';
+  document.getElementById('navCounter').textContent = (idx + 1) + ' / ' + SLIDES.length;
+  document.getElementById('navTitle').textContent = SLIDES[idx].title;
+  document.getElementById('prevBtn').disabled = (idx === 0);
+  document.getElementById('nextBtn').disabled = (idx === SLIDES.length - 1);
+  deck.scrollTop = 0;
+  var active = document.querySelector('.slide.active');
+  if(active) active.scrollTop = 0;
+}
+
+function go(dir){ show(idx + dir); }
+
+document.addEventListener('keydown', function(e){
+  if(e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') { e.preventDefault(); go(1); }
+  if(e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); go(-1); }
+  if(e.key === 'Home') { e.preventDefault(); show(0); }
+  if(e.key === 'End') { e.preventDefault(); show(SLIDES.length - 1); }
+});
+
+buildSlides();
+</script>
+</body>
+</html>
