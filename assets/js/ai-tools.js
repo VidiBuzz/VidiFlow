@@ -265,14 +265,6 @@ const TOOLS_DATA = [
         url: "https://kling.ai"
     },
     {
-        id: 12, category: "video", name: "Sora 2", provider: "OpenAI",
-        max_duration: 60, resolution: "1080p",
-        pricing: "ChatGPT Plus", api_available: false, commercial_license: false,
-        strengths: ["Narrative", "Long coherent shots", "Realism"],
-        description: "Industry-leading photorealism and physics simulation.",
-        url: "https://openai.com/sora"
-    },
-    {
         id: 13, category: "video", name: "Veo 3.1", provider: "Google",
         max_duration: 60, resolution: "4K",
         pricing: "API/Hosted", api_available: true, commercial_license: true,
@@ -292,8 +284,18 @@ const TOOLS_DATA = [
         id: 61, category: "workflow", name: "Higgsfield.ai", provider: "Higgsfield",
         type: "Studio Platform", gpu_required: false,
         api_available: true, learning_curve: "Moderate",
-        description: "All-in-one AI video 'Cinema Studio' with directed shots and integrated image-to-video-to-edit pipelines.",
+        pricing: "$15/$39/$99 per month (Starter/Plus/Ultra)",
+        description: "All-in-one AI video 'Cinema Studio' aggregating 15+ models (Veo 3.1, Kling 3.0, WAN 2.6, Seedance 2, Hailuo) with directed shots and integrated image-to-video-to-edit pipelines.",
         url: "https://higgsfield.ai"
+    },
+    {
+        id: 202, category: "workflow", name: "LTX Studio", provider: "Lightricks",
+        type: "Studio Platform", gpu_required: false,
+        api_available: true, learning_curve: "Moderate",
+        pricing: "Free / $15/$35/$125 per month",
+        description: "Multi-model creative platform combining Lightricks' own LTX-2 (Fast/Pro/Ultra) with Google Veo, Kling 2.6/3.0 Pro, FLUX.2 Pro, and Nano Banana behind one credit-based subscription.",
+        url: "https://ltx.studio",
+        badge: "NEW"
     },
     {
         id: 62, category: "workflow", name: "WaveSpeedAI", provider: "WaveSpeed",
@@ -306,7 +308,7 @@ const TOOLS_DATA = [
         id: 63, category: "workflow", name: "CapCut (2026)", provider: "ByteDance",
         type: "Video Editor", gpu_required: false,
         api_available: false, learning_curve: "Easy",
-        description: "Social-first editor natively integrating Sora 2 and Veo 3.1 with AI dialogue scenes.",
+        description: "Social-first editor natively integrating Veo 3.1 with AI dialogue scenes (dropped its Sora 2 integration after OpenAI discontinued the product in 2026).",
         url: "https://capcut.com"
     },
     {

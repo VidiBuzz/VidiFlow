@@ -45,11 +45,10 @@
             { name: 'Qwen 3.6 27B',      sub: 'Alibaba',   price: 'Free / Local',ctx: '128K', note: 'Local 27B · fits RTX 4090', local: true },
         ],
         video: [
-            { name: 'Wan 2.7 T2V',      sub: 'Wan AI',    price: 'API / Hosted', note: 'Top text-to-video + built-in audio sync' },
-            { name: 'Kling 2.1 Master', sub: 'Kuaishou',  price: '$0.05 / sec',  note: 'Realistic high-motion I2V at scale' },
+            { name: 'Wan 2.7 T2V',      sub: 'Wan AI',    price: 'Free (OSS)',   note: 'Top text-to-video + built-in audio sync', local: true },
+            { name: 'Kling 2.1 Master', sub: 'Kuaishou',  price: '$0.16 / sec',  note: 'Realistic high-motion I2V at scale' },
             { name: 'Veo 3.1',          sub: 'Google',    price: 'API / Hosted', note: '4K cinematic · integrated into editors' },
-            { name: 'Sora 2',           sub: 'OpenAI',    price: 'ChatGPT Plus', note: 'Photorealism & long coherent shots' },
-            { name: 'Runway Gen-4.5',   sub: 'Runway ML', price: '$0.08 / sec',  note: 'Advanced physics · 4K HD output' },
+            { name: 'Runway Gen-4.5',   sub: 'Runway ML', price: '$0.40-0.60/sec', note: 'Advanced physics · 4K HD output' },
         ],
         image: [
             { name: 'Midjourney v7',  sub: 'Midjourney', price: '$0.04 / img',  note: 'Artistic gold standard · unmatched aesthetics' },
