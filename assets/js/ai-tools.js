@@ -362,11 +362,11 @@ const TOOLS_DATA = [
         badge: "NEW"
     },
     {
-        id: 141, category: "video", name: "Seedance 2.0", provider: "ByteDance",
-        max_duration: 60, resolution: "1080p", audio: "Yes",
+        id: 141, category: "video", name: "Seedance 2.5", provider: "ByteDance",
+        max_duration: 60, resolution: "4K", audio: "Yes",
         pricing: "~$0.09/sec", api_available: true, commercial_license: true,
-        strengths: ["Precise audio sync", "Dynamic camera control", "High frame stability"],
-        description: "ByteDance's next-gen video generator matching flagship video-gen quality with built-in soundtrack and SFX synchronization.",
+        strengths: ["Native 4K & Audio Sync", "50 Multimodal References", "Region-Level Editing", "High Frame Stability"],
+        description: "ByteDance's flagship 4K generative video model (Jul 2026) supporting up to 30s single-pass generation, native synchronized audio/SFX, and 50 multimodal character/scene references.",
         url: "https://seedance.ai",
         badge: "NEW"
     },
