@@ -125,13 +125,13 @@ const TOOLS_DATA = [
 
     // — Moonshot AI —
     {
-        id: 126, category: "vlm", name: "Kimi K2.6", provider: "Moonshot AI",
-        params: "1T total / 32B active (MoE)", context_window: "262K", vision_capable: true,
-        pricing: "$0.60/1M input, $2.80/1M output",
+        id: 126, category: "vlm", name: "Moonshot AI Kimi K3 Pro (Aug 2026)", provider: "Moonshot AI",
+        params: "2.8T MoE", context_window: "1M", vision_capable: true,
+        pricing: "$1.50/1M input, $7.50/1M output",
         open_source: true, license: "Modified MIT",
-        benchmark_score: 92.0,
-        description: "Released Apr 20, 2026. 1 trillion parameter MoE model dominating agentic coding and frontend UI generation. Supports 300-agent swarms across 4,000 coordinated steps. Beats Gemini 3.1 Pro on frontend design (68.6% win rate).",
-        strengths: ["Agent swarms", "Frontend generation", "Long-horizon coding", "Open weights"],
+        benchmark_score: 95.1,
+        description: "Released Aug 2026. 2.8 trillion parameter MoE model dominating agentic coding and multimodal reasoning. Features Adaptive Thinking modes and 300-agent swarm orchestration across 4,000 steps.",
+        strengths: ["Agent swarms", "Adaptive Thinking", "2.8T parameters", "1M context", "Open weights"],
         url: "https://kimi.ai",
         badge: "LATEST"
     },
