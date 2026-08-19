@@ -194,15 +194,37 @@ const TOOLS_DATA = [
 
     // — Anthropic —
     {
-        id: 1, category: "vlm", name: "Claude Opus 4.8", provider: "Anthropic",
+        id: 1, category: "vlm", name: "Claude Opus 5", provider: "Anthropic",
         params: "Undisclosed", context_window: "1M", vision_capable: true,
-        pricing: "$5/1M input, $25/1M output",
+        pricing: "$5.00/1M input, $25.00/1M output",
         open_source: false, license: "Proprietary",
-        benchmark_score: 94.1,
-        description: "Anthropic's most capable generally available model. Excels at long-horizon agentic coding, complex reasoning, and high-res vision tasks.",
-        strengths: ["Agentic coding", "1M context window", "High-res vision", "Adaptive thinking"],
+        benchmark_score: 96.5,
+        description: "Anthropic's flagship reasoning powerhouse in the Claude 5 generation. Excels at long-horizon agentic coding, multi-repo architectural refactoring, complex mathematics, and high-res vision tasks.",
+        strengths: ["Agentic coding leader", "1M context window", "128K max output", "Deep architectural reasoning", "High-res vision"],
         url: "https://www.anthropic.com/claude/opus",
         badge: "LATEST"
+    },
+    {
+        id: 147, category: "vlm", name: "Claude Fable 5", provider: "Anthropic",
+        params: "Undisclosed", context_window: "1M", vision_capable: true,
+        pricing: "$10.00/1M input, $50.00/1M output",
+        open_source: false, license: "Proprietary",
+        benchmark_score: 97.2,
+        description: "Anthropic's most capable widely-released model, ranking #1 on the Artificial Analysis Intelligence Index for extreme reasoning, hard mathematical proofs, and frontier agent capabilities.",
+        strengths: ["#1 Intelligence Index", "Extreme reasoning", "Adaptive Thinking Max Effort", "1M context"],
+        url: "https://anthropic.com",
+        badge: "NEW"
+    },
+    {
+        id: 121, category: "vlm", name: "Claude Sonnet 5", provider: "Anthropic",
+        params: "Undisclosed", context_window: "1M", vision_capable: true,
+        pricing: "$2.00/1M input, $10.00/1M output ($3/$15 standard)",
+        open_source: false, license: "Proprietary",
+        benchmark_score: 93.5,
+        description: "Anthropic's most agentic Sonnet model with autonomous terminal/browser orchestration, 1M context, and high-speed tool loops at lower operational cost than Opus.",
+        strengths: ["High-speed agent loops", "1M context window", "Autonomous tool use", "Cost efficiency"],
+        url: "https://anthropic.com",
+        badge: "NEW"
     },
     {
         id: 120, category: "vlm", name: "Claude Mythos Preview", provider: "Anthropic",
@@ -214,16 +236,6 @@ const TOOLS_DATA = [
         strengths: ["Frontier intelligence", "Advanced reasoning", "Cybersecurity research"],
         url: "https://anthropic.com",
         badge: "RESTRICTED"
-    },
-    {
-        id: 121, category: "vlm", name: "Claude Sonnet 4.6", provider: "Anthropic",
-        params: "Undisclosed", context_window: "200K", vision_capable: true,
-        pricing: "$3/1M input, $15/1M output",
-        open_source: false, license: "Proprietary",
-        benchmark_score: 91.0,
-        description: "Balanced mid-tier model from Anthropic. Strong at creative writing, analysis, and coding at lower cost than Opus.",
-        strengths: ["Balanced performance", "Cost efficiency", "Creative writing"],
-        url: "https://anthropic.com"
     },
 
     // — Google DeepMind —
