@@ -2,7 +2,195 @@
 // Data sourced from the CrewAI + LangGraph research pipeline
 
 const TOOLS_DATA = [
-    // === VLM (Vision Language Models) — Updated April 21, 2026 ===
+    // === VLM (Vision & Multimodal Language Models) — Updated August 2026 ===
+
+    // — OpenAI —
+    {
+        id: 2, category: "vlm", name: "GPT-5.6 Sol", provider: "OpenAI",
+        params: "Undisclosed", context_window: "1M", vision_capable: true,
+        pricing: "$1.75/1M input, $7.00/1M output",
+        open_source: false, license: "Proprietary",
+        benchmark_score: 96.2,
+        description: "OpenAI's latest flagship model (August 2026). #1 on the Artificial Analysis Coding Agent Index, featuring native computer-use, whole-repository comprehension, and 1M context with aggressive new pricing.",
+        strengths: ["#1 Coding Agent Index", "Native computer use", "1M context window", "Frontier multimodal reasoning"],
+        url: "https://openai.com",
+        badge: "LATEST"
+    },
+    {
+        id: 130, category: "vlm", name: "GPT-5.6 Terra", provider: "OpenAI",
+        params: "Undisclosed", context_window: "1M", vision_capable: true,
+        pricing: "$0.25/1M input, $1.00/1M output",
+        open_source: false, license: "Proprietary",
+        benchmark_score: 91.5,
+        description: "OpenAI's high-efficiency mid-tier model. Delivers exceptional multimodal reasoning and fast tool-calling at 1/7th the cost of Sol.",
+        strengths: ["Cost-efficiency", "Fast tool calling", "1M context", "Multimodal QA"],
+        url: "https://openai.com",
+        badge: "NEW"
+    },
+    {
+        id: 131, category: "vlm", name: "GPT-5.6 Luna", provider: "OpenAI",
+        params: "Undisclosed", context_window: "1M", vision_capable: true,
+        pricing: "$0.05/1M input, $0.20/1M output",
+        open_source: false, license: "Proprietary",
+        benchmark_score: 87.0,
+        description: "OpenAI's ultra-fast lightweight model for high-throughput classification, routing, and lightweight multimodal inspection.",
+        strengths: ["Ultra-low latency", "High throughput", "Budget pricing", "1M context"],
+        url: "https://openai.com",
+        badge: "NEW"
+    },
+    {
+        id: 122, category: "vlm", name: "GPT-5.3 Codex", provider: "OpenAI",
+        params: "Undisclosed", context_window: "400K", vision_capable: true,
+        pricing: "$1.75/1M input, $14/1M output",
+        open_source: false, license: "Proprietary",
+        benchmark_score: 93.0,
+        description: "OpenAI's specialized coding model optimized for software engineering, long-context code review, and agentic code execution workflows.",
+        strengths: ["Code generation", "400K context", "Agentic coding"],
+        url: "https://openai.com"
+    },
+
+    // — Alibaba / Qwen —
+    {
+        id: 129, category: "vlm", name: "Qwen 3.8 Max", provider: "Alibaba / Qwen",
+        params: "2.4T MoE", context_window: "1M", vision_capable: true,
+        pricing: "$1.20/1M input, $3.60/1M output",
+        open_source: false, license: "Proprietary Cloud API",
+        benchmark_score: 95.8,
+        description: "Alibaba's 2.4 Trillion parameter multimodal flagship, ranking in the Top 5 globally on the Intelligence Index. Features native image and video sequence understanding, frontier SWE-Bench Pro coding, and a 1M-token context window.",
+        strengths: ["2.4T parameters", "Native image & video", "Top-5 globally", "1M context window", "Frontier SWE-Bench"],
+        url: "https://chat.qwen.ai",
+        badge: "LATEST"
+    },
+    {
+        id: 3, category: "vlm", name: "Qwen 3.8 Plus", provider: "Alibaba / Qwen",
+        params: "Undisclosed MoE", context_window: "1M", vision_capable: true,
+        pricing: "$0.30/1M input, $1.20/1M output",
+        open_source: false, license: "Proprietary",
+        benchmark_score: 91.2,
+        description: "Qwen's multimodal workhorse — delivers fast high-resolution vision QA, document parsing, and agentic tool loops at 4x lower cost than Max.",
+        strengths: ["1M context window", "Native vision/video QA", "Cost-effective tool loops", "High throughput"],
+        url: "https://chat.qwen.ai",
+        badge: "NEW"
+    },
+    {
+        id: 132, category: "vlm", name: "Qwen 3.8 27B", provider: "Alibaba / Qwen",
+        params: "27B Dense", context_window: "128K", vision_capable: true,
+        pricing: "Free (Self-Hosted)",
+        open_source: true, license: "Apache 2.0",
+        benchmark_score: 87.5,
+        description: "The latest open-weight 27B model runnable locally on a single RTX 3090/4090 (~17 GB VRAM at Q4_K_M). 100% private inference on the Vidi AI™ server.",
+        strengths: ["Single GPU (~17GB VRAM)", "100% private & offline", "Apache 2.0 open weights", "Strong local coding"],
+        url: "https://huggingface.co/Qwen",
+        badge: "OPEN SOURCE"
+    },
+
+    // — DeepSeek —
+    {
+        id: 133, category: "vlm", name: "DeepSeek V4 Pro 0813", provider: "DeepSeek",
+        params: "Undisclosed MoE (~900GB VRAM)", context_window: "1M", vision_capable: false,
+        pricing: "$0.44/1M input, $0.87/1M output",
+        open_source: false, license: "Proprietary",
+        benchmark_score: 95.0,
+        description: "Released August 13, 2026. DeepSeek's upgraded flagship with switchable Thinking / Non-Thinking modes for trading latency vs reasoning depth, backed by a 1M context window and unmatched price/performance.",
+        strengths: ["Dual Thinking modes", "Frontier reasoning", "1M context", "Unbeatable flagship pricing"],
+        url: "https://deepseek.com",
+        badge: "NEW"
+    },
+    {
+        id: 134, category: "vlm", name: "DeepSeek V4 Flash 0731", provider: "DeepSeek",
+        params: "284B total / 13B active (MoE)", context_window: "1M", vision_capable: false,
+        pricing: "$0.09/1M input, $0.18/1M output",
+        open_source: true, license: "MIT License",
+        benchmark_score: 92.8,
+        description: "Released July 31, 2026. Speculative decoding module crushes agentic benchmarks — Terminal Bench 2.1 (82.7%), DeepSWE (54.4%). MIT-licensed and runnable locally on ~160 GB VRAM.",
+        strengths: ["MIT License", "$0.09/$0.18 budget pricing", "Speculative decoding", "High-volume agent loops"],
+        url: "https://deepseek.com",
+        badge: "LATEST"
+    },
+
+    // — Zhipu AI —
+    {
+        id: 135, category: "vlm", name: "Zhipu GLM-5.3", provider: "Zhipu AI",
+        params: "Undisclosed MoE", context_window: "1M", vision_capable: false,
+        pricing: "$1.35/1M input, $4.20/1M output",
+        open_source: true, license: "MIT License",
+        benchmark_score: 94.5,
+        description: "Zhipu AI's MIT-licensed flagship (August 2026). Engineered for long-horizon agentic coding, multi-turn reasoning, and complex tool orchestration across a full 1M-token context window.",
+        strengths: ["MIT Licensed", "Frontier coding agent", "1M context window", "Open-source flagship"],
+        url: "https://zhipuai.cn",
+        badge: "NEW"
+    },
+    {
+        id: 136, category: "vlm", name: "Zhipu GLM-5V Turbo", provider: "Zhipu AI",
+        params: "Undisclosed MoE", context_window: "1M", vision_capable: true,
+        pricing: "$0.20/1M input, $0.80/1M output",
+        open_source: false, license: "Proprietary",
+        benchmark_score: 89.0,
+        description: "High-speed multimodal vision-language model with native OCR, document parsing, and visual reasoning at 1M context.",
+        strengths: ["Fast vision inference", "Document/OCR parsing", "1M context", "Budget multimodal"],
+        url: "https://zhipuai.cn",
+        badge: "NEW"
+    },
+
+    // — Moonshot AI —
+    {
+        id: 137, category: "vlm", name: "Moonshot AI Kimi K3", provider: "Moonshot AI",
+        params: "2.8T MoE", context_window: "1M", vision_capable: true,
+        pricing: "$3.00/1M input, $15.00/1M output",
+        open_source: true, license: "Modified MIT",
+        benchmark_score: 94.2,
+        description: "2.8 Trillion parameter multimodal flagship, ranking #4 globally on public intelligence benchmarks. Features native high-resolution vision, video comprehension, and autonomous tool loops.",
+        strengths: ["2.8T parameters", "#4 Globally", "Native vision + video", "1M context", "Modified MIT weights"],
+        url: "https://kimi.ai",
+        badge: "LATEST"
+    },
+    {
+        id: 126, category: "vlm", name: "Kimi K 2.6", provider: "Moonshot AI",
+        params: "1T total / 32B active (MoE)", context_window: "2M", vision_capable: true,
+        pricing: "$0.684/1M input, $3.42/1M output",
+        open_source: true, license: "Modified MIT",
+        benchmark_score: 92.0,
+        description: "1 trillion parameter MoE model dominating agentic coding and frontend UI generation. Supports 300-agent swarms across 4,000 coordinated steps.",
+        strengths: ["Agent swarms", "Frontend generation", "Long-horizon coding", "Open weights"],
+        url: "https://kimi.ai"
+    },
+
+    // — MiniMax —
+    {
+        id: 200, category: "vlm", name: "MiniMax M3", provider: "MiniMax",
+        params: "Undisclosed MoE", context_window: "1M", vision_capable: true,
+        pricing: "$0.30/1M input, $1.20/1M output",
+        open_source: false, license: "Proprietary",
+        benchmark_score: 90.5,
+        description: "MiniMax's frontier omni-modal model pairing frontier coding with native vision and audio comprehension in one unified architecture at $0.30 / $1.20.",
+        strengths: ["Native vision + audio + text", "1M context", "Strong coding ELO", "Cost effective"],
+        url: "https://minimax.io",
+        badge: "LATEST"
+    },
+
+    // — NVIDIA —
+    {
+        id: 138, category: "vlm", name: "NVIDIA Nemotron 3 Ultra", provider: "NVIDIA",
+        params: "550B MoE", context_window: "1M", vision_capable: false,
+        pricing: "$0.80/1M input, $2.40/1M output",
+        open_source: true, license: "NVIDIA Open Model License",
+        benchmark_score: 93.8,
+        description: "NVIDIA's 550B MoE reasoning powerhouse for complex text and software engineering workflows. Optimized for NIM microservices on NVIDIA Hopper and Blackwell. Note: Ultra is text/code only; for multimodal, use Nemotron 3 Nano Omni.",
+        strengths: ["550B MoE", "NVIDIA NIM integration", "1M context", "Hardware accelerated"],
+        url: "https://build.nvidia.com",
+        badge: "NEW"
+    },
+    {
+        id: 139, category: "vlm", name: "NVIDIA Nemotron 3 Nano Omni", provider: "NVIDIA",
+        params: "30B-A3B MoE", context_window: "128K", vision_capable: true,
+        pricing: "Free (NIM / Open weights)",
+        open_source: true, license: "NVIDIA Open Model License",
+        benchmark_score: 88.0,
+        description: "NVIDIA's native omni-modal model combining real-time vision, speech audio, and text comprehension with edge-deployable efficiency on RTX/DGX hardware.",
+        strengths: ["Native Omni (vision/audio/text)", "Edge deployable", "NVIDIA NIM optimized"],
+        url: "https://build.nvidia.com",
+        badge: "NEW"
+    },
 
     // — Anthropic —
     {
@@ -11,7 +199,7 @@ const TOOLS_DATA = [
         pricing: "$5/1M input, $25/1M output",
         open_source: false, license: "Proprietary",
         benchmark_score: 94.1,
-        description: "Anthropic's most capable generally available model (Apr 16, 2026). Excels at long-horizon agentic coding, complex reasoning, and high-res vision tasks. First Claude with 2576px image support.",
+        description: "Anthropic's most capable generally available model. Excels at long-horizon agentic coding, complex reasoning, and high-res vision tasks.",
         strengths: ["Agentic coding", "1M context window", "High-res vision", "Adaptive thinking"],
         url: "https://www.anthropic.com/claude/opus",
         badge: "LATEST"
@@ -22,9 +210,9 @@ const TOOLS_DATA = [
         pricing: "$2500/1M (restricted)",
         open_source: false, license: "Proprietary — Project Glasswing only",
         benchmark_score: 98.0,
-        description: "Anthropic's most powerful model ever — not publicly available. Released Apr 7, 2026 to 12 partner orgs under Project Glasswing. Represents a 'step change' in capabilities with advanced cybersecurity abilities.",
+        description: "Anthropic's most powerful model ever — restricted access under Project Glasswing for frontier cybersecurity and alignment research.",
         strengths: ["Frontier intelligence", "Advanced reasoning", "Cybersecurity research"],
-        url: "https://techcrunch.com/2026/04/07/anthropic-mythos-ai-model-preview-security/",
+        url: "https://anthropic.com",
         badge: "RESTRICTED"
     },
     {
@@ -33,43 +221,9 @@ const TOOLS_DATA = [
         pricing: "$3/1M input, $15/1M output",
         open_source: false, license: "Proprietary",
         benchmark_score: 91.0,
-        description: "Balanced mid-tier model from Anthropic. Strong at creative writing, analysis, and coding at lower cost than Opus. Recommended daily driver for most enterprise use cases.",
+        description: "Balanced mid-tier model from Anthropic. Strong at creative writing, analysis, and coding at lower cost than Opus.",
         strengths: ["Balanced performance", "Cost efficiency", "Creative writing"],
         url: "https://anthropic.com"
-    },
-
-    // — OpenAI —
-    {
-        id: 2, category: "vlm", name: "GPT-5.5", provider: "OpenAI",
-        params: "Undisclosed", context_window: "2M", vision_capable: true,
-        pricing: "ChatGPT / API",
-        open_source: false, license: "Proprietary",
-        benchmark_score: 95.5,
-        description: "OpenAI's current flagship (Jun 2026). Native multimodal with 2M context, computer-use capabilities, and PhD-level reasoning. Includes GPT-5.5 mini and nano variants for speed/cost optimizations.",
-        strengths: ["Native computer use", "Multimodal", "Agentic execution"],
-        url: "https://openai.com",
-        badge: "LATEST"
-    },
-    {
-        id: 122, category: "vlm", name: "GPT-5.3 Codex", provider: "OpenAI",
-        params: "Undisclosed", context_window: "400K", vision_capable: true,
-        pricing: "$1.75/1M input, $14/1M output",
-        open_source: false, license: "Proprietary",
-        benchmark_score: 93.0,
-        description: "OpenAI's specialized coding model. Successor to GPT-4.1, optimized for software engineering, long-context code review, and agentic code execution workflows.",
-        strengths: ["Code generation", "400K context", "Agentic coding"],
-        url: "https://openai.com"
-    },
-    {
-        id: 123, category: "vlm", name: "GPT-OSS 120B", provider: "OpenAI",
-        params: "120B", context_window: "131K", vision_capable: true,
-        pricing: "$0.15/1M input, $0.60/1M output",
-        open_source: true, license: "Open weights",
-        benchmark_score: 88.0,
-        description: "OpenAI's first open-weight model release. 120B parameters with strong multimodal reasoning at a fraction of proprietary API cost. Self-hostable via Hugging Face.",
-        strengths: ["Open weights", "Self-hostable", "Cost effective"],
-        url: "https://openai.com",
-        badge: "OPEN SOURCE"
     },
 
     // — Google DeepMind —
@@ -79,7 +233,7 @@ const TOOLS_DATA = [
         pricing: "$2/1M input, $12/1M output",
         open_source: false, license: "Proprietary",
         benchmark_score: 93.5,
-        description: "Google's current flagship model with a staggering 10M token context window. Leads in math/science benchmarks, multimodal reasoning, and frontend design generation.",
+        description: "Google's flagship model with a 10M token context window. Leads in math/science benchmarks, multimodal reasoning, and frontend design generation.",
         strengths: ["10M context window", "Math/Science", "Multimodal"],
         url: "https://deepmind.google/gemini",
         badge: "LATEST"
@@ -87,78 +241,22 @@ const TOOLS_DATA = [
     {
         id: 124, category: "vlm", name: "Gemini 2.5 Flash", provider: "Google DeepMind",
         params: "Undisclosed", context_window: "1M", vision_capable: true,
-        pricing: "$0.15/1M input",
+        pricing: "$0.15/1M input, $0.60/1M output",
         open_source: false, license: "Proprietary",
         benchmark_score: 87.0,
-        description: "Google's workhorse model — GA on Vertex AI and AI Studio. Designed for high-throughput enterprise tasks with fast inference and strong multimodal capability at low cost.",
+        description: "Google's workhorse model on Vertex AI and AI Studio. Designed for high-throughput enterprise tasks with fast inference and strong multimodal capability.",
         strengths: ["High throughput", "Low cost", "1M context"],
         url: "https://deepmind.google/gemini"
     },
     {
-        id: 104, category: "vlm", name: "Gemini Nano", provider: "Google DeepMind",
-        params: "1.8B / 3.2B", context_window: "32K", vision_capable: true,
-        pricing: "Free (On-device)", open_source: false, license: "Proprietary",
-        benchmark_score: 65.0,
-        description: "Google's on-device AI model built into Pixel and Android devices. Zero latency, privacy-first inference with no network calls required.",
-        strengths: ["On-device", "Privacy-first", "Zero latency"],
-        url: "https://deepmind.google/gemini"
-    },
-    {
-        id: 105, category: "vlm", name: "Project Astra", provider: "Google DeepMind",
-        params: "Undisclosed", context_window: "Continuous", vision_capable: true,
-        pricing: "Experimental", open_source: false, license: "Proprietary",
-        benchmark_score: 0,
-        description: "Google's universal AI agent with real-time, continuous multimodal perception. Designed to see, hear, and respond in real time across devices.",
-        strengths: ["Real-time vision", "Spatial memory", "Agentic"],
-        url: "https://deepmind.google/technologies/project-astra/"
-    },
-    {
         id: 125, category: "vlm", name: "Gemma 4", provider: "Google DeepMind",
-        params: "31B / 26B-A4B / E4B", context_window: "128K", vision_capable: true,
+        params: "31B / 26B-A4B", context_window: "128K", vision_capable: true,
         pricing: "Free (Open weights)", open_source: true, license: "Gemma License",
         benchmark_score: 86.0,
-        description: "Google's latest generation of open models. Gemma 4 family includes dense and MoE variants with strong multimodal capabilities and efficient inference.",
+        description: "Google's latest generation of open models with dense and MoE variants, strong multimodal capabilities, and efficient local inference.",
         strengths: ["Open weights", "MoE efficiency", "Google ecosystem"],
         url: "https://ai.google.dev/gemma",
         badge: "OPEN SOURCE"
-    },
-
-    // — Moonshot AI —
-    {
-        id: 126, category: "vlm", name: "Kimi K2.6", provider: "Moonshot AI",
-        params: "1T total / 32B active (MoE)", context_window: "2M", vision_capable: true,
-        pricing: "$0.60/1M input, $2.80/1M output",
-        open_source: true, license: "Modified MIT",
-        benchmark_score: 92.0,
-        description: "Released Apr 20, 2026. 1 trillion parameter MoE model dominating agentic coding and frontend UI generation. Supports 300-agent swarms across 4,000 coordinated steps. Beats Gemini 3.1 Pro on frontend design (68.6% win rate).",
-        strengths: ["Agent swarms", "Frontend generation", "Long-horizon coding", "Open weights"],
-        url: "https://kimi.ai",
-        badge: "LATEST"
-    },
-
-    // — xAI —
-    {
-        id: 127, category: "vlm", name: "Grok 4.20 Beta", provider: "xAI",
-        params: "Undisclosed", context_window: "2M", vision_capable: true,
-        pricing: "$200/1M (premium)",
-        open_source: false, license: "Proprietary",
-        benchmark_score: 91.5,
-        description: "xAI's latest Grok model with strong real-time web access, deep reasoning, and frontier-level multimodal abilities. Positioned for enterprise and research use cases.",
-        strengths: ["Real-time web", "Deep reasoning", "2M context"],
-        url: "https://x.ai"
-    },
-
-    // — MiniMax —
-    {
-        id: 200, category: "vlm", name: "MiniMax M3.0", provider: "MiniMax",
-        params: "Undisclosed MoE", context_window: "1M", vision_capable: true,
-        pricing: "$0.30/1M input, $1.20/1M output",
-        open_source: false, license: "Proprietary",
-        benchmark_score: 90.0,
-        description: "MiniMax's frontier vision-language model (Jun 2026). Native multimodal with 1M context, strong agentic tool use, and competitive pricing. Supports image, video, and document understanding.",
-        strengths: ["Vision capable", "1M context", "Agentic tool use", "Cost effective"],
-        url: "https://minimax.io",
-        badge: "LATEST"
     },
 
     // — Xiaomi MiMo —
@@ -168,7 +266,7 @@ const TOOLS_DATA = [
         pricing: "$0.40/1M input, $2.00/1M output",
         open_source: true, license: "Modified Apache 2.0",
         benchmark_score: 89.0,
-        description: "Xiaomi's flagship omni-modal model — native vision, audio, and text understanding in a single architecture. Open-weight release with strong GUI perception and real-time visual reasoning. The practical choice for cost-sensitive multimodal deployments.",
+        description: "Xiaomi's flagship omni-modal model — native vision, audio, and text understanding in a single architecture with strong GUI perception.",
         strengths: ["Omni-modal", "Open weights", "GUI perception", "Real-time visual"],
         url: "https://github.com/XiaomiMiMo",
         badge: "OPEN SOURCE"
@@ -181,7 +279,7 @@ const TOOLS_DATA = [
         pricing: "$0.20/1M input, $0.60/1M output",
         open_source: true, license: "Llama 4 Community",
         benchmark_score: 88.5,
-        description: "Meta's flagship open-weight model with a massive 10M context window. Industry-leading open-source multimodal model for vision, reasoning, and long-document tasks.",
+        description: "Meta's flagship open-weight model with a massive 10M context window. Multimodal model for vision, reasoning, and long-document tasks.",
         strengths: ["10M context", "Open weights", "Multimodal"],
         url: "https://ai.meta.com/llama",
         badge: "OPEN SOURCE"
@@ -196,29 +294,6 @@ const TOOLS_DATA = [
         strengths: ["2600 t/s speed", "Budget friendly", "Open weights"],
         url: "https://ai.meta.com/llama",
         badge: "OPEN SOURCE"
-    },
-
-    // — Alibaba / Qwen —
-    {
-        id: 3, category: "vlm", name: "Qwen3.6 Plus", provider: "Alibaba / Qwen",
-        params: "Undisclosed MoE", context_window: "1M", vision_capable: true,
-        pricing: "API via Alibaba Cloud",
-        open_source: false, license: "Proprietary",
-        benchmark_score: 89.5,
-        description: "Qwen's production-ready flagship — ranked #7 on Code Arena, beating GPT-5.3 Codex on several tasks. Has vision support, 1M context window, and 65K max output. The practical choice for day-to-day deployment.",
-        strengths: ["1M context window", "Vision capable", "65K output tokens", "#7 Code Arena"],
-        url: "https://chat.qwen.ai"
-    },
-    {
-        id: 129, category: "vlm", name: "Qwen 3.7 Max", provider: "Alibaba / Qwen",
-        params: "Undisclosed MoE", context_window: "128K", vision_capable: false,
-        pricing: "API via Alibaba Cloud Studio",
-        open_source: false, license: "Proprietary",
-        benchmark_score: 92.5,
-        description: "Qwen's frontier model — beats Qwen 3.6 Plus on raw reasoning, agentic tasks, and programming benchmarks. QwenWebBench ELO of 1558. No vision yet, 32K max output. The go-to for the hardest coding and reasoning workloads in the Qwen family.",
-        strengths: ["Programming benchmarks leader", "Agentic tasks", "Hard reasoning", "Code Arena top-5"],
-        url: "https://chat.qwen.ai",
-        badge: "LATEST"
     },
 
 
@@ -257,28 +332,58 @@ const TOOLS_DATA = [
         url: "https://huggingface.co/Wan-AI"
     },
     {
-        id: 11, category: "video", name: "Kling 2.1 Master", provider: "Kuaishou",
-        max_duration: 180, resolution: "1080p",
-        pricing: "$0.05/sec", api_available: true, commercial_license: true,
-        strengths: ["Strong high-motion I2V", "Realistic motion", "Long clips"],
-        description: "Fast, realistic motion from stills at UGC scale. Kling 2.1 Master is the current production version.",
-        url: "https://kling.ai"
+        id: 11, category: "video", name: "Kling 3.0", provider: "Kuaishou",
+        max_duration: 180, resolution: "1080p", audio: "Yes",
+        pricing: "$0.09–0.14/sec (as low as $0.029/s on fal.ai)", api_available: true, commercial_license: true,
+        strengths: ["Strong high-motion I2V", "Realistic motion", "Native audio generation", "Long clips"],
+        description: "Kuaishou's flagship video model with enhanced character consistency, realistic physics, and integrated sound effects generation.",
+        url: "https://kling.ai",
+        badge: "LATEST"
     },
     {
-        id: 13, category: "video", name: "Veo 3.1", provider: "Google",
-        max_duration: 60, resolution: "4K",
-        pricing: "API/Hosted", api_available: true, commercial_license: true,
-        strengths: ["4K photoreal", "Stable B-roll", "Brand content"],
-        description: "4K cinematic generations integrated into top editors.",
-        url: "https://deepmind.google/technologies/veo/"
+        id: 140, category: "video", name: "MiniMax H3", provider: "MiniMax",
+        max_duration: 60, resolution: "2K", audio: "Yes",
+        pricing: "$0.13/sec (2K) / $0.08/sec (768P)", api_available: true, commercial_license: true,
+        strengths: ["Native stereo audio", "2K cinematic resolution", "Direct dialogue sync", "High prompt adherence"],
+        description: "Unified multimodal video architecture natively generating cinematic 2K video alongside perfectly synced stereo audio and Foley sound effects.",
+        url: "https://minimax.io",
+        badge: "NEW"
+    },
+    {
+        id: 141, category: "video", name: "Seedance 2.0", provider: "ByteDance",
+        max_duration: 60, resolution: "1080p", audio: "Yes",
+        pricing: "~$0.09/sec", api_available: true, commercial_license: true,
+        strengths: ["Precise audio sync", "Dynamic camera control", "High frame stability"],
+        description: "ByteDance's next-gen video generator matching flagship video-gen quality with built-in soundtrack and SFX synchronization.",
+        url: "https://seedance.ai",
+        badge: "NEW"
+    },
+    {
+        id: 142, category: "video", name: "Grok Imagine 1.5", provider: "xAI",
+        max_duration: 30, resolution: "1080p", audio: "Yes",
+        pricing: "$0.08/sec", api_available: true, commercial_license: true,
+        strengths: ["Built-in dialogue & SFX", "Fast generation", "Photorealistic rendering"],
+        description: "xAI's video generation model featuring built-in audio synthesis, ambient soundscapes, and photorealistic physics.",
+        url: "https://x.ai",
+        badge: "NEW"
+    },
+    {
+        id: 13, category: "video", name: "Veo 3.1", provider: "Google DeepMind",
+        max_duration: 60, resolution: "4K", audio: "Yes",
+        pricing: "$0.50/s standard / $0.75/s w/ audio", api_available: true, commercial_license: true,
+        strengths: ["4K photoreal", "Precise audio sync", "Cinematic camera paths", "Brand content"],
+        description: "Google DeepMind's 4K cinematic video generator integrated into top creative workflows with native audio support.",
+        url: "https://deepmind.google/technologies/veo/",
+        badge: "LATEST"
     },
     {
         id: 60, category: "video", name: "Runway Gen-4.5", provider: "Runway ML",
         max_duration: 60, resolution: "4K",
-        pricing: "$0.08/sec", api_available: true, commercial_license: true,
+        pricing: "$0.08–0.40/sec", api_available: true, commercial_license: true,
         strengths: ["HD text-to-video", "Advanced physics", "Cinematic quality"],
-        description: "Released Dec 1, 2025. Gen-4.5 (codenamed Whisper Thunder) produces high-definition text-to-video with advanced physics simulation. Benchmark leader against Google and OpenAI.",
-        url: "https://runwayml.com"
+        description: "Gen-4.5 produces high-definition text-to-video with advanced physics simulation, camera motion controls, and multi-asset consistency.",
+        url: "https://runwayml.com",
+        badge: "LATEST"
     },
     {
         id: 61, category: "workflow", name: "Higgsfield.ai", provider: "Higgsfield",
@@ -357,50 +462,72 @@ const TOOLS_DATA = [
         id: 14, category: "image", name: "Midjourney v7", provider: "Midjourney",
         model_type: "Diffusion (proprietary)", pricing: "$0.04/image (Standard plan)",
         api_endpoint: false, ComfyUI_node: false, best_for: "Artistic, editorial",
-        description: "The gold standard for artistic image generation with unmatched aesthetic quality.",
-        url: "https://midjourney.com"
+        description: "The gold standard for artistic image generation with unmatched aesthetic quality and coherent styling.",
+        url: "https://midjourney.com",
+        badge: "LATEST"
     },
     {
-        id: 15, category: "image", name: "FLUX.1 Pro", provider: "Black Forest Labs",
-        model_type: "Flow Matching", pricing: "$0.03/image",
+        id: 15, category: "image", name: "FLUX 1.1 Pro", provider: "Black Forest Labs",
+        model_type: "Flow Matching", pricing: "$0.04/image",
         api_endpoint: true, ComfyUI_node: true, best_for: "Commercial, product photography",
-        description: "Commercial-grade image model with excellent prompt adherence and ComfyUI integration.",
-        url: "https://blackforestlabs.ai"
+        description: "Commercial-grade image foundation model with ultra-crisp resolution, fast generation times, and wide API availability.",
+        url: "https://blackforestlabs.ai",
+        badge: "LATEST"
     },
     {
-        id: 16, category: "image", name: "DALL-E 3", provider: "OpenAI",
-        model_type: "Diffusion", pricing: "$0.04/image (via API)",
-        api_endpoint: true, ComfyUI_node: false, best_for: "Illustration, concept art",
-        description: "OpenAI's image model with exceptional prompt understanding and safety guardrails.",
-        url: "https://openai.com/dall-e-3"
+        id: 143, category: "image", name: "FLUX.1 Kontext [dev]", provider: "Black Forest Labs",
+        model_type: "Flow Matching", pricing: "$0.015/image",
+        api_endpoint: true, ComfyUI_node: true, best_for: "Open-weights development, fine-tuning",
+        description: "High-efficiency open-weight generation model offering state-of-the-art aesthetics at just $0.015/image.",
+        url: "https://blackforestlabs.ai",
+        badge: "OPEN SOURCE"
+    },
+    {
+        id: 18, category: "image", name: "Ideogram 3.0", provider: "Ideogram",
+        model_type: "Diffusion", pricing: "$0.05/image",
+        api_endpoint: true, ComfyUI_node: false, best_for: "Typography, logos, graphic design, posters",
+        description: "Best-in-class text rendering in generated images with accurate graphic design layouts and typography.",
+        url: "https://ideogram.ai",
+        badge: "LATEST"
+    },
+    {
+        id: 144, category: "image", name: "Grok Imagine (Image)", provider: "xAI",
+        model_type: "Diffusion", pricing: "$0.02/image",
+        api_endpoint: true, ComfyUI_node: false, best_for: "Fast photorealism, high-volume generation",
+        description: "xAI's fast, high-volume image model delivering 1K/2K photorealistic generations at just $0.02 per image.",
+        url: "https://x.ai",
+        badge: "NEW"
+    },
+    {
+        id: 145, category: "image", name: "Seedream v5.0 Lite", provider: "ByteDance",
+        model_type: "Diffusion", pricing: "$0.026/image",
+        api_endpoint: true, ComfyUI_node: false, best_for: "High-resolution 2048x2048 illustration & design",
+        description: "ByteDance's high-speed image generator supporting native 2048×2048 generation at rapid inference speeds.",
+        url: "https://seedance.ai",
+        badge: "NEW"
+    },
+    {
+        id: 146, category: "image", name: "Imagen 4 Ultra", provider: "Google DeepMind",
+        model_type: "Diffusion", pricing: "Vertex AI Pricing",
+        api_endpoint: true, ComfyUI_node: false, best_for: "Photorealism, rich detail, complex lighting",
+        description: "Google DeepMind's flagship image generation model with photoreal lighting, skin textures, and spatial composition.",
+        url: "https://deepmind.google/technologies/imagen/",
+        badge: "NEW"
+    },
+    {
+        id: 19, category: "image", name: "Recraft V3", provider: "Recraft",
+        model_type: "Diffusion", pricing: "$0.02/image",
+        api_endpoint: true, ComfyUI_node: false, best_for: "Vector art, icons, brand assets",
+        description: "Specialized in vector-style graphics, SVG export, and brand-consistent asset generation.",
+        url: "https://recraft.ai"
     },
     {
         id: 17, category: "image", name: "Stable Diffusion 3.5 Large", provider: "Stability AI",
         model_type: "Latent Diffusion", pricing: "Free (self-hosted)",
         api_endpoint: true, ComfyUI_node: true, best_for: "Custom workflows, fine-tuning",
         description: "Open-source image model with full ComfyUI support and extensive fine-tuning ecosystem.",
-        url: "https://stability.ai"
-    },
-    {
-        id: 18, category: "image", name: "Ideogram 3.0", provider: "Ideogram",
-        model_type: "Diffusion", pricing: "$0.05/image",
-        api_endpoint: true, ComfyUI_node: false, best_for: "Typography, logos, posters",
-        description: "Best-in-class text rendering in generated images, ideal for typography-heavy designs.",
-        url: "https://ideogram.ai"
-    },
-    {
-        id: 19, category: "image", name: "Recraft V3", provider: "Recraft",
-        model_type: "Diffusion", pricing: "$0.02/image",
-        api_endpoint: true, ComfyUI_node: false, best_for: "Vector art, icons, brand assets",
-        description: "Specialized in vector-style graphics and brand-consistent asset generation.",
-        url: "https://recraft.ai"
-    },
-    {
-        id: 113, category: "image", name: "Imagen 3", provider: "Google DeepMind",
-        model_type: "Diffusion", pricing: "Vertex AI Pricing",
-        api_endpoint: true, ComfyUI_node: false, best_for: "Photorealism, rich detail, text rendering",
-        description: "Google's highest quality text-to-image model, featuring incredible detail, rich lighting, and fewer artifacts.",
-        url: "https://deepmind.google/technologies/imagen-3/"
+        url: "https://stability.ai",
+        badge: "OPEN SOURCE"
     },
 
     // === Audio & Music ===
@@ -840,7 +967,9 @@ function getMetaItems(tool) {
             if (tool.api_available) items.push({ icon: "🔌", text: "API" });
             break;
         case "gpu":
-            if (tool.rtx4090_hr !== "N/A (per-prediction)" && tool.rtx4090_hr !== "N/A (per-inference)") items.push({ icon: "🎮", text: "4090: $" + tool.rtx4090_hr + "/hr" });
+            if (tool.rtx4090_hr && tool.rtx4090_hr !== "N/A (per-prediction)" && tool.rtx4090_hr !== "N/A (per-inference)") {
+                items.push({ icon: "🎮", text: "4090: " + (tool.rtx4090_hr.startsWith('$') ? tool.rtx4090_hr : '$' + tool.rtx4090_hr) + "/hr" });
+            }
             if (tool.serverless) items.push({ icon: "☁️", text: "Serverless" });
             if (tool.free_tier) items.push({ icon: "🆓", text: "Free Tier" });
             break;
@@ -850,7 +979,12 @@ function getMetaItems(tool) {
 
 function formatPrice(tool) {
     if (tool.category === "gpu") {
-        return `From $${tool.rtx4090_hr !== "N/A (per-prediction)" && tool.rtx4090_hr !== "N/A (per-inference)" ? tool.rtx4090_hr : tool.a100_hr !== "N/A (per-prediction)" && tool.a100_hr !== "N/A (per-inference)" ? tool.a100_hr : "?"}/hr`;
+        const rate = (tool.rtx4090_hr && tool.rtx4090_hr !== "N/A (per-prediction)" && tool.rtx4090_hr !== "N/A (per-inference)")
+            ? tool.rtx4090_hr
+            : (tool.a100_hr && tool.a100_hr !== "N/A (per-prediction)" && tool.a100_hr !== "N/A (per-inference)")
+                ? tool.a100_hr
+                : null;
+        return rate ? `From ${rate.startsWith('$') ? rate : '$' + rate}/hr` : "Per-inference / API";
     }
     return tool.pricing || "Contact for pricing";
 }
