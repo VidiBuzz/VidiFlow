@@ -6,7 +6,7 @@ const TOOLS_DATA = [
 
     // — OpenAI —
     {
-        id: 2, category: "vlm", name: "GPT-5.6 Sol", provider: "OpenAI",
+        id: 2, category: "vlm", name: "GPT-5.6 Sol (Jul 2026)", provider: "OpenAI",
         params: "Undisclosed", context_window: "1M", vision_capable: true,
         pricing: "$1.75/1M input, $7.00/1M output",
         open_source: false, license: "Proprietary",
@@ -17,7 +17,7 @@ const TOOLS_DATA = [
         badge: "LATEST"
     },
     {
-        id: 130, category: "vlm", name: "GPT-5.6 Terra", provider: "OpenAI",
+        id: 130, category: "vlm", name: "GPT-5.6 Terra (Jul 2026)", provider: "OpenAI",
         params: "Undisclosed", context_window: "1M", vision_capable: true,
         pricing: "$0.25/1M input, $1.00/1M output",
         open_source: false, license: "Proprietary",
@@ -28,7 +28,7 @@ const TOOLS_DATA = [
         badge: "NEW"
     },
     {
-        id: 131, category: "vlm", name: "GPT-5.6 Luna", provider: "OpenAI",
+        id: 131, category: "vlm", name: "GPT-5.6 Luna (Jul 2026)", provider: "OpenAI",
         params: "Undisclosed", context_window: "1M", vision_capable: true,
         pricing: "$0.05/1M input, $0.20/1M output",
         open_source: false, license: "Proprietary",
@@ -39,7 +39,7 @@ const TOOLS_DATA = [
         badge: "NEW"
     },
     {
-        id: 122, category: "vlm", name: "GPT-5.3 Codex", provider: "OpenAI",
+        id: 122, category: "vlm", name: "GPT-5.3 Codex (May 2026)", provider: "OpenAI",
         params: "Undisclosed", context_window: "400K", vision_capable: true,
         pricing: "$1.75/1M input, $14/1M output",
         open_source: false, license: "Proprietary",
@@ -51,7 +51,7 @@ const TOOLS_DATA = [
 
     // — Alibaba / Qwen —
     {
-        id: 129, category: "vlm", name: "Qwen 3.8 Max", provider: "Alibaba / Qwen",
+        id: 129, category: "vlm", name: "Qwen 3.8 Max (Aug 2026)", provider: "Alibaba / Qwen",
         params: "2.4T MoE", context_window: "1M", vision_capable: true,
         pricing: "$1.20/1M input, $3.60/1M output",
         open_source: false, license: "Proprietary Cloud API",
@@ -62,7 +62,7 @@ const TOOLS_DATA = [
         badge: "LATEST"
     },
     {
-        id: 3, category: "vlm", name: "Qwen 3.8 Plus", provider: "Alibaba / Qwen",
+        id: 3, category: "vlm", name: "Qwen 3.8 Plus (Aug 2026)", provider: "Alibaba / Qwen",
         params: "Undisclosed MoE", context_window: "1M", vision_capable: true,
         pricing: "$0.30/1M input, $1.20/1M output",
         open_source: false, license: "Proprietary",
@@ -73,7 +73,7 @@ const TOOLS_DATA = [
         badge: "NEW"
     },
     {
-        id: 132, category: "vlm", name: "Qwen 3.8 27B", provider: "Alibaba / Qwen",
+        id: 132, category: "vlm", name: "Qwen 3.8 27B (Aug 2026)", provider: "Alibaba / Qwen",
         params: "27B Dense", context_window: "128K", vision_capable: true,
         pricing: "Free (Self-Hosted)",
         open_source: true, license: "Apache 2.0",
@@ -86,7 +86,7 @@ const TOOLS_DATA = [
 
     // — DeepSeek —
     {
-        id: 133, category: "vlm", name: "DeepSeek V4 Pro 0813", provider: "DeepSeek",
+        id: 133, category: "vlm", name: "DeepSeek V4 Pro 0813 (Aug 2026)", provider: "DeepSeek",
         params: "Undisclosed MoE (~900GB VRAM)", context_window: "1M", vision_capable: false,
         pricing: "$0.44/1M input, $0.87/1M output",
         open_source: false, license: "Proprietary",
@@ -97,7 +97,7 @@ const TOOLS_DATA = [
         badge: "NEW"
     },
     {
-        id: 134, category: "vlm", name: "DeepSeek V4 Flash 0731", provider: "DeepSeek",
+        id: 134, category: "vlm", name: "DeepSeek V4 Flash 0731 (Jul 2026)", provider: "DeepSeek",
         params: "284B total / 13B active (MoE)", context_window: "1M", vision_capable: false,
         pricing: "$0.09/1M input, $0.18/1M output",
         open_source: true, license: "MIT License",
@@ -110,7 +110,7 @@ const TOOLS_DATA = [
 
     // — Zhipu AI —
     {
-        id: 135, category: "vlm", name: "Zhipu GLM-5.3", provider: "Zhipu AI",
+        id: 135, category: "vlm", name: "Zhipu GLM-5.3 (Aug 2026)", provider: "Zhipu AI",
         params: "Undisclosed MoE", context_window: "1M", vision_capable: false,
         pricing: "$1.35/1M input, $4.20/1M output",
         open_source: true, license: "MIT License",
@@ -121,7 +121,7 @@ const TOOLS_DATA = [
         badge: "NEW"
     },
     {
-        id: 136, category: "vlm", name: "Zhipu GLM-5V Turbo", provider: "Zhipu AI",
+        id: 136, category: "vlm", name: "Zhipu GLM-5V Turbo (Jun 2026)", provider: "Zhipu AI",
         params: "Undisclosed MoE", context_window: "1M", vision_capable: true,
         pricing: "$0.20/1M input, $0.80/1M output",
         open_source: false, license: "Proprietary",
@@ -134,7 +134,7 @@ const TOOLS_DATA = [
 
     // — Moonshot AI —
     {
-        id: 137, category: "vlm", name: "Moonshot AI Kimi K3", provider: "Moonshot AI",
+        id: 137, category: "vlm", name: "Moonshot AI Kimi K3 (Jul 2026)", provider: "Moonshot AI",
         params: "2.8T MoE", context_window: "1M", vision_capable: true,
         pricing: "$3.00/1M input, $15.00/1M output",
         open_source: true, license: "Modified MIT",
@@ -145,7 +145,7 @@ const TOOLS_DATA = [
         badge: "LATEST"
     },
     {
-        id: 126, category: "vlm", name: "Kimi K 2.6", provider: "Moonshot AI",
+        id: 126, category: "vlm", name: "Kimi K 2.6 (May 2026)", provider: "Moonshot AI",
         params: "1T total / 32B active (MoE)", context_window: "2M", vision_capable: true,
         pricing: "$0.684/1M input, $3.42/1M output",
         open_source: true, license: "Modified MIT",
@@ -157,7 +157,7 @@ const TOOLS_DATA = [
 
     // — MiniMax —
     {
-        id: 200, category: "vlm", name: "MiniMax M3", provider: "MiniMax",
+        id: 200, category: "vlm", name: "MiniMax M3 (May 2026)", provider: "MiniMax",
         params: "Undisclosed MoE", context_window: "1M", vision_capable: true,
         pricing: "$0.30/1M input, $1.20/1M output",
         open_source: false, license: "Proprietary",
@@ -170,7 +170,7 @@ const TOOLS_DATA = [
 
     // — NVIDIA —
     {
-        id: 138, category: "vlm", name: "NVIDIA Nemotron 3 Ultra", provider: "NVIDIA",
+        id: 138, category: "vlm", name: "NVIDIA Nemotron 3 Ultra (Apr 2026)", provider: "NVIDIA",
         params: "550B MoE", context_window: "1M", vision_capable: false,
         pricing: "$0.80/1M input, $2.40/1M output",
         open_source: true, license: "NVIDIA Open Model License",
@@ -181,7 +181,7 @@ const TOOLS_DATA = [
         badge: "NEW"
     },
     {
-        id: 139, category: "vlm", name: "NVIDIA Nemotron 3 Nano Omni", provider: "NVIDIA",
+        id: 139, category: "vlm", name: "NVIDIA Nemotron 3 Nano Omni (Apr 2026)", provider: "NVIDIA",
         params: "30B-A3B MoE", context_window: "128K", vision_capable: true,
         pricing: "Free (NIM / Open weights)",
         open_source: true, license: "NVIDIA Open Model License",
@@ -194,7 +194,7 @@ const TOOLS_DATA = [
 
     // — Anthropic —
     {
-        id: 1, category: "vlm", name: "Claude Opus 5", provider: "Anthropic",
+        id: 1, category: "vlm", name: "Claude Opus 5 (Aug 2026)", provider: "Anthropic",
         params: "Undisclosed", context_window: "1M", vision_capable: true,
         pricing: "$5.00/1M input, $25.00/1M output",
         open_source: false, license: "Proprietary",
@@ -205,7 +205,7 @@ const TOOLS_DATA = [
         badge: "LATEST"
     },
     {
-        id: 147, category: "vlm", name: "Claude Fable 5", provider: "Anthropic",
+        id: 147, category: "vlm", name: "Claude Fable 5 (Jun 2026)", provider: "Anthropic",
         params: "Undisclosed", context_window: "1M", vision_capable: true,
         pricing: "$10.00/1M input, $50.00/1M output",
         open_source: false, license: "Proprietary",
@@ -216,7 +216,7 @@ const TOOLS_DATA = [
         badge: "NEW"
     },
     {
-        id: 121, category: "vlm", name: "Claude Sonnet 5", provider: "Anthropic",
+        id: 121, category: "vlm", name: "Claude Sonnet 5 (Jun 2026)", provider: "Anthropic",
         params: "Undisclosed", context_window: "1M", vision_capable: true,
         pricing: "$2.00/1M input, $10.00/1M output ($3/$15 standard)",
         open_source: false, license: "Proprietary",
@@ -227,7 +227,7 @@ const TOOLS_DATA = [
         badge: "NEW"
     },
     {
-        id: 120, category: "vlm", name: "Claude Mythos Preview", provider: "Anthropic",
+        id: 120, category: "vlm", name: "Claude Mythos Preview (Jul 2026)", provider: "Anthropic",
         params: "Undisclosed", context_window: "Undisclosed", vision_capable: true,
         pricing: "$2500/1M (restricted)",
         open_source: false, license: "Proprietary — Project Glasswing only",
@@ -240,7 +240,7 @@ const TOOLS_DATA = [
 
     // — Google DeepMind —
     {
-        id: 5, category: "vlm", name: "Gemini 3.1 Pro", provider: "Google DeepMind",
+        id: 5, category: "vlm", name: "Gemini 3.1 Pro (Feb 2026)", provider: "Google DeepMind",
         params: "Undisclosed", context_window: "10M", vision_capable: true,
         pricing: "$2/1M input, $12/1M output",
         open_source: false, license: "Proprietary",
@@ -251,7 +251,7 @@ const TOOLS_DATA = [
         badge: "LATEST"
     },
     {
-        id: 124, category: "vlm", name: "Gemini 2.5 Flash", provider: "Google DeepMind",
+        id: 124, category: "vlm", name: "Gemini 2.5 Flash (May 2026)", provider: "Google DeepMind",
         params: "Undisclosed", context_window: "1M", vision_capable: true,
         pricing: "$0.15/1M input, $0.60/1M output",
         open_source: false, license: "Proprietary",
@@ -261,7 +261,7 @@ const TOOLS_DATA = [
         url: "https://deepmind.google/gemini"
     },
     {
-        id: 125, category: "vlm", name: "Gemma 4", provider: "Google DeepMind",
+        id: 125, category: "vlm", name: "Gemma 4 (Mar 2026)", provider: "Google DeepMind",
         params: "31B / 26B-A4B", context_window: "128K", vision_capable: true,
         pricing: "Free (Open weights)", open_source: true, license: "Gemma License",
         benchmark_score: 86.0,
@@ -273,7 +273,7 @@ const TOOLS_DATA = [
 
     // — Xiaomi MiMo —
     {
-        id: 201, category: "vlm", name: "MiMo 2.5 Omni", provider: "Xiaomi",
+        id: 201, category: "vlm", name: "MiMo 2.5 Omni (Apr 2026)", provider: "Xiaomi",
         params: "Undisclosed MoE", context_window: "512K", vision_capable: true,
         pricing: "$0.40/1M input, $2.00/1M output",
         open_source: true, license: "Modified Apache 2.0",
@@ -286,7 +286,7 @@ const TOOLS_DATA = [
 
     // — Meta —
     {
-        id: 4, category: "vlm", name: "Llama 4 Maverick", provider: "Meta",
+        id: 4, category: "vlm", name: "Llama 4 Maverick (Apr 2026)", provider: "Meta",
         params: "10M+ MoE", context_window: "10M", vision_capable: true,
         pricing: "$0.20/1M input, $0.60/1M output",
         open_source: true, license: "Llama 4 Community",
@@ -297,7 +297,7 @@ const TOOLS_DATA = [
         badge: "OPEN SOURCE"
     },
     {
-        id: 128, category: "vlm", name: "Llama 4 Scout", provider: "Meta",
+        id: 128, category: "vlm", name: "Llama 4 Scout (Apr 2026)", provider: "Meta",
         params: "Undisclosed", context_window: "10M", vision_capable: true,
         pricing: "$0.11/1M input, $0.34/1M output",
         open_source: true, license: "Llama 4 Community",
@@ -312,7 +312,7 @@ const TOOLS_DATA = [
 
     // === Video Generation ===
     {
-        id: 7, category: "video", name: "Wan 2.7 (T2V)", provider: "Wan",
+        id: 7, category: "video", name: "Wan 2.7 (T2V) (Jul 2026)", provider: "Wan",
         max_duration: 15, resolution: "1080p", audio: "Yes",
         pricing: "API/Hosted", api_available: true, commercial_license: true,
         strengths: ["Instruction editing", "Audio sync", "Plot recreation"],
@@ -320,7 +320,7 @@ const TOOLS_DATA = [
         url: "https://wan.video"
     },
     {
-        id: 8, category: "video", name: "Wan 2.7 (I2V)", provider: "Wan",
+        id: 8, category: "video", name: "Wan 2.7 (I2V) (Jul 2026)", provider: "Wan",
         max_duration: 15, resolution: "1080p", audio: "Yes",
         pricing: "API/Hosted", api_available: true, commercial_license: true,
         strengths: ["First/last-frame control", "Clip continuation", "Multi-image guidance"],
@@ -328,7 +328,7 @@ const TOOLS_DATA = [
         url: "https://wan.video"
     },
     {
-        id: 9, category: "video", name: "Wan 2.2 (T2V 14B)", provider: "Wan",
+        id: 9, category: "video", name: "Wan 2.2 (T2V 14B) (May 2026)", provider: "Wan",
         max_duration: 30, resolution: "1080p",
         pricing: "Free (open weights)", api_available: true, commercial_license: true,
         strengths: ["MoE architecture", "Cost effective"],
@@ -336,7 +336,7 @@ const TOOLS_DATA = [
         url: "https://huggingface.co/Wan-AI"
     },
     {
-        id: 10, category: "video", name: "Wan 2.2 (I2V 14B)", provider: "Wan",
+        id: 10, category: "video", name: "Wan 2.2 (I2V 14B) (May 2026)", provider: "Wan",
         max_duration: 30, resolution: "720p",
         pricing: "Free (open weights)", api_available: true, commercial_license: true,
         strengths: ["MoE architecture", "Image to video"],
@@ -344,7 +344,7 @@ const TOOLS_DATA = [
         url: "https://huggingface.co/Wan-AI"
     },
     {
-        id: 11, category: "video", name: "Kling 3.0", provider: "Kuaishou",
+        id: 11, category: "video", name: "Kling 3.0 (Jul 2026)", provider: "Kuaishou",
         max_duration: 180, resolution: "1080p", audio: "Yes",
         pricing: "$0.09–0.14/sec (as low as $0.029/s on fal.ai)", api_available: true, commercial_license: true,
         strengths: ["Strong high-motion I2V", "Realistic motion", "Native audio generation", "Long clips"],
@@ -353,7 +353,7 @@ const TOOLS_DATA = [
         badge: "LATEST"
     },
     {
-        id: 140, category: "video", name: "MiniMax H3", provider: "MiniMax",
+        id: 140, category: "video", name: "MiniMax H3 (Jul 2026)", provider: "MiniMax",
         max_duration: 60, resolution: "2K", audio: "Yes",
         pricing: "$0.13/sec (2K) / $0.08/sec (768P)", api_available: true, commercial_license: true,
         strengths: ["Native stereo audio", "2K cinematic resolution", "Direct dialogue sync", "High prompt adherence"],
@@ -362,7 +362,7 @@ const TOOLS_DATA = [
         badge: "NEW"
     },
     {
-        id: 141, category: "video", name: "Seedance 2.5", provider: "ByteDance",
+        id: 141, category: "video", name: "Seedance 2.5 (Jul 2026)", provider: "ByteDance",
         max_duration: 60, resolution: "4K", audio: "Yes",
         pricing: "~$0.09/sec", api_available: true, commercial_license: true,
         strengths: ["Native 4K & Audio Sync", "50 Multimodal References", "Region-Level Editing", "High Frame Stability"],
@@ -371,7 +371,7 @@ const TOOLS_DATA = [
         badge: "NEW"
     },
     {
-        id: 142, category: "video", name: "Grok Imagine 1.5", provider: "xAI",
+        id: 142, category: "video", name: "Grok Imagine 1.5 (Aug 2026)", provider: "xAI",
         max_duration: 30, resolution: "1080p", audio: "Yes",
         pricing: "$0.08/sec", api_available: true, commercial_license: true,
         strengths: ["Built-in dialogue & SFX", "Fast generation", "Photorealistic rendering"],
@@ -380,7 +380,7 @@ const TOOLS_DATA = [
         badge: "NEW"
     },
     {
-        id: 13, category: "video", name: "Veo 3.1", provider: "Google DeepMind",
+        id: 13, category: "video", name: "Veo 3.1 (Jun 2026)", provider: "Google DeepMind",
         max_duration: 60, resolution: "4K", audio: "Yes",
         pricing: "$0.50/s standard / $0.75/s w/ audio", api_available: true, commercial_license: true,
         strengths: ["4K photoreal", "Precise audio sync", "Cinematic camera paths", "Brand content"],
@@ -389,7 +389,7 @@ const TOOLS_DATA = [
         badge: "LATEST"
     },
     {
-        id: 60, category: "video", name: "Runway Gen-4.5", provider: "Runway ML",
+        id: 60, category: "video", name: "Runway Gen-4.5 (Jun 2026)", provider: "Runway ML",
         max_duration: 60, resolution: "4K",
         pricing: "$0.08–0.40/sec", api_available: true, commercial_license: true,
         strengths: ["HD text-to-video", "Advanced physics", "Cinematic quality"],
@@ -471,7 +471,7 @@ const TOOLS_DATA = [
 
     // === Image Generation ===
     {
-        id: 14, category: "image", name: "Midjourney v7", provider: "Midjourney",
+        id: 14, category: "image", name: "Midjourney v7 (Jul 2026)", provider: "Midjourney",
         model_type: "Diffusion (proprietary)", pricing: "$0.04/image (Standard plan)",
         api_endpoint: false, ComfyUI_node: false, best_for: "Artistic, editorial",
         description: "The gold standard for artistic image generation with unmatched aesthetic quality and coherent styling.",
@@ -479,7 +479,7 @@ const TOOLS_DATA = [
         badge: "LATEST"
     },
     {
-        id: 15, category: "image", name: "FLUX 1.1 Pro", provider: "Black Forest Labs",
+        id: 15, category: "image", name: "FLUX 1.1 Pro (Aug 2026)", provider: "Black Forest Labs",
         model_type: "Flow Matching", pricing: "$0.04/image",
         api_endpoint: true, ComfyUI_node: true, best_for: "Commercial, product photography",
         description: "Commercial-grade image foundation model with ultra-crisp resolution, fast generation times, and wide API availability.",
@@ -487,7 +487,7 @@ const TOOLS_DATA = [
         badge: "LATEST"
     },
     {
-        id: 143, category: "image", name: "FLUX.1 Kontext [dev]", provider: "Black Forest Labs",
+        id: 143, category: "image", name: "FLUX.1 Kontext [dev] (Jul 2026)", provider: "Black Forest Labs",
         model_type: "Flow Matching", pricing: "$0.015/image",
         api_endpoint: true, ComfyUI_node: true, best_for: "Open-weights development, fine-tuning",
         description: "High-efficiency open-weight generation model offering state-of-the-art aesthetics at just $0.015/image.",
@@ -495,7 +495,7 @@ const TOOLS_DATA = [
         badge: "OPEN SOURCE"
     },
     {
-        id: 18, category: "image", name: "Ideogram 3.0", provider: "Ideogram",
+        id: 18, category: "image", name: "Ideogram 3.0 (Jul 2026)", provider: "Ideogram",
         model_type: "Diffusion", pricing: "$0.05/image",
         api_endpoint: true, ComfyUI_node: false, best_for: "Typography, logos, graphic design, posters",
         description: "Best-in-class text rendering in generated images with accurate graphic design layouts and typography.",
@@ -503,7 +503,7 @@ const TOOLS_DATA = [
         badge: "LATEST"
     },
     {
-        id: 144, category: "image", name: "Grok Imagine (Image)", provider: "xAI",
+        id: 144, category: "image", name: "Grok Imagine (Image) (Aug 2026)", provider: "xAI",
         model_type: "Diffusion", pricing: "$0.02/image",
         api_endpoint: true, ComfyUI_node: false, best_for: "Fast photorealism, high-volume generation",
         description: "xAI's fast, high-volume image model delivering 1K/2K photorealistic generations at just $0.02 per image.",
@@ -511,7 +511,7 @@ const TOOLS_DATA = [
         badge: "NEW"
     },
     {
-        id: 145, category: "image", name: "Seedream v5.0 Lite", provider: "ByteDance",
+        id: 145, category: "image", name: "Seedream v5.0 Lite (Jul 2026)", provider: "ByteDance",
         model_type: "Diffusion", pricing: "$0.026/image",
         api_endpoint: true, ComfyUI_node: false, best_for: "High-resolution 2048x2048 illustration & design",
         description: "ByteDance's high-speed image generator supporting native 2048×2048 generation at rapid inference speeds.",
@@ -519,7 +519,7 @@ const TOOLS_DATA = [
         badge: "NEW"
     },
     {
-        id: 146, category: "image", name: "Imagen 4 Ultra", provider: "Google DeepMind",
+        id: 146, category: "image", name: "Imagen 4 Ultra (Jun 2026)", provider: "Google DeepMind",
         model_type: "Diffusion", pricing: "Vertex AI Pricing",
         api_endpoint: true, ComfyUI_node: false, best_for: "Photorealism, rich detail, complex lighting",
         description: "Google DeepMind's flagship image generation model with photoreal lighting, skin textures, and spatial composition.",
@@ -527,14 +527,14 @@ const TOOLS_DATA = [
         badge: "NEW"
     },
     {
-        id: 19, category: "image", name: "Recraft V3", provider: "Recraft",
+        id: 19, category: "image", name: "Recraft V3 (May 2026)", provider: "Recraft",
         model_type: "Diffusion", pricing: "$0.02/image",
         api_endpoint: true, ComfyUI_node: false, best_for: "Vector art, icons, brand assets",
         description: "Specialized in vector-style graphics, SVG export, and brand-consistent asset generation.",
         url: "https://recraft.ai"
     },
     {
-        id: 17, category: "image", name: "Stable Diffusion 3.5 Large", provider: "Stability AI",
+        id: 17, category: "image", name: "Stable Diffusion 3.5 Large (Jun 2026)", provider: "Stability AI",
         model_type: "Latent Diffusion", pricing: "Free (self-hosted)",
         api_endpoint: true, ComfyUI_node: true, best_for: "Custom workflows, fine-tuning",
         description: "Open-source image model with full ComfyUI support and extensive fine-tuning ecosystem.",
@@ -544,7 +544,7 @@ const TOOLS_DATA = [
 
     // === Audio & Music ===
     {
-        id: 20, category: "audio", name: "ElevenLabs v3", provider: "ElevenLabs",
+        id: 20, category: "audio", name: "ElevenLabs v3 (Aug 2026)", provider: "ElevenLabs",
         category_type: "Voice cloning & TTS", pricing: "$0.03/1K chars",
         api_available: true, royalty_free: true,
         use_cases: ["Narration", "Dubbing", "Character voices", "Podcasts"],
@@ -552,7 +552,7 @@ const TOOLS_DATA = [
         url: "https://elevenlabs.io"
     },
     {
-        id: 21, category: "audio", name: "Suno v4", provider: "Suno AI",
+        id: 21, category: "audio", name: "Suno v4 (May 2026)", provider: "Suno AI",
         category_type: "Music generation", pricing: "$0.015/sec (Pro plan)",
         api_available: false, royalty_free: true,
         use_cases: ["Full songs", "Background music", "Jingles", "Soundtracks"],
@@ -560,7 +560,7 @@ const TOOLS_DATA = [
         url: "https://suno.ai"
     },
     {
-        id: 22, category: "audio", name: "Udio 1.5", provider: "Udio",
+        id: 22, category: "audio", name: "Udio 1.5 (Jun 2026)", provider: "Udio",
         category_type: "Music generation", pricing: "$0.02/sec",
         api_available: true, royalty_free: true,
         use_cases: ["Music production", "Creative projects", "Commercial licensing"],
@@ -568,7 +568,7 @@ const TOOLS_DATA = [
         url: "https://udio.com"
     },
     {
-        id: 23, category: "audio", name: "Mubert", provider: "Mubert Inc.",
+        id: 23, category: "audio", name: "Mubert (Apr 2026)", provider: "Mubert Inc.",
         category_type: "Ambient & background music", pricing: "$0.01/sec",
         api_available: true, royalty_free: true,
         use_cases: ["Streaming", "Video content", "Apps & games", "Meditation"],
@@ -576,7 +576,7 @@ const TOOLS_DATA = [
         url: "https://mubert.com"
     },
     {
-        id: 24, category: "audio", name: "PlayHT 2.0", provider: "PlayHT",
+        id: 24, category: "audio", name: "PlayHT 2.0 (May 2026)", provider: "PlayHT",
         category_type: "Voice cloning & TTS", pricing: "$0.025/1K chars",
         api_available: true, royalty_free: true,
         use_cases: ["Enterprise TTS", "Audiobooks", "E-learning", "IVR"],
