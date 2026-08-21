@@ -23,7 +23,7 @@
     const MODELS = {
         vision: [
             { name: 'MiniMax M3 (May 2026)',      sub: 'MiniMax',   price: '$0.30/$1.20', ctx: '1M',   note: 'Frontier Omni — best all-round vision' },
-            { name: 'Qwen 3.8 Max (Aug 2026)',    sub: 'Alibaba',   price: '$1.20/$3.60', ctx: '1M',   note: '2.4T MoE · Top 5 globally · Native vision' },
+            { name: 'Qwen 3.8 Max (Aug 2026)',    sub: 'Alibaba',   price: '$2.00/$6.00', ctx: '1M',   note: '2.4T MoE · Top 5 globally · Native vision' },
             { name: 'MiMo 2.5 Omni (Apr 2026)',   sub: 'Xiaomi',    price: 'Free / Local',ctx: '512K', note: 'Open-weight · runs on ~8 GB VRAM', local: true },
             { name: 'MiMo 2.5 Pro (Apr 2026)',    sub: 'Xiaomi',    price: '$0.44/$0.87', ctx: '512K', note: 'Pro vision tier · higher precision' },
             { name: 'Qwen 3.8 Plus (Aug 2026)',   sub: 'Alibaba',   price: '$0.30/$1.20', ctx: '1M',   note: 'Vision + agentic code in one model' },
@@ -31,14 +31,14 @@
             { name: 'Gemini 3.1 Pro (Feb 2026)',  sub: 'Google',    price: '$2.00/$12.00',ctx: '10M',  note: '10M context window · Math/Science' },
         ],
         reasoning: [
-            { name: 'Qwen 3.8 Max (Aug 2026)',    sub: 'Alibaba',   price: '$1.20/$3.60', ctx: '1M',   note: '2.4T MoE · Top 5 globally · Reasoning' },
+            { name: 'Qwen 3.8 Max (Aug 2026)',    sub: 'Alibaba',   price: '$2.00/$6.00', ctx: '1M',   note: '2.4T MoE · Top 5 globally · Reasoning' },
             { name: 'DeepSeek V4 Pro 0813 (Aug 2026)', sub: 'DeepSeek',  price: '$0.44/$0.87', ctx: '1M',   note: 'Frontier reasoning · dual thinking modes' },
             { name: 'Claude Opus 5 (Aug 2026)',   sub: 'Anthropic', price: '$5.00/$25.00',ctx: '1M',   note: 'Maximum capability · deep refactoring' },
             { name: 'GLM-5.3 (Aug 2026)',         sub: 'Zhipu AI',  price: '$1.35/$4.20', ctx: '1M',   note: 'MIT-licensed · deep recursive debugging' },
             { name: 'Moonshot AI Kimi K3 (Jul 2026)', sub: 'Moonshot',  price: '$3.00/$15.00', ctx: '1M',   note: '2.8T MoE · #4 globally · 1M context' },
         ],
         code: [
-            { name: 'Qwen 3.8 Max (Aug 2026)',      sub: 'Alibaba',   price: '$1.20/$3.60', ctx: '1M',   note: '#1 Code Arena · 2.4T coding superagent' },
+            { name: 'Qwen 3.8 Max (Aug 2026)',      sub: 'Alibaba',   price: '$2.00/$6.00', ctx: '1M',   note: '#1 Code Arena · 2.4T coding superagent' },
             { name: 'DeepSeek V4 Flash 0731 (Jul 2026)', sub: 'DeepSeek', price: '$0.09/$0.18', ctx: '1M', note: 'Speculative decoding · DeepSWE 54.4%' },
             { name: 'DeepSeek V4 Pro 0813 (Aug 2026)', sub: 'DeepSeek',  price: '$0.44/$0.87', ctx: '1M',   note: 'Best value frontier coder' },
             { name: 'Claude Sonnet 5 (Jun 2026)',   sub: 'Anthropic', price: '$2.00/$10.00',ctx: '1M',   note: 'Premium code · autonomous tool use' },
