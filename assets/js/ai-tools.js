@@ -8,7 +8,7 @@ const TOOLS_DATA = [
     {
         id: 2, category: "vlm", name: "GPT-5.6 Sol (Jul 2026)", provider: "OpenAI",
         params: "Undisclosed", context_window: "1M", vision_capable: true,
-        pricing: "$1.75/1M input, $7.00/1M output",
+        pricing: "$2.50/1M input, $15.00/1M output",
         open_source: false, license: "Proprietary",
         benchmark_score: 96.2,
         description: "OpenAI's latest flagship model (August 2026). #1 on the Artificial Analysis Coding Agent Index, featuring native computer-use, whole-repository comprehension, and 1M context with aggressive new pricing.",
