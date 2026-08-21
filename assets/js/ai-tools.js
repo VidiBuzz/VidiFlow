@@ -19,18 +19,18 @@ const TOOLS_DATA = [
     {
         id: 130, category: "vlm", name: "GPT-5.6 Terra (Jul 2026)", provider: "OpenAI",
         params: "Undisclosed", context_window: "1M", vision_capable: true,
-        pricing: "$0.25/1M input, $1.00/1M output",
+        pricing: "$2.00/1M input, $12.00/1M output",
         open_source: false, license: "Proprietary",
         benchmark_score: 91.5,
-        description: "OpenAI's high-efficiency mid-tier model. Delivers exceptional multimodal reasoning and fast tool-calling at 1/7th the cost of Sol.",
-        strengths: ["Cost-efficiency", "Fast tool calling", "1M context", "Multimodal QA"],
+        description: "OpenAI's balanced production workhorse. Delivers exceptional multimodal reasoning and fast tool-calling at $2.00 in / $12.00 out.",
+        strengths: ["Production workhorse", "Fast tool calling", "1M context", "Multimodal QA"],
         url: "https://openai.com",
         badge: "NEW"
     },
     {
         id: 131, category: "vlm", name: "GPT-5.6 Luna (Jul 2026)", provider: "OpenAI",
         params: "Undisclosed", context_window: "1M", vision_capable: true,
-        pricing: "$0.05/1M input, $0.20/1M output",
+        pricing: "$0.20/1M input, $1.20/1M output",
         open_source: false, license: "Proprietary",
         benchmark_score: 87.0,
         description: "OpenAI's ultra-fast lightweight model for high-throughput classification, routing, and lightweight multimodal inspection.",
