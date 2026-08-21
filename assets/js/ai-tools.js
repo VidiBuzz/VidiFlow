@@ -62,14 +62,14 @@ const TOOLS_DATA = [
         badge: "LATEST"
     },
     {
-        id: 3, category: "vlm", name: "Qwen 3.8 Plus (Aug 2026)", provider: "Alibaba / Qwen",
+        id: 3, category: "vlm", name: "Qwen 3.7 Plus (Aug 2026)", provider: "Alibaba / Qwen",
         params: "Undisclosed MoE", context_window: "1M", vision_capable: true,
-        pricing: "$0.30/1M input, $1.20/1M output",
+        pricing: "$0.32/1M input, $1.28/1M output",
         open_source: false, license: "Proprietary",
         benchmark_score: 91.2,
-        description: "Qwen's multimodal workhorse — delivers fast high-resolution vision QA, document parsing, and agentic tool loops at 4x lower cost than Max.",
+        description: "Qwen's multimodal workhorse (slug: qwen/qwen3.7-plus) — delivers fast high-resolution vision QA, document parsing, and agentic tool loops at low latency.",
         strengths: ["1M context window", "Native vision/video QA", "Cost-effective tool loops", "High throughput"],
-        url: "https://chat.qwen.ai",
+        url: "https://openrouter.ai/qwen/qwen3.7-plus",
         badge: "NEW"
     },
     {

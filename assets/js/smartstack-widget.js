@@ -26,7 +26,7 @@
             { name: 'Qwen 3.8 Max (Aug 2026)',    sub: 'Alibaba',   price: '$2.00/$6.00', ctx: '1M',   note: '2.4T MoE · Top 5 globally · Native vision' },
             { name: 'MiMo 2.5 Omni (Apr 2026)',   sub: 'Xiaomi',    price: 'Free / Local',ctx: '512K', note: 'Open-weight · runs on ~8 GB VRAM', local: true },
             { name: 'MiMo 2.5 Pro (Apr 2026)',    sub: 'Xiaomi',    price: '$0.44/$0.87', ctx: '512K', note: 'Pro vision tier · higher precision' },
-            { name: 'Qwen 3.8 Plus (Aug 2026)',   sub: 'Alibaba',   price: '$0.30/$1.20', ctx: '1M',   note: 'Vision + agentic code in one model' },
+            { name: 'Qwen 3.7 Plus (Aug 2026)',   sub: 'Alibaba',   price: '$0.32/$1.28', ctx: '1M',   note: 'Vision + agentic code in one model' },
             { name: 'GLM-5V Turbo (Jun 2026)',    sub: 'Zhipu AI',  price: '$0.20/$0.80', ctx: '1M',   note: 'Agent-grade visual QA & layout analysis' },
             { name: 'Gemini 3.1 Pro (Feb 2026)',  sub: 'Google',    price: '$2.00/$12.00',ctx: '10M',  note: '10M context window · Math/Science' },
         ],
