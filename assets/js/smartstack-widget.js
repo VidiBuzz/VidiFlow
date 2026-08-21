@@ -32,15 +32,15 @@
         ],
         reasoning: [
             { name: 'Qwen 3.8 Max (Aug 2026)',    sub: 'Alibaba',   price: '$2.00/$6.00', ctx: '1M',   note: '2.4T MoE · Top 5 globally · Reasoning' },
-            { name: 'DeepSeek V4 Pro 0813 (Aug 2026)', sub: 'DeepSeek',  price: '$0.44/$0.87', ctx: '1M',   note: 'Frontier reasoning · dual thinking modes' },
+            { name: 'DeepSeek V4 Pro 0813 (Aug 2026)', sub: 'DeepSeek',  price: '$1.80/$4.20', ctx: '1M',   note: 'Frontier reasoning · dual thinking modes' },
             { name: 'Claude Opus 5 (Aug 2026)',   sub: 'Anthropic', price: '$5.00/$25.00',ctx: '1M',   note: 'Maximum capability · deep refactoring' },
             { name: 'GLM-5.3 (Aug 2026)',         sub: 'Zhipu AI',  price: '$1.35/$4.20', ctx: '1M',   note: 'MIT-licensed · deep recursive debugging' },
             { name: 'Moonshot AI Kimi K3 (Jul 2026)', sub: 'Moonshot',  price: '$3.00/$15.00', ctx: '1M',   note: '2.8T MoE · #4 globally · 1M context' },
         ],
         code: [
             { name: 'Qwen 3.8 Max (Aug 2026)',      sub: 'Alibaba',   price: '$2.00/$6.00', ctx: '1M',   note: '#1 Code Arena · 2.4T coding superagent' },
-            { name: 'DeepSeek V4 Flash 0731 (Jul 2026)', sub: 'DeepSeek', price: '$0.09/$0.18', ctx: '1M', note: 'Speculative decoding · DeepSWE 54.4%' },
-            { name: 'DeepSeek V4 Pro 0813 (Aug 2026)', sub: 'DeepSeek',  price: '$0.44/$0.87', ctx: '1M',   note: 'Best value frontier coder' },
+            { name: 'DeepSeek V4 Flash 0731 (Jul 2026)', sub: 'DeepSeek', price: '$0.22/$0.66', ctx: '1M', note: 'Speculative decoding · DeepSWE 54.4%' },
+            { name: 'DeepSeek V4 Pro 0813 (Aug 2026)', sub: 'DeepSeek',  price: '$1.80/$4.20', ctx: '1M',   note: 'Best value frontier coder' },
             { name: 'Claude Sonnet 5 (Jun 2026)',   sub: 'Anthropic', price: '$2.00/$10.00',ctx: '1M',   note: 'Premium code · autonomous tool use' },
             { name: 'Moonshot AI Kimi K3 (Jul 2026)', sub: 'Moonshot',  price: '$3.00/$15.00', ctx: '1M',   note: '2.8T MoE · autonomous tool loops' },
             { name: 'Qwen 3.8 27B (Aug 2026)',      sub: 'Alibaba',   price: 'Free / Local',ctx: '128K', note: 'Local 27B · fits RTX 4090 (~17GB)', local: true },

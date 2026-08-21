@@ -53,7 +53,7 @@ const TOOLS_DATA = [
     {
         id: 129, category: "vlm", name: "Qwen 3.8 Max (Aug 2026)", provider: "Alibaba / Qwen",
         params: "2.4T MoE", context_window: "1M", vision_capable: true,
-        pricing: "$1.20/1M input, $3.60/1M output",
+        pricing: "$2.00/1M input, $6.00/1M output",
         open_source: false, license: "Proprietary Cloud API",
         benchmark_score: 95.8,
         description: "Alibaba's 2.4 Trillion parameter multimodal flagship, ranking in the Top 5 globally on the Intelligence Index. Features native image and video sequence understanding, frontier SWE-Bench Pro coding, and a 1M-token context window.",
@@ -88,10 +88,10 @@ const TOOLS_DATA = [
     {
         id: 133, category: "vlm", name: "DeepSeek V4 Pro 0813 (Aug 2026)", provider: "DeepSeek",
         params: "Undisclosed MoE (~900GB VRAM)", context_window: "1M", vision_capable: false,
-        pricing: "$0.44/1M input, $0.87/1M output",
+        pricing: "$1.80/1M input, $4.20/1M output",
         open_source: false, license: "Proprietary",
         benchmark_score: 95.0,
-        description: "Released August 13, 2026. DeepSeek's upgraded flagship with switchable Thinking / Non-Thinking modes for trading latency vs reasoning depth, backed by a 1M context window and unmatched price/performance.",
+        description: "Released August 13, 2026. DeepSeek's upgraded flagship with switchable Thinking / Non-Thinking modes for trading latency vs reasoning depth, backed by a 1M context window and OpenRouter priority rates ($1.80/$4.20).",
         strengths: ["Dual Thinking modes", "Frontier reasoning", "1M context", "Unbeatable flagship pricing"],
         url: "https://deepseek.com",
         badge: "NEW"
@@ -99,11 +99,11 @@ const TOOLS_DATA = [
     {
         id: 134, category: "vlm", name: "DeepSeek V4 Flash 0731 (Jul 2026)", provider: "DeepSeek",
         params: "284B total / 13B active (MoE)", context_window: "1M", vision_capable: false,
-        pricing: "$0.09/1M input, $0.18/1M output",
+        pricing: "$0.22/1M input, $0.66/1M output",
         open_source: true, license: "MIT License",
         benchmark_score: 92.8,
-        description: "Released July 31, 2026. Speculative decoding module crushes agentic benchmarks — Terminal Bench 2.1 (82.7%), DeepSWE (54.4%). MIT-licensed and runnable locally on ~160 GB VRAM.",
-        strengths: ["MIT License", "$0.09/$0.18 budget pricing", "Speculative decoding", "High-volume agent loops"],
+        description: "Released July 31, 2026. Speculative decoding module crushes agentic benchmarks — Terminal Bench 2.1 (82.7%), DeepSWE (54.4%). OpenRouter rates: $0.22/$0.66 per 1M tokens ($0.88 combined).",
+        strengths: ["MIT License", "$0.22/$0.66 OpenRouter rate", "Speculative decoding", "High-volume agent loops"],
         url: "https://deepseek.com",
         badge: "LATEST"
     },
