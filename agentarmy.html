@@ -1402,6 +1402,187 @@
             .cta-card { padding: 36px 20px; border-radius: 22px; }
             .recommendations { grid-template-columns: 1fr; }
         }
+
+        /* === Interactive Mode Tabs === */
+        .mode-tabs-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin: 36px 0 28px;
+            flex-wrap: wrap;
+        }
+
+        .mode-tab-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 22px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: var(--text-dim);
+            font-size: 0.92rem;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+            user-select: none;
+        }
+
+        .mode-tab-btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: #fff;
+            border-color: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .mode-tab-btn.active {
+            background: linear-gradient(135deg, rgba(0, 229, 255, 0.2), rgba(255, 45, 146, 0.2));
+            border-color: var(--accent);
+            color: #fff;
+            box-shadow: 0 0 24px rgba(0, 229, 255, 0.35);
+        }
+
+        .mode-tab-count {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.12);
+            font-size: 0.75em;
+            font-weight: 700;
+        }
+
+        .mode-tab-btn.active .mode-tab-count {
+            background: var(--accent);
+            color: #050514;
+        }
+
+        /* === Architecture Explainer Cards === */
+        .arch-explainer-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        @media (max-width: 900px) {
+            .arch-explainer-grid { grid-template-columns: 1fr; }
+        }
+
+        .arch-card {
+            background: var(--surface);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 24px;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(20px);
+            transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .arch-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+        }
+
+        .arch-card.engine::before { background: linear-gradient(90deg, #ff6b35, #76b900); }
+        .arch-card.visual::before { background: linear-gradient(90deg, #00d4ff, #8b5cf6); }
+        .arch-card.hitl::before { background: linear-gradient(90deg, #10b981, #f59e0b); }
+
+        .arch-card:hover {
+            transform: translateY(-3px);
+            border-color: rgba(255, 255, 255, 0.25);
+            box-shadow: 0 16px 36px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .arch-card-icon {
+            font-size: 2rem;
+            margin-bottom: 12px;
+            display: inline-block;
+        }
+
+        .arch-card h3 {
+            font-family: 'Kumbh Sans', sans-serif !important;
+            font-size: 1.15rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #fff;
+        }
+
+        .arch-card p {
+            font-size: 0.88rem;
+            line-height: 1.6;
+            color: var(--text-dim);
+            margin-bottom: 16px;
+        }
+
+        .arch-card-tags {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .arch-tag {
+            font-size: 0.72rem;
+            padding: 3px 8px;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: var(--text-dim);
+            font-family: 'Geist Mono', monospace;
+        }
+
+        /* === Badges for Platform Cards === */
+        .modality-badge-row {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+        }
+
+        .modality-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            vertical-align: middle;
+        }
+
+        .modality-visual {
+            background: rgba(0, 212, 255, 0.15);
+            color: #00d4ff;
+            border: 1px solid rgba(0, 212, 255, 0.35);
+        }
+
+        .modality-engine {
+            background: rgba(255, 107, 53, 0.15);
+            color: #ff8c5a;
+            border: 1px solid rgba(255, 107, 53, 0.35);
+        }
+
+        .modality-hitl {
+            background: rgba(16, 185, 129, 0.15);
+            color: #34d399;
+            border: 1px solid rgba(16, 185, 129, 0.35);
+        }
+
+        .modality-cli {
+            background: rgba(148, 163, 184, 0.15);
+            color: #cbd5e1;
+            border: 1px solid rgba(148, 163, 184, 0.3);
+        }
+
+        .platform-entry.is-hidden {
+            display: none !important;
+        }
     </style>
 </head>
 <body>
@@ -1499,15 +1680,80 @@
             </div>
         </div>
 
-        <div class="platform-grid">
-        <!-- NVIDIA NemoClaw -->
-        <div class="platform-entry">
+        <!-- ARCHITECTURE PILLARS & STRATIFICATION -->
+        <div class="arch-explainer-grid">
+            <div class="arch-card engine">
+                <div class="arch-card-icon">⚙️</div>
+                <h3>Behind-the-Scenes Orchestration</h3>
+                <p>Low-overhead execution kernels (Rust, WASM, Node, Python) handling subagent DAG routing, capability-based sandboxing (Landlock/seccomp), memory stores, and distributed IPC.</p>
+                <div class="arch-card-tags">
+                    <span class="arch-tag">Kernel Runtimes</span>
+                    <span class="arch-tag">Process Isolation</span>
+                    <span class="arch-tag">Memory &amp; IPC</span>
+                    <span class="arch-tag">Headless / CLI</span>
+                </div>
+            </div>
+
+            <div class="arch-card visual">
+                <div class="arch-card-icon">📊</div>
+                <h3>Visual Dashboards &amp; Observability</h3>
+                <p>Non-text visual user interfaces: live Org-Chart hierarchies, 2D/3D knowledge graph canvases, reactive node heartbeats, real-time message streams, and token burn velocity gauges.</p>
+                <div class="arch-card-tags">
+                    <span class="arch-tag">Infinite Canvas DAGs</span>
+                    <span class="arch-tag">Company Org Trees</span>
+                    <span class="arch-tag">Live Heartbeats</span>
+                    <span class="arch-tag">3D Graphs</span>
+                </div>
+            </div>
+
+            <div class="arch-card hitl">
+                <div class="arch-card-icon">🚦</div>
+                <h3>Human-In-The-Loop (HITL) &amp; Governance</h3>
+                <p>Manual approval gates before executing sensitive tools (terminal commands, payment APIs, database writes), state snapshot time-travel replays, branch overrides, and kill-switches.</p>
+                <div class="arch-card-tags">
+                    <span class="arch-tag">Approval Gates</span>
+                    <span class="arch-tag">Time-Travel Replay</span>
+                    <span class="arch-tag">RBAC &amp; SOC2</span>
+                    <span class="arch-tag">Instant Kill-Switch</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- INTERACTIVE MODE TABS -->
+        <div class="mode-tabs-container" id="agentArmyTabs">
+            <button class="mode-tab-btn active" onclick="filterAgentArmy('all', this)">
+                <span>⚔️ All Platforms</span>
+                <span class="mode-tab-count">14</span>
+            </button>
+            <button class="mode-tab-btn" onclick="filterAgentArmy('engine', this)">
+                <span>⚙️ Backend Orchestration Engines</span>
+                <span class="mode-tab-count">8</span>
+            </button>
+            <button class="mode-tab-btn" onclick="filterAgentArmy('visual', this)">
+                <span>📊 Visual Dashboards &amp; UI</span>
+                <span class="mode-tab-count">8</span>
+            </button>
+            <button class="mode-tab-btn" onclick="filterAgentArmy('hitl', this)">
+                <span>🚦 HITL &amp; Governance</span>
+                <span class="mode-tab-count">10</span>
+            </button>
+        </div>
+
+        <div class="platform-grid" id="platformGrid">
+
+        <!-- 1. NVIDIA NemoClaw -->
+        <div class="platform-entry" data-category="engine hitl">
             <div class="platform-visual">
                 <div class="platform-logo">
                     <svg viewBox="0 0 100 100"><rect rx="18" width="100" height="100" fill="#76b900"/><text x="50" y="68" text-anchor="middle" font-family="Arial Black,Arial,sans-serif" font-size="52" font-weight="900" fill="#fff">N</text></svg>
                 </div>
             </div>
             <div class="platform-content">
+                <div class="modality-badge-row">
+                    <span class="modality-badge modality-engine">⚙️ Orchestration Engine</span>
+                    <span class="modality-badge modality-cli">CLI / OpenShell</span>
+                    <span class="modality-badge modality-hitl">🚦 NeMo Guardrails HITL</span>
+                </div>
                 <h3>🟢 NVIDIA NemoClaw <span class="badge badge-enterprise">ENTERPRISE</span> <span class="badge badge-local">LOCAL: 2GB</span></h3>
                 <div class="metrics-grid">
                     <div class="metric-card">
@@ -1550,14 +1796,19 @@
             </div>
         </div>
 
-        <!-- OpenClaw -->
-        <div class="platform-entry">
+        <!-- 2. OpenClaw -->
+        <div class="platform-entry" data-category="engine visual">
             <div class="platform-visual">
                 <div class="platform-logo">
                     <svg viewBox="0 0 100 100"><rect rx="18" width="100" height="100" fill="#9b59b6"/><path d="M30 65 C30 45 38 30 50 30 C62 30 70 45 70 65" stroke="#fff" stroke-width="5" fill="none" stroke-linecap="round"/><circle cx="40" cy="48" r="5" fill="#fff"/><circle cx="60" cy="48" r="5" fill="#fff"/></svg>
                 </div>
             </div>
             <div class="platform-content">
+                <div class="modality-badge-row">
+                    <span class="modality-badge modality-engine">⚙️ Node/TS Engine</span>
+                    <span class="modality-badge modality-visual">📊 A2UI Visual Canvas</span>
+                    <span class="modality-badge modality-cli">22+ Channels</span>
+                </div>
                 <h3>🟣 OpenClaw (Original) <span class="badge badge-opensource">376K+ STARS</span> <span class="badge badge-local">LOCAL: 1GB</span></h3>
                 <div class="metrics-grid">
                     <div class="metric-card">
@@ -1600,14 +1851,19 @@
             </div>
         </div>
 
-        <!-- OpenFang -->
-        <div class="platform-entry">
+        <!-- 3. OpenFang -->
+        <div class="platform-entry" data-category="engine">
             <div class="platform-visual">
                 <div class="platform-logo">
                     <svg viewBox="0 0 100 100"><rect rx="18" width="100" height="100" fill="#e67e22"/><path d="M50 25 L65 60 L50 50 L35 60 Z" fill="#fff"/><rect x="30" y="62" width="40" height="6" rx="3" fill="rgba(255,255,255,0.7)"/></svg>
                 </div>
             </div>
             <div class="platform-content">
+                <div class="modality-badge-row">
+                    <span class="modality-badge modality-engine">⚙️ Pure Rust Engine</span>
+                    <span class="modality-badge modality-engine">16 Security Layers</span>
+                    <span class="modality-badge modality-cli">Headless OS / Sockets</span>
+                </div>
                 <h3>🔶 OpenFang <span class="badge badge-rust">RUST</span> <span class="badge badge-opensource">16 SECURITY LAYERS</span> <span class="badge badge-local">LOCAL: 500MB</span></h3>
                 <div class="metrics-grid">
                     <div class="metric-card">
@@ -1650,14 +1906,19 @@
             </div>
         </div>
 
-        <!-- ZeroClaw -->
-        <div class="platform-entry">
+        <!-- 4. ZeroClaw -->
+        <div class="platform-entry" data-category="engine">
             <div class="platform-visual">
                 <div class="platform-logo">
                     <svg viewBox="0 0 100 100"><rect rx="18" width="100" height="100" fill="#3498db"/><path d="M55 20 L35 52 L48 52 L42 80 L65 45 L52 45 Z" fill="#fff" stroke="#fff" stroke-width="2" stroke-linejoin="round"/></svg>
                 </div>
             </div>
             <div class="platform-content">
+                <div class="modality-badge-row">
+                    <span class="modality-badge modality-engine">⚙️ Rust WASM Engine</span>
+                    <span class="modality-badge modality-engine">8MB RAM / 10ms Boot</span>
+                    <span class="modality-badge modality-cli">Edge / Headless CLI</span>
+                </div>
                 <h3>⚡ ZeroClaw <span class="badge badge-rust">RUST</span> <span class="badge badge-fast">ULTRA-LIGHTWEIGHT</span> <span class="badge badge-local">LOCAL: 50MB</span></h3>
                 <div class="metrics-grid">
                     <div class="metric-card">
@@ -1698,14 +1959,19 @@
             </div>
         </div>
 
-        <!-- Microsoft Agent Framework -->
-        <div class="platform-entry">
+        <!-- 5. Microsoft Agent Framework -->
+        <div class="platform-entry" data-category="engine hitl">
             <div class="platform-visual">
                 <div class="platform-logo">
                     <svg viewBox="0 0 100 100"><rect rx="18" width="100" height="100" fill="#00a4ef"/><rect x="22" y="22" width="24" height="24" rx="3" fill="#fff"/><rect x="54" y="22" width="24" height="24" rx="3" fill="rgba(255,255,255,0.7)"/><rect x="22" y="54" width="24" height="24" rx="3" fill="rgba(255,255,255,0.7)"/><rect x="54" y="54" width="24" height="24" rx="3" fill="#fff"/></svg>
                 </div>
             </div>
             <div class="platform-content">
+                <div class="modality-badge-row">
+                    <span class="modality-badge modality-engine">⚙️ .NET / Python Runtime</span>
+                    <span class="modality-badge modality-cli">Docker Code Sandbox</span>
+                    <span class="modality-badge modality-hitl">🚦 Approval Gates</span>
+                </div>
                 <h3>🔵 Microsoft Agent Framework <span class="badge badge-enterprise">v1.0 GA</span> <span class="badge badge-local">LOCAL: 3GB</span></h3>
                 <div class="metrics-grid">
                     <div class="metric-card">
@@ -1738,14 +2004,19 @@
             </div>
         </div>
 
-        <!-- CrewAI -->
-        <div class="platform-entry">
+        <!-- 6. CrewAI -->
+        <div class="platform-entry" data-category="engine visual hitl">
             <div class="platform-visual">
                 <div class="platform-logo">
-                    <svg viewBox="0 0 100 100"><rect rx="18" width="100" height="100" fill="#f59e0b"/><circle cx="35" cy="38" r="10" fill="rgba(255,255,255,0.85)"/><circle cx="65" cy="38" r="10" fill="rgba(255,255,255,0.85)"/><circle cx="50" cy="60" r="10" fill="#fff"/><line x1="35" y1="38" x2="50" y2="60" stroke="#fff" stroke-width="2" opacity="0.4"/><line x1="65"y1="38" x2="50" y2="60" stroke="#fff" stroke-width="2" opacity="0.4"/></svg>
+                    <svg viewBox="0 0 100 100"><rect rx="18" width="100" height="100" fill="#f59e0b"/><circle cx="35" cy="38" r="10" fill="rgba(255,255,255,0.85)"/><circle cx="65" cy="38" r="10" fill="rgba(255,255,255,0.85)"/><circle cx="50" cy="60" r="10" fill="#fff"/><line x1="35" y1="38" x2="50" y2="60" stroke="#fff" stroke-width="2" opacity="0.4"/><line x1="65" y1="38" x2="50" y2="60" stroke="#fff" stroke-width="2" opacity="0.4"/></svg>
                 </div>
             </div>
             <div class="platform-content">
+                <div class="modality-badge-row">
+                    <span class="modality-badge modality-engine">⚙️ Role-Based Engine</span>
+                    <span class="modality-badge modality-visual">📊 CrewAI Studio UI</span>
+                    <span class="modality-badge modality-hitl">🚦 Manager HITL Loop</span>
+                </div>
                 <h3>👥 CrewAI <span class="badge badge-opensource">53K+ STARS</span> <span class="badge badge-local">LOCAL: 2GB</span></h3>
                 <div class="metrics-grid">
                     <div class="metric-card">
@@ -1778,14 +2049,19 @@
             </div>
         </div>
 
-        <!-- Dify -->
-        <div class="platform-entry">
+        <!-- 7. Dify -->
+        <div class="platform-entry" data-category="visual hitl">
             <div class="platform-visual">
                 <div class="platform-logo">
                     <svg viewBox="0 0 100 100"><rect rx="18" width="100" height="100" fill="#4f7fff"/><text x="50" y="68" text-anchor="middle" font-family="Arial Black,Arial,sans-serif" font-size="52" font-weight="900" fill="#fff">D</text></svg>
                 </div>
             </div>
             <div class="platform-content">
+                <div class="modality-badge-row">
+                    <span class="modality-badge modality-visual">📊 Drag-and-Drop Visual DAG</span>
+                    <span class="modality-badge modality-visual">App Studio</span>
+                    <span class="modality-badge modality-hitl">🚦 Human Input Nodes</span>
+                </div>
                 <h3>🎨 Dify <span class="badge badge-opensource">143K STARS</span> <span class="badge badge-local">LOCAL: 4GB</span></h3>
                 <div class="metrics-grid">
                     <div class="metric-card">
@@ -1818,14 +2094,19 @@
             </div>
         </div>
 
-        <!-- Flowise -->
-        <div class="platform-entry">
+        <!-- 8. Flowise -->
+        <div class="platform-entry" data-category="visual">
             <div class="platform-visual">
                 <div class="platform-logo">
                     <svg viewBox="0 0 100 100"><rect rx="18" width="100" height="100" fill="#0ea5e9"/><path d="M20 50 Q35 30 50 50 Q65 70 80 50" stroke="#fff" stroke-width="5" fill="none" stroke-linecap="round"/><circle cx="20" cy="50" r="5" fill="#fff"/><circle cx="80" cy="50" r="5" fill="#fff"/></svg>
                 </div>
             </div>
             <div class="platform-content">
+                <div class="modality-badge-row">
+                    <span class="modality-badge modality-visual">📊 React Flow Canvas</span>
+                    <span class="modality-badge modality-visual">Agentflow DAG</span>
+                    <span class="modality-badge modality-cli">REST Endpoints</span>
+                </div>
                 <h3>🌊 Flowise <span class="badge badge-opensource">52K STARS</span> <span class="badge badge-local">LOCAL: 3GB</span></h3>
                 <div class="metrics-grid">
                     <div class="metric-card">
@@ -1858,14 +2139,19 @@
             </div>
         </div>
 
-        <!-- Hermes Agent -->
-        <div class="platform-entry">
+        <!-- 9. Hermes Agent -->
+        <div class="platform-entry" data-category="engine visual hitl">
             <div class="platform-visual">
                 <div class="platform-logo">
                     <svg viewBox="0 0 100 100"><rect rx="18" width="100" height="100" fill="#16a34a"/><path d="M30 68 C30 42 40 25 50 25 C60 25 70 42 70 68" stroke="#fff" stroke-width="4" fill="none" stroke-linecap="round"/><circle cx="38" cy="48" r="5" fill="#fff"/><circle cx="62" cy="48" r="5" fill="#fff"/><path d="M40 60 Q50 70 60 60" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/></svg>
                 </div>
             </div>
             <div class="platform-content">
+                <div class="modality-badge-row">
+                    <span class="modality-badge modality-engine">⚙️ Swarm Mesh Engine</span>
+                    <span class="modality-badge modality-visual">📊 Kanban Board UI</span>
+                    <span class="modality-badge modality-hitl">🚦 Card Drag Approval</span>
+                </div>
                 <h3>🦎 Hermes Agent <span class="badge badge-opensource">177K STARS</span> <span class="badge badge-local">LOCAL: 2GB</span></h3>
                 <div class="metrics-grid">
                     <div class="metric-card">
@@ -1902,14 +2188,19 @@
             </div>
         </div>
 
-        <!-- LangChain + LangGraph + LangSmith + Deep Agents -->
-        <div class="platform-entry">
+        <!-- 10. LangChain + LangGraph + LangSmith + Deep Agents -->
+        <div class="platform-entry" data-category="engine visual hitl">
             <div class="platform-visual">
                 <div class="platform-logo">
                     <svg viewBox="0 0 100 100"><rect rx="18" width="100" height="100" fill="#1a0a2e"/><circle cx="35" cy="50" r="12" fill="none" stroke="#fff" stroke-width="3"/><circle cx="65" cy="50" r="12" fill="none" stroke="#fff" stroke-width="3"/><line x1="47" y1="50" x2="53" y2="50" stroke="#fff" stroke-width="3"/></svg>
                 </div>
             </div>
-            <div class/platform-content">
+            <div class="platform-content">
+                <div class="modality-badge-row">
+                    <span class="modality-badge modality-engine">⚙️ Cyclic Graph Engine</span>
+                    <span class="modality-badge modality-visual">📊 LangSmith Studio</span>
+                    <span class="modality-badge modality-hitl">🚦 Time-Travel Interrupts</span>
+                </div>
                 <h3>🔗 LangChain Stack <span class="badge badge-fast">ORCHESTRATION + AGENTS</span> <span class="badge badge-local">LOCAL: 1GB</span></h3>
                 <div class="metrics-grid">
                     <div class="metric-card">
@@ -1944,14 +2235,19 @@
             </div>
         </div>
 
-        <!-- Paperclip -->
-        <div class="platform-entry">
+        <!-- 11. Paperclip -->
+        <div class="platform-entry" data-category="visual hitl">
             <div class="platform-visual">
                 <div class="platform-logo">
                     <svg viewBox="0 0 100 100"><rect rx="18" width="100" height="100" fill="#6366f1"/><path d="M30 65V35a10 10 0 0120 0v25a7 7 0 01-14 0V40a4 4 0 018 0v18" stroke="#fff" stroke-width="4" fill="none" stroke-linecap="round"/></svg>
                 </div>
             </div>
             <div class="platform-content">
+                <div class="modality-badge-row">
+                    <span class="modality-badge modality-visual">📊 Company Org Chart UI</span>
+                    <span class="modality-badge modality-visual">Live Heartbeats</span>
+                    <span class="modality-badge modality-hitl">🚦 Budget &amp; Role Governance</span>
+                </div>
                 <h3>📎 Paperclip <span class="badge badge-opensource">66K+ STARS</span> <span class="badge badge-local">LOCAL: 2GB</span></h3>
                 <div class="metrics-grid">
                     <div class="metric-card">
@@ -1985,14 +2281,19 @@
             </div>
         </div>
 
-        <!-- Ruflo -->
-        <div class="platform-entry">
+        <!-- 12. Ruflo -->
+        <div class="platform-entry" data-category="visual hitl">
             <div class="platform-visual">
                 <div class="platform-logo">
                     <svg viewBox="0 0 100 100"><rect rx="18" width="100" height="100" fill="#3b82f6"/><path d="M50 22v28l22 16" stroke="#fff" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="22" r="5" fill="#fff"/><circle cx="50" cy="50" r="4" fill="rgba(255,255,255,0.7)"/><circle cx="72" cy="66" r="4" fill="rgba(255,255,255,0.5)"/></svg>
                 </div>
             </div>
             <div class="platform-content">
+                <div class="modality-badge-row">
+                    <span class="modality-badge modality-visual">📊 GOAP Plan Tree UI</span>
+                    <span class="modality-badge modality-engine">A* Planner Engine</span>
+                    <span class="modality-badge modality-hitl">🚦 Human Plan Branching</span>
+                </div>
                 <h3>🌊 Ruflo <span class="badge badge-opensource">48K+ STARS</span> <span class="badge badge-local">LOCAL: 1GB</span></h3>
                 <div class="metrics-grid">
                     <div class="metric-card">
@@ -2025,54 +2326,19 @@
             </div>
         </div>
 
-        <!-- Microsoft Conductor -->
-        <div class="platform-entry">
-            <div class="platform-visual">
-                <div class="platform-logo">
-                    <svg viewBox="0 0 100 100"><rect rx="18" width="100" height="100" fill="#0078d4"/><path d="M25 35h50v5H25z M25 48h50v5H25z M25 61h50v5H25z" fill="#fff" opacity="0.85"/><circle cx="18" cy="37" r="4" fill="#fff"/><circle cx="18" cy="50" r="4" fill="#fff"/><circle cx="18" cy="63" r="4" fill="#fff"/></svg>
-                </div>
-            </div>
-            <div class="platform-content">
-                <h3>📋 Microsoft Conductor <span class="badge badge-enterprise">MAY 2026</span> <span class="badge badge-local">LOCAL: 3GB</span></h3>
-                <div class="metrics-grid">
-                    <div class="metric-card">
-                        <div class="metric-value">New</div>
-                        <div class="metric-label">Status</div>
-                    </div>
-                    <div class="metric-card">
-                        <div class="metric-value">YAML</div>
-                        <div class="metric-label">Config</div>
-                    </div>
-                    <div class="metric-card">
-                        <div class="metric-value">MCP</div>
-                        <div class="metric-label">Protocol</div>
-                    </div>
-                    <div class="metric-card">
-                        <div class="metric-value">Azure</div>
-                        <div class="metric-label">Cloud</div>
-                    </div>
-                </div>
-                <p><strong>Released:</strong> May 2026 | <strong>Type:</strong> Deterministic YAML workflow orchestration | <strong>Backed by:</strong> Microsoft</p>
-                <div class="key-features">
-                    <h4>🔑 Key Strengths</h4>
-                    <ul>
-                        <li><strong>YAML-First:</strong> Declarative workflow definitions with deterministic execution guarantees</li>
-                        <li><strong>MCP Native:</strong> Built-in Model Context Protocol support for tool integration</li>
-                        <li><strong>Microsoft Backed:</strong> Enterprise support, Azure integration, SLA guarantees</li>
-                        <li><strong>Deterministic Workflows:</strong> Predictable execution paths for production reliability</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-
-        <!-- OrchStack -->
-        <div class="platform-entry">
+        <!-- 13. OrchStack -->
+        <div class="platform-entry" data-category="visual hitl">
             <div class="platform-visual">
                 <div class="platform-logo">
                     <svg viewBox="0 0 100 100"><rect rx="18" width="100" height="100" fill="#7c3aed"/><rect x="25" y="55" width="50" height="8" rx="4" fill="rgba(255,255,255,0.3)"/><rect x="25" y="42" width="50" height="8" rx="4" fill="rgba(255,255,255,0.5)"/><rect x="25" y="29" width="50" height="8" rx="4" fill="rgba(255,255,255,0.7)"/><circle cx="50" cy="20" r="5" fill="#fff"/></svg>
                 </div>
             </div>
             <div class="platform-content">
+                <div class="modality-badge-row">
+                    <span class="modality-badge modality-visual">📊 SOC2 Visual Studio</span>
+                    <span class="modality-badge modality-visual">Infinite Canvas</span>
+                    <span class="modality-badge modality-hitl">🚦 Multi-Sig Approvals</span>
+                </div>
                 <h3>🏗️ OrchStack <span class="badge badge-enterprise">SOC2</span> <span class="badge badge-local">LOCAL: 4GB</span></h3>
                 <div class="metrics-grid">
                     <div class="metric-card">
@@ -2106,14 +2372,19 @@
             </div>
         </div>
 
-        <!-- LaunchDarkly Agent Graphs -->
-        <div class="platform-entry">
+        <!-- 14. LaunchDarkly Agent Graphs -->
+        <div class="platform-entry" data-category="visual hitl">
             <div class="platform-visual">
                 <div class="platform-logo">
                     <svg viewBox="0 0 100 100"><rect rx="18" width="100" height="100" fill="#0b3d2e"/><path d="M30 38 L50 22 L70 38 L70 68 L30 68 Z" fill="none" stroke="#22c55e" stroke-width="3"/><line x1="50" y1="22" x2="50" y2="68" stroke="#22c55e" stroke-width="1.5" opacity="0.4"/><circle cx="40" cy="45" r="5" fill="#22c55e"/><circle cx="60" cy="45" r="5" fill="#22c55e"/></svg>
                 </div>
             </div>
             <div class="platform-content">
+                <div class="modality-badge-row">
+                    <span class="modality-badge modality-visual">📊 Visual Topology Graph</span>
+                    <span class="modality-badge modality-visual">Latency Overlays</span>
+                    <span class="modality-badge modality-hitl">🚦 Instant Kill-Switches</span>
+                </div>
                 <h3>🏁 LaunchDarkly Agent Graphs <span class="badge badge-enterprise">ENTERPRISE</span> <span class="badge badge-local">LOCAL: 2GB</span></h3>
                 <div class="metrics-grid">
                     <div class="metric-card">
@@ -2147,7 +2418,138 @@
         </div>
         </div><!-- end platform-grid -->
 
-        <!-- Comparison Table -->
+        <!-- DUAL-LAYER OBSERVABILITY & HITL MATRIX -->
+        <div class="comparison-table" style="margin-top:40px;overflow-x:auto;-webkit-overflow-scrolling:touch;">
+            <h2 style="font-family:'Kumbh Sans',sans-serif;font-size:1.6rem;color:#fff;margin-bottom:12px;">📊 Dual-Layer Modality &amp; Governance Matrix</h2>
+            <p style="color:#94a3b8;font-size:0.95rem;margin-bottom:20px;">Direct breakdown of Visual Canvas vs. CLI/Headless, Behind-the-Scenes Orchestration Engines, Observability Telemetry, and Human-in-the-Loop (HITL) Checkpoints across all 14 platforms.</p>
+            <table style="min-width:1100px;">
+                <thead>
+                    <tr>
+                        <th>Platform</th>
+                        <th>Modality (Visual vs CLI)</th>
+                        <th>Dashboard &amp; Visual UI</th>
+                        <th>Backend Engine Runtime</th>
+                        <th>Observability &amp; Telemetry</th>
+                        <th>HITL &amp; Governance Controls</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>NVIDIA NemoClaw</strong></td>
+                        <td><span class="modality-badge modality-engine">Hybrid CLI/Portal</span></td>
+                        <td>NVIDIA AI Enterprise Dashboard &amp; Grafana</td>
+                        <td>OpenShell Sandboxed Runtime (Python)</td>
+                        <td>OpenTelemetry + Gretel PII Audit Stripping</td>
+                        <td>NeMo Guardrails, Enterprise Approval Gates</td>
+                    </tr>
+                    <tr>
+                        <td><strong>OpenFang</strong></td>
+                        <td><span class="modality-badge modality-cli">Headless OS / Sockets</span></td>
+                        <td>Tauri 2.0 Tray / Optional Terminal TUI</td>
+                        <td>Pure Rust WASM Dual-Metered Kernel (40MB)</td>
+                        <td>Merkle Hash Audit Trail &amp; Taint Tracking</td>
+                        <td>Landlock Capability Policies &amp; Trap Gates</td>
+                    </tr>
+                    <tr>
+                        <td><strong>OpenClaw</strong></td>
+                        <td><span class="modality-badge modality-visual">Visual Canvas + CLI</span></td>
+                        <td>A2UI Live Canvas &amp; Web Workspace</td>
+                        <td>Node.js / TypeScript Event Gateway</td>
+                        <td>Session Timelines &amp; Channel Metrics</td>
+                        <td>Channel-level Confirmation Prompts</td>
+                    </tr>
+                    <tr>
+                        <td><strong>ZeroClaw</strong></td>
+                        <td><span class="modality-badge modality-cli">Headless Engine</span></td>
+                        <td>CLI Daemon / Edge Sockets (No GUI)</td>
+                        <td>Rust WASM Capability Runtime (5MB RAM)</td>
+                        <td>Deterministic State Snapshot Hashing</td>
+                        <td>Hardware Ceilings &amp; Capability Revoking</td>
+                    </tr>
+                    <tr>
+                        <td><strong>CrewAI</strong></td>
+                        <td><span class="modality-badge modality-visual">Visual Studio + CLI</span></td>
+                        <td>CrewAI Studio UI (Role Team View)</td>
+                        <td>Hierarchical Delegation Loop (Python)</td>
+                        <td>Task Output Timelines &amp; Tool Logs</td>
+                        <td>Manager Agent Approval &amp; Human Feedback</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Microsoft AutoGen / SK</strong></td>
+                        <td><span class="modality-badge modality-engine">Enterprise SDK / CLI</span></td>
+                        <td>Azure AI Foundry Portal &amp; Web Studio</td>
+                        <td>Docker Sandboxed Execution (.NET / Python)</td>
+                        <td>Azure Monitor &amp; OpenTelemetry Traces</td>
+                        <td>Interactive Human-in-the-Loop Step Handshake</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Dify.ai</strong></td>
+                        <td><span class="modality-badge modality-visual">Visual Builder</span></td>
+                        <td>Drag-and-Drop Workflow Canvas &amp; Chat App</td>
+                        <td>Celery / Redis / Weaviate Worker Engine</td>
+                        <td>Run Histories, Step Latencies &amp; Token Counters</td>
+                        <td>Interactive Human Input Nodes &amp; Review Loops</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Flowise</strong></td>
+                        <td><span class="modality-badge modality-visual">Visual Canvas DAG</span></td>
+                        <td>React Flow Node Canvas &amp; Test Chatbot</td>
+                        <td>LangChain / LlamaIndex Node Wrapper</td>
+                        <td>Live Execution Trace &amp; OpenTelemetry Export</td>
+                        <td>Form Input Prompts &amp; Credential Locks</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Hermes Agent Swarm</strong></td>
+                        <td><span class="modality-badge modality-visual">Kanban UI + CLI</span></td>
+                        <td>Kanban Swarm Board &amp; Task Worktree UI</td>
+                        <td>Decentralized Python Subagent Mesh</td>
+                        <td>Kanban Statuses &amp; Real-Time Chatter Stream</td>
+                        <td>Card Drag-and-Drop Task Approval Gates</td>
+                    </tr>
+                    <tr>
+                        <td><strong>LangChain / LangGraph</strong></td>
+                        <td><span class="modality-badge modality-visual">Visual Studio + Code</span></td>
+                        <td>LangSmith Studio &amp; Graph Inspector</td>
+                        <td>Cyclic State Machine Engine (Python/TS)</td>
+                        <td>Full DAG Replay, Latency &amp; Token Breakdown</td>
+                        <td>Time-Travel Step Inspection &amp; Interrupt/Resume</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Paperclip</strong></td>
+                        <td><span class="modality-badge modality-visual">Visual Org Chart</span></td>
+                        <td>Company Org Tree &amp; Heartbeat Grid</td>
+                        <td>Node.js Multi-Agent Worker Hierarchy</td>
+                        <td>Live Status Pulses &amp; Token Burn Rates</td>
+                        <td>Role Assignment &amp; Budget Ceilings</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Ruflo</strong></td>
+                        <td><span class="modality-badge modality-visual">Visual GOAP Planner</span></td>
+                        <td>Goal Plan Tree UI &amp; Multi-Model Chat</td>
+                        <td>Goal-Oriented Action Planning (GOAP A*)</td>
+                        <td>Step-by-Step State Transition Logs</td>
+                        <td>Plan Review &amp; Human Branch Selection</td>
+                    </tr>
+                    <tr>
+                        <td><strong>OrchStack</strong></td>
+                        <td><span class="modality-badge modality-visual">Visual Studio (SOC2)</span></td>
+                        <td>Infinite React Flow Canvas &amp; Fleets View</td>
+                        <td>Distributed Go Fleet Daemon</td>
+                        <td>SOC2 Audit Logs &amp; Trace Timeline</td>
+                        <td>Multi-Signature Enterprise RBAC Approvals</td>
+                    </tr>
+                    <tr>
+                        <td><strong>LaunchDarkly Agent Graphs</strong></td>
+                        <td><span class="modality-badge modality-visual">Visual Topology</span></td>
+                        <td>Visual Topology Graph &amp; Flag Studio</td>
+                        <td>Flag-Based Routing Engine (Framework-Agnostic)</td>
+                        <td>Real-time Latency, Error &amp; Drift Overlays</td>
+                        <td>Instant Kill-Switches &amp; Canary Fallback Gates</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
         <div class="comparison-table" style="overflow-x:auto;-webkit-overflow-scrolling:touch;">
             <h2>📊 Platform Comparison Matrix</h2>
             <table style="min-width:1200px;">
@@ -2414,6 +2816,23 @@
     </div>
 
     <script>
+
+        // Tab Filtering for Agent Army
+        function filterAgentArmy(category, btn) {
+            document.querySelectorAll('#agentArmyTabs .mode-tab-btn').forEach(b => b.classList.remove('active'));
+            if (btn) btn.classList.add('active');
+
+            const cards = document.querySelectorAll('.platform-entry');
+            cards.forEach(card => {
+                const cats = (card.getAttribute('data-category') || '').split(' ');
+                if (category === 'all' || cats.includes(category)) {
+                    card.classList.remove('is-hidden');
+                } else {
+                    card.classList.add('is-hidden');
+                }
+            });
+        }
+
         // Smart Stack functionality
         let smartStack = JSON.parse(localStorage.getItem('vidismart_smart_stack') || '[]');
 
