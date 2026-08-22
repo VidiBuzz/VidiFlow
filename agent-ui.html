@@ -9,6 +9,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Kumbh+Sans:wght@400;700;800;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://unpkg.com/three@0.128.0/build/three.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 <style>
 /* ========== RESET & BASE ========== */
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
@@ -149,9 +150,85 @@ a:hover{color:#7dd3fc}
 }
 .nav-brand{font-family:var(--font-display);font-weight:900;font-size:1.4rem;color:#fff;letter-spacing:-.02em}
 .nav-brand span{color:var(--cyan)}
-.nav-links{display:flex;gap:2rem}
+.nav-links{display:flex;gap:1.5rem;align-items:center}
 .nav-links a{font-size:.85rem;font-weight:600;color:var(--text-muted);transition:color .2s}
 .nav-links a:hover{color:var(--cyan)}
+
+/* Pro Login Modal & Button */
+.pro-login-btn {
+  background: linear-gradient(135deg, rgba(251,191,36,0.15), rgba(245,158,11,0.25));
+  border: 1px solid rgba(251,191,36,0.45);
+  color: var(--amber) !important;
+  font-family: var(--font-display);
+  font-size: 0.82rem;
+  font-weight: 700;
+  padding: 0.4rem 1rem;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+.pro-login-btn:hover {
+  background: linear-gradient(135deg, rgba(251,191,36,0.3), rgba(245,158,11,0.45));
+  border-color: var(--amber);
+  box-shadow: 0 0 16px rgba(251,191,36,0.35);
+  transform: translateY(-1px);
+}
+.pro-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.75);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 10000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+.pro-modal-overlay.open {
+  display: flex;
+}
+.pro-modal-card {
+  background: var(--card);
+  border: 1px solid var(--border-light);
+  border-radius: 20px;
+  padding: 2.5rem;
+  max-width: 480px;
+  width: 100%;
+  position: relative;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.8), 0 0 30px rgba(251,191,36,0.15);
+}
+.pro-modal-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--amber), var(--rose), var(--purple));
+  border-radius: 20px 20px 0 0;
+}
+.pro-modal-close {
+  position: absolute;
+  top: 1.2rem;
+  right: 1.2rem;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.pro-modal-close:hover {
+  background: rgba(255,255,255,0.12);
+  color: #fff;
+}
 
 /* ========== CONTAINER ========== */
 .container{max-width:1400px;margin:0 auto;padding:0 2rem}
@@ -1058,6 +1135,7 @@ a:hover{color:#7dd3fc}
 <nav class="nav">
   <div class="nav-brand">Vidi<span>Smart</span></div>
   <div class="nav-links">
+    <a href="visualai-tools.html" style="color: var(--text-muted);">← Visual AI Tools</a>
     <a href="thousand-words.html" style="color: var(--cyan); font-weight: 700; display: inline-flex; align-items: center; gap: 4px;">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-image"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
       Glance Test
@@ -1065,8 +1143,50 @@ a:hover{color:#7dd3fc}
     <a href="#top-picks">Top Picks</a>
     <a href="#gen-ui">Gen UI</a>
     <a href="agent-ui-pro.html?unlocked=1" style="color: var(--amber); font-weight: 700;">Tool Comparisons →</a>
+    <button class="pro-login-btn" onclick="openProModal()">👑 Pro Login</button>
   </div>
 </nav>
+
+<!-- PRO LOGIN MODAL -->
+<div id="proModalOverlay" class="pro-modal-overlay">
+  <div class="pro-modal-card">
+    <button class="pro-modal-close" onclick="closeProModal()">✕</button>
+    <div style="display:inline-flex;align-items:center;gap:.5rem;background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.2);border-radius:999px;padding:.35rem 1rem;font-size:.72rem;font-weight:700;color:var(--amber);letter-spacing:.08em;text-transform:uppercase;margin-bottom:1rem;">
+      👑 Enterprise Access
+    </div>
+    <h3 style="font-family:var(--font-display);font-size:1.6rem;font-weight:900;color:#fff;margin-bottom:.5rem;">VidiSmart Pro Access</h3>
+    <p style="font-size:.88rem;color:var(--text-muted);margin-bottom:1.5rem;line-height:1.6;">Sign in with your enterprise API key or instant license pass to unlock deep agentic metrics, raw telemetry logs, and the Advanced Command Center.</p>
+    <form onsubmit="handleProLogin(event)" style="display:flex;flex-direction:column;gap:.9rem;">
+      <div>
+        <label style="display:block;font-size:.75rem;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.35rem;">Enterprise License / Access Key</label>
+        <input id="proLicenseKey" type="password" placeholder="VS-PRO-XXXX-XXXX" value="VS-ENTERPRISE-2026" style="width:100%;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:10px;padding:.75rem 1rem;font-size:.9rem;color:#fff;font-family:var(--font-body);outline:none;">
+      </div>
+      <button type="submit" style="background:linear-gradient(135deg,var(--amber),#f59e0b);color:#000;font-family:var(--font-display);font-weight:800;font-size:.95rem;padding:.8rem;border-radius:10px;border:none;cursor:pointer;margin-top:.5rem;">Unlock Pro Command Center →</button>
+      <a href="agent-ui-pro.html?unlocked=1" style="text-align:center;font-size:.8rem;color:var(--amber);font-weight:600;margin-top:.2rem;">Or launch instant Pro preview →</a>
+    </form>
+  </div>
+</div>
+
+<script>
+function openProModal() {
+  const overlay = document.getElementById('proModalOverlay');
+  if (overlay) overlay.classList.add('open');
+}
+function closeProModal() {
+  const overlay = document.getElementById('proModalOverlay');
+  if (overlay) overlay.classList.remove('open');
+}
+function handleProLogin(e) {
+  e.preventDefault();
+  window.location.href = 'agent-ui-pro.html?unlocked=1';
+}
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') closeProModal();
+});
+document.getElementById('proModalOverlay')?.addEventListener('click', (e) => {
+  if (e.target.id === 'proModalOverlay') closeProModal();
+});
+</script>
 
 <!-- HERO -->
 <section class="hero container">
@@ -1145,6 +1265,50 @@ a:hover{color:#7dd3fc}
   <p style="font-size:.95rem;color:var(--text-dim);margin-top:1rem;max-width:560px;margin-left:auto;margin-right:auto;line-height:1.6">
     See everything. Read nothing. The first glance-level UI built for the era of agentic visual AI.
   </p>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════
+     BRANCH ORCHESTRATOR — Configure / Results Toggle
+     ═══════════════════════════════════════════════════════════ -->
+<section class="container" id="branch-orchestrator" style="margin-bottom:3rem;padding-top:1rem">
+  <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.25rem 1.5rem;position:relative;overflow:hidden">
+    <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--cyan),var(--purple),var(--emerald));animation:flow-sweep 4s linear infinite"></div>
+    
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem">
+      <div>
+        <div style="font-family:var(--font-display);font-size:.65rem;font-weight:700;color:var(--text-dim);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.3rem">Branch Orchestrator</div>
+        <div style="font-family:var(--font-display);font-size:1.1rem;font-weight:900;color:#fff">Configure & Results</div>
+      </div>
+      
+      <!-- Mode Toggle -->
+      <div style="display:flex;gap:4px;background:rgba(0,0,0,.3);border-radius:10px;padding:4px">
+        <button class="branch-mode-btn active" data-mode="configure" onclick="setBranchMode('configure')" style="font-family:var(--font-display);font-weight:700;font-size:.75rem;padding:.5rem 1.2rem;border-radius:8px;border:none;cursor:pointer;background:rgba(56,189,248,.15);color:var(--cyan);transition:all .2s">⚙ Configure</button>
+        <button class="branch-mode-btn" data-mode="results" onclick="setBranchMode('results')" style="font-family:var(--font-display);font-weight:700;font-size:.75rem;padding:.5rem 1.2rem;border-radius:8px;border:none;cursor:pointer;background:transparent;color:var(--text-dim);transition:all .2s">📊 Results</button>
+      </div>
+    </div>
+    
+    <!-- Sub-tabs for Configure mode -->
+    <div id="config-tabs" style="display:flex;gap:4px;margin-top:1rem;flex-wrap:wrap">
+      <button class="branch-tab active" data-branch="c1" onclick="setBranch('c1')" style="font-size:.65rem;font-weight:700;padding:.4rem .8rem;border-radius:6px;border:1px solid rgba(56,189,248,.3);background:rgba(56,189,248,.1);color:var(--cyan);cursor:pointer;transition:all .2s">C1 Channels</button>
+      <button class="branch-tab" data-branch="c2" onclick="setBranch('c2')" style="font-size:.65rem;font-weight:700;padding:.4rem .8rem;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text-dim);cursor:pointer;transition:all .2s">C2 Agents</button>
+      <button class="branch-tab" data-branch="c3" onclick="setBranch('c3')" style="font-size:.65rem;font-weight:700;padding:.4rem .8rem;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text-dim);cursor:pointer;transition:all .2s">C3 Branching</button>
+      <button class="branch-tab" data-branch="c4" onclick="setBranch('c4')" style="font-size:.65rem;font-weight:700;padding:.4rem .8rem;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text-dim);cursor:pointer;transition:all .2s">C4 Integrations</button>
+      <button class="branch-tab" data-branch="c5" onclick="setBranch('c5')" style="font-size:.65rem;font-weight:700;padding:.4rem .8rem;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text-dim);cursor:pointer;transition:all .2s">C5 Themes</button>
+      <button class="branch-tab" data-branch="c6" onclick="setBranch('c6')" style="font-size:.65rem;font-weight:700;padding:.4rem .8rem;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text-dim);cursor:pointer;transition:all .2s">C6 Notifications</button>
+    </div>
+    
+    <!-- Sub-tabs for Results mode -->
+    <div id="results-tabs" style="display:none;gap:4px;margin-top:1rem;flex-wrap:wrap">
+      <button class="branch-tab" data-branch="r1" onclick="setBranch('r1')" style="font-size:.65rem;font-weight:700;padding:.4rem .8rem;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text-dim);cursor:pointer;transition:all .2s">R1 Fleet</button>
+      <button class="branch-tab" data-branch="r2" onclick="setBranch('r2')" style="font-size:.65rem;font-weight:700;padding:.4rem .8rem;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text-dim);cursor:pointer;transition:all .2s">R2 Critical Path</button>
+      <button class="branch-tab" data-branch="r3" onclick="setBranch('r3')" style="font-size:.65rem;font-weight:700;padding:.4rem .8rem;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text-dim);cursor:pointer;transition:all .2s">R3 Cash Flow</button>
+      <button class="branch-tab" data-branch="r4" onclick="setBranch('r4')" style="font-size:.65rem;font-weight:700;padding:.4rem .8rem;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text-dim);cursor:pointer;transition:all .2s">R4 Brand</button>
+      <button class="branch-tab" data-branch="r5" onclick="setBranch('r5')" style="font-size:.65rem;font-weight:700;padding:.4rem .8rem;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text-dim);cursor:pointer;transition:all .2s">R5 HITL Queue</button>
+      <button class="branch-tab" data-branch="r6" onclick="setBranch('r6')" style="font-size:.65rem;font-weight:700;padding:.4rem .8rem;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text-dim);cursor:pointer;transition:all .2s">R6 Agent Detail</button>
+      <button class="branch-tab" data-branch="r7" onclick="setBranch('r7')" style="font-size:.65rem;font-weight:700;padding:.4rem .8rem;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text-dim);cursor:pointer;transition:all .2s">R7 Compliance</button>
+      <button class="branch-tab" data-branch="r8" onclick="setBranch('r8')" style="font-size:.65rem;font-weight:700;padding:.4rem .8rem;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text-dim);cursor:pointer;transition:all .2s">R8 Forecast</button>
+    </div>
+  </div>
 </section>
 
 <!-- ═══════════════════════════════════════════════════════════
@@ -1472,33 +1636,34 @@ a:hover{color:#7dd3fc}
 <div class="logo-ticker-wrap">
   <div class="logo-ticker">
     <!-- Set 1 -->
-    <div class="logo-item" style="color:#76b900"><svg viewBox="0 0 100 100"><path d="M50 15c-19.3 0-35 15.7-35 35s15.7 35 35 35c10.4 0 19.8-4.6 26.2-11.8L66.7 63.7C62.3 67.7 56.4 70 50 70c-11 0-20-9-20-20s9-20 20-20c6.1 0 11.6 2.7 15.3 7.1l10.1-10.1C68.9 20.3 60.1 15 50 15zm0 25c-5.5 0-10 4.5-10 10s4.5 10 10 10c3 0 5.6-1.3 7.4-3.4l-7.4-7.4v-9.2zm19.8-19.8c8.9 8.9 14.2 21.2 14.2 34.8H70c0-10.2-4.1-19.5-10.7-26.2l10.5-10.6z"/></svg><span>NVIDIA</span></div>
-    <div class="logo-item" style="color:#a78bfa"><svg viewBox="0 0 100 100"><path d="M25 50c0-13.8 11.2-25 25-25s25 11.2 25 25-11.2 25-25 25-25-11.2-25-25zm25-15c-8.3 0-15 6.7-15 15s6.7 15 15 15 15-6.7 15-15-6.7-15-15-15zm-5 15c0-2.8 2.2-5 5-5s5 2.2 5 5-2.2 5-5 5-5-2.2-5-5zm35 0c0-2.8 2.2-5 5-5s5 2.2 5 5-2.2 5-5 5-5-2.2-5-5zm-70 0c0-2.8 2.2-5 5-5s5 2.2 5 5-2.2 5-5 5-5-2.2-5-5z"/></svg><span>OpenRouter</span></div>
-    <div class="logo-item" style="color:#34d399"><svg viewBox="0 0 100 100"><path d="M50 15c-19.3 0-35 15.7-35 35 0 8.3 2.9 16 7.7 22l-4.7 13 13.5-4.5c5.7 3 12.1 4.5 18.5 4.5 19.3 0 35-15.7 35-35s-15.7-35-35-35zm0 15c11 0 20 9 20 20s-9 20-20 20c-3.6 0-7-.9-9.9-2.6l-1-.6-6.1 2 2-6.1-.6-1c-2.9-4.8-4.4-10.4-4.4-16 0-11 9-20 20-20z"/></svg><span>Qwen</span></div>
-    <div class="logo-item" style="color:#fb7185"><svg viewBox="0 0 100 100"><polygon points="50,15 90,85 10,85" stroke="currentColor" stroke-width="6" fill="none"/><circle cx="50" cy="55" r="15" stroke="currentColor" stroke-width="4" fill="none"/></svg><span>Hermes</span></div>
-    <div class="logo-item" style="color:#10b981"><svg viewBox="0 0 100 100"><path d="M88.5 42.6c1.1-6.1-.6-12.3-4.7-16.9-4.1-4.6-10.1-7-16.2-6.7-1.7-5.1-5.3-9.3-10.1-11.7-4.8-2.4-10.4-2.8-15.5-1-4.8-3.5-10.8-4.9-16.7-3.9-5.9 1-11.1 4.5-14.4 9.6-4.6 1.7-8.3 5.1-10.2 9.7-1.9 4.6-2.1 9.8-.5 14.5-1.1 6.1.6 12.3 4.7 16.9 4.1 4.6 10.1 7 16.2 6.7 1.7 5.1 5.3 9.3 10.1 11.7 2.9 1.5 6.1 2.2 9.3 2.2 2.1 0 4.2-.3 6.2-1 4.8 3.5 10.8 4.9 16.7 3.9-5.9-1 11.1-4.5 14.4-9.6 4.6-1.7 8.3-5.1 10.2-9.7 1.9-4.5 2.1-9.7.5-14.4zm-48 27.2l-10-5.8c-1-.6-1.7-1.5-2.1-2.5-.4-1.1-.4-2.2 0-3.3l5.8-10c.8-1.4 2.2-2.3 3.8-2.5 1.6-.2 3.2.4 4.2 1.6l10 5.8c1 .6 1.7 1.5 2.1 2.5.4 1.1.4 2.2 0 3.3l-5.8 10c-.5.9-1.3 1.6-2.3 2-1 .4-2.1.5-3.1.2-1.1-.3-2.1-1-2.6-1.9zm27-14.5l-5.8-10c-.6-1-1.5-1.7-2.5-2.1-1.1-.4-2.2-.4-3.3 0l-10 5.8c-1.4.8-2.3 2.2-2.5 3.8-.2 1.6.4 3.2 1.6 4.2l5.8 10c.6 1 1.5 1.7 2.5 2.1.6.2 1.2.3 1.8.3 1.1 0 2.2-.3 3.1-.9l10-5.8c.9-.5 1.6-1.3 2-2.3.4-1 .5-2.1.2-3.1-.3-1-.9-2-1.9-2.6z"/></svg><span>OpenAI</span></div>
-    <div class="logo-item" style="color:#0078d4"><svg viewBox="0 0 100 100"><rect x="15" y="15" width="32" height="32" fill="#f25022"/><rect x="53" y="15" width="32" height="32" fill="#7fba00"/><rect x="15" y="53" width="32" height="32" fill="#00a4ef"/><rect x="53" y="53" width="32" height="32" fill="#ffb900"/></svg><span>Microsoft</span></div>
-    <div class="logo-item" style="color:#38bdf8"><svg viewBox="0 0 100 100"><path d="M50 10c0 22 18 40 40 40-22 0-40 18-40 40 0-22-18-40-40-40 22 0 40-18 40-40z" fill="currentColor"/></svg><span>Gemini</span></div>
-    <div class="logo-item" style="color:#d97706"><svg viewBox="0 0 100 100"><path d="M50 15c-19.3 0-35 15.7-35 35s15.7 35 35 35 35-15.7 35-35-15.7-35-35-35zm0 10c13.8 0 25 11.2 25 25S63.8 75 50 75 25 63.8 25 50s11.2-25 25-25zm-6 12h12v12h-12zm0 16h12v12h-12z"/></svg><span>Claude</span></div>
-    <div class="logo-item" style="color:#1464dc"><svg viewBox="0 0 100 100"><rect x="10" y="20" width="80" height="8" fill="currentColor"/><rect x="10" y="32" width="80" height="8" fill="currentColor"/><rect x="10" y="44" width="80" height="8" fill="currentColor"/><rect x="10" y="56" width="80" height="8" fill="currentColor"/><rect x="10" y="68" width="80" height="8" fill="currentColor"/><rect x="10" y="80" width="80" height="8" fill="currentColor"/></svg><span>IBM</span></div>
-    <div class="logo-item" style="color:#34d399"><svg viewBox="0 0 100 100"><path d="M30 40c0-5.5 4.5-10 10-10h20c5.5 0 10 4.5 10 10v20c0 5.5-4.5 10-10 10H40c-5.5 0-10-4.5-10-10V40zm25-5c0-2.8-2.2-5-5-5s-5 2.2-5 5v30c0 2.8 2.2 5 5 5s5-2.2 5-5V35z"/></svg><span>LangChain</span></div>
-    <div class="logo-item" style="color:#fbbf24"><svg viewBox="0 0 100 100"><path d="M50 15L85 35V75L50 95L15 75V35L50 15zm0 12L25 41V71L50 85L75 71V41L50 27zm0 15L62.5 49V64L50 71L37.5 64V49L50 42z"/></svg><span>Dify</span></div>
+    <div class="logo-item" style="color:#76b900"><img src="https://cdn.simpleicons.org/nvidia/76b900" alt="NVIDIA" width="36" height="36" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span style="display:none;font-size:1.2rem">⚡</span><span>NVIDIA</span></div>
+    <div class="logo-item" style="color:#a78bfa"><img src="https://upload.wikimedia.org/wikipedia/commons/0/04/ChatGPT_logo.svg" alt="OpenAI" width="36" height="36" loading="lazy" style="filter:invert(67%) sepia(60%) saturate(500%) hue-rotate(220deg) brightness(1.1)" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span style="display:none;font-size:1.2rem">✦</span><span>OpenAI</span></div>
+    <div class="logo-item" style="color:#d97706"><img src="https://cdn.simpleicons.org/anthropic/d97706" alt="Claude" width="36" height="36" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span style="display:none;font-size:1.2rem">🔶</span><span>Claude</span></div>
+    <div class="logo-item" style="color:#4285f4"><img src="https://cdn.simpleicons.org/google/4285f4" alt="Google" width="36" height="36" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span style="display:none;font-size:1.2rem">🌐</span><span>Google</span></div>
+    <div class="logo-item" style="color:#0078d4"><img src="https://cdn.simpleicons.org/microsoft/0078d4" alt="Microsoft" width="36" height="36" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span style="display:none;font-size:1.2rem">🪟</span><span>Microsoft</span></div>
+    <div class="logo-item" style="color:#38bdf8"><img src="https://cdn.simpleicons.org/meta/38bdf8" alt="Meta" width="36" height="36" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span style="display:none;font-size:1.2rem">🔵</span><span>Meta</span></div>
+    <div class="logo-item" style="color:#1464dc"><img src="https://cdn.simpleicons.org/ibm/1464dc" alt="IBM" width="36" height="36" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span style="display:none;font-size:1.2rem">💻</span><span>IBM</span></div>
+    <div class="logo-item" style="color:#34d399"><img src="https://cdn.simpleicons.org/langchain/34d399" alt="LangChain" width="36" height="36" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span style="display:none;font-size:1.2rem">🔗</span><span>LangChain</span></div>
+    <div class="logo-item" style="color:#fbbf24"><img src="https://cdn.simpleicons.org/apache/fbbf24" alt="Dify" width="36" height="36" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span style="display:none;font-size:1.2rem">✨</span><span>Dify</span></div>
+    <div class="logo-item" style="color:#e95420"><img src="https://cdn.simpleicons.org/ollama/ffffff" alt="Ollama" width="36" height="36" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span style="display:none;font-size:1.2rem">🦙</span><span>Ollama</span></div>
+    <div class="logo-item" style="color:#fb7185"><img src="https://cdn.simpleicons.org/huggingface/fb7185" alt="HuggingFace" width="36" height="36" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span style="display:none;font-size:1.2rem">🤗</span><span>Hugging Face</span></div>
+    <div class="logo-item" style="color:#f97316"><img src="https://cdn.simpleicons.org/pytorch/f97316" alt="PyTorch" width="36" height="36" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span style="display:none;font-size:1.2rem">🔥</span><span>PyTorch</span></div>
 
-    <!-- Set 2 -->
-    <div class="logo-item" style="color:#76b900"><svg viewBox="0 0 100 100"><path d="M50 15c-19.3 0-35 15.7-35 35s15.7 35 35 35c10.4 0 19.8-4.6 26.2-11.8L66.7 63.7C62.3 67.7 56.4 70 50 70c-11 0-20-9-20-20s9-20 20-20c6.1 0 11.6 2.7 15.3 7.1l10.1-10.1C68.9 20.3 60.1 15 50 15zm0 25c-5.5 0-10 4.5-10 10s4.5 10 10 10c3 0 5.6-1.3 7.4-3.4l-7.4-7.4v-9.2zm19.8-19.8c8.9 8.9 14.2 21.2 14.2 34.8H70c0-10.2-4.1-19.5-10.7-26.2l10.5-10.6z"/></svg><span>NVIDIA</span></div>
-    <div class="logo-item" style="color:#a78bfa"><svg viewBox="0 0 100 100"><path d="M25 50c0-13.8 11.2-25 25-25s25 11.2 25 25-11.2 25-25 25-25-11.2-25-25zm25-15c-8.3 0-15 6.7-15 15s6.7 15 15 15 15-6.7 15-15-6.7-15-15-15zm-5 15c0-2.8 2.2-5 5-5s5 2.2 5 5-2.2 5-5 5-5-2.2-5-5zm35 0c0-2.8 2.2-5 5-5s5 2.2 5 5-2.2 5-5 5-5-2.2-5-5zm-70 0c0-2.8 2.2-5 5-5s5 2.2 5 5-2.2 5-5 5-5-2.2-5-5z"/></svg><span>OpenRouter</span></div>
-    <div class="logo-item" style="color:#34d399"><svg viewBox="0 0 100 100"><path d="M50 15c-19.3 0-35 15.7-35 35 0 8.3 2.9 16 7.7 22l-4.7 13 13.5-4.5c5.7 3 12.1 4.5 18.5 4.5 19.3 0 35-15.7 35-35s-15.7-35-35-35zm0 15c11 0 20 9 20 20s-9 20-20 20c-3.6 0-7-.9-9.9-2.6l-1-.6-6.1 2 2-6.1-.6-1c-2.9-4.8-4.4-10.4-4.4-16 0-11 9-20 20-20z"/></svg><span>Qwen</span></div>
-    <div class="logo-item" style="color:#fb7185"><svg viewBox="0 0 100 100"><polygon points="50,15 90,85 10,85" stroke="currentColor" stroke-width="6" fill="none"/><circle cx="50" cy="55" r="15" stroke="currentColor" stroke-width="4" fill="none"/></svg><span>Hermes</span></div>
-    <div class="logo-item" style="color:#10b981"><svg viewBox="0 0 100 100"><path d="M88.5 42.6c1.1-6.1-.6-12.3-4.7-16.9-4.1-4.6-10.1-7-16.2-6.7-1.7-5.1-5.3-9.3-10.1-11.7-4.8-2.4-10.4-2.8-15.5-1-4.8-3.5-10.8-4.9-16.7-3.9-5.9 1-11.1 4.5-14.4 9.6-4.6 1.7-8.3 5.1-10.2 9.7-1.9 4.6-2.1 9.8-.5 14.5-1.1 6.1.6 12.3 4.7 16.9 4.1 4.6 10.1 7 16.2 6.7 1.7 5.1 5.3 9.3 10.1 11.7 2.9 1.5 6.1 2.2 9.3 2.2 2.1 0 4.2-.3 6.2-1 4.8 3.5 10.8 4.9 16.7 3.9-5.9-1 11.1-4.5 14.4-9.6 4.6-1.7 8.3-5.1 10.2-9.7 1.9-4.5 2.1-9.7.5-14.4zm-48 27.2l-10-5.8c-1-.6-1.7-1.5-2.1-2.5-.4-1.1-.4-2.2 0-3.3l5.8-10c.8-1.4 2.2-2.3 3.8-2.5 1.6-.2 3.2.4 4.2 1.6l10 5.8c1 .6 1.7 1.5 2.1 2.5.4 1.1.4 2.2 0 3.3l-5.8 10c-.5.9-1.3 1.6-2.3 2-1 .4-2.1.5-3.1.2-1.1-.3-2.1-1-2.6-1.9zm27-14.5l-5.8-10c-.6-1-1.5-1.7-2.5-2.1-1.1-.4-2.2-.4-3.3 0l-10 5.8c-1.4.8-2.3 2.2-2.5 3.8-.2 1.6.4 3.2 1.6 4.2l5.8 10c.6 1 1.5 1.7 2.5 2.1.6.2 1.2.3 1.8.3 1.1 0 2.2-.3 3.1-.9l10-5.8c.9-.5 1.6-1.3 2-2.3.4-1 .5-2.1.2-3.1-.3-1-.9-2-1.9-2.6z"/></svg><span>OpenAI</span></div>
-    <div class="logo-item" style="color:#0078d4"><svg viewBox="0 0 100 100"><rect x="15" y="15" width="32" height="32" fill="#f25022"/><rect x="53" y="15" width="32" height="32" fill="#7fba00"/><rect x="15" y="53" width="32" height="32" fill="#00a4ef"/><rect x="53" y="53" width="32" height="32" fill="#ffb900"/></svg><span>Microsoft</span></div>
-    <div class="logo-item" style="color:#38bdf8"><svg viewBox="0 0 100 100"><path d="M50 10c0 22 18 40 40 40-22 0-40 18-40 40 0-22-18-40-40-40 22 0 40-18 40-40z" fill="currentColor"/></svg><span>Gemini</span></div>
-    <div class="logo-item" style="color:#d97706"><svg viewBox="0 0 100 100"><path d="M50 15c-19.3 0-35 15.7-35 35s15.7 35 35 35 35-15.7 35-35-15.7-35-35-35zm0 10c13.8 0 25 11.2 25 25S63.8 75 50 75 25 63.8 25 50s11.2-25 25-25zm-6 12h12v12h-12zm0 16h12v12h-12z"/></svg><span>Claude</span></div>
-    <div class="logo-item" style="color:#1464dc"><svg viewBox="0 0 100 100"><rect x="10" y="20" width="80" height="8" fill="currentColor"/><rect x="10" y="32" width="80" height="8" fill="currentColor"/><rect x="10" y="44" width="80" height="8" fill="currentColor"/><rect x="10" y="56" width="80" height="8" fill="currentColor"/><rect x="10" y="68" width="80" height="8" fill="currentColor"/><rect x="10" y="80" width="80" height="8" fill="currentColor"/></svg><span>IBM</span></div>
-    <div class="logo-item" style="color:#34d399"><svg viewBox="0 0 100 100"><path d="M30 40c0-5.5 4.5-10 10-10h20c5.5 0 10 4.5 10 10v20c0 5.5-4.5 10-10 10H40c-5.5 0-10-4.5-10-10V40zm25-5c0-2.8-2.2-5-5-5s-5 2.2-5 5v30c0 2.8 2.2 5 5 5s5-2.2 5-5V35z"/></svg><span>LangChain</span></div>
-    <div class="logo-item" style="color:#fbbf24"><svg viewBox="0 0 100 100"><path d="M50 15L85 35V75L50 95L15 75V35L50 15zm0 12L25 41V71L50 85L75 71V41L50 27zm0 15L62.5 49V64L50 71L37.5 64V49L50 42z"/></svg><span>Dify</span></div>
+    <!-- Set 2 (duplicate for seamless loop) -->
+    <div class="logo-item" style="color:#76b900"><img src="https://cdn.simpleicons.org/nvidia/76b900" alt="NVIDIA" width="36" height="36" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span style="display:none;font-size:1.2rem">⚡</span><span>NVIDIA</span></div>
+    <div class="logo-item" style="color:#a78bfa"><img src="https://upload.wikimedia.org/wikipedia/commons/0/04/ChatGPT_logo.svg" alt="OpenAI" width="36" height="36" loading="lazy" style="filter:invert(67%) sepia(60%) saturate(500%) hue-rotate(220deg) brightness(1.1)" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span style="display:none;font-size:1.2rem">✦</span><span>OpenAI</span></div>
+    <div class="logo-item" style="color:#d97706"><img src="https://cdn.simpleicons.org/anthropic/d97706" alt="Claude" width="36" height="36" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span style="display:none;font-size:1.2rem">🔶</span><span>Claude</span></div>
+    <div class="logo-item" style="color:#4285f4"><img src="https://cdn.simpleicons.org/google/4285f4" alt="Google" width="36" height="36" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span style="display:none;font-size:1.2rem">🌐</span><span>Google</span></div>
+    <div class="logo-item" style="color:#0078d4"><img src="https://cdn.simpleicons.org/microsoft/0078d4" alt="Microsoft" width="36" height="36" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span style="display:none;font-size:1.2rem">🪟</span><span>Microsoft</span></div>
+    <div class="logo-item" style="color:#38bdf8"><img src="https://cdn.simpleicons.org/meta/38bdf8" alt="Meta" width="36" height="36" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span style="display:none;font-size:1.2rem">🔵</span><span>Meta</span></div>
+    <div class="logo-item" style="color:#1464dc"><img src="https://cdn.simpleicons.org/ibm/1464dc" alt="IBM" width="36" height="36" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span style="display:none;font-size:1.2rem">💻</span><span>IBM</span></div>
+    <div class="logo-item" style="color:#34d399"><img src="https://cdn.simpleicons.org/langchain/34d399" alt="LangChain" width="36" height="36" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span style="display:none;font-size:1.2rem">🔗</span><span>LangChain</span></div>
+    <div class="logo-item" style="color:#fbbf24"><img src="https://cdn.simpleicons.org/apache/fbbf24" alt="Dify" width="36" height="36" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span style="display:none;font-size:1.2rem">✨</span><span>Dify</span></div>
+    <div class="logo-item" style="color:#e95420"><img src="https://cdn.simpleicons.org/ollama/ffffff" alt="Ollama" width="36" height="36" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span style="display:none;font-size:1.2rem">🦙</span><span>Ollama</span></div>
+    <div class="logo-item" style="color:#fb7185"><img src="https://cdn.simpleicons.org/huggingface/fb7185" alt="HuggingFace" width="36" height="36" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span style="display:none;font-size:1.2rem">🤗</span><span>Hugging Face</span></div>
+    <div class="logo-item" style="color:#f97316"><img src="https://cdn.simpleicons.org/pytorch/f97316" alt="PyTorch" width="36" height="36" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span style="display:none;font-size:1.2rem">🔥</span><span>PyTorch</span></div>
   </div>
 </div>
-
 <!-- THINKING INDICATOR DEMO -->
 <section class="container" style="margin-bottom:3rem">
   <div class="section-header">
@@ -2223,6 +2388,1239 @@ a:hover{color:#7dd3fc}
 </section>
 
 <!-- ═══════════════════════════════════════════════════════════
+     BRANCH CONFIGURATION MODULES (C1-C6)
+     ═══════════════════════════════════════════════════════════ -->
+<section class="container" id="branch-config" style="margin-bottom:4rem">
+  
+  <!-- C1: Channel Configuration -->
+  <div class="branch-panel" id="panel-c1" style="display:block">
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:2rem;position:relative;overflow:hidden">
+      <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--cyan),var(--emerald))"></div>
+      
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem">
+        <div>
+          <div style="font-size:.6rem;font-weight:700;color:var(--cyan);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.3rem">C1 — Channel Configuration</div>
+          <h3 style="font-family:var(--font-display);font-weight:900;font-size:1.4rem;color:#fff;margin:0">Define Your Workflow Channels</h3>
+        </div>
+        <button onclick="addChannel()" style="font-family:var(--font-display);font-weight:700;font-size:.75rem;padding:.5rem 1rem;border-radius:8px;border:1px solid var(--cyan);background:rgba(56,189,248,.1);color:var(--cyan);cursor:pointer">+ Add Channel</button>
+      </div>
+      
+      <p style="font-size:.9rem;color:var(--text-muted);line-height:1.7;margin-bottom:1.5rem">
+        Each channel represents a distinct workflow pipeline. Configure task sequences, define HITL approval gates, and set channel-specific parameters.
+      </p>
+      
+      <!-- Channel List -->
+      <div id="channel-list" style="display:flex;flex-direction:column;gap:1rem">
+        
+        <!-- Channel 1: Brand Discovery -->
+        <div class="channel-card" data-channel-id="1" style="background:rgba(0,0,0,.3);border:1px solid rgba(56,189,248,.2);border-radius:12px;padding:1.25rem">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
+            <div style="display:flex;align-items:center;gap:.8rem">
+              <div style="width:32px;height:32px;border-radius:8px;background:rgba(56,189,248,.15);display:flex;align-items:center;justify-content:center;font-size:.9rem">🔍</div>
+              <div>
+                <input type="text" value="Brand Discovery Pipeline" style="font-family:var(--font-display);font-weight:800;font-size:1rem;color:#fff;background:transparent;border:none;outline:none;width:200px" />
+              </div>
+            </div>
+            <div style="display:flex;gap:.5rem">
+              <button onclick="editChannel(1)" style="font-size:.65rem;padding:.3rem .6rem;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text-dim);cursor:pointer">Edit</button>
+              <button onclick="deleteChannel(1)" style="font-size:.65rem;padding:.3rem .6rem;border-radius:6px;border:1px solid rgba(251,113,133,.3);background:transparent;color:var(--rose);cursor:pointer">Delete</button>
+            </div>
+          </div>
+          
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem">
+            <div>
+              <div style="font-size:.6rem;color:var(--text-dim);letter-spacing:.08em;margin-bottom:.3rem">TASK SEQUENCE</div>
+              <div style="display:flex;gap:4px;flex-wrap:wrap">
+                <span style="font-size:.6rem;padding:.2rem .5rem;border-radius:4px;background:rgba(52,211,153,.15);color:var(--emerald)">Scan</span>
+                <span style="font-size:.6rem;padding:.2rem .5rem;border-radius:4px;background:rgba(52,211,153,.15);color:var(--emerald)">Score</span>
+                <span style="font-size:.6rem;padding:.2rem .5rem;border-radius:4px;background:rgba(52,211,153,.15);color:var(--emerald)">Rank</span>
+                <span style="font-size:.6rem;padding:.2rem .5rem;border-radius:4px;background:rgba(52,211,153,.15);color:var(--emerald)">Validate</span>
+                <span style="font-size:.6rem;padding:.2rem .5rem;border-radius:4px;background:rgba(251,191,36,.15);color:var(--amber)">HITL Review</span>
+                <span style="font-size:.6rem;padding:.2rem .5rem;border-radius:4px;background:rgba(255,255,255,.05);color:var(--text-dim)">Deploy</span>
+                <span style="font-size:.6rem;padding:.2rem .5rem;border-radius:4px;background:rgba(255,255,255,.05);color:var(--text-dim)">Monitor</span>
+              </div>
+            </div>
+            <div>
+              <div style="font-size:.6rem;color:var(--text-dim);letter-spacing:.08em;margin-bottom:.3rem">HITL GATES</div>
+              <div style="display:flex;gap:4px;flex-wrap:wrap">
+                <span style="font-size:.6rem;padding:.2rem .5rem;border-radius:4px;background:rgba(251,191,36,.15);color:var(--amber)">Step 5: Review</span>
+              </div>
+            </div>
+          </div>
+          
+          <div style="display:flex;gap:1rem;font-size:.7rem;color:var(--text-dim)">
+            <span>12 agents assigned</span>
+            <span>•</span>
+            <span>78% complete</span>
+            <span>•</span>
+            <span>2 HITL gates pending</span>
+          </div>
+        </div>
+        
+        <!-- Channel 2: Content Generation -->
+        <div class="channel-card" data-channel-id="2" style="background:rgba(0,0,0,.3);border:1px solid rgba(167,139,250,.2);border-radius:12px;padding:1.25rem">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
+            <div style="display:flex;align-items:center;gap:.8rem">
+              <div style="width:32px;height:32px;border-radius:8px;background:rgba(167,139,250,.15);display:flex;align-items:center;justify-content:center;font-size:.9rem">✍️</div>
+              <div>
+                <input type="text" value="Content Generation Pipeline" style="font-family:var(--font-display);font-weight:800;font-size:1rem;color:#fff;background:transparent;border:none;outline:none;width:200px" />
+              </div>
+            </div>
+            <div style="display:flex;gap:.5rem">
+              <button onclick="editChannel(2)" style="font-size:.65rem;padding:.3rem .6rem;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text-dim);cursor:pointer">Edit</button>
+              <button onclick="deleteChannel(2)" style="font-size:.65rem;padding:.3rem .6rem;border-radius:6px;border:1px solid rgba(251,113,133,.3);background:transparent;color:var(--rose);cursor:pointer">Delete</button>
+            </div>
+          </div>
+          
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem">
+            <div>
+              <div style="font-size:.6rem;color:var(--text-dim);letter-spacing:.08em;margin-bottom:.3rem">TASK SEQUENCE</div>
+              <div style="display:flex;gap:4px;flex-wrap:wrap">
+                <span style="font-size:.6rem;padding:.2rem .5rem;border-radius:4px;background:rgba(52,211,153,.15);color:var(--emerald)">Brief</span>
+                <span style="font-size:.6rem;padding:.2rem .5rem;border-radius:4px;background:rgba(52,211,153,.15);color:var(--emerald)">Draft</span>
+                <span style="font-size:.6rem;padding:.2rem .5rem;border-radius:4px;background:rgba(52,211,153,.15);color:var(--emerald)">Edit</span>
+                <span style="font-size:.6rem;padding:.2rem .5rem;border-radius:4px;background:rgba(52,211,153,.15);color:var(--emerald)">Review</span>
+                <span style="font-size:.6rem;padding:.2rem .5rem;border-radius:4px;background:rgba(52,211,153,.15);color:var(--emerald)">Approve</span>
+                <span style="font-size:.6rem;padding:.2rem .5rem;border-radius:4px;background:rgba(56,189,248,.15);color:var(--cyan)">Publish</span>
+                <span style="font-size:.6rem;padding:.2rem .5rem;border-radius:4px;background:rgba(255,255,255,.05);color:var(--text-dim)">Distribute</span>
+              </div>
+            </div>
+            <div>
+              <div style="font-size:.6rem;color:var(--text-dim);letter-spacing:.08em;margin-bottom:.3rem">HITL GATES</div>
+              <div style="display:flex;gap:4px;flex-wrap:wrap">
+                <span style="font-size:.6rem;padding:.2rem .5rem;border-radius:4px;background:rgba(251,191,36,.15);color:var(--amber)">Step 5: Approve</span>
+              </div>
+            </div>
+          </div>
+          
+          <div style="display:flex;gap:1rem;font-size:.7rem;color:var(--text-dim)">
+            <span>18 agents assigned</span>
+            <span>•</span>
+            <span>92% complete</span>
+            <span>•</span>
+            <span>1 HITL gate pending</span>
+          </div>
+        </div>
+        
+        <!-- Channel 3: Cash Flow Optimization -->
+        <div class="channel-card" data-channel-id="3" style="background:rgba(0,0,0,.3);border:1px solid rgba(52,211,153,.2);border-radius:12px;padding:1.25rem">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
+            <div style="display:flex;align-items:center;gap:.8rem">
+              <div style="width:32px;height:32px;border-radius:8px;background:rgba(52,211,153,.15);display:flex;align-items:center;justify-content:center;font-size:.9rem">💰</div>
+              <div>
+                <input type="text" value="Cash Flow Optimization" style="font-family:var(--font-display);font-weight:800;font-size:1rem;color:#fff;background:transparent;border:none;outline:none;width:200px" />
+              </div>
+            </div>
+            <div style="display:flex;gap:.5rem">
+              <button onclick="editChannel(3)" style="font-size:.65rem;padding:.3rem .6rem;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text-dim);cursor:pointer">Edit</button>
+              <button onclick="deleteChannel(3)" style="font-size:.65rem;padding:.3rem .6rem;border-radius:6px;border:1px solid rgba(251,113,133,.3);background:transparent;color:var(--rose);cursor:pointer">Delete</button>
+            </div>
+          </div>
+          
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem">
+            <div>
+              <div style="font-size:.6rem;color:var(--text-dim);letter-spacing:.08em;margin-bottom:.3rem">TASK SEQUENCE</div>
+              <div style="display:flex;gap:4px;flex-wrap:wrap">
+                <span style="font-size:.6rem;padding:.2rem .5rem;border-radius:4px;background:rgba(52,211,153,.15);color:var(--emerald)">Ingest</span>
+                <span style="font-size:.6rem;padding:.2rem .5rem;border-radius:4px;background:rgba(52,211,153,.15);color:var(--emerald)">Map</span>
+                <span style="font-size:.6rem;padding:.2rem .5rem;border-radius:4px;background:rgba(251,191,36,.15);color:var(--amber)">Anomaly Check</span>
+                <span style="font-size:.6rem;padding:.2rem .5rem;border-radius:4px;background:rgba(255,255,255,.05);color:var(--text-dim)">Rebalance</span>
+                <span style="font-size:.6rem;padding:.2rem .5rem;border-radius:4px;background:rgba(255,255,255,.05);color:var(--text-dim)">Optimize</span>
+                <span style="font-size:.6rem;padding:.2rem .5rem;border-radius:4px;background:rgba(255,255,255,.05);color:var(--text-dim)">Report</span>
+              </div>
+            </div>
+            <div>
+              <div style="font-size:.6rem;color:var(--text-dim);letter-spacing:.08em;margin-bottom:.3rem">HITL GATES</div>
+              <div style="display:flex;gap:4px;flex-wrap:wrap">
+                <span style="font-size:.6rem;padding:.2rem .5rem;border-radius:4px;background:rgba(251,191,36,.15);color:var(--amber)">Step 3: Anomaly Check</span>
+              </div>
+            </div>
+          </div>
+          
+          <div style="display:flex;gap:1rem;font-size:.7rem;color:var(--text-dim)">
+            <span>8 agents assigned</span>
+            <span>•</span>
+            <span>45% complete</span>
+            <span>•</span>
+            <span>1 HITL gate pending</span>
+          </div>
+        </div>
+        
+        <!-- Channel 4: Customer Support -->
+        <div class="channel-card" data-channel-id="4" style="background:rgba(0,0,0,.3);border:1px solid rgba(251,191,36,.2);border-radius:12px;padding:1.25rem">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
+            <div style="display:flex;align-items:center;gap:.8rem">
+              <div style="width:32px;height:32px;border-radius:8px;background:rgba(251,191,36,.15);display:flex;align-items:center;justify-content:center;font-size:.9rem">🎧</div>
+              <div>
+                <input type="text" value="Customer Support Triage" style="font-family:var(--font-display);font-weight:800;font-size:1rem;color:#fff;background:transparent;border:none;outline:none;width:200px" />
+              </div>
+            </div>
+            <div style="display:flex;gap:.5rem">
+              <button onclick="editChannel(4)" style="font-size:.65rem;padding:.3rem .6rem;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text-dim);cursor:pointer">Edit</button>
+              <button onclick="deleteChannel(4)" style="font-size:.65rem;padding:.3rem .6rem;border-radius:6px;border:1px solid rgba(251,113,133,.3);background:transparent;color:var(--rose);cursor:pointer">Delete</button>
+            </div>
+          </div>
+          
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem">
+            <div>
+              <div style="font-size:.6rem;color:var(--text-dim);letter-spacing:.08em;margin-bottom:.3rem">TASK SEQUENCE</div>
+              <div style="display:flex;gap:4px;flex-wrap:wrap">
+                <span style="font-size:.6rem;padding:.2rem .5rem;border-radius:4px;background:rgba(52,211,153,.15);color:var(--emerald)">Ingest</span>
+                <span style="font-size:.6rem;padding:.2rem .5rem;border-radius:4px;background:rgba(52,211,153,.15);color:var(--emerald)">Classify</span>
+                <span style="font-size:.6rem;padding:.2rem .5rem;border-radius:4px;background:rgba(52,211,153,.15);color:var(--emerald)">Route</span>
+                <span style="font-size:.6rem;padding:.2rem .5rem;border-radius:4px;background:rgba(251,191,36,.15);color:var(--amber)">Escalate</span>
+                <span style="font-size:.6rem;padding:.2rem .5rem;border-radius:4px;background:rgba(255,255,255,.05);color:var(--text-dim)">Resolve</span>
+              </div>
+            </div>
+            <div>
+              <div style="font-size:.6rem;color:var(--text-dim);letter-spacing:.08em;margin-bottom:.3rem">HITL GATES</div>
+              <div style="display:flex;gap:4px;flex-wrap:wrap">
+                <span style="font-size:.6rem;padding:.2rem .5rem;border-radius:4px;background:rgba(251,191,36,.15);color:var(--amber)">Step 4: Escalate</span>
+              </div>
+            </div>
+          </div>
+          
+          <div style="display:flex;gap:1rem;font-size:.7rem;color:var(--text-dim)">
+            <span>6 agents assigned</span>
+            <span>•</span>
+            <span>67% complete</span>
+            <span>•</span>
+            <span>0 HITL gates pending</span>
+          </div>
+        </div>
+        
+      </div>
+      
+      <div style="margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+        <div style="font-size:.75rem;color:var(--text-dim)">4 channels configured • 4 HITL gates defined</div>
+        <button onclick="saveChannels()" style="font-family:var(--font-display);font-weight:700;font-size:.75rem;padding:.5rem 1.2rem;border-radius:8px;border:none;background:var(--cyan);color:#000;cursor:pointer">Save Configuration</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- C2: Agent Assignment -->
+  <div class="branch-panel" id="panel-c2" style="display:none">
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:2rem;position:relative;overflow:hidden">
+      <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--purple),var(--cyan))"></div>
+      
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem">
+        <div>
+          <div style="font-size:.6rem;font-weight:700;color:var(--purple);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.3rem">C2 — Agent Assignment</div>
+          <h3 style="font-family:var(--font-display);font-weight:900;font-size:1.4rem;color:#fff;margin:0">Assign Agents to Channels</h3>
+        </div>
+        <button onclick="autoAssignAgents()" style="font-family:var(--font-display);font-weight:700;font-size:.75rem;padding:.5rem 1rem;border-radius:8px;border:1px solid var(--purple);background:rgba(167,139,250,.1);color:var(--purple);cursor:pointer">⚡ Auto-Assign</button>
+      </div>
+      
+      <p style="font-size:.9rem;color:var(--text-muted);line-height:1.7;margin-bottom:1.5rem">
+        Assign agents to channels, set priority levels, and define escalation rules for when agents fail or need human intervention.
+      </p>
+      
+      <!-- Agent Assignment Grid -->
+      <div id="agent-assignment-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem;margin-bottom:1.5rem">
+        
+        <!-- Agent 001 -->
+        <div class="agent-assign-card" data-agent-id="001" style="background:rgba(0,0,0,.3);border:1px solid rgba(52,211,153,.2);border-radius:12px;padding:1rem">
+          <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:.8rem">
+            <div style="width:8px;height:8px;border-radius:50%;background:var(--emerald);box-shadow:0 0 6px var(--emerald)"></div>
+            <div style="font-family:var(--font-display);font-weight:800;font-size:.85rem;color:#fff">Agent 001</div>
+            <div style="margin-left:auto;font-size:.6rem;padding:.2rem .5rem;border-radius:4px;background:rgba(52,211,153,.15);color:var(--emerald)">RUNNING</div>
+          </div>
+          <div style="font-size:.7rem;color:var(--text-dim);margin-bottom:.8rem">Task: research-competitors</div>
+          
+          <div style="margin-bottom:.8rem">
+            <div style="font-size:.6rem;color:var(--text-dim);letter-spacing:.08em;margin-bottom:.3rem">ASSIGNED CHANNEL</div>
+            <select onchange="updateAgentChannel('001', this.value)" style="width:100%;font-size:.75rem;padding:.4rem;background:rgba(0,0,0,.5);border:1px solid var(--border);border-radius:6px;color:var(--text);outline:none">
+              <option value="1" selected>Channel 1: Brand Discovery</option>
+              <option value="2">Channel 2: Content Generation</option>
+              <option value="3">Channel 3: Cash Flow</option>
+              <option value="4">Channel 4: Customer Support</option>
+              <option value="unassigned">Unassigned</option>
+            </select>
+          </div>
+          
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem">
+            <div>
+              <div style="font-size:.6rem;color:var(--text-dim);letter-spacing:.08em;margin-bottom:.3rem">PRIORITY</div>
+              <select onchange="updateAgentPriority('001', this.value)" style="width:100%;font-size:.7rem;padding:.3rem;background:rgba(0,0,0,.5);border:1px solid var(--border);border-radius:6px;color:var(--text);outline:none">
+                <option value="high">High</option>
+                <option value="medium" selected>Medium</option>
+                <option value="low">Low</option>
+              </select>
+            </div>
+            <div>
+              <div style="font-size:.6rem;color:var(--text-dim);letter-spacing:.08em;margin-bottom:.3rem">ESCALATION</div>
+              <select onchange="updateAgentEscalation('001', this.value)" style="width:100%;font-size:.7rem;padding:.3rem;background:rgba(0,0,0,.5);border:1px solid var(--border);border-radius:6px;color:var(--text);outline:none">
+                <option value="none">None</option>
+                <option value="hitl" selected>HITL Gate</option>
+                <option value="supervisor">Supervisor</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Agent 002 -->
+        <div class="agent-assign-card" data-agent-id="002" style="background:rgba(0,0,0,.3);border:1px solid rgba(56,189,248,.2);border-radius:12px;padding:1rem">
+          <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:.8rem">
+            <div style="width:8px;height:8px;border-radius:50%;background:var(--cyan);box-shadow:0 0 6px var(--cyan)"></div>
+            <div style="font-family:var(--font-display);font-weight:800;font-size:.85rem;color:#fff">Agent 002</div>
+            <div style="margin-left:auto;font-size:.6rem;padding:.2rem .5rem;border-radius:4px;background:rgba(56,189,248,.15);color:var(--cyan)">RUNNING</div>
+          </div>
+          <div style="font-size:.7rem;color:var(--text-dim);margin-bottom:.8rem">Task: draft-blog-post</div>
+          
+          <div style="margin-bottom:.8rem">
+            <div style="font-size:.6rem;color:var(--text-dim);letter-spacing:.08em;margin-bottom:.3rem">ASSIGNED CHANNEL</div>
+            <select onchange="updateAgentChannel('002', this.value)" style="width:100%;font-size:.75rem;padding:.4rem;background:rgba(0,0,0,.5);border:1px solid var(--border);border-radius:6px;color:var(--text);outline:none">
+              <option value="1">Channel 1: Brand Discovery</option>
+              <option value="2" selected>Channel 2: Content Generation</option>
+              <option value="3">Channel 3: Cash Flow</option>
+              <option value="4">Channel 4: Customer Support</option>
+              <option value="unassigned">Unassigned</option>
+            </select>
+          </div>
+          
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem">
+            <div>
+              <div style="font-size:.6rem;color:var(--text-dim);letter-spacing:.08em;margin-bottom:.3rem">PRIORITY</div>
+              <select onchange="updateAgentPriority('002', this.value)" style="width:100%;font-size:.7rem;padding:.3rem;background:rgba(0,0,0,.5);border:1px solid var(--border);border-radius:6px;color:var(--text);outline:none">
+                <option value="high" selected>High</option>
+                <option value="medium">Medium</option>
+                <option value="low">Low</option>
+              </select>
+            </div>
+            <div>
+              <div style="font-size:.6rem;color:var(--text-dim);letter-spacing:.08em;margin-bottom:.3rem">ESCALATION</div>
+              <select onchange="updateAgentEscalation('002', this.value)" style="width:100%;font-size:.7rem;padding:.3rem;background:rgba(0,0,0,.5);border:1px solid var(--border);border-radius:6px;color:var(--text);outline:none">
+                <option value="none">None</option>
+                <option value="hitl">HITL Gate</option>
+                <option value="supervisor" selected>Supervisor</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Agent 003 -->
+        <div class="agent-assign-card" data-agent-id="003" style="background:rgba(0,0,0,.3);border:1px solid rgba(251,191,36,.2);border-radius:12px;padding:1rem">
+          <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:.8rem">
+            <div style="width:8px;height:8px;border-radius:50%;background:var(--amber);box-shadow:0 0 6px var(--amber)"></div>
+            <div style="font-family:var(--font-display);font-weight:800;font-size:.85rem;color:#fff">Agent 003</div>
+            <div style="margin-left:auto;font-size:.6rem;padding:.2rem .5rem;border-radius:4px;background:rgba(251,191,36,.15);color:var(--amber)">IDLE</div>
+          </div>
+          <div style="font-size:.7rem;color:var(--text-dim);margin-bottom:.8rem">Task: awaiting-assignment</div>
+          
+          <div style="margin-bottom:.8rem">
+            <div style="font-size:.6rem;color:var(--text-dim);letter-spacing:.08em;margin-bottom:.3rem">ASSIGNED CHANNEL</div>
+            <select onchange="updateAgentChannel('003', this.value)" style="width:100%;font-size:.75rem;padding:.4rem;background:rgba(0,0,0,.5);border:1px solid var(--border);border-radius:6px;color:var(--text);outline:none">
+              <option value="1">Channel 1: Brand Discovery</option>
+              <option value="2">Channel 2: Content Generation</option>
+              <option value="3" selected>Channel 3: Cash Flow</option>
+              <option value="4">Channel 4: Customer Support</option>
+              <option value="unassigned">Unassigned</option>
+            </select>
+          </div>
+          
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem">
+            <div>
+              <div style="font-size:.6rem;color:var(--text-dim);letter-spacing:.08em;margin-bottom:.3rem">PRIORITY</div>
+              <select onchange="updateAgentPriority('003', this.value)" style="width:100%;font-size:.7rem;padding:.3rem;background:rgba(0,0,0,.5);border:1px solid var(--border);border-radius:6px;color:var(--text);outline:none">
+                <option value="high">High</option>
+                <option value="medium" selected>Medium</option>
+                <option value="low">Low</option>
+              </select>
+            </div>
+            <div>
+              <div style="font-size:.6rem;color:var(--text-dim);letter-spacing:.08em;margin-bottom:.3rem">ESCALATION</div>
+              <select onchange="updateAgentEscalation('003', this.value)" style="width:100%;font-size:.7rem;padding:.3rem;background:rgba(0,0,0,.5);border:1px solid var(--border);border-radius:6px;color:var(--text);outline:none">
+                <option value="none" selected>None</option>
+                <option value="hitl">HITL Gate</option>
+                <option value="supervisor">Supervisor</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Agent 004 -->
+        <div class="agent-assign-card" data-agent-id="004" style="background:rgba(0,0,0,.3);border:1px solid rgba(251,113,133,.2);border-radius:12px;padding:1rem">
+          <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:.8rem">
+            <div style="width:8px;height:8px;border-radius:50%;background:var(--rose);box-shadow:0 0 6px var(--rose)"></div>
+            <div style="font-family:var(--font-display);font-weight:800;font-size:.85rem;color:#fff">Agent 004</div>
+            <div style="margin-left:auto;font-size:.6rem;padding:.2rem .5rem;border-radius:4px;background:rgba(251,113,133,.15);color:var(--rose)">ERROR</div>
+          </div>
+          <div style="font-size:.7rem;color:var(--text-dim);margin-bottom:.8rem">Task: api-timeout</div>
+          
+          <div style="margin-bottom:.8rem">
+            <div style="font-size:.6rem;color:var(--text-dim);letter-spacing:.08em;margin-bottom:.3rem">ASSIGNED CHANNEL</div>
+            <select onchange="updateAgentChannel('004', this.value)" style="width:100%;font-size:.75rem;padding:.4rem;background:rgba(0,0,0,.5);border:1px solid var(--border);border-radius:6px;color:var(--text);outline:none">
+              <option value="1">Channel 1: Brand Discovery</option>
+              <option value="2">Channel 2: Content Generation</option>
+              <option value="3">Channel 3: Cash Flow</option>
+              <option value="4" selected>Channel 4: Customer Support</option>
+              <option value="unassigned">Unassigned</option>
+            </select>
+          </div>
+          
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem">
+            <div>
+              <div style="font-size:.6rem;color:var(--text-dim);letter-spacing:.08em;margin-bottom:.3rem">PRIORITY</div>
+              <select onchange="updateAgentPriority('004', this.value)" style="width:100%;font-size:.7rem;padding:.3rem;background:rgba(0,0,0,.5);border:1px solid var(--border);border-radius:6px;color:var(--text);outline:none">
+                <option value="high" selected>High</option>
+                <option value="medium">Medium</option>
+                <option value="low">Low</option>
+              </select>
+            </div>
+            <div>
+              <div style="font-size:.6rem;color:var(--text-dim);letter-spacing:.08em;margin-bottom:.3rem">ESCALATION</div>
+              <select onchange="updateAgentEscalation('004', this.value)" style="width:100%;font-size:.7rem;padding:.3rem;background:rgba(0,0,0,.5);border:1px solid var(--border);border-radius:6px;color:var(--text);outline:none">
+                <option value="none">None</option>
+                <option value="hitl">HITL Gate</option>
+                <option value="supervisor" selected>Supervisor</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        
+      </div>
+      
+      <!-- Summary Stats -->
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.5rem">
+        <div style="background:rgba(0,0,0,.3);border-radius:10px;padding:1rem;text-align:center">
+          <div style="font-family:var(--font-display);font-weight:900;font-size:1.5rem;color:var(--emerald)">44</div>
+          <div style="font-size:.6rem;color:var(--text-dim);letter-spacing:.05em">ASSIGNED</div>
+        </div>
+        <div style="background:rgba(0,0,0,.3);border-radius:10px;padding:1rem;text-align:center">
+          <div style="font-family:var(--font-display);font-weight:900;font-size:1.5rem;color:var(--amber)">4</div>
+          <div style="font-size:.6rem;color:var(--text-dim);letter-spacing:.05em">UNASSIGNED</div>
+        </div>
+        <div style="background:rgba(0,0,0,.3);border-radius:10px;padding:1rem;text-align:center">
+          <div style="font-family:var(--font-display);font-weight:900;font-size:1.5rem;color:var(--cyan)">12</div>
+          <div style="font-size:.6rem;color:var(--text-dim);letter-spacing:.05em">HIGH PRIORITY</div>
+        </div>
+        <div style="background:rgba(0,0,0,.3);border-radius:10px;padding:1rem;text-align:center">
+          <div style="font-family:var(--font-display);font-weight:900;font-size:1.5rem;color:var(--rose)">2</div>
+          <div style="font-size:.6rem;color:var(--text-dim);letter-spacing:.05em">ESCALATED</div>
+        </div>
+      </div>
+      
+      <div style="margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+        <div style="font-size:.75rem;color:var(--text-dim)">48 agents total • 44 assigned • 4 unassigned</div>
+        <button onclick="saveAgentAssignments()" style="font-family:var(--font-display);font-weight:700;font-size:.75rem;padding:.5rem 1.2rem;border-radius:8px;border:none;background:var(--purple);color:#000;cursor:pointer">Save Assignments</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- C3: Dynamic Branching Rules -->
+  <div class="branch-panel" id="panel-c3" style="display:none">
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:2rem;position:relative;overflow:hidden">
+      <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--emerald),var(--amber))"></div>
+      
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem">
+        <div>
+          <div style="font-size:.6rem;font-weight:700;color:var(--emerald);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.3rem">C3 — Dynamic Branching Rules</div>
+          <h3 style="font-family:var(--font-display);font-weight:900;font-size:1.4rem;color:#fff;margin:0">Configure Workflow Logic</h3>
+        </div>
+        <button onclick="addBranchingRule()" style="font-family:var(--font-display);font-weight:700;font-size:.75rem;padding:.5rem 1rem;border-radius:8px;border:1px solid var(--emerald);background:rgba(52,211,153,.1);color:var(--emerald);cursor:pointer">+ Add Rule</button>
+      </div>
+      
+      <p style="font-size:.9rem;color:var(--text-muted);line-height:1.7;margin-bottom:1.5rem">
+        Define conditional logic that controls workflow progression. When a condition is met, specific tasks unlock, agents are notified, or HITL gates are triggered.
+      </p>
+      
+      <!-- Rules List -->
+      <div id="branching-rules-list" style="display:flex;flex-direction:column;gap:1rem;margin-bottom:1.5rem">
+        
+        <!-- Rule 1: HITL Approval Unlocks Next Steps -->
+        <div class="branching-rule-card" data-rule-id="1" style="background:rgba(0,0,0,.3);border:1px solid rgba(52,211,153,.2);border-radius:12px;padding:1.25rem">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
+            <div style="display:flex;align-items:center;gap:.6rem">
+              <div style="width:8px;height:8px;border-radius:50%;background:var(--emerald);box-shadow:0 0 6px var(--emerald)"></div>
+              <div style="font-family:var(--font-display);font-weight:800;font-size:.9rem;color:#fff">Rule 1: HITL Approval Unlocks Next Steps</div>
+            </div>
+            <div style="display:flex;gap:.5rem">
+              <button onclick="editBranchingRule(1)" style="font-size:.65rem;padding:.3rem .6rem;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text-dim);cursor:pointer">Edit</button>
+              <button onclick="deleteBranchingRule(1)" style="font-size:.65rem;padding:.3rem .6rem;border-radius:6px;border:1px solid rgba(251,113,133,.3);background:transparent;color:var(--rose);cursor:pointer">Delete</button>
+            </div>
+          </div>
+          
+          <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:1rem;align-items:center">
+            <div style="background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.2);border-radius:8px;padding:.8rem">
+              <div style="font-size:.6rem;color:var(--amber);letter-spacing:.08em;margin-bottom:.3rem">WHEN</div>
+              <div style="font-size:.75rem;color:var(--text);font-weight:600">HITL gate at Step 5 is approved</div>
+            </div>
+            <div style="font-size:1.2rem;color:var(--emerald)">→</div>
+            <div style="background:rgba(52,211,153,.08);border:1px solid rgba(52,211,153,.2);border-radius:8px;padding:.8rem">
+              <div style="font-size:.6rem;color:var(--emerald);letter-spacing:.08em;margin-bottom:.3rem">THEN</div>
+              <div style="font-size:.75rem;color:var(--text);font-weight:600">Unlock Steps 6, 7, 8</div>
+            </div>
+          </div>
+          
+          <div style="margin-top:.8rem;font-size:.65rem;color:var(--text-dim)">
+            Applied to: Channel 1 (Brand Discovery) • Triggered 12 times today
+          </div>
+        </div>
+        
+        <!-- Rule 2: Error Escalation -->
+        <div class="branching-rule-card" data-rule-id="2" style="background:rgba(0,0,0,.3);border:1px solid rgba(251,113,133,.2);border-radius:12px;padding:1.25rem">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
+            <div style="display:flex;align-items:center;gap:.6rem">
+              <div style="width:8px;height:8px;border-radius:50%;background:var(--rose);box-shadow:0 0 6px var(--rose)"></div>
+              <div style="font-family:var(--font-display);font-weight:800;font-size:.9rem;color:#fff">Rule 2: Error Escalation</div>
+            </div>
+            <div style="display:flex;gap:.5rem">
+              <button onclick="editBranchingRule(2)" style="font-size:.65rem;padding:.3rem .6rem;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text-dim);cursor:pointer">Edit</button>
+              <button onclick="deleteBranchingRule(2)" style="font-size:.65rem;padding:.3rem .6rem;border-radius:6px;border:1px solid rgba(251,113,133,.3);background:transparent;color:var(--rose);cursor:pointer">Delete</button>
+            </div>
+          </div>
+          
+          <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:1rem;align-items:center">
+            <div style="background:rgba(251,113,133,.08);border:1px solid rgba(251,113,133,.2);border-radius:8px;padding:.8rem">
+              <div style="font-size:.6rem;color:var(--rose);letter-spacing:.08em;margin-bottom:.3rem">WHEN</div>
+              <div style="font-size:.75rem;color:var(--text);font-weight:600">Agent fails 3 times in a row</div>
+            </div>
+            <div style="font-size:1.2rem;color:var(--emerald)">→</div>
+            <div style="background:rgba(52,211,153,.08);border:1px solid rgba(52,211,153,.2);border-radius:8px;padding:.8rem">
+              <div style="font-size:.6rem;color:var(--emerald);letter-spacing:.08em;margin-bottom:.3rem">THEN</div>
+              <div style="font-size:.75rem;color:var(--text);font-weight:600">Escalate to supervisor + pause agent</div>
+            </div>
+          </div>
+          
+          <div style="margin-top:.8rem;font-size:.65rem;color:var(--text-dim)">
+            Applied to: All channels • Triggered 2 times today
+          </div>
+        </div>
+        
+        <!-- Rule 3: Quality Threshold -->
+        <div class="branching-rule-card" data-rule-id="3" style="background:rgba(0,0,0,.3);border:1px solid rgba(56,189,248,.2);border-radius:12px;padding:1.25rem">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
+            <div style="display:flex;align-items:center;gap:.6rem">
+              <div style="width:8px;height:8px;border-radius:50%;background:var(--cyan);box-shadow:0 0 6px var(--cyan)"></div>
+              <div style="font-family:var(--font-display);font-weight:800;font-size:.9rem;color:#fff">Rule 3: Quality Threshold</div>
+            </div>
+            <div style="display:flex;gap:.5rem">
+              <button onclick="editBranchingRule(3)" style="font-size:.65rem;padding:.3rem .6rem;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text-dim);cursor:pointer">Edit</button>
+              <button onclick="deleteBranchingRule(3)" style="font-size:.65rem;padding:.3rem .6rem;border-radius:6px;border:1px solid rgba(251,113,133,.3);background:transparent;color:var(--rose);cursor:pointer">Delete</button>
+            </div>
+          </div>
+          
+          <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:1rem;align-items:center">
+            <div style="background:rgba(56,189,248,.08);border:1px solid rgba(56,189,248,.2);border-radius:8px;padding:.8rem">
+              <div style="font-size:.6rem;color:var(--cyan);letter-spacing:.08em;margin-bottom:.3rem">WHEN</div>
+              <div style="font-size:.75rem;color:var(--text);font-weight:600">Quality score > 8.0</div>
+            </div>
+            <div style="font-size:1.2rem;color:var(--emerald)">→</div>
+            <div style="background:rgba(52,211,153,.08);border:1px solid rgba(52,211,153,.2);border-radius:8px;padding:.8rem">
+              <div style="font-size:.6rem;color:var(--emerald);letter-spacing:.08em;margin-bottom:.3rem">THEN</div>
+              <div style="font-size:.75rem;color:var(--text);font-weight:600">Skip HITL review, auto-approve</div>
+            </div>
+          </div>
+          
+          <div style="margin-top:.8rem;font-size:.65rem;color:var(--text-dim)">
+            Applied to: Channel 2 (Content Generation) • Triggered 8 times today
+          </div>
+        </div>
+        
+      </div>
+      
+      <!-- Visual Flow Diagram -->
+      <div style="background:rgba(0,0,0,.4);border:1px solid var(--border);border-radius:12px;padding:1.5rem;margin-bottom:1.5rem">
+        <div style="font-size:.6rem;font-weight:700;color:var(--text-dim);letter-spacing:.1em;text-transform:uppercase;margin-bottom:1rem">VISUAL FLOW DIAGRAM</div>
+        <div style="display:flex;align-items:center;justify-content:center;gap:.5rem;flex-wrap:wrap">
+          <div style="padding:.5rem .8rem;border-radius:6px;background:rgba(52,211,153,.15);border:1px solid rgba(52,211,153,.3);font-size:.7rem;color:var(--emerald);font-weight:600">Task 1-4</div>
+          <div style="font-size:1rem;color:var(--text-dim)">→</div>
+          <div style="padding:.5rem .8rem;border-radius:6px;background:rgba(251,191,36,.15);border:1px solid rgba(251,191,36,.3);font-size:.7rem;color:var(--amber);font-weight:600">HITL Gate</div>
+          <div style="font-size:1rem;color:var(--text-dim)">→</div>
+          <div style="padding:.5rem .8rem;border-radius:6px;background:rgba(56,189,248,.15);border:1px solid rgba(56,189,248,.3);font-size:.7rem;color:var(--cyan);font-weight:600">Decision</div>
+          <div style="font-size:1rem;color:var(--text-dim)">→</div>
+          <div style="display:flex;flex-direction:column;gap:.3rem">
+            <div style="padding:.3rem .6rem;border-radius:4px;background:rgba(52,211,153,.15);border:1px solid rgba(52,211,153,.3);font-size:.6rem;color:var(--emerald)">✓ Approved → Steps 6-8</div>
+            <div style="padding:.3rem .6rem;border-radius:4px;background:rgba(251,113,133,.15);border:1px solid rgba(251,113,133,.3);font-size:.6rem;color:var(--rose)">✕ Rejected → Back to Step 3</div>
+          </div>
+        </div>
+      </div>
+      
+      <div style="margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+        <div style="font-size:.75rem;color:var(--text-dim)">3 rules active • 22 triggers today</div>
+        <button onclick="saveBranchingRules()" style="font-family:var(--font-display);font-weight:700;font-size:.75rem;padding:.5rem 1.2rem;border-radius:8px;border:none;background:var(--emerald);color:#000;cursor:pointer">Save Rules</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- C4: Integrations -->
+  <div class="branch-panel" id="panel-c4" style="display:none">
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:2rem;position:relative;overflow:hidden">
+      <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--cyan),var(--purple))"></div>
+      
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem">
+        <div>
+          <div style="font-size:.6rem;font-weight:700;color:var(--cyan);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.3rem">C4 — Integrations</div>
+          <h3 style="font-family:var(--font-display);font-weight:900;font-size:1.4rem;color:#fff;margin:0">Connect Agent Frameworks</h3>
+        </div>
+        <button onclick="addIntegration()" style="font-family:var(--font-display);font-weight:700;font-size:.75rem;padding:.5rem 1rem;border-radius:8px;border:1px solid var(--cyan);background:rgba(56,189,248,.1);color:var(--cyan);cursor:pointer">+ Add Integration</button>
+      </div>
+      
+      <p style="font-size:.9rem;color:var(--text-muted);line-height:1.7;margin-bottom:1.5rem">
+        Connect your agent orchestration backends. Each integration feeds task data, agent status, and HITL events into VidiFlow in real-time.
+      </p>
+      
+      <!-- Integration Cards -->
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem;margin-bottom:1.5rem">
+        
+        <!-- Hermes Agent -->
+        <div style="background:rgba(0,0,0,.3);border:1px solid rgba(52,211,153,.25);border-radius:12px;padding:1.25rem">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
+            <div style="display:flex;align-items:center;gap:.6rem">
+              <div style="width:36px;height:36px;border-radius:10px;background:rgba(52,211,153,.15);display:flex;align-items:center;justify-content:center;font-size:1.1rem">⚡</div>
+              <div>
+                <div style="font-family:var(--font-display);font-weight:800;font-size:.9rem;color:#fff">Hermes Agent</div>
+                <div style="font-size:.6rem;color:var(--emerald);font-weight:600">● Connected</div>
+              </div>
+            </div>
+            <label style="position:relative;display:inline-block;width:40px;height:22px">
+              <input type="checkbox" checked onchange="toggleIntegration('hermes', this.checked)" style="opacity:0;width:0;height:0">
+              <span style="position:absolute;cursor:pointer;inset:0;background:var(--emerald);border-radius:22px;transition:.3s"></span>
+              <span style="position:absolute;content:'';height:16px;width:16px;left:21px;bottom:3px;background:white;border-radius:50%;transition:.3s"></span>
+            </label>
+          </div>
+          <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:.8rem">
+            <span style="font-size:.55rem;padding:.15rem .4rem;border-radius:4px;background:rgba(52,211,153,.1);color:var(--emerald)">8 platforms</span>
+            <span style="font-size:.55rem;padding:.15rem .4rem;border-radius:4px;background:rgba(56,189,248,.1);color:var(--cyan)">WebSocket</span>
+            <span style="font-size:.55rem;padding:.15rem .4rem;border-radius:4px;background:rgba(167,139,250,.1);color:var(--purple)">Real-time</span>
+          </div>
+          <div style="font-size:.65rem;color:var(--text-dim)">Last sync: 2s ago • 47 agents reporting</div>
+        </div>
+        
+        <!-- CrewAI -->
+        <div style="background:rgba(0,0,0,.3);border:1px solid rgba(167,139,250,.25);border-radius:12px;padding:1.25rem">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
+            <div style="display:flex;align-items:center;gap:.6rem">
+              <div style="width:36px;height:36px;border-radius:10px;background:rgba(167,139,250,.15);display:flex;align-items:center;justify-content:center;font-size:1.1rem">🤝</div>
+              <div>
+                <div style="font-family:var(--font-display);font-weight:800;font-size:.9rem;color:#fff">CrewAI</div>
+                <div style="font-size:.6rem;color:var(--purple);font-weight:600">● Connected</div>
+              </div>
+            </div>
+            <label style="position:relative;display:inline-block;width:40px;height:22px">
+              <input type="checkbox" checked onchange="toggleIntegration('crewai', this.checked)" style="opacity:0;width:0;height:0">
+              <span style="position:absolute;cursor:pointer;inset:0;background:var(--emerald);border-radius:22px;transition:.3s"></span>
+              <span style="position:absolute;content:'';height:16px;width:16px;left:21px;bottom:3px;background:white;border-radius:50%;transition:.3s"></span>
+            </label>
+          </div>
+          <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:.8rem">
+            <span style="font-size:.55rem;padding:.15rem .4rem;border-radius:4px;background:rgba(167,139,250,.1);color:var(--purple)">Role-based</span>
+            <span style="font-size:.55rem;padding:.15rem .4rem;border-radius:4px;background:rgba(56,189,248,.1);color:var(--cyan)">REST API</span>
+            <span style="font-size:.55rem;padding:.15rem .4rem;border-radius:4px;background:rgba(52,211,153,.1);color:var(--emerald)">Polling 5s</span>
+          </div>
+          <div style="font-size:.65rem;color:var(--text-dim)">Last sync: 4s ago • 12 agents reporting</div>
+        </div>
+        
+        <!-- LangChain / LangGraph -->
+        <div style="background:rgba(0,0,0,.3);border:1px solid rgba(56,189,248,.25);border-radius:12px;padding:1.25rem">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
+            <div style="display:flex;align-items:center;gap:.6rem">
+              <div style="width:36px;height:36px;border-radius:10px;background:rgba(56,189,248,.15);display:flex;align-items:center;justify-content:center;font-size:1.1rem">🔗</div>
+              <div>
+                <div style="font-family:var(--font-display);font-weight:800;font-size:.9rem;color:#fff">LangGraph</div>
+                <div style="font-size:.6rem;color:var(--cyan);font-weight:600">● Connected</div>
+              </div>
+            </div>
+            <label style="position:relative;display:inline-block;width:40px;height:22px">
+              <input type="checkbox" checked onchange="toggleIntegration('langgraph', this.checked)" style="opacity:0;width:0;height:0">
+              <span style="position:absolute;cursor:pointer;inset:0;background:var(--emerald);border-radius:22px;transition:.3s"></span>
+              <span style="position:absolute;content:'';height:16px;width:16px;left:21px;bottom:3px;background:white;border-radius:50%;transition:.3s"></span>
+            </label>
+          </div>
+          <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:.8rem">
+            <span style="font-size:.55rem;padding:.15rem .4rem;border-radius:4px;background:rgba(56,189,248,.1);color:var(--cyan)">Stateful</span>
+            <span style="font-size:.55rem;padding:.15rem .4rem;border-radius:4px;background:rgba(52,211,153,.1);color:var(--emerald)">WebSocket</span>
+            <span style="font-size:.55rem;padding:.15rem .4rem;border-radius:4px;background:rgba(251,191,36,.1);color:var(--amber)">Loops</span>
+          </div>
+          <div style="font-size:.65rem;color:var(--text-dim)">Last sync: 1s ago • 8 agents reporting</div>
+        </div>
+        
+        <!-- OpenClaw -->
+        <div style="background:rgba(0,0,0,.3);border:1px solid rgba(251,191,36,.25);border-radius:12px;padding:1.25rem">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
+            <div style="display:flex;align-items:center;gap:.6rem">
+              <div style="width:36px;height:36px;border-radius:10px;background:rgba(251,191,36,.15);display:flex;align-items:center;justify-content:center;font-size:1.1rem">🦞</div>
+              <div>
+                <div style="font-family:var(--font-display);font-weight:800;font-size:.9rem;color:#fff">OpenClaw</div>
+                <div style="font-size:.6rem;color:var(--amber);font-weight:600">○ Disconnected</div>
+              </div>
+            </div>
+            <label style="position:relative;display:inline-block;width:40px;height:22px">
+              <input type="checkbox" onchange="toggleIntegration('openclaw', this.checked)" style="opacity:0;width:0;height:0">
+              <span style="position:absolute;cursor:pointer;inset:0;background:var(--border);border-radius:22px;transition:.3s"></span>
+              <span style="position:absolute;content:'';height:16px;width:16px;left:3px;bottom:3px;background:white;border-radius:50%;transition:.3s"></span>
+            </label>
+          </div>
+          <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:.8rem">
+            <span style="font-size:.55rem;padding:.15rem .4rem;border-radius:4px;background:rgba(251,191,36,.1);color:var(--amber)">Multi-agent</span>
+            <span style="font-size:.55rem;padding:.15rem .4rem;border-radius:4px;background:rgba(255,255,255,.05);color:var(--text-dim)">REST API</span>
+            <span style="font-size:.55rem;padding:.15rem .4rem;border-radius:4px;background:rgba(255,255,255,.05);color:var(--text-dim)">Polling 10s</span>
+          </div>
+          <div style="font-size:.65rem;color:var(--text-dim)">Not connected • Configure API key to enable</div>
+        </div>
+        
+      </div>
+      
+      <div style="margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+        <div style="font-size:.75rem;color:var(--text-dim)">3 of 4 integrations active • 67 agents reporting</div>
+        <button onclick="saveIntegrations()" style="font-family:var(--font-display);font-weight:700;font-size:.75rem;padding:.5rem 1.2rem;border-radius:8px;border:none;background:var(--cyan);color:#000;cursor:pointer">Save Integrations</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- C5: Themes -->
+  <div class="branch-panel" id="panel-c5" style="display:none">
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:2rem;position:relative;overflow:hidden">
+      <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--purple),var(--rose))"></div>
+      
+      <div style="margin-bottom:1.5rem">
+        <div style="font-size:.6rem;font-weight:700;color:var(--purple);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.3rem">C5 — Theme Configuration</div>
+        <h3 style="font-family:var(--font-display);font-weight:900;font-size:1.4rem;color:#fff;margin:0">Visual Identity & Palettes</h3>
+      </div>
+      
+      <p style="font-size:.9rem;color:var(--text-muted);line-height:1.7;margin-bottom:1.5rem">
+        Choose a color palette for the entire dashboard. Each palette is designed for different viewing environments and use cases. You can also use the floating orb in the bottom-right corner.
+      </p>
+      
+      <!-- Theme Grid -->
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1.25rem;margin-bottom:1.5rem">
+        
+        <!-- Midnight -->
+        <div onclick="switchPalette('midnight');setBranch('c5')" style="cursor:pointer;background:rgba(0,0,0,.3);border:2px solid rgba(56,189,248,.3);border-radius:14px;padding:1.25rem;transition:border-color .2s">
+          <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:1rem">
+            <div style="display:flex;gap:4px">
+              <div style="width:14px;height:14px;border-radius:50%;background:#38bdf8"></div>
+              <div style="width:14px;height:14px;border-radius:50%;background:#a78bfa"></div>
+              <div style="width:14px;height:14px;border-radius:50%;background:#34d399"></div>
+            </div>
+            <div style="font-family:var(--font-display);font-weight:800;font-size:.9rem;color:#fff">Midnight</div>
+            <div style="margin-left:auto;font-size:.55rem;padding:.15rem .4rem;border-radius:4px;background:rgba(56,189,248,.15);color:var(--cyan)">DEFAULT</div>
+          </div>
+          <div style="height:40px;border-radius:8px;background:linear-gradient(135deg,#05070e,#0b0f1a,#1a2035);margin-bottom:.8rem;border:1px solid #1a2035"></div>
+          <div style="font-size:.7rem;color:var(--text-dim);line-height:1.5">Deep navy background with cyan, purple, and emerald accents. Best for dark environments.</div>
+        </div>
+        
+        <!-- Void -->
+        <div onclick="switchPalette('void');setBranch('c5')" style="cursor:pointer;background:rgba(0,0,0,.3);border:2px solid var(--border);border-radius:14px;padding:1.25rem;transition:border-color .2s">
+          <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:1rem">
+            <div style="display:flex;gap:4px">
+              <div style="width:14px;height:14px;border-radius:50%;background:#39d353"></div>
+              <div style="width:14px;height:14px;border-radius:50%;background:#a8ff78"></div>
+              <div style="width:14px;height:14px;border-radius:50%;background:#d4f5c4"></div>
+            </div>
+            <div style="font-family:var(--font-display);font-weight:800;font-size:.9rem;color:#fff">Void</div>
+          </div>
+          <div style="height:40px;border-radius:8px;background:linear-gradient(135deg,#000000,#080808,#181818);margin-bottom:.8rem;border:1px solid #181818"></div>
+          <div style="font-size:.7rem;color:var(--text-dim);line-height:1.5">Pure black terminal aesthetic with neon green. For developers and ops teams.</div>
+        </div>
+        
+        <!-- Dusk -->
+        <div onclick="switchPalette('dusk');setBranch('c5')" style="cursor:pointer;background:rgba(0,0,0,.3);border:2px solid var(--border);border-radius:14px;padding:1.25rem;transition:border-color .2s">
+          <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:1rem">
+            <div style="display:flex;gap:4px">
+              <div style="width:14px;height:14px;border-radius:50%;background:#c084fc"></div>
+              <div style="width:14px;height:14px;border-radius:50%;background:#e879f9"></div>
+              <div style="width:14px;height:14px;border-radius:50%;background:#34d399"></div>
+            </div>
+            <div style="font-family:var(--font-display);font-weight:800;font-size:.9rem;color:#fff">Dusk</div>
+          </div>
+          <div style="height:40px;border-radius:8px;background:linear-gradient(135deg,#060212,#0c0620,#1c1040);margin-bottom:.8rem;border:1px solid #1c1040"></div>
+          <div style="font-size:.7rem;color:var(--text-dim);line-height:1.5">Deep violet cosmos with fuchsia and purple accents. Elegant and immersive.</div>
+        </div>
+        
+        <!-- Carbon -->
+        <div onclick="switchPalette('carbon');setBranch('c5')" style="cursor:pointer;background:rgba(0,0,0,.3);border:2px solid var(--border);border-radius:14px;padding:1.25rem;transition:border-color .2s">
+          <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:1rem">
+            <div style="display:flex;gap:4px">
+              <div style="width:14px;height:14px;border-radius:50%;background:#fbbf24"></div>
+              <div style="width:14px;height:14px;border-radius:50%;background:#fb923c"></div>
+              <div style="width:14px;height:14px;border-radius:50%;background:#84cc16"></div>
+            </div>
+            <div style="font-family:var(--font-display);font-weight:800;font-size:.9rem;color:#fff">Carbon</div>
+          </div>
+          <div style="height:40px;border-radius:8px;background:linear-gradient(135deg,#0c0904,#131008,#2a2010);margin-bottom:.8rem;border:1px solid #2a2010"></div>
+          <div style="font-size:.7rem;color:var(--text-dim);line-height:1.5">Warm charcoal with amber and orange accents. Easy on the eyes for long sessions.</div>
+        </div>
+        
+      </div>
+      
+      <div style="margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+        <div style="font-size:.75rem;color:var(--text-dim)">4 palettes available • Click any card to apply instantly</div>
+        <div style="font-size:.75rem;font-weight:700;color:var(--purple)">Active: <span id="c5-active-theme">Midnight</span></div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- C6: Notifications -->
+  <div class="branch-panel" id="panel-c6" style="display:none">
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:2rem;position:relative;overflow:hidden">
+      <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--amber),var(--rose))"></div>
+      
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem">
+        <div>
+          <div style="font-size:.6rem;font-weight:700;color:var(--amber);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.3rem">C6 — Notification Rules</div>
+          <h3 style="font-family:var(--font-display);font-weight:900;font-size:1.4rem;color:#fff;margin:0">Alert & Escalation Config</h3>
+        </div>
+        <button onclick="addNotificationRule()" style="font-family:var(--font-display);font-weight:700;font-size:.75rem;padding:.5rem 1rem;border-radius:8px;border:1px solid var(--amber);background:rgba(251,191,36,.1);color:var(--amber);cursor:pointer">+ Add Rule</button>
+      </div>
+      
+      <p style="font-size:.9rem;color:var(--text-muted);line-height:1.7;margin-bottom:1.5rem">
+        Define when and how humans get notified. Set escalation thresholds, HITL triggers, and delivery channels for alerts.
+      </p>
+      
+      <!-- Notification Rules -->
+      <div style="display:flex;flex-direction:column;gap:1rem;margin-bottom:1.5rem">
+        
+        <!-- Rule 1: HITL Gate Trigger -->
+        <div style="background:rgba(0,0,0,.3);border:1px solid rgba(251,191,36,.2);border-radius:12px;padding:1.25rem">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.8rem">
+            <div style="display:flex;align-items:center;gap:.6rem">
+              <div style="width:8px;height:8px;border-radius:50%;background:var(--amber);box-shadow:0 0 6px var(--amber)"></div>
+              <div style="font-family:var(--font-display);font-weight:800;font-size:.85rem;color:#fff">HITL Gate Triggered</div>
+            </div>
+            <div style="display:flex;gap:.5rem">
+              <span style="font-size:.55rem;padding:.15rem .4rem;border-radius:4px;background:rgba(52,211,153,.15);color:var(--emerald)">ACTIVE</span>
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.8rem;margin-bottom:.8rem">
+            <div>
+              <div style="font-size:.55rem;color:var(--text-dim);letter-spacing:.08em;margin-bottom:.2rem">TRIGGER</div>
+              <div style="font-size:.7rem;color:var(--text)">Any HITL gate opens</div>
+            </div>
+            <div>
+              <div style="font-size:.55rem;color:var(--text-dim);letter-spacing:.08em;margin-bottom:.2rem">DELIVER TO</div>
+              <div style="font-size:.7rem;color:var(--text)">Slack + Email + Dashboard</div>
+            </div>
+            <div>
+              <div style="font-size:.55rem;color:var(--text-dim);letter-spacing:.08em;margin-bottom:.2rem">ESCALATE AFTER</div>
+              <div style="font-size:.7rem;color:var(--text)">15 minutes → Supervisor</div>
+            </div>
+          </div>
+          <div style="font-size:.6rem;color:var(--text-dim)">Triggered 14 times today • Avg response: 4.2 min</div>
+        </div>
+        
+        <!-- Rule 2: Agent Error Threshold -->
+        <div style="background:rgba(0,0,0,.3);border:1px solid rgba(251,113,133,.2);border-radius:12px;padding:1.25rem">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.8rem">
+            <div style="display:flex;align-items:center;gap:.6rem">
+              <div style="width:8px;height:8px;border-radius:50%;background:var(--rose);box-shadow:0 0 6px var(--rose)"></div>
+              <div style="font-family:var(--font-display);font-weight:800;font-size:.85rem;color:#fff">Agent Error Threshold</div>
+            </div>
+            <div style="display:flex;gap:.5rem">
+              <span style="font-size:.55rem;padding:.15rem .4rem;border-radius:4px;background:rgba(52,211,153,.15);color:var(--emerald)">ACTIVE</span>
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.8rem;margin-bottom:.8rem">
+            <div>
+              <div style="font-size:.55rem;color:var(--text-dim);letter-spacing:.08em;margin-bottom:.2rem">TRIGGER</div>
+              <div style="font-size:.7rem;color:var(--text)">3+ errors in 5 minutes</div>
+            </div>
+            <div>
+              <div style="font-size:.55rem;color:var(--text-dim);letter-spacing:.08em;margin-bottom:.2rem">DELIVER TO</div>
+              <div style="font-size:.7rem;color:var(--text)">Dashboard + PagerDuty</div>
+            </div>
+            <div>
+              <div style="font-size:.55rem;color:var(--text-dim);letter-spacing:.08em;margin-bottom:.2rem">ESCALATE AFTER</div>
+              <div style="font-size:.7rem;color:var(--text)">5 minutes → On-call</div>
+            </div>
+          </div>
+          <div style="font-size:.6rem;color:var(--text-dim)">Triggered 2 times today • Avg response: 1.8 min</div>
+        </div>
+        
+        <!-- Rule 3: Channel Completion -->
+        <div style="background:rgba(0,0,0,.3);border:1px solid rgba(52,211,153,.2);border-radius:12px;padding:1.25rem">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.8rem">
+            <div style="display:flex;align-items:center;gap:.6rem">
+              <div style="width:8px;height:8px;border-radius:50%;background:var(--emerald);box-shadow:0 0 6px var(--emerald)"></div>
+              <div style="font-family:var(--font-display);font-weight:800;font-size:.85rem;color:#fff">Channel Completion</div>
+            </div>
+            <div style="display:flex;gap:.5rem">
+              <span style="font-size:.55rem;padding:.15rem .4rem;border-radius:4px;background:rgba(52,211,153,.15);color:var(--emerald)">ACTIVE</span>
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.8rem;margin-bottom:.8rem">
+            <div>
+              <div style="font-size:.55rem;color:var(--text-dim);letter-spacing:.08em;margin-bottom:.2rem">TRIGGER</div>
+              <div style="font-size:.7rem;color:var(--text)">Channel reaches 100%</div>
+            </div>
+            <div>
+              <div style="font-size:.55rem;color:var(--text-dim);letter-spacing:.08em;margin-bottom:.2rem">DELIVER TO</div>
+              <div style="font-size:.7rem;color:var(--text)">Slack + Email</div>
+            </div>
+            <div>
+              <div style="font-size:.55rem;color:var(--text-dim);letter-spacing:.08em;margin-bottom:.2rem">ESCALATE AFTER</div>
+              <div style="font-size:.7rem;color:var(--text)">N/A (informational)</div>
+            </div>
+          </div>
+          <div style="font-size:.6rem;color:var(--text-dim)">Triggered 3 times today • Informational only</div>
+        </div>
+        
+        <!-- Rule 4: Cost Threshold -->
+        <div style="background:rgba(0,0,0,.3);border:1px solid rgba(167,139,250,.2);border-radius:12px;padding:1.25rem">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.8rem">
+            <div style="display:flex;align-items:center;gap:.6rem">
+              <div style="width:8px;height:8px;border-radius:50%;background:var(--purple);box-shadow:0 0 6px var(--purple)"></div>
+              <div style="font-family:var(--font-display);font-weight:800;font-size:.85rem;color:#fff">Cost Threshold Alert</div>
+            </div>
+            <div style="display:flex;gap:.5rem">
+              <span style="font-size:.55rem;padding:.15rem .4rem;border-radius:4px;background:rgba(255,255,255,.05);color:var(--text-dim)">PAUSED</span>
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.8rem;margin-bottom:.8rem">
+            <div>
+              <div style="font-size:.55rem;color:var(--text-dim);letter-spacing:.08em;margin-bottom:.2rem">TRIGGER</div>
+              <div style="font-size:.7rem;color:var(--text)">Daily burn > $50</div>
+            </div>
+            <div>
+              <div style="font-size:.55rem;color:var(--text-dim);letter-spacing:.08em;margin-bottom:.2rem">DELIVER TO</div>
+              <div style="font-size:.7rem;color:var(--text)">Email only</div>
+            </div>
+            <div>
+              <div style="font-size:.55rem;color:var(--text-dim);letter-spacing:.08em;margin-bottom:.2rem">ESCALATE AFTER</div>
+              <div style="font-size:.7rem;color:var(--text)">1 hour → Finance</div>
+            </div>
+          </div>
+          <div style="font-size:.6rem;color:var(--text-dim)">Paused • Last triggered 3 days ago</div>
+        </div>
+        
+      </div>
+      
+      <div style="margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+        <div style="font-size:.75rem;color:var(--text-dim)">4 rules configured • 3 active, 1 paused • 19 alerts today</div>
+        <button onclick="saveNotificationRules()" style="font-family:var(--font-display);font-weight:700;font-size:.75rem;padding:.5rem 1.2rem;border-radius:8px;border:none;background:var(--amber);color:#000;cursor:pointer">Save Rules</button>
+      </div>
+    </div>
+  </div>
+  
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════
+     BRANCH RESULTS MODULES (R1-R8)
+     ═══════════════════════════════════════════════════════════ -->
+<section class="container" id="branch-results" style="margin-bottom:4rem;display:none">
+  
+  <!-- R1: Fleet Results -->
+  <div class="branch-panel" id="panel-r1" style="display:none">
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:2rem;position:relative;overflow:hidden">
+      <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--emerald),var(--cyan))"></div>
+      <div style="font-size:.6rem;font-weight:700;color:var(--emerald);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.3rem">R1 — Fleet-Level Results</div>
+      <h3 style="font-family:var(--font-display);font-weight:900;font-size:1.4rem;color:#fff;margin-bottom:1rem">Fleet Status Dashboard</h3>
+      <p style="font-size:.9rem;color:var(--text-muted);line-height:1.7;margin-bottom:1.5rem">
+        This view is already live above — scroll up to the <strong style="color:var(--text)">Deploy Command</strong> section to see LED bars, fleet numbers, rotary dials, agent grid, server heat maps, and circular gauges.
+      </p>
+      <a href="#gen-ui" style="display:inline-flex;align-items:center;gap:.5rem;font-family:var(--font-display);font-weight:700;font-size:.8rem;padding:.6rem 1.2rem;border-radius:8px;background:rgba(52,211,153,.15);color:var(--emerald);text-decoration:none;border:1px solid rgba(52,211,153,.3)">↑ Scroll to Fleet Dashboard</a>
+    </div>
+  </div>
+  
+  <!-- R2: Critical Path Results -->
+  <div class="branch-panel" id="panel-r2" style="display:none">
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:2rem;position:relative;overflow:hidden">
+      <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--purple),var(--rose))"></div>
+      <div style="font-size:.6rem;font-weight:700;color:var(--purple);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.3rem">R2 — Critical Path Results</div>
+      <h3 style="font-family:var(--font-display);font-weight:900;font-size:1.4rem;color:#fff;margin-bottom:1rem">Channel Workflow Map</h3>
+      <p style="font-size:.9rem;color:var(--text-muted);line-height:1.7;margin-bottom:1.5rem">
+        This view is already live above — scroll up to the <strong style="color:var(--text)">Phase 2: Critical Path Map</strong> section to see 4 channels with task blocks, HITL gates, live timers, and dynamic branching.
+      </p>
+      <a href="#gen-ui" style="display:inline-flex;align-items:center;gap:.5rem;font-family:var(--font-display);font-weight:700;font-size:.8rem;padding:.6rem 1.2rem;border-radius:8px;background:rgba(167,139,250,.15);color:var(--purple);text-decoration:none;border:1px solid rgba(167,139,250,.3)">↑ Scroll to Critical Path Map</a>
+    </div>
+  </div>
+  
+  <!-- R3: Cash Flow Results -->
+  <div class="branch-panel" id="panel-r3" style="display:none">
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:2rem;position:relative;overflow:hidden">
+      <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--emerald),var(--amber))"></div>
+      <div style="font-size:.6rem;font-weight:700;color:var(--emerald);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.3rem">R3 — Cash Flow Results</div>
+      <h3 style="font-family:var(--font-display);font-weight:900;font-size:1.4rem;color:#fff;margin-bottom:1rem">Revenue & Cost Topology</h3>
+      
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:1.5rem">
+        <div style="background:rgba(52,211,153,.06);border:1px solid rgba(52,211,153,.2);border-radius:12px;padding:1.25rem">
+          <div style="font-size:.6rem;color:var(--emerald);letter-spacing:.08em;margin-bottom:.5rem">REVENUE STREAMS</div>
+          <div style="font-family:var(--font-display);font-weight:900;font-size:2rem;color:var(--emerald);margin-bottom:.3rem">$142.8K</div>
+          <div style="font-size:.7rem;color:var(--text-dim)">Monthly recurring • ▲ 12% vs last month</div>
+        </div>
+        <div style="background:rgba(251,113,133,.06);border:1px solid rgba(251,113,133,.2);border-radius:12px;padding:1.25rem">
+          <div style="font-size:.6rem;color:var(--rose);letter-spacing:.08em;margin-bottom:.5rem">COST LEAKS DETECTED</div>
+          <div style="font-family:var(--font-display);font-weight:900;font-size:2rem;color:var(--rose);margin-bottom:.3rem">$8.4K</div>
+          <div style="font-size:.7rem;color:var(--text-dim)">3 leaks identified • Agent retry storms</div>
+        </div>
+      </div>
+      
+      <div style="background:rgba(0,0,0,.3);border-radius:12px;padding:1.25rem;margin-bottom:1.5rem">
+        <div style="font-size:.6rem;font-weight:700;color:var(--text-dim);letter-spacing:.1em;text-transform:uppercase;margin-bottom:1rem">OPTIMIZATION SUGGESTIONS</div>
+        <div style="display:flex;flex-direction:column;gap:.8rem">
+          <div style="display:flex;align-items:center;gap:.8rem">
+            <div style="width:8px;height:8px;border-radius:50%;background:var(--amber);flex-shrink:0"></div>
+            <div style="flex:1">
+              <div style="font-size:.8rem;color:var(--text);font-weight:600">Consolidate API calls in Channel 3</div>
+              <div style="font-size:.65rem;color:var(--text-dim)">Estimated savings: $3.2K/month</div>
+            </div>
+            <div style="font-size:.65rem;font-weight:700;color:var(--amber);padding:.2rem .5rem;border-radius:4px;background:rgba(251,191,36,.1)">MEDIUM</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:.8rem">
+            <div style="width:8px;height:8px;border-radius:50%;background:var(--rose);flex-shrink:0"></div>
+            <div style="flex:1">
+              <div style="font-size:.8rem;color:var(--text);font-weight:600">Fix retry storm in Agent 004</div>
+              <div style="font-size:.65rem;color:var(--text-dim)">Estimated savings: $2.8K/month</div>
+            </div>
+            <div style="font-size:.65rem;font-weight:700;color:var(--rose);padding:.2rem .5rem;border-radius:4px;background:rgba(251,113,133,.1)">HIGH</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:.8rem">
+            <div style="width:8px;height:8px;border-radius:50%;background:var(--emerald);flex-shrink:0"></div>
+            <div style="flex:1">
+              <div style="font-size:.8rem;color:var(--text);font-weight:600">Cache brand discovery results</div>
+              <div style="font-size:.65rem;color:var(--text-dim)">Estimated savings: $1.4K/month</div>
+            </div>
+            <div style="font-size:.65rem;font-weight:700;color:var(--emerald);padding:.2rem .5rem;border-radius:4px;background:rgba(52,211,153,.1)">LOW</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- R4: Brand Discovery Results -->
+  <div class="branch-panel" id="panel-r4" style="display:none">
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:2rem;position:relative;overflow:hidden">
+      <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--cyan),var(--purple))"></div>
+      <div style="font-size:.6rem;font-weight:700;color:var(--cyan);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.3rem">R4 — Brand Discovery Results</div>
+      <h3 style="font-family:var(--font-display);font-weight:900;font-size:1.4rem;color:#fff;margin-bottom:1rem">Scored Opportunities & Intel</h3>
+      
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1.5rem">
+        <div style="background:rgba(0,0,0,.3);border-radius:10px;padding:1rem;text-align:center">
+          <div style="font-family:var(--font-display);font-weight:900;font-size:1.8rem;color:var(--cyan)">247</div>
+          <div style="font-size:.6rem;color:var(--text-dim);letter-spacing:.05em">BRANDS SCANNED</div>
+        </div>
+        <div style="background:rgba(0,0,0,.3);border-radius:10px;padding:1rem;text-align:center">
+          <div style="font-family:var(--font-display);font-weight:900;font-size:1.8rem;color:var(--emerald)">38</div>
+          <div style="font-size:.6rem;color:var(--text-dim);letter-spacing:.05em">HIGH-SCORE MATCHES</div>
+        </div>
+        <div style="background:rgba(0,0,0,.3);border-radius:10px;padding:1rem;text-align:center">
+          <div style="font-family:var(--font-display);font-weight:900;font-size:1.8rem;color:var(--amber)">12</div>
+          <div style="font-size:.6rem;color:var(--text-dim);letter-spacing:.05em">PARTNERSHIP TARGETS</div>
+        </div>
+      </div>
+      
+      <div style="background:rgba(0,0,0,.3);border-radius:12px;padding:1.25rem">
+        <div style="font-size:.6rem;font-weight:700;color:var(--text-dim);letter-spacing:.1em;text-transform:uppercase;margin-bottom:1rem">TOP 5 SCORED OPPORTUNITIES</div>
+        <div style="display:flex;flex-direction:column;gap:.6rem">
+          <div style="display:flex;align-items:center;gap:.8rem;padding:.5rem;border-radius:8px;background:rgba(52,211,153,.05)">
+            <div style="font-family:var(--font-display);font-weight:900;font-size:1.1rem;color:var(--emerald);width:40px">9.4</div>
+            <div style="flex:1"><div style="font-size:.8rem;color:var(--text);font-weight:600">Acme Corp — SaaS Partnership</div><div style="font-size:.6rem;color:var(--text-dim)">Revenue potential: $240K/yr • Fit score: 94%</div></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:.8rem;padding:.5rem;border-radius:8px;background:rgba(52,211,153,.05)">
+            <div style="font-family:var(--font-display);font-weight:900;font-size:1.1rem;color:var(--emerald);width:40px">8.7</div>
+            <div style="flex:1"><div style="font-size:.8rem;color:var(--text);font-weight:600">TechFlow Inc — Integration Partner</div><div style="font-size:.6rem;color:var(--text-dim)">Revenue potential: $180K/yr • Fit score: 87%</div></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:.8rem;padding:.5rem;border-radius:8px;background:rgba(56,189,248,.05)">
+            <div style="font-family:var(--font-display);font-weight:900;font-size:1.1rem;color:var(--cyan);width:40px">8.2</div>
+            <div style="flex:1"><div style="font-size:.8rem;color:var(--text);font-weight:600">DataVault — Co-marketing</div><div style="font-size:.6rem;color:var(--text-dim)">Revenue potential: $95K/yr • Fit score: 82%</div></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:.8rem;padding:.5rem;border-radius:8px;background:rgba(56,189,248,.05)">
+            <div style="font-family:var(--font-display);font-weight:900;font-size:1.1rem;color:var(--cyan);width:40px">7.8</div>
+            <div style="flex:1"><div style="font-size:.8rem;color:var(--text);font-weight:600">CloudNine — Reseller Channel</div><div style="font-size:.6rem;color:var(--text-dim)">Revenue potential: $120K/yr • Fit score: 78%</div></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:.8rem;padding:.5rem;border-radius:8px;background:rgba(251,191,36,.05)">
+            <div style="font-family:var(--font-display);font-weight:900;font-size:1.1rem;color:var(--amber);width:40px">7.1</div>
+            <div style="flex:1"><div style="font-size:.8rem;color:var(--text);font-weight:600">NexGen Labs — Technology License</div><div style="font-size:.6rem;color:var(--text-dim)">Revenue potential: $65K/yr • Fit score: 71%</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- R5: HITL Queue -->
+  <div class="branch-panel" id="panel-r5" style="display:none">
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:2rem;position:relative;overflow:hidden">
+      <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--amber),var(--rose))"></div>
+      <div style="font-size:.6rem;font-weight:700;color:var(--amber);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.3rem">R5 — HITL Queue</div>
+      <h3 style="font-family:var(--font-display);font-weight:900;font-size:1.4rem;color:#fff;margin-bottom:1rem">Pending Human Approvals</h3>
+      
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1.5rem">
+        <div style="background:rgba(0,0,0,.3);border-radius:10px;padding:1rem;text-align:center">
+          <div style="font-family:var(--font-display);font-weight:900;font-size:1.8rem;color:var(--amber)">4</div>
+          <div style="font-size:.6rem;color:var(--text-dim);letter-spacing:.05em">PENDING APPROVALS</div>
+        </div>
+        <div style="background:rgba(0,0,0,.3);border-radius:10px;padding:1rem;text-align:center">
+          <div style="font-family:var(--font-display);font-weight:900;font-size:1.8rem;color:var(--emerald)">18</div>
+          <div style="font-size:.6rem;color:var(--text-dim);letter-spacing:.05em">APPROVED TODAY</div>
+        </div>
+        <div style="background:rgba(0,0,0,.3);border-radius:10px;padding:1rem;text-align:center">
+          <div style="font-family:var(--font-display);font-weight:900;font-size:1.8rem;color:var(--rose)">1</div>
+          <div style="font-size:.6rem;color:var(--text-dim);letter-spacing:.05em">OVERDUE (>1hr)</div>
+        </div>
+      </div>
+      
+      <div style="display:flex;flex-direction:column;gap:1rem">
+        <div style="background:rgba(251,191,36,.06);border:1px solid rgba(251,191,36,.2);border-radius:12px;padding:1.25rem">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.8rem">
+            <div style="display:flex;align-items:center;gap:.6rem">
+              <div style="width:8px;height:8px;border-radius:50%;background:var(--amber);box-shadow:0 0 6px var(--amber);animation:pulse-dot 2s infinite"></div>
+              <div style="font-family:var(--font-display);font-weight:800;font-size:.85rem;color:#fff">Channel 1: HITL Review — Brand Discovery</div>
+            </div>
+            <div style="font-size:.65rem;color:var(--amber);font-weight:600">4:13 elapsed</div>
+          </div>
+          <div style="font-size:.75rem;color:var(--text-muted);margin-bottom:.8rem">Agent 007 requesting approval for 38 scored brand opportunities. Requires 2 of 3 approvers.</div>
+          <div style="display:flex;gap:.5rem">
+            <button style="font-family:var(--font-display);font-weight:700;font-size:.7rem;padding:.4rem .8rem;border-radius:6px;border:none;background:var(--emerald);color:#000;cursor:pointer">✓ Approve</button>
+            <button style="font-family:var(--font-display);font-weight:700;font-size:.7rem;padding:.4rem .8rem;border-radius:6px;border:1px solid var(--rose);background:transparent;color:var(--rose);cursor:pointer">✕ Reject</button>
+            <button style="font-family:var(--font-display);font-weight:700;font-size:.7rem;padding:.4rem .8rem;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text-dim);cursor:pointer">View Details</button>
+          </div>
+        </div>
+        
+        <div style="background:rgba(251,191,36,.06);border:1px solid rgba(251,191,36,.2);border-radius:12px;padding:1.25rem">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.8rem">
+            <div style="display:flex;align-items:center;gap:.6rem">
+              <div style="width:8px;height:8px;border-radius:50%;background:var(--amber);box-shadow:0 0 6px var(--amber);animation:pulse-dot 2s infinite"></div>
+              <div style="font-family:var(--font-display);font-weight:800;font-size:.85rem;color:#fff">Channel 3: Anomaly Check — Cash Flow</div>
+            </div>
+            <div style="font-size:.65rem;color:var(--rose);font-weight:600">⚠ 1:17 overdue</div>
+          </div>
+          <div style="font-size:.75rem;color:var(--text-muted);margin-bottom:.8rem">Agent 019 detected $8.4K in cost leaks. Requires finance team approval before rebalancing.</div>
+          <div style="display:flex;gap:.5rem">
+            <button style="font-family:var(--font-display);font-weight:700;font-size:.7rem;padding:.4rem .8rem;border-radius:6px;border:none;background:var(--emerald);color:#000;cursor:pointer">✓ Approve</button>
+            <button style="font-family:var(--font-display);font-weight:700;font-size:.7rem;padding:.4rem .8rem;border-radius:6px;border:1px solid var(--rose);background:transparent;color:var(--rose);cursor:pointer">✕ Reject</button>
+            <button style="font-family:var(--font-display);font-weight:700;font-size:.7rem;padding:.4rem .8rem;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text-dim);cursor:pointer">View Details</button>
+          </div>
+        </div>
+        
+        <div style="background:rgba(251,191,36,.06);border:1px solid rgba(251,191,36,.2);border-radius:12px;padding:1.25rem">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.8rem">
+            <div style="display:flex;align-items:center;gap:.6rem">
+              <div style="width:8px;height:8px;border-radius:50%;background:var(--amber);box-shadow:0 0 6px var(--amber);animation:pulse-dot 2s infinite"></div>
+              <div style="font-family:var(--font-display);font-weight:800;font-size:.85rem;color:#fff">Channel 2: Content Approval</div>
+            </div>
+            <div style="font-size:.65rem;color:var(--amber);font-weight:600">22 min elapsed</div>
+          </div>
+          <div style="font-size:.75rem;color:var(--text-muted);margin-bottom:.8rem">Agent 012 requesting approval for blog post draft. Quality score: 8.4/10. Auto-approve threshold: 8.0.</div>
+          <div style="display:flex;gap:.5rem">
+            <button style="font-family:var(--font-display);font-weight:700;font-size:.7rem;padding:.4rem .8rem;border-radius:6px;border:none;background:var(--emerald);color:#000;cursor:pointer">✓ Approve</button>
+            <button style="font-family:var(--font-display);font-weight:700;font-size:.7rem;padding:.4rem .8rem;border-radius:6px;border:1px solid var(--rose);background:transparent;color:var(--rose);cursor:pointer">✕ Reject</button>
+            <button style="font-family:var(--font-display);font-weight:700;font-size:.7rem;padding:.4rem .8rem;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text-dim);cursor:pointer">View Details</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- R6: Agent Detail -->
+  <div class="branch-panel" id="panel-r6" style="display:none">
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:2rem;position:relative;overflow:hidden">
+      <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--cyan),var(--emerald))"></div>
+      <div style="font-size:.6rem;font-weight:700;color:var(--cyan);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.3rem">R6 — Agent Detail</div>
+      <h3 style="font-family:var(--font-display);font-weight:900;font-size:1.4rem;color:#fff;margin-bottom:1rem">Individual Agent Deep-Dive</h3>
+      <p style="font-size:.9rem;color:var(--text-muted);line-height:1.7;margin-bottom:1.5rem">
+        Click any agent dot in the fleet dashboard above to open the detail modal. It shows session history, tool calls, token usage, cost tracking, and live logs.
+      </p>
+      <a href="#gen-ui" style="display:inline-flex;align-items:center;gap:.5rem;font-family:var(--font-display);font-weight:700;font-size:.8rem;padding:.6rem 1.2rem;border-radius:8px;background:rgba(56,189,248,.15);color:var(--cyan);text-decoration:none;border:1px solid rgba(56,189,248,.3)">↑ Scroll to Agent Grid</a>
+    </div>
+  </div>
+  
+  <!-- R7: Compliance -->
+  <div class="branch-panel" id="panel-r7" style="display:none">
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:2rem;position:relative;overflow:hidden">
+      <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--purple),var(--cyan))"></div>
+      <div style="font-size:.6rem;font-weight:700;color:var(--purple);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.3rem">R7 — Compliance & Audit Trail</div>
+      <h3 style="font-family:var(--font-display);font-weight:900;font-size:1.4rem;color:#fff;margin-bottom:1rem">Who Approved What, When</h3>
+      
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1.5rem">
+        <div style="background:rgba(0,0,0,.3);border-radius:10px;padding:1rem;text-align:center">
+          <div style="font-family:var(--font-display);font-weight:900;font-size:1.8rem;color:var(--emerald)">142</div>
+          <div style="font-size:.6rem;color:var(--text-dim);letter-spacing:.05em">APPROVALS THIS WEEK</div>
+        </div>
+        <div style="background:rgba(0,0,0,.3);border-radius:10px;padding:1rem;text-align:center">
+          <div style="font-family:var(--font-display);font-weight:900;font-size:1.8rem;color:var(--rose)">3</div>
+          <div style="font-size:.6rem;color:var(--text-dim);letter-spacing:.05em">REJECTIONS</div>
+        </div>
+        <div style="background:rgba(0,0,0,.3);border-radius:10px;padding:1rem;text-align:center">
+          <div style="font-family:var(--font-display);font-weight:900;font-size:1.8rem;color:var(--cyan)">4.2m</div>
+          <div style="font-size:.6rem;color:var(--text-dim);letter-spacing:.05em">AVG RESPONSE TIME</div>
+        </div>
+      </div>
+      
+      <div style="background:rgba(0,0,0,.3);border-radius:12px;padding:1.25rem">
+        <div style="font-size:.6rem;font-weight:700;color:var(--text-dim);letter-spacing:.1em;text-transform:uppercase;margin-bottom:1rem">RECENT AUDIT LOG</div>
+        <div style="display:flex;flex-direction:column;gap:.6rem">
+          <div style="display:flex;align-items:center;gap:.8rem;padding:.5rem;border-radius:6px;background:rgba(52,211,153,.05)">
+            <div style="font-size:.6rem;color:var(--text-dim);width:60px;flex-shrink:0">14:32</div>
+            <div style="width:8px;height:8px;border-radius:50%;background:var(--emerald);flex-shrink:0"></div>
+            <div style="flex:1;font-size:.75rem;color:var(--text)"><strong>Sarah K.</strong> approved Channel 1 HITL gate — Brand Discovery</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:.8rem;padding:.5rem;border-radius:6px;background:rgba(52,211,153,.05)">
+            <div style="font-size:.6rem;color:var(--text-dim);width:60px;flex-shrink:0">14:28</div>
+            <div style="width:8px;height:8px;border-radius:50%;background:var(--emerald);flex-shrink:0"></div>
+            <div style="flex:1;font-size:.75rem;color:var(--text)"><strong>Mike R.</strong> approved Channel 2 content — Blog Post #47</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:.8rem;padding:.5rem;border-radius:6px;background:rgba(251,113,133,.05)">
+            <div style="font-size:.6rem;color:var(--text-dim);width:60px;flex-shrink:0">13:55</div>
+            <div style="width:8px;height:8px;border-radius:50%;background:var(--rose);flex-shrink:0"></div>
+            <div style="flex:1;font-size:.75rem;color:var(--text)"><strong>Lisa T.</strong> rejected Channel 3 anomaly — insufficient data</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:.8rem;padding:.5rem;border-radius:6px;background:rgba(52,211,153,.05)">
+            <div style="font-size:.6rem;color:var(--text-dim);width:60px;flex-shrink:0">13:41</div>
+            <div style="width:8px;height:8px;border-radius:50%;background:var(--emerald);flex-shrink:0"></div>
+            <div style="flex:1;font-size:.75rem;color:var(--text)"><strong>James W.</strong> approved Channel 4 escalation — Customer #892</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:.8rem;padding:.5rem;border-radius:6px;background:rgba(52,211,153,.05)">
+            <div style="font-size:.6rem;color:var(--text-dim);width:60px;flex-shrink:0">12:18</div>
+            <div style="width:8px;height:8px;border-radius:50%;background:var(--emerald);flex-shrink:0"></div>
+            <div style="flex:1;font-size:.75rem;color:var(--text)"><strong>Auto-approve</strong> — Channel 2 quality score 9.1 exceeded threshold</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- R8: Forecast -->
+  <div class="branch-panel" id="panel-r8" style="display:none">
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:2rem;position:relative;overflow:hidden">
+      <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--cyan),var(--purple))"></div>
+      <div style="font-size:.6rem;font-weight:700;color:var(--cyan);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.3rem">R8 — Predictive Analytics</div>
+      <h3 style="font-family:var(--font-display);font-weight:900;font-size:1.4rem;color:#fff;margin-bottom:1rem">Forecasts & Bottleneck Predictions</h3>
+      
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:1.5rem">
+        <div style="background:rgba(56,189,248,.06);border:1px solid rgba(56,189,248,.2);border-radius:12px;padding:1.25rem">
+          <div style="font-size:.6rem;color:var(--cyan);letter-spacing:.08em;margin-bottom:.5rem">PROJECTED COMPLETION</div>
+          <div style="font-family:var(--font-display);font-weight:900;font-size:1.5rem;color:var(--cyan);margin-bottom:.3rem">All channels: 2h 14m</div>
+          <div style="font-size:.7rem;color:var(--text-dim)">Based on current velocity • 94% confidence</div>
+        </div>
+        <div style="background:rgba(251,191,36,.06);border:1px solid rgba(251,191,36,.2);border-radius:12px;padding:1.25rem">
+          <div style="font-size:.6rem;color:var(--amber);letter-spacing:.08em;margin-bottom:.5rem">BOTTLENECK FORECAST</div>
+          <div style="font-family:var(--font-display);font-weight:900;font-size:1.5rem;color:var(--amber);margin-bottom:.3rem">Channel 3 at 78% risk</div>
+          <div style="font-size:.7rem;color:var(--text-dim)">HITL gate wait time trending up • Add approver</div>
+        </div>
+      </div>
+      
+      <div style="background:rgba(0,0,0,.3);border-radius:12px;padding:1.25rem;margin-bottom:1.5rem">
+        <div style="font-size:.6rem;font-weight:700;color:var(--text-dim);letter-spacing:.1em;text-transform:uppercase;margin-bottom:1rem">RESOURCE NEEDS — NEXT 24H</div>
+        <div style="display:flex;flex-direction:column;gap:.8rem">
+          <div style="display:flex;align-items:center;gap:.8rem">
+            <div style="width:8px;height:8px;border-radius:50%;background:var(--amber);flex-shrink:0"></div>
+            <div style="flex:1">
+              <div style="font-size:.8rem;color:var(--text);font-weight:600">+2 approvers needed for Channel 3</div>
+              <div style="font-size:.65rem;color:var(--text-dim)">Current queue will exceed SLA by 45 min without additional capacity</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:.8rem">
+            <div style="width:8px;height:8px;border-radius:50%;background:var(--cyan);flex-shrink:0"></div>
+            <div style="flex:1">
+              <div style="font-size:.8rem;color:var(--text);font-weight:600">Server 03 needs cooldown or replacement</div>
+              <div style="font-size:.65rem;color:var(--text-dim)">Running at 94% CPU for 2+ hours • Failure probability: 34%</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:.8rem">
+            <div style="width:8px;height:8px;border-radius:50%;background:var(--emerald);flex-shrink:0"></div>
+            <div style="flex:1">
+              <div style="font-size:.8rem;color:var(--text);font-weight:600">Channel 1 will complete ahead of schedule</div>
+              <div style="font-size:.65rem;color:var(--text-dim)">Reassign 4 agents to Channel 3 to balance load</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════
      THE HR × HX COLLABORATION ENGINE
      ══════════════════════════════════════════════════════════ -->
 <section id="hr-hx-engine" class="container" style="margin-bottom:5rem; padding-top:2rem">
@@ -2586,6 +3984,18 @@ a:hover{color:#7dd3fc}
 <!-- CONTROL STACK — all four orbs, bottom-right corner -->
 <div id="control-stack">
 
+  <!-- Fleet Connection Status -->
+  <div id="fleet-status-widget" style="display:flex;align-items:center;gap:6px;padding:6px 10px;background:var(--card);border:1px solid var(--border-light);border-radius:20px;cursor:pointer;font-size:.6rem;font-weight:700;color:var(--text-dim);letter-spacing:.06em;box-shadow:0 4px 20px rgba(0,0,0,.5)" onclick="toggleFleetLogin()" title="Fleet Control Plane">
+    <div id="fleetStatusDot" style="width:8px;height:8px;border-radius:50%;background:var(--text-dim);box-shadow:0 0 4px var(--text-dim)"></div>
+    <span id="fleetStatusText">FLEET: DEMO</span>
+  </div>
+  <div id="fleetLoginPanel" style="display:none;background:var(--card);border:1px solid var(--border-light);border-radius:12px;padding:10px;width:220px;box-shadow:0 8px 32px rgba(0,0,0,.7)">
+    <div style="font-size:.6rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--text-dim);margin-bottom:8px">Fleet Auth</div>
+    <input id="fleetTokenInput" type="password" placeholder="Supabase JWT token" style="width:100%;padding:6px 8px;font-size:.65rem;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:var(--font-body);margin-bottom:6px">
+    <button onclick="saveFleetAuth()" style="width:100%;padding:6px;font-size:.65rem;font-weight:700;background:var(--cyan);color:#000;border:none;border-radius:6px;cursor:pointer;font-family:var(--font-display)">Connect</button>
+    <button onclick="clearFleetAuth()" style="width:100%;padding:4px;font-size:.55rem;margin-top:4px;background:transparent;color:var(--text-dim);border:1px solid var(--border);border-radius:6px;cursor:pointer">Demo Mode</button>
+  </div>
+
   <!-- UI Style -->
   <div class="ctrl-orb">
     <canvas id="psSphere" width="56" height="56" class="orb-canvas" onclick="togglePsPanel()" title="UI Style"
@@ -2750,6 +4160,129 @@ a:hover{color:#7dd3fc}
   </div>
 </div>
 
+<!-- HITL GATE ASSIGNMENT MODAL -->
+<div id="hitlModal" class="modal-overlay" onclick="if(event.target===this)closeHitlModal()">
+  <div class="modal-panel" style="max-width:520px">
+    <!-- Header -->
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;padding-bottom:.8rem;border-bottom:1px solid var(--border)">
+      <div style="display:flex;align-items:center;gap:.8rem">
+        <div style="width:12px;height:12px;border-radius:50%;background:var(--amber);box-shadow:0 0 8px var(--amber)"></div>
+        <div>
+          <div id="hitlModalTitle" style="font-family:var(--font-display);font-weight:900;font-size:1.1rem;color:#fff">HITL Gate Assignment</div>
+          <div id="hitlModalSubtitle" style="font-size:.6rem;color:var(--text-dim);letter-spacing:.08em">Channel 1 — Step 5: HITL Review</div>
+        </div>
+      </div>
+      <button onclick="closeHitlModal()" style="background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:6px;padding:.3rem .8rem;font-size:.65rem;color:var(--text-dim);cursor:pointer;font-family:var(--font-body)">✕ ESC</button>
+    </div>
+
+    <!-- Approvers List -->
+    <div style="margin-bottom:1.2rem">
+      <div style="font-size:.55rem;color:var(--text-dim);letter-spacing:.08em;margin-bottom:.6rem">SELECT APPROVERS</div>
+      <div style="display:flex;flex-direction:column;gap:.4rem;max-height:200px;overflow-y:auto">
+        <label style="display:flex;align-items:center;gap:.6rem;padding:.5rem .6rem;border-radius:8px;background:rgba(255,255,255,.03);border:1px solid var(--border);cursor:pointer;transition:border-color .2s">
+          <input type="checkbox" class="hitl-approver" value="sarah" checked style="accent-color:var(--amber);width:16px;height:16px">
+          <div style="flex:1">
+            <div style="font-size:.8rem;color:var(--text);font-weight:600">Sarah K.</div>
+            <div style="font-size:.6rem;color:var(--text-dim)">Product Lead • Approved 14 today</div>
+          </div>
+          <div style="width:8px;height:8px;border-radius:50%;background:var(--emerald)"></div>
+        </label>
+        <label style="display:flex;align-items:center;gap:.6rem;padding:.5rem .6rem;border-radius:8px;background:rgba(255,255,255,.03);border:1px solid var(--border);cursor:pointer;transition:border-color .2s">
+          <input type="checkbox" class="hitl-approver" value="mike" checked style="accent-color:var(--amber);width:16px;height:16px">
+          <div style="flex:1">
+            <div style="font-size:.8rem;color:var(--text);font-weight:600">Mike R.</div>
+            <div style="font-size:.6rem;color:var(--text-dim)">Engineering Manager • Approved 8 today</div>
+          </div>
+          <div style="width:8px;height:8px;border-radius:50%;background:var(--emerald)"></div>
+        </label>
+        <label style="display:flex;align-items:center;gap:.6rem;padding:.5rem .6rem;border-radius:8px;background:rgba(255,255,255,.03);border:1px solid var(--border);cursor:pointer;transition:border-color .2s">
+          <input type="checkbox" class="hitl-approver" value="lisa" style="accent-color:var(--amber);width:16px;height:16px">
+          <div style="flex:1">
+            <div style="font-size:.8rem;color:var(--text);font-weight:600">Lisa T.</div>
+            <div style="font-size:.6rem;color:var(--text-dim)">Finance Director • Approved 3 today</div>
+          </div>
+          <div style="width:8px;height:8px;border-radius:50%;background:var(--amber)"></div>
+        </label>
+        <label style="display:flex;align-items:center;gap:.6rem;padding:.5rem .6rem;border-radius:8px;background:rgba(255,255,255,.03);border:1px solid var(--border);cursor:pointer;transition:border-color .2s">
+          <input type="checkbox" class="hitl-approver" value="james" style="accent-color:var(--amber);width:16px;height:16px">
+          <div style="flex:1">
+            <div style="font-size:.8rem;color:var(--text);font-weight:600">James W.</div>
+            <div style="font-size:.6rem;color:var(--text-dim)">Support Lead • Approved 12 today</div>
+          </div>
+          <div style="width:8px;height:8px;border-radius:50%;background:var(--emerald)"></div>
+        </label>
+        <label style="display:flex;align-items:center;gap:.6rem;padding:.5rem .6rem;border-radius:8px;background:rgba(255,255,255,.03);border:1px solid var(--border);cursor:pointer;transition:border-color .2s">
+          <input type="checkbox" class="hitl-approver" value="anna" style="accent-color:var(--amber);width:16px;height:16px">
+          <div style="flex:1">
+            <div style="font-size:.8rem;color:var(--text);font-weight:600">Anna P.</div>
+            <div style="font-size:.6rem;color:var(--text-dim)">QA Lead • Approved 6 today</div>
+          </div>
+          <div style="width:8px;height:8px;border-radius:50%;background:var(--emerald)"></div>
+        </label>
+        <label style="display:flex;align-items:center;gap:.6rem;padding:.5rem .6rem;border-radius:8px;background:rgba(255,255,255,.03);border:1px solid var(--border);cursor:pointer;transition:border-color .2s">
+          <input type="checkbox" class="hitl-approver" value="david" style="accent-color:var(--amber);width:16px;height:16px">
+          <div style="flex:1">
+            <div style="font-size:.8rem;color:var(--text);font-weight:600">David L.</div>
+            <div style="font-size:.6rem;color:var(--text-dim)">Security Officer • Approved 2 today</div>
+          </div>
+          <div style="width:8px;height:8px;border-radius:50%;background:var(--text-dim)"></div>
+        </label>
+        <label style="display:flex;align-items:center;gap:.6rem;padding:.5rem .6rem;border-radius:8px;background:rgba(255,255,255,.03);border:1px solid var(--border);cursor:pointer;transition:border-color .2s">
+          <input type="checkbox" class="hitl-approver" value="rachel" style="accent-color:var(--amber);width:16px;height:16px">
+          <div style="flex:1">
+            <div style="font-size:.8rem;color:var(--text);font-weight:600">Rachel M.</div>
+            <div style="font-size:.6rem;color:var(--text-dim)">Compliance Lead • Approved 5 today</div>
+          </div>
+          <div style="width:8px;height:8px;border-radius:50%;background:var(--emerald)"></div>
+        </label>
+        <label style="display:flex;align-items:center;gap:.6rem;padding:.5rem .6rem;border-radius:8px;background:rgba(255,255,255,.03);border:1px solid var(--border);cursor:pointer;transition:border-color .2s">
+          <input type="checkbox" class="hitl-approver" value="tom" style="accent-color:var(--amber);width:16px;height:16px">
+          <div style="flex:1">
+            <div style="font-size:.8rem;color:var(--text);font-weight:600">Tom B.</div>
+            <div style="font-size:.6rem;color:var(--text-dim)">Ops Manager • Approved 9 today</div>
+          </div>
+          <div style="width:8px;height:8px;border-radius:50%;background:var(--emerald)"></div>
+        </label>
+      </div>
+    </div>
+
+    <!-- Approval Mode -->
+    <div style="margin-bottom:1.2rem">
+      <div style="font-size:.55rem;color:var(--text-dim);letter-spacing:.08em;margin-bottom:.6rem">APPROVAL MODE</div>
+      <div style="display:flex;gap:.8rem">
+        <label style="flex:1;display:flex;align-items:center;gap:.5rem;padding:.6rem .8rem;border-radius:8px;background:rgba(251,191,36,.08);border:2px solid rgba(251,191,36,.3);cursor:pointer">
+          <input type="radio" name="hitl-mode" value="all" checked style="accent-color:var(--amber);width:14px;height:14px">
+          <div>
+            <div style="font-size:.75rem;color:var(--text);font-weight:700">All must approve</div>
+            <div style="font-size:.6rem;color:var(--text-dim)">Every selected approver must sign off</div>
+          </div>
+        </label>
+        <label style="flex:1;display:flex;align-items:center;gap:.5rem;padding:.6rem .8rem;border-radius:8px;background:rgba(255,255,255,.03);border:2px solid var(--border);cursor:pointer">
+          <input type="radio" name="hitl-mode" value="any" style="accent-color:var(--amber);width:14px;height:14px">
+          <div>
+            <div style="font-size:.75rem;color:var(--text);font-weight:700">Anyone can approve</div>
+            <div style="font-size:.6rem;color:var(--text-dim)">First approval unlocks the gate</div>
+          </div>
+        </label>
+      </div>
+    </div>
+
+    <!-- Current Status -->
+    <div style="background:rgba(251,191,36,.06);border:1px solid rgba(251,191,36,.2);border-radius:10px;padding:.8rem 1rem;margin-bottom:1.2rem">
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <div style="font-size:.7rem;color:var(--amber);font-weight:600">Current Status: 0 of 2 approved</div>
+        <div style="font-size:.65rem;color:var(--text-dim)">Waiting for Sarah K. and Mike R.</div>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div style="display:flex;gap:.6rem;padding-top:.8rem;border-top:1px solid var(--border)">
+      <button onclick="saveHitlAssignment()" style="flex:1;font-family:var(--font-display);font-weight:700;font-size:.75rem;padding:.5rem 1rem;border-radius:8px;border:none;background:var(--amber);color:#000;cursor:pointer">Save Assignment</button>
+      <button onclick="closeHitlModal()" style="font-family:var(--font-display);font-weight:700;font-size:.75rem;padding:.5rem 1rem;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--text-dim);cursor:pointer">Cancel</button>
+    </div>
+  </div>
+</div>
+
 <script>
 // ═══════════ AGENT DATA ═══════════
 const agents = {
@@ -2820,6 +4353,231 @@ for(let i=1;i<=48;i++){
       log:['10s ago ✓ task checkpoint','1m ago → processing data','5m ago ▶ started task'],
       docs:'#',source:'#',metrics:'#'};
   }
+}
+
+// ═══════════ FLEET CONTROL PLANE — LIVE DATA ═══════════
+const FLEET_BACKEND_URL = 'http://localhost:3007';
+let fleetSocket = null;
+let fleetAgents = {};
+let fleetAuth = null;
+
+async function initFleet() {
+  try {
+    const stored = sessionStorage.getItem('fleet_auth');
+    if (stored) fleetAuth = JSON.parse(stored);
+  } catch(e) {}
+
+  if (!fleetAuth) {
+    console.log('[Fleet] No auth token — using demo mode with hardcoded data');
+    return;
+  }
+
+  try {
+    fleetSocket = io(FLEET_BACKEND_URL, {
+      auth: { token: fleetAuth.token },
+      transports: ['websocket', 'polling'],
+    });
+
+    fleetSocket.on('connect', () => {
+      console.log('[Fleet] Connected to control plane');
+      setFleetConnected();
+      fleetSocket.emit('fleet:subscribe');
+      fetchFleetSnapshot();
+    });
+
+    fleetSocket.on('fleet:agent-registered', ({ agent }) => {
+      fleetAgents[agent.id] = agent;
+      renderFleetGrid();
+    });
+
+    fleetSocket.on('fleet:agent-updated', ({ agent }) => {
+      fleetAgents[agent.id] = agent;
+      renderFleetGrid();
+    });
+
+    fleetSocket.on('fleet:agent-removed', ({ agentId }) => {
+      delete fleetAgents[agentId];
+      renderFleetGrid();
+    });
+
+    fleetSocket.on('fleet:agent-status', ({ agentId, status }) => {
+      if (fleetAgents[agentId]) {
+        fleetAgents[agentId].status = status;
+        updateAgentButton(agentId);
+      }
+    });
+
+    fleetSocket.on('fleet:telemetry', ({ agentId, telemetry }) => {
+      if (fleetAgents[agentId]) {
+        fleetAgents[agentId].latest_telemetry = telemetry;
+        updateAgentButton(agentId);
+      }
+    });
+
+    fleetSocket.on('fleet:command-status', ({ cmdId, status, result, error }) => {
+      console.log(`[Fleet] Command ${cmdId}: ${status}`, error || result || '');
+    });
+
+    fleetSocket.on('disconnect', () => {
+      console.log('[Fleet] Disconnected from control plane');
+      document.getElementById('fleetStatusDot').style.background = 'var(--rose)';
+      document.getElementById('fleetStatusDot').style.boxShadow = '0 0 6px var(--rose)';
+      document.getElementById('fleetStatusText').textContent = 'FLEET: OFFLINE';
+    });
+  } catch(e) {
+    console.error('[Fleet] Socket.IO init failed:', e);
+  }
+}
+
+async function fetchFleetSnapshot() {
+  try {
+    const res = await fetch(`${FLEET_BACKEND_URL}/api/fleet/snapshot`, {
+      headers: { 'Authorization': `Bearer ${fleetAuth.token}` },
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    fleetAgents = {};
+    (data.agents || []).forEach(a => { fleetAgents[a.id] = a; });
+    renderFleetGrid();
+    updateFleetSummary(data.summary);
+  } catch(e) {
+    console.error('[Fleet] Snapshot fetch failed:', e);
+  }
+}
+
+function renderFleetGrid() {
+  const grid = document.getElementById('agentGrid');
+  if (!grid) return;
+  const agentList = Object.values(fleetAgents);
+  if (agentList.length === 0) return;
+
+  grid.innerHTML = '';
+  agentList.forEach((a, idx) => {
+    const id = a.profile_id || a.id.substring(0, 8);
+    const statusClass = statusToClass(a.status);
+    const proj = a.role || a.config?.proj || 'α';
+    const projLabel = proj.substring(0, 1).toUpperCase();
+    const btn = document.createElement('div');
+    btn.className = `f1-btn ${statusClass}`;
+    btn.setAttribute('data-status', a.status || 'run');
+    btn.setAttribute('data-proj', `proj-${(a.role || 'alpha').toLowerCase()}`);
+    btn.setAttribute('data-agent-id', a.id);
+    btn.title = `${projLabel} ${id}: ${a.name || a.profile_id}`;
+    btn.innerHTML = `<span style="font-size:.45rem">${id.substring(0, 6)}</span>`;
+    btn.addEventListener('click', () => handleFleetAgentClick(btn, a));
+    grid.appendChild(btn);
+  });
+
+  initFocus();
+}
+
+function statusToClass(status) {
+  switch(status) {
+    case 'running': return 'green';
+    case 'error': return 'red pulse';
+    case 'paused': return 'cyan';
+    case 'stopped': return 'dim';
+    default: return 'green';
+  }
+}
+
+function updateAgentButton(agentId) {
+  const btn = document.querySelector(`#agentGrid [data-agent-id="${agentId}"]`);
+  if (!btn) return;
+  const a = fleetAgents[agentId];
+  if (!a) return;
+  btn.className = `f1-btn ${statusToClass(a.status)}`;
+  btn.setAttribute('data-status', a.status || 'run');
+}
+
+function updateFleetSummary(summary) {
+  if (!summary) return;
+  const tabs = document.querySelectorAll('#agentTabs .tab');
+  tabs.forEach(tab => {
+    const filter = tab.getAttribute('data-filter');
+    const countEl = tab.querySelector('.tab-count');
+    if (!countEl) return;
+    if (filter === 'all') countEl.textContent = summary.total || 0;
+    else if (filter === 'run') countEl.textContent = summary.running || 0;
+    else if (filter === 'hot') countEl.textContent = '0';
+    else if (filter === 'err') countEl.textContent = summary.error || 0;
+    else if (filter === 'hold') countEl.textContent = summary.paused || 0;
+    else if (filter === 'idle') countEl.textContent = summary.stopped || 0;
+  });
+}
+
+function handleFleetAgentClick(btn, agentData) {
+  const id = agentData.profile_id || agentData.id;
+  const mapped = {
+    ...agentData,
+    proj: (agentData.role || 'α').substring(0, 1),
+    projFull: agentData.role || agentData.name,
+    task: agentData.status || 'unknown',
+    tok: agentData.latest_telemetry?.tokens_per_sec ? `${Math.round(agentData.latest_telemetry.tokens_per_sec)}/s` : '—',
+    mem: agentData.latest_telemetry?.memory_mb ? `${(agentData.latest_telemetry.memory_mb / 1024).toFixed(1)}GB` : '—',
+    runtime: agentData.latest_telemetry?.runtime_sec ? `${Math.round(agentData.latest_telemetry.runtime_sec / 60)}m` : '—',
+    cost: agentData.latest_telemetry?.cost_usd ? `$${agentData.latest_telemetry.cost_usd.toFixed(2)}` : '$0.00',
+    color: agentData.status === 'running' ? 'var(--emerald)' : agentData.status === 'error' ? 'var(--rose)' : agentData.status === 'paused' ? 'var(--cyan)' : 'var(--text-dim)',
+    log: [`Status: ${agentData.status}`, `Model: ${agentData.model}`, `Provider: ${agentData.provider}`],
+    docs: '#', source: '#', metrics: '#',
+  };
+  agents[id] = mapped;
+  currentModalAgent = id;
+  openModal(btn);
+}
+
+async function sendFleetCommand(agentId, command) {
+  if (!fleetAuth) { alert('Fleet auth required'); return; }
+  try {
+    const res = await fetch(`${FLEET_BACKEND_URL}/api/fleet/agents/${agentId}/command`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${fleetAuth.token}`,
+      },
+      body: JSON.stringify({ command }),
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    console.log(`[Fleet] Command '${command}' sent to ${agentId}`);
+  } catch(e) {
+    console.error('[Fleet] Command failed:', e);
+    alert('Command failed: ' + e.message);
+  }
+}
+
+setTimeout(initFleet, 500);
+
+function toggleFleetLogin() {
+  const panel = document.getElementById('fleetLoginPanel');
+  panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+}
+
+function saveFleetAuth() {
+  const token = document.getElementById('fleetTokenInput').value.trim();
+  if (!token) return;
+  fleetAuth = { token };
+  sessionStorage.setItem('fleet_auth', JSON.stringify(fleetAuth));
+  document.getElementById('fleetLoginPanel').style.display = 'none';
+  document.getElementById('fleetStatusDot').style.background = 'var(--amber)';
+  document.getElementById('fleetStatusDot').style.boxShadow = '0 0 6px var(--amber)';
+  document.getElementById('fleetStatusText').textContent = 'FLEET: CONNECTING';
+  initFleet();
+}
+
+function clearFleetAuth() {
+  sessionStorage.removeItem('fleet_auth');
+  fleetAuth = null;
+  if (fleetSocket) { fleetSocket.disconnect(); fleetSocket = null; }
+  document.getElementById('fleetLoginPanel').style.display = 'none';
+  document.getElementById('fleetStatusDot').style.background = 'var(--text-dim)';
+  document.getElementById('fleetStatusDot').style.boxShadow = '0 0 4px var(--text-dim)';
+  document.getElementById('fleetStatusText').textContent = 'FLEET: DEMO';
+}
+
+function setFleetConnected() {
+  document.getElementById('fleetStatusDot').style.background = 'var(--emerald)';
+  document.getElementById('fleetStatusDot').style.boxShadow = '0 0 6px var(--emerald)';
+  document.getElementById('fleetStatusText').textContent = 'FLEET: LIVE';
 }
 
 // ═══════════ TAB FILTER ═══════════
@@ -3625,6 +5383,503 @@ setInterval(() => {
     requestAnimationFrame(tick);
   }
   tick();
+})();
+
+// ══════════════════════════════════════════════════════════════════════════════
+// BRANCH ORCHESTRATOR — Configure / Results Toggle
+// ══════════════════════════════════════════════════════════════════════════════
+(function() {
+  let currentMode = 'configure';
+  let currentBranch = 'c1';
+
+  window.setBranchMode = function(mode) {
+    currentMode = mode;
+    
+    // Update mode buttons
+    document.querySelectorAll('.branch-mode-btn').forEach(btn => {
+      btn.classList.remove('active');
+      btn.style.background = 'transparent';
+      btn.style.color = 'var(--text-dim)';
+    });
+    const activeBtn = document.querySelector(`.branch-mode-btn[data-mode="${mode}"]`);
+    if (activeBtn) {
+      activeBtn.classList.add('active');
+      activeBtn.style.background = 'rgba(56,189,248,.15)';
+      activeBtn.style.color = 'var(--cyan)';
+    }
+    
+    // Show/hide tab groups
+    const configTabs = document.getElementById('config-tabs');
+    const resultsTabs = document.getElementById('results-tabs');
+    if (configTabs) configTabs.style.display = mode === 'configure' ? 'flex' : 'none';
+    if (resultsTabs) resultsTabs.style.display = mode === 'results' ? 'flex' : 'none';
+    
+    // Show/hide panels
+    const configSection = document.getElementById('branch-config');
+    const resultsSection = document.getElementById('branch-results');
+    if (configSection) configSection.style.display = mode === 'configure' ? 'block' : 'none';
+    if (resultsSection) resultsSection.style.display = mode === 'results' ? 'block' : 'none';
+    
+    // Reset to first branch in new mode
+    if (mode === 'configure') {
+      setBranch('c1');
+    } else {
+      setBranch('r1');
+    }
+  };
+
+  window.setBranch = function(branch) {
+    currentBranch = branch;
+    
+    // Update tab styling
+    document.querySelectorAll('.branch-tab').forEach(tab => {
+      tab.classList.remove('active');
+      tab.style.background = 'transparent';
+      tab.style.color = 'var(--text-dim)';
+      tab.style.borderColor = 'var(--border)';
+    });
+    const activeTab = document.querySelector(`.branch-tab[data-branch="${branch}"]`);
+    if (activeTab) {
+      activeTab.classList.add('active');
+      activeTab.style.background = 'rgba(56,189,248,.1)';
+      activeTab.style.color = 'var(--cyan)';
+      activeTab.style.borderColor = 'rgba(56,189,248,.3)';
+    }
+    
+    // Show/hide panels
+    document.querySelectorAll('.branch-panel').forEach(panel => {
+      panel.style.display = 'none';
+    });
+    const activePanel = document.getElementById(`panel-${branch}`);
+    if (activePanel) {
+      activePanel.style.display = 'block';
+    }
+  };
+
+  // Initialize
+  setBranchMode('configure');
+})();
+
+// ══════════════════════════════════════════════════════════════════════════════
+// C1: CHANNEL CONFIGURATION — Add/Edit/Delete Channels
+// ══════════════════════════════════════════════════════════════════════════════
+(function() {
+  let channels = [
+    { id: 1, name: 'Brand Discovery Pipeline', icon: '🔍', tasks: ['Scan', 'Score', 'Rank', 'Validate', 'HITL Review', 'Deploy', 'Monitor'], hitlGates: [5], agents: 12, progress: 78 },
+    { id: 2, name: 'Content Generation Pipeline', icon: '✍️', tasks: ['Brief', 'Draft', 'Edit', 'Review', 'Approve', 'Publish', 'Distribute'], hitlGates: [5], agents: 18, progress: 92 },
+    { id: 3, name: 'Cash Flow Optimization', icon: '💰', tasks: ['Ingest', 'Map', 'Anomaly Check', 'Rebalance', 'Optimize', 'Report'], hitlGates: [3], agents: 8, progress: 45 },
+    { id: 4, name: 'Customer Support Triage', icon: '🎧', tasks: ['Ingest', 'Classify', 'Route', 'Escalate', 'Resolve'], hitlGates: [4], agents: 6, progress: 67 }
+  ];
+
+  window.addChannel = function() {
+    const newId = channels.length + 1;
+    const name = prompt('Enter channel name:', `New Channel ${newId}`);
+    if (!name) return;
+    
+    channels.push({
+      id: newId,
+      name: name,
+      icon: '📋',
+      tasks: ['Task 1', 'Task 2', 'Task 3'],
+      hitlGates: [],
+      agents: 0,
+      progress: 0
+    });
+    
+    renderChannels();
+  };
+
+  window.editChannel = function(id) {
+    const channel = channels.find(c => c.id === id);
+    if (!channel) return;
+    
+    const newName = prompt('Edit channel name:', channel.name);
+    if (newName) {
+      channel.name = newName;
+      renderChannels();
+    }
+  };
+
+  window.deleteChannel = function(id) {
+    if (!confirm('Delete this channel?')) return;
+    channels = channels.filter(c => c.id !== id);
+    renderChannels();
+  };
+
+  window.saveChannels = function() {
+    // In a real app, this would POST to an API
+    alert('Configuration saved! ' + channels.length + ' channels configured.');
+    console.log('Saved channels:', channels);
+  };
+
+  function renderChannels() {
+    const list = document.getElementById('channel-list');
+    if (!list) return;
+    
+    list.innerHTML = channels.map(ch => {
+      const taskBadges = ch.tasks.map((t, i) => {
+        const isHitl = ch.hitlGates.includes(i + 1);
+        const isDone = i < Math.floor(ch.tasks.length * ch.progress / 100);
+        const bg = isHitl ? 'rgba(251,191,36,.15)' : isDone ? 'rgba(52,211,153,.15)' : 'rgba(255,255,255,.05)';
+        const color = isHitl ? 'var(--amber)' : isDone ? 'var(--emerald)' : 'var(--text-dim)';
+        return `<span style="font-size:.6rem;padding:.2rem .5rem;border-radius:4px;background:${bg};color:${color}">${t}</span>`;
+      }).join('');
+      
+      const hitlBadges = ch.hitlGates.map(g => {
+        return `<span style="font-size:.6rem;padding:.2rem .5rem;border-radius:4px;background:rgba(251,191,36,.15);color:var(--amber)">Step ${g}: ${ch.tasks[g-1]}</span>`;
+      }).join('');
+      
+      return `
+        <div class="channel-card" data-channel-id="${ch.id}" style="background:rgba(0,0,0,.3);border:1px solid rgba(56,189,248,.2);border-radius:12px;padding:1.25rem">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
+            <div style="display:flex;align-items:center;gap:.8rem">
+              <div style="width:32px;height:32px;border-radius:8px;background:rgba(56,189,248,.15);display:flex;align-items:center;justify-content:center;font-size:.9rem">${ch.icon}</div>
+              <div>
+                <input type="text" value="${ch.name}" style="font-family:var(--font-display);font-weight:800;font-size:1rem;color:#fff;background:transparent;border:none;outline:none;width:200px" />
+              </div>
+            </div>
+            <div style="display:flex;gap:.5rem">
+              <button onclick="editChannel(${ch.id})" style="font-size:.65rem;padding:.3rem .6rem;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text-dim);cursor:pointer">Edit</button>
+              <button onclick="deleteChannel(${ch.id})" style="font-size:.65rem;padding:.3rem .6rem;border-radius:6px;border:1px solid rgba(251,113,133,.3);background:transparent;color:var(--rose);cursor:pointer">Delete</button>
+            </div>
+          </div>
+          
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem">
+            <div>
+              <div style="font-size:.6rem;color:var(--text-dim);letter-spacing:.08em;margin-bottom:.3rem">TASK SEQUENCE</div>
+              <div style="display:flex;gap:4px;flex-wrap:wrap">${taskBadges}</div>
+            </div>
+            <div>
+              <div style="font-size:.6rem;color:var(--text-dim);letter-spacing:.08em;margin-bottom:.3rem">HITL GATES</div>
+              <div style="display:flex;gap:4px;flex-wrap:wrap">${hitlBadges || '<span style="font-size:.6rem;color:var(--text-dim)">None</span>'}</div>
+            </div>
+          </div>
+          
+          <div style="display:flex;gap:1rem;font-size:.7rem;color:var(--text-dim)">
+            <span>${ch.agents} agents assigned</span>
+            <span>•</span>
+            <span>${ch.progress}% complete</span>
+            <span>•</span>
+            <span>${ch.hitlGates.length} HITL gates pending</span>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  // Initial render
+  renderChannels();
+})();
+
+// ══════════════════════════════════════════════════════════════════════════════
+// C2: AGENT ASSIGNMENT — Assign Agents to Channels
+// ══════════════════════════════════════════════════════════════════════════════
+(function() {
+  let agentAssignments = {
+    '001': { channel: 1, priority: 'medium', escalation: 'hitl' },
+    '002': { channel: 2, priority: 'high', escalation: 'supervisor' },
+    '003': { channel: 3, priority: 'medium', escalation: 'none' },
+    '004': { channel: 4, priority: 'high', escalation: 'supervisor' }
+  };
+
+  window.updateAgentChannel = function(agentId, channelValue) {
+    if (!agentAssignments[agentId]) {
+      agentAssignments[agentId] = { channel: null, priority: 'medium', escalation: 'none' };
+    }
+    agentAssignments[agentId].channel = channelValue === 'unassigned' ? null : parseInt(channelValue);
+    console.log(`Agent ${agentId} assigned to channel ${channelValue}`);
+  };
+
+  window.updateAgentPriority = function(agentId, priority) {
+    if (!agentAssignments[agentId]) {
+      agentAssignments[agentId] = { channel: null, priority: priority, escalation: 'none' };
+    } else {
+      agentAssignments[agentId].priority = priority;
+    }
+    console.log(`Agent ${agentId} priority set to ${priority}`);
+  };
+
+  window.updateAgentEscalation = function(agentId, escalation) {
+    if (!agentAssignments[agentId]) {
+      agentAssignments[agentId] = { channel: null, priority: 'medium', escalation: escalation };
+    } else {
+      agentAssignments[agentId].escalation = escalation;
+    }
+    console.log(`Agent ${agentId} escalation set to ${escalation}`);
+  };
+
+  window.autoAssignAgents = function() {
+    // Simple auto-assignment: distribute agents evenly across channels
+    const channelIds = [1, 2, 3, 4];
+    let channelIndex = 0;
+    
+    for (let i = 1; i <= 48; i++) {
+      const agentId = String(i).padStart(3, '0');
+      if (!agentAssignments[agentId]) {
+        agentAssignments[agentId] = {
+          channel: channelIds[channelIndex % channelIds.length],
+          priority: 'medium',
+          escalation: 'none'
+        };
+        channelIndex++;
+      }
+    }
+    
+    alert('Auto-assignment complete! Unassigned agents distributed across channels.');
+    console.log('Auto-assigned agents:', agentAssignments);
+  };
+
+  window.saveAgentAssignments = function() {
+    // In a real app, this would POST to an API
+    const assigned = Object.keys(agentAssignments).filter(id => agentAssignments[id].channel !== null).length;
+    const unassigned = 48 - assigned;
+    alert(`Assignments saved! ${assigned} agents assigned, ${unassigned} unassigned.`);
+    console.log('Saved agent assignments:', agentAssignments);
+  };
+})();
+
+// ══════════════════════════════════════════════════════════════════════════════
+// C3: DYNAMIC BRANCHING RULES — Configure Workflow Logic
+// ══════════════════════════════════════════════════════════════════════════════
+(function() {
+  let branchingRules = [
+    { id: 1, name: 'HITL Approval Unlocks Next Steps', when: 'HITL gate at Step 5 is approved', then: 'Unlock Steps 6, 7, 8', channel: 1, triggers: 12 },
+    { id: 2, name: 'Error Escalation', when: 'Agent fails 3 times in a row', then: 'Escalate to supervisor + pause agent', channel: 'all', triggers: 2 },
+    { id: 3, name: 'Quality Threshold', when: 'Quality score > 8.0', then: 'Skip HITL review, auto-approve', channel: 2, triggers: 8 }
+  ];
+
+  window.addBranchingRule = function() {
+    const name = prompt('Enter rule name:', 'New Branching Rule');
+    if (!name) return;
+    
+    const when = prompt('Enter WHEN condition:', 'When [condition] is met');
+    if (!when) return;
+    
+    const then = prompt('Enter THEN action:', 'Then [action] happens');
+    if (!then) return;
+    
+    const newId = branchingRules.length + 1;
+    branchingRules.push({
+      id: newId,
+      name: name,
+      when: when,
+      then: then,
+      channel: 'all',
+      triggers: 0
+    });
+    
+    alert('Rule added! Refresh the page to see it in the list.');
+    console.log('Added branching rule:', branchingRules);
+  };
+
+  window.editBranchingRule = function(id) {
+    const rule = branchingRules.find(r => r.id === id);
+    if (!rule) return;
+    
+    const newName = prompt('Edit rule name:', rule.name);
+    if (newName) {
+      rule.name = newName;
+      alert('Rule updated!');
+      console.log('Updated branching rule:', rule);
+    }
+  };
+
+  window.deleteBranchingRule = function(id) {
+    if (!confirm('Delete this branching rule?')) return;
+    branchingRules = branchingRules.filter(r => r.id !== id);
+    alert('Rule deleted!');
+    console.log('Deleted branching rule. Remaining rules:', branchingRules);
+  };
+
+  window.saveBranchingRules = function() {
+    // In a real app, this would POST to an API
+    const totalTriggers = branchingRules.reduce((sum, r) => sum + r.triggers, 0);
+    alert(`Rules saved! ${branchingRules.length} rules active, ${totalTriggers} triggers today.`);
+    console.log('Saved branching rules:', branchingRules);
+  };
+})();
+
+// ══════════════════════════════════════════════════════════════════════════════
+// C4: INTEGRATIONS — Connect Agent Frameworks
+// ══════════════════════════════════════════════════════════════════════════════
+(function() {
+  let integrations = {
+    hermes: { enabled: true, lastSync: '2s ago', agents: 47 },
+    crewai: { enabled: true, lastSync: '4s ago', agents: 12 },
+    langgraph: { enabled: true, lastSync: '1s ago', agents: 8 },
+    openclaw: { enabled: false, lastSync: 'Not connected', agents: 0 }
+  };
+
+  window.toggleIntegration = function(name, enabled) {
+    if (!integrations[name]) {
+      integrations[name] = { enabled: enabled, lastSync: enabled ? 'Just now' : 'Not connected', agents: 0 };
+    } else {
+      integrations[name].enabled = enabled;
+      integrations[name].lastSync = enabled ? 'Just now' : 'Not connected';
+      integrations[name].agents = enabled ? Math.floor(Math.random() * 20) + 5 : 0;
+    }
+    console.log(`Integration ${name} ${enabled ? 'enabled' : 'disabled'}`);
+  };
+
+  window.addIntegration = function() {
+    const name = prompt('Enter integration name:', 'New Integration');
+    if (!name) return;
+    
+    const key = name.toLowerCase().replace(/\s+/g, '');
+    integrations[key] = { enabled: false, lastSync: 'Not connected', agents: 0 };
+    
+    alert(`Integration "${name}" added! Configure API credentials to enable.`);
+    console.log('Added integration:', integrations);
+  };
+
+  window.saveIntegrations = function() {
+    const active = Object.keys(integrations).filter(k => integrations[k].enabled).length;
+    const totalAgents = Object.values(integrations).reduce((sum, i) => sum + i.agents, 0);
+    alert(`Integrations saved! ${active} of ${Object.keys(integrations).length} active, ${totalAgents} agents reporting.`);
+    console.log('Saved integrations:', integrations);
+  };
+})();
+
+// ══════════════════════════════════════════════════════════════════════════════
+// C5: THEMES — Update active theme display
+// ══════════════════════════════════════════════════════════════════════════════
+(function() {
+  // Hook into existing switchPalette to update C5 display
+  const originalSwitchPalette = window.switchPalette;
+  window.switchPalette = function(palette) {
+    if (originalSwitchPalette) originalSwitchPalette(palette);
+    
+    const themeNames = {
+      midnight: 'Midnight',
+      void: 'Void',
+      dusk: 'Dusk',
+      carbon: 'Carbon'
+    };
+    
+    const activeEl = document.getElementById('c5-active-theme');
+    if (activeEl) {
+      activeEl.textContent = themeNames[palette] || palette;
+    }
+  };
+})();
+
+// ══════════════════════════════════════════════════════════════════════════════
+// C6: NOTIFICATIONS — Alert & Escalation Rules
+// ══════════════════════════════════════════════════════════════════════════════
+(function() {
+  let notificationRules = [
+    { id: 1, name: 'HITL Gate Triggered', trigger: 'Any HITL gate opens', deliver: 'Slack + Email + Dashboard', escalate: '15 minutes → Supervisor', active: true, triggers: 14 },
+    { id: 2, name: 'Agent Error Threshold', trigger: '3+ errors in 5 minutes', deliver: 'Dashboard + PagerDuty', escalate: '5 minutes → On-call', active: true, triggers: 2 },
+    { id: 3, name: 'Channel Completion', trigger: 'Channel reaches 100%', deliver: 'Slack + Email', escalate: 'N/A (informational)', active: true, triggers: 3 },
+    { id: 4, name: 'Cost Threshold Alert', trigger: 'Daily burn > $50', deliver: 'Email only', escalate: '1 hour → Finance', active: false, triggers: 0 }
+  ];
+
+  window.addNotificationRule = function() {
+    const name = prompt('Enter rule name:', 'New Notification Rule');
+    if (!name) return;
+    
+    const trigger = prompt('Enter trigger condition:', 'When [condition] happens');
+    if (!trigger) return;
+    
+    const deliver = prompt('Enter delivery channels:', 'Slack + Email');
+    if (!deliver) return;
+    
+    const newId = notificationRules.length + 1;
+    notificationRules.push({
+      id: newId,
+      name: name,
+      trigger: trigger,
+      deliver: deliver,
+      escalate: '30 minutes → Supervisor',
+      active: true,
+      triggers: 0
+    });
+    
+    alert('Notification rule added! Refresh the page to see it in the list.');
+    console.log('Added notification rule:', notificationRules);
+  };
+
+  window.saveNotificationRules = function() {
+    const active = notificationRules.filter(r => r.active).length;
+    const totalTriggers = notificationRules.reduce((sum, r) => sum + r.triggers, 0);
+    alert(`Rules saved! ${active} active, ${notificationRules.length - active} paused, ${totalTriggers} alerts today.`);
+    console.log('Saved notification rules:', notificationRules);
+  };
+})();
+
+// ══════════════════════════════════════════════════════════════════════════════
+// HITL GATE ASSIGNMENT MODAL
+// ══════════════════════════════════════════════════════════════════════════════
+(function() {
+  let currentHitlGate = null;
+
+  // Wire up click handlers on all HITL task blocks
+  document.querySelectorAll('.task-hitl').forEach(function(block) {
+    block.style.cursor = 'pointer';
+    block.addEventListener('click', function(e) {
+      e.stopPropagation();
+      openHitlModal(block);
+    });
+  });
+
+  function openHitlModal(block) {
+    currentHitlGate = block;
+    const modal = document.getElementById('hitlModal');
+    if (!modal) return;
+    
+    // Extract gate info from the block
+    const channel = block.closest('[style*="Channel"]');
+    const channelName = channel ? channel.querySelector('h3')?.textContent || 'Unknown Channel' : 'Unknown Channel';
+    const taskName = block.querySelector('span:first-child')?.textContent || 'HITL Review';
+    
+    const subtitle = document.getElementById('hitlModalSubtitle');
+    if (subtitle) subtitle.textContent = channelName + ' — ' + taskName.replace('⏸ ', '');
+    
+    modal.classList.add('open');
+  }
+
+  window.closeHitlModal = function() {
+    const modal = document.getElementById('hitlModal');
+    if (modal) modal.classList.remove('open');
+    currentHitlGate = null;
+  };
+
+  window.saveHitlAssignment = function() {
+    const approvers = [];
+    document.querySelectorAll('.hitl-approver:checked').forEach(function(cb) {
+      approvers.push(cb.value);
+    });
+    
+    const mode = document.querySelector('input[name="hitl-mode"]:checked')?.value || 'all';
+    
+    if (approvers.length === 0) {
+      alert('Please select at least one approver.');
+      return;
+    }
+    
+    // Update the HITL gate block to show assigned approvers
+    if (currentHitlGate) {
+      const existingLabel = currentHitlGate.querySelector('[style*="bottom:-16px"]');
+      if (existingLabel) {
+        existingLabel.textContent = approvers.length + ' approver' + (approvers.length > 1 ? 's' : '') + ' assigned (' + mode + ')';
+        existingLabel.style.color = 'var(--emerald)';
+      }
+    }
+    
+    alert('HITL assignment saved! ' + approvers.length + ' approver' + (approvers.length > 1 ? 's' : '') + ' assigned. Mode: ' + (mode === 'all' ? 'All must approve' : 'Anyone can approve'));
+    console.log('HITL assignment saved:', { approvers: approvers, mode: mode });
+    closeHitlModal();
+  };
+
+  // Close on ESC key
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      const modal = document.getElementById('hitlModal');
+      if (modal && modal.classList.contains('open')) {
+        closeHitlModal();
+      }
+    }
+  });
 })();
 </script>
 
