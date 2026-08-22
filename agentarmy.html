@@ -307,22 +307,31 @@
             border: 1px solid rgba(0,229,255,0.35);
         }
 
-        /* === Container === */
-        .container { max-width: 1400px; margin: 0 auto; padding: 24px 20px 60px; }
+        /* === Container & Page Gutters === */
+        .container {
+            max-width: 1320px;
+            margin: 0 auto;
+            padding: 36px clamp(24px, 5vw, 60px) 100px;
+            width: 100%;
+            box-sizing: border-box;
+        }
 
         /* === Platform Grid (2-column) === */
         .platform-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 28px;
-            margin-bottom: 32px;
+            margin-bottom: 40px;
+            width: 100%;
+            box-sizing: border-box;
         }
 
         /* === Hero Section === */
         .hero {
             position: relative;
-            padding: 100px 40px 60px;
-            margin: 0 0 48px;
+            padding: 60px clamp(20px, 4vw, 40px) 40px;
+            margin: 0 auto 40px;
+            max-width: 1100px;
             text-align: center;
             overflow: hidden;
         }
@@ -1169,238 +1178,26 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* === Responsive === */
-        @media (max-width: 1100px) {
-            .platform-grid { grid-template-columns: 1fr; }
+        /* === Responsive & Viewport Margins === */
+        @media (max-width: 1200px) {
+            .container { padding: 32px clamp(20px, 4vw, 40px) 80px; }
+            .arch-explainer-grid { grid-template-columns: repeat(3, 1fr); gap: 16px; }
         }
-        @media (max-width: 900px) {
-            .smart-stack-bar {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 12px;
-                padding: 16px;
-            }
-            .smart-stack-bar-items {
-                width: 100%;
-            }
-            .smart-stack-bar-actions {
-                width: 100%;
-                justify-content: flex-end;
-            }
-            body {
-                padding-bottom: 120px;
-            }
+        @media (max-width: 1024px) {
+            .platform-grid { grid-template-columns: 1fr; gap: 24px; }
+            .arch-explainer-grid { grid-template-columns: 1fr; gap: 16px; }
         }
-            .topnav {
-                margin: 12px;
-                padding: 12px 16px;
-                border-radius: 16px;
-            }
-            .topnav-links a { padding: 6px 10px; font-size: 0.82em; }
-            .container { padding: 12px 12px 40px; }
-            .header { padding: 56px 24px; border-radius: 24px; }
-            .section, .comparison-table { padding: 24px; border-radius: 20px; }
-            .platform-entry { padding: 20px; gap: 16px; }
-            .platform-logo { width: 90px; height: 90px; border-radius: 18px; }
-            .metrics-grid { grid-template-columns: repeat(2, 1fr); }
-            .comparison-table { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-            .comparison-table table { min-width: 1200px; }
-            .cta-card { padding: 36px 20px; border-radius: 22px; }
-            .recommendations { grid-template-columns: 1fr; }
-        }
-        @media (max-width: 900px) {
-            .topnav {
-                margin: 12px;
-                padding: 12px 16px;
-                border-radius: 16px;
-            }
-            .topnav-links a { padding: 6px 10px; font-size: 0.82em; }
-            .container { padding: 12px 12px 40px; }
-            .header { padding: 56px 24px; border-radius: 24px; }
-            .section, .comparison-table { padding: 24px; border-radius: 20px; }
-            .platform-entry { padding: 20px; gap: 16px; }
-            .platform-logo { width: 90px; height: 90px; border-radius: 18px; }
-            .metrics-grid { grid-template-columns: repeat(2, 1fr); }
-            border: 1px solid var(--glass-border);
-            border-radius: 16px;
-            padding: 20px 22px;
-            position: relative;
-            overflow: hidden;
-            transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
-            transform-style: preserve-3d;
-        }
-        .rec-card::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; bottom: 0;
-            width: 3px;
-            background: linear-gradient(180deg, var(--accent), var(--accent-warm));
-            opacity: 0.7;
-        }
-        .rec-card:hover {
-            transform: translateY(-3px);
-            border-color: rgba(0,229,255,0.25);
-            box-shadow: 0 20px 40px -20px rgba(0,229,255,0.35);
-        }
-        .rec-card-label {
-            display: block;
-            color: var(--accent);
-            font-size: 0.72em;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            margin-bottom: 8px;
-            font-family: 'Geist Mono', monospace;
-            font-weight: 600;
-        }
-        .rec-card-value {
-            color: var(--text);
-            font-size: 0.95em;
-            line-height: 1.55;
-        }
-
-        /* === CTA === */
-        .cta-card {
-            text-align: center;
-            margin-top: 40px;
-            background: linear-gradient(135deg, rgba(0,229,255,0.08), rgba(255,45,146,0.08));
-            border: 1px solid rgba(0,229,255,0.25);
-            border-radius: 28px;
-            padding: 56px 32px;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 36px 72px -20px rgba(0,229,255,0.20), inset 0 1px 0 rgba(255,255,255,0.05);
-        }
-        .cta-card::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: radial-gradient(circle at 50% 50%, rgba(0,229,255,0.15), transparent 60%);
-            animation: cta-pulse 5s ease-in-out infinite;
-            pointer-events: none;
-        }
-        @keyframes cta-pulse {
-            0%, 100% { opacity: 0.4; transform: scale(1); }
-            50% { opacity: 1; transform: scale(1.12); }
-        }
-        .cta-card h2 {
-            font-family: 'Bricolage Grotesque', sans-serif;
-            position: relative;
-            font-size: clamp(1.5rem, 3vw, 2.1rem);
-            font-weight: 700;
-            margin-bottom: 14px;
-            background: linear-gradient(135deg, #fff 0%, var(--accent) 100%);
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-            letter-spacing: -0.02em;
-        }
-        .cta-card p {
-            position: relative;
-            color: var(--text-dim);
-            margin-bottom: 28px;
-            font-size: 1.05em;
-        }
-        .cta-button {
-            position: relative;
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-warm) 100%);
-            color: #050514;
-            padding: 16px 36px;
-            border-radius: 100px;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 1em;
-            letter-spacing: 0.01em;
-            box-shadow:
-                0 20px 40px -10px rgba(0,229,255,0.45),
-                0 0 0 1px rgba(255,255,255,0.10),
-                inset 0 1px 0 rgba(255,255,255,0.30);
-            transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.3s;
-            transform-style: preserve-3d;
-        }
-        .cta-button:hover {
-            transform: translateY(-3px) scale(1.03);
-            box-shadow:
-                0 30px 60px -10px rgba(0,229,255,0.55),
-                0 0 0 1px rgba(255,255,255,0.20),
-                inset 0 1px 0 rgba(255,255,255,0.40);
-        }
-
-        /* === Footer === */
-        .page-footer {
-            text-align: center;
-            margin-top: 48px;
-            padding: 24px;
-            color: var(--text-faint);
-            font-size: 0.82em;
-            font-family: 'Geist Mono', monospace;
-        }
-
-        /* === Reveal animations === */
-        @media (prefers-reduced-motion: no-preference) {
-            .platform-entry, .section, .comparison-table, .cta-card {
-                animation: reveal 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
-            }
-            .header { animation: reveal 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) backwards; }
-            .platform-entry:nth-of-type(1) { animation-delay: 0.10s; }
-            .platform-entry:nth-of-type(2) { animation-delay: 0.18s; }
-            .platform-entry:nth-of-type(3) { animation-delay: 0.26s; }
-            .platform-entry:nth-of-type(4) { animation-delay: 0.34s; }
-            .platform-entry:nth-of-type(5) { animation-delay: 0.42s; }
-            .platform-entry:nth-of-type(6) { animation-delay: 0.50s; }
-            .platform-entry:nth-of-type(7) { animation-delay: 0.58s; }
-            .platform-entry:nth-of-type(8) { animation-delay: 0.66s; }
-            .platform-entry:nth-of-type(9) { animation-delay: 0.74s; }
-            .platform-entry:nth-of-type(10) { animation-delay: 0.82s; }
-            .platform-entry:nth-of-type(11) { animation-delay: 0.90s; }
-            .platform-entry:nth-of-type(12) { animation-delay: 0.98s; }
-            .platform-entry:nth-of-type(13) { animation-delay: 1.06s; }
-            .platform-entry:nth-of-type(14) { animation-delay: 1.14s; }
-        }
-        @keyframes reveal {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* === Responsive === */
-        @media (max-width: 1100px) {
-            .platform-grid { grid-template-columns: 1fr; }
-        }
-        @media (max-width: 900px) {
-            .smart-stack-bar {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 12px;
-                padding: 16px;
-            }
-            .smart-stack-bar-items {
-                width: 100%;
-            }
-            .smart-stack-bar-actions {
-                width: 100%;
-                justify-content: flex-end;
-            }
-            body {
-                padding-bottom: 120px;
-            }
-            .topnav {
-                margin: 12px;
-                padding: 12px 16px;
-                border-radius: 16px;
-            }
-            .topnav-links a { padding: 6px 10px; font-size: 0.82em; }
-            .container { padding: 12px 12px 40px; }
-            .header { padding: 56px 24px; border-radius: 24px; }
-            .section, .comparison-table { padding: 24px; border-radius: 20px; }
-            .platform-entry { padding: 20px; gap: 16px; }
-            .platform-logo { width: 90px; height: 90px; border-radius: 18px; }
-            .metrics-grid { grid-template-columns: repeat(2, 1fr); }
-            .comparison-table { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-            .comparison-table table { min-width: 1200px; }
-            .cta-card { padding: 36px 20px; border-radius: 22px; }
-            .recommendations { grid-template-columns: 1fr; }
+        @media (max-width: 768px) {
+            .container { padding: 24px 16px 60px; }
+            .topnav { padding: 0 16px; }
+            .hero { padding: 40px 16px 32px; margin-bottom: 28px; }
+            .section, .comparison-table { padding: 20px 16px; border-radius: 18px; }
+            .platform-entry { padding: 20px 16px; border-radius: 18px; }
+            .metrics-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+            .cta-card { padding: 36px 16px; border-radius: 20px; }
+            .smart-stack-bar { flex-direction: column; align-items: flex-start; gap: 12px; padding: 14px 16px; }
+            .smart-stack-bar-items { width: 100%; }
+            .smart-stack-bar-actions { width: 100%; justify-content: flex-end; }
         }
 
         /* === Interactive Mode Tabs === */
