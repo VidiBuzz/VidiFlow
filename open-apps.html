@@ -278,36 +278,137 @@ h1 { font-family: 'Kumbh Sans', sans-serif !important; }
   background: var(--surface2);
 }
 
-/* ── Visual Callout & Explainer Boxes ── */
-.visual-explainer-banner {
-  background: linear-gradient(90deg, rgba(79, 127, 255, 0.12) 0%, rgba(124, 92, 252, 0.08) 100%);
-  border: 1px solid rgba(79, 127, 255, 0.3);
-  border-radius: 12px;
-  padding: 16px 20px;
-  margin-bottom: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 14px;
+/* ── Section Dividers & Headers ── */
+.section-wrap {
+  padding: 44px 0;
+  border-bottom: 1px solid var(--border);
 }
-.explainer-title {
-  font-size: 15px;
-  font-weight: 700;
+.section-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.section-title {
+  font-size: 24px;
+  font-weight: 800;
   color: #ffffff;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
 }
-.explainer-desc {
-  font-size: 13px;
-  color: #cbd5e1;
-  max-width: 900px;
-  line-height: 1.5;
+.section-badge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 9px;
+  border-radius: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-family: var(--mono);
+}
+.section-desc {
+  font-size: 13.5px;
+  color: var(--text-dim);
+  margin-top: 4px;
+  max-width: 850px;
 }
 
 /* ==========================================================================
-   RICH VISUAL IDE STUDIO MOCKUP (Full Interactive Anatomy Breakdown)
+   ANIMATED TOUR CONTROLS & DYNAMIC CALLOUT BANNER
+   ========================================================================== */
+.tour-controller-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #111624;
+  border: 1px solid rgba(79, 127, 255, 0.35);
+  border-radius: 10px;
+  padding: 8px 14px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.tour-btn-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.tour-step-btn {
+  background: #1a2236;
+  border: 1px solid #2d3a54;
+  color: #cbd5e1;
+  font-size: 12px;
+  font-family: var(--font);
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+}
+.tour-step-btn:hover {
+  background: #25314d;
+  color: #fff;
+  border-color: #4f7fff;
+}
+.tour-step-btn.active {
+  background: linear-gradient(135deg, #4f7fff, #7c5cfc);
+  color: #ffffff;
+  border-color: #7c5cfc;
+  box-shadow: 0 0 12px rgba(79, 127, 255, 0.5);
+  font-weight: 700;
+}
+.tour-play-toggle {
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  color: #34d399;
+  font-size: 11.5px;
+  font-family: var(--mono);
+  font-weight: 700;
+  padding: 5px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+}
+.tour-play-toggle:hover {
+  background: #10b981;
+  color: #fff;
+}
+
+.tour-animated-callout {
+  background: linear-gradient(90deg, #101628 0%, #151b2e 100%);
+  border: 1px solid #4f7fff;
+  border-left: 5px solid #00d8ff;
+  border-radius: 8px;
+  padding: 12px 18px;
+  margin-bottom: 18px;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: #f8fafc;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  animation: calloutPulse 3s infinite alternate;
+}
+@keyframes calloutPulse {
+  0% { border-color: rgba(79, 127, 255, 0.6); box-shadow: 0 0 15px rgba(79, 127, 255, 0.2); }
+  100% { border-color: rgba(0, 216, 255, 0.9); box-shadow: 0 0 25px rgba(0, 216, 255, 0.4); }
+}
+.tour-callout-icon { font-size: 22px; flex-shrink: 0; }
+.tour-callout-text { flex: 1; }
+.tour-callout-text strong { color: #00d8ff; }
+
+/* ==========================================================================
+   RICH VISUAL IDE STUDIO MOCKUP WITH ANIMATED SPOTLIGHT ZONES
    ========================================================================== */
 .ide-studio-mockup {
   background: #090c14;
@@ -318,6 +419,7 @@ h1 { font-family: 'Kumbh Sans', sans-serif !important; }
   margin-bottom: 32px;
   display: flex;
   flex-direction: column;
+  position: relative;
 }
 .ide-top-titlebar {
   background: #111827;
@@ -328,15 +430,8 @@ h1 { font-family: 'Kumbh Sans', sans-serif !important; }
   justify-content: space-between;
   padding: 0 14px;
 }
-.ide-window-dots {
-  display: flex;
-  gap: 6px;
-}
-.ide-window-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-}
+.ide-window-dots { display: flex; gap: 6px; }
+.ide-window-dot { width: 10px; height: 10px; border-radius: 50%; }
 .ide-search-bar {
   background: #1f293d;
   border: 1px solid #374151;
@@ -361,9 +456,11 @@ h1 { font-family: 'Kumbh Sans', sans-serif !important; }
 
 .ide-main-workspace {
   display: flex;
-  min-height: 380px;
+  min-height: 390px;
+  position: relative;
 }
-/* Far Left Activity Bar */
+
+/* Activity Bar */
 .ide-activity-bar {
   width: 44px;
   background: #0b0f19;
@@ -382,22 +479,9 @@ h1 { font-family: 'Kumbh Sans', sans-serif !important; }
   justify-content: center;
   color: #64748b;
   border-radius: 6px;
-  cursor: pointer;
   position: relative;
 }
-.ide-act-icon.active {
-  color: #fff;
-  background: rgba(255, 255, 255, 0.08);
-}
-.ide-act-icon.active::before {
-  content: '';
-  position: absolute;
-  left: -8px;
-  top: 4px;
-  bottom: 4px;
-  width: 2px;
-  background: var(--accent);
-}
+.ide-act-icon.active { color: #fff; background: rgba(255, 255, 255, 0.08); }
 .ide-act-badge {
   position: absolute;
   top: -2px;
@@ -410,9 +494,11 @@ h1 { font-family: 'Kumbh Sans', sans-serif !important; }
   padding: 0 4px;
 }
 
-/* Left File Explorer Sidebar */
+/* ── 3 PRIMARY ZONES WITH SMOOTH SPOTLIGHT TRANSITIONS ── */
+
+/* Zone 1: File Tree (Left) */
 .ide-file-tree {
-  width: 200px;
+  width: 220px;
   background: #0d121e;
   border-right: 1px solid #1f293d;
   padding: 12px 8px;
@@ -422,7 +508,25 @@ h1 { font-family: 'Kumbh Sans', sans-serif !important; }
   display: flex;
   flex-direction: column;
   gap: 4px;
+  position: relative;
+  transition: all 0.35s ease;
 }
+.zone-pill-tag {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  font-size: 9.5px;
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: var(--mono);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.tag-files { background: rgba(0, 216, 255, 0.2); color: #00d8ff; border: 1px solid #00d8ff; }
+.tag-editor { background: rgba(79, 127, 255, 0.2); color: #93c5fd; border: 1px solid #4f7fff; }
+.tag-agent { background: rgba(124, 92, 252, 0.2); color: #c4b5fd; border: 1px solid #7c5cfc; }
+
 .ide-tree-header {
   font-size: 10px;
   text-transform: uppercase;
@@ -446,13 +550,15 @@ h1 { font-family: 'Kumbh Sans', sans-serif !important; }
 .tree-status-m { color: #f59e0b; font-weight: 700; font-size: 10px; }
 .tree-status-u { color: #10b981; font-weight: 700; font-size: 10px; }
 
-/* Center Code Editor Pane */
+/* Zone 2: Main Code Editor (Middle) */
 .ide-editor-pane {
   flex: 1;
   background: #07090e;
   display: flex;
   flex-direction: column;
   border-right: 1px solid #1f293d;
+  position: relative;
+  transition: all 0.35s ease;
 }
 .ide-tab-bar {
   height: 32px;
@@ -482,17 +588,19 @@ h1 { font-family: 'Kumbh Sans', sans-serif !important; }
   padding: 14px;
   font-family: var(--mono);
   font-size: 12px;
-  line-height: 1.6;
+  line-height: 1.65;
   color: #cbd5e1;
   overflow: auto;
 }
 
-/* Right AI Agent Pane (Roo Code / Cline / Assistant) */
+/* Zone 3: AI Assistant Panel (Right) */
 .ide-ai-pane {
-  width: 320px;
+  width: 330px;
   background: #0f1422;
   display: flex;
   flex-direction: column;
+  position: relative;
+  transition: all 0.35s ease;
 }
 .ide-ai-header {
   height: 32px;
@@ -514,10 +622,7 @@ h1 { font-family: 'Kumbh Sans', sans-serif !important; }
   flex-direction: column;
   gap: 10px;
 }
-.ide-mode-chips {
-  display: flex;
-  gap: 4px;
-}
+.ide-mode-chips { display: flex; gap: 4px; }
 .ide-mode-chip {
   padding: 2px 8px;
   font-size: 10px;
@@ -552,11 +657,7 @@ h1 { font-family: 'Kumbh Sans', sans-serif !important; }
 }
 .ide-diff-add { color: #34d399; background: rgba(16, 185, 129, 0.1); padding: 1px 4px; border-radius: 3px; display: block; }
 .ide-diff-del { color: #f87171; background: rgba(239, 68, 68, 0.1); padding: 1px 4px; border-radius: 3px; display: block; }
-.ide-action-buttons {
-  display: flex;
-  gap: 8px;
-  margin-top: auto;
-}
+.ide-action-buttons { display: flex; gap: 8px; margin-top: auto; }
 .btn-accept {
   flex: 1;
   background: #10b981;
@@ -594,8 +695,25 @@ h1 { font-family: 'Kumbh Sans', sans-serif !important; }
   padding: 0 12px;
 }
 
+/* ── SPOTLIGHT ACTIVE HIGHLIGHT STYLES (BLINK & GLOW) ── */
+.spotlight-active {
+  box-shadow: inset 0 0 25px rgba(0, 216, 255, 0.35), 0 0 20px rgba(0, 216, 255, 0.6) !important;
+  border-color: #00d8ff !important;
+  z-index: 10;
+  opacity: 1 !important;
+  animation: glowZone 1.5s infinite alternate !important;
+}
+.spotlight-dimmed {
+  opacity: 0.28 !important;
+  filter: grayscale(40%) !important;
+}
+@keyframes glowZone {
+  0% { box-shadow: inset 0 0 15px rgba(0, 216, 255, 0.2), 0 0 10px rgba(0, 216, 255, 0.4); }
+  100% { box-shadow: inset 0 0 30px rgba(0, 216, 255, 0.5), 0 0 25px rgba(0, 216, 255, 0.8); }
+}
+
 /* ==========================================================================
-   RICH VISUAL TERMINAL & CLI PROMPT MOCKUP (What a Terminal Really Is)
+   TERMINAL & CLI ANIMATED WORKFLOW MOCKUP
    ========================================================================== */
 .terminal-window-mockup {
   background: #020408;
@@ -635,18 +753,9 @@ h1 { font-family: 'Kumbh Sans', sans-serif !important; }
   flex-direction: column;
   gap: 8px;
 }
-.term-prompt {
-  color: #38bdf8;
-  font-weight: 700;
-}
-.term-path {
-  color: #a855f7;
-  font-weight: 600;
-}
-.term-cmd {
-  color: #facc15;
-  font-weight: 600;
-}
+.term-prompt { color: #38bdf8; font-weight: 700; }
+.term-path { color: #a855f7; font-weight: 600; }
+.term-cmd { color: #facc15; font-weight: 600; }
 .term-output-card {
   background: rgba(15, 23, 42, 0.8);
   border: 1px solid rgba(56, 189, 248, 0.2);
@@ -701,19 +810,1345 @@ h1 { font-family: 'Kumbh Sans', sans-serif !important; }
   50% { opacity: 0; }
 }
 
+/* ── Top 3 Podium Grid ── */
+.top3-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #f8fafc;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-family: var(--mono);
+}
+.top3-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 28px;
+}
+.top3-card {
+  background: linear-gradient(180deg, var(--surface2) 0%, var(--surface) 100%);
+  border: 1px solid var(--border2);
+  border-radius: 14px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.25s ease;
+}
+.top3-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--accent);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+}
+.top3-rank-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  font-size: 10.5px;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-family: var(--mono);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.rank-gold { background: rgba(255, 204, 0, 0.15); color: #ffcc00; border: 1px solid rgba(255, 204, 0, 0.35); }
+.rank-silver { background: rgba(203, 213, 225, 0.15); color: #cbd5e1; border: 1px solid rgba(203, 213, 225, 0.35); }
+.rank-bronze { background: rgba(249, 115, 22, 0.15); color: #fb923c; border: 1px solid rgba(249, 115, 22, 0.35); }
+
+.top3-brand-row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+.top3-logo-box {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: var(--surface3);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.top3-logo-img { width: 28px; height: 28px; object-fit: contain; }
+.top3-brand-info { display: flex; flex-direction: column; }
+.top3-brand-name { font-size: 16px; font-weight: 700; color: #ffffff; }
+.top3-brand-type { font-size: 11px; color: var(--accent); font-family: var(--mono); }
+
+.top3-screen-box {
+  width: 100%;
+  height: 130px;
+  background: #05070a;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  overflow: hidden;
+  margin-bottom: 12px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+.top3-screen-bar {
+  height: 20px;
+  background: #0e121a;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 8px;
+  gap: 4px;
+}
+.top3-dot { width: 6px; height: 6px; border-radius: 50%; }
+.top3-screen-title { font-size: 9.5px; color: #64748b; font-family: var(--mono); margin-left: 6px; }
+.top3-screen-content {
+  flex: 1;
+  padding: 8px 10px;
+  font-family: var(--mono);
+  font-size: 10px;
+  line-height: 1.45;
+  color: #94a3b8;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.top3-highlight { font-size: 12px; color: #cbd5e1; line-height: 1.4; margin-bottom: 14px; min-height: 34px; }
+.top3-btn-row {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+}
+.top3-cta-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(79, 127, 255, 0.15);
+  border: 1px solid rgba(79, 127, 255, 0.35);
+  color: #93c5fd;
+  padding: 6px 12px;
+  border-radius: 7px;
+  font-size: 11.5px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.15s ease;
+}
+.top3-cta-btn:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+/* Comparison Table */
+.table-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow-x: auto;
+  margin-top: 24px;
+}
+.table-matrix { width: 100%; border-collapse: collapse; font-size: 12.5px; text-align: left; }
+.table-matrix th {
+  background: #0b0e14;
+  padding: 12px 16px;
+  color: #94a3b8;
+  font-size: 11px;
+  font-family: var(--mono);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+.table-matrix td {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  color: #cbd5e1;
+  vertical-align: middle;
+}
+.table-matrix tr:hover td { background: var(--surface2); }
+.matrix-name { font-weight: 700; color: #ffffff; display: flex; align-items: center; gap: 8px; }
+
+/* Classic Apps Grid */
+.catalog-header { padding: 40px 0 20px; }
+.toolbar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
+.search-wrap { position: relative; flex: 1; max-width: 380px; min-width: 200px; }
+.search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); pointer-events: none; }
+.search-icon svg { width: 14px; height: 14px; stroke: var(--muted); fill: none; stroke-width: 1.8; }
+input[type=search] {
+  width: 100%;
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 13px;
+  padding: 8px 12px 8px 34px;
+  outline: none;
+  transition: border-color .15s;
+}
+input[type=search]:focus { border-color: var(--accent); }
+.toggle-btn {
+  padding: 6px 12px;
+  border-radius: 7px;
+  border: 1px solid var(--border2);
+  background: transparent;
+  color: var(--muted);
+  font-family: var(--font);
+  font-size: 12px;
+  cursor: pointer;
+  transition: all .15s;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.toggle-btn.active { background: rgba(79,127,255,0.1); border-color: rgba(79,127,255,0.35); color: var(--accent); }
+.toggle-btn .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+.count-badge {
+  font-size: 11px;
+  color: var(--muted);
+  font-family: var(--mono);
+  padding: 5px 9px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  white-space: nowrap;
+}
+.filter-row { display: flex; gap: 20px; margin: 16px 0; flex-wrap: wrap; align-items: flex-start; }
+.filter-group { display: flex; flex-direction: column; gap: 6px; }
+.filter-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted2); font-weight: 500; }
+.pills { display: flex; flex-wrap: wrap; gap: 5px; }
+.pill {
+  padding: 4px 11px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 12px;
+  font-family: var(--font);
+  cursor: pointer;
+  transition: all .15s;
+  white-space: nowrap;
+}
+.pill:hover { border-color: var(--border2); color: var(--text); }
+.pill.active { border-color: rgba(79,127,255,0.3); color: var(--accent); background: rgba(79,127,255,0.08); }
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(206px, 1fr));
+  gap: 10px;
+  padding-bottom: 80px;
+}
+.app-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 13px 12px;
+  display: block;
+  text-decoration: none;
+  transition: border-color .15s, background .15s;
+}
+.app-card:hover { border-color: var(--border2); background: var(--surface2); }
+.app-name { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.app-tag { font-size: 11.5px; color: var(--muted); line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; min-height: 28px; }
+.card-foot { margin-top: 9px; display: flex; align-items: center; justify-content: space-between; gap: 6px; }
+.lang-badge { font-size: 10px; padding: 2px 7px; border-radius: 4px; font-family: var(--mono); font-weight: 500; background: var(--lb, rgba(79,127,255,0.1)); color: var(--lc, #4f7fff); border: 1px solid rgba(255,255,255,0.1); white-space: nowrap; }
+.site-domain { font-size: 10px; color: var(--muted2); font-family: var(--mono); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 110px; }
+
 @media(max-width: 900px) {
+  .top3-grid { grid-template-columns: 1fr; }
   .ide-main-workspace { flex-direction: column; }
   .ide-file-tree { width: 100%; border-right: none; border-bottom: 1px solid #1f293d; }
   .ide-ai-pane { width: 100%; }
 }
-'''
+</style>
+</head>
+<body>
 
-def get_rest_of_html():
-    with open(r"m:\code\vidismart\open-apps.html", "r", encoding="utf-8") as f:
-        text = f.read()
-    
-    # We will replace the body sections with enhanced mockups
-    idx_apps = text.find("const APPS=[")
+<!-- Universal Top Navigation -->
+<nav class="topnav">
+  <a class="topnav-brand" href="open-apps.html">
+    <div class="brand-icon">VS</div>
+    <span class="brand-text">VidiSmart <span>Stack</span></span>
+  </a>
+  <div class="nav-sep"></div>
+  <a class="navlink active" href="open-apps.html">
+    <svg class="nl-icon" style="color:#4f7fff" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="3" y="3" width="7" height="7" rx="1.5"></rect>
+      <rect x="14" y="3" width="7" height="7" rx="1.5"></rect>
+      <rect x="14" y="14" width="7" height="7" rx="1.5"></rect>
+      <rect x="3" y="14" width="7" height="7" rx="1.5"></rect>
+    </svg>
+    Open Apps
+  </a>
+  <a class="navlink" href="directus-extensions.html">
+    <svg class="nl-icon" style="color:#7c5cfc" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 2v6m0 8v6M2 12h6m8 0h6"></path>
+      <rect x="8" y="8" width="8" height="8" rx="2"></rect>
+    </svg>
+    Directus Extensions
+  </a>
+  <a class="navlink" href="visualai-tools.html">
+    <svg class="nl-icon" style="color:#00d8ff" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="3"></circle>
+      <path d="M3 12c2.5-5 6.5-8 9-8s6.5 3 9 8c-2.5 5-6.5 8-9 8s-6.5-3-9-8z"></path>
+    </svg>
+    Visual AI Tools
+  </a>
+  <a class="navlink" href="topmodels.html">
+    <svg class="nl-icon" style="color:#ffcc00" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+    </svg>
+    Top Models
+  </a>
+  <a class="navlink" href="agentarmy.html">
+    <svg class="nl-icon" style="color:#00e5ff" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="3" y="11" width="18" height="10" rx="2"></rect>
+      <circle cx="12" cy="5" r="2"></circle>
+      <path d="M12 7v4"></path>
+      <line x1="8" y1="16" x2="8.01" y2="16"></line>
+      <line x1="16" y1="16" x2="16.01" y2="16"></line>
+    </svg>
+    Agent Army
+  </a>
+  <a class="navlink" href="agent-ui-tools.html">
+    <svg class="nl-icon" style="color:#ff6b6b" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 19l7-7 3 3-7 7-3-3z"></path>
+      <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"></path>
+      <path d="M2 2l7.586 7.586"></path>
+      <circle cx="11" cy="11" r="2"></circle>
+    </svg>
+    Visual UI Tools
+  </a>
+  <a class="navlink" href="ClaudeNoMore.html">
+    <svg class="nl-icon" style="color:#ef4444" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="2" y="5" width="20" height="14" rx="2"></rect>
+      <line x1="2" y1="10" x2="22" y2="10"></line>
+    </svg>
+    Pricing
+  </a>
+</nav>
+
+<!-- Hero Section -->
+<header class="hero-section">
+  <div class="container">
+    <div class="hero-badge">
+      <span class="hero-badge-dot"></span>
+      Model Front-End Architecture &amp; Open Ecosystem
+    </div>
+    <h1 class="hero-title">You Have the Models. <span>Now Choose How You Talk to Them.</span></h1>
+    <p class="hero-subtitle">
+      Raw weights and API endpoints cannot write code, debug repositories, or coordinate agent swarms on their own. You need an interface layer. Explore the battle-tested taxonomy of <strong>VS Code &amp; Extensions</strong>, <strong>Google Antigravity Agentic IDE</strong>, <strong>OpenCode &amp; Terminal Swarms</strong>, <strong>Multi-Model Web Chatrooms</strong>, and <strong>Visual Workflow Harnesses</strong>.
+    </p>
+
+    <!-- Architecture 4 Pillars -->
+    <div class="arch-grid">
+      <div class="arch-box">
+        <div class="arch-icon-row">
+          <div class="arch-icon" style="background:rgba(0,122,204,0.15);color:#007acc;">🚀</div>
+          <div class="arch-name">VS Code Ecosystem</div>
+        </div>
+        <div class="arch-desc">The universal open core IDE standard. Host autonomous agents (Roo Code, Cline, Continue) with 50,000+ extensions and zero vendor lock-in.</div>
+      </div>
+      <div class="arch-box">
+        <div class="arch-icon-row">
+          <div class="arch-icon" style="background:rgba(79,127,255,0.15);color:#4f7fff;">🌌</div>
+          <div class="arch-name">Google Antigravity</div>
+        </div>
+        <div class="arch-desc">DeepMind's advanced agentic pair programming environment with Planning Mode, reactive tool executions, subagents, and Playwright loop.</div>
+      </div>
+      <div class="arch-box">
+        <div class="arch-icon-row">
+          <div class="arch-icon" style="background:rgba(0,216,255,0.15);color:#00d8ff;">⌨️</div>
+          <div class="arch-name">OpenCode &amp; CLI Swarms</div>
+        </div>
+        <div class="arch-desc">Blazing fast CLI engines (OpenCode, Claude Code, Aider, Goose) for headless Git commits, AST parsing, and whole-repository refactors.</div>
+      </div>
+      <div class="arch-box">
+        <div class="arch-icon-row">
+          <div class="arch-icon" style="background:rgba(255,204,0,0.15);color:#ffcc00;">💬</div>
+          <div class="arch-name">Multi-Model Web UIs</div>
+        </div>
+        <div class="arch-desc">Self-hosted &amp; hosted chat hubs (LibreChat, Open WebUI, Big-AGI) connecting all provider keys in split-screen side-by-side rooms.</div>
+      </div>
+    </div>
+
+    <!-- Jump Bar -->
+    <div class="jump-bar">
+      <span style="font-size:11px;font-family:var(--mono);color:var(--muted);text-transform:uppercase;margin-right:4px;">Jump to:</span>
+      <a href="#sec-vscode-ext" class="jump-pill">🚀 Visual IDE Studio (Animated)</a>
+      <a href="#sec-cli-agents" class="jump-pill">⌨️ Visual Terminal Window (Animated)</a>
+      <a href="#sec-antigravity" class="jump-pill">🌌 Google Antigravity</a>
+      <a href="#sec-ides" class="jump-pill">💻 Standalone IDEs</a>
+      <a href="#sec-chat-uis" class="jump-pill">💬 Multi-Model Chat UIs</a>
+      <a href="#sec-agent-harnesses" class="jump-pill">⚡ Visual Agent Harnesses</a>
+      <a href="#sec-comparison" class="jump-pill">📊 Interface Taxonomy Matrix</a>
+      <a href="#sec-open-apps" class="jump-pill">📦 209+ Self-Hosted Apps</a>
+    </div>
+  </div>
+</header>
+
+<main class="container">
+
+  <!-- ==================== SECTION 1: VS CODE & ANIMATED VISUAL IDE STUDIO ==================== -->
+  <section class="section-wrap" id="sec-vscode-ext">
+    <div class="section-header">
+      <div>
+        <h2 class="section-title">
+          <span>🚀</span> The 3 Primary Areas of an IDE — Interactive Visual Tour
+          <span class="section-badge" style="background:rgba(0,122,204,0.15);color:#007acc;">Live Animation</span>
+        </h2>
+        <p class="section-desc">An IDE combines 3 essential zones into one screen: <strong>(1) Files on the left</strong>, <strong>(2) Editor in the middle</strong>, and <strong>(3) AI Agent on the right</strong>. Watch the animated tour below or click any step to highlight each zone!</p>
+      </div>
+    </div>
+
+    <!-- 🎮 Tour Controller Toolbar -->
+    <div class="tour-controller-bar">
+      <div class="tour-btn-group">
+        <span style="font-size:11px;color:#94a3b8;font-family:var(--mono);margin-right:4px;">SPOTLIGHT TOUR:</span>
+        <button class="tour-step-btn active" id="btnTour1" onclick="setIdeTour(1)">📁 1. Project Files (Left)</button>
+        <button class="tour-step-btn" id="btnTour2" onclick="setIdeTour(2)">💻 2. Code Editor (Middle)</button>
+        <button class="tour-step-btn" id="btnTour3" onclick="setIdeTour(3)">🤖 3. AI Agent Panel (Right)</button>
+        <button class="tour-step-btn" id="btnTourAll" onclick="setIdeTour(0)">✨ Full Overview</button>
+      </div>
+      <button class="tour-play-toggle" id="btnPlayToggle" onclick="toggleTourAutoPlay()">
+        <span id="playIcon">⏸</span> <span id="playText">Auto-Tour Playing</span>
+      </button>
+    </div>
+
+    <!-- 💡 Dynamic Animated Explainer Callout -->
+    <div class="tour-animated-callout" id="ideTourCallout">
+      <div class="tour-callout-icon" id="calloutIcon">📁</div>
+      <div class="tour-callout-text" id="calloutText">
+        <strong>1. FILE TREE (LEFT ZONE):</strong> Look over here on the left! Your entire project structure — files, components, and backend routes — lives in this explorer window. Click any file to open it in the editor.
+      </div>
+    </div>
+
+    <!-- 🌟 FULL-FEATURED ANIMATED VISUAL IDE STUDIO MOCKUP 🌟 -->
+    <div class="ide-studio-mockup" id="ideStudio">
+      <!-- Title Bar -->
+      <div class="ide-top-titlebar">
+        <div class="ide-window-dots">
+          <span class="ide-window-dot" style="background:#ef4444"></span>
+          <span class="ide-window-dot" style="background:#f59e0b"></span>
+          <span class="ide-window-dot" style="background:#10b981"></span>
+        </div>
+        <div class="ide-search-bar">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          vidismart-ecosystem — Visual Studio Code [Workspace]
+        </div>
+        <div class="ide-badge-pill">VS Code + Roo Code Active</div>
+      </div>
+
+      <!-- Main Workspace (3 Primary Zones) -->
+      <div class="ide-main-workspace">
+        <!-- Far Left Activity Bar -->
+        <div class="ide-activity-bar">
+          <div class="ide-act-icon active" title="Explorer">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"></rect><line x1="9" y1="3" x2="9" y2="21"></line></svg>
+          </div>
+          <div class="ide-act-icon" title="Search">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          </div>
+          <div class="ide-act-icon" title="Source Control">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="18" r="3"></circle><circle cx="6" cy="6" r="3"></circle><path d="M18 9a9 9 0 0 1-9 9"></path></svg>
+            <span class="ide-act-badge">2</span>
+          </div>
+          <div class="ide-act-icon" style="color:#7c5cfc;margin-top:auto;" title="Roo Code / Cline AI Agent">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="2"></rect><circle cx="12" cy="5" r="2"></circle><path d="M12 7v4"></path></svg>
+          </div>
+        </div>
+
+        <!-- ZONE 1: Left File Explorer -->
+        <div class="ide-file-tree spotlight-active" id="zoneFiles" onclick="setIdeTour(1)">
+          <span class="zone-pill-tag tag-files">ZONE 1: FILES</span>
+          <div class="ide-tree-header">📁 EXPLORER: VIDISMART</div>
+          <div class="ide-tree-item"><span>📂 src/</span></div>
+          <div class="ide-tree-item" style="padding-left:14px;"><span>📂 controllers/</span></div>
+          <div class="ide-tree-item active" style="padding-left:22px;">
+            <span>📄 server.ts</span>
+            <span class="tree-status-m">M</span>
+          </div>
+          <div class="ide-tree-item" style="padding-left:22px;">
+            <span>📄 auth.service.ts</span>
+            <span class="tree-status-u">U</span>
+          </div>
+          <div class="ide-tree-item" style="padding-left:14px;"><span>📂 routes/</span></div>
+          <div class="ide-tree-item" style="padding-left:22px;"><span>📄 api.ts</span></div>
+          <div class="ide-tree-item"><span>📄 package.json</span></div>
+          <div class="ide-tree-item"><span>📄 tsconfig.json</span></div>
+        </div>
+
+        <!-- ZONE 2: Center Code Editor Pane -->
+        <div class="ide-editor-pane spotlight-dimmed" id="zoneEditor" onclick="setIdeTour(2)">
+          <span class="zone-pill-tag tag-editor">ZONE 2: EDITOR</span>
+          <div class="ide-tab-bar">
+            <div class="ide-tab active">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="#38bdf8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path></svg>
+              server.ts <span style="font-size:10px;opacity:0.6;">✕</span>
+            </div>
+            <div class="ide-tab">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="#64748b"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path></svg>
+              auth.service.ts
+            </div>
+          </div>
+          <div class="ide-code-viewport">
+            <div><span style="color:#64748b;">01</span> <span style="color:#f43f5e;">import</span> express <span style="color:#f43f5e;">from</span> <span style="color:#10b981;">'express'</span>;</div>
+            <div><span style="color:#64748b;">02</span> <span style="color:#f43f5e;">import</span> { DirectusSDK } <span style="color:#f43f5e;">from</span> <span style="color:#10b981;">'@directus/sdk'</span>;</div>
+            <div style="background:rgba(16,185,129,0.15);border-left:2px solid #10b981;"><span style="color:#64748b;">03</span> <span style="color:#34d399;">+ import { rateLimiter } from './middleware/rate-limit';</span></div>
+            <div><span style="color:#64748b;">04</span> </div>
+            <div><span style="color:#64748b;">05</span> <span style="color:#f43f5e;">const</span> app = <span style="color:#38bdf8;">express</span>();</div>
+            <div style="background:rgba(16,185,129,0.15);border-left:2px solid #10b981;"><span style="color:#64748b;">06</span> <span style="color:#34d399;">+ app.use('/api/', rateLimiter({ max: 100, windowMs: 60000 }));</span></div>
+            <div><span style="color:#64748b;">07</span> </div>
+            <div><span style="color:#64748b;">08</span> app.<span style="color:#38bdf8;">get</span>(<span style="color:#10b981;">'/api/health'</span>, (req, res) =&gt; res.<span style="color:#38bdf8;">json</span>({ status: <span style="color:#10b981;">'ok'</span> }));</div>
+            <div><span style="color:#64748b;">09</span> app.<span style="color:#38bdf8;">listen</span>(<span style="color:#f59e0b;">3007</span>, () =&gt; console.<span style="color:#38bdf8;">log</span>(<span style="color:#10b981;">'Server ready on 3007'</span>));<span class="term-cursor" style="height:12px;width:6px;margin-left:2px;"></span></div>
+          </div>
+        </div>
+
+        <!-- ZONE 3: Right Autonomous AI Agent Pane -->
+        <div class="ide-ai-pane spotlight-dimmed" id="zoneAgent" onclick="setIdeTour(3)">
+          <span class="zone-pill-tag tag-agent">ZONE 3: AI AGENT</span>
+          <div class="ide-ai-header">
+            <span>🤖 Roo Code · Autonomous Agent</span>
+            <span style="color:#34d399;font-size:9.5px;">● Connected (Claude 3.7)</span>
+          </div>
+          <div class="ide-ai-body">
+            <div class="ide-mode-chips">
+              <span class="ide-mode-chip active">Architect</span>
+              <span class="ide-mode-chip">Code</span>
+              <span class="ide-mode-chip">Ask</span>
+            </div>
+            <div class="ide-ai-msgbox">
+              <strong>I analyzed your codebase:</strong><br>
+              Found unprotected endpoints in <code>server.ts</code>. Proposing rate-limiting middleware to stop brute force requests.
+            </div>
+            <div class="ide-diff-box">
+              <span style="color:#64748b;">server.ts (Diff proposed):</span>
+              <span class="ide-diff-add">+ import { rateLimiter } from './middleware'</span>
+              <span class="ide-diff-add">+ app.use('/api/', rateLimiter())</span>
+            </div>
+            <div class="ide-action-buttons">
+              <button class="btn-accept">✅ Accept Diff (Apply)</button>
+              <button class="btn-reject">❌ Reject</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom Status Bar -->
+      <div class="ide-bottom-statusbar">
+        <div style="display:flex;gap:12px;align-items:center;">
+          <span> main*</span>
+          <span>⊗ 0  ⚠ 0</span>
+        </div>
+        <div style="display:flex;gap:14px;align-items:center;">
+          <span>TypeScript 5.4</span>
+          <span>UTF-8</span>
+          <span>Port: 3007</span>
+          <span style="background:rgba(255,255,255,0.2);padding:1px 6px;border-radius:3px;">🤖 AI Agent: Ready</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- TOP 3 PICKS PODIUM -->
+    <div class="top3-header">
+      <span>👑 Top 3 Recommended VS Code Extensions (Highest Usability &amp; Flexibility)</span>
+    </div>
+    <div class="top3-grid">
+      <!-- 1. Roo Code -->
+      <div class="top3-card">
+        <span class="top3-rank-badge rank-gold">🥇 #1 Choice</span>
+        <div class="top3-brand-row">
+          <div class="top3-logo-box">
+            <img class="top3-logo-img" src="https://www.google.com/s2/favicons?domain=roocode.com&sz=128" alt="Roo Code" referrerpolicy="no-referrer">
+          </div>
+          <div class="top3-brand-info">
+            <div class="top3-brand-name">Roo Code</div>
+            <div class="top3-brand-type">Autonomous In-Editor Agent</div>
+          </div>
+        </div>
+        <div class="top3-screen-box">
+          <div class="top3-screen-bar">
+            <span class="top3-dot" style="background:#ef4444"></span><span class="top3-dot" style="background:#f59e0b"></span><span class="top3-dot" style="background:#10b981"></span>
+            <span class="top3-screen-title">roo-clinic-mode.ts</span>
+          </div>
+          <div class="top3-screen-content">
+            <div style="color:#7c5cfc">[Mode: Architect] Planning tasks</div>
+            <div style="color:#38bdf8">&gt; Tool: mcp_directus_inspect()</div>
+            <div style="color:#10b981">+ Diff applied to auth.service.ts</div>
+          </div>
+        </div>
+        <div class="top3-highlight"><strong>Best for Control:</strong> Specialized agent modes (Code, Architect, Ask), custom MCP tool calling, and live diff rejection.</div>
+        <div class="top3-btn-row">
+          <span style="font-size:11px;color:#94a3b8;font-family:var(--mono)">100% Free / Open</span>
+          <a href="https://roocode.com" target="_blank" rel="noopener" class="top3-cta-btn">Install Roo Code &rarr;</a>
+        </div>
+      </div>
+
+      <!-- 2. Cline -->
+      <div class="top3-card">
+        <span class="top3-rank-badge rank-silver">🥈 #2 Choice</span>
+        <div class="top3-brand-row">
+          <div class="top3-logo-box">
+            <img class="top3-logo-img" src="https://www.google.com/s2/favicons?domain=github.com&sz=128" alt="Cline" referrerpolicy="no-referrer">
+          </div>
+          <div class="top3-brand-info">
+            <div class="top3-brand-name">Cline</div>
+            <div class="top3-brand-type">Terminal/Browser Agent</div>
+          </div>
+        </div>
+        <div class="top3-screen-box">
+          <div class="top3-screen-bar">
+            <span class="top3-dot" style="background:#ef4444"></span><span class="top3-dot" style="background:#f59e0b"></span><span class="top3-dot" style="background:#10b981"></span>
+            <span class="top3-screen-title">cline-terminal.sh</span>
+          </div>
+          <div class="top3-screen-content">
+            <div style="color:#f59e0b">[Cline] Requesting shell permission:</div>
+            <div style="color:#38bdf8">$ npm run build &amp;&amp; npm test</div>
+            <div style="color:#10b981">✔ Build succeeded</div>
+          </div>
+        </div>
+        <div class="top3-highlight"><strong>Best for Autonomy:</strong> Fully autonomous terminal execution, file system modifications, and browser screenshot feedback.</div>
+        <div class="top3-btn-row">
+          <span style="font-size:11px;color:#94a3b8;font-family:var(--mono)">100% Free / Apache</span>
+          <a href="https://github.com/cline/cline" target="_blank" rel="noopener" class="top3-cta-btn">Install Cline &rarr;</a>
+        </div>
+      </div>
+
+      <!-- 3. Continue.dev -->
+      <div class="top3-card">
+        <span class="top3-rank-badge rank-bronze">🥉 Autopilot Choice</span>
+        <div class="top3-brand-row">
+          <div class="top3-logo-box">
+            <img class="top3-logo-img" src="https://www.google.com/s2/favicons?domain=continue.dev&sz=128" alt="Continue" referrerpolicy="no-referrer">
+          </div>
+          <div class="top3-brand-info">
+            <div class="top3-brand-name">Continue.dev</div>
+            <div class="top3-brand-type">Tab Autocomplete</div>
+          </div>
+        </div>
+        <div class="top3-screen-box">
+          <div class="top3-screen-bar">
+            <span class="top3-dot" style="background:#ef4444"></span><span class="top3-dot" style="background:#f59e0b"></span><span class="top3-dot" style="background:#10b981"></span>
+            <span class="top3-screen-title">continue-config.json</span>
+          </div>
+          <div class="top3-screen-content">
+            <div style="color:#38bdf8">"tabAutocompleteModel": "starcoder",</div>
+            <div style="color:#10b981">"contextProviders": ["@codebase"],</div>
+            <div style="color:#64748b">// Works in VS Code &amp; JetBrains</div>
+          </div>
+        </div>
+        <div class="top3-highlight"><strong>Best for Tab Completion:</strong> Open-source Copilot alternative that connects to local Ollama weights and JetBrains IDEs.</div>
+        <div class="top3-btn-row">
+          <span style="font-size:11px;color:#94a3b8;font-family:var(--mono)">100% Free / Apache</span>
+          <a href="https://continue.dev" target="_blank" rel="noopener" class="top3-cta-btn">Install Continue &rarr;</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== SECTION 2: OPENCODE & ANIMATED TERMINAL CLI ==================== -->
+  <section class="section-wrap" id="sec-cli-agents">
+    <div class="section-header">
+      <div>
+        <h2 class="section-title">
+          <span>⌨️</span> What a Terminal &amp; CLI Autonomous Agent Actually Looks Like
+          <span class="section-badge" style="background:rgba(0,216,255,0.15);color:#00d8ff;">Visual Anatomy</span>
+        </h2>
+        <p class="section-desc">Unlike graphical apps with menus and buttons, a Terminal CLI is a raw, lightning-fast command interface where AI bots read code, run unit tests, and make Git commits directly in your operating system.</p>
+      </div>
+    </div>
+
+    <!-- 🌟 FULL-FEATURED VISUAL TERMINAL PROMPT MOCKUP 🌟 -->
+    <div class="terminal-window-mockup">
+      <div class="terminal-topbar">
+        <div class="ide-window-dots">
+          <span class="ide-window-dot" style="background:#ef4444"></span>
+          <span class="ide-window-dot" style="background:#f59e0b"></span>
+          <span class="ide-window-dot" style="background:#10b981"></span>
+        </div>
+        <div class="terminal-title">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg>
+          bash — 110x30 — vidiman@ai-workstation: ~/projects/vidismart
+        </div>
+        <span style="font-size:10px;font-family:var(--mono);color:#64748b;">CLI Autonomous Loop</span>
+      </div>
+
+      <div class="terminal-viewport">
+        <div>
+          <span class="term-prompt">┌── (vidiman@ai-workstation)</span>-[<span class="term-path">~/code/vidismart</span>]<br>
+          <span class="term-prompt">└─$</span> <span class="term-cmd">opencode "Audit entire codebase for security holes and fix them"</span>
+        </div>
+
+        <div class="term-output-card">
+          <div style="display:flex;align-items:center;justify-content:space-between;">
+            <span style="color:#00d8ff;font-weight:700;">[OpenCode Swarm] ⠋ Indexing AST repository map (48 symbols detected)...</span>
+            <span style="color:#94a3b8;font-size:11px;">Model: DeepSeek R1 + Sonnet</span>
+          </div>
+          <div class="term-progress-bar">
+            <div class="term-progress-fill"></div>
+          </div>
+          <div class="term-tree-line">
+            <span>├── 📄 server/server.js</span>
+            <span class="term-badge-ok">+18 lines added (Rate Limiter attached)</span>
+          </div>
+          <div class="term-tree-line">
+            <span>├── 📄 routes/api.js</span>
+            <span class="term-badge-ok">CORS whitelist fixed</span>
+          </div>
+          <div class="term-tree-line">
+            <span>└── 🧪 tests/security.test.js</span>
+            <span style="color:#34d399;font-weight:600;">✔ All 14 test suites passing (1.42s)</span>
+          </div>
+        </div>
+
+        <div>
+          <span style="color:#10b981;">✔ Git commit created automatically:</span> <span style="color:#f59e0b;">[main 8f3d9a1]</span> "feat(security): apply rate limiter &amp; CORS whitelist"<br>
+          <span style="color:#64748b;">4 files modified, 0 errors, branch ready to push.</span>
+        </div>
+
+        <div style="margin-top:6px;">
+          <span class="term-prompt">┌── (vidiman@ai-workstation)</span>-[<span class="term-path">~/code/vidismart</span>]<br>
+          <span class="term-prompt">└─$</span> <span class="term-cursor"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- TOP 3 PICKS PODIUM -->
+    <div class="top3-header">
+      <span>👑 Top 3 Recommended Terminal &amp; CLI Swarms (Quick Scan)</span>
+    </div>
+    <div class="top3-grid">
+      <!-- 1. Claude Code -->
+      <div class="top3-card">
+        <span class="top3-rank-badge rank-gold">🥇 #1 Choice</span>
+        <div class="top3-brand-row">
+          <div class="top3-logo-box">
+            <img class="top3-logo-img" src="https://www.google.com/s2/favicons?domain=anthropic.com&sz=128" alt="Anthropic" referrerpolicy="no-referrer">
+          </div>
+          <div class="top3-brand-info">
+            <div class="top3-brand-name">Claude Code</div>
+            <div class="top3-brand-type">Official CLI Agent</div>
+          </div>
+        </div>
+        <div class="top3-screen-box">
+          <div class="top3-screen-bar">
+            <span class="top3-dot" style="background:#ef4444"></span><span class="top3-dot" style="background:#f59e0b"></span><span class="top3-dot" style="background:#10b981"></span>
+            <span class="top3-screen-title">claude-terminal</span>
+          </div>
+          <div class="top3-screen-content">
+            <div style="color:#f43f5e">$ claude "Audit security endpoints"</div>
+            <div style="color:#38bdf8">&gt; Found 24 route handlers</div>
+            <div style="color:#10b981">&gt; Created commit: "Add rate-limiting"</div>
+          </div>
+        </div>
+        <div class="top3-highlight"><strong>Best for Repo Refactors:</strong> Anthropic's research tool for semantic codebase search, test execution, and Git workflow.</div>
+        <div class="top3-btn-row">
+          <span style="font-size:11px;color:#94a3b8;font-family:var(--mono)">Anthropic Token API</span>
+          <a href="https://docs.anthropic.com/en/docs/agents-and-tools/claude-code" target="_blank" rel="noopener" class="top3-cta-btn">Install Claude Code &rarr;</a>
+        </div>
+      </div>
+
+      <!-- 2. OpenCode -->
+      <div class="top3-card">
+        <span class="top3-rank-badge rank-silver">🥈 #2 Open Choice</span>
+        <div class="top3-brand-row">
+          <div class="top3-logo-box">
+            <img class="top3-logo-img" src="https://www.google.com/s2/favicons?domain=github.com&sz=128" alt="OpenCode" referrerpolicy="no-referrer">
+          </div>
+          <div class="top3-brand-info">
+            <div class="top3-brand-name">OpenCode</div>
+            <div class="top3-brand-type">Multi-Model CLI Agent</div>
+          </div>
+        </div>
+        <div class="top3-screen-box">
+          <div class="top3-screen-bar">
+            <span class="top3-dot" style="background:#ef4444"></span><span class="top3-dot" style="background:#f59e0b"></span><span class="top3-dot" style="background:#10b981"></span>
+            <span class="top3-screen-title">opencode-agent.sh</span>
+          </div>
+          <div class="top3-screen-content">
+            <div style="color:#00d8ff">$ opencode "Refactor auth middleware to JWT"</div>
+            <div style="color:#10b981">+ Multi-file diff generated (3 files)</div>
+            <div style="color:#64748b">// Open source terminal agent loop</div>
+          </div>
+        </div>
+        <div class="top3-highlight"><strong>Best Open CLI:</strong> Fast, unopinionated open-source terminal pair programming engine for multi-model orchestrations.</div>
+        <div class="top3-btn-row">
+          <span style="font-size:11px;color:#94a3b8;font-family:var(--mono)">100% Free / MIT</span>
+          <a href="https://github.com" target="_blank" rel="noopener" class="top3-cta-btn">Install OpenCode &rarr;</a>
+        </div>
+      </div>
+
+      <!-- 3. Aider -->
+      <div class="top3-card">
+        <span class="top3-rank-badge rank-bronze">🥉 Benchmark King</span>
+        <div class="top3-brand-row">
+          <div class="top3-logo-box">
+            <img class="top3-logo-img" src="https://www.google.com/s2/favicons?domain=aider.chat&sz=128" alt="Aider" referrerpolicy="no-referrer">
+          </div>
+          <div class="top3-brand-info">
+            <div class="top3-brand-name">Aider</div>
+            <div class="top3-brand-type">Pair Programmer</div>
+          </div>
+        </div>
+        <div class="top3-screen-box">
+          <div class="top3-screen-bar">
+            <span class="top3-dot" style="background:#ef4444"></span><span class="top3-dot" style="background:#f59e0b"></span><span class="top3-dot" style="background:#10b981"></span>
+            <span class="top3-screen-title">aider-chat.sh</span>
+          </div>
+          <div class="top3-screen-content">
+            <div style="color:#10b981">$ aider --model sonnet</div>
+            <div style="color:#38bdf8">&gt; AST Repo Map: 48 symbols</div>
+            <div style="color:#64748b">&gt; Auto-committing git hash 84f9a1b</div>
+          </div>
+        </div>
+        <div class="top3-highlight"><strong>Best for SWE-bench:</strong> Top-scoring CLI pair programmer with automated git commits and whole-repo AST maps.</div>
+        <div class="top3-btn-row">
+          <span style="font-size:11px;color:#94a3b8;font-family:var(--mono)">100% Free / Apache</span>
+          <a href="https://aider.chat" target="_blank" rel="noopener" class="top3-cta-btn">Install Aider &rarr;</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== SECTION 3: GOOGLE ANTIGRAVITY ==================== -->
+  <section class="section-wrap" id="sec-antigravity">
+    <div class="section-header">
+      <div>
+        <h2 class="section-title">
+          <span>🌌</span> Google Antigravity (AGY)
+          <span class="section-badge" style="background:rgba(79,127,255,0.15);color:#4f7fff;">Google DeepMind · Advanced Agentic Coding</span>
+        </h2>
+        <p class="section-desc">Google DeepMind's flagship advanced agentic pair programming platform. Features interactive Planning Mode, autonomous multi-turn tool execution, headless subagent spawning, live Playwright browser feedback, and Markdown walkthrough artifacts.</p>
+      </div>
+    </div>
+
+    <div class="interface-grid" style="grid-template-columns: 1fr;">
+      <div class="interface-card" style="border-color: rgba(79, 127, 255, 0.35); background: linear-gradient(180deg, #101626 0%, #090c14 100%);">
+        <div class="mockup-canvas" style="height: 200px; background: #03060d;">
+          <div class="mockup-topbar">
+            <div class="mockup-dots"><span class="mockup-dot" style="background:#ef4444"></span><span class="mockup-dot" style="background:#f59e0b"></span><span class="mockup-dot" style="background:#10b981"></span></div>
+            <span class="mockup-title">Google Antigravity IDE · Reactive Task &amp; Subagent Loop</span>
+          </div>
+          <div class="mockup-body">
+            <div class="mockup-code-line"><span class="code-fn">[Antigravity Engine]</span> <span class="code-kw">Planning Mode Activated:</span> <span class="code-str">"Full Stack Directus + PostgreSQL Deployment"</span></div>
+            <div class="mockup-code-line code-diff-add"><span class="code-num">&gt;</span> Spawning Subagent: browser_subagent(Task="Verify live UI rendering on port 3007")</div>
+            <div class="mockup-code-line code-diff-add"><span class="code-num">&gt;</span> Tool: multi_replace_file_content("server/routes.js") &rarr; Auto-lint clean</div>
+            <div class="mockup-code-line"><span class="code-comment">&gt; Created Artifact: walkthrough.md with 4 full-page verification screenshots</span></div>
+          </div>
+        </div>
+        <div class="card-content">
+          <div class="card-title-row">
+            <div class="card-brand-wrap">
+              <div style="width:28px;height:28px;border-radius:6px;background:linear-gradient(135deg,#4285f4,#ea4335,#fbbc05,#34a853);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:13px;">G</div>
+              <h3 class="card-app-title">Google Antigravity (AGY / Antigravity IDE)</h3>
+            </div>
+            <span class="card-type-badge" style="background:rgba(66,133,244,0.18);color:#60a5fa;">Advanced Agentic IDE &amp; CLI</span>
+          </div>
+          <p class="card-tagline">Engineered by Google DeepMind for autonomous software engineering. Replaces naive autocomplete with structured small-step planning, asynchronous non-blocking task execution, live Playwright browser verification, and extensible Model Context Protocol (MCP) server plugins.</p>
+          <div class="card-features" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:8px;">
+            <div class="card-feature-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>Interactive Planning Mode with implementation plans &amp; walkthrough artifacts</div>
+            <div class="card-feature-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>Reactive non-polling wakeup loop for long-running background tasks</div>
+            <div class="card-feature-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>Integrated Playwright browser subagents for visual automated testing</div>
+            <div class="card-feature-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>Full MCP (Model Context Protocol), Skills, and Rules customization architecture</div>
+          </div>
+          <div class="card-foot-row">
+            <div class="protocol-tags"><span class="proto-tag">Google DeepMind</span><span class="proto-tag">Antigravity CLI (agy)</span><span class="proto-tag">MCP Ecosystem</span><span class="proto-tag">Playwright Subagents</span></div>
+            <span style="font-size:12px;color:#60a5fa;font-weight:700;">Active Agentic Environment</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== SECTION 4: STANDALONE IDEs & FORKS ==================== -->
+  <section class="section-wrap" id="sec-ides">
+    <div class="section-header">
+      <div>
+        <h2 class="section-title">
+          <span>💻</span> Standalone IDEs &amp; AI-First Editor Forks
+          <span class="section-badge" style="background:rgba(79,127,255,0.15);color:#4f7fff;">Standalone Builds</span>
+        </h2>
+        <p class="section-desc">Standalone developer environments engineered from scratch or forked from VS Code to index codebases and provide inline code diffing.</p>
+      </div>
+    </div>
+
+    <div class="top3-header">
+      <span>👑 Recommended Standalone IDE Picks (Ranked by Open Usability &amp; Freedom)</span>
+    </div>
+    <div class="top3-grid">
+      <!-- 1. Void Editor -->
+      <div class="top3-card">
+        <span class="top3-rank-badge rank-gold">🥇 #1 Open Choice</span>
+        <div class="top3-brand-row">
+          <div class="top3-logo-box">
+            <img class="top3-logo-img" src="https://www.google.com/s2/favicons?domain=voideditor.com&sz=128" alt="Void Logo" referrerpolicy="no-referrer">
+          </div>
+          <div class="top3-brand-info">
+            <div class="top3-brand-name">Void Editor</div>
+            <div class="top3-brand-type">100% Open Source IDE</div>
+          </div>
+        </div>
+        <div class="top3-screen-box">
+          <div class="top3-screen-bar">
+            <span class="top3-dot" style="background:#ef4444"></span><span class="top3-dot" style="background:#f59e0b"></span><span class="top3-dot" style="background:#10b981"></span>
+            <span class="top3-screen-title">void-privacy.json</span>
+          </div>
+          <div class="top3-screen-content">
+            <div style="color:#f59e0b">"telemetry": false, "lockIn": false,</div>
+            <div style="color:#10b981">"provider": "ollama://localhost",</div>
+            <div style="color:#64748b">// 100% offline local inference, zero subscriptions</div>
+          </div>
+        </div>
+        <div class="top3-highlight"><strong>Best for Privacy &amp; Control:</strong> Zero telemetry, 100% open-source, direct Ollama/LM Studio model connections with no subscription paywalls.</div>
+        <div class="top3-btn-row">
+          <span style="font-size:11px;color:#94a3b8;font-family:var(--mono)">100% Free / MIT</span>
+          <a href="https://voideditor.com" target="_blank" rel="noopener" class="top3-cta-btn">Launch Void &rarr;</a>
+        </div>
+      </div>
+
+      <!-- 2. Zed -->
+      <div class="top3-card">
+        <span class="top3-rank-badge rank-silver">🥈 #2 Speed Choice</span>
+        <div class="top3-brand-row">
+          <div class="top3-logo-box">
+            <img class="top3-logo-img" src="https://www.google.com/s2/favicons?domain=zed.dev&sz=128" alt="Zed Logo" referrerpolicy="no-referrer">
+          </div>
+          <div class="top3-brand-info">
+            <div class="top3-brand-name">Zed</div>
+            <div class="top3-brand-type">Native Rust Editor</div>
+          </div>
+        </div>
+        <div class="top3-screen-box">
+          <div class="top3-screen-bar">
+            <span class="top3-dot" style="background:#ef4444"></span><span class="top3-dot" style="background:#f59e0b"></span><span class="top3-dot" style="background:#10b981"></span>
+            <span class="top3-screen-title">zed-buffer.rs</span>
+          </div>
+          <div class="top3-screen-content">
+            <div style="color:#38bdf8">// GPU-accelerated 120fps UI rendering</div>
+            <div style="color:#10b981">+ let assistant = init_multi_buffer();</div>
+            <div style="color:#64748b">// Fast multi-model token streaming</div>
+          </div>
+        </div>
+        <div class="top3-highlight"><strong>Best for Speed:</strong> Written in Rust with GPU acceleration. Instant startup, multi-buffer assistant injection, and open API keys.</div>
+        <div class="top3-btn-row">
+          <span style="font-size:11px;color:#94a3b8;font-family:var(--mono)">100% Free / GPL</span>
+          <a href="https://zed.dev" target="_blank" rel="noopener" class="top3-cta-btn">Launch Zed &rarr;</a>
+        </div>
+      </div>
+
+      <!-- 3. Cursor -->
+      <div class="top3-card">
+        <span class="top3-rank-badge rank-bronze">⚠️ Closed Fork</span>
+        <div class="top3-brand-row">
+          <div class="top3-logo-box">
+            <img class="top3-logo-img" src="https://www.google.com/s2/favicons?domain=cursor.com&sz=128" alt="Cursor Logo" referrerpolicy="no-referrer">
+          </div>
+          <div class="top3-brand-info">
+            <div class="top3-brand-name">Cursor</div>
+            <div class="top3-brand-type">Proprietary Fork</div>
+          </div>
+        </div>
+        <div class="top3-screen-box">
+          <div class="top3-screen-bar">
+            <span class="top3-dot" style="background:#ef4444"></span><span class="top3-dot" style="background:#f59e0b"></span><span class="top3-dot" style="background:#10b981"></span>
+            <span class="top3-screen-title">cursor-composer.tsx</span>
+          </div>
+          <div class="top3-screen-content">
+            <div style="color:#f43f5e">const composer = new RepoAgent();</div>
+            <div style="color:#f59e0b">// Requires $20/mo subscription for fast pool</div>
+            <div style="color:#64748b">// Proprietary closed-source VS Code fork</div>
+          </div>
+        </div>
+        <div class="top3-highlight"><strong>Proprietary Lock-in:</strong> Feature-rich Composer, but locked behind a $20/mo subscription with rate limit queuing and fork maintenance overhead.</div>
+        <div class="top3-btn-row">
+          <span style="font-size:11px;color:#94a3b8;font-family:var(--mono)">Freemium / $20/mo</span>
+          <a href="https://cursor.com" target="_blank" rel="noopener" class="top3-cta-btn">Inspect Cursor &rarr;</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== SECTION 5: MULTI-MODEL CHAT UIs ==================== -->
+  <section class="section-wrap" id="sec-chat-uis">
+    <div class="section-header">
+      <div>
+        <h2 class="section-title">
+          <span>💬</span> Multi-Model Web &amp; Desktop Chat UIs
+          <span class="section-badge" style="background:rgba(255,204,0,0.15);color:#ffcc00;">Web &amp; Desktop Hubs</span>
+        </h2>
+        <p class="section-desc">When you need prompt engineering, visual side-by-side model comparisons, RAG document search, or conversation archiving across multiple provider keys simultaneously.</p>
+      </div>
+    </div>
+
+    <div class="top3-header">
+      <span>👑 Top 3 Recommended Web &amp; Desktop Chat Hubs (Quick Scan)</span>
+    </div>
+    <div class="top3-grid">
+      <!-- 1. LibreChat -->
+      <div class="top3-card">
+        <span class="top3-rank-badge rank-gold">🥇 #1 Choice</span>
+        <div class="top3-brand-row">
+          <div class="top3-logo-box">
+            <img class="top3-logo-img" src="https://www.google.com/s2/favicons?domain=librechat.ai&sz=128" alt="LibreChat" referrerpolicy="no-referrer">
+          </div>
+          <div class="top3-brand-info">
+            <div class="top3-brand-name">LibreChat</div>
+            <div class="top3-brand-type">Omnichannel Web UI</div>
+          </div>
+        </div>
+        <div class="top3-screen-box">
+          <div class="top3-screen-bar">
+            <span class="top3-dot" style="background:#ef4444"></span><span class="top3-dot" style="background:#f59e0b"></span><span class="top3-dot" style="background:#10b981"></span>
+            <span class="top3-screen-title">librechat-split.view</span>
+          </div>
+          <div class="top3-screen-content">
+            <div style="color:#4f7fff">[Claude 3.7 vs DeepSeek R1]</div>
+            <div style="color:#38bdf8">&gt; Left: Anthropic fast reasoning</div>
+            <div style="color:#10b981">&gt; Right: DeepSeek code synthesis</div>
+          </div>
+        </div>
+        <div class="top3-highlight"><strong>Best for Multi-Model:</strong> Split-screen comparisons, vector RAG search, code interpreter, and multi-user login.</div>
+        <div class="top3-btn-row">
+          <span style="font-size:11px;color:#94a3b8;font-family:var(--mono)">100% Free / Self-Hosted</span>
+          <a href="https://librechat.ai" target="_blank" rel="noopener" class="top3-cta-btn">Launch LibreChat &rarr;</a>
+        </div>
+      </div>
+
+      <!-- 2. Open WebUI -->
+      <div class="top3-card">
+        <span class="top3-rank-badge rank-silver">🥈 #2 Choice</span>
+        <div class="top3-brand-row">
+          <div class="top3-logo-box">
+            <img class="top3-logo-img" src="https://www.google.com/s2/favicons?domain=openwebui.com&sz=128" alt="Open WebUI" referrerpolicy="no-referrer">
+          </div>
+          <div class="top3-brand-info">
+            <div class="top3-brand-name">Open WebUI</div>
+            <div class="top3-brand-type">Local AI Portal</div>
+          </div>
+        </div>
+        <div class="top3-screen-box">
+          <div class="top3-screen-bar">
+            <span class="top3-dot" style="background:#ef4444"></span><span class="top3-dot" style="background:#f59e0b"></span><span class="top3-dot" style="background:#10b981"></span>
+            <span class="top3-screen-title">ollama-pipeline.py</span>
+          </div>
+          <div class="top3-screen-content">
+            <div style="color:#00d8ff">[Ollama] Discovered 8 local weights</div>
+            <div style="color:#10b981">✔ Whisper audio transcription done</div>
+            <div style="color:#64748b">// Web search integrated via SearXNG</div>
+          </div>
+        </div>
+        <div class="top3-highlight"><strong>Best for Local Inference:</strong> Built for Ollama, Python pipelines, local voice/whisper transcription, and privacy.</div>
+        <div class="top3-btn-row">
+          <span style="font-size:11px;color:#94a3b8;font-family:var(--mono)">100% Free / Self-Hosted</span>
+          <a href="https://openwebui.com" target="_blank" rel="noopener" class="top3-cta-btn">Launch Open WebUI &rarr;</a>
+        </div>
+      </div>
+
+      <!-- 3. Big-AGI -->
+      <div class="top3-card">
+        <span class="top3-rank-badge rank-bronze">🥉 Power Choice</span>
+        <div class="top3-brand-row">
+          <div class="top3-logo-box">
+            <img class="top3-logo-img" src="https://www.google.com/s2/favicons?domain=big-agi.com&sz=128" alt="Big-AGI" referrerpolicy="no-referrer">
+          </div>
+          <div class="top3-brand-info">
+            <div class="top3-brand-name">Big-AGI</div>
+            <div class="top3-brand-type">Beam Search Canvas</div>
+          </div>
+        </div>
+        <div class="top3-screen-box">
+          <div class="top3-screen-bar">
+            <span class="top3-dot" style="background:#ef4444"></span><span class="top3-dot" style="background:#f59e0b"></span><span class="top3-dot" style="background:#10b981"></span>
+            <span class="top3-screen-title">beam-reasoning.ts</span>
+          </div>
+          <div class="top3-screen-content">
+            <div style="color:#ffcc00">[Beam] Prompting 4 models in parallel</div>
+            <div style="color:#10b981">&gt; Synthesized best code snippet</div>
+            <div style="color:#64748b">// Visual persona management</div>
+          </div>
+        </div>
+        <div class="top3-highlight"><strong>Best for Power Users:</strong> Beam search synthesizes responses from multiple AI models simultaneously.</div>
+        <div class="top3-btn-row">
+          <span style="font-size:11px;color:#94a3b8;font-family:var(--mono)">100% Free / Next.js</span>
+          <a href="https://big-agi.com" target="_blank" rel="noopener" class="top3-cta-btn">Launch Big-AGI &rarr;</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== SECTION 6: COMPARISON MATRIX ==================== -->
+  <section class="section-wrap" id="sec-comparison">
+    <div class="section-header">
+      <div>
+        <h2 class="section-title">
+          <span>📊</span> Model Interface Taxonomy &amp; Selection Guide
+        </h2>
+        <p class="section-desc">Comparison matrix detailing environment type, terminal execution permissions, multi-file diffing capability, local offline support, and primary use cases.</p>
+      </div>
+    </div>
+
+    <div class="table-panel">
+      <table class="table-matrix">
+        <thead>
+          <tr>
+            <th>Interface Name</th>
+            <th>Type / Environment</th>
+            <th>File Diff &amp; Edit</th>
+            <th>Terminal Execution</th>
+            <th>Local Model Support</th>
+            <th>Usability &amp; Value</th>
+            <th>License / Cost</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="matrix-name">
+              <img src="https://www.google.com/s2/favicons?domain=code.visualstudio.com&sz=32" style="width:16px;height:16px;border-radius:3px;" referrerpolicy="no-referrer">
+              <strong>Visual Studio Code</strong>
+            </td>
+            <td><span style="color:#007acc;">Universal Core IDE</span></td>
+            <td>In-Editor Native Diffs</td>
+            <td>Integrated Terminal</td>
+            <td>Via Extensions &amp; MCP</td>
+            <td><span style="color:#10b981;">⭐⭐⭐⭐⭐ Open Host Standard</span></td>
+            <td>100% Free / MIT</td>
+          </tr>
+          <tr>
+            <td class="matrix-name">
+              <div style="width:16px;height:16px;border-radius:3px;background:linear-gradient(135deg,#4285f4,#ea4335,#fbbc05,#34a853);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:9px;">G</div>
+              <strong>Google Antigravity</strong>
+            </td>
+            <td><span style="color:#4f7fff;">Autonomous Agentic IDE</span></td>
+            <td>Multi-File Diffs + Artifacts</td>
+            <td>Async Background Tasks</td>
+            <td>Full Model API &amp; MCP</td>
+            <td><span style="color:#10b981;">⭐⭐⭐⭐⭐ Advanced DeepMind Pairing</span></td>
+            <td>Google DeepMind Ecosystem</td>
+          </tr>
+          <tr>
+            <td class="matrix-name">
+              <img src="https://www.google.com/s2/favicons?domain=github.com&sz=32" style="width:16px;height:16px;border-radius:3px;" referrerpolicy="no-referrer">
+              <strong>OpenCode</strong>
+            </td>
+            <td><span style="color:#00d8ff;">Terminal CLI Agent</span></td>
+            <td>Multi-File AST Diff</td>
+            <td>Shell Command Loop</td>
+            <td>Ollama / DeepSeek / Cloud</td>
+            <td><span style="color:#10b981;">⭐⭐⭐⭐⭐ Unopinionated Open CLI</span></td>
+            <td>100% Free / Open Source</td>
+          </tr>
+          <tr>
+            <td class="matrix-name">
+              <img src="https://www.google.com/s2/favicons?domain=roocode.com&sz=32" style="width:16px;height:16px;border-radius:3px;" referrerpolicy="no-referrer">
+              <strong>Roo Code</strong>
+            </td>
+            <td><span style="color:#7c5cfc;">VS Code Extension</span></td>
+            <td>In-Editor Diff View</td>
+            <td>Terminal with Permissions</td>
+            <td>Ollama / LM Studio</td>
+            <td><span style="color:#10b981;">⭐⭐⭐⭐⭐ Exceptional Custom Modes</span></td>
+            <td>100% Free / Open Source</td>
+          </tr>
+          <tr>
+            <td class="matrix-name">
+              <img src="https://www.google.com/s2/favicons?domain=anthropic.com&sz=32" style="width:16px;height:16px;border-radius:3px;" referrerpolicy="no-referrer">
+              <strong>Claude Code</strong>
+            </td>
+            <td><span style="color:#ef4444;">Terminal CLI Only</span></td>
+            <td>Headless Git Diff</td>
+            <td>Native Shell / Command Loop</td>
+            <td>Anthropic API Key</td>
+            <td><span style="color:#10b981;">⭐⭐⭐⭐⭐ Lightning Fast Refactors</span></td>
+            <td>Token-based (Anthropic)</td>
+          </tr>
+          <tr>
+            <td class="matrix-name">
+              <img src="https://www.google.com/s2/favicons?domain=voideditor.com&sz=32" style="width:16px;height:16px;border-radius:3px;" referrerpolicy="no-referrer">
+              <strong>Void Editor</strong>
+            </td>
+            <td><span style="color:#10b981;">Open Source IDE Fork</span></td>
+            <td>Local In-Editor Diff</td>
+            <td>Terminal with Local Keys</td>
+            <td>Direct Ollama / LM Studio</td>
+            <td><span style="color:#10b981;">⭐⭐⭐⭐ 100% Privacy &amp; Offline</span></td>
+            <td>100% Free / Open Source</td>
+          </tr>
+          <tr>
+            <td class="matrix-name">
+              <img src="https://www.google.com/s2/favicons?domain=cursor.com&sz=32" style="width:16px;height:16px;border-radius:3px;" referrerpolicy="no-referrer">
+              <strong>Cursor</strong>
+            </td>
+            <td><span style="color:#ef4444;">Proprietary Fork</span></td>
+            <td>Multi-File Composer</td>
+            <td>Built-in Terminal Loop</td>
+            <td>Custom OpenAI Base URL</td>
+            <td><span style="color:#f59e0b;">⭐⭐ Subscription &amp; Rate Friction</span></td>
+            <td>Freemium / $20/mo</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ==================== SECTION 7: CLASSIC OPEN APPS CATALOG ==================== -->
+  <section class="section-wrap" id="sec-open-apps" style="border-bottom:none;">
+    <div class="catalog-header">
+      <h2 class="section-title" style="font-size:26px;">
+        <span>📦</span> Open Self-Hosted Application Catalog
+      </h2>
+      <p class="section-desc" id="subtitle">Loading 209 free self-hosted web applications...</p>
+
+      <div class="toolbar">
+        <div class="search-wrap">
+          <span class="search-icon"><svg viewBox="0 0 16 16"><circle cx="6.5" cy="6.5" r="4.5"/><line x1="10.5" y1="10.5" x2="14" y2="14"/></svg></span>
+          <input type="search" id="search" placeholder="Search self-hosted apps, databases, CMS, tools…" autocomplete="off">
+        </div>
+        <button class="toggle-btn" id="hidePhpBtn"><span class="dot"></span>Hide PHP</button>
+        <button class="toggle-btn" id="directusBtn"><span class="dot"></span>Directus-native only</button>
+        <span class="count-badge" id="countBadge">— apps</span>
+      </div>
+
+      <div class="filter-row">
+        <div class="filter-group">
+          <div class="filter-label">Category</div>
+          <div class="pills" id="catPills"></div>
+        </div>
+        <div class="sep"></div>
+        <div class="filter-group">
+          <div class="filter-label">Stack / Language</div>
+          <div class="pills lang-pills" id="langPills"></div>
+        </div>
+      </div>
+
+      <div class="legend">
+        <span style="font-size:11px;color:var(--muted2);margin-right:2px;">Directus compat:</span>
+        <span class="li"><span class="ld" style="background:#4caf50;box-shadow:0 0 5px rgba(76,175,80,0.5)"></span>Native — JS/TS</span>
+        <span class="li"><span class="ld" style="background:#00acd7;box-shadow:0 0 5px rgba(0,172,215,0.4)"></span>Good — REST API</span>
+        <span class="li"><span class="ld" style="background:#ff9800"></span>Possible</span>
+        <span class="li"><span class="ld" style="background:#3d4455"></span>PHP — avoid</span>
+      </div>
+    </div>
+
+    <div class="grid" id="grid"></div>
+  </section>
+
+</main>
+
+<script>
+// ── INTERACTIVE & AUTOMATED IDE ANIMATED TOUR ENGINE ──
+let currentTourStep = 1;
+let tourInterval = null;
+let isTourAutoPlaying = true;
+
+const tourData = {
+  1: {
+    icon: '📁',
+    text: '<strong>1. FILE TREE (LEFT ZONE):</strong> Look over here on the left! Your entire codebase — files, folders, and components — lives in this explorer window. Click any file to open it in the center editor.',
+    btnId: 'btnTour1',
+    activeZone: 'zoneFiles'
+  },
+  2: {
+    icon: '💻',
+    text: '<strong>2. CENTER EDITOR (MIDDLE ZONE):</strong> Look here in the middle! This is your main code editing canvas with multiple tabs, syntax coloring, and live green additions (<code>+ rateLimiter</code>) proposed by the AI.',
+    btnId: 'btnTour2',
+    activeZone: 'zoneEditor'
+  },
+  3: {
+    icon: '🤖',
+    text: '<strong>3. AI AGENT PANEL (RIGHT ZONE):</strong> Look over on the right! This is where you chat with the model in Architect/Code mode, inspect proposed diffs, and click <strong>"Accept Diff"</strong> to apply changes directly to your files!',
+    btnId: 'btnTour3',
+    activeZone: 'zoneAgent'
+  },
+  0: {
+    icon: '✨',
+    text: '<strong>FULL WORKSPACE OVERVIEW:</strong> All 3 zones work together seamlessly — select files on the left, code in the middle, and prompt your autonomous AI sidekick on the right with zero friction.',
+    btnId: 'btnTourAll',
+    activeZone: null
+  }
+};
+
+function setIdeTour(step) {
+  currentTourStep = step;
+  const data = tourData[step];
+
+  // Update Callout
+  const callout = document.getElementById('ideTourCallout');
+  const icon = document.getElementById('calloutIcon');
+  const text = document.getElementById('calloutText');
+  if (icon) icon.innerHTML = data.icon;
+  if (text) text.innerHTML = data.text;
+
+  // Update Buttons
+  document.querySelectorAll('.tour-step-btn').forEach(btn => btn.classList.remove('active'));
+  const activeBtn = document.getElementById(data.btnId);
+  if (activeBtn) activeBtn.classList.add('active');
+
+  // Update Zones Spotlight
+  const zFiles = document.getElementById('zoneFiles');
+  const zEditor = document.getElementById('zoneEditor');
+  const zAgent = document.getElementById('zoneAgent');
+  
+  if (zFiles && zEditor && zAgent) {
+    zFiles.className = 'ide-file-tree';
+    zEditor.className = 'ide-editor-pane';
+    zAgent.className = 'ide-ai-pane';
+
+    if (step === 1) {
+      zFiles.classList.add('spotlight-active');
+      zEditor.classList.add('spotlight-dimmed');
+      zAgent.classList.add('spotlight-dimmed');
+    } else if (step === 2) {
+      zEditor.classList.add('spotlight-active');
+      zFiles.classList.add('spotlight-dimmed');
+      zAgent.classList.add('spotlight-dimmed');
+    } else if (step === 3) {
+      zAgent.classList.add('spotlight-active');
+      zFiles.classList.add('spotlight-dimmed');
+      zEditor.classList.add('spotlight-dimmed');
+    } else {
+      // All zones active
+      zFiles.classList.remove('spotlight-dimmed');
+      zEditor.classList.remove('spotlight-dimmed');
+      zAgent.classList.remove('spotlight-dimmed');
+    }
+  }
+}
+
+function startTourAutoPlay() {
+  if (tourInterval) clearInterval(tourInterval);
+  tourInterval = setInterval(() => {
+    let nextStep = currentTourStep + 1;
+    if (nextStep > 3) nextStep = 1;
+    setIdeTour(nextStep);
+  }, 3800);
+}
+
+function toggleTourAutoPlay() {
+  isTourAutoPlaying = !isTourAutoPlaying;
+  const playIcon = document.getElementById('playIcon');
+  const playText = document.getElementById('playText');
+  if (isTourAutoPlaying) {
+    if (playIcon) playIcon.innerText = '⏸';
+    if (playText) playText.innerText = 'Auto-Tour Playing';
+    startTourAutoPlay();
+  } else {
+    if (playIcon) playIcon.innerText = '▶';
+    if (playText) playText.innerText = 'Resume Auto-Tour';
+    if (tourInterval) clearInterval(tourInterval);
+  }
+}
+
+// Auto-start on load
+document.addEventListener('DOMContentLoaded', () => {
+  setIdeTour(1);
+  startTourAutoPlay();
+});
+setTimeout(() => {
+  setIdeTour(1);
+  startTourAutoPlay();
+}, 200);
+
+const APPS=[")
     script_part = text[idx_apps:]
     return script_part
 
