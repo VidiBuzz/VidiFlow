@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VidiSmart Master Plan — Smart Channel Community</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,500;9..144,700;9..144,900&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#05070e;--card:#0b0f1a;--border:#1a2035;--border-light:#253050;
+  --text:#e2e8f0;--muted:#94a3b8;--dim:#64748b;
+  --cyan:#38bdf8;--purple:#a78bfa;--emerald:#34d399;--rose:#fb7185;--amber:#fbbf24;
+  --pink:#f472b6;--blue:#60a5fa;--teal:#2dd4bf;
+  --display:'Fraunces',serif;--body:'IBM Plex Sans',sans-serif;--mono:'IBM Plex Mono',monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--body);font-size:15px;line-height:1.65;
+  background-image:radial-gradient(ellipse 80% 50% at 50% -10%,rgba(56,189,248,.08),transparent),
+  radial-gradient(ellipse 60% 40% at 90% 110%,rgba(167,139,250,.06),transparent)}
+.wrap{max-width:1060px;margin:0 auto;padding:0 28px 60px}
+
+/* ---------- masthead ---------- */
+.masthead{padding:64px 0 36px;border-bottom:1px solid var(--border);position:relative}
+.masthead::after{content:"";position:absolute;left:0;bottom:-1px;width:220px;height:3px;
+  background:linear-gradient(90deg,var(--cyan),transparent)}
+.kicker{font-family:var(--mono);font-size:.72rem;letter-spacing:.28em;text-transform:uppercase;color:var(--cyan);margin-bottom:18px}
+h1{font-family:var(--display);font-weight:900;font-size:clamp(2.4rem,5.5vw,3.9rem);line-height:1.04;letter-spacing:-.02em}
+h1 em{font-style:italic;font-weight:300;color:var(--cyan)}
+.mast-meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:26px}
+.chip{font-family:var(--mono);font-size:.72rem;padding:5px 12px;border:1px solid var(--border-light);border-radius:999px;color:var(--muted)}
+.chip b{color:var(--text);font-weight:600}
+.chip.live{border-color:rgba(52,211,153,.4);color:var(--emerald)}
+
+/* ---------- toolbar ---------- */
+.toolbar{position:sticky;top:0;z-index:50;background:rgba(5,7,14,.92);backdrop-filter:blur(8px);
+  border-bottom:1px solid var(--border);padding:10px 0}
+.toolbar .wrap{display:flex;align-items:center;justify-content:space-between;padding-bottom:0}
+.toc{display:flex;gap:16px;overflow-x:auto;font-family:var(--mono);font-size:.7rem;letter-spacing:.06em;text-transform:uppercase}
+.toc a{color:var(--dim);text-decoration:none;white-space:nowrap;padding:6px 0;border-bottom:2px solid transparent;transition:.2s}
+.toc a:hover{color:var(--cyan);border-bottom-color:var(--cyan)}
+#printBtn{font-family:var(--mono);font-size:.72rem;letter-spacing:.08em;padding:8px 18px;border-radius:6px;cursor:pointer;
+  background:var(--cyan);color:#04121d;border:none;font-weight:600;white-space:nowrap}
+#printBtn:hover{background:#7dd3fc}
+
+/* ---------- sections ---------- */
+section{padding:52px 0 8px}
+.sec-num{font-family:var(--mono);font-size:.72rem;color:var(--dim);letter-spacing:.2em}
+h2{font-family:var(--display);font-weight:700;font-size:1.9rem;letter-spacing:-.01em;margin:6px 0 22px}
+h2 .tick{color:var(--cyan)}
+h3{font-family:var(--body);font-weight:700;font-size:1.02rem;margin:28px 0 10px;color:var(--text)}
+p{color:var(--muted);margin-bottom:14px}
+p strong,li strong{color:var(--text)}
+a{color:var(--cyan);text-decoration:none}
+ul,ol{margin:0 0 16px 22px;color:var(--muted)}
+li{margin-bottom:6px}
+li::marker{color:var(--cyan)}
+code{font-family:var(--mono);font-size:.82em;background:var(--card);border:1px solid var(--border);padding:1px 6px;border-radius:4px;color:#7dd3fc}
+
+/* ---------- page markers ---------- */
+.page-tag{display:flex;align-items:center;gap:14px;margin:44px 0 0;font-family:var(--mono);font-size:.68rem;letter-spacing:.3em;text-transform:uppercase;color:var(--dim)}
+.page-tag::before,.page-tag::after{content:"";flex:1;height:1px;background:var(--border)}
+.page-tag b{color:var(--cyan)}
+
+/* ---------- cards & tables ---------- */
+.card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:22px 24px;margin-bottom:16px}
+.card h3{margin-top:0}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+@media(max-width:760px){.grid2,.grid3{grid-template-columns:1fr}}
+table{width:100%;border-collapse:collapse;margin:8px 0 22px;font-size:.86rem}
+th{font-family:var(--mono);font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);
+  text-align:left;padding:10px 12px;border-bottom:2px solid var(--border-light)}
+td{padding:10px 12px;border-bottom:1px solid var(--border);color:var(--muted);vertical-align:top}
+td b{color:var(--text)}
+tr:hover td{background:rgba(56,189,248,.03)}
+.tag{display:inline-block;font-family:var(--mono);font-size:.66rem;padding:2px 8px;border-radius:4px;letter-spacing:.05em;white-space:nowrap}
+.tag.done{background:rgba(52,211,153,.12);color:var(--emerald);border:1px solid rgba(52,211,153,.35)}
+.tag.prog{background:rgba(251,191,36,.12);color:var(--amber);border:1px solid rgba(251,191,36,.35)}
+.tag.todo{background:rgba(148,163,184,.08);color:var(--dim);border:1px solid var(--border-light)}
+.tag.gate{background:rgba(251,113,133,.12);color:var(--rose);border:1px solid rgba(251,113,133,.35)}
+
+/* ---------- agent roster ---------- */
+.division{margin-bottom:30px}
+.div-head{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.div-dot{width:10px;height:10px;border-radius:50%;flex:none}
+.div-head h3{margin:0;font-family:var(--mono);font-size:.78rem;letter-spacing:.18em;text-transform:uppercase}
+.div-head .div-count{font-family:var(--mono);font-size:.66rem;color:var(--dim);margin-left:auto}
+.agent-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px}
+.agent{background:var(--card);border:1px solid var(--border);border-left:3px solid var(--div,var(--cyan));border-radius:8px;padding:12px 14px}
+.agent .a-top{display:flex;align-items:baseline;gap:8px;margin-bottom:4px}
+.agent .a-code{font-family:var(--mono);font-size:.64rem;color:var(--div,var(--cyan));letter-spacing:.08em}
+.agent .a-name{font-weight:700;font-size:.88rem}
+.agent .a-mission{font-size:.76rem;color:var(--text);margin-bottom:6px;line-height:1.45}
+.agent .a-resp{font-size:.7rem;color:var(--dim);line-height:1.5}
+.agent .a-resp b{color:var(--muted);font-weight:600}
+
+/* ---------- stage flow ---------- */
+.flow{display:flex;gap:0;overflow-x:auto;padding:18px 0 26px;margin-bottom:8px}
+.stage{flex:1;min-width:118px;position:relative;text-align:center;padding:0 6px}
+.stage::before{content:"";position:absolute;top:17px;left:-50%;width:100%;height:2px;background:var(--border-light)}
+.stage:first-child::before{display:none}
+.s-node{width:36px;height:36px;border-radius:50%;margin:0 auto 10px;display:flex;align-items:center;justify-content:center;
+  font-family:var(--mono);font-size:.72rem;font-weight:600;background:var(--card);border:2px solid var(--dim);color:var(--muted);position:relative;z-index:1}
+.stage.done .s-node{background:var(--emerald);border-color:var(--emerald);color:#04121d}
+.stage.prog .s-node{background:var(--amber);border-color:var(--amber);color:#1d1503;box-shadow:0 0 16px rgba(251,191,36,.45)}
+.stage.gate .s-node{border-color:var(--rose);color:var(--rose)}
+.s-name{font-size:.72rem;font-weight:700;color:var(--text);line-height:1.3;margin-bottom:3px}
+.s-meta{font-family:var(--mono);font-size:.62rem;color:var(--dim)}
+.stage-head{display:flex;align-items:center;gap:12px;margin:30px 0 6px}
+.stage-head .st-id{font-family:var(--mono);font-size:.7rem;font-weight:600;padding:3px 10px;border-radius:5px;background:var(--card);border:1px solid var(--border-light);color:var(--cyan);white-space:nowrap}
+.stage-head h3{margin:0}
+.stage-head .st-owner{margin-left:auto;font-family:var(--mono);font-size:.64rem;color:var(--dim);white-space:nowrap}
+.task-table td:first-child{font-family:var(--mono);font-size:.72rem;color:var(--dim);white-space:nowrap}
+.task-table td:nth-child(3){font-family:var(--mono);font-size:.7rem;white-space:nowrap}
+.own{color:var(--teal)}
+
+/* ---------- architecture ---------- */
+pre.arch{font-family:var(--mono);font-size:.72rem;line-height:1.5;color:var(--muted);background:var(--card);
+  border:1px solid var(--border);border-radius:10px;padding:22px;overflow-x:auto;margin-bottom:22px}
+pre.arch .hl{color:var(--cyan)}
+
+/* ---------- callouts ---------- */
+.callout{border-left:3px solid var(--rose);background:rgba(251,113,133,.06);padding:14px 18px;border-radius:0 8px 8px 0;margin:16px 0;color:var(--muted)}
+.callout.warn{border-color:var(--amber);background:rgba(251,191,36,.06)}
+.callout.ok{border-color:var(--emerald);background:rgba(52,211,153,.06)}
+.callout b{color:var(--text)}
+
+footer{margin-top:80px;padding-top:24px;border-top:1px solid var(--border);font-family:var(--mono);font-size:.7rem;color:var(--dim);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+
+/* ---------- print ---------- */
+@media print{
+  body{background:#fff;color:#111;font-size:10pt}
+  body,.card,pre.arch,td,th,.agent,.s-node{background:#fff !important;color:#111 !important;border-color:#ccc !important}
+  .toolbar,.toc,#printBtn{display:none !important}
+  .masthead{padding:0 0 18px}
+  h1,h2,h3,.agent .a-name,.s-name{color:#000}
+  h1 em,.kicker,h2 .tick,.agent .a-code{color:#0369a1}
+  p,li,td,.agent .a-resp{color:#333}
+  .agent .a-mission{color:#111}
+  code{background:#f1f5f9;color:#0369a1;border-color:#ddd}
+  section{padding:18px 0 4px}
+  .card,table,.agent{break-inside:avoid}
+  .page-break{break-before:page}
+  .page-tag{color:#94a3b8;margin-top:10px}
+  .page-tag b{color:#0369a1}
+  .tag.done{color:#047857}.tag.prog{color:#b45309}.tag.gate{color:#be123c}.tag.todo{color:#64748b}
+  .callout{background:#fff8f8;color:#333}
+  .callout.warn{background:#fffbeb}.callout.ok{background:#f0fdf4}
+  a{color:#0369a1}
+  pre.arch{color:#334155}
+  footer{color:#64748b}
+  .agent-grid{grid-template-columns:repeat(4,1fr);gap:6px}
+  .agent{padding:8px 10px}
+  .agent .a-mission{font-size:7.2pt}
+  .agent .a-resp{font-size:6.6pt}
+  .flow{flex-wrap:wrap}
+  .stage{min-width:100px}
+  .stage::before{background:#ccc}
+  .s-node{border-color:#94a3b8;color:#334155}
+  .stage.done .s-node{background:#d1fae5;color:#047857;border-color:#047857}
+  .stage.prog .s-node{background:#fef3c7;color:#b45309;border-color:#b45309}
+}
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="kicker">VidiSmart · Launch Dossier · 2026-08-25</div>
+    <h1>The Smart Channel<br><em>Master Plan</em></h1>
+    <div class="mast-meta">
+      <span class="chip"><b>Owner</b>&nbsp; James May, VidiSmart</span>
+      <span class="chip"><b>Status</b>&nbsp; Implementation-ready</span>
+      <span class="chip live">● Target: Ubuntu 26 @ 192.168.4.40 — native, no Docker</span>
+      <span class="chip"><b>Fleet</b>&nbsp; 32 Autonomous Agents · 8 Divisions</span>
+      <span class="chip" style="border-color:rgba(56,189,248,.4);color:var(--cyan)"><b>Workforce Model</b>&nbsp; Blended HX (Smart Agents × Smarter Humans)</span>
+    </div>
+  </div>
+</header>
+
+<nav class="toolbar">
+  <div class="wrap">
+    <div class="toc">
+      <a href="#hx-army">HX Agent Army</a>
+      <a href="#blended-workforce">Blended HX Workforce</a>
+      <a href="#flow">Stage Flow</a>
+      <a href="#tasks">Task Ledger</a>
+      <a href="#decisions">Decisions</a>
+      <a href="#architecture">Architecture</a>
+      <a href="#data">Data</a>
+      <a href="#backbone">Backbone</a>
+      <a href="#money">Money</a>
+      <a href="#deploy">Deploy</a>
+      <a href="#risks">Risks</a>
+    </div>
+    <button id="printBtn" onclick="window.print()">⎙ PRINT / PDF</button>
+  </div>
+</nav>
+
+<div class="wrap">
+
+<div class="page-tag">PAGE 1 · <b>BLENDED HX WORKFORCE &amp; AGENT ARMY ROSTER</b> · 32 AGENTS / 8 DIVISIONS</div>
+
+<!-- ============ PAGE 1: BLENDED HX WORKFORCE ============ -->
+<section id="blended-workforce">
+  <div class="sec-num">01A / THE BLENDED HX WORKFORCE</div>
+  <h2><span class="tick">§</span> Smart Agents Working with Even Smarter Humans</h2>
+  <p>The <b>Human-Agent eXperience (HX)</b> operating model moves beyond naive automation or job replacement. It establishes an amplified, symmetrical symbiosis: <b>32 autonomous, specialized AI agents</b> execute 24/7 background telemetry, media transcoding, enrichment pipelines, and schema governance, while <b>expert human domain leads</b> provide executive discernment, creative taste, strategic direction, and ultimate consent.</p>
+
+  <div class="grid2" style="margin-bottom:20px;">
+    <div class="card" style="border-left:3px solid var(--cyan);">
+      <h3 style="color:var(--cyan);display:flex;align-items:center;gap:8px;">
+        <span>🤖</span> Autonomous Smart Agents (Execution &amp; Scale)
+      </h3>
+      <p>Agents excel at tireless, multi-threaded precision across milliseconds and gigabytes:</p>
+      <ul>
+        <li><b>Continuous Telemetry:</b> 24/7 monitoring of server health, stream transcoding latencies, and security boundaries.</li>
+        <li><b>High-Throughput Processing:</b> Ingesting videos, generating HLS ladders, indexing transcripts, and synthesizing 60s Redis feeds.</li>
+        <li><b>Rigorous Auditing:</b> Verifying task completion with evidence (<code>LEDGER-01</code>) and maintaining zero-drift documentation.</li>
+        <li><b>Cheapest Model Routing:</b> Dynamically dispatching tasks to cost-optimized LLM backbones (<code>ORACLE-01</code>).</li>
+      </ul>
+    </div>
+
+    <div class="card" style="border-left:3px solid var(--purple);">
+      <h3 style="color:var(--purple);display:flex;align-items:center;gap:8px;">
+        <span>🧠</span> Smarter Humans (Strategy, Taste &amp; Consent)
+      </h3>
+      <p>Humans provide the critical context, moral judgment, and leadership that models lack:</p>
+      <ul>
+        <li><b>Executive Judgment &amp; Consent:</b> Authorizing stage gates, Stripe pricing structures, and public DNS routing.</li>
+        <li><b>Editorial Taste &amp; Curation:</b> Defining creator spotlight standards, brand ethos, and community culture.</li>
+        <li><b>Architectural Vision:</b> Guiding framework evolution (Rust Axum + Flutter Web WASM) and core IP protection.</li>
+        <li><b>Operator Voice Control:</b> Directing fleet priorities dynamically via natural LiveKit voice sessions with <code>HERMES-PRIME</code>.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- HX Synergy Matrix Table -->
+  <div class="card">
+    <h3 style="margin-bottom:14px;">The Symmetrical HX Collaboration Matrix</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Human Domain Lead</th>
+          <th>Paired HX Agent Squad</th>
+          <th>Autonomous 24/7 Background Work</th>
+          <th>Human Discretion &amp; Superpower</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><b>Fleet Commander / Operator</b></td>
+          <td><code>ATLAS-01</code> · <code>HERMES-PRIME</code> · <code>SENTINEL-01</code></td>
+          <td>Task dependency routing, SLA tracking, telemetry alarms, daily briefing prep</td>
+          <td>Strategic priorities, stage gate approvals, live voice directives</td>
+        </tr>
+        <tr>
+          <td><b>Lead System Architect</b></td>
+          <td><code>FORGE-01</code> · <code>DEPLOY-01</code> · <code>TUNNEL-01</code></td>
+          <td>Cargo CI builds, WASM compilation, tunnel health, idempotent deploy scripts</td>
+          <td>Architecture design, security trade-offs, release go-live sign-off</td>
+        </tr>
+        <tr>
+          <td><b>Head of Content &amp; Media</b></td>
+          <td><code>INGEST-01</code> · <code>TRANSCODE-01</code> · <code>THUMB-01</code> · <code>CAPTION-01</code></td>
+          <td>tus upload intake, Cloudflare Stream HLS ladders, thumbnail/poster transforms</td>
+          <td>Creator partner curation, content standards, launch programming</td>
+        </tr>
+        <tr>
+          <td><b>AI &amp; Community Product Lead</b></td>
+          <td><code>MUSE-01</code> · <code>GENUI-01</code> · <code>TAG-01</code> · <code>GREETER-01</code></td>
+          <td>Dynamic feed ranking, GenUI per-tier spec deltas, waitlist onboarding</td>
+          <td>User experience polish, community tone of voice, viral growth strategy</td>
+        </tr>
+        <tr>
+          <td><b>Chief Trust &amp; Safety Officer</b></td>
+          <td><code>WARDEN-01</code> · <code>WARDEN-02</code> · <code>SHIELD-01</code> · <code>AUDIT-01</code></td>
+          <td>First-pass AI screening, rate-limit bot defense, immutable GDPR/DMCA logging</td>
+          <td>Complex appeal adjudications, policy edge cases, legal compliance</td>
+        </tr>
+        <tr>
+          <td><b>Commerce &amp; RevOps Director</b></td>
+          <td><code>VAULT-01</code> · <code>LICENSE-01</code> · <code>MARKET-01</code> · <code>BILLING-01</code></td>
+          <td>Stripe webhook reconciliation, JWT license minting, dunning sequences</td>
+          <td>Pricing tier changes, enterprise negotiation, marketplace fee structure</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ============ PAGE 1B: AGENT ROSTER ============ -->
+<section id="hx-army">
+  <div class="sec-num">01B / THE 32-AGENT ARMY</div>
+  <h2><span class="tick">§</span> HX Agent Army — 32 Specialized Fleet Nodes</h2>
+  <p>One Hermes profile per agent (<code>VIDIFLOW-MASTER-PLAN.md</code> runtime model). Every stage task in the ledger is assigned to exactly one owning agent; <b>ATLAS-01</b> routes work, <b>LEDGER-01</b> verifies completion, and <b>HERMES-PRIME</b> bridges to the human operator.</p>
+
+  <div class="division">
+    <div class="div-head"><span class="div-dot" style="background:var(--cyan)"></span><h3 style="color:var(--cyan)">Command &amp; Control</h3><span class="div-count">4 agents</span></div>
+    <div class="agent-grid">
+      <div class="agent" style="--div:var(--cyan)"><div class="a-top"><span class="a-code">ATLAS-01</span><span class="a-name">Fleet Orchestrator</span></div><div class="a-mission">Routes every work item to the right agent and tracks it to done.</div><div class="a-resp"><b>Owns:</b> task queue, priority, dependency ordering, blocker escalation, stage gates.</div></div>
+      <div class="agent" style="--div:var(--cyan)"><div class="a-top"><span class="a-code">HERMES-PRIME</span><span class="a-name">Operator Interface</span></div><div class="a-mission">The operator's voice channel into the fleet — briefings in, approvals out.</div><div class="a-resp"><b>Owns:</b> LiveKit voice sessions, daily brief, HITL approval routing, go-live consent.</div></div>
+      <div class="agent" style="--div:var(--cyan)"><div class="a-top"><span class="a-code">SENTINEL-01</span><span class="a-name">Health Monitor</span></div><div class="a-mission">Watches every service and agent; raises alarms before users notice.</div><div class="a-resp"><b>Owns:</b> server/fleet telemetry, healthz polling, alert rules, RCA reports.</div></div>
+      <div class="agent" style="--div:var(--cyan)"><div class="a-top"><span class="a-code">LEDGER-01</span><span class="a-name">Task Auditor</span></div><div class="a-mission">Verifies that "done" means done — evidence or it didn't happen.</div><div class="a-resp"><b>Owns:</b> task ledger truth, completion evidence, drift detection, status docs sync.</div></div>
+    </div>
+  </div>
+
+  <div class="division">
+    <div class="div-head"><span class="div-dot" style="background:var(--purple)"></span><h3 style="color:var(--purple)">Content &amp; Media Pipeline</h3><span class="div-count">5 agents</span></div>
+    <div class="agent-grid">
+      <div class="agent" style="--div:var(--purple)"><div class="a-top"><span class="a-code">INGEST-01</span><span class="a-name">Upload Intake</span></div><div class="a-mission">Greets every upload: tus tracking, format checks, videos row creation.</div><div class="a-resp"><b>Owns:</b> upload sessions, pending-status lifecycle, duplicate detection.</div></div>
+      <div class="agent" style="--div:var(--purple)"><div class="a-top"><span class="a-code">TRANSCODE-01</span><span class="a-name">Stream Pipeline</span></div><div class="a-mission">Shepherds videos through Cloudflare Stream to <code>state.ready</code>.</div><div class="a-resp"><b>Owns:</b> webhook handling, HLS quality ladder, error retries, 2-min SLA.</div></div>
+      <div class="agent" style="--div:var(--purple)"><div class="a-top"><span class="a-code">THUMB-01</span><span class="a-name">Thumbnail &amp; Poster</span></div><div class="a-mission">Makes every video clickable — thumbs, posters, OG images.</div><div class="a-resp"><b>Owns:</b> thumb selection, avatar/banner transforms, content-hash URLs.</div></div>
+      <div class="agent" style="--div:var(--purple)"><div class="a-top"><span class="a-code">CAPTION-01</span><span class="a-name">Captions &amp; Transcripts</span></div><div class="a-mission">Auto-captions with QA — searchable, timecode-aligned.</div><div class="a-resp"><b>Owns:</b> caption pulls from Stream, language detection, transcript index.</div></div>
+      <div class="agent" style="--div:var(--purple)"><div class="a-top"><span class="a-code">ARCHIVE-01</span><span class="a-name">Media Librarian</span></div><div class="a-mission">Keeps R2 tidy and the CDN fast.</div><div class="a-resp"><b>Owns:</b> R2 bucket hygiene, dedupe, cache rules on <code>cdn.vidi.news</code>, retention policy.</div></div>
+    </div>
+  </div>
+
+  <div class="division">
+    <div class="div-head"><span class="div-dot" style="background:var(--pink)"></span><h3 style="color:var(--pink)">AI &amp; GenUI</h3><span class="div-count">5 agents</span></div>
+    <div class="agent-grid">
+      <div class="agent" style="--div:var(--pink)"><div class="a-top"><span class="a-code">MUSE-01</span><span class="a-name">Feed Synthesizer</span></div><div class="a-mission">Builds the Smart Channel home feed — ranked, personal, 60s-cached.</div><div class="a-resp"><b>Owns:</b> feed ranking (follows/tags/trend), Redis feed cache, cold-start logic.</div></div>
+      <div class="agent" style="--div:var(--pink)"><div class="a-top"><span class="a-code">GENUI-01</span><span class="a-name">Spec Writer</span></div><div class="a-mission">Writes <code>genui_spec</code> deltas — the UI re-skins itself per member &amp; tier.</div><div class="a-resp"><b>Owns:</b> spec versioning, theme/layout/card deltas, live WS pushes.</div></div>
+      <div class="agent" style="--div:var(--pink)"><div class="a-top"><span class="a-code">TAG-01</span><span class="a-name">Enrichment Engine</span></div><div class="a-mission">Tags, one-line summaries, metadata — every asset described.</div><div class="a-resp"><b>Owns:</b> auto-tag pipeline, summary generation, enrichment completion flags.</div></div>
+      <div class="agent" style="--div:var(--pink)"><div class="a-top"><span class="a-code">REC-01</span><span class="a-name">Recommendation</span></div><div class="a-mission">"Up next" and related — keeps watch sessions going.</div><div class="a-resp"><b>Owns:</b> related-video ranking, channel suggestions, Neo4j/Vespa hookup (phase 3).</div></div>
+      <div class="agent" style="--div:var(--pink)"><div class="a-top"><span class="a-code">ORACLE-01</span><span class="a-name">Model Router</span></div><div class="a-mission">Picks the cheapest model that can do the job — free OpenRouter tier first.</div><div class="a-resp"><b>Owns:</b> model selection (Qwen3-Max/GLM-5), fallbacks, cost tracking, rate budgets.</div></div>
+    </div>
+  </div>
+
+  <div class="division">
+    <div class="div-head"><span class="div-dot" style="background:var(--rose)"></span><h3 style="color:var(--rose)">Trust &amp; Safety</h3><span class="div-count">4 agents</span></div>
+    <div class="agent-grid">
+      <div class="agent" style="--div:var(--rose)"><div class="a-top"><span class="a-code">WARDEN-01</span><span class="a-name">Moderation First-Pass</span></div><div class="a-mission">LLM screening of every upload and comment before humans see it.</div><div class="a-resp"><b>Owns:</b> first-pass classification, confidence thresholds, auto-hold rules.</div></div>
+      <div class="agent" style="--div:var(--rose)"><div class="a-top"><span class="a-code">WARDEN-02</span><span class="a-name">Human Queue Manager</span></div><div class="a-mission">Runs the human mod queue in Directus — SLAs, appeals, outcomes.</div><div class="a-resp"><b>Owns:</b> escalation queue, SLA tracking, appeal workflow, action logging.</div></div>
+      <div class="agent" style="--div:var(--rose)"><div class="a-top"><span class="a-code">SHIELD-01</span><span class="a-name">Abuse &amp; Spam</span></div><div class="a-mission">Stops bots, spam floods, and rate abuse at the gate.</div><div class="a-resp"><b>Owns:</b> rate-limit tuning, bot detection, report-pattern analysis, IP policy.</div></div>
+      <div class="agent" style="--div:var(--rose)"><div class="a-top"><span class="a-code">AUDIT-01</span><span class="a-name">Compliance Logger</span></div><div class="a-mission">Immutable trail of every moderation and data action.</div><div class="a-resp"><b>Owns:</b> audit log, DMCA intake, GDPR data requests, retention evidence.</div></div>
+    </div>
+  </div>
+
+  <div class="division">
+    <div class="div-head"><span class="div-dot" style="background:var(--amber)"></span><h3 style="color:var(--amber)">Commerce</h3><span class="div-count">4 agents</span></div>
+    <div class="agent-grid">
+      <div class="agent" style="--div:var(--amber)"><div class="a-top"><span class="a-code">VAULT-01</span><span class="a-name">Stripe Operator</span></div><div class="a-mission">Every dollar through Stripe — checkout sessions and webhook truth.</div><div class="a-resp"><b>Owns:</b> checkout sessions, webhook signature verification, order writes, reconciliation.</div></div>
+      <div class="agent" style="--div:var(--amber)"><div class="a-top"><span class="a-code">LICENSE-01</span><span class="a-name">Entitlement Manager</span></div><div class="a-mission">Grants and revokes — tier claims, licenses, playback gates.</div><div class="a-resp"><b>Owns:</b> license minting, JWT tier claims, upgrade/downgrade, Stream signed tokens.</div></div>
+      <div class="agent" style="--div:var(--amber)"><div class="a-top"><span class="a-code">MARKET-01</span><span class="a-name">Marketplace Clerk</span></div><div class="a-mission">Runs VidiShop listings — review, fees, payouts.</div><div class="a-resp"><b>Owns:</b> listing approval, 5–8% fee computation, application_fee, seller payouts.</div></div>
+      <div class="agent" style="--div:var(--amber)"><div class="a-top"><span class="a-code">BILLING-01</span><span class="a-name">Dunning &amp; Retention</span></div><div class="a-mission">Recovers failed payments and flags churn before it happens.</div><div class="a-resp"><b>Owns:</b> dunning emails, billing portal adoption, churn signals, win-back offers.</div></div>
+    </div>
+  </div>
+
+  <div class="division">
+    <div class="div-head"><span class="div-dot" style="background:var(--emerald)"></span><h3 style="color:var(--emerald)">Community &amp; Growth</h3><span class="div-count">4 agents</span></div>
+    <div class="agent-grid">
+      <div class="agent" style="--div:var(--emerald)"><div class="a-top"><span class="a-code">HERALD-01</span><span class="a-name">Notification Engine</span></div><div class="a-mission">The right nudge at the right time — never spam.</div><div class="a-resp"><b>Owns:</b> realtime fan-out, digests, mentions, notification preferences.</div></div>
+      <div class="agent" style="--div:var(--emerald)"><div class="a-top"><span class="a-code">GREETER-01</span><span class="a-name">Onboarding Concierge</span></div><div class="a-mission">Turns waitlist leads and new signups into active members.</div><div class="a-resp"><b>Owns:</b> waitlist import, welcome sequence, first-follow/first-comment prompts.</div></div>
+      <div class="agent" style="--div:var(--emerald)"><div class="a-top"><span class="a-code">CURATOR-01</span><span class="a-name">Spotlight Curator</span></div><div class="a-mission">Surfaces the best of the Smart Channel — featured creators &amp; videos.</div><div class="a-resp"><b>Owns:</b> spotlight picks, creator features, launch-week programming.</div></div>
+      <div class="agent" style="--div:var(--emerald)"><div class="a-top"><span class="a-code">PULSE-01</span><span class="a-name">Analytics Reporter</span></div><div class="a-mission">Numbers the operator can act on — weekly, not vanity.</div><div class="a-resp"><b>Owns:</b> views/uploads/conversion dashboards, cohort reports, launch KPIs.</div></div>
+    </div>
+  </div>
+
+  <div class="division">
+    <div class="div-head"><span class="div-dot" style="background:var(--blue)"></span><h3 style="color:var(--blue)">Engineering &amp; DevOps</h3><span class="div-count">4 agents</span></div>
+    <div class="agent-grid">
+      <div class="agent" style="--div:var(--blue)"><div class="a-top"><span class="a-code">FORGE-01</span><span class="a-name">Backbone Builder</span></div><div class="a-mission">Ships the Rust backbone — tests green, releases signed.</div><div class="a-resp"><b>Owns:</b> cargo test/CI, release builds, <code>vidismart-native</code> wasm builds.</div></div>
+      <div class="agent" style="--div:var(--blue)"><div class="a-top"><span class="a-code">DEPLOY-01</span><span class="a-name">Release Manager</span></div><div class="a-mission">Git pull → migrate → build → restart. Rollback in one command.</div><div class="a-resp"><b>Owns:</b> deploy.sh, migration ordering, systemd restarts, rollback playbook.</div></div>
+      <div class="agent" style="--div:var(--blue)"><div class="a-top"><span class="a-code">TUNNEL-01</span><span class="a-name">Network Steward</span></div><div class="a-mission">Keeps the tunnel up and the firewall shut.</div><div class="a-resp"><b>Owns:</b> cloudflared health, DNS routes, TLS, ufw rules, nginx vhosts.</div></div>
+      <div class="agent" style="--div:var(--blue)"><div class="a-top"><span class="a-code">PATCH-01</span><span class="a-name">Dependency Watch</span></div><div class="a-mission">Nothing outdated, nothing vulnerable — apt, cargo, npm.</div><div class="a-resp"><b>Owns:</b> update schedule, security advisories, Ubuntu 26 packaging gaps.</div></div>
+    </div>
+  </div>
+
+  <div class="division">
+    <div class="div-head"><span class="div-dot" style="background:var(--teal)"></span><h3 style="color:var(--teal)">Data &amp; Knowledge</h3><span class="div-count">2 agents</span></div>
+    <div class="agent-grid">
+      <div class="agent" style="--div:var(--teal)"><div class="a-top"><span class="a-code">SCRIBE-01</span><span class="a-name">Documentation Keeper</span></div><div class="a-mission">The plan stays true — docs updated as reality changes.</div><div class="a-resp"><b>Owns:</b> master plan sync, changelogs, STATUS docs, decision records.</div></div>
+      <div class="agent" style="--div:var(--teal)"><div class="a-top"><span class="a-code">INDEX-01</span><span class="a-name">Search &amp; Memory</span></div><div class="a-mission">Fleet memory and community search — find anything, fast.</div><div class="a-resp"><b>Owns:</b> Qdrant fleet memory, Neo4j/Vespa indexes, search API (phase 3).</div></div>
+    </div>
+  </div>
+</section>
+
+<div class="page-break"></div>
+<div class="page-tag">PAGE 2 · <b>STAGE FLOW &amp; TASK LEDGER</b> · 9 STAGES / 84 TASKS</div>
+
+<!-- ============ PAGE 2: FLOW + TASKS ============ -->
+<section id="flow">
+  <div class="sec-num">02 / STAGE FLOW</div>
+  <h2><span class="tick">§</span> Launch pipeline — 9 stages</h2>
+  <div class="flow">
+    <div class="stage done"><div class="s-node">S0</div><div class="s-name">Confirm &amp; Scaffold</div><div class="s-meta">8 tasks · done</div></div>
+    <div class="stage prog"><div class="s-node">S1</div><div class="s-name">Schema &amp; Auth</div><div class="s-meta">10 tasks · active</div></div>
+    <div class="stage"><div class="s-node">S2</div><div class="s-name">Rust Backbone</div><div class="s-meta">12 tasks</div></div>
+    <div class="stage"><div class="s-node">S3</div><div class="s-name">GitHub Pipeline</div><div class="s-meta">6 tasks</div></div>
+    <div class="stage"><div class="s-node">S4</div><div class="s-name">Server Provision</div><div class="s-meta">12 tasks</div></div>
+    <div class="stage"><div class="s-node">S5</div><div class="s-name">Tunnel &amp; DNS</div><div class="s-meta">6 tasks</div></div>
+    <div class="stage gate"><div class="s-node">S6</div><div class="s-name">Validation Gate</div><div class="s-meta">10 tasks</div></div>
+    <div class="stage"><div class="s-node">S7</div><div class="s-name">Flutter App</div><div class="s-meta">10 tasks</div></div>
+    <div class="stage"><div class="s-node">S8</div><div class="s-name">GA &amp; Launch</div><div class="s-meta">10 tasks</div></div>
+  </div>
+  <div class="callout ok"><b>Flow rule:</b> a stage opens only when the previous stage's gate tasks are verified by <b>LEDGER-01</b>. Go-live = S6 gate passed + Cloudflare route for <code>community.vidismart.com</code> created. Rollback = remove the route; the box keeps serving LAN.</div>
+</section>
+
+<section id="tasks">
+  <div class="sec-num">03 / TASK LEDGER</div>
+  <h2><span class="tick">§</span> 84 tasks — every one owned</h2>
+
+  <div class="stage-head"><span class="st-id">STAGE 0</span><h3>Confirm &amp; Scaffold</h3><span class="st-owner">gate: ATLAS-01</span></div>
+  <table class="task-table">
+    <tr><th>ID</th><th>Task</th><th>Owner</th><th>Status</th></tr>
+    <tr><td>T-001</td><td>Finalize 4 membership tier prices</td><td class="own">SCRIBE-01</td><td><span class="tag done">DONE</span></td></tr>
+    <tr><td>T-002</td><td>Finalize VidiShop product lines (3 ship-lines)</td><td class="own">MARKET-01</td><td><span class="tag done">DONE</span></td></tr>
+    <tr><td>T-003</td><td>Write <code>monetization/launch-pricing.md</code></td><td class="own">SCRIBE-01</td><td><span class="tag done">DONE</span></td></tr>
+    <tr><td>T-004</td><td>Scaffold <code>vidismart-community/</code> monorepo (Cargo workspace, README, .gitignore)</td><td class="own">FORGE-01</td><td><span class="tag done">DONE</span></td></tr>
+    <tr><td>T-005</td><td>Audit live state: converge DB inventory + R2 buckets (<code>vidismart</code> confirmed)</td><td class="own">ARCHIVE-01</td><td><span class="tag done">DONE</span></td></tr>
+    <tr><td>T-006</td><td>Confirm <code>community.vidismart.com</code> domain plan + CORS/CSP targets</td><td class="own">TUNNEL-01</td><td><span class="tag todo">TODO</span></td></tr>
+    <tr><td>T-007</td><td>Rotate leaked R2 keys (committed in repo docs)</td><td class="own">SHIELD-01</td><td><span class="tag gate">GATE</span></td></tr>
+    <tr><td>T-008</td><td>Record SSH user + connectivity in <code>infra/server.env</code></td><td class="own">DEPLOY-01</td><td><span class="tag todo">TODO</span></td></tr>
+  </table>
+
+  <div class="stage-head"><span class="st-id">STAGE 1</span><h3>Directus Schema &amp; Auth</h3><span class="st-owner">gate: LEDGER-01</span></div>
+  <table class="task-table">
+    <tr><th>ID</th><th>Task</th><th>Owner</th><th>Status</th></tr>
+    <tr><td>T-009</td><td><code>0001_base.sql</code> — foundation schema</td><td class="own">SCRIBE-01</td><td><span class="tag done">DONE</span></td></tr>
+    <tr><td>T-010</td><td><code>0002_community_core.sql</code> — profiles, channels, videos, comments, follows, genui_specs, moderation</td><td class="own">SCRIBE-01</td><td><span class="tag done">DONE</span></td></tr>
+    <tr><td>T-011</td><td><code>0003_commerce.sql</code> — products, orders, subscriptions, licenses, listings</td><td class="own">VAULT-01</td><td><span class="tag done">DONE</span></td></tr>
+    <tr><td>T-012</td><td><code>0004_content.sql</code> — waitlist mirror, ai_companies/consultants, articles, events, forum</td><td class="own">SCRIBE-01</td><td><span class="tag done">DONE</span></td></tr>
+    <tr><td>T-013</td><td><code>0005_directus_registration.sql</code> — register collections</td><td class="own">SCRIBE-01</td><td><span class="tag done">DONE</span></td></tr>
+    <tr><td>T-014</td><td><code>0006_roles_perms_settings.sql</code> — Member/Creator/Pro/Agency policies + registration settings</td><td class="own">LICENSE-01</td><td><span class="tag prog">NEXT</span></td></tr>
+    <tr><td>T-015</td><td>Port supabase <code>member_profiles</code> schema (merged into 0002)</td><td class="own">SCRIBE-01</td><td><span class="tag done">DONE</span></td></tr>
+    <tr><td>T-016</td><td>Enable public registration + CORS for <code>*.vidismart.com</code></td><td class="own">GREETER-01</td><td><span class="tag todo">TODO</span></td></tr>
+    <tr><td>T-017</td><td>Configure SMTP (or defer: <code>public_registration_verify_email=false</code>)</td><td class="own">HERALD-01</td><td><span class="tag todo">TODO</span></td></tr>
+    <tr><td>T-018</td><td>Import <code>waitlist_leads</code> → alpha member list</td><td class="own">GREETER-01</td><td><span class="tag todo">TODO</span></td></tr>
+  </table>
+
+  <div class="stage-head"><span class="st-id">STAGE 2</span><h3>Rust Backbone</h3><span class="st-owner">gate: FORGE-01</span></div>
+  <table class="task-table">
+    <tr><th>ID</th><th>Task</th><th>Owner</th><th>Status</th></tr>
+    <tr><td>T-019</td><td><code>config</code>/<code>telemetry</code>/<code>error</code> boilerplate</td><td class="own">FORGE-01</td><td><span class="tag todo">TODO</span></td></tr>
+    <tr><td>T-020</td><td><code>auth</code> — Directus JWT verify (JWKS), role→tier mapping, signed playback tokens</td><td class="own">LICENSE-01</td><td><span class="tag todo">TODO</span></td></tr>
+    <tr><td>T-021</td><td><code>api-gateway</code> — REST <code>/api/v1/*</code>, openapi docs, rate limits</td><td class="own">FORGE-01</td><td><span class="tag todo">TODO</span></td></tr>
+    <tr><td>T-022</td><td><code>realtime</code> — WS/SSE rooms: comment, like, follow, notification, <code>genui_spec v{+1}</code>, presence</td><td class="own">HERALD-01</td><td><span class="tag todo">TODO</span></td></tr>
+    <tr><td>T-023</td><td><code>stream-gateway</code> — signed tus upload URLs → videos row (pending)</td><td class="own">INGEST-01</td><td><span class="tag todo">TODO</span></td></tr>
+    <tr><td>T-024</td><td><code>stream-gateway</code> — Cloudflare webhook (HMAC) → ready/error + captions/thumb pull</td><td class="own">TRANSCODE-01</td><td><span class="tag todo">TODO</span></td></tr>
+    <tr><td>T-025</td><td><code>commerce</code> — Stripe checkout + webhooks → orders/subscriptions/licenses</td><td class="own">VAULT-01</td><td><span class="tag todo">TODO</span></td></tr>
+    <tr><td>T-026</td><td><code>ai-orchestrator</code> — feed synthesis (rank, Redis 60s cache)</td><td class="own">MUSE-01</td><td><span class="tag todo">TODO</span></td></tr>
+    <tr><td>T-027</td><td><code>ai-orchestrator</code> — genui_spec deltas + moderation first-pass</td><td class="own">GENUI-01</td><td><span class="tag todo">TODO</span></td></tr>
+    <tr><td>T-028</td><td><code>vidismart-native</code> wasm skeleton + <code>wasm-serve</code> (content-hash URLs)</td><td class="own">FORGE-01</td><td><span class="tag todo">TODO</span></td></tr>
+    <tr><td>T-029</td><td><code>healthz</code>/<code>readyz</code> endpoints</td><td class="own">SENTINEL-01</td><td><span class="tag todo">TODO</span></td></tr>
+    <tr><td>T-030</td><td><code>cargo test</code> suite green (auth, RBAC, HMAC, entitlements)</td><td class="own">FORGE-01</td><td><span class="tag gate">GATE</span></td></tr>
+  </table>
+
+  <div class="stage-head"><span class="st-id">STAGE 3</span><h3>GitHub Pipeline</h3><span class="st-owner">gate: DEPLOY-01</span></div>
+  <table class="task-table">
+    <tr><th>ID</th><th>Task</th><th>Owner</th><th>Status</th></tr>
+    <tr><td>T-031</td><td><code>gh auth login</code> on dev machine</td><td class="own">DEPLOY-01</td><td><span class="tag todo">TODO</span></td></tr>
+    <tr><td>T-032</td><td>Create private repo <code>VidiBuzz/vidismart-community</code></td><td class="own">DEPLOY-01</td><td><span class="tag todo">TODO</span></td></tr>
+    <tr><td>T-033</td><td>.gitignore audit (<code>.env</code>, <code>target/</code>, <code>pkg/</code>)</td><td class="own">SHIELD-01</td><td><span class="tag todo">TODO</span></td></tr>
+    <tr><td>T-034</td><td>Secret scan before first push</td><td class="own">SHIELD-01</td><td><span class="tag gate">GATE</span></td></tr>
+    <tr><td>T-035</td><td>Initial push + branch protection</td><td class="own">DEPLOY-01</td><td><span class="tag todo">TODO</span></td></tr>
+    <tr><td>T-036</td><td>Write <code>scripts/deploy.sh</code> (pull → migrate → build → restart)</td><td class="own">DEPLOY-01</td><td><span class="tag todo">TODO</span></td></tr>
+  </table>
+
+  <div class="stage-head"><span class="st-id">STAGE 4</span><h3>Server Provisioning — Ubuntu 26 native</h3><span class="st-owner">gate: SENTINEL-01</span></div>
+  <table class="task-table">
+    <tr><th>ID</th><th>Task</th><th>Owner</th><th>Status</th></tr>
+    <tr><td>T-037</td><td>SSH gate + baseline hardening (fail2ban, sshd tuning)</td><td class="own">TUNNEL-01</td><td><span class="tag todo">TODO</span></td></tr>
+    <tr><td>T-038</td><td>apt: Postgres (+PostGIS probe; plain PG fallback OK)</td><td class="own">DEPLOY-01</td><td><span class="tag todo">TODO</span></td></tr>
+    <tr><td>T-039</td><td>apt: Redis</td><td class="own">DEPLOY-01</td><td><span class="tag todo">TODO</span></td></tr>
+    <tr><td>T-040</td><td>NodeSource Node 22</td><td class="own">DEPLOY-01</td><td><span class="tag todo">TODO</span></td></tr>
+    <tr><td>T-041</td><td>rustup toolchain</td><td class="own">FORGE-01</td><td><span class="tag todo">TODO</span></td></tr>
+    <tr><td>T-042</td><td>nginx + ufw + fail2ban installed</td><td class="own">TUNNEL-01</td><td><span class="tag todo">TODO</span></td></tr>
+    <tr><td>T-043</td><td>2G swap (cargo build OOM mitigation)</td><td class="own">DEPLOY-01</td><td><span class="tag todo">TODO</span></td></tr>
+    <tr><td>T-044</td><td>Create DB <code>vidismart_community</code> + dedicated role</td><td class="own">DEPLOY-01</td><td><span class="tag todo">TODO</span></td></tr>
+    <tr><td>T-045</td><td>Directus 11.x → <code>/opt/vidismart/directus</code> + systemd unit + <code>/etc/vidismart/directus.env</code></td><td class="own">DEPLOY-01</td><td><span class="tag todo">TODO</span></td></tr>
+    <tr><td>T-046</td><td>Directus first boot → apply migrations 0005/0006 → restart</td><td class="own">SCRIBE-01</td><td><span class="tag todo">TODO</span></td></tr>
+    <tr><td>T-047</td><td><code>cargo build --release</code> on-server + <code>vidismart-backbone.service</code></td><td class="own">FORGE-01</td><td><span class="tag todo">TODO</span></td></tr>
+    <tr><td>T-048</td><td>nginx vhost: <code>/</code>→Directus :8055 · <code>/api</code>→backbone :8060 · <code>/wasm/</code>→static</td><td class="own">TUNNEL-01</td><td><span class="tag todo">TODO</span></td></tr>
+  </table>
+
+  <div class="stage-head"><span class="st-id">STAGE 5</span><h3>Tunnel &amp; DNS</h3><span class="st-owner">gate: TUNNEL-01</span></div>
+  <table class="task-table">
+    <tr><th>ID</th><th>Task</th><th>Owner</th><th>Status</th></tr>
+    <tr><td>T-049</td><td>Install <code>cloudflared</code> as systemd service</td><td class="own">TUNNEL-01</td><td><span class="tag todo">TODO</span></td></tr>
+    <tr><td>T-050</td><td>Create tunnel in Cloudflare dashboard + token to server</td><td class="own">TUNNEL-01</td><td><span class="tag todo">TODO</span></td></tr>
+    <tr><td>T-051</td><td>Route <code>community.vidismart.com</code> → tunnel</td><td class="own">TUNNEL-01</td><td><span class="tag todo">TODO</span></td></tr>
+    <tr><td>T-052</td><td>CSP headers for <code>*.videodelivery.net</code>, <code>*.cloudflarestream.com</code>, R2</td><td class="own">SHIELD-01</td><td><span class="tag todo">TODO</span></td></tr>
+    <tr><td>T-053</td><td>ufw final rules: deny external 5432/6379/8055/8060</td><td class="own">TUNNEL-01</td><td><span class="tag gate">GATE</span></td></tr>
+    <tr><td>T-054</td><td>TLS verification end-to-end through tunnel</td><td class="own">SENTINEL-01</td><td><span class="tag todo">TODO</span></td></tr>
+  </table>
+
+  <div class="stage-head"><span class="st-id">STAGE 6</span><h3>Validation &amp; Go-Live Gate</h3><span class="st-owner">gate: HERMES-PRIME (operator consent)</span></div>
+  <table class="task-table">
+    <tr><th>ID</th><th>Task</th><th>Owner</th><th>Status</th></tr>
+    <tr><td>T-055</td><td>Health checks on-box (LAN)</td><td class="own">SENTINEL-01</td><td><span class="tag todo">TODO</span></td></tr>
+    <tr><td>T-056</td><td>Health checks through <code>https://community.vidismart.com</code></td><td class="own">SENTINEL-01</td><td><span class="tag todo">TODO</span></td></tr>
+    <tr><td>T-057</td><td>Directus admin login test</td><td class="own">DEPLOY-01</td><td><span class="tag todo">TODO</span></td></tr>
+    <tr><td>T-058</td><td>Public registration → <code>member_profiles</code> row created</td><td class="own">GREETER-01</td><td><span class="tag todo">TODO</span></td></tr>
+    <tr><td>T-059</td><td>Create video record via API</td><td class="own">INGEST-01</td><td><span class="tag todo">TODO</span></td></tr>
+    <tr><td>T-060</td><td>Realtime event verified (WS/SSE round-trip)</td><td class="own">HERALD-01</td><td><span class="tag todo">TODO</span></td></tr>
+    <tr><td>T-061</td><td>Commerce endpoint e2e (Stripe test mode)</td><td class="own">VAULT-01</td><td><span class="tag todo">TODO</span></td></tr>
+    <tr><td>T-062</td><td>Upload → ready → play under 2 minutes</td><td class="own">TRANSCODE-01</td><td><span class="tag todo">TODO</span></td></tr>
+    <tr><td>T-063</td><td>Confirm local converge stack unaffected (<code>docker ps</code>, :8055)</td><td class="own">SENTINEL-01</td><td><span class="tag todo">TODO</span></td></tr>
+    <tr><td>T-064</td><td>R2 key rotation verified in production config</td><td class="own">SHIELD-01</td><td><span class="tag gate">GATE</span></td></tr>
+  </table>
+
+  <div class="stage-head"><span class="st-id">STAGE 7</span><h3>Flutter Smart Channel App</h3><span class="st-owner">gate: FORGE-01</span></div>
+  <table class="task-table">
+    <tr><th>ID</th><th>Task</th><th>Owner</th><th>Status</th></tr>
+    <tr><td>T-065</td><td>Install Flutter SDK on dev machine</td><td class="own">FORGE-01</td><td><span class="tag todo">TODO</span></td></tr>
+    <tr><td>T-066</td><td>Scaffold feature-first + agent-ui palettes (midnight/void/dusk/carbon)</td><td class="own">GENUI-01</td><td><span class="tag todo">TODO</span></td></tr>
+    <tr><td>T-067</td><td>Auth screens (Directus OAuth + email/password + SSO)</td><td class="own">LICENSE-01</td><td><span class="tag todo">TODO</span></td></tr>
+    <tr><td>T-068</td><td>Home feed + Watch page (Stream HLS, signed gates)</td><td class="own">MUSE-01</td><td><span class="tag todo">TODO</span></td></tr>
+    <tr><td>T-069</td><td>Upload flow (tus direct-to-Stream) e2e on staging</td><td class="own">INGEST-01</td><td><span class="tag todo">TODO</span></td></tr>
+    <tr><td>T-070</td><td>Channel, Profile, Threads pages</td><td class="own">CURATOR-01</td><td><span class="tag todo">TODO</span></td></tr>
+    <tr><td>T-071</td><td>Marketplace (VidiShop) + Pricing pages</td><td class="own">MARKET-01</td><td><span class="tag todo">TODO</span></td></tr>
+    <tr><td>T-072</td><td>GenUI renderer + live <code>genui_spec</code> WS subscription</td><td class="own">GENUI-01</td><td><span class="tag todo">TODO</span></td></tr>
+    <tr><td>T-073</td><td><code>flutter_rust_bridge</code> WASM binding to <code>vidismart-native</code></td><td class="own">FORGE-01</td><td><span class="tag todo">TODO</span></td></tr>
+    <tr><td>T-074</td><td>Playwright E2E on Flutter web build</td><td class="own">LEDGER-01</td><td><span class="tag todo">TODO</span></td></tr>
+  </table>
+
+  <div class="stage-head"><span class="st-id">STAGE 8</span><h3>Commerce GA · Visual AI GA · Launch</h3><span class="st-owner">gate: HERMES-PRIME</span></div>
+  <table class="task-table">
+    <tr><th>ID</th><th>Task</th><th>Owner</th><th>Status</th></tr>
+    <tr><td>T-075</td><td>Stripe live keys + products/prices for 4 tiers + 3 lines</td><td class="own">VAULT-01</td><td><span class="tag todo">TODO</span></td></tr>
+    <tr><td>T-076</td><td>Billing portal + dunning flows live</td><td class="own">BILLING-01</td><td><span class="tag todo">TODO</span></td></tr>
+    <tr><td>T-077</td><td>Free→Creator conversion path test e2e</td><td class="own">BILLING-01</td><td><span class="tag todo">TODO</span></td></tr>
+    <tr><td>T-078</td><td>Enrichment pipeline live (auto-tags, captions, summaries, spotlight)</td><td class="own">TAG-01</td><td><span class="tag todo">TODO</span></td></tr>
+    <tr><td>T-079</td><td>Neo4j + Vespa hooked into feed synthesis (search/recs v2)</td><td class="own">REC-01</td><td><span class="tag todo">TODO</span></td></tr>
+    <tr><td>T-080</td><td>GenUI progressive surfaces (per-tier layout deltas)</td><td class="own">GENUI-01</td><td><span class="tag todo">TODO</span></td></tr>
+    <tr><td>T-081</td><td>Seed: 10 creator accounts + Smart Book excerpts + agent-ui demos</td><td class="own">CURATOR-01</td><td><span class="tag todo">TODO</span></td></tr>
+    <tr><td>T-082</td><td>50-user alpha</td><td class="own">GREETER-01</td><td><span class="tag todo">TODO</span></td></tr>
+    <tr><td>T-083</td><td>250-user beta</td><td class="own">GREETER-01</td><td><span class="tag todo">TODO</span></td></tr>
+    <tr><td>T-084</td><td>Public launch + dashboards (views/uploads/conversion) + error tracking</td><td class="own">PULSE-01</td><td><span class="tag gate">GATE</span></td></tr>
+  </table>
+</section>
+
+<div class="page-break"></div>
+<div class="page-tag">PAGE 3+ · <b>REFERENCE</b> · DECISIONS / ARCHITECTURE / DATA / DEPLOYMENT</div>
+
+<!-- ============ DECISIONS ============ -->
+<section id="decisions">
+  <div class="sec-num">04 / CONFIRMED DECISIONS</div>
+  <h2><span class="tick">§</span> What's locked</h2>
+  <table>
+    <tr><th>Decision</th><th>Choice</th><th>Why / evidence</th></tr>
+    <tr><td><b>Community shape</b></td><td>Custom "Smart Channel" app — video feed first, threads secondary</td><td>User confirmed; "Smart Channel is everything"</td></tr>
+    <tr><td><b>CMS</b></td><td>Directus (self-hosted, BSL-1.1)</td><td>Live locally in <code>converge</code> Docker stack; 40+ collections. Self-hosted commercial use permitted; never resell Directus as a service</td></tr>
+    <tr><td><b>Video + media</b></td><td>Cloudflare Stream + R2 + <code>cdn.vidi.news</code></td><td>Transcode/HLS/thumbnails/captions on Cloudflare; R2 bucket <code>vidismart</code> verified live</td></tr>
+    <tr><td><b>Agent fleet media</b></td><td>SeaweedFS <code>:9000</code>, bucket <code>buzz-media</code></td><td>Agent fleet only — <b>never</b> community media</td></tr>
+    <tr><td><b>Backbone</b></td><td>Rust (Axum/Tokio)</td><td>Native binary + WebAssembly targets; memory-safe public network service</td></tr>
+    <tr><td><b>Frontend</b></td><td>Flutter/Dart (Web WASM + iOS + Android)</td><td>One codebase for community web + member mobile apps</td></tr>
+    <tr><td><b>Agent runtime</b></td><td>Hermes Agent — one profile per agent role, LM Studio brains (≥64K ctx)</td><td><code>VIDIFLOW-MASTER-PLAN.md</code>; fleet control plane on agent-backend :3007</td></tr>
+    <tr><td><b>E-commerce</b></td><td>Stripe (Checkout + Billing + webhooks) via Rust backbone</td><td>Products/orders/entitlements in Directus</td></tr>
+    <tr><td><b>PeerTube</b></td><td>Feature-parity reimplementation only</td><td>AGPL-3.0 — copy the feature list, never the code</td></tr>
+    <tr><td><b>Deploy</b></td><td><b>Ubuntu 26 server, fully native (no Docker)</b>; local <code>converge</code> stack untouched</td><td>User pivot 2026-08-25; fresh Directus + <code>vidismart_community</code> DB on the box</td></tr>
+    <tr><td><b>Public ingress</b></td><td>Cloudflare Tunnel (<code>cloudflared</code> systemd) → <code>community.vidismart.com</code></td><td>TLS terminates at Cloudflare; no open inbound ports</td></tr>
+    <tr><td><b>Code hosting</b></td><td>Private GitHub <code>VidiBuzz/vidismart-community</code></td><td>Monorepo folder = repo root; server sync via <code>git pull</code> + <code>deploy.sh</code></td></tr>
+    <tr><td><b>Licensing</b></td><td>MIT/Apache-2.0 platform code; AI layer may stay closed</td><td>No AGPL/GPL contamination</td></tr>
+  </table>
+</section>
+
+<!-- ============ ARCHITECTURE ============ -->
+<section id="architecture">
+  <div class="sec-num">05 / TARGET ARCHITECTURE</div>
+  <h2><span class="tick">§</span> System map</h2>
+  <pre class="arch">┌────────────────────────────────────────────────────────────────────┐
+│  <span class="hl">CLIENTS</span>                                                           │
+│  Flutter Web (WASM)  ·  Flutter iOS/Android  ·  Directus Studio    │
+└───────────────┬────────────────────────────────────────────────────┘
+                │ HTTPS + WebSocket  (via Cloudflare Tunnel)
+┌───────────────▼────────────────────────────────────────────────────┐
+│  <span class="hl">RUST BACKBONE</span> (Axum, one service, modules)  ══ published binary   │
+│  ├─ api-gateway    (REST, Directus-JWT verify, RBAC per tier)      │
+│  ├─ realtime       (Axum WS: chat, presence, notifications, feed)  │
+│  ├─ stream-gateway (signed tus upload URLs, Stream webhooks)       │
+│  ├─ commerce       (Stripe Checkout/Billing + webhooks, licenses)  │
+│  ├─ ai-orchestrator(feed synth, GenUI specs, moderation, tags)     │
+│  └─ wasm-serve     (serves vidismart-native wasm + verifies)       │
+└───────┬───────────────┬───────────────┬───────────────┬────────────┘
+        │               │               │               │
+┌───────▼─────┐ ┌───────▼───────┐ ┌──────▼────────┐ ┌──────▼──────────┐
+│ <span class="hl">DIRECTUS</span>    │ │ <span class="hl">CLOUDFLARE</span>    │ │ <span class="hl">STRIPE</span>        │ │ <span class="hl">POSTGRES+REDIS</span> │
+│ (R2 files,  │ │ Stream (HLS,  │ │ (subs,        │ │ (Directus data,│
+│ users, roles│ │ thumbs, caps) │ │ checkout)     │ │ cache; Neo4j/  │
+│ content,    │ │ R2 (imgs)     │ │               │ │ Vespa phase 3) │
+│ orders)     │ │ cdn.vidi.news │ │               │ │                │
+└─────────────┘ └───────────────┘ └───────────────┘ └─────────────────┘</pre>
+  <div class="grid3">
+    <div class="card"><h3>Uploads</h3><p>Flutter → tus direct to Stream (signed). Avatars/banners → R2 presigned from backbone. No secret exposure client-side.</p></div>
+    <div class="card"><h3>Playback caching</h3><p>HLS from Cloudflare edge; R2 assets via <code>cdn.vidi.news</code> with content-hash URLs, Edge TTL 1 year, immutable.</p></div>
+    <div class="card"><h3>API caching</h3><p>Directus Redis cache ON; backbone feed cache 60s; realtime events bust only affected keys.</p></div>
+  </div>
+</section>
+
+<!-- ============ DATA MODEL ============ -->
+<section id="data">
+  <div class="sec-num">06 / DATA MODEL</div>
+  <h2><span class="tick">§</span> Directus collections (one DB: <code>vidismart_community</code>)</h2>
+  <p>All schema as migration SQL under <code>vidismart-community/database/migrations/</code>. Migrations 0001–0005 written; 0006 pending (T-014).</p>
+  <table>
+    <tr><th>Migration</th><th>Collections</th><th>Status</th></tr>
+    <tr><td><code>0001_base.sql</code></td><td>Foundation schema</td><td><span class="tag done">WRITTEN</span></td></tr>
+    <tr><td><code>0002_community_core.sql</code></td><td>member_profiles, channels, videos, video_reactions, comments, follows, playlists, playlist_items, tags, notifications, genui_specs, moderation_reports/actions</td><td><span class="tag done">WRITTEN</span></td></tr>
+    <tr><td><code>0003_commerce.sql</code></td><td>products, orders, order_items, subscriptions, licenses, marketplace_listings</td><td><span class="tag done">WRITTEN</span></td></tr>
+    <tr><td><code>0004_content.sql</code></td><td>waitlist_leads mirror, ai_companies, ai_consultants, articles, events, forum_posts</td><td><span class="tag done">WRITTEN</span></td></tr>
+    <tr><td><code>0005_directus_registration.sql</code></td><td>Register collections in <code>directus_collections</code></td><td><span class="tag done">WRITTEN</span></td></tr>
+    <tr><td><code>0006_roles_perms_settings.sql</code></td><td>Policies via <code>directus_policies</code>/<code>directus_access</code>/<code>directus_permissions</code>; Member/Creator/Pro/Agency; public registration settings</td><td><span class="tag prog">NEXT</span></td></tr>
+  </table>
+  <div class="callout warn"><b>Migration ordering:</b> 0005/0006 touch Directus system tables and must run <b>after</b> Directus first boot. Sequence: Directus boot once → apply 0005–0006 → restart. <code>deploy.sh</code> enforces this with an idempotent check.</div>
+</section>
+
+<!-- ============ MONETIZATION ============ -->
+<section id="money">
+  <div class="sec-num">07 / MONETIZATION</div>
+  <h2><span class="tick">§</span> Launch pricing <span class="tag done">FINALIZED</span></h2>
+  <div class="grid2">
+    <div class="card">
+      <h3>Memberships (Stripe Billing)</h3>
+      <table>
+        <tr><td><b>Member</b></td><td>Free</td><td>Watch, follow, comment, like — no uploads</td></tr>
+        <tr><td><b>Creator</b></td><td>$19/mo</td><td>Uploads (~50 GB/yr), channel page, analytics</td></tr>
+        <tr><td><b>Pro</b></td><td>$49/mo</td><td>Near-unlimited uploads, marketplace selling, white-label embeds</td></tr>
+        <tr><td><b>Agency</b></td><td>$149+/mo</td><td>Multi-seat, client workspaces, VidiShop SaaS lines</td></tr>
+      </table>
+    </div>
+    <div class="card">
+      <h3>Other revenue lines</h3>
+      <ul>
+        <li><b>VidiShop SaaS</b> — $99 → $10K/mo ladder via <code>products</code></li>
+        <li><b>Marketplace fees</b> — 5–8% per sale (Stripe application_fee)</li>
+        <li><b>$500 "Smart Meeting"</b> — paid onboarding; $500 credit toward Corporate Bundle ($3K) or Consulting ($15K/mo); buyers get Creator for launch cycle</li>
+      </ul>
+    </div>
+  </div>
+  <p>Entitlements enforced in the backbone (JWT <code>tier</code> claim + Redis) <em>and</em> at Stream signed-token level for paid/member-only playback.</p>
+</section>
+
+<!-- ============ DEPLOYMENT ============ -->
+<section id="deploy">
+  <div class="sec-num">08 / DEPLOYMENT — UBUNTU NATIVE</div>
+  <h2><span class="tick">§</span> Launch box: Ubuntu 26 @ 192.168.4.40</h2>
+  <div class="callout"><b>Go-live gate (T-064):</b> rotate the leaked R2 keys (committed in <code>.clinerules.md</code> / <code>DIRECTUS-COMPLETE-STATUS.md</code>) before production use. Secrets live in <code>/etc/vidismart/*.env</code> on the server, never in git.</div>
+  <table>
+    <tr><th>Component</th><th>Native install</th><th>Unit / path</th></tr>
+    <tr><td><b>Postgres</b> (+PostGIS if packaged)</td><td>apt</td><td>DB <code>vidismart_community</code>, dedicated role; port 5432 LAN-only</td></tr>
+    <tr><td><b>Redis</b></td><td>apt <code>redis-server</code></td><td>port 6379 LAN-only</td></tr>
+    <tr><td><b>Directus 11.x</b></td><td>Node 22 (NodeSource) + npm</td><td><code>/opt/vidismart/directus</code> · <code>vidismart-directus.service</code> · :8055</td></tr>
+    <tr><td><b>Rust backbone</b></td><td>rustup, build on-server</td><td><code>vidismart-backbone.service</code> · :8060</td></tr>
+    <tr><td><b>nginx</b></td><td>apt</td><td><code>/</code> → Directus · <code>/api</code> → backbone · <code>/wasm/</code> → static</td></tr>
+    <tr><td><b>cloudflared</b></td><td>systemd service + tunnel token</td><td>route <code>community.vidismart.com</code></td></tr>
+    <tr><td><b>ufw + fail2ban</b></td><td>apt</td><td>allow ssh/http/https; deny external 5432/6379/8055/8060</td></tr>
+  </table>
+  <p><b>Sync pipeline:</b> private repo <code>VidiBuzz/vidismart-community</code> → server <code>git pull</code> + <code>scripts/deploy.sh</code> (migrate → <code>cargo build --release</code> → restart units). Rollback = remove the Cloudflare route; box keeps serving LAN.</p>
+</section>
+
+<!-- ============ RISKS ============ -->
+<section id="risks">
+  <div class="sec-num">09 / RISKS &amp; GUARDRAILS</div>
+  <h2><span class="tick">§</span> What could bite us</h2>
+  <table>
+    <tr><th>Risk</th><th>Guardrail</th><th>Watcher</th></tr>
+    <tr><td><b>Scope creep</b> (biggest)</td><td>Ship 3 product lines + 4 tiers only; everything else stays in the GLPI queue</td><td class="own">ATLAS-01</td></tr>
+    <tr><td><b>Ubuntu 26 bleeding-edge packaging</b></td><td>Probe apt first; plain Postgres fallback acceptable</td><td class="own">PATCH-01</td></tr>
+    <tr><td><b>Rust build on-server (slow/OOM)</b></td><td>Conservative <code>CARGO_BUILD_JOBS</code>; 2G swap (T-043); CI cross-compile later</td><td class="own">FORGE-01</td></tr>
+    <tr><td><b>Migration vs Directus system tables</b></td><td>Boot-first sequence enforced in deploy.sh; migrations additive only</td><td class="own">DEPLOY-01</td></tr>
+    <tr><td><b>Leaked secrets in repo files</b></td><td>Rotate R2 keys before go-live (T-007/T-064); only <code>vidismart-community/</code> gets pushed</td><td class="own">SHIELD-01</td></tr>
+    <tr><td><b>Directus BSL-1.1</b></td><td>Self-hosted allowed; never offer Directus as a paid service</td><td class="own">AUDIT-01</td></tr>
+    <tr><td><b>PeerTube AGPL</b></td><td>Feature-parity only; no AGPL code enters the repo</td><td class="own">AUDIT-01</td></tr>
+    <tr><td><b>WASM payload</b></td><td>Keep <code>vidismart-native</code> &lt; ~3 MB; lazy-load</td><td class="own">FORGE-01</td></tr>
+    <tr><td><b>DB name drift</b></td><td>One name: <code>vidismart_community</code>; update <code>.PORT_ASSIGNMENTS.md</code></td><td class="own">SCRIBE-01</td></tr>
+  </table>
+</section>
+
+<footer>
+  <span>VIDISMART MASTER PLAN · 2026-08-25 · 32 AGENTS / 9 STAGES / 84 TASKS</span>
+  <span>Sources: plans/1787616142189-vidismart-launch-smart-channel-plan.md · plans/vidismart-ubuntu-native-launch-plan.md · monetization/launch-pricing.md</span>
+</footer>
+
+</div>
+<script src="assets/js/vidismart-magic.js"></script>
+</body>
+</html>
