@@ -64,20 +64,33 @@ h1 em{font-style:italic;font-weight:300;color:var(--cyan);-webkit-text-fill-colo
 .chip.live{border-color:rgba(52,211,153,.5);color:var(--emerald);background:rgba(52,211,153,.08)}
 
 /* ---------- toolbar ---------- */
-.toolbar{position:sticky;top:0;z-index:50;background:rgba(5,7,14,.92);backdrop-filter:blur(8px);
-  border-bottom:1px solid var(--border);padding:10px 0}
-.toolbar .wrap{display:flex;align-items:center;justify-content:space-between;padding-bottom:0}
-.toc{display:flex;gap:0;justify-content:space-between;flex:1;min-width:0;overflow:hidden;
-  font-family:var(--mono);font-size:.62rem;letter-spacing:.02em;text-transform:uppercase}
-.toc a{color:var(--dim);text-decoration:none;white-space:nowrap;padding:6px 0;border-bottom:2px solid transparent;transition:.2s}
-.toc a:hover{color:var(--cyan);border-bottom-color:var(--cyan)}
-@media(max-width:900px){.toc{flex-wrap:wrap;row-gap:2px}}
-#printBtn{font-family:var(--mono);font-size:.72rem;letter-spacing:.08em;padding:8px 18px;border-radius:6px;cursor:pointer;
-  background:var(--cyan);color:#04121d;border:none;font-weight:600;white-space:nowrap}
-#printBtn:hover{background:#7dd3fc}
+.toolbar{position:sticky;top:0;z-index:50;background:rgba(5,7,14,.88);backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--border)}
+.toolbar .wrap{display:flex;align-items:center;gap:16px;padding-top:9px;padding-bottom:9px}
+.brand{display:flex;align-items:center;gap:10px;flex:none;text-decoration:none}
+.b-mark{width:27px;height:27px;border-radius:7px;display:flex;align-items:center;justify-content:center;flex:none;
+  background:linear-gradient(135deg,var(--cyan),var(--purple));box-shadow:0 0 14px rgba(56,189,248,.35)}
+.b-mark svg{width:13px;height:13px;fill:#04121d;stroke:none}
+.b-name{font-family:var(--mono);font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;color:var(--text);line-height:1.2}
+.b-name em{font-style:normal;color:var(--cyan)}
+.b-name small{display:block;font-size:.56rem;letter-spacing:.22em;color:var(--dim)}
+.toc{display:flex;gap:5px;flex:1;min-width:0;overflow-x:auto;scrollbar-width:none;padding:2px;
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.06em;text-transform:uppercase;
+  -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 14px,#000 calc(100% - 14px),transparent);
+  mask-image:linear-gradient(90deg,transparent 0,#000 14px,#000 calc(100% - 14px),transparent)}
+.toc::-webkit-scrollbar{display:none}
+.toc a{color:var(--dim);text-decoration:none;white-space:nowrap;padding:6px 12px;border-radius:999px;
+  border:1px solid transparent;transition:color .2s,background .2s,border-color .2s}
+.toc a:hover{color:var(--cyan);background:rgba(56,189,248,.08)}
+.toc a.on{color:var(--cyan);border-color:rgba(56,189,248,.35);background:rgba(56,189,248,.1)}
+@media(max-width:760px){.b-name small{display:none}.toolbar .wrap{gap:10px}}
+@media(max-width:560px){.b-name{display:none}}
+#printBtn{font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;padding:7px 15px;border-radius:999px;cursor:pointer;
+  background:var(--cyan);color:#04121d;border:none;font-weight:600;white-space:nowrap;flex:none;transition:.2s}
+#printBtn:hover{background:#7dd3fc;box-shadow:0 0 14px rgba(56,189,248,.4)}
 
 /* ---------- sections ---------- */
-section{padding:52px 0 8px}
+section{padding:52px 0 8px;scroll-margin-top:64px}
 .sec-num{font-family:var(--mono);font-size:.72rem;color:var(--dim);letter-spacing:.2em}
 h2{font-family:var(--display);font-weight:700;font-size:1.9rem;letter-spacing:-.01em;margin:6px 0 22px}
 h2 .tick{color:var(--cyan)}
@@ -330,15 +343,18 @@ footer{margin-top:80px;padding-top:24px;border-top:1px solid var(--border);font-
 
 <nav class="toolbar">
   <div class="wrap">
+    <a class="brand" href="#top" onclick="window.scrollTo({top:0,behavior:'smooth'});return false;">
+      <span class="b-mark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l11-6.5z"/></svg></span>
+      <span class="b-name">Vidi<em>Smart</em><small>Master Plan</small></span>
+    </a>
     <div class="toc">
-      <a href="#hx-army">HX Agent Army</a>
-      <a href="#blended-workforce">Blended HX Workforce</a>
+      <a href="#blended-workforce">HX Workforce</a>
+      <a href="#hx-army">Agent Army</a>
       <a href="#flow">Stage Flow</a>
       <a href="#tasks">Task Ledger</a>
       <a href="#decisions">Decisions</a>
       <a href="#architecture">Architecture</a>
       <a href="#data">Data</a>
-      <a href="#backbone">Backbone</a>
       <a href="#money">Money</a>
       <a href="#deploy">Deploy</a>
       <a href="#risks">Risks</a>
@@ -982,6 +998,28 @@ footer{margin-top:80px;padding-top:24px;border-top:1px solid var(--border);font-
       key.appendChild(btn);
     });
   }
+  })();
+</script>
+<script>
+(function () {
+  var links = Array.prototype.slice.call(document.querySelectorAll('.toc a'));
+  var byId = {};
+  links.forEach(function (a) { byId[a.getAttribute('href').slice(1)] = a; });
+  function setActive(id) {
+    links.forEach(function (a) { a.classList.toggle('on', a === byId[id]); });
+  }
+  if ('IntersectionObserver' in window) {
+    var obs = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) { if (e.isIntersecting) setActive(e.target.id); });
+    }, { rootMargin: '-30% 0px -60% 0px' });
+    links.forEach(function (a) {
+      var s = document.getElementById(a.getAttribute('href').slice(1));
+      if (s) obs.observe(s);
+    });
+  }
+  links.forEach(function (a) {
+    a.addEventListener('click', function () { setActive(a.getAttribute('href').slice(1)); });
+  });
 })();
 </script>
 </body>
