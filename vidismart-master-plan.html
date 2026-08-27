@@ -49,7 +49,23 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);font-size:15
   font-family:'Geist Mono',var(--mono);font-size:.72rem;font-weight:600;letter-spacing:.04em;white-space:nowrap}
 .live-dot{width:7px;height:7px;border-radius:50%;background:#34d399;box-shadow:0 0 10px #34d399;animation:pulseDot 2s infinite}
 @keyframes pulseDot{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.3);opacity:.6}}
-@media(max-width:900px){.nav-links-deck{display:none}}
+.nav-burger{display:none;align-items:center;justify-content:center;width:42px;height:42px;border-radius:50%;
+  border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.06);cursor:pointer;flex:none;transition:.2s}
+.nav-burger:hover{background:rgba(255,255,255,.12)}
+.nav-burger svg{width:19px;height:19px;stroke:#fff;stroke-width:2;fill:none;stroke-linecap:round}
+.nav-menu{position:absolute;top:calc(100% + 10px);left:20px;right:20px;display:none;flex-direction:column;gap:2px;
+  background:rgba(10,15,26,.97);backdrop-filter:blur(24px);border:1px solid rgba(255,255,255,.15);border-radius:20px;
+  padding:10px;box-shadow:0 30px 60px -12px rgba(0,0,0,.85)}
+.nav-menu.open{display:flex}
+.nav-menu .navlink-item{padding:12px 16px;font-size:.95rem}
+@media(max-width:900px){
+  .nav-links-deck{display:none}
+  .nav-status-pill{display:none}
+  .nav-burger{display:inline-flex}
+  .brand-3d-emblem{width:40px;height:40px;border-radius:11px;font-size:14pt}
+  .brand-titles .title-main{font-size:17pt}
+  .topnav-wrapper{position:sticky;top:8px}
+}
 
 /* ---------- masthead (SmartGen-style centered hero, no second menu) ---------- */
 .masthead{padding:56px 0 8px;text-align:center}
@@ -65,16 +81,17 @@ h1{font-family:'Kumbh Sans',var(--display);font-weight:900;font-size:clamp(2.8re
   border-radius:999px;color:var(--muted);background:rgba(0,0,0,.25);white-space:nowrap;flex:none}
 .chip b{color:var(--text);font-weight:600}
 .chip.live{border-color:rgba(52,211,153,.5);color:var(--emerald);background:rgba(52,211,153,.08)}
-.print-link{display:inline-block;margin-top:18px;font-family:'Geist Mono',var(--mono);font-size:.72rem;letter-spacing:.08em;
-  text-transform:uppercase;color:var(--dim);background:none;border:0;cursor:pointer}
-.print-link:hover{color:var(--cyan)}
+.print-link{display:inline-flex;align-items:center;gap:8px;margin-top:24px;font-family:'Geist Mono',var(--mono);font-size:.74rem;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--cyan);background:rgba(0,229,255,.08);border:1px solid rgba(0,229,255,.4);
+  border-radius:999px;padding:9px 20px;cursor:pointer;transition:.2s}
+.print-link:hover{background:rgba(0,229,255,.18);box-shadow:0 0 18px rgba(0,229,255,.25)}
 
 /* ---------- sections ---------- */
-section{padding:52px 0 8px;scroll-margin-top:88px}
+section{padding:52px 0 8px;scroll-margin-top:96px}
 .sec-num{font-family:var(--mono);font-size:.72rem;color:var(--dim);letter-spacing:.2em}
 h2{font-family:'Kumbh Sans',var(--display);font-weight:800;font-size:clamp(2rem,4vw,2.8rem);letter-spacing:-.03em;margin:6px 0 8px;line-height:1.05}
 h2 .tick{color:var(--cyan)}
-.lede{color:var(--muted);font-size:1.08rem;margin:0 0 22px;max-width:640px}
+section .lede{color:var(--muted);font-size:1.05rem;margin:0 0 22px;max-width:640px}
 h3{font-family:var(--body);font-weight:700;font-size:1.02rem;margin:28px 0 10px;color:var(--text)}
 p{color:var(--muted);margin-bottom:14px}
 p strong,li strong{color:var(--text)}
@@ -197,21 +214,27 @@ footer{margin-top:80px;padding-top:24px;border-top:1px solid var(--border);font-
 @media print{
   body{background:#fff;color:#111;font-size:10pt}
   body,.card,pre.arch,td,th,.agent,.s-node{background:#fff !important;color:#111 !important;border-color:#ccc !important}
-  .toolbar,.toc,#printBtn{display:none !important}
+  .topnav-wrapper,.nav-menu,.print-link{display:none !important}
   .masthead{padding:0 0 18px}
   h1,h2,h3,.agent .a-name,.s-name{color:#000}
-  h1 em,.kicker,h2 .tick,.agent .a-code{color:#0369a1}
-  p,li,td,.agent .a-resp{color:#333}
+  h1,h2{-webkit-text-fill-color:#000 !important;filter:none !important}
+  .kicker,h2 .tick,.agent .a-code,.st-id{color:#0369a1}
+  .st-id{border-color:#ccc;background:#f8fafc}
+  b,strong{color:#111}
+  p,li,td,.agent .a-resp,.lede{color:#333}
+  .chip{background:#fff;border-color:#ccc;color:#444}
+  .chip b,.chip.live{color:#047857}
   .agent .a-mission{color:#111}
   code{background:#f1f5f9;color:#0369a1;border-color:#ddd}
   section{padding:18px 0 4px}
   .card,table,.agent{break-inside:avoid}
   .page-break{break-before:page}
-  .page-tag{color:#94a3b8;margin-top:10px}
+  .page-tag{display:flex;color:#94a3b8;margin-top:10px}
   .page-tag b{color:#0369a1}
   .tag.done{color:#047857}.tag.prog{color:#b45309}.tag.gate{color:#be123c}.tag.todo{color:#64748b}
   .callout{background:#fff8f8;color:#333}
   .callout.warn{background:#fffbeb}.callout.ok{background:#f0fdf4}
+  .callout b,.callout.warn b,.callout.ok b{color:#111}
   a{color:#0369a1}
   pre.arch{color:#334155}
   footer{color:#64748b}
@@ -224,7 +247,7 @@ footer{margin-top:80px;padding-top:24px;border-top:1px solid var(--border);font-
   .stage::before{background:#ccc}
   .s-node{border-color:#94a3b8;color:#334155}
   .stage.done .s-node{background:#d1fae5;color:#047857;border-color:#047857}
-  .stage.prog .s-node{background:#fef3c7;color:#b45309;border-color:#b45309}
+  .stage.prog .s-node{background:#fef3c7;color:#b45309;border-color:#047857}
   .role-tile{background:#fff !important;border-color:currentColor !important}
   .role-tile.d-cmd{color:#0369a1 !important}
   .role-tile.d-media{color:#6d28d9 !important}
@@ -306,7 +329,19 @@ footer{margin-top:80px;padding-top:24px;border-top:1px solid var(--border);font-
       <a class="navlink-item" href="ClaudeNoMore.html">💎 Pricing</a>
     </div>
     <div class="nav-status-pill"><span class="live-dot"></span><span>LIVE HUB 2026</span></div>
+    <button class="nav-burger" id="navBurger" type="button" aria-label="Open menu" aria-expanded="false">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    </button>
   </nav>
+  <div class="nav-menu" id="navMenu">
+    <a class="navlink-item" href="open-apps.html">⚡ Open Apps</a>
+    <a class="navlink-item" href="directus-extensions.html">🔌 Directus</a>
+    <a class="navlink-item" href="topmodels.html">🏆 Top Models</a>
+    <a class="navlink-item" href="agentarmy.html">⚔️ Agent Army</a>
+    <a class="navlink-item" href="agent-ui-tools.html">🎨 SmartGen Media</a>
+    <a class="navlink-item active" href="vidismart-master-plan.html">📋 Master Plan</a>
+    <a class="navlink-item" href="ClaudeNoMore.html">💎 Pricing</a>
+  </div>
 </div>
 
 <header class="masthead">
@@ -811,7 +846,7 @@ footer{margin-top:80px;padding-top:24px;border-top:1px solid var(--border);font-
 </section>
 
 <footer>
-  <span>VIDISMART MASTER PLAN · 2026-08-26 · 32 AGENTS / 9 STAGES / 84 TASKS</span>
+  <span>VIDISMART MASTER PLAN · 2026-08-27 · 32 AGENTS / 9 STAGES / 84 TASKS</span>
   <span>Sources: plans/1787616142189-vidismart-launch-smart-channel-plan.md · plans/vidismart-ubuntu-native-launch-plan.md · monetization/launch-pricing.md</span>
 </footer>
 
@@ -972,23 +1007,26 @@ footer{margin-top:80px;padding-top:24px;border-top:1px solid var(--border);font-
 </script>
 <script>
 (function () {
-  var links = Array.prototype.slice.call(document.querySelectorAll('.jump a'));
-  var byId = {};
-  links.forEach(function (a) { byId[a.getAttribute('href').slice(1)] = a; });
-  function setActive(id) {
-    links.forEach(function (a) { a.classList.toggle('on', a === byId[id]); });
+  var burger = document.getElementById('navBurger');
+  var menu = document.getElementById('navMenu');
+  if (!burger || !menu) return;
+  function close() {
+    menu.classList.remove('open');
+    burger.setAttribute('aria-expanded', 'false');
   }
-  if ('IntersectionObserver' in window) {
-    var obs = new IntersectionObserver(function (entries) {
-      entries.forEach(function (e) { if (e.isIntersecting) setActive(e.target.id); });
-    }, { rootMargin: '-30% 0px -60% 0px' });
-    links.forEach(function (a) {
-      var s = document.getElementById(a.getAttribute('href').slice(1));
-      if (s) obs.observe(s);
-    });
-  }
-  links.forEach(function (a) {
-    a.addEventListener('click', function () { setActive(a.getAttribute('href').slice(1)); });
+  burger.addEventListener('click', function (e) {
+    e.stopPropagation();
+    var open = menu.classList.toggle('open');
+    burger.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+  document.addEventListener('click', function (e) {
+    if (!menu.contains(e.target) && !burger.contains(e.target)) close();
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') close();
+  });
+  menu.querySelectorAll('a').forEach(function (a) {
+    a.addEventListener('click', close);
   });
 })();
 </script>
