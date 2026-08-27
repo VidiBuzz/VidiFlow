@@ -220,6 +220,69 @@
             box-shadow: 0 4px 14px rgba(0, 229, 255, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.2);
         }
 
+        .nav-sub {
+            position: relative;
+            display: inline-flex;
+        }
+
+        .nav-sub>.navlink-item::after {
+            content: "▾";
+            font-size: 0.6rem;
+            margin-left: -2px;
+            color: #64748b;
+            transition: all 0.2s ease;
+        }
+
+        .nav-sub:hover>.navlink-item::after,
+        .nav-sub:focus-within>.navlink-item::after {
+            color: var(--accent);
+        }
+
+        .nav-dropdown {
+            position: absolute;
+            top: calc(100% + 8px);
+            left: 50%;
+            transform: translateX(-50%);
+            display: none;
+            flex-direction: column;
+            gap: 2px;
+            min-width: 240px;
+            background: rgba(10, 15, 26, 0.97);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 16px;
+            padding: 8px;
+            box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.85);
+            z-index: 1100;
+        }
+
+        .nav-sub:hover .nav-dropdown,
+        .nav-sub:focus-within .nav-dropdown {
+            display: flex;
+        }
+
+        .nav-dropdown .navlink-item {
+            padding: 9px 14px;
+            font-size: 0.8rem;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 2px;
+        }
+
+        .nav-subtag {
+            display: block;
+            font-size: 0.64rem;
+            font-weight: 500;
+            color: #64748b;
+            letter-spacing: 0.02em;
+            margin-top: 2px;
+        }
+
+        .nav-dropdown .navlink-item:hover .nav-subtag {
+            color: #94a3b8;
+        }
+
         .nav-status-pill {
             display: inline-flex;
             align-items: center;
@@ -1051,8 +1114,12 @@
             </a>
 
             <div class="nav-links-deck">
-                <a class="navlink-item" href="open-apps.html">⚡ Open Apps</a>
-                <a class="navlink-item" href="directus-extensions.html">🔌 Directus</a>
+                <div class="nav-sub">
+                    <a class="navlink-item" href="open-apps.html">⚡ Open Apps</a>
+                    <div class="nav-dropdown">
+                        <a class="navlink-item" href="directus-extensions.html">🔌 Directus<span class="nav-subtag">Open-source managed back end</span></a>
+                    </div>
+                </div>
                 <a class="navlink-item" href="topmodels.html">🏆 Top Models</a>
                 <a class="navlink-item" href="agentarmy.html">⚔️ Agent Army</a>
                 <a class="navlink-item active" href="agent-ui-tools.html">🎨 SmartGen Media</a>
@@ -1440,7 +1507,7 @@
 
         <!-- SECTION 2: Knowledge Graph & Memory Visualization -->
         <div class="section">
-            <h2>🧠 Knowledge Graph &amp; Memory Visualization Platforms</h2>
+            <h2>🧠 Memory Maps</h2>
             <p class="section-desc">Tools for visualizing agent memory, knowledge bases, entity relationships, and execution traces as interactive graphs.</p>
 
             <div class="kg-grid">
