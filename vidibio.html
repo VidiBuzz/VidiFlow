@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VidiBio — Your 20-Second AI Bio Video | VidiSmart Smart Channel</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500;600;700&family=Geist:wght@300;400;500;600;700;800&family=Kumbh+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-base: #04060a;
+            --accent: #00e5ff;
+            --accent-purple: #9d4edd;
+            --accent-green: #10b981;
+            --text: #f1f5f9;
+            --text-dim: #94a3b8;
+            --text-faint: #64748b;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background-color: var(--bg-base);
+            color: var(--text);
+            font-family: 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+        h1, h2, h3, h4 { font-family: 'Kumbh Sans', sans-serif !important; letter-spacing: -0.025em; }
+        a { color: #67e8f9; }
+
+        /* background */
+        .bg-scene { position: fixed; inset: 0; z-index: -3; pointer-events: none; overflow: hidden; }
+        .ambient-orb { position: absolute; border-radius: 50%; filter: blur(90px); opacity: .45; animation: orbFloat 14s ease-in-out infinite alternate; }
+        .orb-1 { width: 600px; height: 600px; top: -150px; left: 10%; background: radial-gradient(circle, rgba(0,229,255,.35) 0%, transparent 70%); }
+        .orb-2 { width: 700px; height: 700px; top: 200px; right: -100px; background: radial-gradient(circle, rgba(157,78,221,.3) 0%, transparent 70%); animation-duration: 18s; }
+        .orb-3 { width: 500px; height: 500px; bottom: 100px; left: 20%; background: radial-gradient(circle, rgba(255,94,138,.2) 0%, transparent 70%); animation-duration: 16s; }
+        @keyframes orbFloat { 0% { transform: translateY(0) scale(1); } 100% { transform: translateY(45px) scale(1.08); } }
+        .grid-plane {
+            position: fixed; inset: -20% -20% 0; z-index: -2; pointer-events: none;
+            background-image:
+                linear-gradient(to right, rgba(255,255,255,.035) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255,255,255,.035) 1px, transparent 1px);
+            background-size: 48px 48px;
+            mask-image: radial-gradient(ellipse 70% 50% at 50% 20%, black 20%, transparent 80%);
+            -webkit-mask-image: radial-gradient(ellipse 70% 50% at 50% 20%, black 20%, transparent 80%);
+        }
+
+        /* === Universal Topnav (50px standard) === */
+        .topnav { background: rgba(10,12,16,.95); border-bottom: 1px solid rgba(255,255,255,.07); padding: 0 24px; display: flex; align-items: center; height: 50px; position: sticky; top: 0; z-index: 2000; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); overflow-x: auto; scrollbar-width: none; }
+        .topnav::-webkit-scrollbar { display: none; }
+        .topnav-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; margin-right: 22px; flex-shrink: 0; }
+        .brand-icon { width: 28px; height: 28px; border-radius: 7px; background: linear-gradient(135deg,#4f7fff,#7c5cfc); display: flex; align-items: center; justify-content: center; font-family: 'Kumbh Sans', sans-serif; font-size: 11px; font-weight: 700; color: #fff; letter-spacing: -.03em; }
+        .brand-text { font-family: 'Kumbh Sans', sans-serif; font-size: 18px; font-weight: 700; color: rgba(255,255,255,.88); letter-spacing: -.03em; white-space: nowrap; }
+        .brand-text span { color: rgba(255,255,255,.38); font-weight: 400; }
+        .nav-sep { width: 1px; height: 22px; background: rgba(255,255,255,.09); margin: 0 6px; flex-shrink: 0; }
+        .navlink { display: flex; align-items: center; gap: 6px; padding: 0 14px; height: 50px; font-size: 12.5px; font-weight: 500; color: rgba(255,255,255,.38); text-decoration: none; border-bottom: 2px solid transparent; transition: color .15s, border-color .15s; white-space: nowrap; }
+        .navlink:hover { color: rgba(255,255,255,.7); }
+        .navlink.active { color: #f8fafc; border-bottom-color: #f472b6; }
+        .nl-icon { width: 14px; height: 14px; flex-shrink: 0; opacity: .7; transition: transform .22s cubic-bezier(.34,1.56,.64,1), filter .22s ease, opacity .18s ease; }
+        .navlink:hover .nl-icon { opacity: 1; transform: scale(1.22) translateY(-1px); filter: drop-shadow(0 0 6px currentColor); }
+        .navlink.active .nl-icon { opacity: 1; transform: scale(1.08); filter: drop-shadow(0 0 8px currentColor); }
+
+        .container { max-width: 1180px; margin: 0 auto; padding: 34px 24px 80px; }
+
+        /* hero */
+        .hero-stage { position: relative; padding: 34px 20px 26px; text-align: center; margin-bottom: 36px; }
+        .hero-badge { display: inline-flex; align-items: center; gap: 8px; padding: 6px 16px; border-radius: 100px; background: linear-gradient(90deg, rgba(0,229,255,.12), rgba(157,78,221,.16)); border: 1px solid rgba(0,229,255,.35); color: #a5f3fc; font-family: 'Geist Mono', monospace; font-size: .74rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; margin-bottom: 18px; }
+        .hero-stage h1 { font-size: clamp(2.4rem, 5vw, 3.6rem); font-weight: 900; line-height: 1.1; margin-bottom: 14px; background: linear-gradient(135deg, #fff 15%, #e0f2fe 45%, #38bdf8 70%, #c084fc 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 6px 28px rgba(0,229,255,.28)); }
+        .hero-stage p { font-size: 1.05rem; color: #cbd5e1; max-width: 780px; margin: 0 auto 24px; line-height: 1.65; }
+        .hero-stage p b { color: #fff; }
+
+        /* ===== sample profile ===== */
+        .profile-shell { max-width: 960px; margin: 0 auto; border: 1px solid rgba(255,255,255,.1); border-radius: 22px; overflow: hidden; background: rgba(11,16,28,.85); box-shadow: 0 40px 100px -30px rgba(0,0,0,.85), 0 0 80px -30px rgba(0,229,255,.22); text-align: left; }
+        .p-banner { height: 118px; background: linear-gradient(115deg, #0b1226 0%, #16324a 38%, #0e4d5c 58%, #6d28d9 135%); position: relative; overflow: hidden; }
+        .p-banner::after { content: ""; position: absolute; inset: 0; background-image: linear-gradient(rgba(255,255,255,.06) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.07) 1px, transparent 1px); background-size: 36px 36px; mask-image: radial-gradient(ellipse at 72% 40%, black 25%, transparent 75%); -webkit-mask-image: radial-gradient(ellipse at 72% 40%, black 25%, transparent 75%); }
+        .p-head { display: flex; gap: 18px; padding: 0 26px 18px; margin-top: -36px; align-items: flex-end; position: relative; z-index: 2; flex-wrap: wrap; }
+        .p-avatar { width: 88px; height: 92px; border-radius: 50%; background: linear-gradient(135deg, #38bdf8, #9d4edd); border: 3px solid #060a12; display: flex; align-items: center; justify-content: center; font-family: 'Kumbh Sans', sans-serif; font-size: 1.4rem; font-weight: 800; color: #fff; box-shadow: 0 10px 30px rgba(0,0,0,.6); flex-shrink: 0; }
+        .p-id { flex: 1; min-width: 240px; }
+        .p-name { font-family: 'Kumbh Sans', sans-serif; font-size: 1.45rem; font-weight: 800; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; line-height: 1.25; }
+        .p-tier { font-size: .6rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; padding: 4px 10px; border-radius: 100px; background: rgba(0,229,255,.12); border: 1px solid rgba(0,229,255,.4); color: #67e8f9; }
+        .p-tier.v { background: rgba(139,92,246,.14); border-color: rgba(139,92,246,.5); color: #c4b5fd; }
+        .p-handle { color: var(--text-faint); font-size: .82rem; font-family: 'Geist Mono', monospace; margin-top: 3px; }
+        .p-meta { display: flex; gap: 14px; color: var(--text-dim); font-size: .8rem; margin-top: 7px; flex-wrap: wrap; }
+        .p-meta b { color: #fff; }
+        .p-follow { display: inline-flex; align-items: center; gap: 7px; background: linear-gradient(135deg, #00e5ff, #0284c7); color: #031322; font-weight: 700; font-size: .84rem; padding: 10px 22px; border-radius: 100px; border: 1px solid rgba(255,255,255,.4); box-shadow: 0 8px 24px -6px rgba(0,229,255,.5); cursor: pointer; margin-bottom: 4px; }
+        .p-tabs { display: flex; gap: 4px; padding: 0 26px; border-bottom: 1px solid rgba(255,255,255,.08); }
+        .p-tabs span { padding: 12px 16px; font-size: .84rem; font-weight: 600; color: var(--text-faint); border-bottom: 2px solid transparent; cursor: pointer; }
+        .p-tabs span.active { color: #67e8f9; border-bottom-color: #00e5ff; }
+        .p-body { padding: 24px; display: grid; grid-template-columns: 1.05fr .95fr; gap: 22px; }
+        @media (max-width: 880px) { .p-body { grid-template-columns: 1fr; } }
+
+        /* VidiBio player card */
+        .vb-card { border: 1px solid rgba(0,229,255,.3); border-radius: 18px; overflow: hidden; background: linear-gradient(180deg, rgba(0,229,255,.05), transparent 55%), rgba(8,12,22,.9); box-shadow: 0 20px 60px -20px rgba(0,0,0,.8), 0 0 50px -18px rgba(0,229,255,.3); }
+        .vb-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 11px 15px; border-bottom: 1px solid rgba(255,255,255,.07); flex-wrap: wrap; }
+        .vb-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 11px 15px; border-bottom: 1px solid rgba(255,255,255,.07); flex-wrap: wrap; }
+        .vb-live { display: inline-flex; align-items: center; gap: 8px; font-family: 'Geist Mono', monospace; font-size: .64rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: #67e8f9; }
+        .pulse-dot { width: 8px; height: 8px; border-radius: 50%; background: #10b981; animation: pulse 2s ease-out infinite; flex-shrink: 0; }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(16,185,129,.55); } 70% { box-shadow: 0 0 0 9px rgba(16,185,129,0); } 100% { box-shadow: 0 0 0 0 rgba(16,185,129,0); } }
+        .vb-gen { font-size: .64rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: #94a3b8; font-family: 'Geist Mono', monospace; }
+        .vb-poster { position: relative; aspect-ratio: 16 / 9; background: radial-gradient(480px 260px at 30% 20%, rgba(56,189,248,.28), transparent 62%), linear-gradient(135deg, #0a1020 0%, #14324a 55%, #2b1b5e 100%); display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        .vb-avatar { width: 88px; height: 88px; border-radius: 50%; background: linear-gradient(135deg, #38bdf8, #9d4edd); border: 2px solid rgba(255,255,255,.55); display: flex; align-items: center; justify-content: center; font-family: 'Kumbh Sans', sans-serif; font-size: 1.6rem; font-weight: 800; color: #fff; box-shadow: 0 12px 40px rgba(0,0,0,.65), 0 0 40px rgba(56,189,248,.35); }
+        .vb-play { position: absolute; width: 68px; height: 72px; border-radius: 50%; background: rgba(4,6,10,.55); border: 2px solid rgba(0,229,255,.65); display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 0 40px rgba(0,229,255,.35); backdrop-filter: blur(6px); transition: transform .25s cubic-bezier(.34,1.56,.64,1), box-shadow .25s; }
+        .vb-play:hover { transform: scale(1.08); box-shadow: 0 0 70px rgba(0,229,255,.55); }
+        .vb-play span { display: block; width: 0; height: 0; border-left: 17px solid #e0f7ff; border-top: 11px solid transparent; border-bottom: 11px solid transparent; margin-left: 5px; filter: drop-shadow(0 0 8px rgba(0,229,255,.8)); }
+        .vb-scrub { position: absolute; left: 0; right: 0; bottom: 0; height: 4px; background: rgba(255,255,255,.09); }
+        .vb-scrub i { display: block; height: 100%; width: 30%; border-radius: 4px; background: linear-gradient(90deg, #00e5ff, #9d4edd); box-shadow: 0 0 12px rgba(0,229,255,.8); animation: scrub 20s linear infinite; }
+        @keyframes scrub { from { width: 3%; } to { width: 100%; } }
+        .vb-time { position: absolute; right: 12px; bottom: 12px; font-family: 'Geist Mono', monospace; font-size: .66rem; color: rgba(255,255,255,.8); background: rgba(4,6,10,.65); border: 1px solid rgba(255,255,255,.12); padding: 3px 9px; border-radius: 100px; }
+        .vb-tag { position: absolute; top: 12px; left: 14px; font-family: 'Geist Mono', monospace; font-size: .6rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: #fbbf24; background: rgba(4,6,10,.6); border: 1px solid rgba(251,191,36,.4); padding: 3px 10px; border-radius: 100px; }
+        .vb-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 16px; border-top: 1px solid rgba(255,255,255,.07); flex-wrap: wrap; }
+        .vb-src { font-family: 'Geist Mono', monospace; font-size: .62rem; color: #a5b4fc; line-height: 1.5; }
+        .src-chips { display: flex; gap: 6px; }
+        .src-chip { width: 24px; height: 24px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: .6rem; font-weight: 800; background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.12); color: #cbd5e1; }
+        .src-chip.li { color: #93c5fd; border-color: rgba(59,130,246,.4); }
+        .src-chip.yt { color: #fca5a5; border-color: rgba(239,68,68,.4); }
+        .src-chip.gh { background: rgba(255,255,255,.08); }
+
+        /* script column */
+        .vb-side h4 { font-family: 'Kumbh Sans', sans-serif; font-size: .95rem; font-weight: 800; margin-bottom: 12px; }
+        .vb-line { display: grid; grid-template-columns: 46px 1fr; gap: 12px; padding: 10px 0; border-bottom: 1px dashed rgba(255,255,255,.07); }
+        .vb-t { font-family: 'Geist Mono', monospace; font-size: .72rem; font-weight: 700; color: #67e8f9; padding-top: 3px; }
+        .vb-line p { color: #cbd5e1; font-size: .8rem; line-height: 1.6; }
+        .vb-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+        .mini-btn { font-size: .72rem; font-weight: 700; padding: 7px 14px; border-radius: 100px; cursor: pointer; }
+        .mini-btn.ok { background: linear-gradient(135deg, #10b981, #059669); color: #fff; border: 1px solid rgba(255,255,255,.3); box-shadow: 0 6px 20px -6px rgba(16,185,129,.5); }
+        .mini-btn.ghost { background: transparent; border: 1px solid rgba(255,255,255,.15); color: #94a3b8; }
+        .vb-note { margin-top: 12px; font-size: .7rem; color: var(--text-faint); line-height: 1.6; }
+
+        /* section heads */
+        .sec-head { text-align: center; margin: 60px 0 0; }
+        .sec-title { font-family: 'Kumbh Sans', sans-serif; font-weight: 900; font-size: clamp(1.6rem, 3vw, 2.2rem); margin: 16px 0 8px; }
+        .sec-sub { color: var(--text-dim); font-size: .95rem; max-width: 660px; margin: 0 auto; line-height: 1.65; }
+        .kicker { display: inline-flex; align-items: center; gap: 8px; font-family: 'Geist Mono', monospace; font-size: .72rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: #a5f3fc; background: rgba(0,229,255,.09); border: 1px solid rgba(0,229,255,.3); padding: 6px 16px; border-radius: 100px; }
+
+        /* flow */
+        .flow-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-top: 26px; }
+        .flow-card { background: rgba(11,16,28,.7); border: 1px solid rgba(255,255,255,.09); border-radius: 18px; padding: 20px 18px; position: relative; overflow: hidden; transition: transform .3s cubic-bezier(.2,.8,.2,1), border-color .25s, box-shadow .25s; }
+        .flow-card:hover { transform: translateY(-5px); border-color: rgba(0,229,255,.4); box-shadow: 0 20px 50px -12px rgba(0,0,0,.6), 0 0 30px -8px rgba(0,229,255,.22); }
+        .fc-cyan { border-top: 3px solid var(--accent); }
+        .fc-purple { border-top: 3px solid var(--accent-purple); }
+        .fc-pink { border-top: 3px solid #f472b6; }
+        .fc-green { border-top: 3px solid var(--accent-green); }
+        .fc-step { font-family: 'Geist Mono', monospace; font-size: .66rem; font-weight: 700; letter-spacing: .14em; color: #67e8f9; }
+        .flow-card h3 { font-size: .95rem; font-weight: 800; margin: 10px 0 6px; }
+        .flow-card p { color: var(--text-dim); font-size: .78rem; line-height: 1.6; }
+        .fc-agent { display: inline-flex; align-items: center; gap: 6px; font-family: 'Geist Mono', monospace; font-size: .62rem; font-weight: 600; color: #c4b5fd; margin-top: 12px; background: rgba(157,78,221,.1); border: 1px solid rgba(157,78,221,.35); border-radius: 100px; padding: 3px 10px; }
+
+        /* why row */
+        .why-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin-top: 26px; }
+        .why-card { display: flex; gap: 14px; align-items: flex-start; background: rgba(11,16,28,.66); border: 1px solid rgba(255,255,255,.09); border-radius: 18px; padding: 18px; }
+        .wc-icon { font-size: 1.4rem; flex-shrink: 0; }
+        .why-card b { display: block; font-size: .92rem; margin-bottom: 4px; }
+        .why-card p { color: var(--text-dim); font-size: .8rem; line-height: 1.6; }
+
+        .foot-note { margin-top: 40px; text-align: center; font-size: .78rem; color: var(--text-faint); line-height: 1.7; }
+        .foot-note b { color: #a5b4fc; font-family: 'Geist Mono', monospace; font-weight: 600; font-size: .72rem; }
+
+        @media (max-width: 1024px) { .flow-grid { grid-template-columns: repeat(2, 1fr); } .p-body { grid-template-columns: 1fr; } .why-row { grid-template-columns: 1fr; } }
+        @media (max-width: 640px) { .topnav { padding: 0 16px; } .flow-grid { grid-template-columns: 1fr; } .hero-stage { padding: 28px 10px 22px; } .p-head { padding: 0 18px 16px; } }
+        @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; } }
+    </style>
+</head>
+<body>
+    <div class="bg-scene">
+        <div class="ambient-orb orb-1"></div>
+        <div class="ambient-orb orb-2"></div>
+        <div class="ambient-orb orb-3"></div>
+    </div>
+    <div class="grid-plane"></div>
+
+    <nav class="topnav">
+      <a class="topnav-brand" href="open-apps.html">
+        <div class="brand-icon">VS</div>
+        <span class="brand-text">VidiSmart <span>Stack</span></span>
+      </a>
+      <div class="nav-sep"></div>
+      <a class="navlink" href="open-apps.html">
+        <svg class="nl-icon" style="color:#4f7fff" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"></rect><rect x="14" y="3" width="7" height="7" rx="1.5"></rect><rect x="14" y="14" width="7" height="7" rx="1.5"></rect><rect x="3" y="14" width="7" height="7" rx="1.5"></rect></svg>
+        Open Apps
+      </a>
+      <a class="navlink" href="directus-extensions.html">
+        <svg class="nl-icon" style="color:#7c5cfc" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v6m0 8v6M2 12h6m8 0h6"></path><rect x="8" y="8" width="8" height="8" rx="2"></rect></svg>
+        Directus Extensions
+      </a>
+      <a class="navlink" href="visualai-tools.html">
+        <svg class="nl-icon" style="color:#00d8ff" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M3 12c2.5-5 6.5-8 9-8s6.5 3 9 8c-2.5 5-6.5 8-9 8s-6.5-3-9-8z"></path></svg>
+        Visual AI Tools
+      </a>
+      <a class="navlink" href="topmodels.html">
+        <svg class="nl-icon" style="color:#ffcc00" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+        Top Models
+      </a>
+      <a class="navlink" href="agentarmy.html">
+        <svg class="nl-icon" style="color:#00e5ff" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"></rect><circle cx="12" cy="5" r="2"></circle><path d="M12 7v4"></path><line x1="8" y1="16" x2="8.01" y2="16"></line><line x1="16" y1="16" x2="16.01" y2="16"></line></svg>
+        Agent Army
+      </a>
+      <a class="navlink" href="agent-ui-tools.html">
+        <svg class="nl-icon" style="color:#ff6b6b" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"></path><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"></path><path d="M2 2l7.586 7.586"></path><circle cx="11" cy="11" r="2"></circle></svg>
+        Visual UI Tools
+      </a>
+      <a class="navlink active" href="vidibio.html">
+        <svg class="nl-icon" style="color:#f472b6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="14" height="16" rx="3"></rect><path d="M17 10l5-3v10l-5-3" fill="currentColor" stroke="none"></path></svg>
+        VidiBio
+      </a>
+      <a class="navlink" href="vidismart-master-plan.html">
+        <svg class="nl-icon" style="color:#34d399" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+        Master Plan
+      </a>
+      <a class="navlink" href="ClaudeNoMore.html">
+        <svg class="nl-icon" style="color:#ef4444" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line></svg>
+        Pricing
+      </a>
+    </nav>
+
+    <div class="container">
+        <div class="hero-stage">
+            <div class="hero-badge">👤&nbsp; SAMPLE PROFILE · SMART CHANNEL COMMUNITY</div>
+            <h1>VidiBio</h1>
+            <p>The moment someone creates a profile, VidiSmart's agents scan their <b>public social presence</b> and render a <b>20-second bio video</b> — scripted, voiced, and live on their channel about 90 seconds after signup. Every profile arrives already talking.</p>
+        </div>
+
+        <!-- PROFILE MOCKUP -->
+        <div class="profile-shell">
+            <div class="p-banner"></div>
+            <div class="p-head">
+                <div class="p-avatar">MT</div>
+                <div class="p-id">
+                    <div class="p-name">Maya Torres <span class="p-tier">Creator</span></div>
+                    <div class="p-handle">@mayachen · Austin, TX · joined today</div>
+                    <div class="p-meta"><span><b>1</b> video</span><span><b>0</b> followers</span><span><b>0</b> likes</span><span>VidiBio auto-generated ✓</span></div>
+                </div>
+                <button class="p-follow">+ Follow</button>
+            </div>
+            <div class="p-tabs"><span class="active">VidiBio</span><span>Videos</span><span>About</span><span>Stack</span></div>
+            <div class="p-body">
+                <div class="vb-card">
+                    <div class="vb-top">
+                        <span class="vb-live"><span class="pulse-dot"></span> AUTO-GENERATED VidiBio</span>
+                        <span class="vb-gen" id="genLabel">Reading public profiles…</span>
+                    </div>
+                    <div class="vb-poster">
+                        <span class="vb-tag">AUTO-GENERATED · v1</span>
+                        <div class="vb-avatar">M</div>
+                        <div class="vb-play"><span></span></div>
+                        <div class="vb-scrub"><i id="genBar"></i></div>
+                        <span class="vb-time">0:20</span>
+                    </div>
+                    <div class="vb-foot">
+                        <span class="vb-src">SOURCES · linkedin.com/in/mayachen · @mayabuilds · mayachen.dev · 47 public posts indexed</span>
+                        <span class="src-chips"><span class="src-chip li">in</span><span class="src-chip">𝕏</span><span class="src-chip">GH</span><span class="src-chip yt">▶</span></span>
+                    </div>
+                </div>
+                <div class="vb-side">
+                    <h4>Script — written by MUSE-01, editable by you</h4>
+                    <div class="vb-line"><span class="vb-t">0:00</span><p>"I'm Maya. I make factory floors talk — IIoT dashboards that catch failures before they happen."</p></div>
+                    <div class="vb-line"><span class="vb-t">0:07</span><p>"Eight years in industrial IoT. Last year my alerts saved a client $2.3M in downtime."</p></div>
+                    <div class="vb-line"><span class="vb-t">0:14</span><p>"Now I'm building in public — the wins and the burnouts."</p></div>
+                    <div class="vb-line"><span class="vb-t">0:18</span><p>"Follow along. Week one starts Monday."</p></div>
+                    <div class="vb-actions">
+                        <span class="mini-btn ok">✓ Approve &amp; publish</span>
+                        <span class="mini-btn ghost">✎ Edit script</span>
+                        <span class="mini-btn ghost">↻ Regenerate</span>
+                    </div>
+                    <div class="vb-note">Voice cloned from your public videos · visuals pulled from your posts · music licensed · 1080p HLS via Cloudflare Stream</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PIPELINE -->
+        <div class="sec-head">
+            <span class="hero-badge">🤖&nbsp; Agent Handoffs — About 90 Seconds End to End</span>
+            <h2 class="sec-title">Signup to Published Video, No Clicks</h2>
+            <p class="sec-sub">No forms, no uploads, no blank profile staring back. The fleet does the work while the new member reads their welcome message.</p>
+        </div>
+        <div class="flow-grid">
+            <div class="flow-card fc-cyan">
+                <span class="fc-step">01</span>
+                <h3>Profile Created</h3>
+                <p>Sign-up completes. GREETER-01 greets the new member and fires the VidiBio job automatically.</p>
+                <span class="fc-agent">GREETER-01</span>
+            </div>
+            <div class="flow-card fc-pink">
+                <span class="fc-step">02</span>
+                <h3>Public Footprint Scan</h3>
+                <p>Agents index the member's public presence: LinkedIn, X, YouTube, GitHub, personal sites — public data only, nothing behind a login.</p>
+                <span class="fc-agent">🔎 ORACLE-01</span>
+            </div>
+            <div class="flow-card fc-purple">
+                <span class="fc-step">03</span>
+                <h3>Script &amp; Render</h3>
+                <p>MUSE-01 writes the 55-word script; GENUI-01 assembles the 20-second cut from the member's own photos, logos, and captures.</p>
+                <span class="fc-agent">✍️ MUSE-01 · 🎨 GENUI-01</span>
+            </div>
+            <div class="flow-card fc-green">
+                <span class="fc-step">04</span>
+                <h3>Screen &amp; Publish</h3>
+                <p>WARDEN-02 clears it, TRANSCODE-01 ships HLS to Cloudflare Stream, and the video goes live on the channel — before the first upload exists.</p>
+                <span class="fc-agent">🛡️ WARDEN-02 · 📼 TRANSCODE-01</span>
+            </div>
+        </div>
+
+        <!-- WHY -->
+        <div class="sec-head"><span class="kicker">★ WHY THIS IS THE FIRST FEATURE</span><h2 class="sec-title">The Aha-Moment, In 90 Seconds</h2><p class="sec-sub">An empty profile is a dead channel. VidiBio means nobody ever posts into a void — day one, every member has a playable, shareable bio video.</p></div>
+        <div class="why-row">
+            <div class="why-card"><div class="wc-icon">🎬</div><div><b>Every profile starts with a video — that's the product</b><p>Video-first means video-first: the first asset on every channel is one the platform made for the member. Day one, everyone has something to watch and share.</p></div></div>
+            <div class="why-card"><div class="wc-icon">🔒</div><div><b>Public data only — approval before publish</b><p>Agents read only public profiles. Script and visuals require member approval before going live, and one click regenerates.</p></div></div>
+            <div class="why-card"><div class="wc-icon">🧠</div><div><b>Vectored on arrival</b><p>The VidiBio transcript and visuals are embedded into pgvector + the Neo4j graph immediately — every profile is searchable by meaning from minute one.</p></div></div>
+            <div class="why-card"><div class="wc-icon">🚪</div><div><b>The aha-moment hook</b><p>Nothing sells the Smart Stack like watching it build a video about <em>you</em> in 90 seconds. VidiBio is the moment that converts signups into creators.</p></div></div>
+        </div>
+
+        <div class="foot-note">Sample profile — Maya is fictional. Production pipeline: <b>GREETER-01 → ORACLE-01 → MUSE-01 → GENUI-01 → WARDEN-02 → TRANSCODE-01</b> · tracked in the <a href="vidismart-master-plan.html" style="color:#67e8f9;">Master Plan</a>, Stage 7/8.</div>
+    </div>
+
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var stages = [
+            ["Reading public profiles", "#67e8f9"],
+            ["MUSE-01 writing script", "#c084fc"],
+            ["Rendering 20s video", "#6ee7b7"],
+            ["VidiBio ready — playing", "#fbbf24"]
+        ];
+        var bar = document.getElementById("genBar");
+        var label = document.getElementById("genLabel");
+        var i = 0;
+        if (bar && label) {
+            setInterval(function () {
+                label.textContent = stages[i][0];
+                bar.style.background = stages[i][1];
+                bar.style.width = (25 * (i + 1)) + "%";
+                i = (i + 1) % 4;
+            }, 2200);
+        }
+    });
+    </script>
+</body>
+</html>
