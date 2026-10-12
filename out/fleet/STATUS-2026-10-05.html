@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>VidiFlow — Local Media Stack Status</title>
+<style>
+:root{
+  --bg:#0a0e14; --panel:#111823; --line:#1e2a38; --fg:#e6edf3; --dim:#8b9bb0;
+  --ok:#3fb950; --warn:#d29922; --bad:#f85149; --run:#58a6ff; --acc:#58a6ff;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);
+  font:15px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;padding:28px 22px}
+.wrap{max-width:1080px;margin:0 auto}
+h1{font-size:24px;margin:0 0 4px;letter-spacing:-.3px}
+.sub{color:var(--dim);font-size:13px;margin-bottom:22px}
+a{color:var(--acc);text-decoration:none;border-bottom:1px solid rgba(88,166,255,.3)}
+a:hover{border-bottom-color:var(--acc)}
+h2{font-size:14px;text-transform:uppercase;letter-spacing:.9px;color:var(--dim);
+  margin:30px 0 12px;font-weight:600}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px 18px;margin-bottom:10px}
+.row{display:flex;align-items:flex-start;gap:13px}
+.dot{width:9px;height:9px;border-radius:50%;margin-top:7px;flex:0 0 9px}
+.ok{background:var(--ok);box-shadow:0 0 8px rgba(63,185,80,.55)}
+.warn{background:var(--warn);box-shadow:0 0 8px rgba(210,153,34,.5)}
+.bad{background:var(--bad);box-shadow:0 0 8px rgba(248,81,73,.5)}
+.run{background:var(--run);box-shadow:0 0 8px rgba(88,166,255,.6);animation:p 1.7s ease-in-out infinite}
+@keyframes p{0%,100%{opacity:1}50%{opacity:.35}}
+.b{flex:1;min-width:0}
+.n{font-weight:600;font-size:15px;margin-bottom:3px}
+.d{color:var(--dim);font-size:13.5px}
+.d b{color:var(--fg);font-weight:600}
+code{background:#0d1420;border:1px solid var(--line);padding:1px 6px;border-radius:4px;
+  font:12.5px ui-monospace,Menlo,Consolas,monospace}
+pre{background:#0d1420;border:1px solid var(--line);padding:13px 15px;border-radius:8px;
+  overflow-x:auto;font:12.5px/1.5 ui-monospace,Menlo,Consolas,monospace;color:#c9d5e3}
+pre a{color:var(--acc)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:720px){.grid{grid-template-columns:1fr}}
+.tbl{width:100%;border-collapse:collapse;font-size:13.5px}
+.tbl th{text-align:left;color:var(--dim);font-weight:600;font-size:11.5px;
+  text-transform:uppercase;letter-spacing:.6px;padding:7px 10px;border-bottom:1px solid var(--line)}
+.tbl td{padding:8px 10px;border-bottom:1px solid rgba(30,42,56,.55)}
+.tbl tr:last-child td{border-bottom:none}
+.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.note{border-left:2px solid var(--acc);background:rgba(88,166,255,.05);
+  padding:11px 15px;border-radius:0 8px 8px 0;margin:14px 0;font-size:13.5px;color:#c9d5e3}
+.tag{display:inline-block;font-size:10.5px;font-weight:600;letter-spacing:.5px;
+  padding:2px 7px;border-radius:4px;border:1px solid;margin-left:7px;vertical-align:middle}
+.t-ok{color:var(--ok);border-color:rgba(63,185,80,.4);background:rgba(63,185,80,.08)}
+.t-run{color:var(--run);border-color:rgba(88,166,255,.4);background:rgba(88,166,255,.08)}
+.t-bad{color:var(--bad);border-color:rgba(248,81,73,.4);background:rgba(248,81,73,.08)}
+.t-warn{color:var(--warn);border-color:rgba(210,153,34,.4);background:rgba(210,153,34,.08)}
+ul{margin:7px 0;padding-left:19px}li{margin:4px 0;color:#c9d5e3;font-size:13.5px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>VidiFlow — Local Media Stack</h1>
+<div class="sub">RTX 4090 (24 GB) &middot; 63.7 GB RAM &middot; status as of 17:32 EDT, Oct 5 2026</div>
+
+<div class="note">
+<b>One model at a time.</b> A 24 GB card fits exactly one image model. The queue runs
+serially &mdash; load, run every item, unload, release. Your desktop stays usable.
+</div>
+
+<h2>Proven working</h2>
+
+<div class="card"><div class="row"><div class="dot ok"></div><div class="b">
+<div class="n">Speaker diarization <span class="tag t-ok">VERIFIED</span></div>
+<div class="d">NVIDIA Nemotron-3-Diarization via transformers, CUDA. <b>DER 9.57%</b> on a
+41.6 s two-voice file, 4/4 turn attribution, 17&times; realtime (2.44 s), 8 segments.
+~1 GB VRAM. Labels are anonymous &mdash; it answers <i>who spoke when</i>, not <i>who</i>.</div>
+</div></div></div>
+
+<div class="card"><div class="row"><div class="dot ok"></div><div class="b">
+<div class="n">Qwen 3.6 text model <span class="tag t-ok">VERIFIED</span></div>
+<div class="d">Tool calling confirmed, full agent loop executed on the 4090. Served by Ollama
+on <code>127.0.0.1:11434</code>. <b>Currently stopped at your instruction</b> &mdash;
+restart Ollama to bring the local text lane back up.</div>
+</div></div></div>
+
+<h2>In progress</h2>
+
+<div class="card"><div class="row"><div class="dot run"></div><div class="b">
+<div class="n">Qwen-Image-2.1 text-to-image <span class="tag t-run">RENDERING</span></div>
+<div class="d">All components verified intact &mdash; transformer 7.12 GB (F8_E4M3),
+text encoder 9.39 GB, VAE 0.68 GB; every safetensors opens cleanly. Fixed two real bugs:
+a meta-tensor load failure and a silent FP8&rarr;bf16 upcast that was inflating the
+footprint to 22.4 GB and spiking system RAM. Loaded to GPU in 34.9 s. First render was
+cut off mid-denoise at your request.</div>
+</div></div></div>
+
+<div class="card"><div class="row"><div class="dot run"></div><div class="b">
+<div class="n">LTX 2.5 feasibility <span class="tag t-run">AGENT RUNNING</span></div>
+<div class="d">Verdict is already determined by file size &mdash; see below. Agent is writing the
+full assessment plus Smart Channel CX wiring plan to
+<code>LTX-2.5-4090-ASSESSMENT.md</code>.</div>
+</div></div></div>
+
+<div class="card"><div class="row"><div class="dot run"></div><div class="b">
+<div class="n">Top 5 local image models <span class="tag t-run">AGENT RUNNING</span></div>
+<div class="d">Ranked by <b>text/typography accuracy</b> &mdash; your hard requirement after Gemini's
+spelling errors. Report &rarr; <code>TOP-5-LOCAL-IMAGE-MODELS.md</code></div>
+</div></div></div>
+
+<div class="card"><div class="row"><div class="dot run"></div><div class="b">
+<div class="n">Top 5 paid image APIs <span class="tag t-run">AGENT RUNNING</span></div>
+<div class="d">Real pricing from primary sources, same spelling-accuracy filter. Report &rarr;
+<code>PAID-IMAGE-API-BACKUP-REPORT.md</code></div>
+</div></div></div>
+
+<h2>LTX 2.5 &mdash; it does not fit, and precision is not the reason</h2>
+
+<div class="card">
+<div class="d" style="margin-bottom:11px">Real file sizes pulled from the Hugging Face API for
+<code>Lightricks/LTX-2.5</code>. Your card has <b>~22.5 GB usable</b>.</div>
+<table class="tbl">
+<tr><th>Component</th><th>INT8</th><th class="num">bf16</th></tr>
+<tr><td>Transformer (DiT)</td><td><code>comfy-int8-convrot</code></td><td class="num"><b>21.50 GB</b></td></tr>
+<tr><td>Text encoder (Gemma-4-12B)</td><td><code>comfy-int8-convrot</code></td><td class="num"><b>15.37 GB</b></td></tr>
+<tr><td colspan="2"><b>INT8 subtotal</b></td><td class="num"><b>36.87 GB</b></td></tr>
+<tr><td>Video VAE (conv)</td><td>bf16 only</td><td class="num">1.45 GB</td></tr>
+<tr><td>Audio VAE</td><td>bf16 only</td><td class="num">0.36 GB</td></tr>
+<tr><td>Spatial upscaler</td><td>bf16 only</td><td class="num">1.00 GB</td></tr>
+<tr><td colspan="2"><b>Working total</b></td><td class="num"><b>39.7 GB</b></td></tr>
+</table>
+<div class="d" style="margin-top:12px">
+<b>The transformer alone (21.50 GB) leaves no room for the 15.37 GB text encoder.</b>
+INT8 already halved it from bf16's 42.02 GB &mdash; that was your request and it is applied.
+The model is simply larger than a 24 GB card. NVFP4 is smaller (18.72 GB) but still does not
+fit, and is Blackwell-only.</div>
+</div>
+
+<div class="grid">
+<div class="card">
+<div class="n" style="margin-bottom:8px">Video on the 4090 &rarr; LTX 2.3</div>
+<div class="d" style="font-size:13px">
+<code>ltx-2.3-22b-distilled-Q4_K_S.gguf</code> &mdash; <b>13 GB, already on disk</b> in two
+locations. No download needed. Stepping back to 2.3 is the correct call for this card,
+not a precision compromise.<br><br>
+<b>Open unknown:</b> ComfyUI has no GGUF loader installed, and I have not confirmed LTX 2.3's
+<i>audio</i> nodes are present. Video nodes exist (<code>nodes_ltxv.py</code>).
+</div>
+</div>
+<div class="card">
+<div class="n" style="margin-bottom:8px">Video at production quality &rarr; Miami</div>
+<div class="d" style="font-size:13px">
+Your ops manual locks <b>2&times; Intel Arc Pro B70, 64 GB VRAM</b>, serving via vLLM XPU.
+39.7 GB fits there with room to spare.<br><br>
+<b>I cannot prove it runs.</b> Miami is behind a Cloudflare Tunnel and I have no access.
+Arc XPU support for LTX 2.5's ComfyUI nodes is also unverified &mdash; the model shipped this week.
+Treat "runs on B70" as a plan until someone renders a real clip on it.
+</div>
+</div>
+</div>
+
+<h2>Runtime</h2>
+
+<div class="card"><div class="row"><div class="dot warn"></div><div class="b">
+<div class="n">Ollama <span class="tag t-warn">STOPPED BY YOU</span></div>
+<div class="d">Port <code>11434</code> not listening, zero processes. Local text lane is offline.
+Six model blobs are also missing from disk (<code>nemotron-mini</code>, <code>qwen3-coder</code>,
+<code>qwen3-coder-next</code>, <code>qwen3-vl:30b</code>, <code>Orpheus</code>, 2&times; HF GGUFs) &mdash;
+manifests exist, weight files do not. Your three working models were clean.</div>
+</div></div></div>
+
+<div class="card"><div class="row"><div class="dot ok"></div><div class="b">
+<div class="n">Still up</div>
+<div class="d">Kumiho CE <code>:9190</code> &middot; Neo4j <code>:7474</code> &middot;
+GPU <b>1,328 MiB used of 23,028</b> &mdash; nothing resident.<br>
+Fleet dashboard <code>:8790</code> is <b>down</b> and needs restarting if you want the console.</div>
+</div></div></div>
+
+<h2>Reproduce the image render</h2>
+<pre><a href="https://huggingface.co/unsloth/Qwen-Image-2.1-FP8">huggingface.co/unsloth/Qwen-Image-2.1-FP8</a>
+<a href="https://huggingface.co/Lightricks/LTX-2.5">huggingface.co/Lightricks/LTX-2.5</a>
+<a href="https://github.com/Lightricks/LTX-2">github.com/Lightricks/LTX-2</a>
+
+# image batch &mdash; one at a time, unload between items
+cd /c/Users/James/vidi-image-local
+env -u PYTHONPATH \
+  "C:/Users/James/.unsloth/studio/unsloth_studio/Scripts/python.exe" \
+  -u generate.py "your prompt" --device cuda -s 1024 -n 20
+
+# speaker diarization
+cd /c/Users/James/nemo-diar &amp;&amp; env -u PYTHONPATH \
+  ./venv/Scripts/python.exe diarize_hf.py &lt;audio.wav&gt;</pre>
+
+<p style="color:#8b9bb0;font-size:12.5px;margin-top:26px">
+Built from live measurements only &mdash; no estimates presented as facts.</p>
+</div>
+</body>
+</html>

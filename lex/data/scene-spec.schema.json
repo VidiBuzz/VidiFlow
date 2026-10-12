@@ -1,0 +1,173 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://vidismart.com/schemas/lexi-scene-spec-v1.json",
+  "title": "LEX Scene Spec v1",
+  "description": "Locked scene specification handed off from LTX Desktop drafting (Windows 4090) to the MiniMax H3 local render worker (Miami B70). The orchestrator stores/queues only this spec + job status; it never links the two apps directly. Stored in lexi_terms.scene_spec (jsonb).",
+  "type": "object",
+  "required": ["spec_version", "term", "prompt", "duration_s", "fps", "beats", "resolution", "output"],
+  "additionalProperties": false,
+  "properties": {
+    "spec_version": { "const": "1.0" },
+    "term": {
+      "type": "object",
+      "required": ["acr"],
+      "properties": {
+        "acr": { "type": "string", "minLength": 1 },
+        "full": { "type": "string" }
+      }
+    },
+    "draft": {
+      "type": "object",
+      "description": "Provenance of the PROTOTYPE phase on LTX Desktop (4090).",
+      "properties": {
+        "engine": { "const": "ltx-desktop" },
+        "host": { "type": "string", "description": "e.g. windows-4090" },
+        "operator": { "type": "string" },
+        "preview_local_path": { "type": "string", "description": "Local draft preview file; not published." },
+        "drafted_at": { "type": "string", "format": "date-time" },
+        "iterations": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "prompt": {
+      "type": "object",
+      "required": ["natural", "h3_structured", "h3_text"],
+      "description": "H3-Context-IR is NOT in the open-source release, so the structured H3 prompt must be authored/emitted here, not at render time.",
+      "properties": {
+        "natural": { "type": "string", "description": "Human-readable scene prompt (conceptDesc + direction)." },
+        "h3_structured": {
+          "type": "object",
+          "required": ["subject", "motion", "camera", "style"],
+          "properties": {
+            "subject": { "type": "string" },
+            "scene": { "type": "string" },
+            "motion": { "type": "string" },
+            "camera": { "type": "string" },
+            "lighting": { "type": "string" },
+            "style": { "type": "string" },
+            "audio": { "type": "string", "description": "Native stereo audio direction (H3 generates audio)." }
+          }
+        },
+        "h3_text": { "type": "string", "description": "Flattened structured prompt actually fed to H3." },
+        "negative": { "type": "string" }
+      }
+    },
+    "keyframes": {
+      "type": "array",
+      "description": "Reference images for FL2VA (first/last frame) or Ref2VA. Checkpoints are non-interchangeable; declare the mode.",
+      "items": {
+        "type": "object",
+        "required": ["role", "source"],
+        "properties": {
+          "role": { "enum": ["first", "last", "reference"] },
+          "source": { "type": "string", "description": "R2 key (images/lexi/<ACR>.jpg) or local path at draft time." },
+          "note": { "type": "string" }
+        }
+      }
+    },
+    "h3_checkpoint": {
+      "enum": ["FL2VA", "Ref2VA"],
+      "default": "FL2VA",
+      "description": "FL2VA = T2V/I2V/first-last-frame; Ref2VA = reference-driven. Separate checkpoints."
+    },
+    "duration_s": { "type": "number", "exclusiveMinimum": 0, "maximum": 15, "description": "H3 open-weights ceiling: 15 s." },
+    "fps": { "const": 24 },
+    "beats": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 4,
+      "description": "Camera/motion beats derived from the term's flow[4] shot list.",
+      "items": {
+        "type": "object",
+        "required": ["beat", "title"],
+        "properties": {
+          "beat": { "type": "integer", "minimum": 1, "maximum": 4 },
+          "title": { "type": "string" },
+          "desc": { "type": "string" },
+          "camera": { "type": "string", "description": "Camera move for this beat, e.g. slow push-in, orbit left." },
+          "motion": { "type": "string", "description": "Subject/scene motion for this beat." },
+          "time_range_s": {
+            "type": "array", "items": { "type": "number" }, "minItems": 2, "maxItems": 2,
+            "description": "[start, end] seconds within the clip."
+          },
+          "active": { "type": "boolean", "description": "Mirrors flow[4] active step (the engine)." }
+        }
+      }
+    },
+    "resolution": {
+      "type": "object",
+      "required": ["native", "target"],
+      "properties": {
+        "native": { "const": "768p", "description": "Open-weights ceiling; native 2K is the closed hosted H3-Regenerate-2K stage." },
+        "target": { "enum": ["720p", "1080p"] },
+        "upscale": {
+          "type": "object",
+          "properties": {
+            "method": { "enum": ["esrgan", "dat", "none"], "default": "esrgan" },
+            "note": { "type": "string" }
+          }
+        }
+      }
+    },
+    "seed": { "type": ["integer", "null"] },
+    "audio": {
+      "type": "object",
+      "properties": {
+        "native_stereo": { "type": "boolean", "default": true },
+        "note": { "type": "string" }
+      }
+    },
+    "encode": {
+      "type": "object",
+      "properties": {
+        "codec": { "const": "h265" },
+        "container": { "const": "mp4" },
+        "max_mb": { "type": "number", "default": 15 }
+      }
+    },
+    "output": {
+      "type": "object",
+      "required": ["r2_key", "cdn_url"],
+      "properties": {
+        "r2_bucket": { "const": "vidismart", "default": "vidismart" },
+        "r2_key": { "type": "string", "pattern": "^videos/lexi/.+\\.mp4$" },
+        "cdn_url": { "type": "string", "pattern": "^https://cdn\\.vidi\\.news/videos/lexi/.+\\.mp4$" }
+      }
+    },
+    "quality": {
+      "enum": ["draft", "standard", "premium"],
+      "description": "draft = LTX-only; standard = H3 default settings; premium = H3 max settings + upscale (the DELEGATE path)."
+    },
+    "approval": {
+      "type": "object",
+      "description": "APPROVE gate. Nothing renders until approved (manual-in-Directus vs auto-queue is an open user decision).",
+      "properties": {
+        "status": { "enum": ["pending", "approved", "rejected"] },
+        "approved_by": { "type": "string" },
+        "approved_at": { "type": "string", "format": "date-time" },
+        "notes": { "type": "string" }
+      }
+    },
+    "render": {
+      "type": "object",
+      "description": "DELEGATE/FINISH state written by the orchestrator + H3 worker. Never written by the draft app.",
+      "properties": {
+        "engine": { "enum": ["h3-local-miami", "h3-local-4090-fallback"] },
+        "worker_job_id": { "type": "string" },
+        "queue": { "type": "string", "default": "lex:h3:render" },
+        "attempts": { "type": "integer", "minimum": 0 },
+        "last_error": { "type": ["string", "null"] },
+        "rendered_at": { "type": "string", "format": "date-time" }
+      }
+    },
+    "review": {
+      "type": "object",
+      "description": "HUMAN REVIEW. Reject loops back to DRAFT with notes.",
+      "properties": {
+        "result": { "enum": ["accept", "reject"] },
+        "notes": { "type": "string" },
+        "reviewed_by": { "type": "string" },
+        "reviewed_at": { "type": "string", "format": "date-time" }
+      }
+    }
+  }
+}

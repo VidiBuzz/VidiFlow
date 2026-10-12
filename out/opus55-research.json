@@ -1,0 +1,16 @@
+{
+  "cost_implication": "When Grok Bot routes a request to Claude Opus 5.5, billing follows the serving model's pricing ($4/input, $20/output per million tokens). This bills against the user's xAI account / $100 credit, not separately. Grok's own models (grok-4.7: $2/$6 per MTok, grok-4.6: $2/$6 per MTok) are cheaper when they suffice.",
+  "evidence": [
+    "Elon Musk announced on October 7, 2026 that Grok Bot will route to Claude Opus 5.5, Midjourney and Suno for tasks where they excel: https://x.com/elonmusk/status/2107894231922876510",
+    "Grok Bot has no customer-facing model picker; model is chosen per task by the product: https://cursor.com/help/grok-bot/faqs",
+    "xAI API model catalog only lists Grok models (grok-4.7, grok-4.6, grok-3, grok-3-mini, grok-2-image-1212): https://docs.x.ai/developers/release-notes",
+    "Claude Opus 5.5 pricing at $4/$20 per MTok: https://cellcog.ai/blog/grok-bot-claude-opus-5-5/",
+    "Grok 4.7 pricing at $2/$6 per MTok on xAI API: https://docs.x.ai/overview"
+  ],
+  "exists": true,
+  "fallback_recipe": "Use Grok with Expert Mode toggle + 'respond as a world-class reviewer' prompt pattern. In Grok.com UI: toggle Expert Mode (Heavy mode) for deeper reasoning. In Grok Build TUI: use /model grok-4.7 slash command. Prompt pattern: 'As a world-class reviewer, evaluate this work for correctness, completeness, and edge cases.' This does not force Opus 5.5 but elicits best-effort reasoning from whichever model Grok selects.",
+  "feature_name": "Grok Bot automatic model routing (task-based delegation to third-party models including Claude Opus 5.5)",
+  "programmatic_access": "NOT available. The xAI API (POST /v1/chat/completions) only accepts Grok model IDs (grok-4.7, grok-4.6, grok-3, etc.). Passing claude-opus-5-5 or anthropic/claude-opus-5-5 as the model parameter will fail with a 404, as those models are not in the xAI catalog. No model-id or toggle in the API can force Opus 5.5 routing; routing is entirely product-managed in Grok Bot.",
+  "recommended_recipe": "For the fleet's $100 xAI accounts: (1) Use grok.com UI with Expert Mode/Heavy Mode toggled on for complex code/design review work — this prompts Grok Bot to select deeper reasoning models (which may include Opus 5.5 auto-routed). (2) In Grok Build TUI, use /model grok-4.7 to select Grok's flagship model explicitly. (3) As prompt pattern, preface requests with 'As a world-class reviewer, evaluate this for...' to elicit thorough analysis from whatever model Grok selects. (4) Fallback: if Opus 5.5 routing is essential and cannot be auto-routed, use a separate Anthropic Claude Opus 5.5 API key directly (billed separately, not through xAI credit).",
+  "summary": "xAI Grok now auto-routes to Claude Opus 5.5 for complex tasks (announced Oct 7, 2026), but there is NO user-facing way to force it — not on grok.com UI, not via the xAI API. The routing is automatic, task-based, and product-managed. The xAI API catalog contains only Grok models (grok-4.7, grok-4.6, grok-3). Billing follows the serving model ($4/$20 per MTok for Opus 5.5, $2/$6 for Grok 4.7). Fleet should use Grok Expert Mode + 'world-class reviewer' prompt pattern as the practical workaround, since programmatic forcing of Opus 5.5 through the xAI API is not possible."
+}

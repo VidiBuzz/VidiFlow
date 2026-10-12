@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VidiShop Interface Specification — Animated Blueprint</title>
+    <style>
+        :root {
+            --bg: #030712; --surface: #0b0f19; --surface-bright: #161e2e;
+            --text-primary: #ffffff; --text-secondary: #94a3b8;
+            --blue: #3b82f6; --emerald: #10b981; --amber: #f59e0b;
+            --red: #ef4444; --purple: #a855f7; --cyan: #06b6d4;
+            --border: rgba(255,255,255,0.1);
+            --font: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background: var(--bg); color: var(--text-primary); font-family: var(--font); line-height: 1.5; overflow-x: hidden; }
+
+        /* ── HERO ─────────────────────────────────────────────── */
+        .hero { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 2rem; position: relative; overflow: hidden; }
+        .hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 30%, rgba(59,130,246,0.12) 0%, transparent 60%); pointer-events: none; }
+        .hero-badge { font-size: 0.65rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.2em; color: var(--blue); border: 1px solid rgba(59,130,246,0.3); padding: 6px 16px; border-radius: 20px; margin-bottom: 2rem; animation: fadeInUp 0.8s ease both; }
+        .hero h1 { font-size: clamp(2.5rem, 6vw, 5rem); font-weight: 950; letter-spacing: -0.04em; line-height: 1.05; margin-bottom: 1.5rem; animation: fadeInUp 0.8s ease 0.2s both; }
+        .hero h1 span { background: linear-gradient(135deg, var(--blue), var(--cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .hero p { font-size: 1.15rem; color: var(--text-secondary); max-width: 600px; margin-bottom: 2.5rem; animation: fadeInUp 0.8s ease 0.4s both; }
+        .hero-tagline { font-size: 0.75rem; font-weight: 800; color: var(--emerald); text-transform: uppercase; letter-spacing: 0.15em; animation: fadeInUp 0.8s ease 0.6s both; }
+
+        /* ── SECTION ──────────────────────────────────────────── */
+        .section { padding: 6rem 2rem; max-width: 1400px; margin: 0 auto; }
+        .section-label { font-size: 0.65rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.2em; color: var(--blue); margin-bottom: 1rem; }
+        .section h2 { font-size: clamp(1.8rem, 4vw, 3rem); font-weight: 950; letter-spacing: -0.03em; margin-bottom: 1rem; }
+        .section h2 span { color: var(--blue); }
+        .section > p { color: var(--text-secondary); font-size: 1rem; max-width: 700px; margin-bottom: 3rem; }
+
+        /* ── SVG CONTAINER ────────────────────────────────────── */
+        .flow-container { background: var(--surface); border: 1px solid var(--border); border-radius: 24px; padding: 2rem; overflow: hidden; position: relative; }
+        .flow-container::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at 30% 20%, rgba(59,130,246,0.06) 0%, transparent 50%); pointer-events: none; }
+        .flow-svg { width: 100%; height: auto; display: block; }
+
+        /* ── ANIMATIONS ───────────────────────────────────────── */
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideInLeft { from { opacity: 0; transform: translateX(-60px); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes slideInRight { from { opacity: 0; transform: translateX(60px); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes slideInDown { from { opacity: 0; transform: translateY(-40px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes pulseGlow { 0%, 100% { filter: drop-shadow(0 0 4px rgba(59,130,246,0.3)); } 50% { filter: drop-shadow(0 0 16px rgba(59,130,246,0.7)); } }
+        @keyframes pulseGreen { 0%, 100% { filter: drop-shadow(0 0 4px rgba(16,185,129,0.3)); } 50% { filter: drop-shadow(0 0 16px rgba(16,185,129,0.7)); } }
+        @keyframes pulseAmber { 0%, 100% { filter: drop-shadow(0 0 4px rgba(245,158,11,0.3)); } 50% { filter: drop-shadow(0 0 16px rgba(245,158,11,0.7)); } }
+        @keyframes flowDash { to { stroke-dashoffset: -20; } }
+        @keyframes flowDashSlow { to { stroke-dashoffset: -30; } }
+        @keyframes typingCursor { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+        @keyframes barFill { from { width: 0; } }
+        @keyframes scaleIn { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
+        @keyframes cardAppear { from { opacity: 0; transform: translateY(20px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
+
+        /* ── PRODUCT CARDS (in SVG) ───────────────────────────── */
+        .prod-card { cursor: pointer; transition: transform 0.2s; }
+        .prod-card:hover { transform: translateY(-4px); }
+
+        /* ── PHILOSOPHY CARDS ─────────────────────────────────── */
+        .phil-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-top: 2rem; }
+        .phil-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 1.5rem; transition: all 0.3s; }
+        .phil-card:hover { border-color: var(--blue); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(59,130,246,0.15); }
+        .phil-card h3 { font-size: 0.9rem; font-weight: 800; margin-bottom: 0.5rem; }
+        .phil-card p { font-size: 0.8rem; color: var(--text-secondary); line-height: 1.5; }
+
+        /* ── DIVIDER ──────────────────────────────────────────── */
+        .divider { height: 1px; background: linear-gradient(90deg, transparent, var(--border), transparent); margin: 0 auto; max-width: 800px; }
+
+        /* ── FOOTER ───────────────────────────────────────────── */
+        .footer { text-align: center; padding: 4rem 2rem; color: var(--text-secondary); font-size: 0.75rem; }
+    </style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════════════════════════════════
+     HERO
+     ════════════════════════════════════════════════════════════════ -->
+<section class="hero">
+    <div class="hero-badge">Interface Specification v1.0</div>
+    <h1>VidiShop<br><span>Visual-First Commerce</span></h1>
+    <p>AI filters 10,000 products down to 8. Each of the 8 gets a visual. User picks visually. Nobody reads text.</p>
+    <div class="hero-tagline">Search Becomes The Store</div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ════════════════════════════════════════════════════════════════
+     SECTION 1: DESIGN PHILOSOPHY
+     ════════════════════════════════════════════════════════════════ -->
+<section class="section">
+    <div class="section-label">01 — Design Philosophy</div>
+    <h2>The <span>Visual-First</span> Principle</h2>
+    <p>Every product, every result, every comparison gets an image. Text is secondary. AI handles complexity. Users pick visually.</p>
+
+    <div class="phil-grid">
+        <div class="phil-card" style="animation: fadeInUp 0.6s ease 0.1s both;">
+            <h3 style="color:var(--blue);">1. AI Filters</h3>
+            <p>10,000 products narrowed to 7-8 options by intent, budget, category, and visual similarity.</p>
+        </div>
+        <div class="phil-card" style="animation: fadeInUp 0.6s ease 0.2s both;">
+            <h3 style="color:var(--emerald);">2. Visual Gallery</h3>
+            <p>Each option = product image + price + 1-line name. No text-only cards ever.</p>
+        </div>
+        <div class="phil-card" style="animation: fadeInUp 0.6s ease 0.3s both;">
+            <h3 style="color:var(--amber);">3. User Picks Visually</h3>
+            <p>Tap an image. See details. Add to cart. No scrolling through text descriptions.</p>
+        </div>
+        <div class="phil-card" style="animation: fadeInUp 0.6s ease 0.4s both;">
+            <h3 style="color:var(--purple);">4. AI Handles Complexity</h3>
+            <p>Pricing, comparison, trust scoring, vendor matching — all invisible to the user.</p>
+        </div>
+    </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ════════════════════════════════════════════════════════════════
+     SECTION 2: AI SEARCH → VISUAL GALLERY FLOW
+     ════════════════════════════════════════════════════════════════ -->
+<section class="section">
+    <div class="section-label">02 — AI Search Flow</div>
+    <h2>From Intent to <span>Visual Gallery</span></h2>
+    <p>User expresses intent. AI filters 10,000 products. Visual gallery appears with 8 ranked options.</p>
+
+    <div class="flow-container">
+        <svg class="flow-svg" viewBox="0 0 1200 700" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <linearGradient id="blueGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:0.8"/>
+                    <stop offset="100%" style="stop-color:#06b6d4;stop-opacity:0.8"/>
+                </linearGradient>
+                <linearGradient id="greenGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" style="stop-color:#10b981;stop-opacity:0.8"/>
+                    <stop offset="100%" style="stop-color:#34d399;stop-opacity:0.8"/>
+                </linearGradient>
+                <filter id="glow"><feGaussianBlur stdDeviation="3" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+                <filter id="glowGreen"><feGaussianBlur stdDeviation="4" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+            </defs>
+
+            <!-- ── NODE 1: USER INPUT (3 sources) ──────────── -->
+            <g opacity="0">
+                <animate attributeName="opacity" from="0" to="1" dur="0.5s" begin="0.2s" fill="freeze"/>
+                <!-- Voice -->
+                <rect x="30" y="40" width="160" height="70" rx="12" fill="#0b0f19" stroke="#3b82f6" stroke-width="1.5"/>
+                <text x="110" y="68" text-anchor="middle" fill="#3b82f6" font-size="22">🎤</text>
+                <text x="110" y="92" text-anchor="middle" fill="white" font-size="11" font-weight="700">Voice Input</text>
+                <!-- Text -->
+                <rect x="30" y="130" width="160" height="70" rx="12" fill="#0b0f19" stroke="#3b82f6" stroke-width="1.5"/>
+                <text x="110" y="158" text-anchor="middle" fill="#3b82f6" font-size="22">⌨️</text>
+                <text x="110" y="182" text-anchor="middle" fill="white" font-size="11" font-weight="700">Text Search</text>
+                <!-- Image -->
+                <rect x="30" y="220" width="160" height="70" rx="12" fill="#0b0f19" stroke="#3b82f6" stroke-width="1.5"/>
+                <text x="110" y="248" text-anchor="middle" fill="#3b82f6" font-size="22">📷</text>
+                <text x="110" y="272" text-anchor="middle" fill="white" font-size="11" font-weight="700">Image Upload</text>
+            </g>
+
+            <!-- ── FLOW LINES: Input → Parser ──────────────── -->
+            <g opacity="0">
+                <animate attributeName="opacity" from="0" to="1" dur="0.3s" begin="0.8s" fill="freeze"/>
+                <path d="M190,75 C260,75 260,155 330,155" stroke="url(#blueGrad)" stroke-width="2" stroke-dasharray="6 4" fill="none">
+                    <animate attributeName="stroke-dashoffset" from="0" to="-20" dur="1.5s" repeatCount="indefinite"/>
+                </path>
+                <path d="M190,165 L330,165" stroke="url(#blueGrad)" stroke-width="2" stroke-dasharray="6 4" fill="none">
+                    <animate attributeName="stroke-dashoffset" from="0" to="-20" dur="1.5s" repeatCount="indefinite"/>
+                </path>
+                <path d="M190,255 C260,255 260,175 330,175" stroke="url(#blueGrad)" stroke-width="2" stroke-dasharray="6 4" fill="none">
+                    <animate attributeName="stroke-dashoffset" from="0" to="-20" dur="1.5s" repeatCount="indefinite"/>
+                </path>
+            </g>
+
+            <!-- ── NODE 2: AI INTENT PARSER ────────────────── -->
+            <g opacity="0" filter="url(#glow)">
+                <animate attributeName="opacity" from="0" to="1" dur="0.5s" begin="1.2s" fill="freeze"/>
+                <rect x="330" y="115" width="200" height="100" rx="16" fill="#0b0f19" stroke="#a855f7" stroke-width="2"/>
+                <text x="430" y="148" text-anchor="middle" fill="#a855f7" font-size="13" font-weight="900">AI INTENT PARSER</text>
+                <text x="430" y="170" text-anchor="middle" fill="#94a3b8" font-size="10">CLIP / Jina Embeddings</text>
+                <text x="430" y="188" text-anchor="middle" fill="#94a3b8" font-size="10">Category · Budget · Style</text>
+                <!-- Pulse dot -->
+                <circle cx="430" cy="205" r="4" fill="#a855f7">
+                    <animate attributeName="r" values="3;6;3" dur="2s" repeatCount="indefinite"/>
+                    <animate attributeName="opacity" values="0.5;1;0.5" dur="2s" repeatCount="indefinite"/>
+                </circle>
+            </g>
+
+            <!-- ── FLOW LINE: Parser → Vespa ───────────────── -->
+            <g opacity="0">
+                <animate attributeName="opacity" from="0" to="1" dur="0.3s" begin="1.8s" fill="freeze"/>
+                <path d="M430,215 L430,280" stroke="url(#blueGrad)" stroke-width="2" stroke-dasharray="6 4" fill="none">
+                    <animate attributeName="stroke-dashoffset" from="0" to="-20" dur="1.5s" repeatCount="indefinite"/>
+                </path>
+            </g>
+
+            <!-- ── NODE 3: VESPA TENSOR SEARCH ─────────────── -->
+            <g opacity="0" filter="url(#glow)">
+                <animate attributeName="opacity" from="0" to="1" dur="0.5s" begin="2.1s" fill="freeze"/>
+                <rect x="330" y="280" width="200" height="100" rx="16" fill="#0b0f19" stroke="#06b6d4" stroke-width="2"/>
+                <text x="430" y="313" text-anchor="middle" fill="#06b6d4" font-size="13" font-weight="900">VESPA SEARCH</text>
+                <text x="430" y="335" text-anchor="middle" fill="#94a3b8" font-size="10">10,000 products</text>
+                <text x="430" y="353" text-anchor="middle" fill="#94a3b8" font-size="10">↓ visual similarity</text>
+                <text x="430" y="371" text-anchor="middle" fill="#10b981" font-size="11" font-weight="800">→ 8 results</text>
+            </g>
+
+            <!-- ── FLOW LINE: Vespa → Gallery ──────────────── -->
+            <g opacity="0">
+                <animate attributeName="opacity" from="0" to="1" dur="0.3s" begin="2.7s" fill="freeze"/>
+                <path d="M530,330 C600,330 600,330 660,330" stroke="url(#greenGrad)" stroke-width="2.5" stroke-dasharray="8 4" fill="none">
+                    <animate attributeName="stroke-dashoffset" from="0" to="-24" dur="1.2s" repeatCount="indefinite"/>
+                </path>
+                <!-- Arrow head -->
+                <polygon points="655,322 668,330 655,338" fill="#10b981" opacity="0">
+                    <animate attributeName="opacity" from="0" to="1" dur="0.3s" begin="2.9s" fill="freeze"/>
+                </polygon>
+            </g>
+
+            <!-- ── NODE 4: VISUAL GALLERY (8 product cards) ── -->
+            <g opacity="0">
+                <animate attributeName="opacity" from="0" to="1" dur="0.5s" begin="3s" fill="freeze"/>
+                <text x="680" y="245" fill="#10b981" font-size="11" font-weight="900" text-transform="uppercase" letter-spacing="0.15em">VISUAL GALLERY</text>
+
+                <!-- Row 1: 4 cards -->
+                <g class="prod-card">
+                    <animate attributeName="opacity" from="0" to="1" dur="0.4s" begin="3.2s" fill="freeze"/>
+                    <animateTransform attributeName="transform" type="translate" from="0,20" to="0,0" dur="0.4s" begin="3.2s" fill="freeze"/>
+                    <rect x="660" y="260" width="120" height="140" rx="10" fill="#161e2e" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+                    <image href="hardware/gpu-rtx4090.jpg" x="668" y="268" width="104" height="70" preserveAspectRatio="xMidYMid slice" clip-path="inset(0 round 6px)"/>
+                    <text x="720" y="355" text-anchor="middle" fill="white" font-size="9" font-weight="800">RTX 4090</text>
+                    <text x="720" y="370" text-anchor="middle" fill="#94a3b8" font-size="9">$1,799</text>
+                    <text x="720" y="388" text-anchor="middle" fill="#10b981" font-size="8" font-weight="800">★ 94%</text>
+                </g>
+
+                <g class="prod-card">
+                    <animate attributeName="opacity" from="0" to="1" dur="0.4s" begin="3.35s" fill="freeze"/>
+                    <animateTransform attributeName="transform" type="translate" from="0,20" to="0,0" dur="0.4s" begin="3.35s" fill="freeze"/>
+                    <rect x="790" y="260" width="120" height="140" rx="10" fill="#161e2e" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+                    <image href="hardware/gpu-rtx-a6000-ada.jpg" x="798" y="268" width="104" height="70" preserveAspectRatio="xMidYMid slice" clip-path="inset(0 round 6px)"/>
+                    <text x="850" y="355" text-anchor="middle" fill="white" font-size="9" font-weight="800">RTX A6000</text>
+                    <text x="850" y="370" text-anchor="middle" fill="#94a3b8" font-size="9">$3,499</text>
+                    <text x="850" y="388" text-anchor="middle" fill="#10b981" font-size="8" font-weight="800">★ 87%</text>
+                </g>
+
+                <g class="prod-card">
+                    <animate attributeName="opacity" from="0" to="1" dur="0.4s" begin="3.5s" fill="freeze"/>
+                    <animateTransform attributeName="transform" type="translate" from="0,20" to="0,0" dur="0.4s" begin="3.5s" fill="freeze"/>
+                    <rect x="920" y="260" width="120" height="140" rx="10" fill="#161e2e" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+                    <image href="hardware/gpu-rtx6000ada.jpg" x="928" y="268" width="104" height="70" preserveAspectRatio="xMidYMid slice" clip-path="inset(0 round 6px)"/>
+                    <text x="980" y="355" text-anchor="middle" fill="white" font-size="9" font-weight="800">RTX 6000 Ada</text>
+                    <text x="980" y="370" text-anchor="middle" fill="#94a3b8" font-size="9">$6,799</text>
+                    <text x="980" y="388" text-anchor="middle" fill="#10b981" font-size="8" font-weight="800">★ 82%</text>
+                </g>
+
+                <g class="prod-card">
+                    <animate attributeName="opacity" from="0" to="1" dur="0.4s" begin="3.65s" fill="freeze"/>
+                    <animateTransform attributeName="transform" type="translate" from="0,20" to="0,0" dur="0.4s" begin="3.65s" fill="freeze"/>
+                    <rect x="1050" y="260" width="120" height="140" rx="10" fill="#161e2e" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+                    <image href="hardware/gpu-h100-pcie.jpg" x="1058" y="268" width="104" height="70" preserveAspectRatio="xMidYMid slice" clip-path="inset(0 round 6px)"/>
+                    <text x="1110" y="355" text-anchor="middle" fill="white" font-size="9" font-weight="800">H100 PCIe</text>
+                    <text x="1110" y="370" text-anchor="middle" fill="#94a3b8" font-size="9">$24,999</text>
+                    <text x="1110" y="388" text-anchor="middle" fill="#10b981" font-size="8" font-weight="800">★ 79%</text>
+                </g>
+
+                <!-- Row 2: 4 cards -->
+                <g class="prod-card">
+                    <animate attributeName="opacity" from="0" to="1" dur="0.4s" begin="3.8s" fill="freeze"/>
+                    <animateTransform attributeName="transform" type="translate" from="0,20" to="0,0" dur="0.4s" begin="3.8s" fill="freeze"/>
+                    <rect x="660" y="410" width="120" height="140" rx="10" fill="#161e2e" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+                    <image href="hardware/gpu-arc-b70.jpg" x="668" y="418" width="104" height="70" preserveAspectRatio="xMidYMid slice" clip-path="inset(0 round 6px)"/>
+                    <text x="720" y="505" text-anchor="middle" fill="white" font-size="9" font-weight="800">Arc B70</text>
+                    <text x="720" y="520" text-anchor="middle" fill="#94a3b8" font-size="9">$949</text>
+                    <text x="720" y="538" text-anchor="middle" fill="#10b981" font-size="8" font-weight="800">★ 76%</text>
+                </g>
+
+                <g class="prod-card">
+                    <animate attributeName="opacity" from="0" to="1" dur="0.4s" begin="3.95s" fill="freeze"/>
+                    <animateTransform attributeName="transform" type="translate" from="0,20" to="0,0" dur="0.4s" begin="3.95s" fill="freeze"/>
+                    <rect x="790" y="410" width="120" height="140" rx="10" fill="#161e2e" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+                    <image href="hardware/cpu-7845wx.jpg" x="798" y="418" width="104" height="70" preserveAspectRatio="xMidYMid slice" clip-path="inset(0 round 6px)"/>
+                    <text x="850" y="505" text-anchor="middle" fill="white" font-size="9" font-weight="800">TR 7845WX</text>
+                    <text x="850" y="520" text-anchor="middle" fill="#94a3b8" font-size="9">$649</text>
+                    <text x="850" y="538" text-anchor="middle" fill="#10b981" font-size="8" font-weight="800">★ 74%</text>
+                </g>
+
+                <g class="prod-card">
+                    <animate attributeName="opacity" from="0" to="1" dur="0.4s" begin="4.1s" fill="freeze"/>
+                    <animateTransform attributeName="transform" type="translate" from="0,20" to="0,0" dur="0.4s" begin="4.1s" fill="freeze"/>
+                    <rect x="920" y="410" width="120" height="140" rx="10" fill="#161e2e" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+                    <image href="hardware/mobo-wrx90.jpg" x="928" y="418" width="104" height="70" preserveAspectRatio="xMidYMid slice" clip-path="inset(0 round 6px)"/>
+                    <text x="980" y="505" text-anchor="middle" fill="white" font-size="9" font-weight="800">WRX90 SAGE</text>
+                    <text x="980" y="520" text-anchor="middle" fill="#94a3b8" font-size="9">$1,299</text>
+                    <text x="980" y="538" text-anchor="middle" fill="#10b981" font-size="8" font-weight="800">★ 71%</text>
+                </g>
+
+                <g class="prod-card">
+                    <animate attributeName="opacity" from="0" to="1" dur="0.4s" begin="4.25s" fill="freeze"/>
+                    <animateTransform attributeName="transform" type="translate" from="0,20" to="0,0" dur="0.4s" begin="4.25s" fill="freeze"/>
+                    <rect x="1050" y="410" width="120" height="140" rx="10" fill="#161e2e" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+                    <image href="hardware/case-define7xl.jpg" x="1058" y="418" width="104" height="70" preserveAspectRatio="xMidYMid slice" clip-path="inset(0 round 6px)"/>
+                    <text x="1110" y="505" text-anchor="middle" fill="white" font-size="9" font-weight="800">Define 7 XL</text>
+                    <text x="1110" y="520" text-anchor="middle" fill="#94a3b8" font-size="9">$239</text>
+                    <text x="1110" y="538" text-anchor="middle" fill="#10b981" font-size="8" font-weight="800">★ 68%</text>
+                </g>
+            </g>
+
+            <!-- ── FLOW: Gallery → Product Detail ──────────── -->
+            <g opacity="0">
+                <animate attributeName="opacity" from="0" to="1" dur="0.3s" begin="4.5s" fill="freeze"/>
+                <path d="M720,400 L720,580" stroke="url(#greenGrad)" stroke-width="2" stroke-dasharray="6 4" fill="none">
+                    <animate attributeName="stroke-dashoffset" from="0" to="-20" dur="1.5s" repeatCount="indefinite"/>
+                </path>
+                <text x="730" y="490" fill="#94a3b8" font-size="9" font-style="italic">user taps</text>
+            </g>
+
+            <!-- ── NODE 5: PRODUCT DETAIL ──────────────────── -->
+            <g opacity="0">
+                <animate attributeName="opacity" from="0" to="1" dur="0.5s" begin="4.8s" fill="freeze"/>
+                <rect x="620" y="580" width="300" height="110" rx="16" fill="#0b0f19" stroke="#10b981" stroke-width="2"/>
+                <text x="640" y="605" fill="#10b981" font-size="10" font-weight="900">PRODUCT DETAIL</text>
+                <text x="640" y="625" fill="white" font-size="12" font-weight="800">NVIDIA GeForce RTX 4090 24GB</text>
+                <text x="640" y="645" fill="#94a3b8" font-size="10">Matches 94% of your intent</text>
+                <text x="640" y="665" fill="white" font-size="14" font-weight="900">$1,799</text>
+                <rect x="820" y="648" width="80" height="28" rx="6" fill="#10b981"/>
+                <text x="860" y="666" text-anchor="middle" fill="white" font-size="10" font-weight="800">ADD</text>
+            </g>
+        </svg>
+    </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ════════════════════════════════════════════════════════════════
+     SECTION 3: CONFIGURATOR FLOW
+     ════════════════════════════════════════════════════════════════ -->
+<section class="section">
+    <div class="section-label">03 — Configurator Flow</div>
+    <h2>Interactive <span>Component Selection</span></h2>
+    <p>Hover a component card. Spotlight image updates. Name and price appear. Click to select. Visual feedback on every interaction.</p>
+
+    <div class="flow-container">
+        <svg class="flow-svg" viewBox="0 0 1200 600" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <linearGradient id="hoverLine" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:0"/>
+                    <stop offset="50%" style="stop-color:#3b82f6;stop-opacity:0.8"/>
+                    <stop offset="100%" style="stop-color:#3b82f6;stop-opacity:0"/>
+                </linearGradient>
+            </defs>
+
+            <!-- ── LEFT PANEL: Component Grid ──────────────── -->
+            <g opacity="0">
+                <animate attributeName="opacity" from="0" to="1" dur="0.5s" begin="0.3s" fill="freeze"/>
+                <text x="40" y="40" fill="#3b82f6" font-size="11" font-weight="900" letter-spacing="0.15em">COMPONENT SELECTION</text>
+
+                <!-- Chassis cards row -->
+                <g>
+                    <animateTransform attributeName="transform" type="translate" from="-40,0" to="0,0" dur="0.5s" begin="0.5s" fill="freeze"/>
+                    <rect x="40" y="55" width="140" height="100" rx="10" fill="#161e2e" stroke="#3b82f6" stroke-width="2"/>
+                    <image href="hardware/case-define7xl.jpg" x="48" y="63" width="124" height="50" preserveAspectRatio="xMidYMid slice" clip-path="inset(0 round 6px)"/>
+                    <text x="110" y="125" text-anchor="middle" fill="white" font-size="9" font-weight="800">Fractal D.7 XL</text>
+                    <text x="110" y="140" text-anchor="middle" fill="#94a3b8" font-size="8">$240</text>
+                    <!-- Active indicator -->
+                    <rect x="40" y="150" width="140" height="3" rx="1.5" fill="#3b82f6"/>
+                </g>
+
+                <g>
+                    <animateTransform attributeName="transform" type="translate" from="-40,0" to="0,0" dur="0.5s" begin="0.65s" fill="freeze"/>
+                    <rect x="195" y="55" width="140" height="100" rx="10" fill="#161e2e" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+                    <image href="hardware/case-enthoo-pro2.jpg" x="203" y="63" width="124" height="50" preserveAspectRatio="xMidYMid slice" clip-path="inset(0 round 6px)"/>
+                    <text x="265" y="125" text-anchor="middle" fill="white" font-size="9" font-weight="800">Phanteks E.P2</text>
+                    <text x="265" y="140" text-anchor="middle" fill="#94a3b8" font-size="8">$170</text>
+                </g>
+
+                <g>
+                    <animateTransform attributeName="transform" type="translate" from="-40,0" to="0,0" dur="0.5s" begin="0.8s" fill="freeze"/>
+                    <rect x="350" y="55" width="140" height="100" rx="10" fill="#161e2e" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+                    <image href="hardware/case-o11d-xl.jpg" x="358" y="63" width="124" height="50" preserveAspectRatio="xMidYMid slice" clip-path="inset(0 round 6px)"/>
+                    <text x="420" y="125" text-anchor="middle" fill="white" font-size="9" font-weight="800">Lian Li O11D</text>
+                    <text x="420" y="140" text-anchor="middle" fill="#94a3b8" font-size="8">$245</text>
+                </g>
+
+                <!-- GPU cards row -->
+                <text x="40" y="190" fill="#3b82f6" font-size="10" font-weight="800" letter-spacing="0.1em">GPU ACCELERATOR</text>
+
+                <g>
+                    <animateTransform attributeName="transform" type="translate" from="-40,0" to="0,0" dur="0.5s" begin="1s" fill="freeze"/>
+                    <rect x="40" y="200" width="140" height="100" rx="10" fill="#161e2e" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+                    <image href="hardware/gpu-rtx4090.jpg" x="48" y="208" width="124" height="50" preserveAspectRatio="xMidYMid slice" clip-path="inset(0 round 6px)"/>
+                    <text x="110" y="270" text-anchor="middle" fill="white" font-size="9" font-weight="800">RTX 4090</text>
+                    <text x="110" y="285" text-anchor="middle" fill="#94a3b8" font-size="8">$1,799</text>
+                </g>
+
+                <g>
+                    <animateTransform attributeName="transform" type="translate" from="-40,0" to="0,0" dur="0.5s" begin="1.15s" fill="freeze"/>
+                    <rect x="195" y="200" width="140" height="100" rx="10" fill="#161e2e" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+                    <image href="hardware/gpu-rtx-a6000-ada.jpg" x="203" y="208" width="124" height="50" preserveAspectRatio="xMidYMid slice" clip-path="inset(0 round 6px)"/>
+                    <text x="265" y="270" text-anchor="middle" fill="white" font-size="9" font-weight="800">RTX A6000 Ada</text>
+                    <text x="265" y="285" text-anchor="middle" fill="#94a3b8" font-size="8">$3,499</text>
+                </g>
+
+                <g>
+                    <animateTransform attributeName="transform" type="translate" from="-40,0" to="0,0" dur="0.5s" begin="1.3s" fill="freeze"/>
+                    <rect x="350" y="200" width="140" height="100" rx="10" fill="#161e2e" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+                    <image href="hardware/gpu-rtx6000ada.jpg" x="358" y="208" width="124" height="50" preserveAspectRatio="xMidYMid slice" clip-path="inset(0 round 6px)"/>
+                    <text x="420" y="270" text-anchor="middle" fill="white" font-size="9" font-weight="800">RTX 6000 Ada</text>
+                    <text x="420" y="285" text-anchor="middle" fill="#94a3b8" font-size="8">$6,799</text>
+                </g>
+            </g>
+
+            <!-- ── HOVER FLOW LINE ─────────────────────────── -->
+            <g opacity="0">
+                <animate attributeName="opacity" from="0" to="0.7" dur="0.3s" begin="1.8s" fill="freeze"/>
+                <line x1="540" y1="105" x2="660" y2="105" stroke="url(#hoverLine)" stroke-width="2" stroke-dasharray="4 4">
+                    <animate attributeName="stroke-dashoffset" from="0" to="-16" dur="1s" repeatCount="indefinite"/>
+                </line>
+                <text x="590" y="98" text-anchor="middle" fill="#3b82f6" font-size="9" font-weight="700">hover</text>
+                <polygon points="655,100 665,105 655,110" fill="#3b82f6"/>
+            </g>
+
+            <!-- ── RIGHT PANEL: Spotlight Image ────────────── -->
+            <g opacity="0">
+                <animate attributeName="opacity" from="0" to="1" dur="0.5s" begin="2s" fill="freeze"/>
+                <rect x="660" y="30" width="520" height="340" rx="20" fill="#080c14" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+                <!-- Spotlight image -->
+                <image href="hardware/case-define7xl.jpg" x="720" y="60" width="400" height="220" preserveAspectRatio="xMidYMid meet" clip-path="inset(0 round 12px)" opacity="0">
+                    <animate attributeName="opacity" from="0" to="1" dur="0.4s" begin="2.3s" fill="freeze"/>
+                </image>
+                <!-- Overlay info -->
+                <rect x="660" y="290" width="520" height="80" rx="0" fill="url(#overlayGrad)" opacity="0.9"/>
+                <text x="680" y="315" fill="#3b82f6" font-size="9" font-weight="900" letter-spacing="0.15em">CHASSIS — FULL TOWER</text>
+                <text x="680" y="338" fill="white" font-size="16" font-weight="950">Fractal Design Define 7 XL</text>
+                <text x="680" y="358" fill="#94a3b8" font-size="12" font-weight="700">$239.99</text>
+                <!-- Nav arrows -->
+                <text x="675" y="200" fill="white" font-size="24" opacity="0.4">‹</text>
+                <text x="1160" y="200" fill="white" font-size="24" opacity="0.4">›</text>
+                <!-- Counter -->
+                <rect x="870" y="355" width="60" height="20" rx="10" fill="rgba(0,0,0,0.5)" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+                <text x="900" y="369" text-anchor="middle" fill="white" font-size="9" font-weight="800" font-family="Courier New">1 / 9</text>
+            </g>
+
+            <!-- ── BOTTOM: PCIe Schematic ──────────────────── -->
+            <g opacity="0">
+                <animate attributeName="opacity" from="0" to="1" dur="0.5s" begin="2.8s" fill="freeze"/>
+                <text x="660" y="410" fill="#3b82f6" font-size="10" font-weight="900" letter-spacing="0.12em">PCIe SLOT SPACING</text>
+                <rect x="660" y="420" width="520" height="160" rx="12" fill="#080c14" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+
+                <!-- CPU block -->
+                <rect x="680" y="440" width="80" height="60" rx="6" fill="none" stroke="#475569" stroke-width="1" stroke-dasharray="4 2"/>
+                <text x="720" y="475" text-anchor="middle" fill="#475569" font-size="8" font-weight="800">CPU</text>
+
+                <!-- Slots -->
+                <rect x="780" y="435" width="380" height="8" rx="3" fill="#1e293b"/>
+                <rect x="780" y="458" width="380" height="8" rx="3" fill="#1e293b"/>
+                <rect x="780" y="481" width="380" height="8" rx="3" fill="#1e293b"/>
+                <rect x="780" y="504" width="380" height="8" rx="3" fill="#1e293b"/>
+
+                <!-- GPU cards sliding in -->
+                <rect x="780" y="428" width="380" height="22" rx="4" fill="linear-gradient(90deg, #166534, #14532d)" opacity="0">
+                    <animate attributeName="opacity" from="0" to="1" dur="0.4s" begin="3.2s" fill="freeze"/>
+                    <animateTransform attributeName="transform" type="translate" from="0,-20" to="0,0" dur="0.4s" begin="3.2s" fill="freeze"/>
+                </rect>
+                <text x="790" y="443" fill="white" font-size="7" font-weight="800" opacity="0">
+                    <animate attributeName="opacity" from="0" to="1" dur="0.3s" begin="3.4s" fill="freeze"/>RTX 4090 · Slot 1 · x16
+                </text>
+
+                <rect x="780" y="474" width="380" height="22" rx="4" fill="linear-gradient(90deg, #166534, #14532d)" opacity="0">
+                    <animate attributeName="opacity" from="0" to="1" dur="0.4s" begin="3.6s" fill="freeze"/>
+                    <animateTransform attributeName="transform" type="translate" from="0,-20" to="0,0" dur="0.4s" begin="3.6s" fill="freeze"/>
+                </rect>
+                <text x="790" y="489" fill="white" font-size="7" font-weight="800" opacity="0">
+                    <animate attributeName="opacity" from="0" to="1" dur="0.3s" begin="3.8s" fill="freeze"/>RTX 4090 · Slot 3 · x16
+                </text>
+
+                <!-- Slot labels -->
+                <text x="770" y="441" text-anchor="end" fill="#475569" font-size="7">Slot 1</text>
+                <text x="770" y="464" text-anchor="end" fill="#475569" font-size="7">Slot 3</text>
+                <text x="770" y="487" text-anchor="end" fill="#475569" font-size="7">Slot 5</text>
+                <text x="770" y="510" text-anchor="end" fill="#475569" font-size="7">Slot 7</text>
+            </g>
+
+            <!-- ── BOTTOM: BOM Table ───────────────────────── -->
+            <g opacity="0">
+                <animate attributeName="opacity" from="0" to="1" dur="0.5s" begin="4s" fill="freeze"/>
+                <text x="40" y="380" fill="#3b82f6" font-size="10" font-weight="900" letter-spacing="0.12em">BILL OF MATERIALS</text>
+                <rect x="40" y="390" width="580" height="200" rx="12" fill="#0b0f19" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+
+                <!-- Table rows with thumbnails -->
+                <g>
+                    <animateTransform attributeName="transform" type="translate" from="0,10" to="0,0" dur="0.3s" begin="4.3s" fill="freeze"/>
+                    <image href="hardware/case-define7xl.jpg" x="60" y="405" width="30" height="20" preserveAspectRatio="xMidYMid slice" clip-path="inset(0 round 3px)"/>
+                    <text x="100" y="420" fill="white" font-size="10" font-weight="700">Chassis</text>
+                    <text x="300" y="420" fill="#94a3b8" font-size="10">Fractal Define 7 XL</text>
+                    <text x="590" y="420" text-anchor="end" fill="white" font-size="10" font-weight="800">$240</text>
+                </g>
+                <g>
+                    <animateTransform attributeName="transform" type="translate" from="0,10" to="0,0" dur="0.3s" begin="4.5s" fill="freeze"/>
+                    <image href="hardware/mobo-wrx90.jpg" x="60" y="435" width="30" height="20" preserveAspectRatio="xMidYMid slice" clip-path="inset(0 round 3px)"/>
+                    <text x="100" y="450" fill="white" font-size="10" font-weight="700">Motherboard</text>
+                    <text x="300" y="450" fill="#94a3b8" font-size="10">Asus WRX90 SAGE SE</text>
+                    <text x="590" y="450" text-anchor="end" fill="white" font-size="10" font-weight="800">$1,300</text>
+                </g>
+                <g>
+                    <animateTransform attributeName="transform" type="translate" from="0,10" to="0,0" dur="0.3s" begin="4.7s" fill="freeze"/>
+                    <image href="hardware/cpu-7845wx.jpg" x="60" y="465" width="30" height="20" preserveAspectRatio="xMidYMid slice" clip-path="inset(0 round 3px)"/>
+                    <text x="100" y="480" fill="white" font-size="10" font-weight="700">CPU</text>
+                    <text x="300" y="480" fill="#94a3b8" font-size="10">Threadripper Pro 7845WX</text>
+                    <text x="590" y="480" text-anchor="end" fill="white" font-size="10" font-weight="800">$650</text>
+                </g>
+                <g>
+                    <animateTransform attributeName="transform" type="translate" from="0,10" to="0,0" dur="0.3s" begin="4.9s" fill="freeze"/>
+                    <image href="hardware/gpu-rtx4090.jpg" x="60" y="495" width="30" height="20" preserveAspectRatio="xMidYMid slice" clip-path="inset(0 round 3px)"/>
+                    <text x="100" y="510" fill="white" font-size="10" font-weight="700">GPU ×2</text>
+                    <text x="300" y="510" fill="#94a3b8" font-size="10">NVIDIA RTX 4090 24GB</text>
+                    <text x="590" y="510" text-anchor="end" fill="white" font-size="10" font-weight="800">$3,598</text>
+                </g>
+
+                <!-- Total -->
+                <line x1="60" y1="530" x2="600" y2="530" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+                <text x="100" y="555" fill="#3b82f6" font-size="13" font-weight="950">TOTAL</text>
+                <text x="590" y="555" text-anchor="end" fill="#3b82f6" font-size="16" font-weight="950">$5,788</text>
+            </g>
+        </svg>
+    </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ════════════════════════════════════════════════════════════════
+     SECTION 4: PRICE MATCH AGENT FLOW
+     ════════════════════════════════════════════════════════════════ -->
+<section class="section">
+    <div class="section-label">04 — Price Match Agent</div>
+    <h2>Live <span>Vendor Price Scanning</span></h2>
+    <p>Agent scans 4 vendors in real-time. Results appear as visual product cards with prices, vendor badges, and buy buttons.</p>
+
+    <div class="flow-container">
+        <svg class="flow-svg" viewBox="0 0 1200 650" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <linearGradient id="scanGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" style="stop-color:#a855f7;stop-opacity:0.8"/>
+                    <stop offset="100%" style="stop-color:#c084fc;stop-opacity:0.8"/>
+                </linearGradient>
+            </defs>
+
+            <!-- ── TRIGGER: Button Click ───────────────────── -->
+            <g opacity="0">
+                <animate attributeName="opacity" from="0" to="1" dur="0.4s" begin="0.2s" fill="freeze"/>
+                <rect x="40" y="40" width="280" height="50" rx="12" fill="linear-gradient(135deg, #a855f7, #c084fc)"/>
+                <text x="180" y="70" text-anchor="middle" fill="white" font-size="12" font-weight="900">VidiShop Price Scan</text>
+                <!-- Click ripple -->
+                <circle cx="180" cy="65" r="5" fill="none" stroke="white" stroke-width="1" opacity="0">
+                    <animate attributeName="r" from="5" to="40" dur="0.6s" begin="0.8s" fill="freeze"/>
+                    <animate attributeName="opacity" from="0.6" to="0" dur="0.6s" begin="0.8s" fill="freeze"/>
+                </circle>
+            </g>
+
+            <!-- ── FLOW: Button → Console ──────────────────── -->
+            <g opacity="0">
+                <animate attributeName="opacity" from="0" to="1" dur="0.3s" begin="1.2s" fill="freeze"/>
+                <path d="M320,65 C400,65 400,65 480,65" stroke="url(#scanGrad)" stroke-width="2" stroke-dasharray="6 4" fill="none">
+                    <animate attributeName="stroke-dashoffset" from="0" to="-20" dur="1.5s" repeatCount="indefinite"/>
+                </path>
+                <polygon points="475,60 488,65 475,70" fill="#a855f7"/>
+            </g>
+
+            <!-- ── NODE: Agent Console (slide-in sidebar) ──── -->
+            <g opacity="0">
+                <animate attributeName="opacity" from="0" to="1" dur="0.4s" begin="1.5s" fill="freeze"/>
+                <animateTransform attributeName="transform" type="translate" from="60,0" to="0,0" dur="0.4s" begin="1.5s" fill="freeze"/>
+                <rect x="480" y="20" width="340" height="280" rx="14" fill="#000" stroke="#1e293b" stroke-width="1.5"/>
+                <!-- Header -->
+                <rect x="480" y="20" width="340" height="36" rx="14" fill="#0a0a0a"/>
+                <text x="500" y="43" fill="#94a3b8" font-size="9" font-weight="800" letter-spacing="0.1em">AGENT CONSOLE</text>
+                <!-- Scanning lines with typing animation -->
+                <text x="500" y="80" fill="#38bdf8" font-size="10" font-family="Courier New" opacity="0">
+                    <animate attributeName="opacity" from="0" to="1" dur="0.1s" begin="2s" fill="freeze"/>▶ Scanning Amazon...
+                </text>
+                <text x="500" y="100" fill="#38bdf8" font-size="10" font-family="Courier New" opacity="0">
+                    <animate attributeName="opacity" from="0" to="1" dur="0.1s" begin="2.4s" fill="freeze"/>▶ Scanning Newegg...
+                </text>
+                <text x="500" y="120" fill="#38bdf8" font-size="10" font-family="Courier New" opacity="0">
+                    <animate attributeName="opacity" from="0" to="1" dur="0.1s" begin="2.8s" fill="freeze"/>▶ Scanning B&H Photo...
+                </text>
+                <text x="500" y="140" fill="#38bdf8" font-size="10" font-family="Courier New" opacity="0">
+                    <animate attributeName="opacity" from="0" to="1" dur="0.1s" begin="3.2s" fill="freeze"/>▶ Scanning Mfg sites...
+                </text>
+                <text x="500" y="170" fill="#10b981" font-size="11" font-family="Courier New" font-weight="bold" opacity="0">
+                    <animate attributeName="opacity" from="0" to="1" dur="0.1s" begin="3.6s" fill="freeze"/>✓ Complete — 4 vendors found
+                </text>
+
+                <!-- Progress bar -->
+                <rect x="500" y="190" width="300" height="6" rx="3" fill="#1e293b"/>
+                <rect x="500" y="190" width="0" height="6" rx="3" fill="url(#scanGrad)">
+                    <animate attributeName="width" from="0" to="300" dur="2s" begin="2s" fill="freeze"/>
+                </rect>
+
+                <!-- Scan time -->
+                <text x="500" y="220" fill="#94a3b8" font-size="9" font-family="Courier New">Scan time: </text>
+                <text x="577" y="220" fill="#10b981" font-size="9" font-family="Courier New" font-weight="bold" opacity="0">
+                    <animate attributeName="opacity" from="0" to="1" dur="0.1s" begin="4s" fill="freeze"/>3.2s
+                </text>
+            </g>
+
+            <!-- ── FLOW: Console → Results ─────────────────── -->
+            <g opacity="0">
+                <animate attributeName="opacity" from="0" to="1" dur="0.3s" begin="4.2s" fill="freeze"/>
+                <path d="M820,160 C900,160 900,340 960,340" stroke="url(#scanGrad)" stroke-width="2" stroke-dasharray="6 4" fill="none">
+                    <animate attributeName="stroke-dashoffset" from="0" to="-20" dur="1.5s" repeatCount="indefinite"/>
+                </path>
+            </g>
+
+            <!-- ── RESULTS: 4 Vendor Cards ─────────────────── -->
+            <g opacity="0">
+                <animate attributeName="opacity" from="0" to="1" dur="0.4s" begin="4.5s" fill="freeze"/>
+                <text x="960" y="300" fill="#10b981" font-size="11" font-weight="900" letter-spacing="0.12em">RESULTS</text>
+
+                <!-- Card 1: Amazon (Best Price) -->
+                <g opacity="0">
+                    <animate attributeName="opacity" from="0" to="1" dur="0.4s" begin="4.8s" fill="freeze"/>
+                    <animateTransform attributeName="transform" type="translate" from="0,15" to="0,0" dur="0.4s" begin="4.8s" fill="freeze"/>
+                    <rect x="960" y="315" width="220" height="80" rx="10" fill="#161e2e" stroke="#10b981" stroke-width="2"/>
+                    <image href="hardware/gpu-rtx4090.jpg" x="970" y="325" width="60" height="40" preserveAspectRatio="xMidYMid slice" clip-path="inset(0 round 6px)"/>
+                    <text x="1040" y="340" fill="white" font-size="10" font-weight="800">RTX 4090</text>
+                    <text x="1040" y="355" fill="#10b981" font-size="12" font-weight="950">$1,799</text>
+                    <rect x="1040" y="365" width="50" height="18" rx="4" fill="rgba(255,153,0,0.15)"/>
+                    <text x="1065" y="378" text-anchor="middle" fill="#ff9900" font-size="7" font-weight="800">AMAZON</text>
+                    <!-- Best price badge -->
+                    <rect x="1130" y="320" width="40" height="16" rx="4" fill="#10b981"/>
+                    <text x="1150" y="331" text-anchor="middle" fill="white" font-size="7" font-weight="900">BEST</text>
+                </g>
+
+                <!-- Card 2: Newegg -->
+                <g opacity="0">
+                    <animate attributeName="opacity" from="0" to="1" dur="0.4s" begin="5.1s" fill="freeze"/>
+                    <animateTransform attributeName="transform" type="translate" from="0,15" to="0,0" dur="0.4s" begin="5.1s" fill="freeze"/>
+                    <rect x="960" y="405" width="220" height="80" rx="10" fill="#161e2e" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+                    <image href="hardware/gpu-rtx4090.jpg" x="970" y="415" width="60" height="40" preserveAspectRatio="xMidYMid slice" clip-path="inset(0 round 6px)"/>
+                    <text x="1040" y="430" fill="white" font-size="10" font-weight="800">RTX 4090</text>
+                    <text x="1040" y="445" fill="#94a3b8" font-size="12" font-weight="800">$1,849</text>
+                    <rect x="1040" y="455" width="50" height="18" rx="4" fill="rgba(245,166,35,0.15)"/>
+                    <text x="1065" y="468" text-anchor="middle" fill="#f5a623" font-size="7" font-weight="800">NEWEGG</text>
+                </g>
+
+                <!-- Card 3: B&H -->
+                <g opacity="0">
+                    <animate attributeName="opacity" from="0" to="1" dur="0.4s" begin="5.4s" fill="freeze"/>
+                    <animateTransform attributeName="transform" type="translate" from="0,15" to="0,0" dur="0.4s" begin="5.4s" fill="freeze"/>
+                    <rect x="960" y="495" width="220" height="80" rx="10" fill="#161e2e" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+                    <image href="hardware/gpu-rtx4090.jpg" x="970" y="505" width="60" height="40" preserveAspectRatio="xMidYMid slice" clip-path="inset(0 round 6px)"/>
+                    <text x="1040" y="520" fill="white" font-size="10" font-weight="800">RTX 4090</text>
+                    <text x="1040" y="535" fill="#94a3b8" font-size="12" font-weight="800">$1,899</text>
+                    <rect x="1040" y="545" width="50" height="18" rx="4" fill="rgba(59,130,246,0.15)"/>
+                    <text x="1065" y="558" text-anchor="middle" fill="#3b82f6" font-size="7" font-weight="800">B&H</text>
+                </g>
+
+                <!-- Card 4: Mfg -->
+                <g opacity="0">
+                    <animate attributeName="opacity" from="0" to="1" dur="0.4s" begin="5.7s" fill="freeze"/>
+                    <animateTransform attributeName="transform" type="translate" from="0,15" to="0,0" dur="0.4s" begin="5.7s" fill="freeze"/>
+                    <rect x="960" y="585" width="220" height="80" rx="10" fill="#161e2e" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+                    <image href="hardware/gpu-rtx4090.jpg" x="970" y="595" width="60" height="40" preserveAspectRatio="xMidYMid slice" clip-path="inset(0 round 6px)"/>
+                    <text x="1040" y="610" fill="white" font-size="10" font-weight="800">RTX 4090</text>
+                    <text x="1040" y="625" fill="#94a3b8" font-size="12" font-weight="800">$1,949</text>
+                    <rect x="1040" y="635" width="50" height="18" rx="4" fill="rgba(16,185,129,0.15)"/>
+                    <text x="1065" y="648" text-anchor="middle" fill="#10b981" font-size="7" font-weight="800">NVIDIA</text>
+                </g>
+            </g>
+
+            <!-- ── SAVINGS BADGE ───────────────────────────── -->
+            <g opacity="0">
+                <animate attributeName="opacity" from="0" to="1" dur="0.4s" begin="6s" fill="freeze"/>
+                <rect x="40" y="400" width="400" height="80" rx="14" fill="rgba(16,185,129,0.08)" stroke="rgba(16,185,129,0.3)" stroke-width="1"/>
+                <text x="60" y="430" fill="#10b981" font-size="28" font-weight="950">$150</text>
+                <text x="60" y="450" fill="#10b981" font-size="10" font-weight="800" letter-spacing="0.1em">SAVINGS VS NEXT BEST</text>
+                <text x="60" y="468" fill="#94a3b8" font-size="9">Amazon $1,799 vs Newegg $1,849 — same card, $150 less</text>
+            </g>
+
+            <!-- ── BUY BUTTONS ─────────────────────────────── -->
+            <g opacity="0">
+                <animate attributeName="opacity" from="0" to="1" dur="0.3s" begin="6.3s" fill="freeze"/>
+                <!-- Buy buttons on each card -->
+                <rect x="1120" y="355" width="50" height="24" rx="5" fill="#10b981" filter="url(#glowGreen)"/>
+                <text x="1145" y="371" text-anchor="middle" fill="white" font-size="9" font-weight="800">BUY</text>
+
+                <rect x="1120" y="445" width="50" height="24" rx="5" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+                <text x="1145" y="461" text-anchor="middle" fill="white" font-size="9" font-weight="800">BUY</text>
+
+                <rect x="1120" y="535" width="50" height="24" rx="5" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+                <text x="1145" y="551" text-anchor="middle" fill="white" font-size="9" font-weight="800">BUY</text>
+
+                <rect x="1120" y="625" width="50" height="24" rx="5" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+                <text x="1145" y="641" text-anchor="middle" fill="white" font-size="9" font-weight="800">BUY</text>
+            </g>
+        </svg>
+    </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ════════════════════════════════════════════════════════════════
+     FOOTER
+     ════════════════════════════════════════════════════════════════ -->
+<footer class="footer">
+    <p style="margin-bottom:0.5rem;">VidiShop Interface Specification v1.0 — Animated Blueprint</p>
+    <p>Visual-First, AI-Filtered Commerce — Search Becomes The Store</p>
+</footer>
+
+</body>
+</html>

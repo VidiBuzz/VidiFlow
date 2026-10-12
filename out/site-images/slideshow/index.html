@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VidiFlow · P1 Website Images · Slideshow</title>
+<style>
+:root{--bg:#0b1020;--bg2:#0f172a;--panel:#111a33;--line:#1e2a4a;--blue:#2563eb;--blue2:#3b82f6;--blue3:#60a5fa;--txt:#e5ecff;--mut:#8ea0c9}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:radial-gradient(1200px 600px at 50% -10%,#14204a 0%,var(--bg) 60%) fixed,var(--bg);color:var(--txt);font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+body{display:flex;flex-direction:column;min-height:100vh;overflow:hidden}
+header{display:flex;align-items:center;gap:16px;padding:12px 22px;border-bottom:1px solid var(--line);background:rgba(11,16,32,.75);flex:0 0 auto}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;letter-spacing:.2px;white-space:nowrap}
+.dot{width:12px;height:12px;border-radius:50%;background:var(--blue2);box-shadow:0 0 12px var(--blue2)}
+.brand small{font-weight:500;color:var(--mut);margin-left:4px}
+.spacer{flex:1}
+.counter{font-variant-numeric:tabular-nums;color:var(--blue3);font-weight:600;white-space:nowrap}
+button{font:inherit;color:var(--txt);background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:7px 14px;cursor:pointer;transition:.15s}
+button:hover{border-color:var(--blue2);box-shadow:0 0 0 2px rgba(59,130,246,.25)}
+button.on{background:var(--blue);border-color:var(--blue2)}
+main{flex:1 1 auto;display:flex;flex-direction:column;min-height:0;padding:14px 22px 0}
+.stage{position:relative;flex:1 1 auto;min-height:0;display:flex;align-items:center;justify-content:center;touch-action:pan-y}
+.stage img{max-width:calc(100% - 130px);max-height:100%;object-fit:contain;border-radius:12px;border:1px solid var(--line);box-shadow:0 20px 60px rgba(0,0,0,.55),0 0 0 1px rgba(96,165,250,.08);cursor:zoom-in;background:#050912;user-select:none;-webkit-user-drag:none;transition:opacity .25s}
+.stage img.small{min-width:min(360px,60vh)}
+.nav{position:absolute;top:50%;transform:translateY(-50%);width:50px;height:50px;border-radius:50%;font-size:24px;line-height:1;padding:0;display:flex;align-items:center;justify-content:center;background:rgba(17,26,51,.85)}
+.nav.prev{left:0}.nav.next{right:0}
+.caption{flex:0 0 auto;display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 14px;padding:12px 4px 10px;max-width:1200px;width:100%;margin:0 auto}
+.slot{font-weight:700;color:#fff;background:var(--blue);border-radius:6px;padding:1px 8px;font-size:13px;letter-spacing:.4px}
+.site{color:var(--blue3);font-weight:600}
+.dims{color:var(--mut);font-size:13px;font-variant-numeric:tabular-nums}
+.title{flex-basis:100%;color:var(--txt);font-size:15px;word-wrap:break-word;overflow-wrap:anywhere}
+.page{flex-basis:100%;color:var(--mut);font-size:13px;overflow-wrap:anywhere}
+.thumbs{flex:0 0 auto;display:flex;gap:8px;overflow-x:auto;padding:10px 22px 14px;border-top:1px solid var(--line);background:rgba(11,16,32,.6);scrollbar-width:thin;scrollbar-color:var(--line) transparent}
+.thumbs button{flex:0 0 auto;padding:0;width:120px;height:68px;border-radius:8px;overflow:hidden;position:relative;opacity:.6;background:#050912}
+.thumbs button img{width:100%;height:100%;object-fit:cover;display:block}
+.thumbs button span{position:absolute;left:4px;bottom:3px;font-size:10px;font-weight:700;background:rgba(11,16,32,.8);padding:0 4px;border-radius:4px}
+.thumbs button.cur{opacity:1;border-color:var(--blue3);box-shadow:0 0 0 2px var(--blue2)}
+.thumbs button:hover{opacity:1}
+/* zoom */
+.zoom{position:fixed;inset:0;background:rgba(3,6,14,.97);display:none;z-index:50;overflow:hidden;touch-action:none}
+.zoom.open{display:block}
+.zoom img{position:absolute;left:0;top:0;transform-origin:0 0;max-width:none;max-height:none;user-select:none;-webkit-user-drag:none;cursor:grab;will-change:transform}
+.zoom img.drag{cursor:grabbing}
+.zbar{position:absolute;top:0;left:0;right:0;display:flex;align-items:center;gap:10px;padding:10px 16px;background:linear-gradient(rgba(3,6,14,.9),rgba(3,6,14,0));z-index:2;pointer-events:none}
+.zbar>*{pointer-events:auto}
+.zinfo{color:var(--mut);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.zinfo b{color:var(--txt)}
+.zpct{color:var(--blue3);font-variant-numeric:tabular-nums;font-weight:600;min-width:52px;text-align:right}
+.hint{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);color:var(--mut);font-size:12px;background:rgba(11,16,32,.8);padding:4px 12px;border-radius:20px;border:1px solid var(--line);white-space:nowrap;z-index:2}
+@media (max-width:700px){header{padding:10px 12px;gap:8px}.brand small{display:none}main{padding:10px 10px 0}.stage img{max-width:100%}.nav{display:none}.thumbs{padding:8px 10px 10px}.thumbs button{width:84px;height:48px}.hint{display:none}}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand"><span class="dot"></span>VidiFlow <small>P1 Website Images</small></div>
+  <div class="spacer"></div>
+  <button id="play" title="Autoplay (space)">▶ Autoplay</button>
+  <div class="counter" id="counter">1 / 11</div>
+</header>
+<main>
+  <div class="stage" id="stage">
+    <button class="nav prev" id="prev" title="Previous (←)" aria-label="Previous">‹</button>
+    <img id="main" alt="">
+    <button class="nav next" id="next" title="Next (→)" aria-label="Next">›</button>
+  </div>
+  <div class="caption">
+    <span class="slot" id="c-slot"></span>
+    <span class="site" id="c-site"></span>
+    <span class="dims" id="c-dims"></span>
+    <div class="title" id="c-title"></div>
+    <div class="page" id="c-page"></div>
+  </div>
+</main>
+<nav class="thumbs" id="thumbs"></nav>
+
+<div class="zoom" id="zoom">
+  <div class="zbar">
+    <div class="zinfo" id="zinfo"></div>
+    <div class="spacer"></div>
+    <span class="zpct" id="zpct">100%</span>
+    <button id="zfit" title="Fit / 100% (click image)">Fit</button>
+    <button id="z1">100%</button>
+    <button id="zclose" title="Close (Esc)">✕ Close</button>
+  </div>
+  <img id="zimg" alt="">
+  <div class="hint">Click: fit ↔ 100% · Wheel / pinch: zoom · Drag: pan · ← → : prev/next · Esc: close</div>
+</div>
+
+<script>
+var SLOTS=[
+{id:"VF-01",site:"vidiflow.net",page:"vidiflow.net/",title:"Home hero — “Humans + AI agents. One visual mission OS.”",w:1920,h:1080,f:"vidiflow-home-hero.png"},
+{id:"VF-02",site:"vidiflow.net",page:"vidiflow.net/",title:"Hero video tile poster — Consulting",w:1920,h:1080,f:"vidiflow-consulting-poster.png"},
+{id:"VF-03",site:"vidiflow.net",page:"vidiflow.net/",title:"Hero video tile poster — VidiFund",w:1920,h:1080,f:"vidiflow-vidifund-poster.png"},
+{id:"VS-01",site:"vidismart.com",page:"vidismart.com/",title:"Home hero — “Transform Your Tech Stack into a Smart Stack in 10 Minutes”",w:1920,h:1080,f:"vidismart-home-hero.png"},
+{id:"VN-01",site:"vidi.news",page:"vidi.news/news",title:"Social share image (og:image) — Case Studies",w:1200,h:630,f:"vidinews-og-case-studies.png"},
+{id:"VN-02",site:"vidi.news",page:"vidi.news/",title:"Home hero — “Running the world with Smart Stack.”",w:1920,h:1080,f:"vidinews-home-hero.png"},
+{id:"VC-01",site:"vidicity.net",page:"vidicity.net/",title:"Home hero — Smart Video News + Hyperlocal Video Search",w:1920,h:1080,f:"vidicity-home-hero.png"},
+{id:"VC-03",site:"vidicity.net + vidimodels.com",page:"Theme (all pages)",title:"Video play button overlay icon",w:256,h:256,f:"owl-video-play.png"},
+{id:"VC-04",site:"vidicity.net + vidimodels.com",page:"Theme (all pages)",title:"Default avatar (round crop)",w:256,h:256,f:"pic3-default-avatar.png"},
+{id:"VM-01",site:"vidimodels.com",page:"vidimodels.com/",title:"Home hero — Video Share Page / Video Profiles",w:1920,h:1080,f:"vidimodels-home-hero.png"},
+{id:"VCY-01",site:"vidi.city",page:"vidi.city/",title:"Future home hero for the rebuild",w:1920,h:1080,f:"vidicity-rebuild-hero.png"}
+];
+var $=function(id){return document.getElementById(id)};
+var N=SLOTS.length,i=0,timer=null;
+var mainImg=$("main"),thumbs=$("thumbs");
+function src(s){return "../"+s.f}
+SLOTS.forEach(function(s,k){
+  var b=document.createElement("button");b.title=s.id+" · "+s.title;
+  b.innerHTML='<img loading="lazy" alt=""><span></span>';
+  b.querySelector("img").src=src(s);b.querySelector("span").textContent=s.id;
+  b.onclick=function(){go(k);stopPlay()};thumbs.appendChild(b);
+});
+function go(k){
+  i=(k+N)%N;var s=SLOTS[i];
+  mainImg.src=src(s);mainImg.alt=s.id+" "+s.title;
+  mainImg.classList.toggle("small",s.w<600);
+  $("c-slot").textContent=s.id;$("c-site").textContent=s.site;
+  $("c-dims").textContent=s.w+" × "+s.h;
+  $("c-title").textContent=s.title;$("c-page").textContent=s.page;
+  $("counter").textContent=(i+1)+" / "+N;
+  [].forEach.call(thumbs.children,function(b,k){b.classList.toggle("cur",k===i)});
+  var t=thumbs.children[i];if(t&&t.scrollIntoView)t.scrollIntoView({block:"nearest",inline:"center",behavior:"smooth"});
+  new Image().src=src(SLOTS[(i+1)%N]);
+  if(zoomOpen())openZoom();
+}
+$("prev").onclick=function(){go(i-1);stopPlay()};
+$("next").onclick=function(){go(i+1);stopPlay()};
+function stopPlay(){if(timer){clearInterval(timer);timer=null}$("play").classList.remove("on");$("play").textContent="▶ Autoplay"}
+function togglePlay(){if(timer){stopPlay();return}timer=setInterval(function(){go(i+1)},4000);$("play").classList.add("on");$("play").textContent="❚❚ Pause"}
+$("play").onclick=togglePlay;
+// swipe on stage
+(function(){var x0=null,y0=0;var st=$("stage");
+st.addEventListener("touchstart",function(e){if(e.touches.length===1){x0=e.touches[0].clientX;y0=e.touches[0].clientY}},{passive:true});
+st.addEventListener("touchend",function(e){if(x0===null)return;var t=e.changedTouches[0],dx=t.clientX-x0,dy=t.clientY-y0;x0=null;
+ if(Math.abs(dx)>45&&Math.abs(dx)>Math.abs(dy)){go(i+(dx<0?1:-1));stopPlay();swiped=Date.now()}},{passive:true});})();
+var swiped=0;
+// ---- zoom viewer ----
+var Z=$("zoom"),zimg=$("zimg"),sc=1,tx=0,ty=0,nw=1,nh=1;
+function zoomOpen(){return Z.classList.contains("open")}
+function fitScale(){return Math.min((innerWidth-40)/nw,(innerHeight-120)/nh,1)}
+function apply(){zimg.style.transform="translate("+tx+"px,"+ty+"px) scale("+sc+")";$("zpct").textContent=Math.round(sc*100)+"%"}
+function center(s){sc=s;tx=(innerWidth-nw*sc)/2;ty=(innerHeight-nh*sc)/2;apply()}
+function clampPan(){var w=nw*sc,h=nh*sc;
+ tx=w<=innerWidth?(innerWidth-w)/2:Math.min(0,Math.max(innerWidth-w,tx));
+ ty=h<=innerHeight?(innerHeight-h)/2:Math.min(0,Math.max(innerHeight-h,ty))}
+function zoomAt(ns,cx,cy){ns=Math.max(Math.min(fitScale(),.1),Math.min(8,ns));tx=cx-(cx-tx)*ns/sc;ty=cy-(cy-ty)*ns/sc;sc=ns;clampPan();apply()}
+function openZoom(){var s=SLOTS[i];
+ $("zinfo").innerHTML="";var b=document.createElement("b");b.textContent=s.id+"  ";$("zinfo").appendChild(b);
+ $("zinfo").appendChild(document.createTextNode(s.site+" · "+s.title+" · "+s.w+"×"+s.h+" · "+(i+1)+"/"+N));
+ Z.classList.add("open");
+ zimg.onload=function(){nw=zimg.naturalWidth;nh=zimg.naturalHeight;zimg.style.width=nw+"px";zimg.style.height=nh+"px";center(fitScale())};
+ zimg.src=src(s);if(zimg.complete&&zimg.naturalWidth)zimg.onload();}
+function closeZoom(){Z.classList.remove("open")}
+mainImg.onclick=function(){if(Date.now()-swiped<400)return;stopPlay();openZoom()};
+$("zclose").onclick=closeZoom;
+$("zfit").onclick=function(){center(fitScale())};
+$("z1").onclick=function(){center(1)};
+function toggleFit(cx,cy){var f=fitScale();if(Math.abs(sc-f)<.01&&f<1){zoomAt(1,cx,cy)}else center(f)}
+Z.addEventListener("wheel",function(e){e.preventDefault();zoomAt(sc*Math.exp(-e.deltaY*.0015),e.clientX,e.clientY)},{passive:false});
+// pointer: drag, click, pinch
+var ptrs={},moved=false,last=null,pinch0=null;
+zimg.addEventListener("pointerdown",function(e){zimg.setPointerCapture(e.pointerId);ptrs[e.pointerId]={x:e.clientX,y:e.clientY};moved=false;last={x:e.clientX,y:e.clientY};zimg.classList.add("drag");
+ var k=Object.keys(ptrs);if(k.length===2){var a=ptrs[k[0]],b=ptrs[k[1]];pinch0={d:Math.hypot(a.x-b.x,a.y-b.y),s:sc}}});
+zimg.addEventListener("pointermove",function(e){if(!ptrs[e.pointerId])return;ptrs[e.pointerId]={x:e.clientX,y:e.clientY};var k=Object.keys(ptrs);
+ if(k.length===2&&pinch0){var a=ptrs[k[0]],b=ptrs[k[1]];moved=true;zoomAt(pinch0.s*Math.hypot(a.x-b.x,a.y-b.y)/pinch0.d,(a.x+b.x)/2,(a.y+b.y)/2);return}
+ var dx=e.clientX-last.x,dy=e.clientY-last.y;if(Math.abs(dx)+Math.abs(dy)>3)moved=true;last={x:e.clientX,y:e.clientY};tx+=dx;ty+=dy;clampPan();apply()});
+function up(e){var wasClick=!moved&&Object.keys(ptrs).length===1;delete ptrs[e.pointerId];if(Object.keys(ptrs).length<2)pinch0=null;
+ var k=Object.keys(ptrs);if(k.length===1)last=ptrs[k[0]];if(!k.length)zimg.classList.remove("drag");
+ if(wasClick&&e.type==="pointerup")toggleFit(e.clientX,e.clientY)}
+zimg.addEventListener("pointerup",up);zimg.addEventListener("pointercancel",up);
+Z.addEventListener("click",function(e){if(e.target===Z)closeZoom()});
+addEventListener("resize",function(){if(zoomOpen()){clampPan();apply()}});
+addEventListener("keydown",function(e){
+ if(e.key==="Escape"){if(zoomOpen())closeZoom();return}
+ if(e.key==="ArrowRight"){go(i+1);stopPlay()}else if(e.key==="ArrowLeft"){go(i-1);stopPlay()}
+ else if(e.key===" "&&!zoomOpen()){e.preventDefault();togglePlay()}
+ else if(zoomOpen()&&(e.key==="+"||e.key==="="))zoomAt(sc*1.25,innerWidth/2,innerHeight/2)
+ else if(zoomOpen()&&e.key==="-")zoomAt(sc/1.25,innerWidth/2,innerHeight/2)
+ else if(zoomOpen()&&e.key==="0")center(fitScale())});
+var h=parseInt((location.hash||"").replace(/\D/g,""),10);go(h>0&&h<=N?h-1:0);
+if(/zoom/.test(location.hash))openZoom();
+</script>
+</body>
+</html>

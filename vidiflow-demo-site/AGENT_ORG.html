@@ -1,0 +1,1731 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="holo">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VidiSmart Agent Org — Progress &amp; Command</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Antonio:wght@400;600;700&family=Rajdhani:wght@400;500;600;700&family=Michroma&display=swap');
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+/* ═══════════════ BASE TOKENS (Holographic Bridge = default) ═══════════════ */
+:root,
+html[data-theme="holo"] {
+    --bg: #020810;
+    --bg2: #04121e;
+    --panel: rgba(8, 26, 40, 0.55);
+    --panel-solid: #081a28;
+    --panel-blur: blur(14px);
+    --line: rgba(34, 211, 238, 0.18);
+    --line-strong: rgba(34, 211, 238, 0.45);
+    --text: #d7f5ff;
+    --text-dim: #6fa8bd;
+    --text-faint: #3d6478;
+    --accent: #22d3ee;
+    --accent2: #38bdf8;
+    --glow: 0 0 18px rgba(34, 211, 238, 0.25);
+    --st-idle: #5b7285;
+    --st-thinking: #22d3ee;
+    --st-running: #34d399;
+    --st-hot: #fbbf24;
+    --st-error: #fb7185;
+    --font-ui: 'Rajdhani', 'Segoe UI', system-ui, sans-serif;
+    --font-display: 'Rajdhani', 'Segoe UI', system-ui, sans-serif;
+    --font-mono: 'Cascadia Code', 'Consolas', monospace;
+    --radius: 14px;
+    --radius-sm: 8px;
+}
+
+/* ═══════════════ LCARS ═══════════════ */
+html[data-theme="lcars"] {
+    --bg: #000000;
+    --bg2: #0a0a0a;
+    --panel: #141414;
+    --panel-solid: #141414;
+    --panel-blur: none;
+    --line: #3a3a3a;
+    --line-strong: #ff9900;
+    --text: #ffeedd;
+    --text-dim: #b39a7d;
+    --text-faint: #6e5c47;
+    --accent: #ff9900;
+    --accent2: #99ccff;
+    --glow: none;
+    --st-idle: #857360;
+    --st-thinking: #99ccff;
+    --st-running: #33cc99;
+    --st-hot: #ffaa00;
+    --st-error: #cc4444;
+    --font-ui: 'Antonio', 'Arial Narrow', system-ui, sans-serif;
+    --font-display: 'Antonio', 'Arial Narrow', system-ui, sans-serif;
+    --radius: 26px;
+    --radius-sm: 16px;
+}
+
+/* ═══════════════ JARVIS ═══════════════ */
+html[data-theme="jarvis"] {
+    --bg: #05070a;
+    --bg2: #0a0e14;
+    --panel: rgba(18, 22, 30, 0.6);
+    --panel-solid: #12161e;
+    --panel-blur: blur(10px);
+    --line: rgba(245, 166, 35, 0.22);
+    --line-strong: rgba(245, 166, 35, 0.55);
+    --text: #f2ead9;
+    --text-dim: #9a8f78;
+    --text-faint: #5c5545;
+    --accent: #f5a623;
+    --accent2: #35e0f0;
+    --glow: 0 0 16px rgba(245, 166, 35, 0.2);
+    --st-idle: #6b7280;
+    --st-thinking: #35e0f0;
+    --st-running: #3ddc84;
+    --st-hot: #ffb020;
+    --st-error: #ff5252;
+    --font-ui: 'Rajdhani', 'Segoe UI', system-ui, sans-serif;
+    --font-display: 'Michroma', 'Rajdhani', system-ui, sans-serif;
+    --radius: 4px;
+    --radius-sm: 3px;
+}
+
+/* ═══════════════ STATE MODEL ═══════════════ */
+[data-state="idle"]     { --state-color: var(--st-idle); }
+[data-state="thinking"] { --state-color: var(--st-thinking); }
+[data-state="running"]  { --state-color: var(--st-running); }
+[data-state="hot"]      { --state-color: var(--st-hot); }
+[data-state="error"]    { --state-color: var(--st-error); }
+[data-state="done"]     { --state-color: var(--st-running); }
+
+/* ═══════════════ CINEMATIC AMBIENT LAYERS ═══════════════ */
+#ambient { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+#ambStars, #ambSweep, #ambHex, #ambRings, #ambLcarsL, #ambLcarsR { display: none; }
+
+/* Holo: drifting starfield + bridge sweep */
+html[data-theme="holo"] #ambStars {
+    display: block;
+    background-image:
+        radial-gradient(1.5px 1.5px at 22px 34px, rgba(215, 245, 255, 0.75), transparent 60%),
+        radial-gradient(1px 1px at 120px 90px, rgba(56, 189, 248, 0.55), transparent 60%),
+        radial-gradient(1px 1px at 200px 160px, rgba(215, 245, 255, 0.4), transparent 60%),
+        radial-gradient(1.5px 1.5px at 260px 60px, rgba(255, 255, 255, 0.5), transparent 60%),
+        radial-gradient(1px 1px at 70px 210px, rgba(56, 189, 248, 0.4), transparent 60%);
+    background-size: 300px 260px;
+    opacity: 0.45;
+    animation: starDrift 140s linear infinite;
+}
+html[data-theme="holo"] #ambSweep {
+    display: block;
+    position: absolute; left: 0; right: 0; top: 0; height: 32vh;
+    background: linear-gradient(180deg, transparent, rgba(34, 211, 238, 0.05) 42%, rgba(34, 211, 238, 0.11) 50%, rgba(34, 211, 238, 0.05) 58%, transparent);
+    animation: bridgeSweep 10s linear infinite;
+    mix-blend-mode: screen;
+}
+html[data-theme="holo"] .topbar::after {
+    content: '';
+    position: absolute; left: 0; right: 0; bottom: -1px; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    background-size: 220px 100%;
+    background-repeat: no-repeat;
+    opacity: 0.7;
+    animation: railSweep 7s linear infinite;
+}
+
+/* Jarvis: lattice + arc-reactor rings */
+html[data-theme="jarvis"] #ambHex {
+    display: block;
+    opacity: 0.06;
+    background-image:
+        repeating-linear-gradient(0deg, var(--accent) 0 1px, transparent 1px 30px),
+        repeating-linear-gradient(60deg, var(--accent) 0 1px, transparent 1px 30px),
+        repeating-linear-gradient(-60deg, var(--accent) 0 1px, transparent 1px 30px);
+}
+html[data-theme="jarvis"] #ambRings {
+    display: block;
+    position: absolute; top: 90px; right: 64px; width: 250px; height: 250px;
+}
+#ambRings i {
+    position: absolute; inset: 0;
+    border-radius: 50%;
+    border: 1px dashed var(--accent);
+    opacity: 0.4;
+    animation: spin 44s linear infinite;
+}
+#ambRings i:nth-child(2) { inset: 32px; border-color: var(--accent2); animation-duration: 28s; animation-direction: reverse; }
+#ambRings i:nth-child(3) { inset: 66px; border-style: dotted; animation-duration: 64s; }
+
+/* LCARS: structural pill rails */
+#ambLcarsL, #ambLcarsR {
+    position: fixed; top: 0; bottom: 0; width: 52px;
+    flex-direction: column; gap: 7px; padding: 12px 5px;
+    z-index: 30;
+}
+#ambLcarsL { left: 0; }
+#ambLcarsR { right: 0; }
+#ambLcarsL span { border-radius: 0 999px 999px 0; }
+#ambLcarsR span { border-radius: 999px 0 0 999px; }
+html[data-theme="lcars"] #ambLcarsL,
+html[data-theme="lcars"] #ambLcarsR { display: flex; }
+@media (max-width: 1199px) {
+    html[data-theme="lcars"] #ambLcarsL,
+    html[data-theme="lcars"] #ambLcarsR { display: none; }
+}
+@media (min-width: 1200px) {
+    html[data-theme="lcars"] .topbar { padding-left: 78px; padding-right: 78px; }
+    html[data-theme="lcars"] main { padding-left: 78px; padding-right: 78px; }
+}
+html[data-theme="lcars"] .topbar { background: #000; border-bottom: 2px solid var(--accent); }
+html[data-theme="lcars"] .brand-mark { background: var(--accent); color: #000; border: none; }
+html[data-theme="lcars"] .tbtn[aria-pressed="true"] { background: var(--accent); color: #000; border-color: var(--accent); box-shadow: none; }
+html[data-theme="lcars"] .simbadge { border-style: solid; }
+
+/* ═══════════════ TACTICAL HUD FRAMES ═══════════════ */
+.hud { --hud-c: var(--line-strong); }
+.hud::before {
+    content: '';
+    position: absolute; inset: 0;
+    pointer-events: none;
+    border-radius: inherit;
+    background:
+        linear-gradient(var(--hud-c), var(--hud-c)) left 0 top 0 / 18px 2px,
+        linear-gradient(var(--hud-c), var(--hud-c)) left 0 top 0 / 2px 18px,
+        linear-gradient(var(--hud-c), var(--hud-c)) right 0 top 0 / 18px 2px,
+        linear-gradient(var(--hud-c), var(--hud-c)) right 0 top 0 / 2px 18px,
+        linear-gradient(var(--hud-c), var(--hud-c)) left 0 bottom 0 / 18px 2px,
+        linear-gradient(var(--hud-c), var(--hud-c)) left 0 bottom 0 / 2px 18px,
+        linear-gradient(var(--hud-c), var(--hud-c)) right 0 bottom 0 / 18px 2px,
+        linear-gradient(var(--hud-c), var(--hud-c)) right 0 bottom 0 / 2px 18px;
+    background-repeat: no-repeat;
+    opacity: 0.85;
+    transition: opacity 0.3s ease;
+}
+.hud:hover::before { opacity: 1; }
+.fleetbar.hud, .rootcard.hud { --hud-c: var(--accent); }
+.acard.hud { --hud-c: var(--state-color, var(--line-strong)); }
+.leadcard.hud { --hud-c: var(--accent); }
+
+/* Portrait targeting reticle + holo scan */
+.avatar { overflow: visible; }
+.avatar img, .avatar .ph { border-radius: 50%; }
+.avatar::before {
+    content: '';
+    position: absolute; inset: 0;
+    border-radius: 50%;
+    background: repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.07) 0 1px, transparent 1px 3px);
+    mix-blend-mode: overlay;
+    z-index: 1;
+    pointer-events: none;
+}
+.avatar::after {
+    content: '';
+    position: absolute; inset: -5px;
+    border-radius: 50%;
+    background: conic-gradient(from 0deg,
+        var(--state-color, var(--accent)) 0deg 22deg, transparent 22deg 90deg,
+        var(--state-color, var(--accent)) 90deg 112deg, transparent 112deg 180deg,
+        var(--state-color, var(--accent)) 180deg 202deg, transparent 202deg 270deg,
+        var(--state-color, var(--accent)) 270deg 292deg, transparent 292deg);
+    -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 4px), #000 calc(100% - 3px));
+    mask: radial-gradient(farthest-side, transparent calc(100% - 4px), #000 calc(100% - 3px));
+    animation: spin 18s linear infinite;
+    opacity: 0.95;
+    pointer-events: none;
+}
+
+/* Alert blinking + segmented progress + flowing connectors */
+.acard[data-state="hot"] .schip,
+.acard[data-state="error"] .schip,
+.gcard[data-state="hot"] .dot,
+.gcard[data-state="error"] .dot { animation: blink 1s steps(2, jump-none) infinite; }
+
+.pbar .fill::before, .bigbar .fill::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.2) 0 2px, transparent 2px 9px);
+}
+
+html:not([data-theme="lcars"]) .org-stem,
+html:not([data-theme="lcars"]) .dcol::before,
+html:not([data-theme="lcars"]) .dcol .stem {
+    background: repeating-linear-gradient(180deg, var(--line-strong) 0 6px, transparent 6px 11px);
+    animation: stemFlow 1.4s linear infinite;
+}
+
+/* Staggered reveal for the command chain */
+.rootcard, .leadcard {
+    opacity: 0;
+    animation: cardIn 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes blink { 50% { opacity: 0.35; } }
+@keyframes starDrift { to { background-position: 0 300px; } }
+@keyframes bridgeSweep { from { transform: translateY(-34vh); } to { transform: translateY(135vh); } }
+@keyframes railSweep { from { background-position: -220px 0; } to { background-position: calc(100% + 220px) 0; } }
+@keyframes stemFlow { to { background-position: 0 11px; } }
+
+
+html, body { min-height: 100%; }
+body {
+    font-family: var(--font-ui);
+    background: var(--bg);
+    color: var(--text);
+    transition: background 0.6s ease;
+    padding-bottom: 40px;
+}
+html[data-theme="holo"] body::before {
+    content: '';
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background: radial-gradient(1200px 800px at 50% 0%, var(--bg2), var(--bg) 75%);
+}
+html[data-theme="holo"] body::after {
+    content: '';
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background: repeating-linear-gradient(0deg, rgba(34, 211, 238, 0.025) 0 1px, transparent 1px 3px);
+    mix-blend-mode: screen;
+}
+header, main, footer { position: relative; z-index: 1; }
+
+/* ═══════════════ TOPBAR ═══════════════ */
+.topbar {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 12px 22px;
+    border-bottom: 1px solid var(--line);
+    background: var(--panel);
+    backdrop-filter: var(--panel-blur);
+    position: sticky;
+    top: 0;
+    z-index: 50;
+}
+.brand { display: flex; align-items: center; gap: 12px; }
+.brand-mark {
+    width: 34px; height: 34px;
+    border: 2px solid var(--accent);
+    border-radius: 8px;
+    display: grid; place-items: center;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--accent);
+    box-shadow: var(--glow);
+}
+.brand-title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 17px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+}
+.brand-sub {
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+}
+.topstats { display: flex; gap: 8px; margin-left: 12px; flex-wrap: wrap; }
+.tchip {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    padding: 4px 10px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    color: var(--text-dim);
+}
+.tchip b { color: var(--text); font-weight: 600; }
+.tchip.warn b { color: var(--st-error); }
+.topbar .spacer { flex: 1; }
+.simbadge {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    padding: 4px 10px;
+    border-radius: 4px;
+    color: var(--st-hot);
+    border: 1px dashed var(--st-hot);
+    opacity: 0.9;
+}
+.orglink {
+    font-family: var(--font-display);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 5px 12px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    color: var(--text-dim);
+    text-decoration: none;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+}
+.orglink:hover { color: var(--accent); border-color: var(--accent); box-shadow: var(--glow); }
+.theme-chips { display: flex; gap: 6px; }
+.tbtn {
+    font-family: var(--font-display);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    padding: 5px 12px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.tbtn:hover { color: var(--text); border-color: var(--line-strong); }
+.tbtn[aria-pressed="true"] {
+    color: var(--accent);
+    border-color: var(--accent);
+    box-shadow: var(--glow);
+}
+
+/* ═══════════════ SECTION HEADERS ═══════════════ */
+main { max-width: 1560px; margin: 0 auto; padding: 26px 22px 0; }
+.sect-head {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    margin: 8px 0 16px;
+}
+.sect-head h2 {
+    font-family: var(--font-display);
+    font-size: 21px;
+    font-weight: 700;
+    letter-spacing: var(--tt, 0.14em);
+    text-transform: uppercase;
+}
+html[data-theme="jarvis"] .sect-head h2 { --tt: 0.1em; }
+.sect-head .sub { font-size: 13px; color: var(--text-dim); letter-spacing: 0.06em; }
+.sect-head .rule { flex: 1; height: 1px; background: var(--line); }
+
+/* ═══════════════ FLEET SUMMARY ═══════════════ */
+.fleetbar {
+    display: grid;
+    grid-template-columns: minmax(220px, 1fr) auto;
+    gap: 18px;
+    align-items: center;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--panel);
+    backdrop-filter: var(--panel-blur);
+    padding: 16px 20px;
+    margin-bottom: 18px;
+}
+.fleetbar .avg-label { font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 8px; }
+.fleetbar .avg-label b { color: var(--text); font-family: var(--font-mono); font-size: 15px; letter-spacing: 0.04em; }
+.bigbar {
+    height: 14px;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--bg2) 70%, transparent);
+    border: 1px solid var(--line);
+    overflow: hidden;
+    position: relative;
+}
+.bigbar .fill {
+    height: 100%;
+    width: 0%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, color-mix(in srgb, var(--accent) 55%, transparent), var(--accent));
+    box-shadow: var(--glow);
+    transition: width 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+    position: relative;
+    overflow: hidden;
+}
+.bigbar .fill::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(115deg, transparent 30%, rgba(255,255,255,0.28) 50%, transparent 70%);
+    transform: translateX(-120%);
+    animation: shimmer 2.8s ease-in-out infinite;
+}
+@keyframes shimmer { 60%, 100% { transform: translateX(120%); } }
+.fleetcounts { display: flex; gap: 10px; }
+.fcount {
+    min-width: 84px;
+    text-align: center;
+    padding: 8px 14px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+}
+.fcount .n { font-family: var(--font-mono); font-size: 22px; font-weight: 600; line-height: 1.1; }
+.fcount .l { font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-dim); }
+.fcount.c-active .n { color: var(--st-running); }
+.fcount.c-alert .n { color: var(--st-error); }
+.fcount.c-avg .n { color: var(--accent); }
+
+/* ═══════════════ AGENT BOARD ═══════════════ */
+.board-wrap {
+    display: grid;
+    grid-template-columns: 250px minmax(0, 1fr);
+    gap: 14px;
+    align-items: start;
+    margin-bottom: 34px;
+}
+.mission-rail {
+    position: sticky;
+    top: 76px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.rail-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    padding: 2px 2px 0;
+}
+.mcard {
+    font: inherit;
+    color: inherit;
+    text-align: left;
+    width: 100%;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    background: var(--panel);
+    backdrop-filter: var(--panel-blur);
+    padding: 10px 12px;
+    cursor: pointer;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 3px 10px;
+    align-items: center;
+    transition: border-color 0.25s ease, box-shadow 0.3s ease;
+}
+.mcard:hover { border-color: var(--line-strong); }
+.mcard[aria-pressed="true"] { border-color: var(--accent); box-shadow: var(--glow); }
+.mcard .mdot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--mdc, var(--st-idle));
+    box-shadow: 0 0 8px var(--mdc, transparent);
+    grid-row: 1 / 3;
+    align-self: center;
+}
+.mcard .mname {
+    font-family: var(--font-display);
+    font-size: 13.5px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.mcard .mmeta { font-family: var(--font-mono); font-size: 10px; color: var(--text-dim); white-space: nowrap; justify-self: end; }
+.mcard .mbar {
+    grid-column: 1 / 3;
+    height: 5px;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    background: color-mix(in srgb, var(--bg2) 70%, transparent);
+    overflow: hidden;
+}
+.mcard .mbar .fill {
+    height: 100%;
+    width: 0%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, color-mix(in srgb, var(--accent) 45%, transparent), var(--accent));
+    transition: width 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+}
+@media (max-width: 1100px) {
+    .board-wrap { grid-template-columns: 1fr; }
+    .mission-rail { position: static; flex-direction: row; flex-wrap: wrap; }
+    .rail-label { width: 100%; }
+    .mcard { min-width: 190px; flex: 1; }
+}
+.board-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+    gap: 14px;
+}
+.acard {
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--state-color, var(--line));
+    border-radius: var(--radius);
+    background: var(--panel);
+    backdrop-filter: var(--panel-blur);
+    padding: 14px 16px;
+    display: grid;
+    grid-template-columns: 64px minmax(0, 1fr);
+    grid-template-rows: auto auto auto;
+    column-gap: 14px;
+    row-gap: 8px;
+    opacity: 0;
+    transform: translateY(14px);
+    animation: cardIn 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    transition: border-color 0.4s ease, box-shadow 0.4s ease;
+}
+html[data-theme="jarvis"] .acard { box-shadow: inset 0 0 0 1px rgba(245, 166, 35, 0.06); }
+@keyframes cardIn { to { opacity: 1; transform: none; } }
+.acard.is-hot  { box-shadow: 0 0 22px color-mix(in srgb, var(--st-hot) 22%, transparent); }
+.acard.is-error{ box-shadow: 0 0 26px color-mix(in srgb, var(--st-error) 26%, transparent); }
+
+.avatar {
+    grid-row: 1 / 3;
+    width: 64px; height: 64px;
+    border-radius: 50%;
+    border: 2px solid var(--state-color, var(--line));
+    box-shadow: 0 0 14px color-mix(in srgb, var(--state-color, var(--accent)) 30%, transparent);
+    overflow: hidden;
+    position: relative;
+    background: var(--panel-solid);
+    transition: border-color 0.4s ease;
+}
+.avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.avatar .ph {
+    position: absolute; inset: 0;
+    display: grid; place-items: center;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 20px;
+    color: var(--text-dim);
+    letter-spacing: 0.05em;
+}
+.who { min-width: 0; }
+.who .nm {
+    font-family: var(--font-display);
+    font-size: 16.5px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.who .ti { font-size: 12.5px; color: var(--text-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.who .sub {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text-faint);
+    letter-spacing: 0.04em;
+    margin-top: 2px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.schip {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    padding: 2px 9px;
+    border-radius: 4px;
+    color: var(--state-color, var(--text-dim));
+    border: 1px solid color-mix(in srgb, var(--state-color, var(--line)) 60%, transparent);
+    background: color-mix(in srgb, var(--state-color, transparent) 10%, transparent);
+    white-space: nowrap;
+}
+.chiprow {
+    grid-column: 2;
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-start;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+.fchip {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    padding: 2px 9px;
+    border-radius: 4px;
+    color: var(--fn-color, var(--text-dim));
+    border: 1px solid color-mix(in srgb, var(--fn-color, var(--line)) 55%, transparent);
+    background: color-mix(in srgb, var(--fn-color, transparent) 8%, transparent);
+    white-space: nowrap;
+}
+[data-fn="orchestrator"] { --fn-color: #e879f9; }
+[data-fn="coder"]        { --fn-color: #38bdf8; }
+[data-fn="researcher"]   { --fn-color: #60a5fa; }
+[data-fn="devops"]       { --fn-color: #fb923c; }
+[data-fn="worker"]       { --fn-color: #c084fc; }
+[data-fn="analyst"]      { --fn-color: #a3e635; }
+.pct {
+    font-family: var(--font-mono);
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text);
+    justify-self: end;
+    font-variant-numeric: tabular-nums;
+}
+.pbar {
+    grid-column: 1 / 3;
+    height: 10px;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    background: color-mix(in srgb, var(--bg2) 70%, transparent);
+    overflow: hidden;
+    position: relative;
+}
+.pbar .fill {
+    height: 100%;
+    width: 0%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, color-mix(in srgb, var(--state-color, var(--accent)) 45%, transparent), var(--state-color, var(--accent)));
+    transition: width 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+    position: relative;
+    overflow: hidden;
+}
+.pbar .fill::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(115deg, transparent 30%, rgba(255,255,255,0.25) 50%, transparent 70%);
+    transform: translateX(-120%);
+    animation: shimmer 3.2s ease-in-out infinite;
+}
+.statusline {
+    grid-column: 1 / 3;
+    font-size: 12.5px;
+    letter-spacing: 0.03em;
+    color: var(--text);
+    opacity: 0.85;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    min-height: 17px;
+}
+.meta {
+    grid-column: 1 / 3;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-dim);
+}
+.meta b { color: var(--text); font-weight: 600; font-variant-numeric: tabular-nums; }
+.meta .spacer { flex: 1; }
+.meta .spacer { flex: 1; }
+.meta canvas { width: 74px; height: 22px; opacity: 0.9; flex: none; }
+.meta b.hot { color: var(--st-hot); }
+.meta b.err { color: var(--st-error); }
+.meta b.good { color: var(--st-running); }
+.meta .delta { font-size: 9px; margin-left: -12px; flex: none; }
+.delta.up { color: var(--st-running); }
+.delta.down { color: var(--st-error); }
+.delta.flat { color: var(--text-faint); }
+.acard[data-state="hot"] .pct { color: var(--st-hot); }
+.acard[data-state="error"] .pct { color: var(--st-error); }
+.acard[data-state="done"] .pct { color: var(--st-running); }
+
+/* Fleet state mix */
+.stmix {
+    display: flex;
+    height: 8px;
+    border-radius: 999px;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    margin-top: 12px;
+    background: color-mix(in srgb, var(--bg2) 70%, transparent);
+}
+.stmix span { height: 100%; width: 0%; transition: width 1.2s cubic-bezier(0.22, 1, 0.36, 1); }
+.stmix-label {
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-top: 7px;
+    font-family: var(--font-mono);
+}
+
+/* ═══════════════ ORG CHART ═══════════════ */
+.org-wrap { overflow-x: auto; padding-bottom: 10px; }
+.org {
+    min-width: 1420px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.rootcard {
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius);
+    background: var(--panel);
+    backdrop-filter: var(--panel-blur);
+    box-shadow: var(--glow);
+    padding: 16px 30px;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    position: relative;
+    z-index: 2;
+}
+.rootcard .avatar { width: 84px; height: 84px; border-color: var(--accent); box-shadow: var(--glow); }
+.rootcard .nm {
+    font-family: var(--font-display);
+    font-size: 21px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+.rootcard .ti { font-size: 13.5px; color: var(--accent); letter-spacing: 0.08em; text-transform: uppercase; margin-top: 2px; }
+.rootcard .org-name { font-size: 12px; color: var(--text-dim); margin-top: 5px; letter-spacing: 0.06em; }
+.rootcard .rk {
+    position: absolute;
+    top: -10px; left: 18px;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.24em;
+    padding: 3px 10px 3px 12px;
+    border-radius: 3px;
+    background: var(--accent);
+    color: var(--bg);
+}
+.org-stem { width: 2px; height: 26px; background: var(--line-strong); }
+.org-rail {
+    align-self: stretch;
+    height: 2px;
+    background: var(--line-strong);
+    margin: 0 0;
+    position: relative;
+}
+.org-cols {
+    align-self: stretch;
+    display: grid;
+    grid-template-columns: repeat(7, minmax(186px, 1fr));
+    gap: 12px;
+    padding-top: 26px;
+    position: relative;
+}
+.org-cols::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--line-strong);
+}
+.dcol { display: flex; flex-direction: column; align-items: center; position: relative; }
+.dcol::before {
+    content: '';
+    position: absolute;
+    top: -26px;
+    left: 50%;
+    width: 2px;
+    height: 26px;
+    background: var(--line-strong);
+}
+.leadcard {
+    width: 100%;
+    border: 1px solid var(--line);
+    border-top: 3px solid var(--accent);
+    border-radius: var(--radius);
+    background: var(--panel);
+    backdrop-filter: var(--panel-blur);
+    padding: 12px 10px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+}
+.leadcard .avatar { width: 62px; height: 62px; }
+.leadcard .nm {
+    font-family: var(--font-display);
+    font-size: 14.5px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    line-height: 1.15;
+}
+.leadcard .ti { font-size: 11.5px; color: var(--text-dim); line-height: 1.3; min-height: 30px; }
+.leadcard .dp {
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    border-top: 1px solid var(--line);
+    padding-top: 6px;
+    width: 100%;
+}
+.dcol .stem { width: 2px; height: 16px; background: var(--line); }
+.agents { display: flex; flex-direction: column; gap: 10px; width: 100%; }
+.gcard {
+    width: 100%;
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--state-color, var(--line));
+    border-radius: var(--radius-sm);
+    background: var(--panel);
+    backdrop-filter: var(--panel-blur);
+    padding: 9px 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: border-color 0.4s ease;
+}
+.gcard .avatar { width: 44px; height: 44px; flex: none; }
+.gcard .info { min-width: 0; flex: 1; }
+.gcard .nm {
+    font-family: var(--font-display);
+    font-size: 12.5px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.gcard .ti { font-size: 10.5px; color: var(--text-dim); line-height: 1.25; }
+.gfn {
+    font-family: var(--font-mono);
+    font-size: 8.5px;
+    letter-spacing: 0.12em;
+    color: var(--fn-color, var(--text-dim));
+    margin-left: 5px;
+    text-transform: uppercase;
+}
+.gcard .row { display: flex; align-items: center; gap: 8px; margin-top: 5px; }
+.gcard .mini {
+    flex: 1;
+    height: 4px;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--bg2) 70%, transparent);
+    border: 1px solid var(--line);
+    overflow: hidden;
+}
+.gcard .mini .fill {
+    height: 100%;
+    width: 0%;
+    background: var(--state-color, var(--accent));
+    transition: width 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.gcard .pcts { font-family: var(--font-mono); font-size: 10px; color: var(--text-dim); font-variant-numeric: tabular-nums; }
+.gcard .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--state-color, var(--st-idle)); box-shadow: 0 0 8px var(--state-color, transparent); flex: none; }
+
+.legend {
+    display: flex;
+    gap: 18px;
+    align-items: center;
+    justify-content: center;
+    margin: 26px 0 8px;
+    flex-wrap: wrap;
+}
+.legend .li { display: flex; align-items: center; gap: 7px; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-dim); }
+.legend .sw { width: 9px; height: 9px; border-radius: 50%; }
+footer { text-align: center; color: var(--text-faint); font-size: 11px; letter-spacing: 0.1em; padding: 6px 0 18px; }
+
+@media (prefers-reduced-motion: reduce) {
+    * { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+}
+</style>
+</head>
+<body>
+
+<div id="ambient" aria-hidden="true">
+    <div id="ambStars"></div>
+    <div id="ambSweep"></div>
+    <div id="ambHex"></div>
+    <div id="ambRings"><i></i><i></i><i></i></div>
+    <div id="ambLcarsL"></div>
+    <div id="ambLcarsR"></div>
+</div>
+
+<header class="topbar">
+    <div class="brand">
+        <div class="brand-mark">VF</div>
+        <div>
+            <div class="brand-title">Agent Org</div>
+            <div class="brand-sub">Progress &amp; Command Structure</div>
+        </div>
+    </div>
+    <div class="topstats" role="status" id="topstats">
+        <span class="tchip">FLEET <b id="tsFleet">8</b></span>
+        <span class="tchip">ACTIVE <b id="tsActive">0</b></span>
+        <span class="tchip">AVG <b id="tsAvg">0%</b></span>
+        <span class="tchip" id="stardate">STARDATE <b id="sdVal">—</b></span>
+        <span class="tchip warn" id="tsAlertWrap">ALERTS <b id="tsAlerts">0</b></span>
+    </div>
+    <div class="spacer"></div>
+    <span class="simbadge">SIMULATED</span>
+    <a class="orglink" href="AGENT_BRIDGE.html" title="Open Agent Bridge — telemetry command deck">⌁ Agent Bridge</a>
+    <div class="theme-chips" id="themeChips">
+        <button class="tbtn" data-t="holo" aria-pressed="true">HOLO</button>
+        <button class="tbtn" data-t="lcars" aria-pressed="false">LCARS</button>
+        <button class="tbtn" data-t="jarvis" aria-pressed="false">JARVIS</button>
+    </div>
+</header>
+
+<main>
+    <section id="board" aria-label="Fleet progress">
+        <div class="sect-head">
+            <h2>Fleet Progress</h2>
+            <span class="sub" id="boardSub">live agent mission tracking</span>
+            <span class="rule"></span>
+        </div>
+        <div class="fleetbar hud">
+            <div>
+                <div class="avg-label">Combined mission progress — <b id="avgPct">0%</b></div>
+                <div class="bigbar"><div class="fill" id="avgFill"></div></div>
+                <div class="stmix" id="stMix" aria-hidden="true">
+                    <span style="background:var(--st-running)"></span>
+                    <span style="background:var(--st-hot)"></span>
+                    <span style="background:var(--st-error)"></span>
+                </div>
+                <div class="stmix-label" id="stMixLabel">—</div>
+            </div>
+            <div class="fleetcounts">
+                <div class="fcount c-active"><div class="n" id="fcActive">0</div><div class="l">Active</div></div>
+                <div class="fcount c-avg"><div class="n" id="fcCycles">0</div><div class="l">Cycles</div></div>
+                <div class="fcount c-alert"><div class="n" id="fcAlerts">0</div><div class="l">Alerts</div></div>
+            </div>
+        </div>
+        <div class="board-wrap">
+            <aside class="mission-rail" id="missionRail" aria-label="Mission selector"></aside>
+            <div class="board-grid" id="boardGrid"></div>
+        </div>
+    </section>
+
+    <section id="org" aria-label="Organization chart">
+        <div class="sect-head">
+            <h2>Chain of Command</h2>
+            <span class="sub">people leading · agents delivering</span>
+            <span class="rule"></span>
+        </div>
+        <div class="org-wrap">
+            <div class="org" id="orgTree"></div>
+        </div>
+    </section>
+
+    <div class="legend" aria-hidden="true">
+        <span class="li"><span class="sw" style="background:var(--st-running)"></span>Run</span>
+        <span class="li"><span class="sw" style="background:var(--st-thinking)"></span>Think</span>
+        <span class="li"><span class="sw" style="background:var(--st-hot)"></span>Hot</span>
+        <span class="li"><span class="sw" style="background:var(--st-error)"></span>Error</span>
+        <span class="li"><span class="sw" style="background:var(--st-idle)"></span>Idle</span>
+        <span class="li" style="opacity:.35">│</span>
+        <span class="li"><span class="sw" style="background:#e879f9"></span>Orchestrator</span>
+        <span class="li"><span class="sw" style="background:#38bdf8"></span>Coder</span>
+        <span class="li"><span class="sw" style="background:#60a5fa"></span>Scan</span>
+        <span class="li"><span class="sw" style="background:#fb923c"></span>Ops</span>
+        <span class="li"><span class="sw" style="background:#c084fc"></span>Work</span>
+        <span class="li"><span class="sw" style="background:#a3e635"></span>Data</span>
+    </div>
+</main>
+
+<footer>VIDISMART · AGENT ORG · SIMULATED TELEMETRY FOR DEMONSTRATION</footer>
+
+<script>
+'use strict';
+
+/* ═══════════════ DATA ═══════════════ */
+const IMG_DIRS = ['../images/', 'images/', '/images/'];
+let IMG_DIR = IMG_DIRS[0];
+
+function detectImgDir() {
+    return new Promise(resolve => {
+        let i = 0;
+        const probe = new Image();
+        probe.onload = () => { IMG_DIR = IMG_DIRS[i]; resolve(); };
+        probe.onerror = () => {
+            i++;
+            if (i < IMG_DIRS.length) {
+                probe.src = IMG_DIRS[i] + 'org-head-lexi.png';
+            } else {
+                resolve();
+            }
+        };
+        probe.src = IMG_DIRS[0] + 'org-head-lexi.png';
+    });
+}
+
+const LEADS = [
+    { key: 'james',  img: 'org-head-james', name: 'James May',      title: 'Founder & Mission Director', org: 'VidiSmart Command', dept: null },
+    { key: 'casey',  img: 'org-head-casey',  name: 'Casey',          title: 'Chief of Staff · Mission Routing & Handoffs', dept: 'Staff & Ops', deptKey: 'OPS' },
+    { key: 'ledger', img: 'org-head-ledger', name: 'Ledger',         title: 'CFO · Zero-License Books & Cash (ERPNext)', dept: 'Finance & Books', deptKey: 'FINANCE' },
+    { key: 'marcus', img: 'org-head-marcus', name: 'Marcus Chen',    title: 'Generation systems & VidiShop APIs', dept: 'SmartGen', deptKey: 'SMARTGEN' },
+    { key: 'sofia',  img: 'org-head-sofia',  name: 'Sofia Reyes',    title: 'Integrates every Vidi product surface', dept: 'Ecosystem', deptKey: 'ECOSYSTEM' },
+    { key: 'ryan',   img: 'org-head-ryan',   name: 'Ryan Cole',      title: 'Runs the master directive & execution plan', dept: 'Directive', deptKey: 'DIRECTIVE' },
+    { key: 'daniel', img: 'org-head-daniel', name: 'Daniel Okafor',  title: 'Owns schema, content and migrations', dept: 'CMS / Directus', deptKey: 'CMS' },
+    { key: 'priya',  img: 'org-head-priya',  name: 'Priya Nair',     title: 'Brand pipeline & batch media swaps', dept: 'BrandSwap', deptKey: 'BRANDSWAP' },
+    { key: 'tomas',  img: 'org-head-tomas',  name: 'Tomás Ferreira', title: 'Ships releases to the edge', dept: 'Deploy', deptKey: 'DEPLOY' },
+    { key: 'elena',  img: 'org-head-elena',  name: 'Elena Marsh',    title: 'Client solutions & vidiCRM delivery', dept: 'Client · vidiCRM', deptKey: 'CLIENT' },
+];
+
+/* Virtual agents carry personal identities — never project names. Missions are assignments, not identities. */
+const AGENTS = [
+    { key: 'hermes',    img: 'org-head-hermes',    name: 'Max Riker',     title: 'Routes every task through the queue',      model: 'qwen-72b', baseTps: 120, lead: 'ryan',   fn: 'orchestrator' },
+    { key: 'vidiflow',  img: 'org-head-vidiflow',  name: 'Iris Novak',    title: 'Builds and ships the VidiFlow experience', model: 'qwen-72b', baseTps: 95,  lead: 'sofia',  fn: 'coder' },
+    { key: 'vidinews',  img: 'org-head-vidinews',  name: 'Dex Harmon',    title: 'Reads the web so the fleet can think',     model: 'qwen-32b', baseTps: 70,  lead: 'sofia',  fn: 'researcher' },
+    { key: 'smartgen',  img: 'org-head-smartgen',  name: 'Kenji Mori',    title: 'Builds and serves the generation API',     model: 'qwen-72b', baseTps: 110, lead: 'marcus', fn: 'coder' },
+    { key: 'brandswap', img: 'org-head-brandswap', name: 'Zola Grant',    title: 'Swaps brands across media in batch',       model: 'qwen-32b', baseTps: 80,  lead: 'priya',  fn: 'worker' },
+    { key: 'directus',  img: 'org-head-directus',  name: 'Greta Lindholm',title: 'Keeps content flowing through Postgres',   model: 'qwen-14b', baseTps: 55,  lead: 'daniel', fn: 'devops' },
+    { key: 'deploy',    img: 'org-head-deploy',    name: 'Miles Turner',  title: 'Pushes builds to Vercel and beyond',       model: 'qwen-14b', baseTps: 60,  lead: 'tomas',  fn: 'devops' },
+    { key: 'airpmd',    img: 'org-head-airpmd',    name: 'Nadia Rehn',    title: 'Turns client data into decision briefs',   model: 'qwen-32b', baseTps: 85,  lead: 'elena',  fn: 'analyst' },
+    { key: 'books',     img: 'org-head-ledger',    name: 'Balancing Bot', title: 'Reconciles ERPNext general ledger & burn rate', model: 'qwen-32b', baseTps: 80,  lead: 'ledger', fn: 'analyst' },
+    { key: 'routing',   img: 'org-head-casey',     name: 'Sentry Core',   title: 'Dispatches missions across the workforce',       model: 'qwen-72b', baseTps: 115, lead: 'casey',  fn: 'orchestrator' },
+];
+
+const FN_LABEL = { orchestrator: 'ORCH', coder: 'CODE', researcher: 'SCAN', devops: 'OPS', worker: 'WORK', analyst: 'DATA' };
+
+/* Mission = project-level objective. 3–18 agents assigned over its course; agents may serve several missions. */
+const MISSIONS = [
+    { key: 'all',       name: 'All Missions', goal: 'Combined fleet objective',            agents: null },
+    { key: 'vidiflow',  name: 'VidiFlow',     goal: 'Ship the VidiFlow web experience',    agents: ['vidiflow', 'hermes', 'deploy', 'vflow-qa', 'vflow-docs'] },
+    { key: 'vidinews',  name: 'Vidi.News',    goal: 'Cover the web before anyone else',    agents: ['vidinews', 'vn-crawler', 'vn-parser', 'vn-cite'] },
+    { key: 'smartgen',  name: 'SmartGen',     goal: 'Serve the generation API at scale',   agents: ['smartgen', 'hermes', 'sg-cache', 'sg-lab'] },
+    { key: 'brandswap', name: 'BrandSwap',    goal: 'Batch brand swaps across media',      agents: ['brandswap', 'directus', 'bs-batch', 'bs-norm'] },
+    { key: 'airpmd',    name: 'Air PMDS',     goal: 'Turn client data into briefs',        agents: ['airpmd', 'ap-cohort', 'ap-brief'] },
+    { key: 'finance',   name: 'Finance & Books', goal: 'Run zero-license ERPNext double-entry books', agents: ['books', 'routing', 'ledger'] },
+];
+
+const MISSIONS_OF = {};
+MISSIONS.forEach(m => (m.agents || []).forEach(k => {
+    (MISSIONS_OF[k] = MISSIONS_OF[k] || []).push(m.name);
+}));
+
+/* Mission-attached units without permanent fleet seats (initials avatar until a headshot exists). */
+const AUX_AGENTS = [
+    { key: 'vflow-qa',   img: null, name: 'Colin Reyes',  title: 'Regression-tests every release',      model: 'qwen-32b', baseTps: 70,  fn: 'coder',      seed: 'running' },
+    { key: 'vflow-docs', img: null, name: 'Mara Quinn',   title: 'Keeps the handbook current',          model: 'qwen-14b', baseTps: 50,  fn: 'researcher', seed: 'idle' },
+    { key: 'vn-crawler', img: null, name: 'Otto Lindgren',title: 'Watches 214 feeds around the clock',  model: 'qwen-32b', baseTps: 75,  fn: 'researcher', seed: 'running' },
+    { key: 'vn-parser',  img: null, name: 'Tess Marlow',  title: 'Normalizes articles into the index',  model: 'qwen-32b', baseTps: 80,  fn: 'coder',      seed: 'running' },
+    { key: 'vn-cite',    img: null, name: 'Ivan Petrov',  title: 'Verifies every claim to source',      model: 'qwen-14b', baseTps: 55,  fn: 'analyst',    seed: 'thinking' },
+    { key: 'sg-cache',   img: null, name: 'Nils Ferrer',  title: 'Keeps inference hot and cheap',       model: 'qwen-14b', baseTps: 60,  fn: 'devops',     seed: 'running' },
+    { key: 'sg-lab',     img: null, name: 'Juno Park',    title: 'Scores and tunes prompt chains',      model: 'qwen-32b', baseTps: 65,  fn: 'analyst',    seed: 'running' },
+    { key: 'bs-batch',   img: null, name: 'Rex Calloway', title: 'Chews through SKU batches',           model: 'qwen-32b', baseTps: 70,  fn: 'worker',     seed: 'running' },
+    { key: 'bs-norm',    img: null, name: 'Wren Castillo',title: 'Aligns brand assets to spec',         model: 'qwen-14b', baseTps: 55,  fn: 'worker',     seed: 'running' },
+    { key: 'ap-cohort',  img: null, name: 'Ada Sorensen', title: 'Projects cohort outcomes',            model: 'qwen-32b', baseTps: 80,  fn: 'analyst',    seed: 'running' },
+    { key: 'ap-brief',   img: null, name: 'Leo Vance',    title: 'Drafts client-ready briefs',          model: 'qwen-14b', baseTps: 55,  fn: 'analyst',    seed: 'running' },
+];
+
+const ALL_AGENTS = AGENTS.concat(AUX_AGENTS);
+const ALL_BY_KEY = new Map(ALL_AGENTS.map(a => [a.key, a]));
+
+const AUX_LINES = {
+    coder:      ['Running regression suite 88/120…', 'Rebuilding type definitions…', 'Linting 214 modules…', 'Patching flaky test #47…'],
+    researcher: ['Crawling feed batch 12/30…', 'Entity-linking 44 new articles…', 'Refreshing stale sources…', 'Scoring source reliability…'],
+    devops:     ['Trimming cache eviction lag…', 'Warming embeddings for peak hour…', 'Rebalancing replica load…', 'Pruning cold cache entries…'],
+    analyst:    ['Scoring cohort v7 projections…', 'Cross-checking dedupe rules…', 'Drafting insight brief…', 'Validating dataset freshness…'],
+    worker:     ['Processing SKU batch 77/120…', 'Aligning media to brand spec…', 'Indexing 9.1k records…', 'Flushing render cache…'],
+};
+
+const ROLES = {
+    hermes:    ['Orchestrating sub-tasks for launch checklist…', 'Routing queue → 3 workers', 'Rebalancing fleet priorities…', 'Awaiting telemetry handshake'],
+    vidiflow:  ['Refactoring dashboard components…', 'Writing unit tests for parser…', 'Migrating schema v12 → v13…', 'Bundling production assets…'],
+    vidinews:  ['Scraping competitor pricing pages…', 'Parsing Reuters feed items…', 'Summarizing 14 source documents…', 'Cross-checking citations…'],
+    smartgen:  ['Compiling generation templates…', 'A/B testing prompt chains…', 'Warming embedding cache…', 'Serving 42 inference streams…'],
+    brandswap: ['Processing SKU batch 44/120…', 'Normalizing media pipeline input…', 'Indexing 8.2k records…', 'Flushing render cache…'],
+    directus:  ['Applying migration 118 → 119…', 'Reindexing media library…', 'Backing up content snapshots…', 'Validating collection schemas…'],
+    deploy:    ['Provisioning container replicas…', 'Health-checking edge nodes…', 'Rotating TLS certificates…', 'Syncing deploy artifacts…'],
+    airpmd:    ['Scoring healthcare client dataset…', 'Building cohort projections…', 'Validating CRM dedupe rules…', 'Drafting insight brief…'],
+    books:     ['Syncing ERPNext general ledger…', 'Auditing monthly cash burn telemetry…', 'Posting double-entry journal entries…', 'Forecasting runway & statements…'],
+    routing:   ['Assigning priority ticket to cross-bot swarm…', 'Evaluating HITL approval gates…', 'Rerouting stuck worker queue…', 'Balancing fleet workload…'],
+};
+const ERR_LINES = ['Connection reset by peer', 'Tool call timed out after 30s', 'Rate limit exceeded (429)', 'Context window overflow'];
+
+const MODEL_LAT = { 'qwen-14b': 85, 'qwen-32b': 125, 'qwen-72b': 190 };
+
+const STATE_CHIP = { running: 'RUN', thinking: 'THINK', hot: 'HOT', error: 'ERR', idle: 'IDLE', done: 'DONE' };
+const TICK_MS = 1500;
+const HISTORY = 26;
+
+/* ═══════════════ STATE ═══════════════ */
+const fleet = {};
+let simTick = 0;
+let simTimer = null;
+let cyclesCompleted = 0;
+const cardRefs = {};   // key -> { el, chip, fill, pct, line, tps, mem, eta, spark, dot, mini, miniFill, miniPct }
+const sparkData = {};
+
+/* ═══════════════ HELPERS ═══════════════ */
+const pick = a => a[Math.floor(Math.random() * a.length)];
+const clamp01 = v => Math.max(0, Math.min(1, v));
+const pctStr = v => Math.round(clamp01(v) * 100) + '%';
+
+function initials(name) {
+    return name.split(/\s+/).slice(0, 2).map(w => w[0] || '').join('').toUpperCase();
+}
+
+function makeAvatar(person) {
+    const wrap = document.createElement('div');
+    wrap.className = 'avatar';
+    if (!person.img) {
+        const ph = document.createElement('div');
+        ph.className = 'ph';
+        ph.textContent = initials(person.name);
+        wrap.appendChild(ph);
+        return wrap;
+    }
+    const img = document.createElement('img');
+    img.src = IMG_DIR + person.img + '.png';
+    img.alt = person.name + ' headshot';
+    img.loading = 'lazy';
+    img.onerror = () => {
+        wrap.removeChild(img);
+        const ph = document.createElement('div');
+        ph.className = 'ph';
+        ph.textContent = initials(person.name);
+        wrap.appendChild(ph);
+    };
+    wrap.appendChild(img);
+    return wrap;
+}
+
+function fmtEta(sec) {
+    if (!isFinite(sec) || sec <= 0) return '—';
+    if (sec > 3600) return '>1h';
+    const m = Math.floor(sec / 60), s = Math.round(sec % 60);
+    return m > 0 ? '~' + m + 'm ' + String(s).padStart(2, '0') + 's' : '~' + s + 's';
+}
+
+/* ═══════════════ THEME ═══════════════ */
+function setTheme(t) {
+    if (!['holo', 'lcars', 'jarvis'].includes(t)) t = 'holo';
+    document.documentElement.dataset.theme = t;
+    try { localStorage.setItem('agentorg-theme', t); } catch (e) {}
+    document.querySelectorAll('#themeChips .tbtn').forEach(b => {
+        b.setAttribute('aria-pressed', String(b.dataset.t === t));
+    });
+}
+document.getElementById('themeChips').addEventListener('click', e => {
+    const b = e.target.closest('.tbtn');
+    if (b) setTheme(b.dataset.t);
+});
+try {
+    const saved = localStorage.getItem('agentorg-theme');
+    if (saved) setTheme(saved);
+} catch (e) {}
+
+/* ═══════════════ SEED FLEET ═══════════════ */
+function seedFleet() {
+    ALL_AGENTS.forEach((a, i) => {
+        fleet[a.key] = {
+            key: a.key,
+            status: a.seed || 'running',
+            status_line: pick(ROLES[a.key] || AUX_LINES[a.fn] || ['Standing by…']),
+            progress: 0.12 + Math.random() * 0.55,
+            progress: 0.12 + Math.random() * 0.55,
+            rate: 0,                       // progress per second (measured)
+            _baseTps: a.baseTps,
+            model: a.model,
+            lat: MODEL_LAT[a.model] || 120,
+            errors: 0,
+            tokens: 0,
+            _prevTps: null,
+            _hotUntil: null,
+            _errUntil: null,
+            _doneUntil: null,
+            _prevProgress: null,
+            _prevT: Date.now(),
+            tps: Math.round(a.baseTps * 0.8),
+            mem: 2200 + Math.round(Math.random() * 2400),
+        };
+        const ring = sparkData[a.key] = [];
+        const now = Date.now();
+        for (let k = HISTORY; k >= 1; k--) {
+            ring.push({ t: now - k * TICK_MS, tps: Math.round(a.baseTps * (0.75 + Math.random() * 0.5)) });
+        }
+    });
+}
+
+/* ═══════════════ BUILD BOARD ═══════════════ */
+function buildBoard() {
+    const grid = document.getElementById('boardGrid');
+    ALL_AGENTS.forEach((a, i) => {
+        const lead = LEADS.find(l => l.key === a.lead);
+        const card = document.createElement('article');
+        card.className = 'acard hud';
+        card.dataset.fn = a.fn;
+        card.dataset.state = 'running';
+        card.style.animationDelay = (i * 35) + 'ms';
+
+        const av = makeAvatar(a);
+        av.style.gridRow = '1 / 3';
+
+        const who = document.createElement('div');
+        who.className = 'who';
+        const nm = document.createElement('div');
+        nm.className = 'nm';
+        nm.textContent = a.name;
+        const ti = document.createElement('div');
+        ti.className = 'ti';
+        ti.textContent = a.title;
+        const sub = document.createElement('div');
+        sub.className = 'sub';
+        const asg = MISSIONS_OF[a.key];
+        sub.textContent = 'reports to ' + (lead ? lead.name : 'mission pool')
+            + ' · ' + a.model
+            + (asg && asg.length ? ' · assigned: ' + (asg.length > 2 ? 'all missions' : asg.join(' / ')) : '');
+        who.appendChild(nm);
+        who.appendChild(ti);
+        who.appendChild(sub);
+
+        const chip = document.createElement('span');
+        chip.className = 'schip';
+        chip.textContent = 'RUN';
+
+        const chiprow = document.createElement('div');
+        chiprow.className = 'chiprow';
+        const fchip = document.createElement('span');
+        fchip.className = 'fchip';
+        fchip.textContent = FN_LABEL[a.fn];
+        fchip.title = 'Function: ' + a.fn;
+        chiprow.appendChild(fchip);
+        chiprow.appendChild(chip);
+
+        const pct = document.createElement('div');
+        pct.className = 'pct';
+        pct.textContent = '0%';
+
+        const pbar = document.createElement('div');
+        pbar.className = 'pbar';
+        const fill = document.createElement('div');
+        fill.className = 'fill';
+        pbar.appendChild(fill);
+
+        const statusline = document.createElement('div');
+        statusline.className = 'statusline';
+
+        const meta = document.createElement('div');
+        meta.className = 'meta';
+        const mkStat = label => {
+            const s = document.createElement('span');
+            s.append(label + ' ');
+            const b = document.createElement('b');
+            s.appendChild(b);
+            return b;
+        };
+        const tpsB = mkStat('TOK/S');
+        const delta = document.createElement('span');
+        delta.className = 'delta flat';
+        delta.textContent = '·';
+        const memB = mkStat('MEM');
+        const latB = mkStat('LAT');
+        const errB = mkStat('ERR');
+        const etaB = mkStat('ETA');
+        const spacer = document.createElement('span');
+        spacer.className = 'spacer';
+        const spark = document.createElement('canvas');
+        spark.width = 148;
+        spark.height = 44;
+        meta.appendChild(tpsB);
+        meta.appendChild(delta);
+        meta.appendChild(memB.parentElement);
+        meta.appendChild(latB.parentElement);
+        meta.appendChild(errB.parentElement);
+        meta.appendChild(etaB.parentElement);
+        meta.appendChild(spacer);
+        meta.appendChild(spark);
+
+        card.appendChild(av);
+        card.appendChild(who);
+        card.appendChild(chiprow);
+        card.appendChild(pct);
+        card.appendChild(pbar);
+        card.appendChild(statusline);
+        card.appendChild(meta);
+        grid.appendChild(card);
+
+        cardRefs[a.key] = {
+            el: card, chip, fill, pct, line: statusline,
+            tps: tpsB, mem: memB, lat: latB, errB, eta: etaB, delta, spark,
+            dot: null, miniFill: null, miniPct: null,
+        };
+    });
+}
+
+/* ═══════════════ BUILD ORG ═══════════════ */
+function buildOrg() {
+    const tree = document.getElementById('orgTree');
+    const root = LEADS[0];
+
+    const rootcard = document.createElement('div');
+    rootcard.className = 'rootcard hud';
+    const rk = document.createElement('span');
+    rk.className = 'rk';
+    rk.textContent = root.org.toUpperCase();
+    rootcard.appendChild(rk);
+    rootcard.appendChild(makeAvatar(root));
+    const rinfo = document.createElement('div');
+    const rnm = document.createElement('div');
+    rnm.className = 'nm';
+    rnm.textContent = root.name;
+    const rti = document.createElement('div');
+    rti.className = 'ti';
+    rti.textContent = root.title;
+    const rorg = document.createElement('div');
+    rorg.className = 'org-name';
+    rorg.textContent = 'Directs ' + (LEADS.length - 1) + ' divisions · commands ' + AGENTS.length + ' specialist agents';
+    rinfo.appendChild(rnm);
+    rinfo.appendChild(rti);
+    rinfo.appendChild(rorg);
+    rootcard.appendChild(rinfo);
+    tree.appendChild(rootcard);
+
+    const stem = document.createElement('div');
+    stem.className = 'org-stem';
+    tree.appendChild(stem);
+
+    const rail = document.createElement('div');
+    rail.className = 'org-rail';
+    tree.appendChild(rail);
+
+    const cols = document.createElement('div');
+    cols.className = 'org-cols';
+
+    LEADS.slice(1).forEach((lead, li) => {
+        const col = document.createElement('div');
+        col.className = 'dcol';
+
+        const leadcard = document.createElement('div');
+        leadcard.className = 'leadcard hud';
+        leadcard.style.animationDelay = (120 + li * 80) + 'ms';
+        leadcard.appendChild(makeAvatar(lead));
+        const lnm = document.createElement('div');
+        lnm.className = 'nm';
+        lnm.textContent = lead.name;
+        const lti = document.createElement('div');
+        lti.className = 'ti';
+        lti.textContent = lead.title;
+        const ldp = document.createElement('div');
+        ldp.className = 'dp';
+        ldp.textContent = lead.dept.toUpperCase() + ' DIVISION';
+        leadcard.appendChild(lnm);
+        leadcard.appendChild(lti);
+        leadcard.appendChild(ldp);
+        col.appendChild(leadcard);
+
+        const dstem = document.createElement('div');
+        dstem.className = 'stem';
+        col.appendChild(dstem);
+
+        const agentsBox = document.createElement('div');
+        agentsBox.className = 'agents';
+        AGENTS.filter(a => a.lead === lead.key).forEach(a => {
+            const g = document.createElement('div');
+            g.className = 'gcard';
+            g.dataset.state = 'running';
+            g.dataset.fn = a.fn;
+            g.appendChild(makeAvatar(a));
+
+            const info = document.createElement('div');
+            info.className = 'info';
+            const gnm = document.createElement('div');
+            gnm.className = 'nm';
+            gnm.append(a.name + ' ');
+            const gfn = document.createElement('span');
+            gfn.className = 'gfn';
+            gfn.textContent = FN_LABEL[a.fn];
+            gfn.title = 'Function: ' + a.fn;
+            gnm.appendChild(gfn);
+            const gti = document.createElement('div');
+            gti.className = 'ti';
+            gti.textContent = a.title;
+            const row = document.createElement('div');
+            row.className = 'row';
+            const dot = document.createElement('span');
+            dot.className = 'dot';
+            const mini = document.createElement('div');
+            mini.className = 'mini';
+            const miniFill = document.createElement('div');
+            miniFill.className = 'fill';
+            mini.appendChild(miniFill);
+            const pcts = document.createElement('span');
+            pcts.className = 'pcts';
+            pcts.textContent = '0%';
+            row.appendChild(dot);
+            row.appendChild(mini);
+            row.appendChild(pcts);
+            info.appendChild(gnm);
+            info.appendChild(gti);
+            info.appendChild(row);
+            g.appendChild(info);
+            agentsBox.appendChild(g);
+
+            cardRefs[a.key].dot = dot;
+            cardRefs[a.key].miniFill = miniFill;
+            cardRefs[a.key].miniPct = pcts;
+        });
+        col.appendChild(agentsBox);
+        cols.appendChild(col);
+    });
+
+    tree.appendChild(cols);
+}
+
+/* ═══════════════ MISSION RAIL ═══════════════ */
+let selectedMission = 'all';
+const missionRefs = {};
+const STATE_OF = f => (f._doneUntil != null && Date.now() < f._doneUntil) ? 'done' : f.status;
+const SEV = { error: 0, hot: 1, thinking: 1.5, idle: 2, running: 3, done: 3.5 };
+const STATE_DOT = { running: 'var(--st-running)', done: 'var(--st-running)', hot: 'var(--st-hot)', error: 'var(--st-error)', thinking: 'var(--st-thinking)', idle: 'var(--st-idle)' };
+
+function missionMembers(key) {
+    if (key === 'all') return ALL_AGENTS.map(a => a.key);
+    const m = MISSIONS.find(x => x.key === key);
+    return m ? m.agents.slice() : ALL_AGENTS.map(a => a.key);
+}
+
+function buildMissionRail() {
+    const rail = document.getElementById('missionRail');
+    const label = document.createElement('div');
+    label.className = 'rail-label';
+    label.textContent = 'Missions';
+    rail.appendChild(label);
+    MISSIONS.forEach(m => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'mcard hud';
+        b.dataset.m = m.key;
+        b.setAttribute('aria-pressed', String(m.key === selectedMission));
+        b.title = m.goal;
+        const dot = document.createElement('span');
+        dot.className = 'mdot';
+        const nm = document.createElement('span');
+        nm.className = 'mname';
+        nm.textContent = m.name;
+        const meta = document.createElement('span');
+        meta.className = 'mmeta';
+        meta.textContent = missionMembers(m.key).length + ' AG';
+        const bar = document.createElement('div');
+        bar.className = 'mbar';
+        const fill = document.createElement('div');
+        fill.className = 'fill';
+        bar.appendChild(fill);
+        b.appendChild(dot);
+        b.appendChild(nm);
+        b.appendChild(meta);
+        b.appendChild(bar);
+        rail.appendChild(b);
+        missionRefs[m.key] = { el: b, dot, fill };
+    });
+    rail.addEventListener('click', e => {
+        const btn = e.target.closest('.mcard');
+        if (btn) selectMission(btn.dataset.m);
+    });
+}
+
+function selectMission(key) {
+    if (!MISSIONS.some(m => m.key === key)) key = 'all';
+    selectedMission = key;
+    document.querySelectorAll('#missionRail .mcard').forEach(b => {
+        b.setAttribute('aria-pressed', String(b.dataset.m === key));
+    });
+    const members = missionMembers(key);
+    Object.keys(cardRefs).forEach(k => {
+        cardRefs[k].el.style.display = members.includes(k) ? '' : 'none';
+    });
+    const m = MISSIONS.find(x => x.key === key);
+    document.getElementById('boardSub').textContent = key === 'all'
+        ? 'all missions · combined view'
+        : m.name + ' — ' + m.goal.toLowerCase() + ' · ' + members.length + ' agents assigned';
+    render();
+}
+
+/* ═══════════════ SIM ENGINE ═══════════════ */
+function simStep() {
+    simTick++;
+    const now = Date.now();
+
+    Object.values(fleet).forEach(a => {
+        if (a._errUntil != null) {
+            if (now >= a._errUntil) {
+                a._errUntil = null;
+                a.status = 'running';
+                a.status_line = 'Reconnected — resuming queue';
+            } else {
+                a.status = 'error';
+                a.tps = 0;
+                a.mem = 0;
+                a.lat = 0;
+            }
+        }
+        if (a._hotUntil != null && now >= a._hotUntil) a._hotUntil = null;
+        if (a._doneUntil != null && now >= a._doneUntil) a._doneUntil = null;
+
+        if (a.status !== 'error') {
+            const dt = Math.max(0.2, (now - a._prevT) / 1000);
+            const before = a.progress;
+            if (a._doneUntil == null && (a.status === 'running' || a.status === 'hot')) {
+                a.progress = clamp01(before + 0.004 + Math.random() * 0.022);
+            }
+            a.rate = (a.progress - before) / dt;
+            a._prevT = now;
+            if (a.progress >= 1) {
+                a.progress = 0.03;
+                a._doneUntil = now + 2600;
+                cyclesCompleted++;
+            }
+        }
+
+        if (a.status !== 'error') {
+            a._prevTps = a.tps;
+            let tps;
+            if (a.status === 'idle') tps = 4;
+            else if (a.status === 'thinking') tps = a._baseTps * 0.15;
+            else {
+                tps = a._baseTps * (0.75 + Math.random() * 0.5);
+                if (a._hotUntil != null) tps = 175 + Math.random() * 45;
+                if (a._doneUntil != null) tps = a._baseTps * 0.2;
+            }
+            a.tps = Math.round(tps);
+            a.mem = Math.round(1800 + Math.random() * 3600 + (a._hotUntil != null ? 2600 : 0));
+            const latBase = MODEL_LAT[a.model] || 120;
+            a.lat = Math.round(latBase * (0.8 + Math.random() * 0.5)
+                * (a._hotUntil != null ? (2.2 + Math.random() * 1.6) : 1)
+                * (a._doneUntil != null ? 0.6 : 1));
+            a.tokens += a.tps * (TICK_MS / 1000);
+            if (a._doneUntil == null && simTick % 4 === 0) a.status_line = pick(ROLES[a.key] || AUX_LINES[a.fn] || ['Standing by…']);
+            if ((a.status === 'running' || a.status === 'hot') && a._errUntil == null && a._hotUntil == null) a.status = a._hotUntil != null ? 'hot' : 'running';
+        }
+
+        const ring = sparkData[a.key];
+        ring.push({ t: now, tps: a.tps });
+        if (ring.length > HISTORY) ring.shift();
+    });
+
+    if (simTick % 19 === 0) {
+        const cands = Object.values(fleet).filter(a => a._errUntil == null && a._hotUntil == null && a._doneUntil == null && a.status === 'running');
+        if (cands.length) {
+            const a = pick(cands);
+            a._hotUntil = now + 9500;
+            a.status = 'hot';
+            a.status_line = 'Token surge — throttling cache pressure';
+        }
+    }
+    if (simTick % 30 === 0) {
+        const cands = Object.values(fleet).filter(a => a._errUntil == null && a._hotUntil == null);
+        if (cands.length) {
+            const a = pick(cands);
+            a._errUntil = now + 9000;
+            a.status = 'error';
+            a.errors = (a.errors || 0) + 1;
+            a.status_line = pick(ERR_LINES);
+        }
+    }
+
+    render();
+}
+
+/* ═══════════════ RENDER ═══════════════ */
+function drawSpark(canvas, ring, color) {
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    const w = canvas.width, h = canvas.height;
+    ctx.clearRect(0, 0, w, h);
+    if (ring.length < 2) return;
+    const max = Math.max(60, ...ring.map(p => p.tps));
+    ctx.beginPath();
+    ring.forEach((p, i) => {
+        const x = (i / (ring.length - 1)) * (w - 4) + 2;
+        const y = h - 3 - (p.tps / max) * (h - 8);
+        if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    });
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 2.5;
+    ctx.lineJoin = 'round';
+    ctx.stroke();
+}
+
+function render() {
+    const members = missionMembers(selectedMission);
+    let sRun = 0, sHot = 0, sErr = 0, sum = 0;
+
+    members.forEach(key => {
+        const a = ALL_BY_KEY.get(key);
+        const f = fleet[key];
+        if (!a || !f) return;
+        const r = cardRefs[key];
+        let state = STATE_OF(f);
+        if (state === 'running' || state === 'done') sRun++;
+        else if (state === 'hot') sHot++;
+        else if (state === 'error') sErr++;
+        sum += clamp01(f.progress);
+
+        r.el.dataset.state = state;
+        r.el.classList.toggle('is-hot', state === 'hot');
+        r.el.classList.toggle('is-error', state === 'error');
+        r.chip.textContent = STATE_CHIP[state] || 'RUN';
+        r.fill.style.width = pctStr(state === 'done' ? 1 : f.progress);
+        r.pct.textContent = pctStr(state === 'done' ? 1 : f.progress);
+        r.line.textContent = f.status_line;
+        r.tps.textContent = String(f.tps);
+        const dtps = f.tps - (f._prevTps == null ? f.tps : f._prevTps);
+        r.delta.textContent = dtps > 2 ? '▲' : (dtps < -2 ? '▼' : '·');
+        r.delta.className = 'delta ' + (dtps > 2 ? 'up' : (dtps < -2 ? 'down' : 'flat'));
+        const gb = f.mem / 1024;
+        r.mem.textContent = Math.round(gb * 10) / 10 + 'G';
+        r.mem.className = gb > 6.8 ? 'err' : (gb > 5.6 ? 'hot' : '');
+        r.lat.textContent = Math.round(f.lat) + 'ms';
+        r.lat.className = f.lat > 900 ? 'err' : (f.lat > 450 ? 'hot' : '');
+        r.errB.textContent = String(f.errors);
+        r.errB.className = f.errors > 0 ? 'err' : '';
+        const etaSec = (state === 'running' && f.rate > 0.0005) ? (1 - f.progress) / f.rate : Infinity;
+        r.eta.textContent = fmtEta(etaSec);
+        r.eta.className = (state === 'running' && etaSec < 600) ? 'good' : '';
+
+        const stColor = getComputedStyle(r.el).getPropertyValue('--state-color').trim() || '#22d3ee';
+        drawSpark(r.spark, sparkData[key], stColor);
+
+        if (r.dot) {
+            r.dot.parentElement.parentElement.parentElement.dataset.state = state;
+            r.miniFill.style.width = pctStr(state === 'done' ? 1 : f.progress);
+            r.miniPct.textContent = pctStr(state === 'done' ? 1 : f.progress);
+            r.dot.closest('.gcard').title = a.name + ' · ' + f.tps + ' tok/s · ' + Math.round(gb * 10) / 10 + 'G mem · ' + Math.round(f.lat) + 'ms · ' + f.errors + ' errors';
+        }
+    });
+
+    const avg = sum / members.length;
+    document.getElementById('avgFill').style.width = pctStr(avg);
+    document.getElementById('avgPct').textContent = pctStr(avg);
+    const active = sRun + sHot;
+    document.getElementById('tsFleet').textContent = String(members.length);
+    document.getElementById('tsActive').textContent = String(active);
+    document.getElementById('tsAvg').textContent = pctStr(avg);
+    document.getElementById('tsAvg').className = avg >= 0.7 ? 'good' : '';
+    document.getElementById('tsAlerts').textContent = String(sErr);
+    document.getElementById('fcActive').textContent = String(active);
+    document.getElementById('fcCycles').textContent = String(cyclesCompleted);
+    document.getElementById('fcAlerts').textContent = String(sErr);
+    const mixSegs = document.querySelectorAll('#stMix span');
+    mixSegs[0].style.width = (sRun / members.length * 100) + '%';
+    mixSegs[1].style.width = (sHot / members.length * 100) + '%';
+    mixSegs[2].style.width = (sErr / members.length * 100) + '%';
+    document.getElementById('stMixLabel').textContent = sRun + ' RUNNING · ' + sHot + ' HOT · ' + sErr + ' ERRORS';
+
+    MISSIONS.forEach(m => {
+        const ref = missionRefs[m.key];
+        if (!ref) return;
+        const keys = missionMembers(m.key);
+        let sp = 0, worst = 'running';
+        keys.forEach(k => {
+            const f = fleet[k];
+            sp += clamp01(f.progress);
+            const st = STATE_OF(f);
+            if (SEV[st] < SEV[worst]) worst = st;
+        });
+        ref.fill.style.width = pctStr(sp / keys.length);
+        ref.dot.style.setProperty('--mdc', STATE_DOT[worst]);
+    });
+}
+
+/* ═══════════════ CINEMA EXTRAS ═══════════════ */
+function updateStardate() {
+    const sd = (Date.now() - Date.UTC(1994, 0, 1)) / 31557600000 * 1000 + 47000;
+    document.getElementById('sdVal').textContent = sd.toFixed(1);
+}
+
+const LCARS_COLORS = ['#FF9C00', '#CC6666', '#DD99FF', '#99CCFF', '#FFCC66', '#CC99CC', '#9F99FF', '#FF8A5C'];
+function buildLcarsRails() {
+    const heights = [96, 26, 40, 22, 52, 24, 36, 22, 44, 26, 66, 22];
+    [[document.getElementById('ambLcarsL'), 0], [document.getElementById('ambLcarsR'), 3]].forEach(([el, off]) => {
+        heights.forEach((h, i) => {
+            const s = document.createElement('span');
+            s.style.height = h + 'px';
+            s.style.background = LCARS_COLORS[(i + off) % LCARS_COLORS.length];
+            el.appendChild(s);
+        });
+    });
+}
+
+/* ═══════════════ BOOT ═══════════════ */
+seedFleet();
+buildLcarsRails();
+updateStardate();
+setInterval(updateStardate, 1000);
+detectImgDir().then(() => {
+    buildBoard();
+    buildMissionRail();
+    buildOrg();
+    selectMission('all');
+    simTimer = setInterval(simStep, TICK_MS);
+});
+</script>
+</body>
+</html>

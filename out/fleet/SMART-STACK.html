@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>VidiFlow — Smart Stack &amp; Screen Check</title>
+<style>
+:root{
+  /* Linear-derived dark system (popular-web-designs/linear.app.md) */
+  --bg:#08090a; --panel:rgba(255,255,255,0.02); --panel2:rgba(255,255,255,0.05);
+  --border:rgba(255,255,255,0.08); --border-sub:rgba(255,255,255,0.05);
+  --fg:#f7f8f8; --fg2:#d0d6e0; --dim:#8a8f98; --dimmer:#62666d;
+  --acc:#7170ff; --acc-hover:#828fff; --brand:#5e6ad2;
+  --ok:#10b981; --warn:#d29922; --bad:#f85149;
+  --radius:8px; --radius-lg:12px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--fg2);
+  font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  font-feature-settings:"cv01","ss03";
+  -webkit-font-smoothing:antialiased}
+.wrap{max-width:1200px;margin:0 auto;padding:48px 28px}
+h1{color:var(--fg);font-weight:510;font-size:48px;letter-spacing:-1.056px;line-height:1.0;margin:0 0 12px}
+.sub{color:var(--dim);font-size:18px;font-weight:400;line-height:1.6;max-width:640px;margin:0 0 36px;letter-spacing:-.165px}
+h2{color:var(--dim);font-size:12px;font-weight:590;text-transform:uppercase;letter-spacing:.8px;margin:52px 0 18px}
+p{line-height:1.6}
+a{color:var(--acc);text-decoration:none}
+a:hover{color:var(--acc-hover)}
+code{font-family:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;font-size:12px;
+  background:var(--panel2);border:1px solid var(--border-sub);border-radius:5px;padding:2px 6px;color:var(--fg2)}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);
+  padding:20px 22px;margin-bottom:12px;transition:background .15s,border-color .15s}
+.card:hover{background:var(--panel2)}
+.card h3{color:var(--fg);font-size:17px;font-weight:510;letter-spacing:-.24px;margin:0 0 6px}
+.card p{color:var(--dim);font-size:14px;margin:0}
+.pill{display:inline-block;font-size:11px;font-weight:510;padding:3px 10px;border-radius:9999px;
+  border:1px solid #23252a;color:var(--fg2);margin-left:10px;vertical-align:middle}
+.pill.ok{color:var(--ok);border-color:rgba(16,185,129,.35)}
+.pill.warn{color:var(--warn);border-color:rgba(210,153,34,.35)}
+.pill.bad{color:var(--bad);border-color:rgba(248,81,73,.35)}
+table{width:100%;border-collapse:collapse;font-size:14px;margin:10px 0 4px}
+th{text-align:left;color:var(--dim);font-size:11px;text-transform:uppercase;letter-spacing:.7px;
+  font-weight:510;padding:8px 12px;border-bottom:1px solid var(--border)}
+td{padding:10px 12px;border-bottom:1px solid var(--border-sub);vertical-align:top;color:var(--fg2)}
+tr:last-child td{border-bottom:none}
+.num{text-align:right;font-variant-numeric:tabular-nums}
+figure{margin:0 0 24px}
+figure img{display:block;width:100%;height:auto;border:1px solid var(--border);border-radius:var(--radius)}
+figcaption{color:var(--dimmer);font-size:12.5px;padding:9px 2px 0;letter-spacing:-.13px}
+.sq{max-width:520px}
+.board{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:18px 0 8px}
+.col{background:var(--panel);border:1px solid var(--border-sub);border-radius:var(--radius);padding:12px;min-height:120px}
+.col h4{margin:0 0 10px;color:var(--dim);font-size:10.5px;text-transform:uppercase;letter-spacing:.8px;font-weight:590}
+.chip{background:var(--panel2);border:1px solid var(--border);border-radius:6px;
+  padding:8px 10px;font-size:12.5px;color:var(--fg2);margin-bottom:7px}
+.chip small{display:block;color:var(--dimmer);font-size:10.5px;margin-top:2px}
+.note{border-left:none;border:1px solid var(--border);border-left:2px solid var(--acc);
+  border-radius:0 var(--radius) var(--radius) 0;background:rgba(113,112,255,.04);
+  padding:14px 18px;margin:20px 0;font-size:14px;color:var(--fg2)}
+.footer{color:var(--dimmer);font-size:12.5px;margin-top:56px;padding-top:20px;border-top:1px solid var(--border-sub)}
+@media (max-width:820px){.board{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:520px){.board{grid-template-columns:1fr}h1{font-size:32px;letter-spacing:-.704px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>Smart Channel CX — Smart Stack</h1>
+<p class="sub">The video pipeline on the kanban orchestrator, plus the screen-check of every preview
+server running on this machine. Restyled on the Linear design system; imagery generated locally on Mage-Flow.</p>
+
+<h2>Kanban video orchestrator</h2>
+<div class="card">
+  <h3>Plan: <code>_kanban_video_orchestrator.md</code><span class="pill warn">planning</span></h3>
+  <p>Every step of a video job — brief, prompt, generate, compose, timeline, render, review, deliver —
+  becomes a kanban card. Hermes' existing kanban engine already has claiming, retries, heartbeats,
+  parent/child task trees and an event log, so the video stack only supplies job types.
+  This is also the observation layer: one board shows the state of every job, which is what's missing today.</p>
+</div>
+
+<div class="board">
+  <div class="col"><h4>Brief</h4>
+    <div class="chip">Campaign parent<small>customer list + copy</small></div>
+    <div class="chip">Per-customer child ×N<small>one card per recipient</small></div>
+  </div>
+  <div class="col"><h4>Generate</h4>
+    <div class="chip">Prompt authoring<small>LLM, reviewable</small></div>
+    <div class="chip">Mage-Flow render<small>4 s/image, MIT, local</small></div>
+  </div>
+  <div class="col"><h4>Assemble</h4>
+    <div class="chip">Cutout + composite<small>rembg, 0.6 s</small></div>
+    <div class="chip">Remotion timeline<small>not installed yet</small></div>
+  </div>
+  <div class="col"><h4>Deliver</h4>
+    <div class="chip">Review gate<small>checker agent scores output</small></div>
+    <div class="chip">VidiBlast send<small>hosted MP4 + poster</small></div>
+  </div>
+</div>
+<figure>
+  <img src="img/vram-headroom-tray-v2_00001_.png" alt="A metal tray holding a stack of dark blocks that overhangs the rim beside one compact block with clear floor around it.">
+  <figcaption>VRAM headroom, visualised — 22.4 GB of load on a 22.5 GB card leaves zero headroom.
+  Generated on Mage-Flow Turbo, no text, palette-matched.</figcaption>
+</figure>
+
+<h2>Image stack — verified</h2>
+<table>
+  <tr><th>Model</th><th>Role</th><th class="num">Time</th><th>License</th><th>Text render</th></tr>
+  <tr><td><b>Mage-Flow Turbo</b></td><td>primary generator</td><td class="num">4–12 s</td><td>MIT</td><td class="num" style="color:var(--ok)">6/6 perfect</td></tr>
+  <tr><td>Z-Image-Turbo</td><td>stylised</td><td class="num">10–18 s</td><td>Apache-2.0</td><td class="num">—</td></tr>
+  <tr><td>FLUX.2 klein 4B</td><td>prompt adherence</td><td class="num">8–52 s</td><td>Apache-2.0</td><td class="num" style="color:var(--ok)">strong</td></tr>
+  <tr><td>HiDream-O1 dev</td><td>long-text</td><td class="num">6–36 s</td><td>MIT</td><td class="num" style="color:var(--warn)">author-reported</td></tr>
+</table>
+<div class="note">All four run on the 4090. ComfyUI starts only for an approved job and unloads after —
+12.5 GB VRAM was released after the last run. Nothing model-sized runs during the day by standing rule.</div>
+
+<h2>Screen check — 2026-10-07</h2>
+<p style="color:var(--dim);font-size:14px;max-width:720px">Every preview server that was running got captured,
+checked for blank captures, and filed under <code>out/screens/</code>. Seven of eight rendered real content;
+<code>8833 vidimodels</code> is a Vite/React shell served by a static server, so it renders an empty
+<code>#root</code> — it needs its dev server, not <code>http.server</code>.</p>
+
+<figure>
+  <img src="screens/8832-vidiflow-hx-mobile.png" alt="The VidiFlow HX mobile preview page.">
+  <figcaption>Port 8832 — vidiflow-hx/mobile. The page you had never seen; captured live this session.</figcaption>
+</figure>
+
+<figure class="sq">
+  <img src="screens/8790-fleet-dashboard.png" alt="The fleet dashboard showing bots, lanes and services.">
+  <figcaption>Port 8790 — fleet dashboard (46 bots, 66 lanes). Candidate home for the orchestrator board.</figcaption>
+</figure>
+
+<h2>Lex — 3D term graph</h2>
+<div class="card">
+  <h3>Demo shipped: <code>lex-graph-3d-demo.html</code><span class="pill ok">interactive</span></h3>
+  <p>100 tech terms, 10 colour-coded categories, ~110 real relationship edges, force-directed in 3D.
+  Hover for neighbours, click legend rows to filter, drag to rotate.
+  <a href="lex-graph-3d-demo.html">Open it →</a></p>
+</div>
+<figure class="sq">
+  <img src="screens/lex-graph-3d-demo.png" alt="The Lex 3D term graph demo with labelled nodes and category legend.">
+  <figcaption>First render of the Lex relationship graph. Real Lex data does not exist yet —
+  <code>vidismart/lex/app</code> is empty — so this is the spec, not the product.</figcaption>
+</figure>
+
+<h2>Storage reality check</h2>
+<div class="card">
+  <h3>It's markdown files, not a database<span class="pill warn">the gap</span></h3>
+  <p>Skills: 103 + 64 plain <code>SKILL.md</code> files. Memory: <code>MEMORY.md</code> / <code>USER.md</code>.
+  No index, no vectors, no edges — which is why nothing can show relationships between skills today.
+  The Neo4j graph (stopped, data intact) is the candidate store when the memory architecture is decided.</p>
+</div>
+
+<div class="footer">
+  Generated by @smartchannel_cx — Smart Channel CX · Imagery: Mage-Flow Turbo (local, MIT) ·
+  Design system: Linear via popular-web-designs · Screens: real captures, blanks flagged, not faked
+</div>
+
+</div>
+</body>
+</html>

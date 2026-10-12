@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VidiFlow - P1 Website Images Review</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Kumbh+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg0:#0b1020; --bg1:#0f172a; --panel:#131c33; --panel2:#16203a;
+    --line:#22304f; --ink:#e8eefc; --muted:#93a4c8;
+    --blue:#2563eb; --blue2:#3b82f6; --blue3:#60a5fa;
+    --ok:#22c55e; --redo:#f59e0b; --bad:#ef4444;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    font-family:'Kumbh Sans',system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+    background:linear-gradient(180deg,var(--bg0) 0%,var(--bg1) 45%,#0a0f1e 100%);
+    color:var(--ink); min-height:100vh; line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  header.top{
+    position:sticky; top:0; z-index:20;
+    background:rgba(11,16,32,.86); backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+    padding:16px 22px;
+    display:flex; flex-wrap:wrap; align-items:center; gap:14px 20px;
+  }
+  .brand{font-weight:700; font-size:1.05rem; letter-spacing:.2px}
+  .brand .dot{color:var(--blue3)}
+  h1.title{font-size:1.22rem; margin:0; font-weight:600}
+  .sub{color:var(--muted); font-size:.85rem; width:100%; margin-top:-4px}
+  .counters{display:flex; gap:10px; flex-wrap:wrap; margin-left:auto}
+  .pill{border:1px solid var(--line); background:var(--panel); border-radius:999px;
+        padding:5px 12px; font-size:.82rem; color:var(--muted); white-space:nowrap}
+  .pill b{color:var(--ink); font-weight:700}
+  .pill.ok b{color:var(--ok)} .pill.redo b{color:var(--redo)} .pill.pend b{color:var(--blue3)}
+  button.export{
+    background:linear-gradient(135deg,var(--blue),var(--blue3));
+    color:#fff; border:0; border-radius:10px; padding:10px 16px;
+    font-family:inherit; font-size:.9rem; font-weight:600; cursor:pointer;
+    box-shadow:0 6px 18px rgba(37,99,235,.35);
+  }
+  button.export:hover{filter:brightness(1.08)}
+  main{padding:22px}
+  .grid{
+    display:grid; gap:20px;
+    grid-template-columns:1fr;
+  }
+  @media(min-width:760px){ .grid{grid-template-columns:repeat(2,1fr)} }
+  @media(min-width:1180px){ .grid{grid-template-columns:repeat(3,1fr)} }
+  .card{
+    background:linear-gradient(180deg,var(--panel) 0%,var(--panel2) 100%);
+    border:1px solid var(--line); border-radius:16px; overflow:hidden;
+    display:flex; flex-direction:column; min-width:0;
+  }
+  .shot{
+    display:block; width:100%; background:#05080f; position:relative;
+    border-bottom:1px solid var(--line);
+  }
+  .shot img{display:block; width:100%; height:auto; max-height:340px; object-fit:contain; background:#05080f}
+  .shot .missing{
+    min-height:200px; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:8px; padding:22px; text-align:center; color:var(--bad);
+    background:repeating-linear-gradient(45deg,#0d1424,#0d1424 12px,#0f1830 12px,#0f1830 24px);
+  }
+  .missing .big{font-weight:700; font-size:1rem; color:#ff8a8a}
+  .missing .why{color:var(--muted); font-size:.78rem; overflow-wrap:anywhere; max-width:100%}
+  .body{padding:14px 16px 16px; display:flex; flex-direction:column; gap:10px; min-width:0}
+  .rowline{display:flex; gap:8px; align-items:baseline; flex-wrap:wrap}
+  .sid{font-weight:700; color:var(--blue3); font-size:.95rem}
+  .site{color:var(--muted); font-size:.82rem}
+  .meta{font-size:.8rem; color:var(--muted); overflow-wrap:anywhere}
+  .meta b{color:var(--ink); font-weight:600}
+  .meta a{color:var(--blue3); text-decoration:none; overflow-wrap:anywhere}
+  .meta a:hover{text-decoration:underline}
+  details{border:1px solid var(--line); border-radius:10px; background:#0e1730; padding:0 12px}
+  details summary{cursor:pointer; padding:9px 0; font-size:.82rem; color:var(--blue3); font-weight:600; outline:none}
+  details .inner{padding:0 0 12px; font-size:.78rem; color:var(--muted); overflow-wrap:anywhere}
+  details .inner .lbl{color:var(--ink); font-weight:600; margin-top:8px; display:block}
+  .decide{display:flex; gap:8px; flex-wrap:wrap; margin-top:2px}
+  .seg{border:1px solid var(--line); background:#0e1730; color:var(--muted);
+       border-radius:9px; padding:8px 12px; font-family:inherit; font-size:.84rem; cursor:pointer;
+       display:inline-flex; align-items:center; gap:7px}
+  .seg:hover{border-color:var(--blue2)}
+  .seg .k{width:10px; height:10px; border-radius:50%; border:2px solid currentColor}
+  .seg[aria-pressed="true"].approve{color:#fff; background:linear-gradient(135deg,#15803d,#22c55e); border-color:transparent}
+  .seg[aria-pressed="true"].redo{color:#1b1200; background:linear-gradient(135deg,#f59e0b,#fbbf24); border-color:transparent}
+  .seg[aria-pressed="true"].approve .k,.seg[aria-pressed="true"].redo .k{background:currentColor}
+  textarea.notes{
+    width:100%; min-height:56px; resize:vertical; background:#0b1428; color:var(--ink);
+    border:1px solid var(--line); border-radius:10px; padding:9px 10px;
+    font-family:inherit; font-size:.82rem; overflow-wrap:anywhere;
+  }
+  textarea.notes:focus{outline:none; border-color:var(--blue2)}
+  .savedhint{font-size:.72rem; color:var(--muted); min-height:15px}
+  footer{padding:26px 22px 40px; color:var(--muted); font-size:.78rem; text-align:center}
+</style>
+</head>
+<body>
+<header class="top">
+  <div>
+    <div class="brand">VidiFlow<span class="dot">.</span></div>
+    <h1 class="title">P1 Website Images Review</h1>
+  </div>
+  <div class="counters">
+    <span class="pill ok"><b id="c-approved">0</b> approved</span>
+    <span class="pill redo"><b id="c-redo">0</b> redo</span>
+    <span class="pill pend"><b id="c-pending">0</b> pending</span>
+  </div>
+  <button class="export" id="export">Export decisions</button>
+  <div class="sub" id="subtitle"></div>
+</header>
+<main>
+  <div class="grid" id="grid"></div>
+</main>
+<footer>VidiFlow &middot; P1 website images review &middot; decisions are stored in this browser only.</footer>
+
+<script id="slot-data" type="application/json">[{"id": "VF-01", "site": "vidiflow.net", "page": "https://vidiflow.net/", "section": "Hero section (H1: Humans + AI agents. One visual mission OS.)", "width": "1920", "height": "1080", "filename": "vidiflow-home-hero.png", "prompt": "Wide cinematic establishing shot of a dark mission-control space where translucent holographic human silhouettes and glowing abstract AI agent orbs stand side by side as equals around a floating node-and-edge mission canvas; status nodes linked by thin light trails, one node pulsing as needing attention; camera low and wide, strong depth, left third kept dark and empty for headline. Cinematic, high-end 3D/photoreal render with real depth and lighting: deep near-black navy background (#0b1020 to #0f172a), VidiSmart blue accents (#2563eb, #3b82f6, #60a5fa) as rim light and glow, soft volumetric haze, shallow depth of field, subtle film grain, clean negative space for headline overlay. No text, no logos, no real or identifiable people.", "negative": "text, letters, words, numbers, captions, watermark, signature, logos, brand marks, third-party logos or UI, real or identifiable people, celebrity likeness, close-up faces, stock-photo look, clip-art, flat lighting, oversaturated neon yellow, purple-dominant palette, low resolution, blur, jpeg artifacts, cluttered composition, distorted hands, extra limbs", "rendered": true, "error": "ok (direct)", "bytes": 2027608}, {"id": "VF-02", "site": "vidiflow.net", "page": "https://vidiflow.net/", "section": "Hero video tile: Consulting (video src /videos/consulting.mp4)", "width": "1920", "height": "1080", "filename": "vidiflow-consulting-poster.png", "prompt": "Cinematic still of a glass consulting desk at night: a floating stack of translucent document and workflow cards streaming from a tablet into an organized vertical pipeline of five glowing stages, warm desk lamp versus cool blue holographic light, city bokeh through window behind. Cinematic, high-end 3D/photoreal render with real depth and lighting: deep near-black navy background (#0b1020 to #0f172a), VidiSmart blue accents (#2563eb, #3b82f6, #60a5fa) as rim light and glow, soft volumetric haze, shallow depth of field, subtle film grain, clean negative space for headline overlay. No text, no logos, no real or identifiable people.", "negative": "text, letters, words, numbers, captions, watermark, signature, logos, brand marks, third-party logos or UI, real or identifiable people, celebrity likeness, close-up faces, stock-photo look, clip-art, flat lighting, oversaturated neon yellow, purple-dominant palette, low resolution, blur, jpeg artifacts, cluttered composition, distorted hands, extra limbs", "rendered": true, "error": "ok (direct)", "bytes": 2462590}, {"id": "VF-03", "site": "vidiflow.net", "page": "https://vidiflow.net/", "section": "Hero video tile: VidiFund (video src /videos/vidifund.mp4)", "width": "1920", "height": "1080", "filename": "vidiflow-vidifund-poster.png", "prompt": "Cinematic still of a swarm of faceless holographic blue agent figures arranged in a wide arc around a floating translucent market chart with candlesticks and flowing data ribbons, dark trading floor, motion streaks of light, deep perspective. Cinematic, high-end 3D/photoreal render with real depth and lighting: deep near-black navy background (#0b1020 to #0f172a), VidiSmart blue accents (#2563eb, #3b82f6, #60a5fa) as rim light and glow, soft volumetric haze, shallow depth of field, subtle film grain, clean negative space for headline overlay. No text, no logos, no real or identifiable people.", "negative": "text, letters, words, numbers, captions, watermark, signature, logos, brand marks, third-party logos or UI, real or identifiable people, celebrity likeness, close-up faces, stock-photo look, clip-art, flat lighting, oversaturated neon yellow, purple-dominant palette, low resolution, blur, jpeg artifacts, cluttered composition, distorted hands, extra limbs", "rendered": true, "error": "ok (direct)", "bytes": 2585096}, {"id": "VS-01", "site": "vidismart.com", "page": "https://vidismart.com/", "section": "Hero (H1: Transform Your Tech Stack into a Smart Stack in 10 Minutes)", "width": "1920", "height": "1080", "filename": "vidismart-home-hero.png", "prompt": "Cinematic dark scene of hundreds of small glowing technology nodes in a vast sphere slowly organizing into a clean, structured smart stack of layered translucent blue planes, center bright, edges falling to black; calm, premium, plenty of contrast behind a centered headline. Cinematic, high-end 3D/photoreal render with real depth and lighting: deep near-black navy background (#0b1020 to #0f172a), VidiSmart blue accents (#2563eb, #3b82f6, #60a5fa) as rim light and glow, soft volumetric haze, shallow depth of field, subtle film grain, clean negative space for headline overlay. No text, no logos, no real or identifiable people.", "negative": "text, letters, words, numbers, captions, watermark, signature, logos, brand marks, third-party logos or UI, real or identifiable people, celebrity likeness, close-up faces, stock-photo look, clip-art, flat lighting, oversaturated neon yellow, purple-dominant palette, low resolution, blur, jpeg artifacts, cluttered composition, distorted hands, extra limbs", "rendered": true, "error": "ok (direct)", "bytes": 2113417}, {"id": "VN-01", "site": "vidi.news", "page": "https://vidi.news/news", "section": "<meta og:image> = /og-image-case-studies.jpg (HTTP 404)", "width": "1200", "height": "630", "filename": "vidinews-og-case-studies.png", "prompt": "Social card of a dark broadcast studio wall of twelve glowing case-study panels arranged in a grid, each showing an abstract upward graph shape, blue studio light, depth. Cinematic, high-end 3D/photoreal render with real depth and lighting: deep near-black navy background (#0b1020 to #0f172a), VidiSmart blue accents (#2563eb, #3b82f6, #60a5fa) as rim light and glow, soft volumetric haze, shallow depth of field, subtle film grain, clean negative space for headline overlay. No text, no logos, no real or identifiable people.", "negative": "text, letters, words, numbers, captions, watermark, signature, logos, brand marks, third-party logos or UI, real or identifiable people, celebrity likeness, close-up faces, stock-photo look, clip-art, flat lighting, oversaturated neon yellow, purple-dominant palette, low resolution, blur, jpeg artifacts, cluttered composition, distorted hands, extra limbs", "rendered": true, "error": "ok (direct)", "bytes": 958990}, {"id": "VN-02", "site": "vidi.news", "page": "https://vidi.news/", "section": "Hero (H1: Running the world with Smart Stack.)", "width": "1920", "height": "1080", "filename": "vidinews-home-hero.png", "prompt": "Cinematic wide shot of an empty futuristic newsroom control room at night, curved wall of screens showing abstract world-map light and data streams, glowing desk consoles, blue light, no people, left half dark for headline. Cinematic, high-end 3D/photoreal render with real depth and lighting: deep near-black navy background (#0b1020 to #0f172a), VidiSmart blue accents (#2563eb, #3b82f6, #60a5fa) as rim light and glow, soft volumetric haze, shallow depth of field, subtle film grain, clean negative space for headline overlay. No text, no logos, no real or identifiable people.", "negative": "text, letters, words, numbers, captions, watermark, signature, logos, brand marks, third-party logos or UI, real or identifiable people, celebrity likeness, close-up faces, stock-photo look, clip-art, flat lighting, oversaturated neon yellow, purple-dominant palette, low resolution, blur, jpeg artifacts, cluttered composition, distorted hands, extra limbs", "rendered": true, "error": "ok (direct)", "bytes": 2597549}, {"id": "VC-01", "site": "vidicity.net", "page": "https://vidicity.net/", "section": "Hero (Smart Video News + Hyperlocal Video Search; 33,000 Cities x 180 Categories)", "width": "1920", "height": "1080", "filename": "vidicity-home-hero.png", "prompt": "Cinematic night aerial of a generic waterfront city grid with glowing map pins and small floating video frames rising from neighbourhoods, blue light paths connecting them, horizon glow, center kept calm for headline. Cinematic, high-end 3D/photoreal render with real depth and lighting: deep near-black navy background (#0b1020 to #0f172a), VidiSmart blue accents (#2563eb, #3b82f6, #60a5fa) as rim light and glow, soft volumetric haze, shallow depth of field, subtle film grain, clean negative space for headline overlay. No text, no logos, no real or identifiable people.", "negative": "text, letters, words, numbers, captions, watermark, signature, logos, brand marks, third-party logos or UI, real or identifiable people, celebrity likeness, close-up faces, stock-photo look, clip-art, flat lighting, oversaturated neon yellow, purple-dominant palette, low resolution, blur, jpeg artifacts, cluttered composition, distorted hands, extra limbs", "rendered": true, "error": "ok (direct)", "bytes": 4325717}, {"id": "VC-03", "site": "vidicity.net + vidimodels.com", "page": "theme CSS (all pages)", "section": "MyListing theme video play overlay (owl.video.play.png, 80x80, HTTP 404)", "width": "256", "height": "256", "filename": "owl-video-play.png", "prompt": "Single centered circular play button icon: frosted dark glass disc with a crisp bright blue triangle play symbol and soft outer glow, plain dark background for easy masking. Cinematic, high-end 3D/photoreal render with real depth and lighting: deep near-black navy background (#0b1020 to #0f172a), VidiSmart blue accents (#2563eb, #3b82f6, #60a5fa) as rim light and glow, soft volumetric haze, shallow depth of field, subtle film grain, clean negative space for headline overlay. No text, no logos, no real or identifiable people.", "negative": "text, letters, words, numbers, captions, watermark, signature, logos, brand marks, third-party logos or UI, real or identifiable people, celebrity likeness, close-up faces, stock-photo look, clip-art, flat lighting, oversaturated neon yellow, purple-dominant palette, low resolution, blur, jpeg artifacts, cluttered composition, distorted hands, extra limbs", "rendered": true, "error": "ok (direct)", "bytes": 76359}, {"id": "VC-04", "site": "vidicity.net + vidimodels.com", "page": "theme CSS (all pages)", "section": "MyListing theme default avatar circle (img/pic3.png, 60x60 round, HTTP 404)", "width": "256", "height": "256", "filename": "pic3-default-avatar.png", "prompt": "Abstract default avatar for a circular crop: a soft glowing blue geometric head-and-shoulders silhouette made of light, no facial features, centered, dark gradient background. Cinematic, high-end 3D/photoreal render with real depth and lighting: deep near-black navy background (#0b1020 to #0f172a), VidiSmart blue accents (#2563eb, #3b82f6, #60a5fa) as rim light and glow, soft volumetric haze, shallow depth of field, subtle film grain, clean negative space for headline overlay. No text, no logos, no real or identifiable people.", "negative": "text, letters, words, numbers, captions, watermark, signature, logos, brand marks, third-party logos or UI, real or identifiable people, celebrity likeness, close-up faces, stock-photo look, clip-art, flat lighting, oversaturated neon yellow, purple-dominant palette, low resolution, blur, jpeg artifacts, cluttered composition, distorted hands, extra limbs", "rendered": true, "error": "ok (direct)", "bytes": 75169}, {"id": "VM-01", "site": "vidimodels.com", "page": "https://vidimodels.com/", "section": "Hero (Video Share Page / Video Profiles)", "width": "1920", "height": "1080", "filename": "vidimodels-home-hero.png", "prompt": "Cinematic dark film studio stage with a glowing wall of vertical video profile frames floating in rows, a camera crane silhouette, blue key light with a magenta rim accent, stage haze, no people visible in frames. Cinematic, high-end 3D/photoreal render with real depth and lighting: deep near-black navy background (#0b1020 to #0f172a), VidiSmart blue accents (#2563eb, #3b82f6, #60a5fa) as rim light and glow, soft volumetric haze, shallow depth of field, subtle film grain, clean negative space for headline overlay. No text, no logos, no real or identifiable people.", "negative": "text, letters, words, numbers, captions, watermark, signature, logos, brand marks, third-party logos or UI, real or identifiable people, celebrity likeness, close-up faces, stock-photo look, clip-art, flat lighting, oversaturated neon yellow, low resolution, blur, jpeg artifacts, cluttered composition, distorted hands, extra limbs", "rendered": true, "error": "ok (direct)", "bytes": 2288664}, {"id": "VCY-01", "site": "vidi.city", "page": "https://vidi.city/ -> /lander (HTTP 525)", "section": "Future hero for rebuild", "width": "1920", "height": "1080", "filename": "vidicity-rebuild-hero.png", "prompt": "Cinematic night view of a network of many small generic cities on a dark globe, each city a cluster of glowing video tiles, linked by blue arcs, sense of scale toward hundreds of cities. Cinematic, high-end 3D/photoreal render with real depth and lighting: deep near-black navy background (#0b1020 to #0f172a), VidiSmart blue accents (#2563eb, #3b82f6, #60a5fa) as rim light and glow, soft volumetric haze, shallow depth of field, subtle film grain, clean negative space for headline overlay. No text, no logos, no real or identifiable people.", "negative": "text, letters, words, numbers, captions, watermark, signature, logos, brand marks, third-party logos or UI, real or identifiable people, celebrity likeness, close-up faces, stock-photo look, clip-art, flat lighting, oversaturated neon yellow, purple-dominant palette, low resolution, blur, jpeg artifacts, cluttered composition, distorted hands, extra limbs", "rendered": true, "error": "ok (direct)", "bytes": 2860342}]</script>
+<script>
+(function(){
+  var SLOTS = JSON.parse(document.getElementById('slot-data').textContent);
+  var LS_KEY = 'vidiflow-p1-image-decisions-2026-10-11';
+  var store = {};
+  try { store = JSON.parse(localStorage.getItem(LS_KEY) || '{}') || {}; } catch(e){ store = {}; }
+  function persist(){ try { localStorage.setItem(LS_KEY, JSON.stringify(store)); } catch(e){} }
+
+  function esc(s){ return String(s==null?'':s); }
+  function isUrl(s){ return /^https?:\/\//i.test(s.trim()); }
+
+  var grid = document.getElementById('grid');
+
+  SLOTS.forEach(function(s){
+    var card = document.createElement('article');
+    card.className = 'card';
+    card.dataset.id = s.id;
+
+    // ---- image / placeholder ----
+    var shot = document.createElement('div');
+    shot.className = 'shot';
+    if (s.rendered) {
+      var a = document.createElement('a');
+      a.href = '../' + encodeURIComponent(s.filename);
+      a.target = '_blank'; a.rel = 'noopener';
+      a.title = 'Open full size';
+      var img = document.createElement('img');
+      img.src = '../' + encodeURIComponent(s.filename);
+      img.alt = s.id + ' - ' + s.section;
+      img.onerror = function(){
+        shot.innerHTML = '<div class="missing"><div class="big">Not rendered</div>'
+          + '<div class="why">Image file missing on disk (' + s.filename + ').</div></div>';
+      };
+      a.appendChild(img); shot.appendChild(a);
+    } else {
+      shot.innerHTML = '<div class="missing"><div class="big">Not rendered</div>'
+        + '<div class="why">' + s.error.replace(/</g,'&lt;') + '</div></div>';
+    }
+    card.appendChild(shot);
+
+    // ---- body ----
+    var body = document.createElement('div');
+    body.className = 'body';
+
+    var rowline = document.createElement('div');
+    rowline.className = 'rowline';
+    rowline.innerHTML = '<span class="sid">' + s.id + '</span>'
+      + '<span class="site">' + s.site + '</span>';
+    body.appendChild(rowline);
+
+    var meta = document.createElement('div');
+    meta.className = 'meta';
+    var pm = s.page.match(/^(https?:\/\/\S+)([\s\S]*)$/);
+    var pageHtml;
+    if (pm) {
+      pageHtml = '<a href="' + pm[1] + '" target="_blank" rel="noopener">' + pm[1] + '</a>'
+        + (pm[2].trim() ? ' <span class="note">' + pm[2].trim().replace(/</g,'&lt;') + '</span>' : '');
+    } else {
+      pageHtml = s.page.replace(/</g,'&lt;');
+    }
+    meta.innerHTML =
+        '<div><b>Page:</b> ' + pageHtml + '</div>'
+      + '<div><b>Section:</b> ' + s.section + '</div>'
+      + '<div><b>Intended size:</b> ' + s.width + ' x ' + s.height + ' px</div>'
+      + '<div><b>File:</b> ' + s.filename + '</div>';
+    body.appendChild(meta);
+
+    var det = document.createElement('details');
+    var sum = document.createElement('summary');
+    sum.textContent = 'Prompt';
+    det.appendChild(sum);
+    var inner = document.createElement('div');
+    inner.className = 'inner';
+    inner.innerHTML = '<span class="lbl">Prompt</span>' + s.prompt.replace(/</g,'&lt;')
+      + '<span class="lbl">Negative prompt</span>' + s.negative.replace(/</g,'&lt;');
+    det.appendChild(inner);
+    body.appendChild(det);
+
+    // ---- decision ----
+    var decide = document.createElement('div');
+    decide.className = 'decide';
+    var bApprove = document.createElement('button');
+    bApprove.type='button'; bApprove.className='seg approve'; bApprove.setAttribute('aria-pressed','false');
+    bApprove.innerHTML = '<span class="k"></span>Approve';
+    var bRedo = document.createElement('button');
+    bRedo.type='button'; bRedo.className='seg redo'; bRedo.setAttribute('aria-pressed','false');
+    bRedo.innerHTML = '<span class="k"></span>Redo';
+    decide.appendChild(bApprove); decide.appendChild(bRedo);
+    body.appendChild(decide);
+
+    var notes = document.createElement('textarea');
+    notes.className='notes'; notes.placeholder='Notes for this slot...';
+    body.appendChild(notes);
+
+    var hint = document.createElement('div');
+    hint.className='savedhint';
+    body.appendChild(hint);
+
+    card.appendChild(body);
+    grid.appendChild(card);
+
+    // ---- state ----
+    var st = store[s.id] || {};
+    function paint(){
+      var d = (store[s.id] && store[s.id].decision) || '';
+      bApprove.setAttribute('aria-pressed', d==='approve' ? 'true':'false');
+      bRedo.setAttribute('aria-pressed', d==='redo' ? 'true':'false');
+      updateCounters();
+    }
+    function setDecision(d){
+      store[s.id] = store[s.id] || {};
+      store[s.id].decision = (store[s.id].decision === d) ? '' : d;
+      store[s.id].timestamp = new Date().toISOString();
+      persist(); paint(); flash(hint,'Saved');
+    }
+    bApprove.addEventListener('click', function(){ setDecision('approve'); });
+    bRedo.addEventListener('click', function(){ setDecision('redo'); });
+    notes.value = st.notes || '';
+    notes.addEventListener('input', function(){
+      store[s.id] = store[s.id] || {};
+      store[s.id].notes = notes.value;
+      store[s.id].timestamp = new Date().toISOString();
+      persist(); flash(hint,'Saved');
+    });
+    paint();
+  });
+
+  var flashTimers = {};
+  function flash(el,msg){
+    el.textContent = msg + ' ' + new Date().toLocaleTimeString();
+    clearTimeout(flashTimers[el]);
+    flashTimers[el] = setTimeout(function(){ el.textContent=''; }, 1500);
+  }
+
+  function updateCounters(){
+    var a=0,r=0;
+    SLOTS.forEach(function(s){
+      var d = store[s.id] && store[s.id].decision;
+      if (d==='approve') a++; else if (d==='redo') r++;
+    });
+    document.getElementById('c-approved').textContent = a;
+    document.getElementById('c-redo').textContent = r;
+    document.getElementById('c-pending').textContent = SLOTS.length - a - r;
+  }
+
+  document.getElementById('export').addEventListener('click', function(){
+    var out = SLOTS.map(function(s){
+      var e = store[s.id] || {};
+      return {
+        id: s.id,
+        filename: s.filename,
+        decision: e.decision || 'pending',
+        notes: e.notes || '',
+        timestamp: e.timestamp || ''
+      };
+    });
+    var blob = new Blob([JSON.stringify(out, null, 2)], {type:'application/json'});
+    var u = URL.createObjectURL(blob);
+    var dl = document.createElement('a');
+    dl.href = u; dl.download = 'vidiflow-p1-image-decisions-2026-10-11.json';
+    document.body.appendChild(dl); dl.click(); dl.remove();
+    setTimeout(function(){ URL.revokeObjectURL(u); }, 2000);
+  });
+
+  var rendered = SLOTS.filter(function(s){return s.rendered;}).length;
+  document.getElementById('subtitle').textContent =
+    SLOTS.length + ' P1 slots - ' + rendered + ' rendered - decisions save in this browser';
+  updateCounters();
+})();
+</script>
+</body>
+</html>

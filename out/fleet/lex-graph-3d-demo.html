@@ -1,0 +1,339 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lex — tech term relationship graph (3D demo)</title>
+<style>
+  :root{
+    --bg:#0a0e14; --panel:#111823; --line:#1e2a38; --fg:#e6edf3; --dim:#8b9bb0; --acc:#58a6ff;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;background:var(--bg);color:var(--fg);
+    font:13px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;overflow:hidden}
+  #stage{position:fixed;inset:0}
+  canvas{display:block;width:100%;height:100%;cursor:grab}
+  canvas.drag{cursor:grabbing}
+  .hud{position:fixed;background:rgba(17,24,35,.92);border:1px solid var(--line);
+    border-radius:9px;padding:10px 12px;backdrop-filter:blur(6px)}
+  #info{top:14px;left:14px;max-width:330px}
+  #info h1{margin:0 0 2px;font-size:14px;letter-spacing:-.2px}
+  #info .sub{color:var(--dim);font-size:11.5px;margin-bottom:9px}
+  #legend{display:flex;flex-direction:column;gap:4px}
+  .lg{display:flex;align-items:center;gap:7px;cursor:pointer;font-size:11.5px;
+    padding:2px 5px;border-radius:5px;user-select:none}
+  .lg:hover{background:rgba(88,166,255,.1)}
+  .lg.off{opacity:.32}
+  .dot{width:9px;height:9px;border-radius:50%;flex:0 0 auto}
+  .lg .n{color:var(--dim);margin-left:auto;font-variant-numeric:tabular-nums}
+  #hover{bottom:14px;left:14px;min-width:250px;max-width:360px;display:none}
+  #hover .t{font-size:15px;font-weight:600}
+  #hover .c{font-size:11px;text-transform:uppercase;letter-spacing:.6px;margin:2px 0 7px}
+  #hover .r{color:#c9d5e3;font-size:12px}
+  #hover .r b{color:var(--fg)}
+  #hover .rel{margin-top:7px;padding-top:7px;border-top:1px solid var(--line);
+    color:var(--dim);font-size:11.5px;line-height:1.65}
+  #hint{bottom:14px;right:14px;color:var(--dim);font-size:11px;text-align:right}
+  kbd{background:#0d1420;border:1px solid var(--line);border-radius:4px;padding:1px 5px;font-size:10.5px}
+</style>
+</head>
+<body>
+<div id="stage"><canvas id="c"></canvas></div>
+
+<div class="hud" id="info">
+  <h1>Lex — tech term graph</h1>
+  <div class="sub">demo set, not Lex data · rotate, hover, filter</div>
+  <div id="legend"></div>
+</div>
+
+<div class="hud" id="hover">
+  <div class="t" id="h-t"></div>
+  <div class="c" id="h-c"></div>
+  <div class="r" id="h-r"></div>
+  <div class="rel" id="h-rel"></div>
+</div>
+
+<div class="hud" id="hint">
+  <b>drag</b> rotate · <b>wheel</b> zoom · <b>hover</b> inspect · click legend to filter<br>
+  <kbd>space</kbd> pause spin
+</div>
+
+<script>
+// ---------------------------------------------------------------------------
+// Categories drive both colour and spatial clustering. Edges encode real
+// technical relationships, not just shared category.
+// ---------------------------------------------------------------------------
+const CAT = {
+  db:      {name:'Databases & Graph', color:'#3fb950'},
+  ui:      {name:'UI & Frontend',     color:'#58a6ff'},
+  web:     {name:'Web & Protocols',   color:'#22d3ee'},
+  ai:      {name:'AI & ML',           color:'#d29922'},
+  infra:   {name:'Infra & DevOps',    color:'#f85149'},
+  lang:    {name:'Languages',         color:'#bc8cff'},
+  msg:     {name:'Messaging & Events',color:'#ff7b72'},
+  auth:    {name:'Auth & Identity',   color:'#7ee787'},
+  obs:     {name:'Observability',     color:'#e3b341'},
+  media:   {name:'Media & Video',     color:'#ffa657'},
+};
+
+const T = [
+  // databases & graph
+  ['PostgreSQL','db'],['Neo4j','db'],['Redis','db'],['SQLite','db'],['MongoDB','db'],
+  ['pgvector','db'],['DuckDB','db'],['MinIO','db'],['Cypher','db'],['SurrealDB','db'],
+  ['R2','db'],['Firestore','db'],
+  // ui & frontend
+  ['React','ui'],['Next.js','ui'],['Tailwind','ui'],['Vite','ui'],['Radix UI','ui'],
+  ['Framer Motion','ui'],['TanStack Query','ui'],['shadcn/ui','ui'],['Flutter','ui'],
+  ['React Flow','ui'],['Three.js','ui'],['Zustand','ui'],
+  // web & protocols
+  ['HTTP/3','web'],['WebSocket','web'],['GraphQL','web'],['REST','web'],['tRPC','web'],
+  ['CORS','web'],['HSTS','web'],['DNS','web'],['TLS','web'],['SSE','web'],
+  ['WebRTC','web'],['OpenAPI','web'],
+  // ai & ml
+  ['ComfyUI','ai'],['Mage-Flow','ai'],['Diffusion Model','ai'],['LoRA','ai'],['Embedding','ai'],
+  ['Vector Search','ai'],['RAG','ai'],['Gemini','ai'],['Claude','ai'],['GPT','ai'],
+  ['Whisper','ai'],['Ollama','ai'],
+  // infra & devops
+  ['Docker','infra'],['Kubernetes','infra'],['Nginx','infra'],['GitHub Actions','infra'],
+  ['Cloudflare Tunnel','infra'],['Terraform','infra'],['systemd','infra'],['PM2','infra'],
+  ['WSL2','infra'],['Ubuntu','infra'],['Proxmox','infra'],['Healthcheck','infra'],
+  // languages
+  ['TypeScript','lang'],['Python','lang'],['Rust','lang'],['Go','lang'],['Bash','lang'],
+  ['SQL','lang'],['Zig','lang'],['Dart','lang'],
+  // messaging & events
+  ['RabbitMQ','msg'],['Kafka','msg'],['Redis Streams','msg'],['Webhook','msg'],
+  ['Cron','msg'],['MQTT','msg'],
+  // auth & identity
+  ['OAuth2','auth'],['OIDC','auth'],['JWT','auth'],['Passkey','auth'],['SAML','auth'],
+  ['API Key','auth'],['Session Cookie','auth'],
+  // observability
+  ['OpenTelemetry','obs'],['Prometheus','obs'],['Grafana','obs'],['Loki','obs'],
+  ['Structured Logs','obs'],['Trace Span','obs'],['Sentry','obs'],
+  // media & video
+  ['FFmpeg','media'],['Remotion','media'],['H.264','media'],['HLS','media'],['LiveKit','media'],
+  ['9Miho','media'],['Codec','media'],['Timeline','media'],['Ken Burns','media'],
+];
+
+// real relationships — these are the edges that carry meaning
+const R = [
+  ['PostgreSQL','pgvector'],['pgvector','Vector Search'],['pgvector','Embedding'],
+  ['Neo4j','Cypher'],['Neo4j','GraphQL'],['Vector Search','RAG'],['RAG','Embedding'],
+  ['RAG','GPT'],['RAG','Claude'],['RAG','Gemini'],['Embedding','Vector Search'],
+  ['React','Next.js'],['React','React Flow'],['React','Zustand'],['Next.js','Vite'],
+  ['Next.js','Tailwind'],['Tailwind','shadcn/ui'],['shadcn/ui','Radix UI'],
+  ['React','Three.js'],['Three.js','WebGL'],['React Flow','Cypher'],['React','TanStack Query'],
+  ['TanStack Query','REST'],['TanStack Query','GraphQL'],['tRPC','TypeScript'],
+  ['GraphQL','OpenAPI'],['REST','OpenAPI'],['REST','HTTP/3'],['HTTP/3','TLS'],['TLS','HSTS'],
+  ['DNS','Cloudflare Tunnel'],['WebSocket','SSE'],['WebSocket','LiveKit'],['LiveKit','WebRTC'],
+  ['WebRTC','HLS'],['HLS','FFmpeg'],['FFmpeg','H.264'],['H.264','Codec'],['Codec','Timeline'],
+  ['Remotion','Timeline'],['Remotion','React'],['Remotion','FFmpeg'],['Remotion','H.264'],
+  ['9Miho','Timeline'],['9Miho','FFmpeg'],['Ken Burns','Remotion'],['Ken Burns','Timeline'],
+  ['ComfyUI','Mage-Flow'],['ComfyUI','Diffusion Model'],['Mage-Flow','Diffusion Model'],
+  ['Diffusion Model','LoRA'],['Diffusion Model','Embedding'],['ComfyUI','LoRA'],
+  ['Ollama','Mage-Flow'],['Ollama','Whisper'],['Whisper','Embedding'],
+  ['Docker','Kubernetes'],['Docker','Compose'],['Kubernetes','Terraform'],
+  ['Nginx','Docker'],['Nginx','TLS'],['Cloudflare Tunnel','Nginx'],
+  ['Ubuntu','systemd'],['Ubuntu','WSL2'],['Ubuntu','Docker'],['Proxmox','Ubuntu'],
+  ['PM2','systemd'],['GitHub Actions','Terraform'],['Healthcheck','Prometheus'],
+  ['TypeScript','React'],['TypeScript','tRPC'],['Python','ComfyUI'],['Python','FFmpeg'],
+  ['Rust','Neo4j'],['Rust','Kumiho'],['Go','Kubernetes'],['Bash','systemd'],['SQL','PostgreSQL'],
+  ['Zig','Rust'],['Dart','Flutter'],
+  ['RabbitMQ','Kafka'],['RabbitMQ','Webhook'],['Kafka','Structured Logs'],
+  ['Redis','Redis Streams'],['Redis','Session Cookie'],['Redis Streams','Webhook'],
+  ['Cron','Webhook'],['MQTT','LiveKit'],
+  ['OAuth2','OIDC'],['OIDC','JWT'],['OIDC','SAML'],['JWT','Session Cookie'],['Passkey','OIDC'],
+  ['API Key','OAuth2'],['API Key','JWT'],['Session Cookie','CORS'],['CORS','REST'],
+  ['OpenTelemetry','Prometheus'],['Prometheus','Grafana'],['Grafana','Loki'],
+  ['OpenTelemetry','Trace Span'],['Structured Logs','Loki'],['Sentry','Trace Span'],
+  ['Trace Span','Healthcheck'],['OpenTelemetry','Structured Logs'],
+  ['MinIO','R2'],['R2','Cloudflare Tunnel'],['SQLite','DuckDB'],['MongoDB','Firestore'],
+  ['SurrealDB','Neo4j'],['DuckDB','SQL'],['SSE','OpenTelemetry'],
+  ['Embedding','Ollama'],['WebGL','Three.js'],
+].filter(([a,b]) => T.some(t=>t[0]===a) && T.some(t=>t[0]===b));
+
+// ---------------------------------------------------------------------------
+const cv = document.getElementById('c'), ctx = cv.getContext('2d');
+let W=0,H=0,DPR=1;
+function resize(){
+  DPR = Math.min(devicePixelRatio||1, 2);
+  W = cv.clientWidth; H = cv.clientHeight;
+  cv.width = W*DPR; cv.height = H*DPR;
+  ctx.setTransform(DPR,0,0,DPR,0,0);
+}
+addEventListener('resize', resize);
+
+const catKeys = Object.keys(CAT);
+// cluster centres spread on a sphere
+const CENTRES = {};
+catKeys.forEach((k,i)=>{
+  const phi = Math.acos(-1 + (2*i+1)/catKeys.length);
+  const th  = Math.sqrt(catKeys.length*Math.PI)*phi;
+  CENTRES[k] = {x:Math.cos(th)*Math.sin(phi)*230, y:Math.sin(th)*Math.sin(phi)*230, z:Math.cos(phi)*230};
+});
+
+const nodes = T.map(([label,cat],i)=>({
+  id:i, label, cat,
+  x:(Math.random()-.5)*60, y:(Math.random()-.5)*60, z:(Math.random()-.5)*60,
+  vx:0, vy:0, vz:0, deg:0
+}));
+const byLabel = Object.fromEntries(nodes.map(n=>[n.label,n]));
+const edges = R.map(([a,b])=>({a:byLabel[a], b:byLabel[b]}))
+  .filter(e=>e.a&&e.b)
+  .map(e=>{
+    e.a.deg++; e.b.deg++;
+    // stash a mutual neighbour list for the hover panel
+    (e.a.nb ??= []).push(e.b.label); (e.b.nb ??= []).push(e.a.label);
+    return e;
+  });
+// deterministic-ish seed positions inside their cluster
+nodes.forEach(n=>{ const c=CENTRES[n.cat];
+  n.x=c.x+(Math.random()-.5)*70; n.y=c.y+(Math.random()-.5)*70; n.z=c.z+(Math.random()-.5)*70; });
+
+// ---- force simulation (3D) -------------------------------------------------
+const LINK=64, REP=1700, CENTER=0.0055;
+function step(){
+  for(const n of nodes){
+    const c = CENTRES[n.cat];
+    n.vx += (c.x-n.x)*CENTER; n.vy += (c.y-n.y)*CENTER; n.vz += (c.z-n.z)*CENTER;
+  }
+  for(let i=0;i<nodes.length;i++) for(let j=i+1;j<nodes.length;j++){
+    const a=nodes[i], b=nodes[j];
+    let dx=b.x-a.x, dy=b.y-a.y, dz=b.z-a.z;
+    let d2=dx*dx+dy*dy+dz*dz || 1;
+    if(d2>90000) continue;
+    const f=REP/d2, d=Math.sqrt(d2);
+    dx/=d; dy/=d; dz/=d;
+    a.vx-=dx*f; a.vy-=dy*f; a.vz-=dz*f;
+    b.vx+=dx*f; b.vy+=dy*f; b.vz+=dz*f;
+  }
+  for(const e of edges){
+    const a=e.a,b=e.b;
+    let dx=b.x-a.x, dy=b.y-a.y, dz=b.z-a.z;
+    const d=Math.hypot(dx,dy,dz)||1, f=(d-LINK)/d*0.045;
+    a.vx+=dx*f; a.vy+=dy*f; a.vz+=dz*f;
+    b.vx-=dx*f; b.vy-=dy*f; b.vz-=dz*f;
+  }
+  for(const n of nodes){
+    n.vx*=0.82; n.vy*=0.82; n.vz*=0.82;
+    n.x+=n.vx*0.5; n.y+=n.vy*0.5; n.z+=n.vz*0.5;
+  }
+}
+
+// ---- camera ---------------------------------------------------------------
+let rotY=0.5, rotX=-0.22, zoom=1, spin=true;
+let dragging=false, lastX=0, lastY=0;
+cv.addEventListener('pointerdown',e=>{dragging=true;lastX=e.clientX;lastY=e.clientY;cv.classList.add('drag')});
+addEventListener('pointerup',()=>{dragging=false;cv.classList.remove('drag')});
+addEventListener('pointermove',e=>{
+  if(!dragging) return;
+  rotY += (e.clientX-lastX)*0.006; rotX += (e.clientY-lastY)*0.006;
+  rotX = Math.max(-1.3, Math.min(1.3, rotX));
+  lastX=e.clientX; lastY=e.clientY;
+});
+cv.addEventListener('wheel',e=>{e.preventDefault(); zoom *= e.deltaY>0?0.92:1.08; zoom=Math.max(.35,Math.min(3,zoom));},{passive:false});
+addEventListener('keydown',e=>{ if(e.code==='Space'){e.preventDefault(); spin=!spin;} });
+
+function project(n){
+  const cy=Math.cos(rotY), sy=Math.sin(rotY), cx=Math.cos(rotX), sx=Math.sin(rotX);
+  let x=n.x*cy - n.z*sy, z=n.x*sy + n.z*cy, y=n.y;
+  let y2=y*cx - z*sx, z2=y*sx + z*cx;
+  const d = 640, s = (d/(d+ (z2+320))) * zoom;
+  return {sx: W/2 + x*s, sy: H/2 + y2*s, s, z:z2};
+}
+
+// ---- interaction: hover + filter ------------------------------------------
+let hovered=null, active=new Set(catKeys);
+const SCREEN=[];
+addEventListener('pointermove',e=>{
+  if(dragging) return;
+  const r=cv.getBoundingClientRect(), mx=e.clientX-r.left, my=e.clientY-r.top;
+  let best=null, bd=22*22;
+  for(const s of SCREEN){
+    const dx=s.sx-mx, dy=s.sy-my, d=dx*dx+dy*dy;
+    if(d<bd){ bd=d; best=s.node; }
+  }
+  hovered=best; paintHover();
+});
+
+const legend=document.getElementById('legend');
+catKeys.forEach(k=>{
+  const count = nodes.filter(n=>n.cat===k).length;
+  const row=document.createElement('div');
+  row.className='lg'; row.dataset.k=k;
+  row.innerHTML=`<span class="dot" style="background:${CAT[k].color}"></span>${CAT[k].name}<span class="n">${count}</span>`;
+  row.onclick=()=>{ if(active.has(k)) active.delete(k); else active.add(k);
+    row.classList.toggle('off', !active.has(k)); };
+  legend.appendChild(row);
+});
+
+const hb=document.getElementById('hover');
+function paintHover(){
+  if(!hovered){ hb.style.display='none'; return; }
+  hb.style.display='block';
+  document.getElementById('h-t').textContent = hovered.label;
+  const cc=document.getElementById('h-c');
+  cc.textContent = CAT[hovered.cat].name; cc.style.color = CAT[hovered.cat].color;
+  document.getElementById('h-r').innerHTML =
+    `<b>${hovered.deg}</b> relationship${hovered.deg===1?'':'s'} in this set`;
+  document.getElementById('h-rel').textContent =
+    (hovered.nb||[]).slice(0,8).join(' · ') || 'no edges yet';
+}
+
+function inView(n){ return active.has(n.cat); }
+
+let paused=false;
+function draw(){
+  ctx.clearRect(0,0,W,H);
+  SCREEN.length=0;
+  for(const n of nodes){ const p=project(n); p.node=n; SCREEN.push(p); }
+  SCREEN.sort((a,b)=>a.z-b.z);              // painter's algorithm: far first
+
+  // edges
+  ctx.lineWidth=1;
+  for(const e of edges){
+    if(!inView(e.a)||!inView(e.b)) continue;
+    const pa=project(e.a), pb=project(e.b);
+    const hot = hovered && (hovered===e.a||hovered===e.b);
+    const op = hot?0.75:0.10;
+    ctx.strokeStyle = hot ? CAT[hovered.cat].color : `rgba(88,166,255,${op})`;
+    ctx.lineWidth = hot?1.6:0.7;
+    ctx.beginPath(); ctx.moveTo(pa.sx,pa.sy); ctx.lineTo(pb.sx,pb.sy); ctx.stroke();
+  }
+  // nodes
+  for(const p of SCREEN){
+    const n=p.node, dim=!inView(n);
+    const r=(4.2+n.deg*0.45)*p.s;
+    const isHov = hovered===n;
+    const isNb  = hovered && (hovered.nb||[]).includes(n.label);
+    ctx.globalAlpha = dim?0.10:(isHov||isNb?1:0.9);
+    ctx.beginPath(); ctx.arc(p.sx,p.sy,r,0,6.2832);
+    ctx.fillStyle = isHov? '#ffffff' : CAT[n.cat].color;
+    ctx.fill();
+    if(isHov||isNb){ ctx.lineWidth=1.4; ctx.strokeStyle='rgba(255,255,255,.85)'; ctx.stroke(); }
+    if(p.s>0.86 && !dim){
+      ctx.globalAlpha = isHov?1:0.82;
+      ctx.font = `${isHov?600:400} ${Math.round(11*p.s)}px -apple-system,Segoe UI,Roboto,sans-serif`;
+      ctx.fillStyle = isHov? '#ffffff' : 'rgba(230,237,243,.85)';
+      ctx.textAlign='center';
+      ctx.fillText(n.label, p.sx, p.sy - r - 4);
+    }
+  }
+  ctx.globalAlpha=1;
+}
+
+let frames=0;
+function loop(){
+  if(!paused){
+    if(frames<420) step();          // settle, then hold still
+    frames++;
+    if(spin && !hovered && !dragging) rotY += 0.0016;
+  }
+  draw(); requestAnimationFrame(loop);
+}
+
+resize();
+for(let i=0;i<160;i++) step();
+loop();
+</script>
+</body>
+</html>

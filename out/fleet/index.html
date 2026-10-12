@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>VidiSmart Fleet — live status</title>
+<style>
+  :root{
+    --bg:#07080d; --panel:#0d1017; --panel2:#121722; --line:#1e2634;
+    --fg:#e8ecf4; --mut:#8b95a8; --acc:#ff4d8d; --acc2:#39d4ff;
+    --ok:#2ee6a0; --bad:#ff5a5a; --warn:#ffb020;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:
+      radial-gradient(1100px 620px at 12% -12%, #1a1030 0%, transparent 60%),
+      radial-gradient(900px 520px at 92% 0%, #06222e 0%, transparent 55%),
+      var(--bg);
+    color:var(--fg);font:14px/1.5 ui-sans-serif,system-ui,"Segoe UI",sans-serif;padding:22px}
+  h1{font-size:23px;margin:0 0 3px;letter-spacing:-.4px}
+  h1 span{background:linear-gradient(92deg,var(--acc),var(--acc2));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .sub{color:var(--mut);font-size:12.5px;margin-bottom:18px}
+  .pill{display:inline-block;padding:2px 9px;border-radius:999px;font-size:11px;border:1px solid var(--line);background:var(--panel2);color:var(--mut)}
+  .grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(168px,1fr));margin-bottom:18px}
+  .card{background:linear-gradient(180deg,var(--panel),#0a0d13);border:1px solid var(--line);border-radius:13px;padding:13px 15px}
+  .card .k{color:var(--mut);font-size:11px;text-transform:uppercase;letter-spacing:.7px}
+  .card .v{font-size:27px;font-weight:650;margin-top:3px;letter-spacing:-.5px}
+  .card .s{color:var(--mut);font-size:11.5px;margin-top:2px}
+  .ok{color:var(--ok)} .bad{color:var(--bad)} .warn{color:var(--warn)}
+  section{margin-bottom:18px}
+  h2{font-size:12px;text-transform:uppercase;letter-spacing:1.3px;color:var(--mut);margin:0 0 9px;font-weight:600}
+  table{width:100%;border-collapse:collapse;background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  th{text-align:left;font-size:10.5px;text-transform:uppercase;letter-spacing:.8px;color:var(--mut);padding:9px 12px;background:var(--panel2);font-weight:600}
+  td{padding:9px 12px;border-top:1px solid var(--line);font-size:13px}
+  tr:hover td{background:#111621}
+  .dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:7px;vertical-align:middle}
+  .d-up{background:var(--ok);box-shadow:0 0 9px var(--ok)}
+  .d-down{background:var(--bad);box-shadow:0 0 9px var(--bad)}
+  .bar{height:5px;border-radius:3px;background:var(--panel2);overflow:hidden;margin-top:5px}
+  .bar i{display:block;height:100%;background:linear-gradient(90deg,var(--acc),var(--acc2))}
+  .alert{border:1px solid #4a2230;background:linear-gradient(90deg,#1d0f16,#140a10);border-radius:12px;padding:13px 15px;margin-bottom:18px}
+  .alert b{color:var(--acc)}
+  .lanes{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}
+  .lane{background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:11px 13px}
+  .lane .n{font-weight:600;font-size:13px}
+  .lane .m{color:var(--mut);font-size:11.5px;font-family:ui-monospace,Menlo,monospace;word-break:break-all}
+  .foot{color:var(--mut);font-size:11.5px;margin-top:16px;text-align:center}
+  .flash{animation:f 1.4s ease-out}
+  @keyframes f{0%{background:#1d2b22}100%{background:transparent}}
+</style>
+</head>
+<body>
+<h1><span>VidiSmart</span> Fleet Control</h1>
+<div class="sub">VidiFlow HX · live service, agent and inference status — read-only · <span id="ts">connecting…</span> <span class="pill" id="live">● LIVE</span></div>
+
+<div class="alert">
+  <b>⚠ Space Bunny Alpha retires 2026-10-05.</b> Kilo's catalog publishes the date. OpenRouter and OpenCode Zen list it
+  as limited-time with no end date. After Oct 5 the free rotation ends — xAI <code>grok-4.3</code> is the only non-preview lane.
+</div>
+
+<div class="grid" id="cards"></div>
+
+<section>
+  <h2>Services — this machine (V20)</h2>
+  <table><thead><tr><th>Service</th><th>Port</th><th>Status</th></tr></thead><tbody id="svc"></tbody></table>
+</section>
+
+<section>
+  <h2>Ubuntu box — 192.168.4.40</h2>
+  <table><thead><tr><th>Item</th><th>Port</th><th>Status</th><th>Note</th></tr></thead><tbody id="ubu"></tbody></table>
+</section>
+
+<section>
+  <h2>Agents — Hermes profiles</h2>
+  <table>
+    <thead><tr><th>Profile</th><th>Role</th><th>Model</th><th>Auth</th><th>Jobs</th><th>Ran</th><th>Ticker</th></tr></thead>
+    <tbody id="prof"></tbody>
+  </table>
+</section>
+
+<section>
+  <h2>Inference lanes</h2>
+  <div class="lanes" id="lanes"></div>
+</section>
+
+<div class="foot">Launch is gated — nothing starts without your approval. Refresh every 10s.</div>
+
+<script>
+const $ = s => document.querySelector(s);
+const dot = up => `<span class="dot ${up?'d-up':'d-down'}"></span>`;
+const esc = s => String(s ?? '').replace(/[<>&"]/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c]));
+
+async function tick(){
+  try{
+    const d = await (await fetch('/api/health',{cache:'no-store'})).json();
+    const t = d.totals;
+    $('#ts').textContent = 'updated ' + new Date(d.checked_at).toLocaleTimeString();
+
+    $('#cards').innerHTML = [
+      ['Services up', `${t.services_up}/${t.services_total}`, t.services_up===t.services_total?'all green':'attention needed', t.services_up===t.services_total?'ok':'bad'],
+      ['Agents', t.profiles, `${t.profiles_with_auth} with credentials`, ''],
+      ['Cron jobs', t.jobs, t.jobs? 'scheduled':'none scheduled', t.jobs?'ok':'warn'],
+      ['Executions', t.executions, t.executions? 'work has run':'nothing has run yet', t.executions?'ok':'warn'],
+      ['Ubuntu', d.ubuntu.ssh?'reachable':'unreachable', d.ubuntu.auth==='ok'?'SSH key works':'SSH needs a key', d.ubuntu.ssh?(d.ubuntu.auth==='ok'?'ok':'warn'):'bad'],
+    ].map(([k,v,s,c])=>`<div class="card"><div class="k">${k}</div><div class="v ${c}">${esc(v)}</div><div class="s">${esc(s)}</div></div>`).join('');
+
+    $('#svc').innerHTML = d.services.map(s =>
+      `<tr><td>${esc(s.label)}</td><td>${s.port}</td><td>${dot(s.up)}<span class="${s.up?'ok':'bad'}">${s.up?'up':'down'}</span></td></tr>`).join('');
+
+    const u = d.ubuntu, rows = [];
+    rows.push(`<tr><td>SSH</td><td>22</td><td>${dot(u.ssh)}<span class="${u.ssh?'ok':'bad'}">${u.ssh?'open':'closed'}</span></td><td>${esc(u.auth)}</td></tr>`);
+    u.services.forEach(s => rows.push(
+      `<tr><td>${esc(s.name)}</td><td>${s.port}</td><td>${dot(s.up)}<span class="${s.up?'ok':'bad'}">${s.up?'up':'down'}</span></td><td>—</td></tr>`));
+    $('#ubu').innerHTML = rows.join('');
+
+    $('#prof').innerHTML = d.profiles.map(p => {
+      const beat = p.ticker_age_s == null ? '—' : (p.ticker_age_s < 90 ? '<span class="ok">alive</span>' : `<span class="warn">${Math.round(p.ticker_age_s)}s</span>`);
+      return `<tr>
+        <td><b>${esc(p.name)}</b></td>
+        <td style="color:var(--mut)">${esc(p.role||'—')}</td>
+        <td style="font-family:ui-monospace,Menlo,monospace;font-size:11.5px">${esc(p.model||'—')}<br><span style="color:var(--mut)">${esc(p.provider||'')}</span></td>
+        <td>${p.auth?'<span class="ok">yes</span>':'<span class="bad">none</span>'}</td>
+        <td>${p.jobs||'—'}</td>
+        <td>${p.executions||'—'}</td>
+        <td>${beat}</td></tr>`;
+    }).join('');
+
+    const L = d.lanes, lane = (x,note) =>
+      `<div class="lane"><div class="n">${dot(x.ok)}<span class="${x.ok?'ok':'bad'}">${esc(x.label)}</span></div>
+       <div class="m">${esc(x.model)}</div>${note?`<div class="s" style="color:var(--mut);font-size:11px">${esc(note)}</div>`:''}</div>`;
+    $('#lanes').innerHTML = lane(L.zen) + lane(L.openrouter) + lane(L.kilo) +
+      `<div class="lane"><div class="n" style="color:var(--mut)">⏳ deadline</div><div class="m">${esc(L.expires)}</div></div>`;
+  }catch(e){
+    $('#ts').innerHTML = '<span class="bad">dashboard offline</span>';
+  }
+}
+tick(); setInterval(tick, 10000);
+</script>
+</body>
+</html>

@@ -1,0 +1,520 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>VidiFlow HX — Fleet Operations</title>
+<meta name="description" content="Live operations console for the VidiFlow fleet."/>
+<link rel="stylesheet" href="hx_fonts/fonts.css"/>
+<style>
+/* ── VidiFlow HX ──────────────────────────────────────────────────────────
+   Design system: Linear (dark-native, luminance-stepped surfaces, one accent).
+   Colour is spent ONLY on state — up / down / warn. Type carries hierarchy.
+   Spacing is a strict 4px grid. Nothing here is a browser default.
+   ─────────────────────────────────────────────────────────────────────── */
+:root{
+  --bg:#08090a; --panel:#0f1011; --surf2:#191a1b; --surf3:#232528;
+  --ink:#f7f8f8; --ink2:#d0d6e0; --mut:#8a8f98; --dim:#62666d;
+  --line:rgba(255,255,255,.08); --line2:rgba(255,255,255,.05); --line3:#34343a;
+  --accent:#7170ff; --accent-bg:#5e6ad2; --accent-hi:#828fff;
+  --up:#10b981; --down:#f87171; --warn:#e3b341; --idle:#62666d;
+  --up-bg:rgba(16,185,129,.12); --down-bg:rgba(248,113,113,.12);
+  --warn-bg:rgba(227,179,65,.12); --idle-bg:rgba(255,255,255,.04);
+  --s1:4px; --s2:8px; --s3:12px; --s4:16px; --s5:24px; --s6:32px; --s7:48px;
+  --r-sm:4px; --r:8px; --r-lg:12px;
+  --sans:"Inter",-apple-system,"Segoe UI",Roboto,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,"Cascadia Mono",Consolas,monospace;
+  --shadow:0 0 0 1px rgba(0,0,0,.2),0 8px 24px rgba(0,0,0,.28);
+}
+:root[data-theme="light"]{
+  --bg:#f7f8f8; --panel:#ffffff; --surf2:#f3f4f5; --surf3:#e6e6e6;
+  --ink:#1b1c1e; --ink2:#3f4147; --mut:#6b6f76; --dim:#8a8f98;
+  --line:rgba(0,0,0,.10); --line2:rgba(0,0,0,.06); --line3:#d0d6e0;
+  --up:#0d8a5f; --down:#c23b3b; --warn:#9a6f00;
+  --up-bg:rgba(16,185,129,.12); --down-bg:rgba(194,59,59,.10);
+  --warn-bg:rgba(154,111,0,.12); --idle-bg:rgba(0,0,0,.04);
+  --shadow:0 0 0 1px rgba(0,0,0,.06),0 8px 24px rgba(0,0,0,.08);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{
+  background:var(--bg); color:var(--ink); font-family:var(--sans);
+  font-size:14px; line-height:1.5; font-weight:400;
+  font-feature-settings:"cv01","ss03"; font-variant-numeric:tabular-nums;
+  -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+  min-height:100vh;
+}
+::selection{background:rgba(113,112,255,.32);color:#fff}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:var(--r-sm)}
+.mono{font-family:var(--mono);font-weight:400}
+h1,h2,h3{font-weight:510;letter-spacing:-.2px}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+
+/* ── type scale ─────────────────────────────────────────────────────────── */
+.t-display{font-size:clamp(22px,2.6vw,30px);font-weight:590;letter-spacing:-.024em;line-height:1.15}
+.t-h2{font-size:17px;font-weight:590;letter-spacing:-.016em;line-height:1.3}
+.t-h3{font-size:14px;font-weight:510;letter-spacing:-.01em;line-height:1.4}
+.t-body{font-size:14px;line-height:1.55;color:var(--ink2)}
+.t-cap{font-size:13px;line-height:1.45;color:var(--mut)}
+.t-lab{font-size:11px;line-height:1.35;color:var(--mut);letter-spacing:.04em;
+  text-transform:uppercase;font-weight:510}
+.t-num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+
+/* ── header ─────────────────────────────────────────────────────────────── */
+header{
+  position:sticky;top:0;z-index:30;background:color-mix(in srgb,var(--panel) 88%,transparent);
+  backdrop-filter:blur(12px);border-bottom:1px solid var(--line);
+}
+.hwrap{max-width:1400px;margin:0 auto;padding:0 var(--s5);
+  display:flex;align-items:center;gap:var(--s4);height:56px}
+.brand{display:flex;align-items:center;gap:var(--s2);min-width:0}
+.mark{width:22px;height:22px;border-radius:var(--r-sm);flex:none;
+  background:linear-gradient(140deg,var(--accent-hi),var(--accent-bg));
+  display:grid;place-items:center;color:#fff;font-size:11px;font-weight:590}
+.brand h1{font-size:15px;font-weight:590;letter-spacing:-.015em;white-space:nowrap}
+.brand .prod{font-size:11px;color:var(--dim);letter-spacing:.06em;text-transform:uppercase;
+  font-weight:510;border-left:1px solid var(--line3);padding-left:var(--s2);white-space:nowrap}
+.spacer{flex:1 1 auto;min-width:var(--s1)}
+.hstat{display:flex;align-items:center;gap:var(--s2);font-size:12px;color:var(--mut);white-space:nowrap}
+.dot{width:7px;height:7px;border-radius:50%;flex:none;background:var(--idle)}
+.dot.live{background:var(--up);box-shadow:0 0 0 3px var(--up-bg);animation:pulse 2.6s ease-in-out infinite}
+.dot.warm{background:var(--warn);box-shadow:0 0 0 3px var(--warn-bg)}
+.dot.bad{background:var(--down);box-shadow:0 0 0 3px var(--down-bg)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+@media (prefers-reduced-motion:reduce){.dot.live{animation:none}}
+.ghost{
+  display:inline-flex;align-items:center;gap:var(--s1);height:30px;padding:0 var(--s3);
+  border-radius:var(--r-sm);border:1px solid var(--line);background:var(--idle-bg);
+  color:var(--ink2);font-size:12px;font-weight:510;transition:background .14s,border-color .14s;
+}
+.ghost:hover{background:var(--surf2);border-color:var(--line3)}
+.ghost[aria-pressed="true"]{color:var(--ink);border-color:var(--accent);background:rgba(113,112,255,.10)}
+
+/* ── layout ─────────────────────────────────────────────────────────────── */
+main{max-width:1400px;margin:0 auto;padding:var(--s5);display:grid;gap:var(--s4)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg)}
+.chead{display:flex;align-items:center;gap:var(--s3);padding:var(--s4) var(--s4) var(--s3)}
+.chead .t-lab{color:var(--dim)}
+.count{margin-left:auto;font-family:var(--mono);font-size:12px;color:var(--mut)}
+
+/* banner */
+.banner{display:flex;align-items:flex-start;gap:var(--s3);padding:var(--s3) var(--s4);
+  border-radius:var(--r);border:1px solid var(--line);background:var(--surf2)}
+.banner.bad{border-color:rgba(248,113,113,.35);background:var(--down-bg)}
+.banner.warn{border-color:rgba(227,179,65,.35);background:var(--warn-bg)}
+.banner b{font-weight:590}
+.banner .r{margin-left:auto;font-family:var(--mono);font-size:12px;color:var(--dim);white-space:nowrap}
+
+/* metric strip */
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(148px,1fr));
+  border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden;background:var(--panel)}
+.m{padding:var(--s3) var(--s4);border-right:1px solid var(--line2);border-bottom:1px solid var(--line2);
+  display:flex;flex-direction:column;gap:var(--s1);min-width:0}
+.m:last-child{border-right:0}
+.mv{font-family:var(--mono);font-size:clamp(20px,2.2vw,26px);font-weight:500;line-height:1.1;
+  letter-spacing:-.02em;color:var(--ink)}
+.mv.up{color:var(--up)} .mv.down{color:var(--down)} .mv.warn{color:var(--warn)}
+.mv small{font-size:13px;color:var(--dim);font-weight:400}
+
+/* ── findings ───────────────────────────────────────────────────────────── */
+.findings{display:grid}
+.f{display:grid;grid-template-columns:3px 1fr auto;gap:0 var(--s3);align-items:start;
+  padding:var(--s3) var(--s4);border-top:1px solid var(--line2);transition:background .14s}
+.f:first-child{border-top:0}
+.f:hover{background:var(--surf2)}
+.f .bar{align-self:stretch;border-radius:2px;background:var(--idle)}
+.f.sev-down .bar{background:var(--down)}
+.f.sev-warn .bar{background:var(--warn)}
+.f.sev-info .bar{background:var(--idle)}
+.ft{min-width:0}
+.ft h3{font-size:14px;font-weight:510;letter-spacing:-.008em}
+.ft p{font-size:13px;color:var(--mut);margin-top:2px;overflow-wrap:anywhere}
+.fe{font-family:var(--mono);font-size:11px;color:var(--dim);text-align:right;
+  white-space:nowrap;padding-top:2px}
+.pill{display:inline-block;font-family:var(--mono);font-size:10px;font-weight:500;letter-spacing:.06em;
+  text-transform:uppercase;padding:2px var(--s2);border-radius:9999px;border:1px solid var(--line3);
+  color:var(--mut)}
+.pill.down{color:var(--down);background:var(--down-bg);border-color:rgba(248,113,113,.3)}
+.pill.warn{color:var(--warn);background:var(--warn-bg);border-color:rgba(227,179,65,.3)}
+.pill.up{color:var(--up);background:var(--up-bg);border-color:rgba(16,185,129,.3)}
+.pill.idle{color:var(--idle);background:var(--idle-bg)}
+
+/* ── tables / grids ─────────────────────────────────────────────────────── */
+.grid2{display:grid;gap:var(--s4);grid-template-columns:1fr 1fr}
+.row{display:flex;align-items:center;gap:var(--s3);padding:10px var(--s4);border-top:1px solid var(--line2)}
+.row:first-child{border-top:0}
+.row .nm{font-size:13px;font-weight:510;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.row .sub{font-family:var(--mono);font-size:11px;color:var(--dim);margin-left:auto;white-space:nowrap}
+.lanes{display:grid;gap:var(--s2);padding:var(--s2) var(--s4) var(--s4)}
+.lane{display:grid;grid-template-columns:1fr auto;gap:var(--s1) var(--s3);align-items:center;
+  padding:var(--s3);border:1px solid var(--line2);border-radius:var(--r);background:var(--surf2)}
+.lane .ln{font-size:13px;font-weight:510}
+.lane .lm{font-family:var(--mono);font-size:11px;color:var(--mut);overflow-wrap:anywhere}
+.lane .st{display:flex;align-items:center;gap:var(--s2);font-size:12px;color:var(--mut);white-space:nowrap}
+.expiry{display:flex;align-items:center;gap:var(--s3);padding:0 var(--s4) var(--s4);flex-wrap:wrap}
+.exbox{flex:1 1 200px;min-width:0;display:flex;align-items:baseline;gap:var(--s2);
+  padding:var(--s3);border-radius:var(--r);border:1px solid var(--line2);background:var(--surf2)}
+.exbox .n{font-family:var(--mono);font-size:22px;font-weight:500;letter-spacing:-.02em}
+.exbox.retired .n{color:var(--down)} .exbox.today .n{color:var(--warn)}
+.exbox.upcoming .n{color:var(--up)}
+.exbox .l{font-size:11px;color:var(--mut);letter-spacing:.04em;text-transform:uppercase;font-weight:510}
+
+/* roster */
+.rbar{display:flex;gap:var(--s2);align-items:center;padding:0 var(--s4) var(--s3);flex-wrap:wrap}
+input[type=search]{flex:1 1 180px;min-width:0;height:30px;padding:0 var(--s3);font:inherit;font-size:13px;
+  color:var(--ink);background:var(--surf2);border:1px solid var(--line);border-radius:var(--r-sm)}
+input[type=search]::placeholder{color:var(--dim)}
+input[type=search]:focus{border-color:var(--accent);outline:none;
+  box-shadow:0 0 0 3px rgba(113,112,255,.14)}
+.chips{display:flex;gap:var(--s1);flex-wrap:wrap}
+.chip{font-size:11px;font-weight:510;padding:4px var(--s2);border-radius:9999px;
+  border:1px solid var(--line3);color:var(--mut);background:transparent;transition:.14s}
+.chip:hover{color:var(--ink2);border-color:var(--mut)}
+.chip[aria-pressed="true"]{background:rgba(113,112,255,.12);border-color:var(--accent);color:var(--ink)}
+.bots{display:grid;grid-template-columns:repeat(auto-fill,minmax(232px,1fr));gap:var(--s2);
+  padding:0 var(--s4) var(--s4)}
+.bot{padding:var(--s3);border:1px solid var(--line2);border-radius:var(--r);background:var(--surf2);
+  display:flex;flex-direction:column;gap:var(--s1);min-width:0}
+.bot .n{font-size:13px;font-weight:510;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bot .d{font-size:12px;color:var(--mut);overflow-wrap:anywhere;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.bot .f{display:block;font-family:var(--mono);font-size:11px;color:var(--dim);padding:0;border:0}
+.sec{margin:0 var(--s4) var(--s2);font-family:var(--mono);font-size:11px;color:var(--dim);
+  letter-spacing:.06em;text-transform:uppercase;padding-top:var(--s2)}
+.empty{padding:var(--s5) var(--s4);text-align:center;color:var(--mut);font-size:13px}
+
+footer{max-width:1400px;margin:0 auto;padding:0 var(--s5) var(--s7);
+  display:flex;gap:var(--s3);flex-wrap:wrap;font-size:11px;color:var(--dim)}
+footer a{color:var(--mut);text-decoration:none;border-bottom:1px solid var(--line3)}
+footer a:hover{color:var(--ink2)}
+
+/* ── responsive: 4px rhythm holds at every width ────────────────────────── */
+@media (max-width:900px){
+  .grid2{grid-template-columns:1fr}
+  .main-3{grid-template-columns:1fr}
+}
+@media (max-width:720px){
+  .hwrap{padding:0 var(--s4);gap:var(--s3);height:52px}
+  main{padding:var(--s4);gap:var(--s3)}
+  .brand .prod{display:none}
+  .metrics{grid-template-columns:repeat(2,1fr)}
+  .m{border-right:1px solid var(--line2);padding:var(--s3)}
+  .m:nth-child(2n){border-right:0}
+  .f{grid-template-columns:3px 1fr;padding:var(--s3)}
+  .fe{grid-column:2;text-align:left;padding-top:var(--s1)}
+  .bots{grid-template-columns:1fr;padding:0 var(--s3) var(--s3)}
+  .chead,.banner,.rbar,.expiry{padding-left:var(--s3);padding-right:var(--s3)}
+  .lanes{padding:var(--s2) var(--s3) var(--s3)}
+  .row{padding:10px var(--s3)}
+  .sec{margin-left:var(--s3);margin-right:var(--s3)}
+  footer{padding:0 var(--s4) var(--s6)}
+}
+@media (max-width:420px){
+  .metrics{grid-template-columns:1fr}
+  .m{border-right:0}
+  .brand h1{font-size:14px}
+  .hstat.clock{display:none}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="hwrap">
+    <div class="brand">
+      <div class="mark" aria-hidden="true">HX</div>
+      <h1>VidiFlow HX</h1>
+      <span class="prod">Operations</span>
+    </div>
+    <div class="spacer"></div>
+    <div class="hstat clock mono" id="clock">—</div>
+    <div class="hstat"><i class="dot" id="dot"></i><span id="conn">connecting</span></div>
+    <button class="ghost" id="refresh" type="button">Refresh</button>
+    <button class="ghost" id="theme" type="button" aria-label="Toggle colour theme">◐</button>
+  </div>
+</header>
+
+<main id="main">
+  <div class="banner" id="banner" hidden><b id="btitle"></b><span class="t-cap" id="bdetail"></span><span class="r" id="bmeta"></span></div>
+  <section class="metrics" id="metrics" aria-label="Fleet summary"></section>
+
+  <section class="card" aria-labelledby="att-h">
+    <div class="chead"><h2 class="t-h2" id="att-h">Needs attention now</h2>
+      <span class="count" id="att-count"></span></div>
+    <div class="findings" id="findings"></div>
+  </section>
+
+  <div class="grid2 main-3">
+    <section class="card" aria-labelledby="lane-h">
+      <div class="chead"><h2 class="t-h2" id="lane-h">Model lanes</h2></div>
+      <div class="lanes" id="lanes"></div>
+      <div class="expiry" id="expiry"></div>
+    </section>
+
+    <section class="card" aria-labelledby="infra-h">
+      <div class="chead"><h2 class="t-h2" id="infra-h">Infrastructure</h2>
+        <span class="count" id="infra-count"></span></div>
+      <div id="infra"></div>
+    </section>
+  </div>
+
+  <section class="card" aria-labelledby="roster-h">
+    <div class="chead"><h2 class="t-h2" id="roster-h">Bot roster</h2>
+      <span class="count" id="roster-count"></span></div>
+    <div class="rbar">
+      <input type="search" id="q" placeholder="Filter by name, role or section…"
+             aria-label="Filter bot roster"/>
+      <div class="chips" id="chips" role="group" aria-label="Filter by section"></div>
+    </div>
+    <div id="roster"></div>
+  </section>
+</main>
+
+<footer>
+  <span>Source <span class="mono" id="src">127.0.0.1:8790</span> · read-only · POST refused 403</span>
+  <span class="spacer"></span>
+  <a href="http://127.0.0.1:8790/" >Console</a>
+  <a href="http://127.0.0.1:8790/f">Fleet</a>
+  <a href="http://127.0.0.1:8790/ai">Vidi AI</a>
+</footer>
+
+<script>
+"use strict";
+/* Renders exactly what the API measured. Two rules this file exists to enforce:
+   1. "warming" is never drawn as zeros — an unmeasured service list is labelled,
+      because that is the false-green shape from the 8799 wedge incident.
+   2. Every lane state comes from the server's `state` field, never from
+      treating a null/false `ok` as a verdict. */
+const $ = s => document.querySelector(s);
+const esc = v => String(v ?? "").replace(/[&<>"']/g, c =>
+  ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const LANE_ST = { up: ["up", "ok"], auth: ["warn", "auth"], missing: ["warn", "no model"],
+  down: ["down", "failing"], degraded: ["warn", "degraded"], pending: ["idle", "probing"] };
+
+let DATA = null, timer = null, filter = "", section = "";
+
+function ago(iso){
+  if(!iso) return "—";
+  const s = (Date.now() - new Date(iso).getTime()) / 1000;
+  if(!isFinite(s)) return "—";
+  if(s < 0) return "just now";
+  if(s < 60) return Math.round(s) + "s ago";
+  if(s < 3600) return Math.round(s/60) + "m ago";
+  if(s < 86400) return Math.round(s/3600) + "h ago";
+  return Math.round(s/86400) + "d ago";
+}
+
+function metric(label, value, cls, sub){
+  return `<div class="m"><span class="t-lab">${esc(label)}</span>
+    <span class="mv ${cls||""}">${value}</span>
+    <span class="t-cap">${esc(sub||"")}</span></div>`;
+}
+
+function render(d){
+  DATA = d;
+  const up = d.bots.up, tot = d.bots.total, sev = d.counts_by_severity;
+  const att = sev.down + sev.warn;
+  const healthy = tot > 0 && up === tot;
+
+  /* header state */
+  const warming = d.state === "warming";
+  const stale = d.stale;
+  const dot = $("#dot");
+  dot.className = "dot " + (warming ? "warm" : (!healthy || stale) ? "bad" : "live");
+  $("#conn").textContent = warming ? "warming"
+    : d.bots.total === 0 ? "no data"
+    : healthy && !stale ? "live" : "degraded";
+  $("#clock").textContent = d.checked_at ? ago(d.checked_at) : "—";
+  $("#src").textContent = (d.upstream && d.upstream.dashboard || "127.0.0.1:8790");
+
+  /* banner: only when something genuinely needs saying */
+  const b = $("#banner"), bits = [];
+  if(warming) bits.push(["warn", "Snapshot warming",
+    d.detail || "first measurement still running", "not yet measured"]);
+  if(stale) bits.push(["warn", "Snapshot is stale",
+    `last measured ${d.snapshot_age_s}s ago (>30s)`, "refresh stalled"]);
+  if(d.bots.total === 0 && !warming) bits.push(["bad", "No services measured",
+    "source returned an empty service list", "check dashboard"]);
+  if(bits.length){
+    b.className = "banner " + bits[0][0];
+    $("#btitle").textContent = bits[0][1];
+    $("#bdetail").textContent = bits[0][2];
+    $("#bmeta").textContent = bits[0][3];
+    b.hidden = false;
+  } else { b.hidden = true; }
+
+  /* metrics */
+  $("#metrics").innerHTML =
+    metric("Bots up", warming ? "—" : `${up}<small>/${tot}</small>`,
+      warming ? "" : healthy ? "up" : "down",
+      warming ? "measuring" : tot - up ? tot - up + " not responding" : "all responding") +
+    metric("Attention", att, att ? "warn" : "up",
+      sev.down ? sev.down + " down · " + sev.warn + " warn" : "nothing outstanding") +
+    metric("Model lanes", d.lanes && d.lanes.zen
+      ? `${laneCount(d)}<small>/3</small>` : "—",
+      laneCount(d) === 3 ? "up" : "warn", "of 3 providers") +
+    metric("Bot roster", d.roster.count ?? "—", "", (d.roster.lanes ?? "—") + " knowledge lanes") +
+    metric("Kumiho nodes", d.stack.total_nodes ?? "—", "",
+      d.stack.graph && d.stack.graph.reachable === false ? "graph unreachable" : "graph reachable") +
+    metric("Credentials", `${d.profiles.with_auth}<small>/${d.profiles.total}</small>`,
+      d.profiles.no_auth.length ? "warn" : "up",
+      d.profiles.no_auth.length ? d.profiles.no_auth.length + " missing" : "all present");
+
+  /* findings */
+  const f = d.findings || [];
+  $("#att-count").textContent = f.length ? `${f.length} item${f.length>1?"s":""}` : "clear";
+  $("#findings").innerHTML = f.length ? f.map(x => `
+    <article class="f sev-${esc(x.severity)}">
+      <div class="bar"></div>
+      <div class="ft"><h3>${esc(x.title)}</h3><p>${esc(x.detail)}</p></div>
+      <div class="fe mono">${esc(x.evidence)}</div>
+    </article>`).join("")
+    : `<div class="empty">Nothing needs attention. All measured services responding, no lane or credential issues.</div>`;
+
+  /* lanes */
+  const L = d.lanes || {}, out = [];
+  for(const k of ["zen","openrouter","kilo"]){
+    const l = L[k]; if(!l) continue;
+    const st = l.state || (l.ok ? "up" : "down");
+    const [cls, word] = LANE_ST[st] || ["idle", st];
+    out.push(`<div class="lane">
+      <div><div class="ln">${esc(l.label||k)}</div>
+        <div class="lm">${esc(l.model||"—")}</div></div>
+      <div class="st"><span class="pill ${cls}">${esc(word)}</span>
+        ${l.latency_ms!=null?`<span class="mono">${l.latency_ms}ms</span>`:""}</div>
+    </div>`);
+  }
+  $("#lanes").innerHTML = out.join("") ||
+    `<div class="empty">No lane data.</div>`;
+
+  const e = d.expiry || {};
+  if(e.date){
+    const n = e.days_remaining;
+    const word = e.state === "retired" ? `${Math.abs(n)}d past` :
+                 e.state === "today" ? "today" : `${n}d left`;
+    $("#expiry").innerHTML = `<div class="exbox ${esc(e.state)}">
+        <span class="n">${esc(word)}</span>
+        <span class="l">Space Bunny Alpha</span>
+        <span class="mono t-cap">${esc(e.date)} · ${esc(e.source||"")}</span>
+      </div>`;
+  } else { $("#expiry").innerHTML = ""; }
+
+  /* infra */
+  const rows = (d.services||[]).map(s =>
+    `<div class="row"><i class="dot ${s.up?"live":"bad"}"></i>
+      <span class="nm">${esc(s.label)}</span>
+      <span class="sub">:${s.port} · ${s.up?"up":"no answer"}</span></div>`).join("");
+  const u = d.ubuntu || {};
+  const ubox = u.host ? `<div class="row" style="border-top:1px solid var(--line2)">
+      <i class="dot ${(u.services||[]).some(x=>x.up)?"live":"bad"}"></i>
+      <span class="nm">Ubuntu ${esc(u.host)}</span>
+      <span class="sub">ssh ${esc(u.ssh?(u.auth||"?"):"refused")} ·
+        ${(u.services||[]).filter(x=>x.up).length}/${(u.services||[]).length} up</span></div>` : "";
+  $("#infra").innerHTML = (rows || `<div class="empty">No services measured.</div>`) + ubox;
+  const upN = (d.services||[]).filter(s=>s.up).length;
+  $("#infra-count").textContent = `${upN}/${(d.services||[]).length}`;
+
+  renderRoster();
+}
+
+function laneCount(d){
+  const L = d.lanes || {};
+  return ["zen","openrouter","kilo"].filter(k => L[k] && L[k].ok).length;
+}
+
+/* ── roster (from /api/fleet, proxied) ─────────────────────────────────── */
+async function loadRoster(){
+  try{
+    const r = await fetch("/api/hx/roster", {cache:"no-store"});
+    if(!r.ok) throw new Error("HTTP " + r.status);
+    window.__roster = await r.json();
+    renderRoster();
+  }catch(e){
+    $("#roster").innerHTML = `<div class="empty">Roster unavailable — ${esc(e.message)}</div>`;
+    $("#roster-count").textContent = "";
+  }
+}
+
+function renderRoster(){
+  const R = window.__roster;
+  if(!R){ return; }
+  const all = R.bots || [];
+  const secs = [...new Set(all.map(b=>b.section).filter(Boolean))];
+  if(!$("#chips").children.length){
+    $("#chips").innerHTML = secs.map(s =>
+      `<button class="chip" type="button" data-s="${esc(s)}">${esc(s)}</button>`).join("");
+    $("#chips").addEventListener("click", ev=>{
+      const c = ev.target.closest(".chip"); if(!c) return;
+      section = section === c.dataset.s ? "" : c.dataset.s;
+      [...$("#chips").children].forEach(x =>
+        x.setAttribute("aria-pressed", String(x.dataset.s === section)));
+      renderRoster();
+    });
+  }
+  const q = filter.toLowerCase();
+  const hit = all.filter(b =>
+    (!section || b.section === section) &&
+    (!q || (b.name+" "+(b.role||"")+" "+(b.section||"")).toLowerCase().includes(q)));
+
+  $("#roster-count").textContent = hit.length === all.length
+    ? `${all.length} bots` : `${hit.length} of ${all.length}`;
+
+  if(!hit.length){
+    $("#roster").innerHTML = `<div class="empty">No bot matches that filter.</div>`;
+    return;
+  }
+  const bySec = {};
+  hit.forEach(b => (bySec[b.section||"Unassigned"] ||= []).push(b));
+  $("#roster").innerHTML = Object.entries(bySec)
+    .sort((a,b)=>a[0].localeCompare(b[0]))
+    .map(([sec, list]) => `<div class="sec">${esc(sec)} · ${list.length}</div>
+      <div class="bots">${list.map(b => `<div class="bot">
+        <span class="n" title="${esc(b.name)}">${esc(b.name)}</span>
+        <span class="d">${esc(b.role||"—")}</span>
+        ${b.profile?`<span class="f">profile · ${esc(b.profile)}</span>`:""}
+      </div>`).join("")}</div>`).join("");
+}
+
+/* ── boot ───────────────────────────────────────────────────────────────── */
+function fail(msg, detail){
+  clearInterval(timer); timer = null;
+  $("#dot").className = "dot bad";
+  $("#conn").textContent = "source down";
+  const b = $("#banner");
+  b.className = "banner bad"; b.hidden = false;
+  $("#btitle").textContent = msg;
+  $("#bdetail").textContent = detail;
+  $("#bmeta").textContent = "no data";
+  ["#metrics","#findings","#lanes","#expiry","#infra"].forEach(s => {
+    $(s).innerHTML = `<div class="empty">Unavailable — the fleet dashboard on 8790 did not answer. Start it, then refresh.</div>`;
+  });
+  $("#att-count").textContent = "";
+  $("#infra-count").textContent = "";
+}
+
+async function tick(){
+  try{
+    const r = await fetch("/api/hx", {cache:"no-store"});
+    const d = await r.json();
+    if(!r.ok) return fail(d.error === "source_unreachable"
+      ? "Fleet dashboard unreachable"
+      : "HX data error", d.detail ? String(d.detail) : "HTTP " + r.status);
+    clearInterval(timer);
+    timer = setInterval(tick, 10000);
+    render(d);
+  }catch(e){
+    fail("Cannot reach VidiFlow HX", String(e.message || e));
+  }
+}
+
+$("#refresh").addEventListener("click", () => { clearInterval(timer); tick(); });
+$("#theme").addEventListener("click", () => {
+  const cur = document.documentElement.getAttribute("data-theme");
+  document.documentElement.setAttribute("data-theme", cur === "dark" ? "light" : "dark");
+});
+$("#q").addEventListener("input", e => { filter = e.target.value.trim(); renderRoster(); });
+
+tick();
+loadRoster();
+</script>
+</body>
+</html>

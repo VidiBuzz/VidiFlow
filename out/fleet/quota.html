@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Antigravity Quota — VidiFlow Hydra</title>
+<style>
+:root{--bg:#0a0e14;--panel:#111823;--line:#1e2a38;--fg:#e6edf3;--dim:#8b9bb0;
+ --ok:#3fb950;--warn:#d29922;--bad:#f85149;--acc:#58a6ff}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);
+ font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;padding:26px 22px}
+.wrap{max-width:980px;margin:0 auto}
+h1{font-size:22px;margin:0 0 3px;letter-spacing:-.3px}
+.sub{color:var(--dim);font-size:13px;margin-bottom:20px}
+a.back{color:var(--acc);text-decoration:none;font-size:13px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;margin-bottom:18px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+.k{color:var(--dim);font-size:11.5px;text-transform:uppercase;letter-spacing:.7px;margin-bottom:6px;font-weight:600}
+.v{font-size:22px;font-weight:700;font-variant-numeric:tabular-nums}
+.vs{font-size:12.5px;color:var(--dim);margin-top:3px}
+.bar{height:7px;border-radius:4px;background:#0d1420;margin-top:9px;overflow:hidden;border:1px solid var(--line)}
+.bar>i{display:block;height:100%;border-radius:3px}
+h2{font-size:13px;text-transform:uppercase;letter-spacing:.9px;color:var(--dim);margin:22px 0 10px;font-weight:600}
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th{text-align:left;color:var(--dim);font-size:11px;text-transform:uppercase;letter-spacing:.6px;
+ padding:6px 10px;border-bottom:1px solid var(--line);font-weight:600}
+.tbl td{padding:7px 10px;border-bottom:1px solid rgba(30,42,56,.5)}
+.tbl tr:last-child td{border-bottom:none}
+.mbar{height:5px;border-radius:3px;background:#0d1420;overflow:hidden;border:1px solid var(--line);min-width:120px}
+.mbar>i{display:block;height:100%}
+.num{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
+.pct{font-weight:600}
+.err{border-left:2px solid var(--bad);background:rgba(248,81,73,.06);padding:12px 15px;border-radius:0 8px 8px 0}
+.note{border-left:2px solid var(--acc);background:rgba(88,166,255,.05);padding:11px 15px;
+ border-radius:0 8px 8px 0;margin:14px 0;font-size:13px;color:#c9d5e3}
+code{background:#0d1420;border:1px solid var(--line);padding:1px 6px;border-radius:4px;font:12px ui-monospace,Menlo,monospace}
+footer{color:var(--dim);font-size:12px;margin-top:22px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>Antigravity Quota</h1>
+<div class="sub"><a class="back" href="/">&larr; VidiFlow Hydra</a> &middot; Google Antigravity IDE &middot; Gemini Pro $20 plan &middot; live</div>
+
+<div id="root"><div class="card"><div class="k">Loading…</div><div class="vs">polling language server</div></div></div>
+
+<div class="note">
+<b>Budgeting note.</b> This panel tracks <b>IDE quota</b> (the $20 Gemini Pro subscription used
+inside Antigravity). API-spend lanes &mdash; xAI grok-imagine, OpenRouter &mdash; are billed
+separately and are not included here. IDE credits reset monthly; per-model bars reset on their own
+schedule (shown per row).
+</div>
+
+<footer>Polled from the local Antigravity language server &middot; port + CSRF re-discovered every call
+&middot; reverse-engineered from Henrik-3/AntigravityQuota v1.1.1 (MIT) &middot; <span id="stamp"></span></footer>
+</div>
+
+<script>
+const fmt = n => n == null ? "&mdash;" : Number(n).toLocaleString();
+const cls = p => p >= 50 ? "var(--ok)" : p >= 25 ? "var(--warn)" : "var(--bad)";
+const resetLocal = iso => { try { return new Date(iso).toLocaleString(); } catch { return iso; } };
+
+function creditCard(title, rem, mon, color) {
+  const pct = mon && rem != null ? Math.round(100 * rem / mon) : 0;
+  return `<div class="card"><div class="k">${title}</div>
+   <div class="v" style="color:${color}">${fmt(rem)} <span style="font-size:13px;color:var(--dim);font-weight:400">/ ${fmt(mon)}</span></div>
+   <div class="vs">${pct}% remaining this cycle</div>
+   <div class="bar"><i style="width:${pct}%;background:${color}"></i></div></div>`;
+}
+
+function render(d) {
+  const root = document.getElementById("root");
+  if (!d.ok) {
+    root.innerHTML = `<div class="err"><b>Quota unavailable.</b> ${d.error || "unknown"}<br>
+    <span style="color:var(--dim);font-size:12.5px">Open Antigravity IDE once, then refresh this panel &mdash;
+    the language server must be running to answer the quota call.</span></div>`;
+    return;
+  }
+  const c = d.credits || {};
+  const pR = c.prompt_remaining, pM = c.prompt_monthly, fR = c.flow_remaining, fM = c.flow_monthly;
+  const pPct = pM ? 100 * pR / pM : 0, fPct = fM ? 100 * fR / fM : 0;
+
+  const models = (d.models || []).slice().sort((a, b) => a.remaining_pct - b.remaining_pct);
+  const rows = models.map(m => `
+   <tr><td>${m.label || m.id}<div style="color:var(--dim);font-size:11px">${m.id}</div></td>
+   <td class="num pct" style="color:${cls(m.remaining_pct)}">${m.remaining_pct.toFixed(1)}%</td>
+   <td><div class="mbar"><i style="width:${m.remaining_pct}%;background:${cls(m.remaining_pct)}"></i></div></td>
+   <td class="num" style="color:var(--dim);font-size:12px">${resetLocal(m.reset_utc)}</td></tr>`).join("");
+
+  root.innerHTML = `
+  <div class="grid">
+   ${creditCard("Prompt credits", pR, pM, cls(pPct))}
+   ${creditCard("Flow credits", fR, fM, cls(fPct))}
+   <div class="card"><div class="k">Plan</div><div class="v">${d.plan || "?"}</div>
+    <div class="vs">${d.email || ""} &middot; ${d.tier || ""}</div>
+    <div class="vs">${(d.models || []).length} models tracked &middot; via :${d.via_port}</div></div>
+  </div>
+  <h2>Per-model quota &mdash; lowest first</h2>
+  <div class="card" style="padding:6px 10px">
+   <table class="tbl">
+    <tr><th>Model</th><th class="num">Remaining</th><th></th><th class="num">Resets</th></tr>
+    ${rows}
+   </table>
+  </div>`;
+  document.getElementById("stamp").textContent = "updated " + new Date().toLocaleTimeString();
+}
+
+async function tick() {
+  try {
+    const r = await fetch("/api/ag", {cache: "no-store"});
+    render(await r.json());
+  } catch (e) { render({ok: false, error: String(e)}); }
+}
+tick();
+setInterval(tick, 15000);
+</script>
+</body>
+</html>

@@ -1,0 +1,2591 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="holo">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VidiSmart Agent Bridge — Gen UI Flagship</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Antonio:wght@400;600;700&family=Rajdhani:wght@400;500;600;700&family=Michroma&display=swap');
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+/* ═══════════════ BASE TOKENS (Holographic Bridge = default) ═══════════════ */
+:root,
+html[data-theme="holo"] {
+    --bg: #020810;
+    --bg2: #04121e;
+    --panel: rgba(8, 26, 40, 0.55);
+    --panel-solid: #081a28;
+    --panel-blur: blur(14px);
+    --line: rgba(34, 211, 238, 0.18);
+    --line-strong: rgba(34, 211, 238, 0.45);
+    --text: #d7f5ff;
+    --text-dim: #6fa8bd;
+    --text-faint: #3d6478;
+    --accent: #22d3ee;
+    --accent2: #38bdf8;
+    --glow: 0 0 18px rgba(34, 211, 238, 0.25);
+    --st-idle: #5b7285;
+    --st-thinking: #22d3ee;
+    --st-running: #34d399;
+    --st-hot: #fbbf24;
+    --st-error: #fb7185;
+    --font-ui: 'Rajdhani', 'Segoe UI', system-ui, sans-serif;
+    --font-display: 'Rajdhani', 'Segoe UI', system-ui, sans-serif;
+    --font-mono: 'Cascadia Code', 'Consolas', monospace;
+    --radius: 14px;
+    --radius-sm: 8px;
+    --panel-pad: 14px;
+    --title-tracking: 0.14em;
+    --fawave: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='12' viewBox='0 0 24 12'%3E%3Cpath d='M0 6 Q3 1.5 6 6 T12 6 T18 6 T24 6' fill='none' stroke='white' stroke-width='2.6' stroke-linecap='round'/%3E%3C/svg%3E");
+}
+
+/* ═══════════════ LCARS ═══════════════ */
+html[data-theme="lcars"] {
+    --bg: #000000;
+    --bg2: #0a0a0a;
+    --panel: #141414;
+    --panel-solid: #141414;
+    --panel-blur: none;
+    --line: #3a3a3a;
+    --line-strong: #ff9900;
+    --text: #ffeedd;
+    --text-dim: #b39a7d;
+    --text-faint: #6e5c47;
+    --accent: #ff9900;
+    --accent2: #99ccff;
+    --glow: none;
+    --st-idle: #857360;
+    --st-thinking: #99ccff;
+    --st-running: #33cc99;
+    --st-hot: #ffaa00;
+    --st-error: #cc4444;
+    --font-ui: 'Antonio', 'Arial Narrow', system-ui, sans-serif;
+    --font-display: 'Antonio', 'Arial Narrow', system-ui, sans-serif;
+    --radius: 26px;
+    --radius-sm: 16px;
+    --panel-pad: 16px;
+    --title-tracking: 0.08em;
+}
+
+/* ═══════════════ JARVIS ═══════════════ */
+html[data-theme="jarvis"] {
+    --bg: #05070a;
+    --bg2: #0a0e14;
+    --panel: rgba(18, 22, 30, 0.6);
+    --panel-solid: #12161e;
+    --panel-blur: blur(10px);
+    --line: rgba(245, 166, 35, 0.22);
+    --line-strong: rgba(245, 166, 35, 0.55);
+    --text: #f2ead9;
+    --text-dim: #9a8f78;
+    --text-faint: #5c5545;
+    --accent: #f5a623;
+    --accent2: #35e0f0;
+    --glow: 0 0 16px rgba(245, 166, 35, 0.2);
+    --st-idle: #6b7280;
+    --st-thinking: #35e0f0;
+    --st-running: #3ddc84;
+    --st-hot: #ffb020;
+    --st-error: #ff5252;
+    --font-ui: 'Rajdhani', 'Segoe UI', system-ui, sans-serif;
+    --font-display: 'Michroma', 'Rajdhani', system-ui, sans-serif;
+    --radius: 4px;
+    --radius-sm: 3px;
+    --panel-pad: 14px;
+    --title-tracking: 0.1em;
+}
+
+/* ═══════════════ AGENT STATE MODEL (vocabulary mirrors vidiflow-status-orb.html) ═══════════════ */
+[data-state="idle"]     { --state-color: var(--st-idle); }
+[data-state="thinking"] { --state-color: var(--st-thinking); }
+[data-state="running"]  { --state-color: var(--st-running); }
+[data-state="hot"]      { --state-color: var(--st-hot); }
+[data-state="error"]    { --state-color: var(--st-error); }
+
+html, body { height: 100%; }
+body {
+    font-family: var(--font-ui);
+    background: var(--bg);
+    color: var(--text);
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: 290px minmax(0, 1fr) 320px;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    grid-template-areas:
+        "top top top"
+        "left center right"
+        "cmd cmd cmd";
+    height: 100vh;
+    gap: 10px;
+    padding: 10px;
+    transition: background 0.6s ease;
+}
+
+.fa-sr {
+    position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+    overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+/* ═══════════════ AMBIENT LAYERS ═══════════════ */
+#ambient { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+#ambScan, #ambFlare, #ambHex, #ambParticles, #ambRings, #ambBlocks { position: absolute; inset: 0; display: none; }
+
+/* Holo: scanlines + lens flare */
+html[data-theme="holo"] #ambScan {
+    display: block;
+    background: repeating-linear-gradient(0deg, rgba(34, 211, 238, 0.028) 0 1px, transparent 1px 3px);
+    mix-blend-mode: screen;
+}
+html[data-theme="holo"] #ambFlare {
+    display: block;
+    background:
+        radial-gradient(560px 320px at 82% -8%, rgba(56, 189, 248, 0.16), transparent 70%),
+        radial-gradient(700px 500px at 8% 110%, rgba(34, 211, 238, 0.08), transparent 70%);
+}
+html[data-theme="holo"] body::before {
+    content: ""; position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background: radial-gradient(1200px 800px at 50% 40%, var(--bg2), var(--bg) 75%);
+}
+
+/* JARVIS: hex grid + particles + rotating rings */
+html[data-theme="jarvis"] #ambHex {
+    display: block; opacity: 0.5;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='100' viewBox='0 0 28 49'%3E%3Cg fill='none' stroke='%23f5a623' stroke-opacity='0.07' stroke-width='1'%3E%3Cpath d='M13.99 9.25l13 7.5v15l-13 7.5L1 31.75v-15l12.99-7.5zM3 17.9v12.7l10.99 6.34 11-6.35V17.9l-11-6.34L3 17.9zM0 15l12.98-7.5V0h-2v6.35L0 12.69v2.3zm0 18.5L12.98 41v8h-2v-6.85L0 35.81v-2.3zM15 0v7.5L27.99 15H28v-2.31h-.01L17 6.35V0h-2zm0 49v-8l12.99-7.5H28v2.31h-.01L17 42.15V49h-2z'/%3E%3C/g%3E%3C/svg%3E");
+}
+html[data-theme="jarvis"] #ambParticles { display: block; }
+html[data-theme="jarvis"] #ambRings { display: block; }
+#ambRings svg { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); opacity: 0.5; }
+#ambRings .ring1 { animation: ring-spin 44s linear infinite; }
+#ambRings .ring2 { animation: ring-spin 66s linear infinite reverse; }
+@keyframes ring-spin { to { transform: translate(-50%, -50%) rotate(360deg); } }
+
+/* LCARS: color block strips */
+html[data-theme="lcars"] #ambBlocks { display: block; }
+#ambBlocks i { position: absolute; border-radius: 999px; display: block; }
+#ambBlocks i:nth-child(1) { left: 0; top: 12%; width: 10px; height: 26%; background: #ff9900; }
+#ambBlocks i:nth-child(2) { left: 0; top: 42%; width: 10px; height: 12%; background: #cc99cc; }
+#ambBlocks i:nth-child(3) { right: 0; top: 20%; width: 10px; height: 18%; background: #99ccff; }
+#ambBlocks i:nth-child(4) { right: 0; top: 44%; width: 10px; height: 30%; background: #33cc99; }
+
+/* ═══════════════ PANELS ═══════════════ */
+.panel {
+    position: relative;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: var(--panel-pad);
+    backdrop-filter: var(--panel-blur);
+    -webkit-backdrop-filter: var(--panel-blur);
+    min-width: 0;
+    z-index: 1;
+}
+.panel-title {
+    font-family: var(--font-display);
+    font-size: 0.68rem; font-weight: 700; letter-spacing: var(--title-tracking);
+    text-transform: uppercase; color: var(--text-dim);
+    margin-bottom: 10px; display: flex; align-items: center; gap: 8px;
+}
+.panel-title::before { content: ""; width: 8px; height: 8px; border-radius: 2px; background: var(--accent); flex-shrink: 0; }
+
+/* Holo: HUD corner brackets */
+html[data-theme="holo"] .panel::before,
+html[data-theme="holo"] .panel::after {
+    content: ""; position: absolute; width: 16px; height: 16px; pointer-events: none;
+}
+html[data-theme="holo"] .panel::before { top: -1px; left: -1px; border-top: 2px solid var(--line-strong); border-left: 2px solid var(--line-strong); border-top-left-radius: var(--radius); }
+html[data-theme="holo"] .panel::after { bottom: -1px; right: -1px; border-bottom: 2px solid var(--line-strong); border-right: 2px solid var(--line-strong); border-bottom-right-radius: var(--radius); }
+
+/* LCARS: color-block header strip + elbow feel */
+html[data-theme="lcars"] .panel { border: none; background: var(--panel-solid); box-shadow: inset 0 0 0 1px #262626; }
+html[data-theme="lcars"] .panel::before {
+    content: ""; position: absolute; left: 0; top: 10px; bottom: 10px; width: 12px;
+    background: var(--accent); border-radius: 999px;
+}
+html[data-theme="lcars"] .panel { padding-left: 24px; }
+html[data-theme="lcars"] .panel-title { color: var(--accent); font-weight: 700; }
+html[data-theme="lcars"] .panel-title::before { display: none; }
+
+/* JARVIS: subtle 3D tilt on hover */
+html[data-theme="jarvis"] .panel { transition: transform 0.35s ease, border-color 0.35s ease; }
+html[data-theme="jarvis"] .panel:hover { transform: perspective(900px) rotateX(1.2deg) rotateY(-1.2deg) translateY(-2px); border-color: var(--line-strong); }
+
+/* ═══════════════ TOPBAR ═══════════════ */
+#topbar {
+    grid-area: top; display: flex; align-items: center; gap: 14px;
+    padding: 10px 16px; flex-wrap: wrap; z-index: 5;
+}
+#topbar .brand { display: flex; align-items: baseline; gap: 10px; min-width: 0; }
+#topbar .brand h1 {
+    font-family: var(--font-display); font-size: 1.15rem; font-weight: 700;
+    letter-spacing: 0.22em; color: var(--text); text-transform: uppercase; white-space: nowrap;
+}
+html[data-theme="lcars"] #topbar .brand h1 { letter-spacing: 0.1em; }
+#topbar .brand .sub { font-size: 0.68rem; color: var(--text-faint); letter-spacing: 0.18em; text-transform: uppercase; white-space: nowrap; }
+#stardate { font-family: var(--font-mono); font-size: 0.75rem; color: var(--accent2); white-space: nowrap; }
+
+#fleetPill {
+    display: inline-flex; align-items: center; gap: 7px; padding: 4px 12px;
+    border: 1px solid var(--line); border-radius: 999px; font-size: 0.72rem;
+    letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-dim); white-space: nowrap;
+}
+#fleetPill .pill-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--st-idle); }
+#fleetPill.live .pill-dot { background: var(--st-running); box-shadow: 0 0 8px var(--st-running); animation: pulse-dot 1.6s ease-in-out infinite; }
+#fleetPill.sim .pill-dot { background: var(--st-hot); box-shadow: 0 0 8px var(--st-hot); }
+#fleetPill.offline .pill-dot { background: var(--st-error); }
+
+@keyframes pulse-dot { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.45; transform: scale(0.82); } }
+
+.topbar-spacer { flex: 1; }
+
+/* Mode chips */
+.chipset { display: flex; gap: 6px; align-items: center; }
+.chip {
+    font-family: var(--font-ui); font-size: 0.72rem; font-weight: 700; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--text-dim); background: transparent;
+    border: 1px solid var(--line); border-radius: 999px; padding: 5px 13px; cursor: pointer;
+    transition: color 0.25s, border-color 0.25s, background 0.25s;
+}
+.chip:hover { color: var(--text); border-color: var(--line-strong); }
+.chip[aria-pressed="true"] { color: var(--bg); background: var(--accent); border-color: var(--accent); }
+html[data-theme="lcars"] .chip[aria-pressed="true"] { color: #000; }
+.chip#chipAlert[aria-pressed="true"] { background: var(--st-error); border-color: var(--st-error); color: #fff; }
+.chip#chipDecision[aria-pressed="true"] { background: var(--st-hot); border-color: var(--st-hot); color: #000; }
+.chip#chipAuto[aria-pressed="false"] { border-style: dashed; opacity: 0.75; }
+
+/* Theme switcher */
+#themeSwitch { display: flex; gap: 4px; border: 1px solid var(--line); border-radius: 999px; padding: 3px; }
+#themeSwitch button {
+    font-family: var(--font-ui); font-size: 0.66rem; font-weight: 700; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--text-dim); background: transparent; border: none;
+    border-radius: 999px; padding: 4px 10px; cursor: pointer; transition: background 0.25s, color 0.25s;
+}
+#themeSwitch button[aria-pressed="true"] { background: var(--accent); color: var(--bg); }
+html[data-theme="lcars"] #themeSwitch button[aria-pressed="true"] { color: #000; }
+
+.icon-btn {
+    width: 34px; height: 34px; display: inline-flex; align-items: center; justify-content: center;
+    border: 1px solid var(--line); border-radius: 50%; background: transparent; cursor: pointer;
+    color: var(--text-dim); font-size: 0.95rem; transition: color 0.25s, border-color 0.25s;
+}
+.icon-btn:hover { color: var(--text); border-color: var(--line-strong); }
+.icon-btn[aria-pressed="true"] { color: var(--accent); border-color: var(--accent); }
+.icon-btn.hidden { display: none; }
+.icon-btn.listening { color: var(--st-error); border-color: var(--st-error); animation: pulse-dot 1s ease-in-out infinite; }
+
+/* LCARS block-blink accent in topbar */
+.lcars-blink { display: none; }
+html[data-theme="lcars"] .lcars-blink {
+    display: inline-block; width: 14px; height: 14px; background: #cc99cc; border-radius: 3px;
+    animation: block-blink 1.4s steps(1) infinite;
+}
+@keyframes block-blink { 0%, 60% { opacity: 1; } 61%, 100% { opacity: 0.15; } }
+
+/* LCARS elbow on topbar */
+html[data-theme="lcars"] #topbar::before {
+    content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 34px;
+    background: #ff9900; border-radius: 0 0 22px 0;
+}
+html[data-theme="lcars"] #topbar { padding-left: 52px; position: relative; }
+
+:focus-visible { outline: 2px solid var(--accent2); outline-offset: 2px; }
+
+/* ═══════════════ LEFT RAIL — EVENT STREAM ═══════════════ */
+#leftRail { grid-area: left; display: flex; flex-direction: column; min-height: 0; }
+#eventList { list-style: none; overflow-y: auto; flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 6px; scrollbar-width: thin; scrollbar-color: var(--line-strong) transparent; }
+.ev {
+    display: grid; grid-template-columns: auto auto minmax(0, 1fr); gap: 6px; align-items: baseline;
+    font-size: 0.78rem; padding: 6px 8px; border-left: 2px solid var(--line);
+    background: rgba(255, 255, 255, 0.02); border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    animation: ev-in 0.35s ease-out;
+}
+@keyframes ev-in { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+.ev-time { font-family: var(--font-mono); font-size: 0.64rem; color: var(--text-faint); }
+.ev-tag {
+    font-size: 0.58rem; font-weight: 700; letter-spacing: 0.1em; padding: 1px 6px;
+    border-radius: 999px; border: 1px solid var(--line); color: var(--text-dim); white-space: nowrap;
+}
+.ev-text { color: var(--text-dim); line-height: 1.35; overflow-wrap: anywhere; }
+.ev-success { border-left-color: var(--st-running); }
+.ev-success .ev-text { color: var(--text); }
+.ev-warn { border-left-color: var(--st-hot); }
+.ev-error { border-left-color: var(--st-error); }
+.ev-error .ev-text { color: var(--st-error); }
+.ev-cmd { border-left-color: var(--accent2); }
+.ev-sim {
+    grid-column: 3; justify-self: start; font-size: 0.55rem; font-weight: 700; letter-spacing: 0.12em;
+    color: var(--st-hot); border: 1px dashed var(--st-hot); border-radius: 4px; padding: 0 5px; margin-top: 2px;
+}
+
+/* ═══════════════ CENTER CANVAS ═══════════════ */
+#centerCanvas { grid-area: center; position: relative; min-width: 0; min-height: 0; display: flex; flex-direction: column; gap: 10px; }
+#centerTabs { display: flex; gap: 6px; align-items: center; }
+#centerStack { position: relative; flex: 1; min-height: 0; }
+.center-view { position: absolute; inset: 0; display: none; flex-direction: column; min-height: 0; }
+body[data-mode="cruise"] #viewCruise,
+body[data-mode="focus"] #viewCruise { display: flex; }
+body[data-mode="alert"] #viewAlert { display: flex; }
+body[data-mode="decision"] #viewDecision { display: flex; }
+body[data-mode="focus"] #centerCanvas { opacity: 0.32; transform: scale(0.985); filter: blur(1px); }
+#centerCanvas { transition: opacity 0.45s ease, transform 0.45s ease, filter 0.45s ease; }
+
+/* Cruise: radar + metrics */
+#radarWrap, #orgWrap { flex: 1; min-height: 0; position: relative; }
+#orgWrap { display: none; }
+#centerCanvas[data-tab="org"] #radarWrap { display: none; }
+#centerCanvas[data-tab="org"] #orgWrap { display: block; }
+#radarSvg { width: 100%; height: 100%; display: block; }
+#orgCanvas { width: 100%; height: 100%; display: block; cursor: grab; touch-action: none; }
+#orgCanvas.dragging { cursor: grabbing; }
+#orgHud { position: absolute; left: 12px; bottom: 10px; font-family: var(--font-mono); font-size: 0.66rem; color: var(--text-faint); pointer-events: none; }
+#radarTip {
+    position: absolute; display: none; pointer-events: none; z-index: 20;
+    background: var(--panel-solid); border: 1px solid var(--line-strong); border-radius: var(--radius-sm);
+    padding: 7px 10px; font-size: 0.74rem; color: var(--text); max-width: 240px;
+    box-shadow: var(--glow);
+}
+#radarTip .tip-state { font-size: 0.62rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--state-color, var(--accent)); font-weight: 700; }
+#radarTip .tip-meta { font-family: var(--font-mono); font-size: 0.64rem; color: var(--text-dim); margin-top: 2px; }
+
+.radar-ring { fill: none; stroke: var(--line); stroke-width: 1; }
+.radar-cross { stroke: var(--line); stroke-width: 1; opacity: 0.6; }
+.radar-tick { fill: var(--text-faint); font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.1em; }
+#radarSweep { transform-origin: 300px 300px; animation: radar-spin 7s linear infinite; }
+@keyframes radar-spin { to { transform: rotate(360deg); } }
+.radar-node { cursor: pointer; }
+.radar-node .node-core { fill: var(--state-color, var(--st-idle)); transition: fill 0.4s ease; }
+.radar-node .node-halo { fill: none; stroke: var(--state-color, var(--st-idle)); stroke-width: 1.5; opacity: 0.55; animation: node-ping 2.2s ease-out infinite; transform-origin: center; transform-box: fill-box; }
+@keyframes node-ping { 0% { transform: scale(1); opacity: 0.55; } 70%, 100% { transform: scale(2.4); opacity: 0; } }
+.radar-node[data-state="idle"] .node-halo { animation: none; opacity: 0.2; }
+.radar-node[data-state="error"] .node-halo { animation-duration: 0.9s; }
+.radar-node[data-state="hot"] .node-halo { animation-duration: 1.3s; }
+.radar-node .node-label { fill: var(--text-dim); font-size: 11px; font-family: var(--font-ui); font-weight: 600; letter-spacing: 0.04em; text-anchor: middle; pointer-events: none; }
+.radar-node.selected .node-core { stroke: var(--accent2); stroke-width: 2.5; }
+.radar-node.selected .node-sel { opacity: 1; }
+.radar-node .node-sel { fill: none; stroke: var(--accent2); stroke-width: 1.5; stroke-dasharray: 4 4; opacity: 0; animation: sel-spin 9s linear infinite; transform-origin: center; transform-box: fill-box; }
+@keyframes sel-spin { to { transform: rotate(360deg); } }
+
+#metricsRow { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.metric {
+    padding: 8px 12px; border: 1px solid var(--line); border-radius: var(--radius-sm);
+    background: rgba(255, 255, 255, 0.02);
+}
+.metric .m-label { font-size: 0.6rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--text-faint); font-weight: 700; }
+.metric .m-value { font-family: var(--font-display); font-size: 1.35rem; font-weight: 700; color: var(--text); line-height: 1.15; font-variant-numeric: tabular-nums; }
+.metric .m-value.alertish { color: var(--st-error); }
+
+/* Alert view — Gen UI ALERT panel */
+#viewAlert { gap: 10px; }
+#alertCard {
+    flex: 1; min-height: 0; position: relative; overflow: hidden; display: flex; flex-direction: column;
+    background: color-mix(in srgb, var(--st-error) 8%, var(--panel-solid));
+    border: 1px solid var(--st-error); border-radius: var(--radius); padding: 22px;
+    animation: alert-breathe 2.4s ease-in-out infinite;
+}
+@keyframes alert-breathe { 0%, 100% { box-shadow: 0 0 0 rgba(251, 113, 133, 0); } 50% { box-shadow: 0 0 42px rgba(251, 113, 133, 0.28); } }
+#alertCard::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--st-error); animation: flow-sweep 1.5s linear infinite; }
+@keyframes flow-sweep { 0% { opacity: 0.35; } 50% { opacity: 1; } 100% { opacity: 0.35; } }
+#alertHead { display: flex; align-items: center; gap: 12px; margin-bottom: 6px; }
+#alertHead .alert-dot { width: 14px; height: 14px; border-radius: 50%; background: var(--st-error); box-shadow: 0 0 14px var(--st-error); animation: pulse-dot 0.7s ease-in-out infinite; flex-shrink: 0; }
+#alertHead h2 { font-family: var(--font-display); font-size: 1.3rem; font-weight: 700; letter-spacing: 0.18em; color: var(--st-error); text-transform: uppercase; }
+#alertSub { font-size: 0.85rem; color: var(--text-dim); margin-bottom: 14px; }
+#alertList { list-style: none; overflow-y: auto; flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 8px; }
+#alertList li {
+    display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 10px; align-items: center;
+    background: rgba(0, 0, 0, 0.25); border: 1px solid color-mix(in srgb, var(--st-error) 35%, transparent);
+    border-radius: var(--radius-sm); padding: 10px 12px; cursor: pointer;
+}
+#alertList .al-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--state-color, var(--st-error)); box-shadow: 0 0 8px var(--state-color, var(--st-error)); animation: pulse-dot 0.9s ease-in-out infinite; }
+#alertList .al-name { font-weight: 700; font-size: 0.9rem; }
+#alertList .al-msg { font-size: 0.74rem; color: var(--text-dim); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+#alertList .al-state { font-size: 0.62rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--state-color, var(--st-error)); }
+#alertFoot { display: flex; gap: 10px; margin-top: 14px; align-items: center; }
+
+/* Decision view — Gen UI compare layout */
+#viewDecision { gap: 10px; }
+#decisionHead { display: flex; align-items: center; gap: 12px; }
+#decisionHead h2 { font-family: var(--font-display); font-size: 1rem; font-weight: 700; letter-spacing: 0.18em; color: var(--st-hot); text-transform: uppercase; }
+#decisionHead .sub { font-size: 0.75rem; color: var(--text-dim); }
+#decisionGrid { flex: 1; min-height: 0; overflow-y: auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; align-content: start; }
+.dcard { border: 1px solid var(--line); border-radius: var(--radius); padding: 14px; background: var(--panel); backdrop-filter: var(--panel-blur); -webkit-backdrop-filter: var(--panel-blur); }
+.dcard h3 { font-size: 0.95rem; font-weight: 700; margin-bottom: 2px; }
+.dcard .d-role { font-size: 0.66rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-faint); margin-bottom: 10px; }
+.dstat { display: flex; justify-content: space-between; font-size: 0.78rem; padding: 4px 0; border-bottom: 1px dashed var(--line); }
+.dstat .k { color: var(--text-faint); }
+.dstat .v { font-family: var(--font-mono); color: var(--text); }
+#decisionFoot { display: flex; gap: 10px; align-items: center; }
+#pendingCard { border: 1px dashed var(--st-hot); border-radius: var(--radius); padding: 14px; display: none; align-items: center; gap: 12px; }
+#pendingCard.show { display: flex; }
+#pendingCard .p-text { flex: 1; font-size: 0.85rem; }
+
+/* ═══════════════ BUTTONS ═══════════════ */
+.btn {
+    font-family: var(--font-ui); font-size: 0.76rem; font-weight: 700; letter-spacing: 0.12em;
+    text-transform: uppercase; padding: 8px 18px; border-radius: 999px; cursor: pointer;
+    border: 1px solid var(--line-strong); background: transparent; color: var(--text);
+    transition: background 0.25s, color 0.25s;
+}
+.btn:hover { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+html[data-theme="lcars"] .btn:hover { color: #000; }
+.btn-danger { border-color: var(--st-error); color: var(--st-error); }
+.btn-danger:hover { background: var(--st-error); color: #fff; }
+.btn-solid { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+html[data-theme="lcars"] .btn-solid { color: #000; }
+
+/* ═══════════════ RIGHT RAIL ═══════════════ */
+#rightRail { grid-area: right; display: flex; flex-direction: column; gap: 10px; min-height: 0; overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--line-strong) transparent; }
+#sparkFleet { width: 100%; height: 56px; display: block; }
+#sparkFleet polyline { fill: none; stroke: var(--accent); stroke-width: 1.8; }
+#sparkFleet .spark-fill { fill: color-mix(in srgb, var(--accent) 14%, transparent); stroke: none; }
+.an-row { display: flex; justify-content: space-between; align-items: baseline; padding: 5px 0; border-bottom: 1px dashed var(--line); font-size: 0.78rem; }
+.an-row .k { color: var(--text-faint); letter-spacing: 0.06em; text-transform: uppercase; font-size: 0.66rem; font-weight: 700; }
+.an-row .v { font-family: var(--font-mono); color: var(--text); font-variant-numeric: tabular-nums; }
+.trend-up { color: var(--st-running); }
+.trend-down { color: var(--st-error); }
+.trend-flat { color: var(--text-dim); }
+#moversList { list-style: none; margin-top: 8px; display: flex; flex-direction: column; gap: 4px; }
+#moversList li { display: flex; justify-content: space-between; font-size: 0.72rem; color: var(--text-dim); gap: 8px; }
+#moversList .mv-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+#moversList .mv-val { font-family: var(--font-mono); white-space: nowrap; }
+
+/* Active agents mini list (fa- widgets) */
+#miniAgents { display: flex; flex-direction: column; gap: 4px; }
+.mini-agent { padding: 8px 10px; border-radius: var(--radius-sm); border: 1px solid transparent; cursor: pointer; transition: border-color 0.25s, background 0.25s; }
+.mini-agent:hover { border-color: var(--line); background: rgba(255, 255, 255, 0.025); }
+.mini-agent .ma-head { display: flex; align-items: center; gap: 7px; }
+.mini-agent .ma-name { font-size: 0.8rem; font-weight: 700; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mini-agent .ma-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--state-color, var(--st-idle)); box-shadow: 0 0 6px var(--state-color, transparent); flex-shrink: 0; }
+.mini-agent[data-state="running"] .ma-dot, .mini-agent[data-state="hot"] .ma-dot { animation: pulse-dot 1.4s ease-in-out infinite; }
+.mini-agent[data-state="error"] .ma-dot { animation: pulse-dot 0.7s ease-in-out infinite; }
+
+/* ═══════════════ fa- STATUS WIDGETS (ported from AGENT_CONTROL_DASHBOARD) ═══════════════ */
+.fa-status { display: flex; align-items: center; gap: 6px; margin-top: 6px; min-width: 0; }
+.fa-status-text {
+    flex: 1; min-width: 0; font-size: 0.72rem; font-family: var(--font-mono);
+    color: var(--text-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+[data-state="error"] .fa-status-text { color: var(--st-error); }
+[data-state="hot"] .fa-status-text { color: var(--st-hot); }
+
+.fa-eq { display: inline-flex; align-items: flex-end; gap: 2px; height: 10px; flex-shrink: 0; }
+.fa-eq i {
+    width: 2px; height: 100%; border-radius: 1px;
+    background: var(--state-color, var(--st-idle));
+    transform-origin: bottom; animation: fa-eq-wave 1s ease-in-out infinite;
+}
+.fa-eq i:nth-child(2) { animation-delay: 0.12s; }
+.fa-eq i:nth-child(3) { animation-delay: 0.24s; }
+.fa-eq i:nth-child(4) { animation-delay: 0.36s; }
+@keyframes fa-eq-wave { 0%, 100% { transform: scaleY(0.25); } 50% { transform: scaleY(1); } }
+[data-state="idle"] .fa-eq { opacity: 0.4; }
+[data-state="idle"] .fa-eq i,
+[data-state="error"] .fa-eq i { animation: none; transform: scaleY(0.4); }
+[data-state="hot"] .fa-eq i { animation-duration: 0.55s; }
+
+.fa-caret {
+    width: 5px; height: 0.85em; flex-shrink: 0;
+    background: var(--state-color, var(--st-idle));
+    animation: fa-caret-blink 1s step-end infinite;
+}
+@keyframes fa-caret-blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+[data-state="idle"] .fa-caret,
+[data-state="error"] .fa-caret { display: none; }
+
+.fa-projrow { display: flex; align-items: center; gap: 8px; margin-top: 6px; }
+.fa-projbar { position: relative; flex: 1; min-width: 0; height: 12px; --wl: 24px; }
+.fa-projbar-track {
+    position: absolute; left: 0; right: 0; top: 50%; height: 3px;
+    transform: translateY(-50%); border-radius: 99px; background: rgba(255, 255, 255, 0.07);
+}
+.fa-projbar-fill {
+    position: absolute; left: 0; top: 0; bottom: 0; width: 0;
+    background: var(--state-color, var(--accent));
+    -webkit-mask-image: var(--fawave); mask-image: var(--fawave);
+    -webkit-mask-repeat: repeat-x; mask-repeat: repeat-x;
+    -webkit-mask-size: var(--wl) 100%; mask-size: var(--wl) 100%;
+    -webkit-mask-position: 0 center; mask-position: 0 center;
+    transition: width 0.95s cubic-bezier(0.22, 1, 0.36, 1);
+    animation: fa-wave-drift 1.6s linear infinite;
+    filter: drop-shadow(0 0 3px var(--state-color, var(--accent)));
+}
+@keyframes fa-wave-drift {
+    from { -webkit-mask-position-x: 0; mask-position-x: 0; }
+    to { -webkit-mask-position-x: calc(var(--wl) * -1); mask-position-x: calc(var(--wl) * -1); }
+}
+.fa-projbar-cap {
+    position: absolute; top: 50%; left: 0; width: 7px; height: 7px; border-radius: 50%;
+    background: var(--state-color, var(--accent)); box-shadow: 0 0 8px var(--state-color, var(--accent));
+    transform: translate(-50%, -50%); transition: left 0.95s cubic-bezier(0.22, 1, 0.36, 1);
+    display: none;
+}
+.fa-projbar-win {
+    position: absolute; top: 0; bottom: 0; width: 38%; left: -40%; display: none;
+    animation: fa-indet-slide 2.1s cubic-bezier(0.55, 0, 0.45, 1) infinite;
+    -webkit-mask-image: linear-gradient(90deg, transparent, #fff 30%, #fff 70%, transparent);
+    mask-image: linear-gradient(90deg, transparent, #fff 30%, #fff 70%, transparent);
+}
+.fa-projbar-win .fa-projbar-fill { width: 100%; transition: none; }
+.fa-projbar.indet .fa-projbar-win { display: block; }
+.fa-projbar.indet > .fa-projbar-fill { display: none; }
+@keyframes fa-indet-slide { 0% { left: -40%; } 100% { left: 104%; } }
+.fa-pct {
+    font-size: 0.68rem; font-family: var(--font-mono); color: var(--text-dim);
+    font-variant-numeric: tabular-nums; min-width: 32px; text-align: right; flex-shrink: 0;
+}
+
+/* ═══════════════ COMMAND BAR ═══════════════ */
+#cmdBar { grid-area: cmd; display: flex; align-items: center; gap: 10px; padding: 10px 16px; z-index: 5; }
+#cmdWrap { position: relative; flex: 1; min-width: 0; }
+#cmdInput {
+    width: 100%; font-family: var(--font-mono); font-size: 0.88rem; color: var(--text);
+    background: rgba(0, 0, 0, 0.35); border: 1px solid var(--line); border-radius: 999px;
+    padding: 11px 18px; outline: none; transition: border-color 0.25s, box-shadow 0.25s;
+}
+#cmdInput:focus { border-color: var(--accent); box-shadow: var(--glow); }
+#cmdGhost {
+    position: absolute; left: 18px; top: 50%; transform: translateY(-50%);
+    font-family: var(--font-mono); font-size: 0.88rem; color: var(--text-faint);
+    pointer-events: none; white-space: nowrap; overflow: hidden; display: flex; align-items: center;
+}
+#cmdGhost .ghost-caret { display: inline-block; width: 7px; height: 1em; margin-left: 2px; background: var(--text-faint); animation: fa-caret-blink 1.1s step-end infinite; }
+#cmdWrap.has-text #cmdGhost { display: none; }
+#cmdHint { font-size: 0.64rem; color: var(--text-faint); letter-spacing: 0.08em; white-space: nowrap; }
+
+/* ═══════════════ FLYOUT (FOCUS mode) ═══════════════ */
+#flyout {
+    position: fixed; top: 0; right: 0; bottom: 0; width: min(420px, 92vw); z-index: 40;
+    background: var(--panel-solid); border-left: 1px solid var(--line-strong);
+    box-shadow: -24px 0 60px rgba(0, 0, 0, 0.5);
+    transform: translateX(105%); transition: transform 0.42s cubic-bezier(0.22, 1, 0.36, 1);
+    display: flex; flex-direction: column; overflow-y: auto; scrollbar-width: thin;
+}
+#flyout.open { transform: none; }
+#flyoutHead { display: flex; align-items: flex-start; gap: 10px; padding: 18px 18px 10px; }
+#flyoutHead h2 { font-family: var(--font-display); font-size: 1.15rem; font-weight: 700; letter-spacing: 0.05em; flex: 1; min-width: 0; }
+#flyoutHead .f-role { font-size: 0.66rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--text-faint); }
+#flyoutBody { padding: 6px 18px 18px; display: flex; flex-direction: column; gap: 14px; }
+#flyoutState {
+    display: flex; align-items: center; gap: 12px; padding: 14px;
+    border: 1px solid var(--state-color, var(--line)); border-radius: var(--radius);
+    background: color-mix(in srgb, var(--state-color, var(--accent)) 7%, transparent);
+}
+#flyoutState .fs-orb { width: 34px; height: 34px; border-radius: 50%; border: 2px solid var(--state-color, var(--accent)); position: relative; flex-shrink: 0; }
+#flyoutState .fs-orb::after { content: ""; position: absolute; inset: 4px; border-radius: 50%; background: var(--state-color, var(--accent)); opacity: 0.4; animation: orb-breathe 2.4s ease-in-out infinite; }
+@keyframes orb-breathe { 0%, 100% { transform: scale(0.82); opacity: 0.3; } 50% { transform: scale(1); opacity: 0.6; } }
+#flyoutState .fs-label { font-family: var(--font-display); font-size: 1rem; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: var(--state-color, var(--text)); }
+#flyoutState .fs-line { font-size: 0.78rem; color: var(--text-dim); margin-top: 2px; font-family: var(--font-mono); }
+.f-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.f-cell { border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 9px 11px; }
+.f-cell .k { font-size: 0.6rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-faint); font-weight: 700; }
+.f-cell .v { font-family: var(--font-mono); font-size: 0.95rem; color: var(--text); margin-top: 2px; }
+#flyoutSpark { width: 100%; height: 64px; display: block; }
+#flyoutSpark polyline { fill: none; stroke: var(--accent2); stroke-width: 1.6; }
+#flyoutPrompt { font-family: var(--font-mono); font-size: 0.76rem; color: var(--text-dim); background: rgba(0, 0, 0, 0.3); border-left: 2px solid var(--accent2); padding: 10px 12px; border-radius: 0 var(--radius-sm) var(--radius-sm) 0; line-height: 1.5; overflow-wrap: anywhere; }
+#flyoutEvents { list-style: none; display: flex; flex-direction: column; gap: 5px; max-height: 170px; overflow-y: auto; }
+#flyoutEvents li { font-size: 0.72rem; color: var(--text-dim); display: flex; gap: 8px; }
+#flyoutEvents .fe-time { font-family: var(--font-mono); color: var(--text-faint); flex-shrink: 0; }
+#flyoutActions { display: flex; gap: 8px; padding: 0 18px 18px; flex-wrap: wrap; }
+
+/* ═══════════════ ENTRANCE ANIMATION (replayed on theme switch) ═══════════════ */
+body.entrance #topbar { animation: ent-down 0.6s cubic-bezier(0.22, 1, 0.36, 1) both; }
+body.entrance #leftRail { animation: ent-left 0.6s 0.08s cubic-bezier(0.22, 1, 0.36, 1) both; }
+body.entrance #rightRail { animation: ent-right 0.6s 0.08s cubic-bezier(0.22, 1, 0.36, 1) both; }
+body.entrance #centerCanvas { animation: ent-up 0.7s 0.14s cubic-bezier(0.22, 1, 0.36, 1) both; }
+body.entrance #cmdBar { animation: ent-up 0.6s 0.2s cubic-bezier(0.22, 1, 0.36, 1) both; }
+@keyframes ent-down { from { opacity: 0; transform: translateY(-18px); } to { opacity: 1; transform: none; } }
+@keyframes ent-up { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+@keyframes ent-left { from { opacity: 0; transform: translateX(-22px); } to { opacity: 1; transform: none; } }
+@keyframes ent-right { from { opacity: 0; transform: translateX(22px); } to { opacity: 1; transform: none; } }
+
+/* ═══════════════ RESPONSIVE ═══════════════ */
+@media (max-width: 1100px) {
+    body { grid-template-columns: 240px minmax(0, 1fr); grid-template-areas: "top top" "left center" "cmd cmd"; }
+    #rightRail { display: none; }
+}
+@media (max-width: 760px) {
+    body { grid-template-columns: minmax(0, 1fr); grid-template-areas: "top" "center" "cmd"; }
+    #leftRail { display: none; }
+}
+
+/* ═══════════════ REDUCED MOTION ═══════════════ */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+    #radarSweep { display: none; }
+    .fa-projbar.indet .fa-projbar-win { left: 31%; display: block; }
+    body.entrance #topbar, body.entrance #leftRail, body.entrance #rightRail,
+    body.entrance #centerCanvas, body.entrance #cmdBar { animation: none !important; }
+}
+</style>
+</head>
+<body data-mode="cruise">
+
+<div id="ambient" aria-hidden="true">
+    <div id="ambScan"></div>
+    <div id="ambFlare"></div>
+    <div id="ambHex"></div>
+    <canvas id="ambParticles"></canvas>
+    <div id="ambRings">
+        <svg class="ring1" width="720" height="720" viewBox="0 0 720 720" fill="none">
+            <circle cx="360" cy="360" r="300" stroke="#f5a623" stroke-opacity="0.14" stroke-width="1" stroke-dasharray="3 9"/>
+            <circle cx="360" cy="360" r="252" stroke="#35e0f0" stroke-opacity="0.1" stroke-width="1" stroke-dasharray="30 14 4 14"/>
+        </svg>
+        <svg class="ring2" width="720" height="720" viewBox="0 0 720 720" fill="none">
+            <circle cx="360" cy="360" r="336" stroke="#f5a623" stroke-opacity="0.09" stroke-width="1" stroke-dasharray="60 24"/>
+        </svg>
+    </div>
+    <div id="ambBlocks"><i></i><i></i><i></i><i></i></div>
+</div>
+
+<!-- ═══════════════ TOPBAR (Shell zone — never moves) ═══════════════ -->
+<header id="topbar" class="panel">
+    <span class="lcars-blink" aria-hidden="true"></span>
+    <div class="brand">
+        <h1>Agent Bridge</h1>
+        <span class="sub">VidiSmart Gen UI</span>
+    </div>
+    <span id="stardate" aria-label="Stardate and clock">SD 0000.000 · 00:00:00</span>
+    <span id="fleetPill" class="sim" role="status"><span class="pill-dot" aria-hidden="true"></span><span id="fleetPillText">Simulated</span></span>
+    <a href="AGENT_ORG.html" style="display:inline-flex;align-items:center;padding:4px 12px;border:1px solid var(--line);border-radius:999px;font-size:0.72rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-dim);text-decoration:none;white-space:nowrap;" title="Open Agent Org — headshots, org chart, mission progress">Org &amp; Progress →</a>
+    <div class="topbar-spacer"></div>
+    <div class="chipset" role="group" aria-label="UI mode">
+        <button class="chip" id="chipCruise" aria-pressed="true" onclick="setModeManual('cruise')">Cruise</button>
+        <button class="chip" id="chipAlert" aria-pressed="false" onclick="setModeManual('alert')">Alert</button>
+        <button class="chip" id="chipDecision" aria-pressed="false" onclick="setModeManual('decision')">Decision</button>
+        <button class="chip" id="chipAuto" aria-pressed="true" onclick="toggleAutoResume()" title="Auto-resume: UI mode follows fleet state">Auto</button>
+    </div>
+    <div id="themeSwitch" role="group" aria-label="Theme">
+        <button data-theme-set="lcars" aria-pressed="false" onclick="setTheme('lcars')">LCARS</button>
+        <button data-theme-set="holo" aria-pressed="true" onclick="setTheme('holo')">Holo</button>
+        <button data-theme-set="jarvis" aria-pressed="false" onclick="setTheme('jarvis')">JARVIS</button>
+    </div>
+    <button class="icon-btn" id="btnMic" aria-pressed="false" title="Voice command" onclick="toggleListening()">🎙</button>
+    <button class="icon-btn" id="btnMute" aria-pressed="true" title="Spoken alerts (muted)" onclick="toggleMute()">🔇</button>
+</header>
+
+<!-- ═══════════════ LEFT RAIL — LIVE EVENT STREAM ═══════════════ -->
+<aside id="leftRail" class="panel" aria-label="Live event stream">
+    <div class="panel-title">Event Stream <span id="evCount" style="margin-left:auto;color:var(--text-faint);font-family:var(--font-mono);"></span></div>
+    <ul id="eventList" aria-live="polite" aria-relevant="additions"></ul>
+</aside>
+
+<!-- ═══════════════ CENTER CANVAS ═══════════════ -->
+<main id="centerCanvas" data-tab="radar" aria-label="Center canvas">
+    <div id="centerTabs">
+        <button class="chip" id="tabRadar" aria-pressed="true" onclick="setCenterTab('radar')">Radar</button>
+        <button class="chip" id="tabOrg" aria-pressed="false" onclick="setCenterTab('org')">Org Constellation</button>
+        <div class="topbar-spacer"></div>
+        <span id="modeLabel" style="font-size:0.66rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--text-faint);font-weight:700;" role="status">CRUISE</span>
+    </div>
+    <div id="centerStack">
+        <!-- CRUISE -->
+        <section class="center-view" id="viewCruise" aria-label="Fleet visualization">
+            <div id="radarWrap">
+                <svg id="radarSvg" viewBox="0 0 600 600" role="img" aria-label="Fleet radar">
+                    <defs>
+                        <radialGradient id="radarBg" cx="50%" cy="50%" r="50%">
+                            <stop offset="0%" stop-color="rgba(34,211,238,0.05)"/>
+                            <stop offset="100%" stop-color="rgba(34,211,238,0)"/>
+                        </radialGradient>
+                        <linearGradient id="sweepGrad" x1="0" y1="0" x2="1" y2="0">
+                            <stop offset="0%" stop-color="var(--accent)" stop-opacity="0.34"/>
+                            <stop offset="100%" stop-color="var(--accent)" stop-opacity="0"/>
+                        </linearGradient>
+                    </defs>
+                    <circle cx="300" cy="300" r="270" fill="url(#radarBg)"/>
+                    <circle class="radar-ring" cx="300" cy="300" r="90"/>
+                    <circle class="radar-ring" cx="300" cy="300" r="160"/>
+                    <circle class="radar-ring" cx="300" cy="300" r="230"/>
+                    <circle class="radar-ring" cx="300" cy="300" r="270"/>
+                    <line class="radar-cross" x1="300" y1="30" x2="300" y2="570"/>
+                    <line class="radar-cross" x1="30" y1="300" x2="570" y2="300"/>
+                    <text class="radar-tick" x="304" y="216">CORE</text>
+                    <text class="radar-tick" x="304" y="146">INNER</text>
+                    <text class="radar-tick" x="304" y="76">OUTER</text>
+                    <g id="radarSweep">
+                        <path d="M300 300 L300 30 A270 270 0 0 1 490 110 Z" fill="url(#sweepGrad)"/>
+                    </g>
+                    <g id="radarNodes"></g>
+                </svg>
+                <div id="radarTip" role="tooltip"></div>
+            </div>
+            <div id="orgWrap">
+                <canvas id="orgCanvas" aria-label="3D organization constellation"></canvas>
+                <div id="orgHud">drag rotate · wheel zoom · click node</div>
+            </div>
+        </section>
+        <!-- ALERT -->
+        <section class="center-view" id="viewAlert" aria-label="Alert state">
+            <div id="alertCard" role="alert">
+                <div id="alertHead">
+                    <span class="alert-dot" aria-hidden="true"></span>
+                    <h2>Condition Alert</h2>
+                </div>
+                <div id="alertSub">Agents require attention</div>
+                <ul id="alertList"></ul>
+                <div id="alertFoot">
+                    <button class="btn btn-danger" onclick="acknowledgeAlert()">Acknowledge</button>
+                    <span style="font-size:0.72rem;color:var(--text-dim);">Ack holds CRUISE until Auto is re-enabled or state changes</span>
+                </div>
+            </div>
+        </section>
+        <!-- DECISION -->
+        <section class="center-view" id="viewDecision" aria-label="Decision state">
+            <div id="decisionHead">
+                <h2>⚖ Decision</h2>
+                <span class="sub" id="decisionSub">Compare selected agents</span>
+            </div>
+            <div id="pendingCard">
+                <span class="p-text" id="pendingText"></span>
+                <button class="btn btn-solid" onclick="confirmPending()">Confirm</button>
+                <button class="btn" onclick="cancelPending()">Cancel</button>
+            </div>
+            <div id="decisionGrid"></div>
+            <div id="decisionFoot">
+                <button class="btn" onclick="clearSelection()">Clear selection</button>
+            </div>
+        </section>
+    </div>
+    <div id="metricsRow">
+        <div class="metric"><div class="m-label">Fleet</div><div class="m-value" id="mFleet">0</div></div>
+        <div class="metric"><div class="m-label">Active</div><div class="m-value" id="mActive">0</div></div>
+        <div class="metric"><div class="m-label">Avg tok/s</div><div class="m-value" id="mTps">0</div></div>
+        <div class="metric"><div class="m-label">Alerts</div><div class="m-value" id="mAlerts">0</div></div>
+    </div>
+</main>
+
+<!-- ═══════════════ RIGHT RAIL ═══════════════ -->
+<aside id="rightRail" aria-label="Analytics and active agents">
+    <div class="panel" id="analyticsPanel">
+        <div class="panel-title">Predictive Analytics</div>
+        <svg id="sparkFleet" viewBox="0 0 300 56" preserveAspectRatio="none" aria-hidden="true">
+            <polygon class="spark-fill" points=""/>
+            <polyline points=""/>
+        </svg>
+        <div class="an-row"><span class="k">Throughput</span><span class="v"><span id="anTps">—</span> <span id="anTrend" class="trend-flat">→</span></span></div>
+        <div class="an-row"><span class="k">Projected +60s</span><span class="v" id="anProj">—</span></div>
+        <div class="an-row"><span class="k">Fleet memory</span><span class="v" id="anMem">—</span></div>
+        <div class="an-row" style="border-bottom:none;"><span class="k">Load index</span><span class="v" id="anLoad">—</span></div>
+        <ul id="moversList" aria-label="Top movers"></ul>
+    </div>
+    <div class="panel" style="flex:1;min-height:120px;">
+        <div class="panel-title">Active Agents <span id="miniMode" style="margin-left:auto;color:var(--text-faint);font-family:var(--font-mono);font-size:0.62rem;">SIMULATED</span></div>
+        <div id="miniAgents"></div>
+    </div>
+</aside>
+
+<!-- ═══════════════ COMMAND BAR ═══════════════ -->
+<footer id="cmdBar" class="panel">
+    <span id="cmdHint">NL COMMAND ▸</span>
+    <div id="cmdWrap">
+        <label class="fa-sr" for="cmdInput">Natural language command</label>
+        <input id="cmdInput" type="text" autocomplete="off" spellcheck="false" aria-describedby="cmdHint">
+        <div id="cmdGhost" aria-hidden="true"><span id="cmdGhostText"></span><span class="ghost-caret"></span></div>
+    </div>
+    <button class="btn btn-solid" id="cmdSend" onclick="submitCommand()">Send</button>
+</footer>
+
+<!-- ═══════════════ FLYOUT ═══════════════ -->
+<div id="flyout" role="dialog" aria-modal="false" aria-labelledby="flyoutName" aria-hidden="true">
+    <div id="flyoutHead">
+        <div style="flex:1;min-width:0;">
+            <h2 id="flyoutName">—</h2>
+            <div class="f-role" id="flyoutRole">—</div>
+        </div>
+        <button class="icon-btn" onclick="closeFlyout()" aria-label="Close detail panel" title="Close (Esc)">✕</button>
+    </div>
+    <div id="flyoutBody">
+        <div id="flyoutState" data-state="idle">
+            <span class="fs-orb" aria-hidden="true"></span>
+            <div style="min-width:0;">
+                <div class="fs-label" id="flyoutStateLabel">IDLE</div>
+                <div class="fs-line" id="flyoutStateLine">—</div>
+            </div>
+        </div>
+        <div class="fa-projrow" data-state="idle" id="flyoutProjWrap">
+            <div class="fa-projbar" id="flyoutProj" role="progressbar" aria-label="Task progress" aria-valuemin="0" aria-valuemax="100">
+                <div class="fa-projbar-track"></div>
+                <div class="fa-projbar-fill"></div>
+                <div class="fa-projbar-cap"></div>
+                <div class="fa-projbar-win"><div class="fa-projbar-fill"></div></div>
+            </div>
+            <span class="fa-pct" id="flyoutPct">—</span>
+        </div>
+        <div class="f-grid">
+            <div class="f-cell"><div class="k">Model</div><div class="v" id="flyoutModel">—</div></div>
+            <div class="f-cell"><div class="k">Throughput</div><div class="v" id="flyoutTps">—</div></div>
+            <div class="f-cell"><div class="k">Memory</div><div class="v" id="flyoutMem">—</div></div>
+            <div class="f-cell"><div class="k">Project</div><div class="v" id="flyoutProject">—</div></div>
+        </div>
+        <div>
+            <div class="panel-title">Throughput history</div>
+            <svg id="flyoutSpark" viewBox="0 0 380 64" preserveAspectRatio="none" aria-hidden="true"><polyline points=""/></svg>
+        </div>
+        <div>
+            <div class="panel-title">Current prompt</div>
+            <div id="flyoutPrompt">—</div>
+        </div>
+        <div>
+            <div class="panel-title">Recent events</div>
+            <ul id="flyoutEvents"></ul>
+        </div>
+    </div>
+    <div id="flyoutActions">
+        <button class="btn" id="flyoutPause" onclick="flyoutCommand('pause')">Pause</button>
+        <button class="btn" id="flyoutResume" onclick="flyoutCommand('resume')">Resume</button>
+        <button class="btn" id="flyoutCompare" onclick="flyoutCompare()">Compare</button>
+    </div>
+</div>
+
+<script src="https://cdn.socket.io/4.7.2/socket.io.min.js" onerror="console.warn('Socket.io not loaded: bridge runs in local simulation mode.')"></script>
+<script src="https://cdn.jsdelivr.net/npm/motion@12/dist/motion.js" onerror="console.warn('Motion not loaded: CSS transitions will drive animations.')"></script>
+<script type="module">
+    // @formkit/auto-animate ships ESM only — load as module and expose the global.
+    import('https://cdn.jsdelivr.net/npm/@formkit/auto-animate@0.10.0/index.min.js')
+        .then(m => {
+            window.autoAnimate = m.default || m.autoAnimate;
+            ['eventList', 'alertList', 'decisionGrid', 'miniAgents'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el && typeof window.autoAnimate === 'function' && !el.__aaCtl) {
+                    try { el.__aaCtl = window.autoAnimate(el, { duration: 300, easing: 'ease-out' }); } catch (e) { console.warn('AutoAnimate init failed.', e); }
+                }
+            });
+        })
+        .catch(() => console.warn('AutoAnimate not loaded: list updates without add/remove transitions.'));
+</script>
+<script>
+// ════════════════════════════════════════════════════════════════════
+// VidiSmart AGENT BRIDGE — Gen UI flagship (Shell / Vocabulary / State Engine)
+// Single-file vanilla JS. Global functions by convention. Never innerHTML
+// for live/dynamic strings — textContent / attributes only.
+// ════════════════════════════════════════════════════════════════════
+
+// ===== CONSTANTS & UTILS =====
+let BACKEND_PORT = 3007;
+let BACKEND_URL = `http://localhost:${BACKEND_PORT}`;
+const HOT_TPS = 160;      // tokens/sec above which a running agent renders as 'hot'
+const HOT_MEM_MB = 6144;  // memory_mb above which a running agent renders as 'hot'
+const EVENT_CAP = 100;
+const RING_CAP = 300;     // telemetry points per agent
+const FLEET_RING_CAP = 120;
+
+function $(id) { return document.getElementById(id); }
+function prefersReducedMotion() {
+    return !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+}
+function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+function hhmmss(d) {
+    return [d.getHours(), d.getMinutes(), d.getSeconds()].map(n => String(n).padStart(2, '0')).join(':');
+}
+function hashStr(s) {
+    let h = 2166136261;
+    for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); }
+    return (h >>> 0);
+}
+
+// ===== STATE MODEL HELPERS (ported from AGENT_CONTROL_DASHBOARD) =====
+// State vocabulary mirrors vidiflow-status-orb.html: idle | thinking | running | hot | error
+function agentState(a) {
+    if (!a) return 'idle';
+    if (a.status === 'error') return 'error';
+    if (a.status === 'paused') return 'thinking';
+    if (a.status === 'running') {
+        const t = a.latest_telemetry;
+        if (t && ((Number(t.tokens_per_sec) || 0) > HOT_TPS || (Number(t.memory_mb) || 0) > HOT_MEM_MB)) return 'hot';
+        return 'running';
+    }
+    return 'idle';
+}
+
+function statusLine(a) {
+    if (!a) return 'Idle';
+    const direct = a.status_line || a.message || (a.latest_telemetry && a.latest_telemetry.message);
+    if (direct) return String(direct);
+    const fallback = { running: 'Working…', paused: 'Holding', stopped: 'Idle', error: 'Error' };
+    return fallback[a.status] || 'Idle';
+}
+
+// Returns a 0..1 fraction, or null for "unknown" (indeterminate bar).
+function projectPct(a) {
+    if (!a) return null;
+    let p = a.progress;
+    if (p == null && a.latest_telemetry) p = a.latest_telemetry.progress;
+    if (p == null || p === '') return null;
+    const n = Number(p);
+    if (!isFinite(n)) return null;
+    const frac = (n > 1 && n <= 100) ? n / 100 : n;
+    return clamp(frac, 0, 1);
+}
+
+// Dependency-free typewriter; writes via textContent only. Idempotent.
+function typewrite(el, text) {
+    if (!el) return;
+    text = String(text == null ? '' : text);
+    if (el.__twFull === text) return;
+    el.__twFull = text;
+    if (el.__twTimer) { clearInterval(el.__twTimer); el.__twTimer = null; }
+    if (prefersReducedMotion()) { el.textContent = text; return; }
+    let i = 0;
+    el.textContent = '';
+    el.__twTimer = setInterval(() => {
+        i += 1;
+        el.textContent = text.slice(0, i);
+        if (i >= text.length) { clearInterval(el.__twTimer); el.__twTimer = null; }
+    }, 24);
+}
+
+// Animated % roll when Motion (motion.dev) is available; static write otherwise.
+function rollPct(el, txt, pct) {
+    const to = pct == null ? null : Math.round(pct * 100);
+    if (to != null && window.Motion && typeof window.Motion.animate === 'function' && !prefersReducedMotion()) {
+        const from = parseInt(el.textContent, 10);
+        try {
+            window.Motion.animate(isFinite(from) ? from : 0, to, {
+                duration: 0.6,
+                ease: [0.22, 1, 0.36, 1],
+                onUpdate: v => { el.textContent = Math.round(v) + '%'; },
+            });
+            return;
+        } catch (e) { /* fall through to static write */ }
+    }
+    el.textContent = txt;
+}
+
+function setProjBar(bar, pct) {
+    if (!bar) return;
+    const indet = pct == null;
+    bar.classList.toggle('indet', indet);
+    if (indet) bar.removeAttribute('aria-valuenow');
+    else bar.setAttribute('aria-valuenow', String(Math.round(pct * 100)));
+    const w = indet ? '0%' : (pct * 100).toFixed(1) + '%';
+    const fill = bar.querySelector(':scope > .fa-projbar-fill');
+    if (fill && fill.__faW !== w) { fill.__faW = w; fill.style.width = w; }
+    const cap = bar.querySelector('.fa-projbar-cap');
+    if (cap) {
+        cap.style.display = indet ? 'none' : 'block';
+        if (!indet && cap.__faL !== w) { cap.__faL = w; cap.style.left = w; }
+    }
+}
+
+function sparkPoints(arr, w, h) {
+    if (!arr || arr.length < 2) return '';
+    const min = Math.min.apply(null, arr), max = Math.max.apply(null, arr);
+    const span = (max - min) || 1;
+    return arr.map((v, i) =>
+        `${(i / (arr.length - 1) * w).toFixed(1)},${(h - 3 - ((v - min) / span) * (h - 6)).toFixed(1)}`
+    ).join(' ');
+}
+
+function linreg(arr) {
+    const n = arr.length;
+    if (n < 2) return { slope: 0, intercept: n ? arr[0] : 0 };
+    let sx = 0, sy = 0, sxy = 0, sxx = 0;
+    for (let i = 0; i < n; i++) { sx += i; sy += arr[i]; sxy += i * arr[i]; sxx += i * i; }
+    const denom = (n * sxx - sx * sx) || 1;
+    const slope = (n * sxy - sx * sy) / denom;
+    return { slope, intercept: (sy - slope * sx) / n };
+}
+
+// ===== THEME MANAGER =====
+let theme = 'holo';
+let themeColors = {};
+
+function readThemeColors() {
+    const cs = getComputedStyle(document.documentElement);
+    const g = n => cs.getPropertyValue(n).trim();
+    themeColors = {
+        accent: g('--accent') || '#22d3ee',
+        accent2: g('--accent2') || '#38bdf8',
+        line: g('--line-strong') || 'rgba(34,211,238,.45)',
+        text: g('--text') || '#d7f5ff',
+        dim: g('--text-dim') || '#6fa8bd',
+        faint: g('--text-faint') || '#3d6478',
+        idle: g('--st-idle') || '#5b7285',
+        thinking: g('--st-thinking') || '#22d3ee',
+        running: g('--st-running') || '#34d399',
+        hot: g('--st-hot') || '#fbbf24',
+        error: g('--st-error') || '#fb7185',
+    };
+}
+
+function setTheme(name) {
+    if (!['lcars', 'holo', 'jarvis'].includes(name)) name = 'holo';
+    theme = name;
+    document.documentElement.setAttribute('data-theme', name);
+    try { localStorage.setItem('agentbridge-theme', name); } catch (e) { /* private mode */ }
+    document.querySelectorAll('#themeSwitch button').forEach(b =>
+        b.setAttribute('aria-pressed', String(b.getAttribute('data-theme-set') === name)));
+    readThemeColors();
+    replayEntrance();
+    sizeParticleCanvas();
+    logEvent('info', 'THEME', `Skin → ${name.toUpperCase()}`);
+}
+
+function replayEntrance() {
+    document.body.classList.remove('entrance');
+    void document.body.offsetWidth;
+    document.body.classList.add('entrance');
+}
+
+// ===== CLOCK / STARDATE =====
+function updateClock(d) {
+    const start = new Date(d.getFullYear(), 0, 0);
+    const doy = Math.floor((d - start) / 86400000);
+    const sd = `${d.getFullYear()}.${String(doy).padStart(3, '0')}`;
+    $('stardate').textContent = `SD ${sd} · ${hhmmss(d)}`;
+}
+
+// ===== EVENT STREAM =====
+const eventLog = []; // {time, kind, tag, text, agentId}
+
+function logEvent(kind, tag, text, opts) {
+    opts = opts || {};
+    const list = $('eventList');
+    if (!list) return;
+    const now = new Date();
+    const time = hhmmss(now);
+    const li = document.createElement('li');
+    li.className = `ev ev-${kind}`;
+    if (opts.agentId) li.setAttribute('data-agent', String(opts.agentId));
+    const t = document.createElement('span'); t.className = 'ev-time'; t.textContent = time;
+    const g = document.createElement('span'); g.className = 'ev-tag'; g.textContent = tag;
+    const x = document.createElement('span'); x.className = 'ev-text'; x.textContent = String(text);
+    li.append(t, g, x);
+    if (opts.simulated) {
+        const s = document.createElement('span'); s.className = 'ev-sim'; s.textContent = 'SIMULATED';
+        li.appendChild(s);
+    }
+    list.prepend(li);
+    while (list.children.length > EVENT_CAP) list.lastElementChild.remove();
+    const cnt = $('evCount');
+    if (cnt) cnt.textContent = String(list.children.length);
+    eventLog.unshift({ time, kind, tag, text: String(text), agentId: opts.agentId || null });
+    if (eventLog.length > 250) eventLog.pop();
+    if (flyoutAgentId && opts.agentId && opts.agentId === flyoutAgentId) refreshFlyoutEvents();
+}
+
+// ===== FLEET DATA LAYER =====
+let fleetAgents = {};
+let backendLive = false;
+let restRoster = false;
+let socket = null;
+let agentsLiveFeed = null;
+const telemetryRing = {};   // agentId -> [{t, tps, mem}] capped
+const fleetTpsRing = [];    // fleet-wide sum, capped
+
+function pushTelemetry(agentId, tps, mem) {
+    let ring = telemetryRing[agentId];
+    if (!ring) { ring = telemetryRing[agentId] = []; }
+    ring.push({ t: Date.now(), tps: Number(tps) || 0, mem: Number(mem) || 0 });
+    while (ring.length > RING_CAP) ring.shift();
+}
+
+const DEMO_FLEET = [
+    { id: 'demo-hermes', name: 'Hermes Coordinator', role: 'coordinator', model: 'qwen-72b', project: 'Hermes Agent Suite', baseTps: 120 },
+    { id: 'demo-vidiflow', name: 'VidiFlow Frontend', role: 'coder', model: 'qwen-72b', project: 'VidiFlow Frontend', baseTps: 95 },
+    { id: 'demo-vidinews', name: 'Vidi.News Scraper', role: 'researcher', model: 'qwen-32b', project: 'Vidi.News RSS Scraper', baseTps: 70 },
+    { id: 'demo-smartgen', name: 'SmartGen API Core', role: 'coder', model: 'qwen-72b', project: 'SmartGen API Core', baseTps: 110 },
+    { id: 'demo-brandswap', name: 'BrandSwap Backend', role: 'worker', model: 'qwen-32b', project: 'BrandSwap Backend', baseTps: 80 },
+    { id: 'demo-directus', name: 'Directus CMS Ops', role: 'devops', model: 'qwen-14b', project: 'Directus CMS Setup', baseTps: 55 },
+    { id: 'demo-deploy', name: 'Deploy Runner', role: 'devops', model: 'qwen-14b', project: 'Vercel Deployments', baseTps: 60 },
+    { id: 'demo-airpmd', name: 'Air PMDS Analyst', role: 'analyst', model: 'qwen-32b', project: 'Air PMDS App', baseTps: 85 },
+];
+
+const SIM_LINES = {
+    coordinator: ['Orchestrating sub-tasks for launch checklist…', 'Routing queue → 3 workers', 'Rebalancing fleet priorities…', 'Awaiting telemetry handshake'],
+    coder: ['Refactoring dashboard components…', 'Writing unit tests for parser…', 'Migrating schema v12 → v13…', 'Bundling production assets…'],
+    researcher: ['Scraping competitor pricing pages…', 'Parsing Reuters feed items…', 'Summarizing 14 source documents…', 'Cross-checking citations…'],
+    devops: ['Provisioning container replicas…', 'Health-checking edge nodes…', 'Rotating TLS certificates…', 'Syncing deploy artifacts…'],
+    worker: ['Processing SKU batch 44/120…', 'Normalizing media pipeline input…', 'Indexing 8.2k records…', 'Flushing render cache…'],
+    analyst: ['Scoring healthcare client dataset…', 'Building cohort projections…', 'Validating CRM dedupe rules…', 'Drafting insight brief…'],
+    default: ['Working…', 'Processing queue…', 'Streaming tokens…'],
+};
+const ERR_LINES = ['Connection reset by peer', 'Tool call timed out after 30s', 'Rate limit exceeded (429)', 'Context window overflow'];
+
+let simTimer = null;
+let simTick = 0;
+
+function seedDemoFleet() {
+    fleetAgents = {};
+    DEMO_FLEET.forEach((d, i) => {
+        fleetAgents[d.id] = {
+            id: d.id, name: d.name, role: d.role, model: d.model, project: d.project,
+            status: i === 2 ? 'paused' : 'running',
+            status_line: pick(SIM_LINES[d.role] || SIM_LINES.default),
+            progress: 0.08 + Math.random() * 0.6,
+            latest_telemetry: { tokens_per_sec: Math.round(d.baseTps * 0.8), memory_mb: 2200 + Math.round(Math.random() * 2400), progress: 0.1 },
+            _demo: true, _baseTps: d.baseTps,
+        };
+        // Warm-up history so analytics/trends are meaningful immediately
+        const ring = telemetryRing[d.id] = [];
+        const now = Date.now();
+        for (let k = 24; k >= 1; k--) {
+            ring.push({
+                t: now - k * 1500,
+                tps: Math.round(d.baseTps * (0.75 + Math.random() * 0.5)),
+                mem: Math.round(1800 + Math.random() * 3600),
+            });
+        }
+    });
+    // Static fallback feed (root agents-live.json) overrides demo values when present
+    if (agentsLiveFeed && agentsLiveFeed.length) {
+        Object.keys(fleetAgents).slice(0, 3).forEach((id, i) => {
+            const feed = agentsLiveFeed[i % agentsLiveFeed.length];
+            if (!feed) return;
+            if (feed.progress != null) fleetAgents[id].progress = feed.progress;
+            if (feed.note) fleetAgents[id].status_line = feed.note;
+        });
+    }
+}
+
+function startDemoSim() {
+    if (simTimer) return;
+    if (!Object.keys(fleetAgents).length) seedDemoFleet();
+    simTick = 0;
+    simStep();
+    simTimer = setInterval(simStep, 1500);
+    setFleetPill(backendLive ? 'live' : 'sim');
+}
+
+function stopDemoSim() {
+    if (simTimer) { clearInterval(simTimer); simTimer = null; }
+}
+
+function simStep() {
+    simTick++;
+    const now = Date.now();
+    Object.values(fleetAgents).forEach(a => {
+        if (!a._demo) return;
+        if (a._errUntil != null) {
+            if (now < a._errUntil) {
+                a.status = 'error';
+            } else {
+                delete a._errUntil;
+                a.status = 'running';
+                a.status_line = 'Reconnected — resuming queue';
+                logEvent('success', 'FLEET', `${a.name} recovered — back online`, { agentId: a.id });
+            }
+        }
+        if (a._hotUntil != null && now > a._hotUntil) delete a._hotUntil;
+        if (a.status !== 'error' && a.status !== 'paused' && a.status !== 'stopped') {
+            a.progress = (a.progress == null ? 0.05 : a.progress + 0.004 + Math.random() * 0.022);
+            if (a.progress >= 1) {
+                a.progress = 0.02;
+                logEvent('success', 'FLEET', `${a.name} completed a cycle — restarting queue`, { agentId: a.id });
+            }
+        }
+        let tps;
+        if (a.status === 'error') tps = 0;
+        else if (a.status === 'paused' || a.status === 'stopped') tps = 6;
+        else tps = (a._baseTps || 80) * (0.75 + Math.random() * 0.5);
+        const isHot = a._hotUntil != null && now < a._hotUntil;
+        if (isHot && a.status === 'running') tps = 175 + Math.random() * 45;
+        const mem = a.status === 'error' ? 0 : 1800 + Math.random() * 3600 + (isHot ? 2600 : 0);
+        a.latest_telemetry = {
+            tokens_per_sec: Math.round(tps),
+            memory_mb: Math.round(mem),
+            progress: a.progress,
+            message: a.status_line,
+        };
+        pushTelemetry(a.id, tps, mem);
+        if (simTick % 4 === 0 && a.status !== 'error') {
+            a.status_line = pick(SIM_LINES[a.role] || SIM_LINES.default);
+        }
+    });
+    // Scripted hot spike — exercises HOT state + ALERT derivation
+    if (simTick % 19 === 0) {
+        const cands = Object.values(fleetAgents).filter(a => a._demo && a.status === 'running' && a._errUntil == null);
+        if (cands.length) {
+            const a = pick(cands);
+            a._hotUntil = now + 6500;
+            a.status_line = 'Throughput spike — draining backlog';
+            logEvent('warn', 'FLEET', `${a.name} running HOT — token throughput above ${HOT_TPS}/s`, { agentId: a.id });
+        }
+    }
+    // Scripted error window — exercises ERROR state + ALERT mode
+    if (simTick % 30 === 0) {
+        const cands = Object.values(fleetAgents).filter(a => a._demo && a.status !== 'error');
+        if (cands.length) {
+            const a = pick(cands);
+            a.status = 'error';
+            a._errUntil = now + 7500;
+            a.status_line = pick(ERR_LINES);
+            logEvent('error', 'FLEET', `${a.name} entered ERROR — ${a.status_line}`, { agentId: a.id });
+        }
+    }
+    scheduleRender();
+}
+
+// Static fallback feed — only fetched when served over HTTP (file:// guard).
+async function loadAgentsLiveFallback() {
+    if (location.protocol === 'file:') return;
+    try {
+        const res = await fetch('../agents-live.json', { cache: 'no-store' });
+        if (!res.ok) return;
+        const data = await res.json();
+        if (data && data.agents) {
+            agentsLiveFeed = Object.values(data.agents);
+            if (!backendLive) { seedDemoFleet(); scheduleRender(); }
+        }
+    } catch (e) { console.warn('[Bridge] agents-live.json unavailable — demo defaults remain.'); }
+}
+
+function setFleetPill(state) {
+    const pill = $('fleetPill');
+    pill.className = state;
+    const txt = { live: 'Live Fleet', sim: 'Simulated', offline: 'Offline' }[state] || 'Simulated';
+    $('fleetPillText').textContent = txt;
+    const label = state === 'live' ? `LIVE · :${BACKEND_PORT}` : state === 'offline' ? 'OFFLINE' : 'SIMULATED';
+    $('miniMode').textContent = label;
+}
+
+function applySnapshot(data) {
+    fleetAgents = {};
+    (data.agents || []).forEach(a => { fleetAgents[a.id] = a; });
+    restRoster = true;
+    stopDemoSim();
+    setFleetPill('live');
+    scheduleRender();
+}
+
+async function fetchFleetSnapshot() {
+    if (!backendLive) return;
+    try {
+        const res = await fetch(`${BACKEND_URL}/api/fleet/snapshot`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        applySnapshot(await res.json());
+    } catch (e) {
+        console.warn('[Fleet] Snapshot refresh failed:', e.message);
+    }
+}
+
+// Opaque no-cors probe: resolves when the control plane answers at all,
+// even though cross-origin REST reads are CORS-blocked.
+function probeReachable() {
+    return fetch(`${BACKEND_URL}/health`, { mode: 'no-cors', signal: AbortSignal.timeout ? AbortSignal.timeout(2500) : undefined })
+        .then(r => r.type === 'opaque' || r.ok)
+        .catch(() => false);
+}
+
+function initRealtime() {
+    // Probe first — prefer the REST roster; fall back to the live event
+    // channel (socket.io websocket bypasses CORS); demo sim when unreachable.
+    fetch(`${BACKEND_URL}/api/fleet/snapshot`, { signal: AbortSignal.timeout ? AbortSignal.timeout(2500) : undefined })
+        .then(res => { if (!res.ok) throw new Error(`HTTP ${res.status}`); return res.json(); })
+        .then(data => {
+            backendLive = true;
+            applySnapshot(data);
+            logEvent('success', 'WS', `Control plane reachable on :${BACKEND_PORT} — live fleet engaged`);
+            connectSocket();
+            loadOrgData(true);
+        })
+        .catch(() => probeReachable().then(up => {
+            if (up) {
+                backendLive = true;
+                logEvent('info', 'WS', `Control plane reachable on :${BACKEND_PORT} — live event channel engaged (roster streams in via fleet events)`);
+                connectSocket();
+                loadOrgData(true);
+            } else {
+                backendLive = false;
+                console.warn('[Bridge] Control plane unreachable — demo simulation active.');
+                startDemoSim();
+                loadOrgData(false);
+            }
+        }));
+}
+
+function connectSocket() {
+    try {
+        if (typeof io === 'undefined') return;
+        socket = io(BACKEND_URL, { autoConnect: true, transports: ['websocket', 'polling'] });
+
+        socket.on('connect', () => {
+            logEvent('success', 'WS', 'Real-time channel active — Hermes Express server');
+            socket.emit('fleet:subscribe');
+            if (!restRoster) fleetAgents = {};
+            stopDemoSim();
+            setFleetPill('live');
+            scheduleRender();
+            fetchFleetSnapshot();
+        });
+
+        socket.on('disconnect', () => {
+            backendLive = false;
+            restRoster = false;
+            setFleetPill('offline');
+            logEvent('warn', 'WS', 'Real-time channel lost — falling back to simulation');
+            fleetAgents = {};
+            seedDemoFleet();
+            startDemoSim();
+            scheduleRender();
+        });
+
+        socket.on('fleet:agent-registered', ({ agent }) => {
+            fleetAgents[agent.id] = agent;
+            logEvent('info', 'FLEET', `${agent.name || agent.id} registered with the fleet`);
+            loadOrgData(true);
+            scheduleRender();
+        });
+
+        socket.on('fleet:agent-updated', ({ agent }) => {
+            fleetAgents[agent.id] = agent;
+            scheduleRender();
+        });
+
+        socket.on('fleet:agent-removed', ({ agentId }) => {
+            const a = fleetAgents[agentId];
+            delete fleetAgents[agentId];
+            delete telemetryRing[agentId];
+            selectedAgents.delete(agentId);
+            if (flyoutAgentId === agentId) closeFlyout();
+            logEvent('warn', 'FLEET', `${a ? a.name : agentId} removed from the fleet`);
+            loadOrgData(true);
+            scheduleRender();
+        });
+
+        socket.on('fleet:agent-status', ({ agentId, status, message, progress }) => {
+            const a = fleetAgents[agentId];
+            if (!a) return;
+            a.status = status;
+            if (message != null) a.status_line = String(message);
+            if (progress != null) a.progress = progress;
+            logEvent(status === 'error' ? 'error' : status === 'running' ? 'success' : 'info',
+                'FLEET', `${a.name} is now ${status}`, { agentId });
+            scheduleRender();
+        });
+
+        socket.on('fleet:telemetry', ({ agentId, telemetry }) => {
+            const a = fleetAgents[agentId];
+            if (!a) return;
+            a.latest_telemetry = telemetry;
+            if (telemetry) {
+                if (telemetry.progress != null) a.progress = telemetry.progress;
+                if (telemetry.message) a.status_line = String(telemetry.message);
+                pushTelemetry(agentId, telemetry.tokens_per_sec, telemetry.memory_mb);
+            }
+            scheduleRender();
+        });
+
+        socket.on('fleet:command-status', ({ cmdId, status, result, error }) => {
+            const kind = status === 'completed' ? 'success' : status === 'failed' ? 'error' : 'info';
+            logEvent(kind, 'CMD', `Fleet command ${cmdId ? String(cmdId).substring(0, 8) : ''} → ${status}${error ? ` (${error})` : ''}`);
+        });
+
+        socket.on('org:changed', () => loadOrgData(true));
+
+        socket.on('agent-node-update', (data) => {
+            logEvent(data.status === 'error' ? 'error' : 'info', 'NODE',
+                `${data.nodeId || 'node'}: ${data.message || data.status || ''}`);
+        });
+    } catch (e) {
+        console.warn('[WS] Socket init failed:', e.message);
+    }
+}
+
+// ===== RENDER ORCHESTRATION =====
+let renderRafPending = false;
+function scheduleRender() {
+    if (renderRafPending) return;
+    renderRafPending = true;
+    requestAnimationFrame(() => {
+        renderRafPending = false;
+        renderAll();
+    });
+}
+
+function renderAll() {
+    updateRadar();
+    syncMiniAgents();
+    updateMetrics();
+    updateFlyout();
+    evaluateMode();
+}
+
+function updateMetrics() {
+    const list = Object.values(fleetAgents);
+    const tps = list.map(a => (a.latest_telemetry && Number(a.latest_telemetry.tokens_per_sec)) || 0);
+    const active = list.filter(a => { const s = agentState(a); return s === 'running' || s === 'hot'; }).length;
+    const offending = list.filter(a => { const s = agentState(a); return s === 'error' || s === 'hot'; }).length;
+    const avg = list.length ? Math.round(tps.reduce((s, v) => s + v, 0) / list.length) : 0;
+    $('mFleet').textContent = String(list.length);
+    $('mActive').textContent = String(active);
+    $('mTps').textContent = String(avg);
+    const al = $('mAlerts');
+    al.textContent = String(offending);
+    al.classList.toggle('alertish', offending > 0);
+}
+
+// ===== HERO FLEET RADAR =====
+const GOLDEN = 2.39996323;
+
+function radarNodeEl(a) {
+    const NS = 'http://www.w3.org/2000/svg';
+    const g = document.createElementNS(NS, 'g');
+    g.setAttribute('class', 'radar-node');
+    g.setAttribute('tabindex', '0');
+    g.setAttribute('role', 'button');
+    g.setAttribute('data-id', String(a.id));
+    const sel = document.createElementNS(NS, 'circle');
+    sel.setAttribute('class', 'node-sel'); sel.setAttribute('r', '16');
+    const halo = document.createElementNS(NS, 'circle');
+    halo.setAttribute('class', 'node-halo'); halo.setAttribute('r', '9');
+    const core = document.createElementNS(NS, 'circle');
+    core.setAttribute('class', 'node-core'); core.setAttribute('r', '7');
+    const label = document.createElementNS(NS, 'text');
+    label.setAttribute('class', 'node-label'); label.setAttribute('y', '28');
+    g.append(sel, halo, core, label);
+    g.addEventListener('click', (ev) => {
+        if (ev.shiftKey || ev.ctrlKey || ev.metaKey) toggleSelect(a.id);
+        else openFlyout(a.id);
+    });
+    g.addEventListener('keydown', (ev) => {
+        if (ev.key === 'Enter') { ev.preventDefault(); openFlyout(g.getAttribute('data-id')); }
+        else if (ev.key === ' ') { ev.preventDefault(); toggleSelect(g.getAttribute('data-id')); }
+    });
+    g.addEventListener('mouseenter', () => showRadarTip(g));
+    g.addEventListener('mouseleave', hideRadarTip);
+    g.addEventListener('focus', () => showRadarTip(g));
+    g.addEventListener('blur', hideRadarTip);
+    return g;
+}
+
+function updateRadar() {
+    const host = $('radarNodes');
+    const list = Object.values(fleetAgents);
+    const nodes = new Map();
+    host.querySelectorAll('.radar-node').forEach(n => nodes.set(n.getAttribute('data-id'), n));
+    const seen = new Set();
+    list.forEach((a, i) => {
+        const key = String(a.id);
+        seen.add(key);
+        let g = nodes.get(key);
+        if (!g) { g = radarNodeEl(a); nodes.set(key, g); host.appendChild(g); }
+        const state = agentState(a);
+        if (g.getAttribute('data-state') !== state) g.setAttribute('data-state', state);
+        const tps = (a.latest_telemetry && Number(a.latest_telemetry.tokens_per_sec)) || 0;
+        const load = clamp(tps / HOT_TPS, 0, 1);
+        const r = a.role === 'coordinator' ? 70 : 230 - load * 140;
+        const ang = i * GOLDEN - Math.PI / 2;
+        const x = 300 + Math.cos(ang) * r;
+        const y = 300 + Math.sin(ang) * r;
+        g.setAttribute('transform', `translate(${x.toFixed(1)},${y.toFixed(1)})`);
+        g.__xy = { x, y };
+        const full = String(a.name || a.id);
+        const short = full.length > 14 ? full.slice(0, 13) + '…' : full;
+        const label = g.querySelector('.node-label');
+        if (label.textContent !== short) label.textContent = short;
+        g.setAttribute('aria-label', `${a.name}, ${state}, ${Math.round(tps)} tokens per second`);
+        g.classList.toggle('selected', selectedAgents.has(key));
+    });
+    nodes.forEach((g, key) => { if (!seen.has(key)) g.remove(); });
+}
+
+function showRadarTip(g) {
+    const a = fleetAgents[g.getAttribute('data-id')];
+    if (!a || !g.__xy) return;
+    const tip = $('radarTip');
+    const svg = $('radarSvg');
+    const wrap = $('radarWrap');
+    const sr = svg.getBoundingClientRect();
+    const wr = wrap.getBoundingClientRect();
+    const sx = sr.left + (g.__xy.x / 600) * sr.width - wr.left;
+    const sy = sr.top + (g.__xy.y / 600) * sr.height - wr.top;
+    tip.textContent = '';
+    const name = document.createElement('div');
+    name.style.fontWeight = '700';
+    name.textContent = a.name || a.id;
+    const st = document.createElement('div');
+    st.className = 'tip-state';
+    const state = agentState(a);
+    st.textContent = state.toUpperCase();
+    const meta = document.createElement('div');
+    meta.className = 'tip-meta';
+    const t = a.latest_telemetry || {};
+    meta.textContent = `${Math.round(t.tokens_per_sec || 0)} tok/s · ${t.memory_mb ? (t.memory_mb / 1024).toFixed(1) + ' GB' : '—'} · shift+click to compare`;
+    tip.append(name, st, meta);
+    tip.dataset.state = state;
+    tip.style.display = 'block';
+    tip.style.left = `${clamp(sx + 16, 4, Math.max(4, wr.width - 250))}px`;
+    tip.style.top = `${clamp(sy - 10, 4, Math.max(4, wr.height - 80))}px`;
+}
+
+function hideRadarTip() {
+    const tip = $('radarTip');
+    if (tip) tip.style.display = 'none';
+}
+
+// ===== SELECTION =====
+const selectedAgents = new Set();
+
+function toggleSelect(id) {
+    id = String(id);
+    if (selectedAgents.has(id)) selectedAgents.delete(id);
+    else selectedAgents.add(id);
+    updateRadar();
+    evaluateMode();
+}
+
+function clearSelection() {
+    selectedAgents.clear();
+    updateRadar();
+    evaluateMode();
+    logEvent('info', 'MODE', 'Selection cleared');
+}
+
+// ===== MINI ACTIVE-AGENTS LIST (fa- widgets) =====
+function miniAgentEl(a) {
+    const el = document.createElement('div');
+    el.className = 'mini-agent';
+    el.setAttribute('data-agent-id', String(a.id));
+    el.setAttribute('role', 'button');
+    el.setAttribute('tabindex', '0');
+    const head = document.createElement('div'); head.className = 'ma-head';
+    const dot = document.createElement('span'); dot.className = 'ma-dot';
+    const name = document.createElement('span'); name.className = 'ma-name';
+    const pct = document.createElement('span'); pct.className = 'fa-pct';
+    head.append(dot, name, pct);
+    const status = document.createElement('div'); status.className = 'fa-status';
+    const eq = document.createElement('span'); eq.className = 'fa-eq';
+    for (let i = 0; i < 4; i++) eq.appendChild(document.createElement('i'));
+    const txt = document.createElement('span'); txt.className = 'fa-status-text';
+    const caret = document.createElement('span'); caret.className = 'fa-caret';
+    const sr = document.createElement('span'); sr.className = 'fa-sr fa-status-sr';
+    status.append(eq, txt, caret, sr);
+    const prow = document.createElement('div'); prow.className = 'fa-projrow';
+    const bar = document.createElement('div'); bar.className = 'fa-projbar';
+    bar.setAttribute('role', 'progressbar');
+    bar.setAttribute('aria-valuemin', '0'); bar.setAttribute('aria-valuemax', '100');
+    bar.setAttribute('aria-label', `${a.name} progress`);
+    const track = document.createElement('div'); track.className = 'fa-projbar-track';
+    const fill = document.createElement('div'); fill.className = 'fa-projbar-fill';
+    const cap = document.createElement('div'); cap.className = 'fa-projbar-cap';
+    const win = document.createElement('div'); win.className = 'fa-projbar-win';
+    const wfill = document.createElement('div'); wfill.className = 'fa-projbar-fill';
+    win.appendChild(wfill);
+    bar.append(track, fill, cap, win);
+    prow.appendChild(bar);
+    el.append(head, status, prow);
+    el.addEventListener('click', () => openFlyout(el.getAttribute('data-agent-id')));
+    el.addEventListener('keydown', (ev) => {
+        if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); openFlyout(el.getAttribute('data-agent-id')); }
+    });
+    return el;
+}
+
+function updateMiniCard(card, a) {
+    if (!card || !a) return;
+    const state = agentState(a);
+    if (card.getAttribute('data-state') !== state) card.setAttribute('data-state', state);
+    const name = card.querySelector('.ma-name');
+    if (name && name.textContent !== a.name) name.textContent = a.name || a.id;
+    const line = statusLine(a);
+    const textEl = card.querySelector('.fa-status-text');
+    if (textEl && textEl.__twFull !== line) {
+        typewrite(textEl, line);
+        textEl.title = line;
+        const sr = card.querySelector('.fa-status-sr');
+        if (sr) sr.textContent = `${state}: ${line}`;
+    }
+    const pct = projectPct(a);
+    setProjBar(card.querySelector('.fa-projbar'), pct);
+    const pctEl = card.querySelector('.fa-pct');
+    if (pctEl) {
+        const pctTxt = pct == null ? '—' : Math.round(pct * 100) + '%';
+        if (pctEl.textContent !== pctTxt) rollPct(pctEl, pctTxt, pct);
+    }
+}
+
+function syncMiniAgents() {
+    const host = $('miniAgents');
+    const list = Object.values(fleetAgents);
+    const cards = new Map();
+    host.querySelectorAll('.mini-agent').forEach(c => cards.set(c.getAttribute('data-agent-id'), c));
+    const seen = new Set();
+    list.forEach(a => {
+        const key = String(a.id);
+        seen.add(key);
+        let card = cards.get(key);
+        if (!card) { card = miniAgentEl(a); cards.set(key, card); host.appendChild(card); }
+        updateMiniCard(card, a);
+    });
+    cards.forEach((card, key) => { if (!seen.has(key)) card.remove(); });
+}
+
+// ===== PREDICTIVE ANALYTICS =====
+function updateAnalytics() {
+    const sum = Object.values(fleetAgents).reduce((s, a) =>
+        s + ((a.latest_telemetry && Number(a.latest_telemetry.tokens_per_sec)) || 0), 0);
+    fleetTpsRing.push(Math.round(sum));
+    while (fleetTpsRing.length > FLEET_RING_CAP) fleetTpsRing.shift();
+
+    const hist = fleetTpsRing.slice(-60);
+    const svg = $('sparkFleet');
+    const poly = svg.querySelector('polyline');
+    const area = svg.querySelector('.spark-fill');
+    const pts = sparkPoints(hist, 300, 56);
+    poly.setAttribute('points', pts);
+    area.setAttribute('points', pts ? `0,56 ${pts} 300,56` : '');
+
+    const reg = linreg(hist);
+    const last = hist.length ? hist[hist.length - 1] : 0;
+    $('anTps').textContent = `${last} tok/s`;
+    const trend = $('anTrend');
+    if (reg.slope > 0.6) { trend.textContent = '↑'; trend.className = 'trend-up'; }
+    else if (reg.slope < -0.6) { trend.textContent = '↓'; trend.className = 'trend-down'; }
+    else { trend.textContent = '→'; trend.className = 'trend-flat'; }
+    const proj = Math.max(0, Math.round(last + reg.slope * 30)); // +60s at 2s steps
+    $('anProj').textContent = `≈ ${proj} tok/s`;
+    const mem = Object.values(fleetAgents).reduce((s, a) =>
+        s + ((a.latest_telemetry && Number(a.latest_telemetry.memory_mb)) || 0), 0);
+    $('anMem').textContent = mem ? `${(mem / 1024).toFixed(1)} GB` : '—';
+    const list = Object.values(fleetAgents);
+    const loadIdx = list.length
+        ? Math.round(list.reduce((s, a) => s + clamp(((a.latest_telemetry && Number(a.latest_telemetry.tokens_per_sec)) || 0) / HOT_TPS, 0, 1.5), 0) / list.length * 100)
+        : 0;
+    $('anLoad').textContent = `${loadIdx}%`;
+
+    // Top movers by |slope| of per-agent rings
+    const movers = [];
+    Object.keys(telemetryRing).forEach(id => {
+        const ring = telemetryRing[id];
+        if (ring.length < 10) return;
+        const r = linreg(ring.slice(-30).map(p => p.tps));
+        const a = fleetAgents[id];
+        if (a) movers.push({ name: a.name || id, slope: r.slope });
+    });
+    movers.sort((x, y) => Math.abs(y.slope) - Math.abs(x.slope));
+    const ul = $('moversList');
+    ul.textContent = '';
+    movers.slice(0, 3).forEach(m => {
+        const li = document.createElement('li');
+        const n = document.createElement('span'); n.className = 'mv-name'; n.textContent = m.name;
+        const v = document.createElement('span'); v.className = 'mv-val';
+        v.textContent = `${m.slope >= 0 ? '↑' : '↓'} ${Math.abs(m.slope).toFixed(1)}/s²`;
+        v.style.color = m.slope >= 0 ? 'var(--st-running)' : 'var(--st-error)';
+        li.append(n, v);
+        ul.appendChild(li);
+    });
+}
+
+// ===== STATE ENGINE (Gen UI pillar 3) =====
+let uiMode = 'cruise';
+let manualOverride = false;
+let autoResume = true;
+let manualMode = 'cruise';
+let flyoutOpen = false;
+let pendingConfirm = null;
+let prevDerived = 'cruise';
+
+function offendingAgents() {
+    return Object.values(fleetAgents).filter(a => {
+        const s = agentState(a);
+        return s === 'error' || s === 'hot';
+    });
+}
+
+function deriveMode() {
+    if (flyoutOpen) return 'focus';
+    if (pendingConfirm) return 'decision';
+    if (selectedAgents.size >= 2) return 'decision';
+    if (offendingAgents().length) return 'alert';
+    return 'cruise';
+}
+
+function evaluateMode() {
+    const derived = deriveMode();
+    if (derived === 'alert' && prevDerived !== 'alert') {
+        const n = offendingAgents().length;
+        speak(`Condition alert. ${n} agent${n === 1 ? '' : 's'} require attention.`);
+    }
+    prevDerived = derived;
+    const next = flyoutOpen ? 'focus' : (manualOverride ? manualMode : derived);
+    applyMode(next);
+}
+
+function applyMode(m) {
+    const changed = m !== uiMode;
+    uiMode = m;
+    document.body.setAttribute('data-mode', m);
+    $('chipCruise').setAttribute('aria-pressed', String(m === 'cruise'));
+    $('chipAlert').setAttribute('aria-pressed', String(m === 'alert'));
+    $('chipDecision').setAttribute('aria-pressed', String(m === 'decision'));
+    $('modeLabel').textContent = m.toUpperCase();
+    renderModeContent();
+    if (changed) logEvent('info', 'MODE', `State engine → ${m.toUpperCase()}${manualOverride && m !== 'focus' ? ' (manual)' : ''}`);
+}
+
+function renderModeContent() {
+    if (uiMode === 'alert') renderAlertList();
+    if (uiMode === 'decision') renderDecision();
+}
+
+function renderAlertList() {
+    const ul = $('alertList');
+    const off = offendingAgents();
+    $('alertSub').textContent = off.length === 1
+        ? '1 agent requires attention'
+        : `${off.length} agents require attention`;
+    ul.textContent = '';
+    off.forEach(a => {
+        const state = agentState(a);
+        const li = document.createElement('li');
+        li.setAttribute('data-state', state);
+        li.setAttribute('role', 'button');
+        li.setAttribute('tabindex', '0');
+        const dot = document.createElement('span'); dot.className = 'al-dot';
+        const mid = document.createElement('div'); mid.style.minWidth = '0';
+        const nm = document.createElement('div'); nm.className = 'al-name'; nm.textContent = a.name || a.id;
+        const msg = document.createElement('div'); msg.className = 'al-msg'; msg.textContent = statusLine(a);
+        mid.append(nm, msg);
+        const st = document.createElement('span'); st.className = 'al-state'; st.textContent = state.toUpperCase();
+        li.append(dot, mid, st);
+        li.addEventListener('click', () => openFlyout(a.id));
+        li.addEventListener('keydown', (ev) => { if (ev.key === 'Enter') openFlyout(a.id); });
+        ul.appendChild(li);
+    });
+}
+
+function renderDecision() {
+    const grid = $('decisionGrid');
+    const pc = $('pendingCard');
+    if (pendingConfirm) {
+        pc.classList.add('show');
+        $('pendingText').textContent = pendingConfirm.type === 'spawn'
+            ? `Spawn order pending: "${pendingConfirm.name}" — confirm to add to the fleet`
+            : 'Command pending confirmation';
+    } else {
+        pc.classList.remove('show');
+    }
+    grid.textContent = '';
+    const ids = Array.from(selectedAgents).filter(id => fleetAgents[id]);
+    $('decisionSub').textContent = ids.length
+        ? `Comparing ${ids.length} selected agent${ids.length === 1 ? '' : 's'}`
+        : 'Shift+click radar nodes (or "select <name>") to compare';
+    ids.forEach(id => {
+        const a = fleetAgents[id];
+        const state = agentState(a);
+        const t = a.latest_telemetry || {};
+        const card = document.createElement('div');
+        card.className = 'dcard';
+        card.setAttribute('data-state', state);
+        const h = document.createElement('h3'); h.textContent = a.name || a.id;
+        h.style.color = 'var(--state-color)';
+        const role = document.createElement('div'); role.className = 'd-role';
+        role.textContent = `${a.role || 'agent'} · ${state}`;
+        card.append(h, role);
+        const rows = [
+            ['Model', a.model || '—'],
+            ['Throughput', t.tokens_per_sec ? `${Math.round(t.tokens_per_sec)} tok/s` : '—'],
+            ['Memory', t.memory_mb ? `${(t.memory_mb / 1024).toFixed(1)} GB` : '—'],
+            ['Project', a.project || '—'],
+        ];
+        rows.forEach(([k, v]) => {
+            const r = document.createElement('div'); r.className = 'dstat';
+            const ks = document.createElement('span'); ks.className = 'k'; ks.textContent = k;
+            const vs = document.createElement('span'); vs.className = 'v'; vs.textContent = v;
+            r.append(ks, vs);
+            card.appendChild(r);
+        });
+        const pct = projectPct(a);
+        const prow = document.createElement('div'); prow.className = 'fa-projrow';
+        const bar = document.createElement('div'); bar.className = 'fa-projbar';
+        bar.setAttribute('role', 'progressbar');
+        bar.setAttribute('aria-valuemin', '0'); bar.setAttribute('aria-valuemax', '100');
+        bar.setAttribute('aria-label', `${a.name} progress`);
+        ['fa-projbar-track', 'fa-projbar-fill', 'fa-projbar-cap'].forEach(c => {
+            const d = document.createElement('div'); d.className = c; bar.appendChild(d);
+        });
+        const win = document.createElement('div'); win.className = 'fa-projbar-win';
+        const wf = document.createElement('div'); wf.className = 'fa-projbar-fill';
+        win.appendChild(wf); bar.appendChild(win);
+        const pctEl = document.createElement('span'); pctEl.className = 'fa-pct';
+        prow.append(bar, pctEl);
+        card.appendChild(prow);
+        setProjBar(bar, pct);
+        pctEl.textContent = pct == null ? '—' : Math.round(pct * 100) + '%';
+        const open = document.createElement('button');
+        open.className = 'btn';
+        open.style.marginTop = '10px';
+        open.textContent = 'Open';
+        open.addEventListener('click', () => openFlyout(id));
+        card.appendChild(open);
+        grid.appendChild(card);
+    });
+}
+
+function setModeManual(m) {
+    if (!['cruise', 'alert', 'decision'].includes(m)) return;
+    manualOverride = true;
+    autoResume = false;
+    manualMode = m;
+    updateChipAuto();
+    applyMode(m);
+}
+
+function toggleAutoResume() {
+    autoResume = !autoResume;
+    if (autoResume) {
+        manualOverride = false;
+        evaluateMode();
+        logEvent('info', 'MODE', 'Auto-resume engaged — UI follows fleet state');
+    } else {
+        manualMode = uiMode === 'focus' ? 'cruise' : uiMode;
+        manualOverride = true;
+        logEvent('info', 'MODE', 'Auto-resume off — manual mode holds');
+    }
+    updateChipAuto();
+}
+
+function updateChipAuto() {
+    $('chipAuto').setAttribute('aria-pressed', String(autoResume));
+}
+
+function acknowledgeAlert() {
+    setModeManual('cruise');
+    logEvent('info', 'MODE', 'Alert acknowledged — holding CRUISE (re-enable AUTO to follow fleet state)');
+}
+
+function confirmPending() {
+    if (!pendingConfirm) return;
+    if (pendingConfirm.type === 'spawn') {
+        const name = pendingConfirm.name;
+        const id = 'demo-' + name.toLowerCase().replace(/[^a-z0-9]+/g, '-').slice(0, 24) + '-' + Date.now().toString(36).slice(-4);
+        fleetAgents[id] = {
+            id, name, role: 'worker', model: 'qwen-32b', project: name,
+            status: 'running', status_line: 'Spawning — warming context…',
+            progress: 0.01,
+            latest_telemetry: { tokens_per_sec: 40, memory_mb: 1600 },
+            _demo: true, _baseTps: 75,
+        };
+        telemetryRing[id] = [];
+        logEvent('success', 'CMD', `Agent "${name}" spawned into the fleet`, { agentId: id, simulated: !backendLive });
+    }
+    pendingConfirm = null;
+    evaluateMode();
+    scheduleRender();
+}
+
+function cancelPending() {
+    if (!pendingConfirm) return;
+    logEvent('info', 'CMD', 'Pending order cancelled');
+    pendingConfirm = null;
+    evaluateMode();
+}
+
+// ===== CENTER TABS =====
+function setCenterTab(tab) {
+    $('centerCanvas').setAttribute('data-tab', tab);
+    $('tabRadar').setAttribute('aria-pressed', String(tab === 'radar'));
+    $('tabOrg').setAttribute('aria-pressed', String(tab === 'org'));
+    if (tab === 'org') { sizeOrgCanvas(); drawConstellation(); }
+}
+
+// ===== FLYOUT (FOCUS mode) =====
+let flyoutAgentId = null;
+let lastFocusEl = null;
+
+function openFlyout(id) {
+    const a = fleetAgents[id];
+    if (!a) return;
+    if (!flyoutOpen) lastFocusEl = document.activeElement;
+    flyoutAgentId = id;
+    flyoutOpen = true;
+    $('flyout').classList.add('open');
+    $('flyout').setAttribute('aria-hidden', 'false');
+    $('flyoutName').textContent = a.name || a.id;
+    $('flyoutRole').textContent = `${a.role || 'agent'} · ${a.id}`;
+    updateFlyout();
+    refreshFlyoutEvents();
+    evaluateMode();
+    const closeBtn = $('flyout').querySelector('.icon-btn');
+    if (closeBtn) closeBtn.focus();
+    logEvent('info', 'FOCUS', `Detail view → ${a.name || a.id}`, { agentId: id });
+}
+
+function closeFlyout() {
+    if (!flyoutOpen) return;
+    flyoutOpen = false;
+    flyoutAgentId = null;
+    $('flyout').classList.remove('open');
+    $('flyout').setAttribute('aria-hidden', 'true');
+    evaluateMode();
+    if (lastFocusEl && typeof lastFocusEl.focus === 'function') {
+        try { lastFocusEl.focus(); } catch (e) { /* detached */ }
+    }
+}
+
+function updateFlyout() {
+    if (!flyoutAgentId) return;
+    const a = fleetAgents[flyoutAgentId];
+    if (!a) { closeFlyout(); return; }
+    const state = agentState(a);
+    const st = $('flyoutState');
+    if (st.getAttribute('data-state') !== state) st.setAttribute('data-state', state);
+    $('flyoutStateLabel').textContent = state.toUpperCase();
+    $('flyoutStateLine').textContent = statusLine(a);
+    $('flyoutProjWrap').setAttribute('data-state', state);
+    const pct = projectPct(a);
+    setProjBar($('flyoutProj'), pct);
+    const pctTxt = pct == null ? '—' : Math.round(pct * 100) + '%';
+    if ($('flyoutPct').textContent !== pctTxt) rollPct($('flyoutPct'), pctTxt, pct);
+    const t = a.latest_telemetry || {};
+    $('flyoutModel').textContent = a.model || '—';
+    $('flyoutTps').textContent = t.tokens_per_sec ? `${Math.round(t.tokens_per_sec)} tok/s` : '—';
+    $('flyoutMem').textContent = t.memory_mb ? `${(t.memory_mb / 1024).toFixed(1)} GB` : '—';
+    $('flyoutProject').textContent = a.project || '—';
+    $('flyoutPrompt').textContent = statusLine(a);
+    const ring = telemetryRing[flyoutAgentId] || [];
+    const pts = sparkPoints(ring.slice(-60).map(p => p.tps), 380, 64);
+    $('flyoutSpark').querySelector('polyline').setAttribute('points', pts);
+}
+
+function refreshFlyoutEvents() {
+    const ul = $('flyoutEvents');
+    if (!ul) return;
+    ul.textContent = '';
+    eventLog.filter(e => e.agentId === flyoutAgentId).slice(0, 8).forEach(e => {
+        const li = document.createElement('li');
+        const t = document.createElement('span'); t.className = 'fe-time'; t.textContent = e.time;
+        const x = document.createElement('span'); x.textContent = e.text;
+        li.append(t, x);
+        ul.appendChild(li);
+    });
+    if (!ul.children.length) {
+        const li = document.createElement('li');
+        li.textContent = 'No recent events for this agent.';
+        ul.appendChild(li);
+    }
+}
+
+function flyoutCommand(cmd) {
+    if (flyoutAgentId) dispatchAgentCommand(flyoutAgentId, cmd);
+}
+
+function flyoutCompare() {
+    if (!flyoutAgentId) return;
+    selectedAgents.add(flyoutAgentId);
+    closeFlyout();
+    updateRadar();
+    evaluateMode();
+}
+
+// ===== COMMAND BAR =====
+const SUGGESTIONS = ['show errors', 'go alert', 'theme lcars', 'pause deploy runner', 'mode cruise', 'spawn VidiShop agent', 'select hermes', 'org', 'help'];
+let suggIdx = -1;
+
+function cycleSuggestion() {
+    suggIdx = (suggIdx + 1) % SUGGESTIONS.length;
+    typewrite($('cmdGhostText'), SUGGESTIONS[suggIdx]);
+}
+
+function submitCommand() {
+    const input = $('cmdInput');
+    const v = input.value.trim();
+    if (!v) return;
+    input.value = '';
+    syncCmdGhost();
+    executeCommand(v);
+}
+
+function findAgent(q) {
+    if (!q) return null;
+    const s = String(q).toLowerCase().trim();
+    const list = Object.values(fleetAgents);
+    return list.find(a => String(a.id).toLowerCase() === s)
+        || list.find(a => String(a.name).toLowerCase() === s)
+        || list.find(a => String(a.name).toLowerCase().includes(s))
+        || list.find(a => String(a.id).toLowerCase().includes(s))
+        || null;
+}
+
+function executeCommand(raw) {
+    raw = String(raw || '').trim();
+    if (!raw) return;
+    logEvent('cmd', 'YOU', raw);
+    const parts = raw.toLowerCase().split(/\s+/);
+    const verb = parts[0];
+    const argRaw = raw.slice(verb.length).trim();
+    const arg = argRaw.toLowerCase();
+    switch (verb) {
+        case 'help':
+            ['Verbs: spawn <name> · pause <agent> · resume <agent> · select <agent> · clear',
+             'show errors|fleet · status · go/mode cruise|alert|decision · auto on|off',
+             'theme lcars|holo|jarvis · radar|org · voice · mute on|off · help'].forEach(l => logEvent('info', 'HELP', l));
+            break;
+        case 'theme':
+            if (['lcars', 'holo', 'jarvis'].includes(arg)) setTheme(arg);
+            else logEvent('warn', 'CMD', `Unknown theme "${argRaw}" — try lcars, holo, jarvis`);
+            break;
+        case 'mode':
+        case 'go': {
+            const m = arg.includes('alert') ? 'alert' : arg.includes('decision') ? 'decision' : arg.includes('cruise') ? 'cruise' : null;
+            if (m) setModeManual(m);
+            else logEvent('warn', 'CMD', `Unknown mode "${argRaw}" — try cruise, alert, decision`);
+            break;
+        }
+        case 'auto':
+            if (arg === 'off') { autoResume = false; manualOverride = true; manualMode = uiMode === 'focus' ? 'cruise' : uiMode; logEvent('info', 'MODE', 'Auto-resume disabled'); }
+            else { autoResume = true; manualOverride = false; evaluateMode(); logEvent('info', 'MODE', 'Auto-resume enabled'); }
+            updateChipAuto();
+            break;
+        case 'spawn':
+            pendingConfirm = { type: 'spawn', name: argRaw || 'New Agent' };
+            logEvent('info', 'CMD', 'Spawn order pending confirmation in DECISION view');
+            evaluateMode();
+            break;
+        case 'pause':
+        case 'resume': {
+            const a = findAgent(argRaw);
+            if (!a) logEvent('warn', 'CMD', `No agent matches "${argRaw}"`);
+            else dispatchAgentCommand(a.id, verb);
+            break;
+        }
+        case 'show': {
+            if (arg.includes('error')) {
+                const errs = Object.values(fleetAgents).filter(a => agentState(a) === 'error');
+                const hot = Object.values(fleetAgents).filter(a => agentState(a) === 'hot');
+                if (!errs.length && !hot.length) logEvent('success', 'FLEET', 'All clear — no agents in error or hot state');
+                else {
+                    errs.forEach(a => logEvent('error', 'FLEET', `${a.name}: ${statusLine(a)}`, { agentId: a.id }));
+                    hot.forEach(a => logEvent('warn', 'FLEET', `${a.name} running hot: ${statusLine(a)}`, { agentId: a.id }));
+                }
+            } else if (arg.includes('fleet') || arg.includes('agent')) {
+                Object.values(fleetAgents).forEach(a =>
+                    logEvent('info', 'FLEET', `${a.name} — ${agentState(a)} · ${statusLine(a)}`, { agentId: a.id }));
+            } else {
+                logEvent('warn', 'CMD', 'Try "show errors" or "show fleet"');
+            }
+            break;
+        }
+        case 'select': {
+            const a = findAgent(argRaw);
+            if (!a) logEvent('warn', 'CMD', `No agent matches "${argRaw}"`);
+            else { selectedAgents.add(a.id); updateRadar(); evaluateMode(); logEvent('info', 'CMD', `${a.name} added to comparison (${selectedAgents.size} selected)`); }
+            break;
+        }
+        case 'clear':
+            clearSelection();
+            break;
+        case 'status': {
+            const list = Object.values(fleetAgents);
+            const counts = { idle: 0, thinking: 0, running: 0, hot: 0, error: 0 };
+            list.forEach(a => { counts[agentState(a)]++; });
+            logEvent('info', 'FLEET', `Fleet ${list.length} · running ${counts.running} · thinking ${counts.thinking} · hot ${counts.hot} · error ${counts.error} · idle ${counts.idle} · ${backendLive ? 'LIVE' : 'SIMULATED'}`);
+            break;
+        }
+        case 'mute':
+            voiceMuted = arg === 'on' ? true : arg === 'off' ? false : !voiceMuted;
+            syncMuteBtn();
+            logEvent('info', 'VOICE', voiceMuted ? 'Spoken alerts muted' : 'Spoken alerts active');
+            break;
+        case 'voice':
+            toggleListening();
+            break;
+        case 'org':
+            setCenterTab('org');
+            break;
+        case 'radar':
+            setCenterTab('radar');
+            break;
+        default:
+            logEvent('warn', 'CMD', `Unknown command "${verb}" — type help for verbs`);
+    }
+}
+
+async function dispatchAgentCommand(agentId, command) {
+    const a = fleetAgents[agentId];
+    if (!a) return;
+    if (backendLive && !a._demo) {
+        try {
+            const res = await fetch(`${BACKEND_URL}/api/fleet/agents/${agentId}/command`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ command }),
+            });
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+            logEvent('info', 'CMD', `Command '${command}' dispatched to ${a.name}`, { agentId });
+            return;
+        } catch (e) {
+            console.warn('[CMD] Live dispatch failed — simulating locally:', e.message);
+        }
+    }
+    // Simulated fallback — visibly labeled per SIMULATED badge convention
+    if (command === 'pause') { a.status = 'paused'; a.status_line = 'Holding — paused by operator'; delete a._errUntil; }
+    if (command === 'resume') { a.status = 'running'; a.status_line = 'Resuming queue'; delete a._errUntil; }
+    logEvent('info', 'CMD', `Command '${command}' applied to ${a.name}`, { agentId, simulated: true });
+    scheduleRender();
+}
+
+function syncCmdGhost() {
+    $('cmdWrap').classList.toggle('has-text', $('cmdInput').value.length > 0);
+}
+
+// ===== VOICE =====
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+let recog = null;
+let listening = false;
+let voiceMuted = true;
+
+function initVoice() {
+    try { voiceMuted = localStorage.getItem('agentbridge-muted') !== '0'; } catch (e) { voiceMuted = true; }
+    if (!SR) $('btnMic').classList.add('hidden');
+    if (!('speechSynthesis' in window)) $('btnMute').classList.add('hidden');
+    syncMuteBtn();
+}
+
+function syncMuteBtn() {
+    const b = $('btnMute');
+    b.setAttribute('aria-pressed', String(voiceMuted));
+    b.textContent = voiceMuted ? '🔇' : '🔊';
+    b.title = voiceMuted ? 'Spoken alerts (muted) — click to unmute' : 'Spoken alerts (active) — click to mute';
+    try { localStorage.setItem('agentbridge-muted', voiceMuted ? '1' : '0'); } catch (e) { /* private mode */ }
+}
+
+function toggleMute() {
+    voiceMuted = !voiceMuted;
+    syncMuteBtn();
+    logEvent('info', 'VOICE', voiceMuted ? 'Spoken alerts muted' : 'Spoken alerts active');
+    if (!voiceMuted) speak('Spoken alerts online.');
+}
+
+function speak(text) {
+    if (voiceMuted) return;
+    if (!('speechSynthesis' in window)) return;
+    try {
+        const u = new SpeechSynthesisUtterance(String(text));
+        u.rate = 1.05; u.pitch = 0.9; u.volume = 0.9;
+        window.speechSynthesis.cancel();
+        window.speechSynthesis.speak(u);
+    } catch (e) { /* never throw */ }
+}
+
+function toggleListening() {
+    if (!SR) return;
+    const btn = $('btnMic');
+    if (listening) {
+        try { recog && recog.stop(); } catch (e) { /* noop */ }
+        return;
+    }
+    try {
+        recog = new SR();
+        recog.lang = 'en-US';
+        recog.interimResults = false;
+        recog.maxAlternatives = 1;
+        recog.onresult = (ev) => {
+            const transcript = ev.results && ev.results[0] && ev.results[0][0] ? ev.results[0][0].transcript : '';
+            if (transcript) {
+                $('cmdInput').value = transcript;
+                syncCmdGhost();
+                submitCommand();
+            }
+        };
+        recog.onerror = (ev) => {
+            logEvent('warn', 'VOICE', `Speech input error: ${ev.error || 'unknown'}`);
+        };
+        recog.onend = () => {
+            listening = false;
+            btn.classList.remove('listening');
+            btn.setAttribute('aria-pressed', 'false');
+        };
+        recog.start();
+        listening = true;
+        btn.classList.add('listening');
+        btn.setAttribute('aria-pressed', 'true');
+        logEvent('info', 'VOICE', 'Listening… speak a command');
+    } catch (e) {
+        console.warn('[Voice] Speech recognition unavailable:', e.message);
+    }
+}
+
+// ===== 3D ORG CONSTELLATION (canvas 2D, manual projection — no three.js) =====
+let orgData = { entities: [], links: [] };
+let orgNodes = [];
+let orgEdges = [];
+let projectedOrg = [];
+let orgYaw = 0.5, orgPitch = -0.32, orgZoom = 1;
+let orgDragging = false, orgDragMoved = false;
+let orgLastPtr = null;
+let orgHover = null;
+
+function sampleOrg() {
+    const cats = {
+        'SmartGen': [['SmartGen API Core', 'In Progress', 'demo-smartgen'], ['SmartGen Backend Services', 'In Progress', null], ['SmartGen UI / VidiShop', 'Live', null], ['SmartGen Deployment Plans', 'Planned', null], ['Vector Stack (Vespa + PostGIS)', 'Planned', null]],
+        'Ecosystem': [['VidiFlow Frontend', 'In Progress', 'demo-vidiflow'], ['Vidi.News RSS Scraper', 'In Progress', 'demo-vidinews'], ['VidiPitch Integration', 'In Progress', null], ['VidiCity Concept Setup', 'Planned', null], ['Smart Book Enhancements', 'Live', null], ['FortunaTrade Deck', 'Live', null], ['AI Consultants Directory', 'Live', null]],
+        'Directive': [['Agent UI Dashboard', 'Live', null], ['Hermes Agent Suite', 'In Progress', 'demo-hermes'], ['Agent Execution Plan', 'Planned', null], ['Master Architecture Overview', 'Live', null]],
+        'CMS/Directus': [['Directus CMS Setup', 'Live', 'demo-directus'], ['PostgreSQL Schema & Migrations', 'Live', null], ['Directus Integration Plan', 'Planned', null], ['Directus Status & Audit', 'Live', null]],
+        'BrandSwap': [['BrandSwap Backend', 'In Progress', 'demo-brandswap'], ['Batch Processor', 'Planned', null]],
+        'Deploy': [['Vercel Deployments', 'Live', 'demo-deploy'], ['Railway Deployments', 'In Progress', null], ['SiteGround Deployment', 'Live', null], ['Repo Separation', 'Planned', null]],
+        'Client/vidiCRM.com': [['Air PMDS App', 'In Progress', 'demo-airpmd'], ['VidiCRM Platform', 'Planned', null], ['VidiBuzz Promotion Site', 'Live', null], ['Monetization Plans HTML', 'Planned', null]],
+    };
+    const statusMap = { 'Live': 'running', 'In Progress': 'thinking', 'Planned': 'idle' };
+    const entities = [{ id: 'org-root', name: 'VidiSmart Command', entity_type: 'human', reports_to: null, status: 'active' }];
+    const links = [];
+    let ti = 0;
+    Object.keys(cats).forEach(cat => {
+        const catId = 'org-c-' + cat.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+        entities.push({ id: catId, name: cat, entity_type: 'department', reports_to: 'org-root', status: 'active' });
+        cats[cat].forEach(([name, st, fleetId]) => {
+            const id = 'org-t-' + (ti++);
+            entities.push({ id, name, entity_type: 'agent', reports_to: catId, status: statusMap[st] || 'idle', fleet_agent_id: fleetId || undefined, task_status: st });
+        });
+    });
+    links.push({ source: 'org-t-0', target: 'org-t-5' });   // SmartGen API ↔ VidiFlow
+    links.push({ source: 'org-t-16', target: 'org-t-21' });  // Directus ↔ BrandSwap
+    links.push({ source: 'org-t-24', target: 'org-t-5' });   // Vercel ↔ VidiFlow
+    return { entities, links };
+}
+
+async function loadOrgData(force) {
+    if (backendLive) {
+        try {
+            const res = await fetch(`${BACKEND_URL}/api/org/tree`);
+            if (res.ok) {
+                const d = await res.json();
+                if (d && Array.isArray(d.entities) && d.entities.length) {
+                    orgData = d;
+                    buildConstellation();
+                    return;
+                }
+            }
+        } catch (e) {
+            console.warn('[Org] Tree fetch failed — using sample hierarchy.');
+        }
+    }
+    if (force || !orgNodes.length) {
+        orgData = sampleOrg();
+        buildConstellation();
+    }
+}
+
+function buildConstellation() {
+    const ents = orgData.entities || [];
+    const byId = new Map(ents.map(e => [String(e.id), e]));
+    const depthOf = (e) => {
+        let d = 0, cur = e, guard = 0;
+        while (cur && cur.reports_to && byId.get(String(cur.reports_to)) && guard++ < 12) {
+            cur = byId.get(String(cur.reports_to));
+            d++;
+        }
+        return d;
+    };
+    const kids = new Map();
+    ents.forEach(e => {
+        const p = e.reports_to ? String(e.reports_to) : null;
+        if (p) { if (!kids.has(p)) kids.set(p, []); kids.get(p).push(e); }
+    });
+    const pos = new Map();
+    ents.forEach(e => {
+        const id = String(e.id);
+        const d = depthOf(e);
+        if (d === 0) { pos.set(id, { x: 0, y: 0, z: 0 }); return; }
+        const parent = byId.get(String(e.reports_to));
+        const pp = parent ? pos.get(String(parent.id)) : null;
+        if (d === 1 || !pp) {
+            const sibs = parent ? (kids.get(String(parent.id)) || []) : ents.filter(x => !x.reports_to);
+            const idx = Math.max(0, sibs.findIndex(x => String(x.id) === id));
+            const ang = (idx / Math.max(1, sibs.length)) * Math.PI * 2;
+            const R = 170;
+            pos.set(id, {
+                x: Math.cos(ang) * R,
+                y: ((hashStr(id) % 70) - 35),
+                z: Math.sin(ang) * R,
+            });
+        } else {
+            const sibs = kids.get(String(parent.id)) || [];
+            const idx = Math.max(0, sibs.findIndex(x => String(x.id) === id));
+            const n = Math.max(1, sibs.length);
+            const ga = idx * GOLDEN;
+            const yy = 1 - (idx / (n - 1 || 1)) * 2;
+            const rr = Math.sqrt(Math.max(0, 1 - yy * yy));
+            const R = 78;
+            pos.set(id, {
+                x: pp.x + Math.cos(ga) * rr * R,
+                y: pp.y + yy * R * 0.7,
+                z: pp.z + Math.sin(ga) * rr * R,
+            });
+        }
+    });
+    orgNodes = ents.map(e => {
+        const p = pos.get(String(e.id)) || { x: 0, y: 0, z: 0 };
+        return { ent: e, x: p.x, y: p.y, z: p.z, depth: depthOf(e) };
+    });
+    orgEdges = [];
+    ents.forEach(e => {
+        if (e.reports_to && pos.has(String(e.reports_to))) orgEdges.push([String(e.reports_to), String(e.id)]);
+    });
+    (orgData.links || []).forEach(l => {
+        const s = String(l.source != null ? l.source : l.from);
+        const t = String(l.target != null ? l.target : l.to);
+        if (pos.has(s) && pos.has(t)) orgEdges.push([s, t, true]);
+    });
+}
+
+function orgNodeColor(node) {
+    const e = node.ent;
+    if (e.fleet_agent_id && fleetAgents[e.fleet_agent_id]) {
+        const s = agentState(fleetAgents[e.fleet_agent_id]);
+        return themeColors[s] || themeColors.accent;
+    }
+    if (e.entity_type === 'human') return themeColors.accent;
+    if (e.entity_type === 'department') return themeColors.accent2;
+    return themeColors[e.status] || themeColors.idle;
+}
+
+function sizeOrgCanvas() {
+    const cv = $('orgCanvas');
+    const wrap = $('orgWrap');
+    if (!wrap) return;
+    const r = wrap.getBoundingClientRect();
+    if (!r.width || !r.height) return;
+    const dpr = window.devicePixelRatio || 1;
+    cv.width = Math.round(r.width * dpr);
+    cv.height = Math.round(r.height * dpr);
+    cv.__cssW = r.width;
+    cv.__cssH = r.height;
+}
+
+function drawConstellation() {
+    const cv = $('orgCanvas');
+    const ctx = cv.getContext('2d');
+    const w = cv.__cssW || 0, h = cv.__cssH || 0;
+    if (!w || !h) return;
+    const dpr = window.devicePixelRatio || 1;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, w, h);
+    if (!prefersReducedMotion() && !orgDragging) orgYaw += 0.0016;
+    const cx = w / 2, cy = h / 2;
+    const camDist = 520 / orgZoom;
+    const f = 460;
+    const cyaw = Math.cos(orgYaw), syaw = Math.sin(orgYaw);
+    const cpit = Math.cos(orgPitch), spit = Math.sin(orgPitch);
+    const proj = orgNodes.map(n => {
+        const x1 = n.x * cyaw - n.z * syaw;
+        const z1 = n.x * syaw + n.z * cyaw;
+        const y2 = n.y * cpit - z1 * spit;
+        const z2 = n.y * spit + z1 * cpit;
+        const zc = Math.max(80, z2 + camDist);
+        const s = f / zc;
+        return { n, sx: cx + x1 * s, sy: cy + y2 * s, s, zc };
+    });
+    projectedOrg = proj;
+    const pmap = new Map();
+    proj.forEach(p => pmap.set(String(p.n.ent.id), p));
+    // edges
+    orgEdges.forEach(([a, b, cross]) => {
+        const pa = pmap.get(a), pb = pmap.get(b);
+        if (!pa || !pb) return;
+        const alpha = clamp((pa.s + pb.s) / 2 * 0.9, 0.06, 0.5);
+        ctx.strokeStyle = cross ? themeColors.hot : themeColors.line;
+        ctx.globalAlpha = cross ? alpha * 0.8 : alpha;
+        ctx.lineWidth = cross ? 1 : 1.2;
+        if (cross) ctx.setLineDash([4, 4]); else ctx.setLineDash([]);
+        ctx.beginPath();
+        ctx.moveTo(pa.sx, pa.sy);
+        ctx.lineTo(pb.sx, pb.sy);
+        ctx.stroke();
+    });
+    ctx.setLineDash([]);
+    ctx.globalAlpha = 1;
+    // nodes (far first)
+    proj.slice().sort((a, b) => b.zc - a.zc).forEach(p => {
+        const n = p.n;
+        const col = orgNodeColor(n);
+        const r = clamp((n.depth === 0 ? 9 : n.depth === 1 ? 6 : 3.6) * p.s * 1.5, 1.5, 16);
+        ctx.globalAlpha = clamp(p.s * 1.5, 0.25, 1);
+        ctx.fillStyle = col;
+        ctx.beginPath();
+        ctx.arc(p.sx, p.sy, r, 0, Math.PI * 2);
+        ctx.fill();
+        if (n.depth === 0 || orgHover === n.ent.id) {
+            ctx.strokeStyle = col;
+            ctx.globalAlpha = 0.5;
+            ctx.lineWidth = 1.4;
+            ctx.beginPath();
+            ctx.arc(p.sx, p.sy, r + 5, 0, Math.PI * 2);
+            ctx.stroke();
+        }
+        if (n.depth <= 1 || orgHover === n.ent.id) {
+            ctx.globalAlpha = clamp(p.s * 1.6, 0.35, 1);
+            ctx.fillStyle = themeColors.text;
+            ctx.font = `${n.depth === 0 ? 700 : 600} ${n.depth === 0 ? 13 : 11}px Rajdhani, sans-serif`;
+            ctx.textAlign = 'center';
+            ctx.fillText(String(n.ent.name || n.ent.id), p.sx, p.sy + r + 14);
+        }
+    });
+    ctx.globalAlpha = 1;
+}
+
+function orgHitTest(mx, my) {
+    let best = null, bestD = 16;
+    projectedOrg.forEach(p => {
+        const d = Math.hypot(p.sx - mx, p.sy - my);
+        if (d < bestD) { bestD = d; best = p; }
+    });
+    return best;
+}
+
+function initOrgInteraction() {
+    const cv = $('orgCanvas');
+    cv.addEventListener('pointerdown', (ev) => {
+        orgDragging = true; orgDragMoved = false;
+        orgLastPtr = { x: ev.clientX, y: ev.clientY };
+        cv.setPointerCapture(ev.pointerId);
+        cv.classList.add('dragging');
+    });
+    cv.addEventListener('pointermove', (ev) => {
+        const r = cv.getBoundingClientRect();
+        if (orgDragging && orgLastPtr) {
+            const dx = ev.clientX - orgLastPtr.x;
+            const dy = ev.clientY - orgLastPtr.y;
+            if (Math.abs(dx) + Math.abs(dy) > 3) orgDragMoved = true;
+            orgYaw += dx * 0.006;
+            orgPitch = clamp(orgPitch + dy * 0.005, -1.2, 1.2);
+            orgLastPtr = { x: ev.clientX, y: ev.clientY };
+        } else {
+            const hit = orgHitTest(ev.clientX - r.left, ev.clientY - r.top);
+            const id = hit ? String(hit.n.ent.id) : null;
+            if (id !== orgHover) { orgHover = id; cv.style.cursor = id ? 'pointer' : 'grab'; }
+        }
+    });
+    cv.addEventListener('pointerup', (ev) => {
+        cv.classList.remove('dragging');
+        if (orgDragging && !orgDragMoved) {
+            const r = cv.getBoundingClientRect();
+            const hit = orgHitTest(ev.clientX - r.left, ev.clientY - r.top);
+            if (hit) orgNodeClick(hit.n.ent);
+        }
+        orgDragging = false;
+        orgLastPtr = null;
+    });
+    cv.addEventListener('wheel', (ev) => {
+        ev.preventDefault();
+        orgZoom = clamp(orgZoom * (ev.deltaY < 0 ? 1.09 : 0.92), 0.35, 3.2);
+    }, { passive: false });
+}
+
+function orgNodeClick(ent) {
+    if (ent.fleet_agent_id && fleetAgents[ent.fleet_agent_id]) {
+        openFlyout(ent.fleet_agent_id);
+        return;
+    }
+    const type = ent.entity_type === 'human' ? 'command node' : ent.entity_type === 'department' ? 'department' : 'task';
+    logEvent('info', 'ORG', `${ent.name} — ${type}${ent.task_status ? ` · ${ent.task_status}` : ''}`);
+}
+
+// ===== JARVIS PARTICLES (≤60, single rAF loop) =====
+let particles = [];
+
+function sizeParticleCanvas() {
+    const cv = $('ambParticles');
+    const dpr = window.devicePixelRatio || 1;
+    cv.width = Math.round(window.innerWidth * dpr);
+    cv.height = Math.round(window.innerHeight * dpr);
+    cv.style.width = window.innerWidth + 'px';
+    cv.style.height = window.innerHeight + 'px';
+    cv.__dpr = dpr;
+    if (!particles.length) {
+        for (let i = 0; i < 55; i++) {
+            particles.push({
+                x: Math.random() * window.innerWidth,
+                y: Math.random() * window.innerHeight,
+                v: 0.15 + Math.random() * 0.5,
+                r: 0.6 + Math.random() * 1.6,
+                a: 0.1 + Math.random() * 0.4,
+                c: Math.random() < 0.7 ? '#f5a623' : '#35e0f0',
+            });
+        }
+    }
+}
+
+function stepParticles() {
+    if (theme !== 'jarvis') return;
+    const cv = $('ambParticles');
+    const ctx = cv.getContext('2d');
+    const dpr = cv.__dpr || 1;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+    particles.forEach(p => {
+        p.y -= p.v;
+        if (p.y < -4) { p.y = window.innerHeight + 4; p.x = Math.random() * window.innerWidth; }
+        ctx.globalAlpha = p.a;
+        ctx.fillStyle = p.c;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fill();
+    });
+    ctx.globalAlpha = 1;
+}
+
+// ===== MASTER rAF LOOP =====
+let lastClockSec = -1;
+
+function bridgeLoop() {
+    requestAnimationFrame(bridgeLoop);
+    if (document.hidden) return;
+    const d = new Date();
+    if (d.getSeconds() !== lastClockSec) {
+        lastClockSec = d.getSeconds();
+        updateClock(d);
+    }
+    if ($('centerCanvas').getAttribute('data-tab') === 'org' && uiMode !== 'alert' && uiMode !== 'decision') {
+        drawConstellation();
+    }
+    if (!prefersReducedMotion()) stepParticles();
+}
+
+// ===== KEYBOARD / A11Y =====
+function initKeyboard() {
+    document.addEventListener('keydown', (ev) => {
+        if (ev.key === 'Escape') {
+            if (flyoutOpen) { closeFlyout(); return; }
+            if (pendingConfirm) { cancelPending(); return; }
+        }
+        if (ev.key === '/' && document.activeElement === document.body) {
+            ev.preventDefault();
+            $('cmdInput').focus();
+        }
+    });
+    $('cmdInput').addEventListener('keydown', (ev) => {
+        if (ev.key === 'Enter') submitCommand();
+    });
+    $('cmdInput').addEventListener('input', syncCmdGhost);
+}
+
+// ===== INIT =====
+function init() {
+    let saved = null;
+    try { saved = localStorage.getItem('agentbridge-theme'); } catch (e) { /* private mode */ }
+    readThemeColors();
+    setTheme(['lcars', 'holo', 'jarvis'].includes(saved) ? saved : 'holo');
+    updateClock(new Date());
+    initVoice();
+    initKeyboard();
+    initOrgInteraction();
+    sizeParticleCanvas();
+    sizeOrgCanvas();
+    window.addEventListener('resize', () => { sizeParticleCanvas(); sizeOrgCanvas(); });
+
+    seedDemoFleet();
+    setFleetPill('sim');
+    startDemoSim();
+    loadAgentsLiveFallback();
+    initRealtime();
+    orgData = sampleOrg();
+    buildConstellation();
+
+    setInterval(updateAnalytics, 2000);
+    setInterval(cycleSuggestion, 4500);
+    cycleSuggestion();
+
+    logEvent('success', 'BRIDGE', 'Agent Bridge online — Gen UI shell initialized');
+    logEvent('info', 'BRIDGE', 'State engine armed: CRUISE / ALERT / DECISION / FOCUS — type help for commands');
+    renderAll();
+    requestAnimationFrame(bridgeLoop);
+}
+
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+else init();
+</script>
+</body>
+</html>

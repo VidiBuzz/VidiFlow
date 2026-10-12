@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VidiSmart Visual Dashboard</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0f172a; color: #e2e8f0; }
+        
+        /* Project Tabs */
+        .project-tabs { display: flex; gap: 8px; padding: 16px 24px; background: #1e293b; border-bottom: 2px solid #334155; }
+        .tab { padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 500; transition: all 0.2s; border: 1px solid transparent; }
+        .tab:hover { background: #334155; }
+        .tab.active { background: #3b82f6; border-color: #60a5fa; color: white; }
+        .tab .count { background: rgba(255,255,255,0.2); padding: 2px 8px; border-radius: 12px; font-size: 0.8em; margin-left: 8px; }
+        
+        /* Main Grid */
+        .dashboard { padding: 24px; }
+        .project-section { display: none; }
+        .project-section.active { display: block; }
+        
+        /* Status Cards */
+        .status-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
+        .status-card { background: #1e293b; border-radius: 12px; padding: 20px; text-align: center; border: 1px solid #334155; }
+        .status-card .number { font-size: 2.5em; font-weight: 700; }
+        .status-card .label { color: #94a3b8; font-size: 0.9em; margin-top: 4px; }
+        .status-card.done .number { color: #34d399; }
+        .status-card.pending .number { color: #fbbf24; }
+        .status-card.blocked .number { color: #f87171; }
+        .status-card.critical .number { color: #ef4444; }
+        
+        /* Task Cards with Thumbnails */
+        .task-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 16px; }
+        .task-card { background: #1e293b; border-radius: 12px; overflow: hidden; border: 1px solid #334155; transition: all 0.2s; }
+        .task-card:hover { border-color: #3b82f6; transform: translateY(-2px); }
+        .task-card.done { border-left: 4px solid #34d399; }
+        .task-card.pending { border-left: 4px solid #fbbf24; }
+        .task-card.blocked { border-left: 4px solid #f87171; }
+        .task-card.critical { border-left: 4px solid #ef4444; }
+        
+        .task-thumbnail { width: 100%; height: 180px; background: #0f172a; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; }
+        .task-thumbnail img { width: 100%; height: 100%; object-fit: cover; }
+        .task-thumbnail .placeholder { color: #475569; font-size: 3em; }
+        .task-thumbnail .badge { position: absolute; top: 8px; right: 8px; padding: 4px 12px; border-radius: 20px; font-size: 0.75em; font-weight: 600; }
+        .badge.done { background: #064e3b; color: #34d399; }
+        .badge.pending { background: #451a03; color: #fbbf24; }
+        .badge.blocked { background: #450a0a; color: #f87171; }
+        .badge.critical { background: #7f1d1d; color: #ef4444; }
+        
+        .task-info { padding: 16px; }
+        .task-title { font-weight: 600; font-size: 1.1em; margin-bottom: 8px; }
+        .task-desc { color: #94a3b8; font-size: 0.9em; line-height: 1.4; margin-bottom: 12px; }
+        .task-meta { display: flex; gap: 12px; align-items: center; }
+        .task-tag { background: #334155; padding: 4px 10px; border-radius: 6px; font-size: 0.8em; }
+        .task-link { color: #60a5fa; text-decoration: none; font-size: 0.9em; }
+        .task-link:hover { text-decoration: underline; }
+        
+        /* Progress Bar */
+        .progress-container { margin-bottom: 24px; }
+        .progress-header { display: flex; justify-content: space-between; margin-bottom: 8px; }
+        .progress-bar { height: 12px; background: #334155; border-radius: 6px; overflow: hidden; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, #3b82f6, #60a5fa); border-radius: 6px; transition: width 0.5s; }
+        
+        /* Recent Changes */
+        .changes-section { margin-top: 32px; }
+        .changes-title { font-size: 1.3em; font-weight: 600; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+        .change-item { display: flex; gap: 16px; padding: 12px; background: #1e293b; border-radius: 8px; margin-bottom: 8px; align-items: center; }
+        .change-icon { font-size: 1.5em; }
+        .change-info { flex: 1; }
+        .change-file { font-family: monospace; color: #60a5fa; }
+        .change-time { color: #64748b; font-size: 0.85em; }
+    </style>
+</head>
+<body>
+    <!-- Project Tabs -->
+    <div class="project-tabs">
+        <div class="tab active" onclick="switchTab('smartgen')">🔧 SmartGen <span class="count">14</span></div>
+        <div class="tab" onclick="switchTab('smartbook')">📚 Smart Book <span class="count">8</span></div>
+        <div class="tab" onclick="switchTab('smartdeck')">🎴 Smart Deck <span class="count">2</span></div>
+        <div class="tab" onclick="switchTab('vidipitch')">🎬 VidiPitch <span class="count">2</span></div>
+        <div class="tab" onclick="switchTab('infra')">⚙️ Infrastructure <span class="count">4</span></div>
+    </div>
+
+    <div class="dashboard">
+        <!-- SMARTGEN SECTION -->
+        <div class="project-section active" id="smartgen">
+            <div class="status-row">
+                <div class="status-card done"><div class="number">6</div><div class="label">Completed</div></div>
+                <div class="status-card pending"><div class="number">6</div><div class="label">Pending</div></div>
+                <div class="status-card critical"><div class="number">2</div><div class="label">Critical</div></div>
+                <div class="status-card"><div class="number">43%</div><div class="label">Progress</div></div>
+            </div>
+            
+            <div class="progress-container">
+                <div class="progress-header"><span>SmartGen Progress</span><span>6/14 tasks done</span></div>
+                <div class="progress-bar"><div class="progress-fill" style="width: 43%"></div></div>
+            </div>
+
+            <div class="task-grid">
+                <div class="task-card done">
+                    <div class="task-thumbnail"><span class="placeholder">📁</span><span class="badge done">Done</span></div>
+                    <div class="task-info">
+                        <div class="task-title">Review project structure</div>
+                        <div class="task-desc">Analyzed smartgen/ directory and architecture docs</div>
+                        <div class="task-meta"><span class="task-tag">review</span><a class="task-link" href="smartgen/" target="_blank">View Files →</a></div>
+                    </div>
+                </div>
+                <div class="task-card done">
+                    <div class="task-thumbnail"><span class="placeholder">🔍</span><span class="badge done">Done</span></div>
+                    <div class="task-info">
+                        <div class="task-title">Identify implementation gaps</div>
+                        <div class="task-desc">Created SmartGenGapAnalyzer.js, documented 7 missing components</div>
+                        <div class="task-meta"><span class="task-tag">analysis</span><a class="task-link" href="smartgen/SmartGenGapAnalyzer.js" target="_blank">View File →</a></div>
+                    </div>
+                </div>
+                <div class="task-card done">
+                    <div class="task-thumbnail"><span class="placeholder">📋</span><span class="badge done">Done</span></div>
+                    <div class="task-info">
+                        <div class="task-title">Create gap analysis report</div>
+                        <div class="task-desc">Documented all 7 critical gaps in GAP_ANALYSIS_REPORT.md</div>
+                        <div class="task-meta"><span class="task-tag">docs</span><a class="task-link" href="smartgen/GAP_ANALYSIS_REPORT.md" target="_blank">View Report →</a></div>
+                    </div>
+                </div>
+                <div class="task-card pending">
+                    <div class="task-thumbnail"><span class="placeholder">🧪</span><span class="badge pending">Pending</span></div>
+                    <div class="task-info">
+                        <div class="task-title">Build real Vespa integration test</div>
+                        <div class="task-desc">Connect to actual Vespa instance, verify vector search works</div>
+                        <div class="task-meta"><span class="task-tag">testing</span><span class="task-tag">vector</span></div>
+                    </div>
+                </div>
+                <div class="task-card critical">
+                    <div class="task-thumbnail"><span class="placeholder">🌐</span><span class="badge critical">Critical</span></div>
+                    <div class="task-info">
+                        <div class="task-title">Build Visual Vector 3D dashboard</div>
+                        <div class="task-desc">Three.js visualization of vector database with UMAP projection</div>
+                        <div class="task-meta"><span class="task-tag">feature</span><span class="task-tag">vector</span></div>
+                    </div>
+                </div>
+                <div class="task-card critical">
+                    <div class="task-thumbnail"><span class="placeholder">🤖</span><span class="badge critical">Critical</span></div>
+                    <div class="task-info">
+                        <div class="task-title">Create agent orchestration system</div>
+                        <div class="task-desc">Build coordinator-agent.js, coder-agent.js, research-agent.js workers</div>
+                        <div class="task-meta"><span class="task-tag">agents</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SMART BOOK SECTION -->
+        <div class="project-section" id="smartbook">
+            <div class="status-row">
+                <div class="status-card done"><div class="number">4</div><div class="label">Completed</div></div>
+                <div class="status-card pending"><div class="number">2</div><div class="label">Pending</div></div>
+                <div class="status-card blocked"><div class="number">2</div><div class="label">Blocked</div></div>
+                <div class="status-card"><div class="number">50%</div><div class="label">Progress</div></div>
+            </div>
+            
+            <div class="progress-container">
+                <div class="progress-header"><span>Smart Book Progress</span><span>4/8 tasks done</span></div>
+                <div class="progress-bar"><div class="progress-fill" style="width: 50%"></div></div>
+            </div>
+
+            <div class="task-grid">
+                <div class="task-card done">
+                    <div class="task-thumbnail"><span class="placeholder">📖</span><span class="badge done">Done</span></div>
+                    <div class="task-info">
+                        <div class="task-title">Smart Book reader (index.html)</div>
+                        <div class="task-desc">Main book reader with two-column layout, lightbox, scroll progress</div>
+                        <div class="task-meta"><span class="task-tag">live</span><a class="task-link" href="smart-book/index.html" target="_blank">Open Book →</a></div>
+                    </div>
+                </div>
+                <div class="task-card done">
+                    <div class="task-thumbnail"><span class="placeholder">🖨️</span><span class="badge done">Done</span></div>
+                    <div class="task-info">
+                        <div class="task-title">Print-friendly version</div>
+                        <div class="task-desc">print-book.html with optimized layout for printing</div>
+                        <div class="task-meta"><span class="task-tag">live</span><a class="task-link" href="smart-book/print-book.html" target="_blank">Open Print →</a></div>
+                    </div>
+                </div>
+                <div class="task-card done">
+                    <div class="task-thumbnail"><span class="placeholder">🚀</span><span class="badge done">Done</span></div>
+                    <div class="task-info">
+                        <div class="task-title">Migration script (154 files)</div>
+                        <div class="task-desc">migrate-to-directus.js ready, dry-run passed 154/154</div>
+                        <div class="task-meta"><span class="task-tag">ready</span><a class="task-link" href="smart-book/migrate-to-directus.js" target="_blank">View Script →</a></div>
+                    </div>
+                </div>
+                <div class="task-card blocked">
+                    <div class="task-thumbnail"><span class="placeholder">🔒</span><span class="badge blocked">Blocked</span></div>
+                    <div class="task-info">
+                        <div class="task-title">Execute actual migration</div>
+                        <div class="task-desc">Needs DIRECTUS_ACCESS_TOKEN to run the migration</div>
+                        <div class="task-meta"><span class="task-tag">blocked</span><span class="task-tag">needs token</span></div>
+                    </div>
+                </div>
+                <div class="task-card blocked">
+                    <div class="task-thumbnail"><span class="placeholder">📚</span><span class="badge blocked">Blocked</span></div>
+                    <div class="task-info">
+                        <div class="task-title">Create book_chapters collection</div>
+                        <div class="task-desc">39 chapters in data.js need to be migrated to Directus CMS</div>
+                        <div class="task-meta"><span class="task-tag">cms</span><span class="task-tag">blocked</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SMART DECK SECTION -->
+        <div class="project-section" id="smartdeck">
+            <div class="status-row">
+                <div class="status-card done"><div class="number">1</div><div class="label">Completed</div></div>
+                <div class="status-card pending"><div class="number">1</div><div class="label">Pending</div></div>
+                <div class="status-card"><div class="number">50%</div><div class="label">Progress</div></div>
+            </div>
+            <div class="task-grid">
+                <div class="task-card done">
+                    <div class="task-thumbnail"><span class="placeholder">🎴</span><span class="badge done">Done</span></div>
+                    <div class="task-info">
+                        <div class="task-title">Deck Agent UI</div>
+                        <div class="task-desc">vidismart.deck.agent.html with model selector, settings panel</div>
+                        <div class="task-meta"><span class="task-tag">live</span><a class="task-link" href="vidismart.deck.agent.html" target="_blank">Open Deck →</a></div>
+                    </div>
+                </div>
+                <div class="task-card pending">
+                    <div class="task-thumbnail"><span class="placeholder">🎨</span><span class="badge pending">Pending</span></div>
+                    <div class="task-info">
+                        <div class="task-title">Plan deck enhancements</div>
+                        <div class="task-desc">Design UI improvements for deck agent</div>
+                        <div class="task-meta"><span class="task-tag">planning</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIDIPITCH SECTION -->
+        <div class="project-section" id="vidipitch">
+            <div class="status-row">
+                <div class="status-card critical"><div class="number">2</div><div class="label">Critical</div></div>
+                <div class="status-card"><div class="number">0%</div><div class="label">Progress</div></div>
+            </div>
+            <div class="task-grid">
+                <div class="task-card critical">
+                    <div class="task-thumbnail"><span class="placeholder">🎬</span><span class="badge critical">Critical</span></div>
+                    <div class="task-info">
+                        <div class="task-title">Build VidiPitch manufacturer portal</div>
+                        <div class="task-desc">Next.js + Plasmic with Clerk auth, video upload, dashboard</div>
+                        <div class="task-meta"><span class="task-tag">feature</span></div>
+                    </div>
+                </div>
+                <div class="task-card critical">
+                    <div class="task-thumbnail"><span class="placeholder">🔄</span><span class="badge critical">Critical</span></div>
+                    <div class="task-info">
+                        <div class="task-title">Migrate VidiPitch pages to Directus</div>
+                        <div class="task-desc">34 VidiPitch-branded pages need VidiSmart rebranding</div>
+                        <div class="task-meta"><span class="task-tag">migration</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- INFRASTRUCTURE SECTION -->
+        <div class="project-section" id="infra">
+            <div class="status-row">
+                <div class="status-card done"><div class="number">1</div><div class="label">Completed</div></div>
+                <div class="status-card pending"><div class="number">3</div><div class="label">Pending</div></div>
+                <div class="status-card"><div class="number">25%</div><div class="label">Progress</div></div>
+            </div>
+            <div class="task-grid">
+                <div class="task-card done">
+                    <div class="task-thumbnail"><span class="placeholder">📊</span><span class="badge done">Done</span></div>
+                    <div class="task-info">
+                        <div class="task-title">Railway deployment config</div>
+                        <div class="task-desc">railway.json configured, dual deployment pipeline documented</div>
+                        <div class="task-meta"><span class="task-tag">docs</span><a class="task-link" href="railway.json" target="_blank">View Config →</a></div>
+                    </div>
+                </div>
+                <div class="task-card pending">
+                    <div class="task-thumbnail"><span class="placeholder">🔑</span><span class="badge pending">Pending</span></div>
+                    <div class="task-info">
+                        <div class="task-title">Re-auth Railway CLI</div>
+                        <div class="task-desc">Run railway login, verify all services running</div>
+                        <div class="task-meta"><span class="task-tag">infrastructure</span></div>
+                    </div>
+                </div>
+                <div class="task-card pending">
+                    <div class="task-thumbnail"><span class="placeholder">🗄️</span><span class="badge pending">Pending</span></div>
+                    <div class="task-info">
+                        <div class="task-title">Enable PostGIS</div>
+                        <div class="task-desc">Add PostGIS extension to converge/docker-compose.yml</div>
+                        <div class="task-meta"><span class="task-tag">database</span></div>
+                    </div>
+                </div>
+                <div class="task-card pending">
+                    <div class="task-thumbnail"><span class="placeholder">📧</span><span class="badge pending">Pending</span></div>
+                    <div class="task-info">
+                        <div class="task-title">Configure Resend SMTP</div>
+                        <div class="task-desc">Set up Resend API keys, test email sending</div>
+                        <div class="task-meta"><span class="task-tag">email</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RECENT CHANGES -->
+        <div class="changes-section">
+            <div class="changes-title">🕐 Recent Changes</div>
+            <div class="change-item">
+                <span class="change-icon">✅</span>
+                <div class="change-info">
+                    <div class="change-file">smartgen/PROJECT_DASHBOARD.html</div>
+                    <div>Created visual project dashboard</div>
+                    <div class="change-time">2026-05-16 20:25 UTC</div>
+                </div>
+            </div>
+            <div class="change-item">
+                <span class="change-icon">✅</span>
+                <div class="change-info">
+                    <div class="change-file">smartgen/LINEAR_IMPORT.csv</div>
+                    <div>Created Linear import file with 30 tasks</div>
+                    <div class="change-time">2026-05-16 20:36 UTC</div>
+                </div>
+            </div>
+            <div class="change-item">
+                <span class="change-icon">✅</span>
+                <div class="change-info">
+                    <div class="change-file">smartgen/LINEAR_SETUP_INSTRUCTIONS.md</div>
+                    <div>Created Linear setup guide</div>
+                    <div class="change-time">2026-05-16 20:36 UTC</div>
+                </div>
+            </div>
+            <div class="change-item">
+                <span class="change-icon">✅</span>
+                <div class="change-info">
+                    <div class="change-file">smart-book/migrate-to-directus.js</div>
+                    <div>Updated migration script from 20 to 154 files</div>
+                    <div class="change-time">2026-05-16 20:15 UTC</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function switchTab(project) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.project-section').forEach(s => s.classList.remove('active'));
+            event.target.closest('.tab').classList.add('active');
+            document.getElementById(project).classList.add('active');
+        }
+    </script>
+</body>
+</html>

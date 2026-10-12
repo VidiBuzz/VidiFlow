@@ -1,0 +1,627 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Loading the constellation into the real Kumiho</title>
+<style>
+:root { --bg:#0b0f14; --panel:#121821; --ink:#e8eef6; --dim:#9fb0c3;
+        --line:#22303f; --accent:#6cc2ff; --warn:#ffcc66; }
+* { box-sizing:border-box; }
+body { margin:0; background:var(--bg); color:var(--ink);
+       font:16px/1.65 "Segoe UI",system-ui,-apple-system,sans-serif;
+       text-wrap:pretty; overflow-wrap:anywhere; }
+main { max-width:1040px; margin:0 auto; padding:48px 28px 96px; }
+h1,h2,h3 { line-height:1.25; text-wrap:balance; letter-spacing:-0.01em; }
+h1 { font-size:2rem; margin:0 0 .4em; }
+h2 { font-size:1.35rem; margin:2.2em 0 .6em; padding-bottom:.3em; border-bottom:1px solid var(--line); }
+h3 { font-size:1.08rem; margin:1.6em 0 .5em; color:var(--accent); }
+p, ul, ol { margin:.6em 0; }
+a { color:var(--accent); text-decoration:none; border-bottom:1px solid rgba(108,194,255,.35); }
+a:hover { border-bottom-color:var(--accent); }
+code { background:#0f1620; border:1px solid var(--line); border-radius:4px;
+       padding:.1em .35em; font:13.5px/1.5 "Cascadia Mono",Consolas,monospace;
+       overflow-wrap:anywhere; }
+pre { background:var(--panel); border:1px solid var(--line); border-radius:10px;
+      padding:14px 16px; overflow-x:auto; }
+pre code { background:none; border:0; padding:0; }
+table { display:block; overflow-x:auto; width:100%; border-collapse:collapse; margin:1em 0;
+        font-size:14.5px; background:var(--panel); border:1px solid var(--line); border-radius:10px; }
+th,td { text-align:left; padding:9px 12px; border-bottom:1px solid var(--line);
+        vertical-align:top; overflow-wrap:anywhere; }
+th { background:#16202c; color:var(--ink); font-weight:600; }
+tr:last-child td { border-bottom:0; }
+blockquote { margin:1em 0; padding:.4em 1em; border-left:3px solid var(--accent);
+             background:#101a24; color:var(--dim); }
+hr { border:0; border-top:1px solid var(--line); margin:2.4em 0; }
+strong { color:#fff; }
+ul { padding-left:1.3em; }
+</style></head>
+<body><main><h1 id="loading-the-constellation-into-the-real-kumiho-plan-exact-commands-verification">Loading the constellation into the real Kumiho — plan, exact commands, verification</h1>
+<p><strong>Date:</strong> 2026-10-11 (ET) · <strong>Author:</strong> Hermes sub-agent (VidiBot TASK 3 of 3)
+<strong>Status:</strong> PLAN ONLY — <strong>nothing has been written to any Kumiho graph.</strong>
+<strong>Deliverable folder:</strong> <code>M:\code\VidiFlow\out\kumiho-constellation\</code></p>
+<p>Read together with: <code>M:\code\VidiFlow\out\KUMIHO-RESEARCH-CAPTURE-SPEC-2026-10-07.md</code> (node/edge
+property contracts) and <code>M:\code\VidiBot\kumiho\KUMIHO-CONSTELLATION-LOCK-2026-09-29.md</code>
+(Constellation is the default 3D view <strong>mode</strong>, not the whole product).</p>
+<hr />
+<h2 id="0-where-the-stack-stands-right-now-checked-live-2026-10-11-1920-et">0. Where the stack stands right now (checked live, 2026-10-11 ~19:20 ET)</h2>
+<p><strong>The entire memory stack is DOWN on V20.</strong> Nothing can be loaded until it is up.</p>
+<table>
+<thead>
+<tr>
+<th>Port</th>
+<th>Service</th>
+<th>Live result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>9190</td>
+<td>Kumiho CE server (gRPC)</td>
+<td><strong>CLOSED</strong></td>
+</tr>
+<tr>
+<td>7687</td>
+<td>Neo4j bolt (Kumiho's store)</td>
+<td><strong>CLOSED</strong></td>
+</tr>
+<tr>
+<td>7474</td>
+<td>Neo4j HTTP</td>
+<td><strong>CLOSED</strong></td>
+</tr>
+<tr>
+<td>6379</td>
+<td>Redis event stream</td>
+<td><strong>CLOSED</strong></td>
+</tr>
+<tr>
+<td>42617</td>
+<td>Revka gateway</td>
+<td><strong>CLOSED</strong></td>
+</tr>
+<tr>
+<td>9999</td>
+<td>9Miho UI / API</td>
+<td><strong>CLOSED</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Also checked: <code>M:\code\VidiFlow\out\kumiho-constellation\</code> exists but was <strong>empty</strong> when this plan
+was written — VidiBot has not copied <code>nodes.json</code>, <code>edges.json</code>, <code>index.html</code>, <code>build.py</code> there yet.</p>
+<p>Two facts that shaped this plan:</p>
+<ol>
+<li><strong>Kumiho <em>is</em> the Neo4j graph.</strong> The correct spine is <strong>Mez → Kumiho (= Neo4j) → Revka → 9Miho</strong>.
+   Writing "Kumiho → Neo4j" invents a hop between a thing and itself.</li>
+<li>Kumiho CE is <strong>loopback-bound</strong> (<code>127.0.0.1:9190</code>) and serves <strong>gRPC, not JSON REST</strong> — only the
+   health endpoints are HTTP. Any loader therefore runs <strong>on V20</strong>, through the Kumiho SDK or the
+   Revka SDK bridge, not by POSTing JSON at 9190.</li>
+</ol>
+<h3 id="01-bring-the-stack-up-documented-idempotent-already-used-on-this-box">0.1 Bring the stack up (documented, idempotent, already used on this box)</h3>
+<pre><code class="language-powershell"># full ordered bring-up: Docker engine -&gt; kumiho-ce-neo4j/redis -&gt; CE server -&gt; desktop -&gt; Revka
+powershell -File M:\code\vidismart\tools\recover-kumiho.ps1
+# one-shot health verdict for every tile (Server, Neo4j, Event stream, Revka gateway, Revka MCP,
+# Memory 8090, 9Miho 9999, Embeddings)
+powershell -File M:\code\vidismart\tools\kumiho-tiles.ps1
+</code></pre>
+<p>Single-service starts, if only one piece is down:</p>
+<pre><code class="language-powershell">powershell -File M:\code\vidismart\tools\start-kumiho-ce.ps1        # Kumiho CE server only
+powershell -File M:\code\vidismart\tools\start-kumiho-desktop.ps1   # detached desktop (Memory + 9miho)
+</code></pre>
+<p><strong>Trap:</strong> all CE liveness checks must run through <strong>Windows PowerShell</strong>, not WSL bash —
+WSL→Windows loopback is unreliable here and produced false "CE is dead" readings before.
+<code>GET http://127.0.0.1:9190/api/_live</code> must answer
+<code>{"status":"ok","version":"1.8.0","deployment_mode":"self_hosted_ce"}</code>.</p>
+<hr />
+<h2 id="1-what-feeds-kumiho-revka-and-9miho">1. What feeds Kumiho, Revka and 9Miho</h2>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>What it is</th>
+<th>Where it listens</th>
+<th>How data gets in</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Kumiho CE 1.8.0</strong></td>
+<td>the graph itself (system of record)</td>
+<td>gRPC <code>127.0.0.1:9190</code> (HTTP only for <code>/api/_live</code>, <code>/api/_health</code>)</td>
+<td>Kumiho SDK / MCP tools / Revka bridge — all of which land in Neo4j</td>
+</tr>
+<tr>
+<td><strong>Neo4j 5.26.30</strong> (<code>kumiho-ce-neo4j</code>)</td>
+<td>Kumiho's property store</td>
+<td>bolt <code>7687</code>, HTTP <code>7474</code></td>
+<td>written <strong>by Kumiho</strong>, never by hand</td>
+</tr>
+<tr>
+<td><strong>Redis</strong> (<code>kumiho-ce-redis</code>)</td>
+<td>event stream between Kumiho and Revka</td>
+<td><code>6379</code></td>
+<td>Kumiho/Revka internals</td>
+</tr>
+<tr>
+<td><strong>Revka 2026.8.31</strong></td>
+<td>the <strong>pen</strong> — captures memory into Kumiho</td>
+<td>gateway <code>127.0.0.1:42617</code>; MCP on an <strong>ephemeral</strong> port in <code>C:\Users\James\.revka\mcp.json</code></td>
+<td><code>engage → answer → reflect</code> tool calls against <code>[kumiho] mode = "local_ce"</code></td>
+</tr>
+<tr>
+<td><strong>9Miho 0.22.6</strong></td>
+<td>the Kumiho Desktop <strong>UI</strong></td>
+<td>FastAPI <code>127.0.0.1:9999</code> (must be launched <code>--kumiho ce</code>)</td>
+<td>read-mostly proxy over Kumiho; the surface a person looks at</td>
+</tr>
+</tbody>
+</table>
+<p>Revka's live config (<code>C:\Users\James\.revka\config.toml</code>) already points at the local graph:</p>
+<pre><code class="language-toml">[kumiho]
+enabled = true
+mode = &quot;local_ce&quot;
+api_url = &quot;http://127.0.0.1:9190&quot;
+mcp_path = &quot;~/.revka/kumiho/run_kumiho_mcp.py&quot;
+space_prefix = &quot;Revka&quot;
+memory_project = &quot;CognitiveMemory&quot;
+[memory]
+backend = &quot;kumiho&quot;
+auto_save = true
+auto_hydrate = true
+</code></pre>
+<h3 id="11-the-three-documented-write-paths-all-verified-on-this-machine-today">1.1 The three documented write paths (all verified on this machine today)</h3>
+<p><strong>(a) Kumiho MCP server</strong> — <code>kumiho.mcp_server</code> (the sidecar Revka launches). <strong>45 tools</strong> are
+registered in the installed build (kumiho 0.14.0; older notes claiming 69 come from a different
+release — use the live list, not the number). The load-bearing ones:</p>
+<pre><code>kumiho_create_project   kumiho_create_space    kumiho_create_item
+kumiho_create_revision  kumiho_create_edge     kumiho_set_metadata
+kumiho_create_bundle    kumiho_add_bundle_member
+kumiho_memory_store     kumiho_memory_retrieve
+kumiho_get_item         kumiho_get_item_revisions   kumiho_get_revision
+kumiho_get_edges        kumiho_get_dependencies     kumiho_get_dependents
+kumiho_get_provenance_summary   kumiho_find_path   kumiho_analyze_impact
+kumiho_search_items     kumiho_fulltext_search      kumiho_resolve_kref
+</code></pre>
+<p><strong>(b) Revka's Kumiho SDK bridge</strong> — <code>C:\Users\James\.revka\kumiho\kumiho_sdk_bridge.py</code>, a local
+HTTP front end to the SDK (<code>/api/v1/...</code>, tokenless for local CE). This is the concrete REST shape
+Revka itself uses:</p>
+<table>
+<thead>
+<tr>
+<th>Route</th>
+<th>Method</th>
+<th>Body / params</th>
+<th>SDK call behind it</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/api/v1/projects</code></td>
+<td>GET / POST</td>
+<td>POST <code>{name, description}</code></td>
+<td><code>get_projects</code> / <code>create_project</code></td>
+</tr>
+<tr>
+<td><code>/api/v1/spaces</code></td>
+<td>GET / POST</td>
+<td>POST <code>{parent_path, name}</code></td>
+<td><code>get_child_spaces</code> / <code>create_space</code></td>
+</tr>
+<tr>
+<td><code>/api/v1/items</code></td>
+<td>GET / POST</td>
+<td>POST <code>{space_path, item_name, kind, metadata}</code></td>
+<td><code>get_items</code> / <code>create_item</code></td>
+</tr>
+<tr>
+<td><code>/api/v1/revisions</code></td>
+<td>GET / POST</td>
+<td>POST <code>{item_kref, metadata}</code></td>
+<td><code>get_revisions</code> / <code>create_revision</code></td>
+</tr>
+<tr>
+<td><code>/api/v1/edges</code></td>
+<td>GET / POST / DELETE</td>
+<td>POST <code>{source_kref, target_kref, edge_type, metadata}</code></td>
+<td><code>get_edges</code> / <code>create_edge</code></td>
+</tr>
+<tr>
+<td><code>/api/v1/artifacts</code></td>
+<td>GET / POST</td>
+<td>POST <code>{revision_kref, name, location, metadata}</code></td>
+<td><code>get_artifacts</code> / <code>create_artifact</code></td>
+</tr>
+<tr>
+<td><code>/api/v1/items/fulltext-search</code></td>
+<td>GET</td>
+<td><code>query=</code>, <code>kind=</code></td>
+<td><code>search</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>(c) The Kumiho Python SDK (0.14.0)</strong> — installed in the Revka sidecar venv
+(<code>C:\Users\James\.revka\kumiho\venv</code>). This is what <code>kumiho_load.py</code> in this folder uses:</p>
+<pre><code class="language-python">import kumiho
+client = kumiho.client_from_local_ce()            # tokenless local CE, probes 127.0.0.1:9190
+with kumiho.use_client(client):
+    proj  = kumiho.get_project(&quot;EquityGen&quot;) or kumiho.create_project(&quot;EquityGen&quot;, &quot;…&quot;)
+    space = proj.get_space(&quot;/EquityGen/Constellation&quot;) or proj.create_space(&quot;Constellation&quot;)
+    item  = space.create_item(&quot;equitygen&quot;, &quot;company&quot;)           # (item_name, kind)
+    item.set_metadata({&quot;constellation_id&quot;: &quot;equitygen&quot;, …})
+    rev   = item.create_revision(metadata={…}, embedding_text=&quot;…&quot;, idempotency_key=&quot;…&quot;)
+    rev.create_edge(other_rev, &quot;BELONGS_TO&quot;, metadata={…}, idempotency_key=&quot;…&quot;)
+</code></pre>
+<p><code>client_from_local_ce()</code> is the documented tokenless route for a self-hosted CE (it reads
+<code>KUMIHO_LOCAL_SERVER_ENDPOINT</code>, default <code>127.0.0.1:9190</code>, probes <code>/api/_live</code>, and connects over
+gRPC when it sees <code>deployment_mode=self_hosted_ce</code>).</p>
+<h3 id="12-read-paths-for-verification">1.2 Read paths (for verification)</h3>
+<table>
+<thead>
+<tr>
+<th>Path</th>
+<th>Command</th>
+<th>Note</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>9Miho proxy</td>
+<td><code>http://127.0.0.1:9999/api/kumiho/projects</code>, <code>/spaces?project=</code>, <code>/items?project=&amp;space=</code>, <code>/item</code>, <code>/document</code>, <code>/revisions</code>, <code>/lineage</code>, <code>/file</code>, plus <code>/api/health</code> and <code>/api/kumiho/connection</code></td>
+<td>verified from 9Miho's live <code>openapi.json</code> on 2026-10-05; re-verify when it is up</td>
+</tr>
+<tr>
+<td>Kumiho health</td>
+<td><code>http://127.0.0.1:9190/api/_live</code>, <code>/api/_health</code></td>
+<td>PowerShell only</td>
+</tr>
+<tr>
+<td>Fleet readers</td>
+<td><code>M:\code\VidiFlow\out\fleet\kumiho_probe.py</code>, <code>kumiho_stack.py</code></td>
+<td>read Neo4j bolt via <code>~/.kumiho/server.toml</code>; <strong>need the <code>neo4j</code> driver, which is not installed on any Python on this box today</strong> (<code>pip install neo4j</code> where they run, or use the SDK route)</td>
+</tr>
+<tr>
+<td>Revka</td>
+<td><code>revka doctor</code>, <code>revka memory stats</code></td>
+<td>gateway + memory backend health</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="2-the-mapping-nodesjson-edgesjson-kumiho">2. The mapping: <code>nodes.json</code> / <code>edges.json</code> → Kumiho</h2>
+<p>Kumiho already stores everything as <strong><code>:Item</code></strong> (discriminated by a <code>kind</code> property) plus
+versioned <strong><code>:Revision</code></strong> nodes, grouped by <code>:Project</code> / <code>:Space</code>, with relationships
+<code>CONTAINS</code> (Space→Item) and <code>HAS_REVISION</code> (Item→Revision). The loader adds nothing to that
+schema — it only uses it.</p>
+<table>
+<thead>
+<tr>
+<th>Constellation data</th>
+<th>Kumiho object</th>
+<th>Exact call</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>node (id, name, kind, props)</td>
+<td><code>:Item</code> in the space</td>
+<td><code>space.create_item(item_name=&lt;slug of id&gt;, kind=&lt;node kind&gt;)</code></td>
+</tr>
+<tr>
+<td>node text/metadata</td>
+<td><code>:Revision</code> on that item</td>
+<td><code>item.create_revision(metadata={…}, embedding_text=&lt;summary/text&gt;, idempotency_key=&lt;stable&gt;)</code></td>
+</tr>
+<tr>
+<td>item props</td>
+<td>item metadata (string→string)</td>
+<td><code>item.set_metadata({…})</code></td>
+</tr>
+<tr>
+<td>edge (source, target, type)</td>
+<td><strong>Revision → Revision</strong> relationship</td>
+<td><code>source_rev.create_edge(target_rev, "DERIVED_FROM", metadata={…}, idempotency_key=…)</code></td>
+</tr>
+</tbody>
+</table>
+<p>Key technical facts that the loader encodes:</p>
+<ul>
+<li><strong>Edges live between <em>revisions</em>, not items.</strong> <code>create_edge(source_revision, target_revision, …)</code>.
+  The loader therefore creates one revision per node and wires edges to those revisions.</li>
+<li><strong>Edge types must match <code>^[A-Z][A-Z0-9_]{0,49}$</code></strong> (validated by both the SDK and the Rust server).
+  Lower-case input like <code>belongs_to</code> is normalised to <code>BELONGS_TO</code>. Kumiho's own standard types are
+  <code>BELONGS_TO, CREATED_FROM, REFERENCED, DEPENDS_ON, DERIVED_FROM, PRODUCED_BY, MIGRATED_FROM,
+  CONTAINS, SUPERSEDES, SUPPORTS</code>; any other uppercase type in that pattern is accepted.</li>
+<li><strong>kref format:</strong> <code>kref://&lt;project&gt;/&lt;space&gt;/&lt;item_name&gt;.&lt;kind&gt;?r=&lt;revision&gt;</code>. House convention is
+  dotted slugs — item names in the live graph look like <code>ten-projects-into-revka-agent-os.goal</code>,
+  i.e. <code>item_name</code> = slug, <code>kind</code> = <code>goal</code>. The loader passes slug + kind separately and lets
+  Kumiho form the dotted name.</li>
+<li><strong>Idempotency:</strong> <code>create_revision</code> and <code>create_edge</code> take <code>idempotency_key</code>; the loader derives
+  deterministic keys (<code>sha1</code> of node id / edge triple) so <strong>re-running the load is safe</strong> — the same
+  input produces the same nodes and edges, not duplicates. Item identity is the
+  <code>(space_path, item_name, kind)</code> triple, which Kumiho merges on.</li>
+<li><strong>Every edge carries <code>source</code> + <code>confidence</code></strong> (house rule), and every loaded object carries
+  <code>source = "vidibot.constellation"</code> so verification can find exactly what this load created.</li>
+<li><code>kind = "bundle"</code> is <strong>reserved</strong> by Kumiho; the loader renames any node that asks for it.</li>
+</ul>
+<h3 id="21-target-housing-needs-a-go-decision-the-default-is-a-proposal">2.1 Target housing (needs a GO decision — the default is a proposal)</h3>
+<table>
+<thead>
+<tr>
+<th>Choice</th>
+<th>Path</th>
+<th>Note</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Proposed default</strong></td>
+<td>project <code>EquityGen</code>, space <code>/EquityGen/Constellation</code></td>
+<td>the constellation was meant to be EquityGen's view; a new project keeps it separate from memory</td>
+</tr>
+<tr>
+<td>Alternative A</td>
+<td>project <code>CognitiveMemory</code>, space <code>/CognitiveMemory/Constellation</code></td>
+<td>keeps everything in the existing memory project</td>
+</tr>
+<tr>
+<td>Alternative B</td>
+<td>project <code>9miho</code>, space <code>/9miho/assets/…</code></td>
+<td>only if this is to read as an asset view</td>
+</tr>
+</tbody>
+</table>
+<p><code>kumiho_load.py</code> defaults to the proposed project/space and takes <code>--project</code> / <code>--space</code> overrides,
+so the decision costs one flag.</p>
+<hr />
+<h2 id="3-the-exact-commands">3. The exact commands</h2>
+<p>All commands are copy-pasteable. Working folder:
+<code>M:\code\VidiFlow\out\kumiho-constellation\</code></p>
+<h3 id="step-0-bring-the-stack-up-and-prove-it-is-up">Step 0 — bring the stack up and prove it is up</h3>
+<pre><code class="language-powershell">powershell -File M:\code\vidismart\tools\recover-kumiho.ps1
+powershell -File M:\code\vidismart\tools\kumiho-tiles.ps1
+</code></pre>
+<p>Require: Server, Neo4j, Event stream, Revka gateway, Revka MCP, Memory (8090) and 9Miho (9999) green.</p>
+<h3 id="step-1-dry-run-no-connection-to-kumiho-is-opened">Step 1 — dry run (no connection to Kumiho is opened)</h3>
+<pre><code class="language-powershell">cd M:\code\VidiFlow\out\kumiho-constellation
+C:\Python314\python.exe kumiho_load.py
+</code></pre>
+<p>Reads <code>nodes.json</code> / <code>edges.json</code>, validates every node id, every edge endpoint and every edge
+type, and writes the full call list to <code>kumiho-load-plan.json</code>. Today (against the sample fixture
+in the same folder) this prints:</p>
+<pre><code>nodes parsed : 6   edges parsed: 4
+kinds        : {'company': 1, 'product': 2, 'system': 3}
+edge types   : {'BELONGS_TO': 1, 'CONTAINS': 1, 'DERIVED_FROM': 1, 'DEPENDS_ON': 1}
+target       : project=EquityGen space=/EquityGen/Constellation
+SDK calls    : 10  -&gt; plan written to …\kumiho-load-plan.json
+DRY RUN ONLY - no connection to Kumiho was opened. …
+</code></pre>
+<p>Use <code>--nodes nodes.sample.json --edges edges.sample.json</code> to rehearse before VidiBot's real files
+land. Exit code is non-zero if any validation problem is found.</p>
+<h3 id="step-2-review-the-plan">Step 2 — review the plan</h3>
+<p>Open <code>kumiho-load-plan.json</code>: it lists every <code>space.create_item</code>, <code>item.set_metadata</code>,
+<code>item.create_revision</code> and <code>create_edge</code> call with its arguments and idempotency key.</p>
+<h3 id="step-3-the-live-load-three-gates-at-once-jamess-go-is-required">Step 3 — the live load (three gates at once; James's GO is required)</h3>
+<pre><code class="language-powershell">cd M:\code\VidiFlow\out\kumiho-constellation
+$env:KUMIHO_CONSTELLATION_GO = &quot;1&quot;                       # James's GO
+C:\Users\James\.revka\kumiho\venv\Scripts\python.exe kumiho_load.py --commit
+</code></pre>
+<p>Without <code>--commit</code> <strong>and</strong> <code>KUMIHO_CONSTELLATION_GO=1</code> <strong>and</strong> a clean validation pass, the script
+refuses and writes nothing (proven today: <code>--commit</code> alone exits with
+<code>REFUSED: --commit given but KUMIHO_CONSTELLATION_GO is not 1. Nothing was written.</code>).</p>
+<p>Run it with the <strong>sidecar venv</strong> interpreter — that is where the <code>kumiho</code> SDK lives. From a Hermes
+tool call, strip the injected <code>PYTHONPATH</code> (<code>env -u PYTHONPATH …</code>) or the loader's own
+<code>os.environ.pop("PYTHONPATH")</code>; the script already does the latter.</p>
+<h3 id="step-4-verify-read-only">Step 4 — verify (read-only)</h3>
+<pre><code class="language-powershell">cd M:\code\VidiFlow\out\kumiho-constellation
+C:\Users\James\.revka\kumiho\venv\Scripts\python.exe verify_load.py
+</code></pre>
+<p>Four checks: (1) <code>/api/_live</code>, (2) the SDK view — project, space, items carrying
+<code>constellation_id</code>, revisions, edges, (3) the 9Miho proxy answers with the same project/space/items,
+(4) the manual look. Exit code 0 = passed.</p>
+<h3 id="step-5-the-alternative-load-by-hand-through-the-mcp-tools">Step 5 — the alternative: load by hand through the MCP tools</h3>
+<p>If a person or agent prefers one object at a time (or wants to fix a single node), drive the Kumiho
+MCP tools in this order:</p>
+<pre><code>kumiho_create_project(name=&quot;EquityGen&quot;, description=&quot;EquityGen constellation&quot;)
+kumiho_create_space(project_name=&quot;EquityGen&quot;, space_name=&quot;Constellation&quot;)
+kumiho_create_item(space_path=&quot;/EquityGen/Constellation&quot;, item_name=&quot;equitygen&quot;, kind=&quot;company&quot;,
+                   metadata={&quot;constellation_id&quot;:&quot;equitygen&quot;,&quot;source&quot;:&quot;vidibot.constellation&quot;})
+kumiho_create_revision(item_kref=&quot;kref://EquityGen/Constellation/equitygen.company&quot;,
+                       metadata={&quot;summary&quot;:&quot;EquityGen is the company.&quot;})
+kumiho_set_metadata(kref=&quot;kref://EquityGen/Constellation/equitygen.company&quot;, metadata={...})
+kumiho_create_edge(source_kref=&quot;kref://…/vidi-ai.product?r=1&quot;,
+                   target_kref=&quot;kref://…/equitygen.company?r=1&quot;,
+                   edge_type=&quot;BELONGS_TO&quot;, metadata={&quot;source&quot;:&quot;vidibot.constellation&quot;,&quot;confidence&quot;:&quot;0.9&quot;})
+</code></pre>
+<p>The MCP server is launched by Revka as <code>python -m kumiho.mcp_server</code>
+(launcher: <code>C:\Users\James\.revka\kumiho\run_kumiho_mcp.py</code>); its live URL is in
+<code>C:\Users\James\.revka\mcp.json</code> (the port changes every start — never hard-code it).</p>
+<hr />
+<h2 id="4-how-james-puts-data-in">4. How James puts data in</h2>
+<p><strong>Route 1 — drop files and run the loader (recommended, repeatable).</strong>
+Put <code>nodes.json</code> and <code>edges.json</code> in <code>M:\code\VidiFlow\out\kumiho-constellation\</code>, run Step 1
+(dry run), read the plan, then Step 3 with his GO. Re-running is safe (idempotency keys).</p>
+<p><strong>Route 2 — ask the agent.</strong> Any Mez/Revka session with the Kumiho MCP attached can run
+<code>kumiho_create_item</code> / <code>kumiho_create_revision</code> / <code>kumiho_create_edge</code> interactively. Use
+<code>kumiho_memory_store</code> when the content is memory-shaped (conversation/summary) rather than a graph
+node — that is Revka's engage/reflect path, and it is how memory is <em>meant</em> to land.</p>
+<p><strong>Route 3 — Revka's own turn shape.</strong> For anything a person asks Revka in chat, the locked shape is
+<code>kumiho_memory_engage(query)</code> → answer → <code>kumiho_memory_reflect(response, captures, source_krefs)</code>.
+The constellation is a <em>seeded</em> view, so Routes 1–2 suit it better than Route 3.</p>
+<p><strong>Route 4 — 9Miho UI.</strong> The UI reads (and its Canvas can surface) the same graph; it is the place to
+<em>look</em> at the result, not the place to bulk-load it.</p>
+<hr />
+<h2 id="5-how-to-verify-it-landed-and-what-counts-as-proof">5. How to verify it landed (and what counts as proof)</h2>
+<ol>
+<li><code>verify_load.py</code> → <code>VERIFY PASSED</code>.</li>
+<li>Read-only Cypher against Neo4j (bolt <code>7687</code>, creds in <code>C:\Users\James\.kumiho\server.toml</code>,
+   which the scripts read but never print):</li>
+</ol>
+<pre><code class="language-cypher">MATCH (i:Item) WHERE i.constellation_id IS NOT NULL RETURN count(i);          -- expect = node count
+MATCH (s:Space {path:'/EquityGen/Constellation'})-[:CONTAINS]-&gt;(i:Item)
+      RETURN i.item_name, i.kind ORDER BY i.item_name;                        -- every node present
+MATCH ()-[e]-&gt;() WHERE e.source = 'vidibot.constellation'
+      RETURN type(e), count(*) ORDER BY type(e);                              -- expect = edge count by type
+MATCH (i:Item {constellation_id:'equitygen'})-[:HAS_REVISION]-&gt;(r:Revision)
+      RETURN r.number, r.metadata;                                            -- revision carries the text
+MATCH p=(a:Revision)-[e]-&gt;(b:Revision) WHERE e.source='vidibot.constellation'
+      RETURN p LIMIT 10;                                                      -- the visible web
+</code></pre>
+<ol start="3">
+<li><strong>The real proof is visual, not a status code:</strong> open
+   <a href="http://127.0.0.1:9999/">Kumiho Desktop → Constellation</a> and confirm the nodes and their edges
+   render in the 3D sun-and-planets view, and that the same items appear in the 9Miho UI at
+   <a href="http://127.0.0.1:9999/">http://127.0.0.1:9999/</a>. Note the known UI trap: a red tile ≠ CE down and
+   a green tile ≠ CE up — confirm with <code>kumiho-tiles.ps1</code>, then re-check the UI.</li>
+</ol>
+<hr />
+<h2 id="6-safety-governance-and-the-rules-honoured-here">6. Safety, governance and the rules honoured here</h2>
+<ul>
+<li><strong>Nothing was written to the live graph.</strong> The only executions today were the dry run, the
+  <code>--commit</code> refusal test, and <code>verify_load.py</code> (read-only, all three failing honestly because the
+  stack is down).</li>
+<li><strong>Pack A</strong> (the ~12 first-fill captures) is untouched; it stays blocked until James says go.</li>
+<li><strong>No live deploy, no publish, no email or outside message</strong> was sent for this task.</li>
+<li><strong>No key was printed, changed or rotated;</strong> <code>peer.txt</code> and <code>.env</code> were not opened or edited.</li>
+<li>The commands above are documented ones from this machine's own tooling (<code>M:\code\vidismart\tools\*.ps1</code>,
+  the installed SDK/MCP/bridge) — not invented syntax.</li>
+</ul>
+<hr />
+<h2 id="7-open-items-and-decisions-not-guessed">7. Open items and decisions (not guessed)</h2>
+<ol>
+<li><strong>Housing:</strong> confirm project <code>EquityGen</code> + space <code>/EquityGen/Constellation</code> (or pick an alternative, §2.1).</li>
+<li><strong><code>item_name</code> dotted convention:</strong> the loader passes slug + <code>kind</code> separately; the first live item
+   should be read back to confirm Kumiho stores <code>item_name</code> as <code>&lt;slug&gt;.&lt;kind&gt;</code> (observed convention).</li>
+<li><strong>Embeddings are disabled/401</strong> (Cloudflare Workers AI <code>bge-m3</code> has no token on this machine), so
+   <code>revision_embedding</code> is empty: <strong>graph and edges work, semantic recall does not.</strong> This is the one
+   amber tile and it is a HITL item, not a blocker for the constellation.</li>
+<li><strong>Bolt readers need a driver:</strong> <code>kumiho_probe.py</code> / <code>kumiho_stack.py</code> require <code>neo4j</code> (absent from
+   every Python on this box today). Either <code>pip install neo4j</code> or use the SDK route in §1.1c.</li>
+<li><strong>9Miho proxy shapes</strong> were captured from its live <code>openapi.json</code> on 2026-10-05; re-confirm
+   <code>/api/kumiho/*</code> when the service is back up.</li>
+<li><strong>Ubuntu box:</strong> it carries only a stray Kumiho <strong>binary</strong> (<code>/home/vidiman/.kumiho/bin/kumiho_server</code>,
+   no <code>server.toml</code>), so there is nothing loadable there. The Ubuntu-side docs pass was <strong>not</strong>
+   performed because this task forbids outbound messages of any kind, and the peer link is a
+   bot-to-bot message channel; when James lifts that, the read is one DM away.</li>
+<li><strong>Node-count honesty:</strong> VidiBot's real <code>nodes.json</code> / <code>edges.json</code> were not on disk at the time of
+   writing, so counts here come from the sample fixture. Re-run Step 1 the moment they land.</li>
+</ol>
+<hr />
+<h2 id="8-sources-read-for-this-plan-all-on-v20">8. Sources read for this plan (all on V20)</h2>
+<table>
+<thead>
+<tr>
+<th>Source</th>
+<th>What it gave</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>M:\code\VidiFlow\vidiflow\KUMIHO_REVKA_STATUS_SUMMARY.md</code></td>
+<td>ports, Docker/Neo4j coupling, the <code>KUMIHO_*</code> env, PID-file traps, tile/login behaviour</td>
+</tr>
+<tr>
+<td><code>M:\code\VidiFlow\out\fleet\_smartstack_setup_plan.md</code></td>
+<td>live service inventory + the 9Miho proxy endpoints read from its <code>openapi.json</code></td>
+</tr>
+<tr>
+<td><code>M:\code\VidiFlow\business-plan\VIDI_AI_X_VIDIFLOW_SETUP_AND_OPERATIONS_MANUAL.md</code></td>
+<td>component/port matrix, MCP launcher, runbook commands, engage→reflect turn shape</td>
+</tr>
+<tr>
+<td><code>M:\code\VidiFlow\business-plan\REVKA-KUMIHO-CONTEXT-LOCK.md</code></td>
+<td>the mandatory turn shape and <code>fail-closed</code> rule</td>
+</tr>
+<tr>
+<td><code>M:\code\VidiFlow\out\KUMIHO-RESEARCH-CAPTURE-SPEC-2026-10-07.md</code></td>
+<td>house node/edge conventions (<code>:Item</code>+<code>kind</code>, <code>HAS_REVISION</code>, <code>DERIVED_FROM</code>, <code>source</code>+<code>confidence</code>)</td>
+</tr>
+<tr>
+<td><code>M:\code\VidiBot\kumiho\KUMIHO-CONSTELLATION-LOCK-2026-09-29.md</code></td>
+<td>Constellation = default 3D view mode, sun + planets metaphor</td>
+</tr>
+<tr>
+<td><code>M:\code\VidiBot\projects\ACTIVE-PROGRAM-MEZ-KUMIHO-NEO4J-2026-09-30.md</code></td>
+<td>locked order and the P1–P4 tracks (Pack A stays on GO)</td>
+</tr>
+<tr>
+<td><code>M:\code\VidiBot\vidiflow-hx\docs\FEDERATION-SPINE-REVIEW-2026-10-11.md</code></td>
+<td>"Kumiho is the Neo4j graph", loopback binding</td>
+</tr>
+<tr>
+<td><code>M:\code\VidiBot\hermes-demo-revka-harness\README.md</code></td>
+<td>Revka = the harness at 42617, memory = Kumiho at 9190, project <code>CognitiveMemory</code></td>
+</tr>
+<tr>
+<td><code>M:\code\VidiFlow\hydra\PEER-LINK-V20-2026-10-08.md</code>, <code>M:\code\VidiBot\docs\PEER-LINK-FOUR-DAY-POSTMORTEM-2026-10-10.md</code></td>
+<td>peer-link state (V20 <code>192.168.4.44</code>, Ubuntu <code>192.168.4.40:8642</code>)</td>
+</tr>
+<tr>
+<td><strong>Installed code, read directly (no docs exist for these binaries)</strong></td>
+<td></td>
+</tr>
+<tr>
+<td><code>C:\Users\James\.revka\kumiho\venv\Lib\site-packages\kumiho\</code> (0.14.0)</td>
+<td><code>client_from_local_ce</code>, <code>create_project/space/item/revision/edge</code>, <code>Kref</code> format, edge-type rule, reserved kinds</td>
+</tr>
+<tr>
+<td><code>C:\Users\James\.revka\kumiho\venv\Lib\site-packages\kumiho\mcp_server.py</code></td>
+<td>the 45 registered <code>kumiho_*</code> tool names and their arguments</td>
+</tr>
+<tr>
+<td><code>C:\Users\James\.revka\kumiho\kumiho_sdk_bridge.py</code></td>
+<td>the <code>/api/v1/*</code> routes Revka uses, and the tokenless local-CE path</td>
+</tr>
+<tr>
+<td><code>C:\Users\James\.revka\kumiho\venv\Lib\site-packages\kumiho_memory\</code> (1.6.0)</td>
+<td>the higher-level memory API (<code>UniversalMemoryManager</code>, <code>memory_store</code>/<code>retrieve</code>)</td>
+</tr>
+<tr>
+<td><code>M:\code\vidismart\tools\{recover,start}-kumiho*.ps1</code>, <code>kumiho-tiles.ps1</code>, <code>kumiho-diag.ps1</code></td>
+<td>the only supported start/health commands</td>
+</tr>
+</tbody>
+</table>
+<h2 id="9-files-created-by-this-task">9. Files created by this task</h2>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>M:\code\VidiFlow\out\kumiho-constellation\LOAD-INTO-KUMIHO.md</code></td>
+<td>this plan</td>
+</tr>
+<tr>
+<td><code>M:\code\VidiFlow\out\kumiho-constellation\LOAD-INTO-KUMIHO.html</code></td>
+<td>read-friendly render of this plan (generated by <code>render_doc.py</code>)</td>
+</tr>
+<tr>
+<td><code>M:\code\VidiFlow\out\kumiho-constellation\render_doc.py</code></td>
+<td>markdown → styled HTML renderer (re-run after editing this file)</td>
+</tr>
+<tr>
+<td><code>M:\code\VidiFlow\out\kumiho-constellation\kumiho_load.py</code></td>
+<td>the loader (dry-run by default; triple-gated live write)</td>
+</tr>
+<tr>
+<td><code>M:\code\VidiFlow\out\kumiho-constellation\verify_load.py</code></td>
+<td>read-only verification (REST, SDK, 9Miho proxy)</td>
+</tr>
+<tr>
+<td><code>M:\code\VidiFlow\out\kumiho-constellation\nodes.sample.json</code>, <code>edges.sample.json</code></td>
+<td>fixture used to prove the dry run before VidiBot's real files land</td>
+</tr>
+<tr>
+<td><code>M:\code\VidiFlow\out\kumiho-constellation\kumiho-load-plan.json</code></td>
+<td>generated call list from the last dry run</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Reading it in a browser:</strong> this folder is served on loopback, so the render opens at
+<a href="http://127.0.0.1:8791/LOAD-INTO-KUMIHO.html">http://127.0.0.1:8791/LOAD-INTO-KUMIHO.html</a>
+and the flat markdown at
+<a href="http://127.0.0.1:8791/LOAD-INTO-KUMIHO.md">http://127.0.0.1:8791/LOAD-INTO-KUMIHO.md</a>.
+If that server is not running, restart it with
+<code>C:\Python314\python.exe -m http.server 8791 --bind 127.0.0.1</code> from this folder.</p></main></body></html>

@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Profile architecture — Mez engine internals</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* vidiflow tokens (mirrored from /mnt/m/code/vidiflow/vidiflow-demo-site) */
+  --bg:#070a0e;            /* page */
+  --bg-panel:#0e141d;      /* panels  */
+  --bg-raised:#101822;     /* cards   */
+  --bg-inset:#04080c;      /* code blocks */
+  --surface:#131b26;
+  --line:#1c2734;
+  --line-soft:#0e141d;
+  --text:#e8eef6;
+  --text-2:#8595a8;
+  --text-3:#5d6c7e;
+  --accent:#5be9ff;        /* cyan */
+  --accent-dim:#1d8ea6;
+  --ok:#4ade80;
+  --warn:#ffb347;
+  --bad:#ff4d5e;
+  --violet:#b98cff;
+  --r-s:6px; --r-m:10px; --r-l:16px;
+  --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+  --sans:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);color:var(--text);font-family:var(--sans);
+  font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased;
+}
+p{text-wrap:pretty}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline;text-underline-offset:3px}
+code{font-family:var(--mono);font-size:.88em}
+.mono{font-family:var(--mono)}
+.wrap{max-width:960px;margin:0 auto;padding:0 24px}
+
+/* ---------- header ---------- */
+.topbar{
+  position:sticky;top:0;z-index:50;background:rgba(7,10,14,.85);
+  backdrop-filter:blur(12px);border-bottom:1px solid var(--line);
+}
+.topbar-in{max-width:960px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;gap:16px}
+.wordmark{font-size:17px;font-weight:700;letter-spacing:-.02em;color:var(--text);font-family:var(--sans)}
+.wordmark span{color:var(--accent)}
+.topbar .kicker{font-size:12px;color:var(--text-3);font-weight:500;letter-spacing:.02em}
+.topnav{margin-left:auto;display:flex;gap:18px;font-size:13px;font-weight:500}
+.topnav a{color:var(--text-2)}
+.topnav a:hover{color:var(--text);text-decoration:none}
+
+/* ---------- hero ---------- */
+.hero{padding:72px 0 56px;border-bottom:1px solid var(--line)}
+.hero .eyebrow{
+  display:inline-block;font-family:var(--mono);font-size:11px;font-weight:500;
+  letter-spacing:.09em;text-transform:uppercase;color:var(--accent-dim);
+  background:rgba(91,233,255,.06);border:1px solid rgba(91,233,255,.18);
+  padding:4px 10px;border-radius:999px;margin-bottom:24px;
+}
+h1{
+  font-size:clamp(34px,5.5vw,52px);font-weight:700;line-height:1.08;
+  letter-spacing:-.035em;color:var(--text);max-width:15ch;
+}
+.hero p.lede{margin-top:20px;font-size:18px;font-weight:300;color:var(--text-2);max-width:62ch}
+.meta-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:28px}
+.chip{
+  font-family:var(--mono);font-size:11.5px;color:var(--text-2);
+  background:var(--bg-raised);border:1px solid var(--line);border-radius:999px;padding:4px 12px;
+}
+.chip b{color:var(--accent);font-weight:500}
+
+/* ---------- sections ---------- */
+section{padding:52px 0;border-bottom:1px solid var(--line)}
+h2{
+  font-size:26px;font-weight:600;letter-spacing:-.02em;line-height:1.2;
+  margin-bottom:8px;
+}
+h2 .num{font-family:var(--mono);font-size:14px;color:var(--accent);font-weight:500;margin-right:10px}
+.sub{color:var(--text-2);font-size:15.5px;margin-bottom:28px;max-width:64ch}
+h3{font-size:16px;font-weight:600;letter-spacing:-.01em;margin:28px 0 10px;color:var(--text)}
+
+/* big callout */
+.callout{
+  background:linear-gradient(135deg,rgba(91,233,255,.07),rgba(185,140,255,.05));
+  border:1px solid rgba(91,233,255,.25);border-radius:var(--r-l);
+  padding:26px 28px;margin:32px 0;
+}
+.callout h3{margin:0 0 10px;font-size:16px;color:var(--accent)}
+.callout p{color:var(--text-2);font-size:15px}
+.callout p+p{margin-top:10px}
+.callout code{color:var(--text)}
+
+/* cards */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.card{
+  background:var(--bg-raised);border:1px solid var(--line);border-radius:var(--r-m);
+  padding:20px;
+}
+.card h4{font-size:14.5px;font-weight:600;margin-bottom:6px;color:var(--text)}
+.card p{font-size:13.5px;color:var(--text-2)}
+
+/* tables */
+.tbl{width:100%;border-collapse:collapse;font-size:13.5px;margin:16px 0}
+.tbl th{
+  text-align:left;font-family:var(--mono);font-size:10.5px;font-weight:500;
+  text-transform:uppercase;letter-spacing:.08em;color:var(--text-3);
+  padding:8px 12px;border-bottom:1px solid var(--line);
+}
+.tbl td{padding:10px 12px;border-bottom:1px solid var(--line-soft);color:var(--text-2);vertical-align:top}
+.tbl td:first-child{font-family:var(--mono);font-size:12.5px;color:var(--text);white-space:nowrap}
+.tbl .pill{display:inline-block;font-family:var(--mono);font-size:10.5px;font-weight:500;
+  padding:2px 8px;border-radius:999px}
+.pill.iso{color:var(--warn);background:rgba(255,179,71,.09);border:1px solid rgba(255,179,71,.25)}
+.pill.share{color:var(--ok);background:rgba(74,222,128,.08);border:1px solid rgba(74,222,128,.25)}
+.tbl code{color:var(--accent)}
+
+/* code blocks */
+pre{
+  background:var(--bg-inset);border:1px solid var(--line);border-radius:var(--r-m);
+  padding:16px 18px;overflow-x:auto;margin:14px 0;
+}
+pre code{font-size:12.5px;line-height:1.65;color:#c9d6e3}
+pre .c{color:#5d6c7e}
+pre .k{color:var(--accent)}
+pre .s{color:var(--ok)}
+pre .p{color:var(--violet)}
+.codelabel{
+  font-family:var(--mono);font-size:10.5px;color:var(--text-3);letter-spacing:.06em;
+  text-transform:uppercase;margin-bottom:-8px;margin-top:18px;
+}
+
+/* diagram */
+.diagram{background:var(--bg-panel);border:1px solid var(--line);border-radius:var(--r-l);padding:24px;margin:24px 0}
+.diagram svg{display:block;width:100%;height:auto}
+
+/* troubleshooting */
+.trouble{
+  border:1px solid rgba(255,77,94,.3);border-radius:var(--r-l);
+  padding:26px 28px;margin:32px 0;background:rgba(255,77,94,.04);
+}
+.trouble h3{margin:0 0 6px;color:var(--bad);font-size:16px}
+.trouble .lead{color:var(--text-2);font-size:14.5px;margin-bottom:18px}
+.check{display:flex;gap:14px;padding:14px 0;border-top:1px solid var(--line)}
+.check:first-of-type{border-top:none}
+.check .n{
+  flex:0 0 28px;height:28px;border-radius:8px;background:var(--bg-raised);
+  border:1px solid var(--line);display:flex;align-items:center;justify-content:center;
+  font-family:var(--mono);font-size:12px;font-weight:700;color:var(--accent);
+}
+.check p{font-size:14px;color:var(--text-2)}
+.check p code{color:var(--text)}
+.check p b{color:var(--text);font-weight:600}
+
+/* footer */
+footer{padding:40px 0 64px;color:var(--text-3);font-size:13px}
+footer .note{
+  font-family:var(--mono);font-size:11.5px;color:var(--accent-dim);
+  background:var(--bg-raised);border:1px solid var(--line);border-radius:var(--r-s);
+  display:inline-block;padding:6px 12px;margin-bottom:14px;
+}
+footer p{max-width:70ch}
+.src{margin-top:10px;font-size:12px;color:var(--text-3)}
+
+@media (max-width:720px){
+  .grid2,.grid3{grid-template-columns:1fr}
+  .topnav{display:none}
+  .hero{padding:48px 0 40px}
+  .tbl{font-size:12.5px}
+  .tbl td:first-child{white-space:normal}
+  .diagram{padding:12px}
+}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-in">
+    <span class="wordmark"><span>Vidi</span> · Ops Wiki</span>
+    <span class="kicker">Mez engine internals</span>
+    <nav class="topnav">
+      <a href="#ownership">Ownership</a>
+      <a href="#providers">Providers</a>
+      <a href="#fixes">Fixes</a>
+      <a href="#trouble">Missing provider</a>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap">
+
+<section class="hero" style="border:none">
+  <span class="eyebrow">Internal ops reference</span>
+  <h1>How Mez profiles, config, and model providers relate</h1>
+  <p class="lede">
+    Every named profile is a complete, isolated Mez home. One process switches homes by
+    re-pointing <code>HERMES_HOME</code>, and from that moment every config file, secret,
+    skill, session, and provider plugin resolves inside that home. Nothing leaks in from a
+    sibling profile, and that is deliberate.
+  </p>
+  <div class="meta-row">
+    <span class="chip">Measured on <b>&nbsp;vidi</b></span>
+    <span class="chip">Mez <b>&nbsp;v0.21.5+7024.g7653424</b></span>
+    <span class="chip">Verified against live file:line checks, Oct 2026</span>
+  </div>
+</section>
+
+<section id="model">
+  <h2><span class="num">00</span>The one-sentence model</h2>
+  <p class="sub">If you remember one thing, remember this.</p>
+  <div class="callout" style="margin-top:8px">
+    <p><b style="color:var(--text)">A profile is a Mez home.</b> Invoking
+    <code>hermes -p lexi</code> sets <code>HERMES_HOME</code> to
+    <code>~/.hermes/profiles/lexi/</code> before any code imports, so <code>config.yaml</code>,
+    <code>.env</code>, <code>skills/</code>, <code>sessions/</code>, <code>memories/</code>, and
+    <code>plugins/</code> all read from that directory. There is no cross-profile inheritance
+    and no global provider registry for user plugins. A provider installed under one home is
+    invisible to every other home, by design.</p>
+  </div>
+  <p class="sub" style="margin-bottom:0">
+    Mechanism, in order: <code>hermes_cli/main.py:594</code> pre-parses <code>-p/--profile</code>
+    and rewrites <code>HERMES_HOME</code> before imports; <code>profiles.py:2572-2589</code>
+    maps <code>default</code> to the root home and anything else to
+    <code>root/profiles/&lt;name&gt;</code>; every subcommand accepts <code>-p</code>, and a
+    sticky <code>~/.hermes/active_profile</code> supplies the default when no flag is given.
+    Example verified live: <code>hermes -p vidimail config path</code> returns the
+    <code>vidimail</code> profile's own <code>config.yaml</code>.
+  </p>
+</section>
+
+<section id="ownership">
+  <h2><span class="num">01</span>What each profile owns, and what it shares</h2>
+  <p class="sub">
+    A named profile directory is a full copy of the Mez home layout, not a overlay with a few
+    personal settings. Almost everything is isolated; only shipped bundle code, the admin-only
+    managed scope, and the sticky default-profile pointer are per-box.
+  </p>
+
+  <table class="tbl">
+    <thead><tr><th>Artifact</th><th>Scope</th><th>Shared or isolated, and why</th></tr></thead>
+    <tbody>
+      <tr><td>profile.yaml</td><td><span class="pill iso">isolated</span></td>
+        <td>Metadata about the profile: display name, description, kanban role, UI meta. Written by <code>hermes profile describe/rename</code>. Not configuration.</td></tr>
+      <tr><td>config.yaml</td><td><span class="pill iso">isolated</span></td>
+        <td>The entire file, per profile. Merged over <code>DEFAULT_CONFIG</code>, then the managed overlay. The root <code>~/.hermes/config.yaml</code> is never merged as a fallback for a named profile.</td></tr>
+      <tr><td>.env</td><td><span class="pill iso">isolated</span></td>
+        <td>Profile-scoped secret scopes exist precisely so one profile's keys never reach another's. Seeded at profile creation; legacy profiles were backfilled once with a copy of the root <code>.env</code>. <code>${VAR}</code> refs in config resolve through the profile's own scope; a miss is a miss.</td></tr>
+      <tr><td>skills/</td><td><span class="pill iso">isolated</span></td>
+        <td>Per-profile copies; bundled skills are re-seeded into each profile at update time. Diverge freely per profile.</td></tr>
+      <tr><td>sessions/ &amp; state.db</td><td><span class="pill iso">isolated</span></td>
+        <td>The canonical session store is per-home.</td></tr>
+      <tr><td>memories/</td><td><span class="pill iso">isolated</span></td>
+        <td>Per-profile memory namespace.</td></tr>
+      <tr><td>plugins/</td><td><span class="pill iso">isolated</span></td>
+        <td>User-installed provider plugins live here, per home. This is the crux of §02.</td></tr>
+      <tr><td>models/ cache, auth.json</td><td><span class="pill iso">isolated</span></td>
+        <td>Per-profile model caches and credentials.</td></tr>
+      <tr><td>Bundled provider plugins</td><td><span class="pill share">shared</span></td>
+        <td>Shipped in the repo at <code>plugins/model-providers/&lt;name&gt;/</code>, available to every profile (openrouter, anthropic, deepseek, nvidia …).</td></tr>
+      <tr><td>Managed scope</td><td><span class="pill share">shared</span></td>
+        <td><code>/etc/hermes/</code> (or <code>$HERMES_MANAGED_DIR</code>) is a read-only admin overlay merged into every profile's config. Admin-only; not configured on this box.</td></tr>
+      <tr><td>active_profile</td><td><span class="pill share">shared</span></td>
+        <td>One stick of global state: remembers which profile is the default when no <code>-p</code> is passed. <code>hermes profile use &lt;name&gt;</code>.</td></tr>
+    </tbody>
+  </table>
+
+  <p class="sub" style="margin-bottom:0">
+    Config precedence, verbatim from <code>hermes_cli/config.py:2123-2127</code>:
+    <b style="color:var(--text)"><code>DEFAULT_CONFIG + profile config.yaml + managed scope</code></b>,
+    env-expanded. Two routing rules matter in practice: <code>${VAR}</code> references resolve
+    through the profile's own secret scope only, and <code>UPPER_SNAKE</code> keys passed to
+    <code>hermes config set</code> are routed to <code>.env</code>, not <code>config.yaml</code>.
+  </p>
+</section>
+
+<section id="diagram">
+  <h2><span class="num">02</span>The diagram: one profile, one home</h2>
+  <p class="sub">
+    Resolution happens once, before imports. Everything downstream reads from inside the box.
+  </p>
+  <div class="diagram">
+    <svg viewBox="0 0 880 400" role="img" aria-label="Diagram: a profile resolves HERMES_HOME, which scopes config.yaml, .env, skills, sessions, memories, and plugins inside one home; shared layers sit outside">
+      <defs>
+        <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="#5be9ff"/>
+        </marker>
+        <marker id="arrg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="#4ade80"/>
+        </marker>
+      </defs>
+
+      <!-- profile pill -->
+      <rect x="40" y="150" width="170" height="64" rx="12" fill="#101822" stroke="#5be9ff" stroke-width="1.4"/>
+      <text x="125" y="176" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="14" font-weight="700" fill="#5be9ff">hermes -p lexi</text>
+      <text x="125" y="196" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" fill="#8595a8">profile selector</text>
+
+      <!-- arrow profile -> home -->
+      <line x1="210" y1="182" x2="288" y2="182" stroke="#5be9ff" stroke-width="1.4" marker-end="url(#arr)"/>
+      <text x="249" y="170" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#5d6c7e">HERMES_HOME</text>
+
+      <!-- home box -->
+      <rect x="292" y="30" width="330" height="304" rx="14" fill="#0e141d" stroke="#1c2734" stroke-width="1.4"/>
+      <text x="457" y="56" text-anchor="middle" font-family="Inter,sans-serif" font-size="12" font-weight="600" fill="#e8eef6">~/.hermes/profiles/lexi/</text>
+
+      <!-- home children -->
+      <g font-family="JetBrains Mono,monospace" font-size="12" fill="#c9d6e3">
+        <rect x="316" y="76"  width="282" height="30" rx="6" fill="#101822" stroke="#1c2734"/><text x="332" y="95">config.yaml</text><text x="574" y="95" font-size="9.5" fill="#ffb347" text-anchor="end">isolated</text>
+        <rect x="316" y="114" width="282" height="30" rx="6" fill="#101822" stroke="#1c2734"/><text x="332" y="133">.env</text><text x="574" y="133" font-size="9.5" fill="#ffb347" text-anchor="end">isolated</text>
+        <rect x="316" y="152" width="282" height="30" rx="6" fill="#101822" stroke="#1c2734"/><text x="332" y="171">skills/</text><text x="574" y="171" font-size="9.5" fill="#ffb347" text-anchor="end">isolated</text>
+        <rect x="316" y="190" width="282" height="30" rx="6" fill="#101822" stroke="#1c2734"/><text x="332" y="209">sessions/ · state.db</text><text x="574" y="209" font-size="9.5" fill="#ffb347" text-anchor="end">isolated</text>
+        <rect x="316" y="228" width="282" height="30" rx="6" fill="#101822" stroke="#1c2734"/><text x="332" y="247">memories/</text><text x="574" y="247" font-size="9.5" fill="#ffb347" text-anchor="end">isolated</text>
+        <rect x="316" y="266" width="282" height="30" rx="6" fill="#101822" stroke="#5be9ff" opacity="0.9"/><text x="332" y="285">plugins/model-providers/</text><text x="574" y="285" font-size="9.5" fill="#5be9ff" text-anchor="end">per home</text>
+      </g>
+
+      <!-- shared right column -->
+      <g font-family="JetBrains Mono,monospace" font-size="11.5" fill="#c9d6e3">
+        <rect x="668" y="86"  width="180" height="52" rx="10" fill="#04080c" stroke="rgba(74,222,128,.45)"/>
+        <text x="758" y="107" text-anchor="middle" fill="#4ade80">repo-bundled</text>
+        <text x="758" y="124" text-anchor="middle" font-size="10" fill="#5d6c7e">all profiles see these</text>
+
+        <rect x="658" y="158" width="200" height="52" rx="10" fill="#04080c" stroke="rgba(74,222,128,.45)"/>
+        <text x="758" y="179" text-anchor="middle" fill="#4ade80">/etc/hermes/</text>
+        <text x="758" y="196" text-anchor="middle" font-size="9" fill="#5d6c7e">admin overlay, merged into all</text>
+
+        <rect x="668" y="230" width="180" height="52" rx="10" fill="#04080c" stroke="#1c2734"/>
+        <text x="758" y="251" text-anchor="middle" fill="#8595a8">active_profile</text>
+        <text x="758" y="268" text-anchor="middle" font-size="10" fill="#5d6c7e">sticky default only</text>
+
+        <rect x="658" y="302" width="200" height="52" rx="10" fill="#04080c" stroke="rgba(255,77,94,.4)" stroke-dasharray="4 3"/>
+        <text x="758" y="323" text-anchor="middle" font-size="11" fill="#ff4d5e">sibling profile</text>
+        <text x="758" y="340" text-anchor="middle" font-size="9" fill="#ff4d5e">never merged in</text>
+      </g>
+
+      <!-- arrows home -> shared -->
+      <line x1="622" y1="112" x2="666" y2="112" stroke="#4ade80" stroke-width="1.2" marker-end="url(#arrg)"/>
+      <line x1="622" y1="184" x2="666" y2="184" stroke="#4ade80" stroke-width="1.2" marker-end="url(#arrg)"/>
+      <line x1="758" y1="282" x2="758" y2="300" stroke="#1c2734" stroke-width="1.2" marker-end="url(#arr)"/>
+      <line x1="710" y1="256" x2="640" y2="300" stroke="#ff4d5e" stroke-width="1.2" stroke-dasharray="4 3" marker-end="url(#arr)"/>
+       </svg>
+  </div>
+</section>
+
+<section id="providers">
+  <h2><span class="num">03</span>Why a provider added to profile A does not appear on profile B</h2>
+  <p class="sub">
+    Provider plugins come from four discovery sources, and only two of them are shared. The
+    lookup chain binds to the current profile's home layer first and never borrows across homes.
+  </p>
+  <div class="grid3">
+    <div class="card">
+      <h4 style="color:#4ade80">Bundled plugins · shared</h4>
+      <p>Shipped inside the repo, <code>plugins/model-providers/</code>: openrouter, anthropic, deepseek, nvidia, openai-codex and about 40 more. Loaded once per process, visible to every profile.</p>
+    </div>
+    <div class="card">
+      <h4 style="color:#ffb347">User plugins · per home</h4>
+      <p><code>$HERMES_HOME/plugins/model-providers/</code> resolves against the active profile at lookup time and loads into "that home's own layer", keyed by home path. Two threads serving two profiles must not cross-register.</p>
+    </div>
+    <div class="card">
+      <h4 style="color:#4ade80">Pip entry points · shared</h4>
+      <p><code>hermes_agent.plugins</code> entry points, process-wide. Plus per-profile named custom providers in <code>config.yaml</code>, memoized per home so multiplex homes never borrow each other's answers.</p>
+    </div>
+  </div>
+
+  <div class="callout">
+    <h3>Why profiles are isolated by design</h3>
+    <p>
+      The database comment at <code>kanban_db_dispatch.py:2831</code> and the secret-scope design
+      at <code>agent/secret_scope.py</code> say it plainly: one process serves several profiles
+      (the multiplex gateway, Desktop serve, the kanban dispatcher), so a leaking layer would
+      leak <b style="color:var(--text)">everyone's credentials and settings into everyone's agents</b>.
+      Profile-scoped secrets, scrubbed spawn environments, and per-home plugin layers exist so
+      that a multi-tenant box behaves like several tenants with a single install.
+    </p>
+    <p>
+      That is why there is no "add once, see everywhere" path. The supported shared mechanisms
+      today are exactly three: <b style="color:var(--text)">repo-bundled plugins</b> (ship with
+      <code>hermes update</code>), the <b style="color:var(--text)">managed scope</b>
+      (<code>/etc/hermes/</code>, admin-pushed, merged into every profile), and the sticky
+      <b style="color:var(--text)">active_profile</b> pointer. Everything else is per-home.
+    </p>
+  </div>
+
+  <h3>Live proof on this box</h3>
+  <p class="sub">
+    The <code>cheaperinference</code> provider exists only under the default home. An in-process
+    probe with <code>HERMES_HOME=~/.hermes/profiles/lexi</code> could not resolve it, twice.
+  </p>
+  <pre><code><span class="c"># exists only here:</span>
+~/.hermes/plugins/model-providers/cheaperinference/   <span class="c"># = the DEFAULT profile's home</span>
+
+<span class="c"># none of the 8 named profiles have it:</span>
+profiles/agent_army/ · appflowy_research/ · equitygen-app/ · hermes_gateway/
+lex_lexicon/ · lexi/ · vidiflow_vidibio_hx/ · vidimail/
+  → plugins/model-providers/  <span class="c"># directory absent or empty in all 8 (verified)</span>
+
+<span class="c"># in-process resolution check:</span>
+default home:  resolves cheaperinference  <span class="s">True</span>
+HERMES_HOME=profiles/lexi:  resolves      <span class="s">False</span>  <span class="c">#/invisible</span></code></pre>
+</section>
+
+<section id="fixes">
+  <h2><span class="num">04</span>Supported ways to make a provider available to all profiles</h2>
+  <p class="sub">
+    There is no sync verb and no inheritance. Pick one of these, all verified against
+    <code>hermes --help</code> on this version.
+  </p>
+
+  <h3>A · Copy the plugin into every profile home</h3>
+  <pre><code><span class="k">for</span> p <span class="k">in</span> $(hermes profile list | awk <span class="s">'/^[ ]/ {print $1}'</span>); <span class="k">do</span>
+  mkdir -p ~/.hermes/profiles/$p/plugins/model-providers
+  cp -r ~/.hermes/plugins/model-providers/cheaperinference ~/.hermes/profiles/$p/plugins/
+<span class="k">done</span></code></pre>
+  <p class="sub" style="margin-top:-6px">
+    Discovery re-scans the plugin dir on a TTL, so a served profile picks it up without a
+    restart. Cost: every future profile needs the copy again.
+  </p>
+
+  <h3>B · Set each profile's config explicitly</h3>
+  <pre><code>hermes -p agent_army config set model.default deepseek-v4.1-flash
+hermes -p agent_army config set model.provider cheaperinference
+hermes -p agent_army config set model.base_url <span class="s">'https://api.cheaperinference.com/v1'</span>
+
+<span class="c"># UPPER_SNAKE keys route to .env, and .env is per profile:</span>
+hermes -p agent_army config set CHEAPER_INFERENCE_API_KEY &lt;key&gt;</code></pre>
+
+  <h3>C · Clone new profiles from a good one</h3>
+  <pre><code>hermes profile create &lt;newname&gt; --clone-from lexi   <span class="c"># copies config.yaml/.env/SOUL.md/skills</span>
+hermes profile create &lt;newname&gt; --no-skills          <span class="c"># bare profile, no bundled skills</span></code></pre>
+  <p class="sub" style="margin-top:-6px">
+    Bot tokens are stripped on clone by default; <code>--clone-channels</code> keeps them, but
+    two profiles sharing one bot token collide. Existing profiles are not touched by clone.
+  </p>
+
+  <h3>D · Managed scope, the true all-profile layer</h3>
+  <p class="sub">
+    Put <code>config.yaml</code> and/or <code>managed.env</code> under <code>/etc/hermes/</code>
+    and every profile, default and named, merges it. Blunt but real: no per-profile opt-out,
+    and it is not configured on this box yet, so using it would be a new decision.
+  </p>
+
+  <div class="trouble">
+    <p class="lead" style="color:var(--text-3);font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px">Checked, not assumed</p>
+    <p class="lead" style="margin-top:0">None of these exist in this version: a global or shared user-provider directory; <code>include:</code>/<code>extends:</code> config inheritance; <code>hermes config set --for all-profiles</code> or any provision/sync verb; or <code>HERMES_VAR</code> shell-env inheritance, which is scrubbed at spawn rather than propagated. Traced across <code>providers/__init__.py</code>, <code>hermes_cli/config.py</code>, and <code>hermes profile --help</code>.</p>
+  </div>
+</section>
+
+<section id="trouble" style="border-bottom:none">
+  <h2><span class="num">05</span>My provider is missing</h2>
+  <p class="sub">
+    Run the three checks in this order. Each one narrows the failure before you touch
+    anything.
+  </p>
+  <div class="trouble" style="border-color:var(--line);background:var(--bg-panel)">
+    <h3 style="color:var(--text)">Three checks, in order</h3>
+    <div class="check">
+      <span class="n">1</span>
+      <p><b>Which profile am I actually in?</b> Confirm your home resolves to the profile you
+      expect: <code>hermes -p &lt;profile&gt; config path</code>. If you launched without
+      <code>-p</code>, a sticky <code>~/.hermes/active_profile</code> may be choosing for you.
+      A missing provider under profile B is usually here: it was installed under the default
+      home, not under B.</p>
+    </div>
+    <div class="check">
+      <span class="n">2</span>
+      <p><b>Does the plugin dir exist in this profile's home?</b> Look for
+      <code>&lt;profile-home&gt;/plugins/model-providers/&lt;name&gt;/</code> with a
+      <code>plugin.yaml</code> inside. On vidi, <code>cheaperinference</code> lived only under
+      <code>~/.hermes/plugins/…</code> (the default profile) and was absent from all 8 named
+      profiles. If it is not there, copy it (§04 A).</p>
+    </div>
+    <div class="check">
+      <span class="n">3</span>
+      <p><b>Does the profile's config actually name the provider, and is the key in scope?</b>
+      Check <code>model.provider</code>/<code>model.base_url</code> in
+      <code>&lt;profile-home&gt;/config.yaml</code>, and the API key in
+      <code>&lt;profile-home&gt;/.env</code> — never another profile's <code>.env</code>, since
+      a scope miss is a miss by design. Set both with <code>hermes -p &lt;profile&gt; config
+      set</code> (§04 B).</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="note">Internal ops reference — Mez engine internals.</div>
+  <p>
+    Source: live audit of the installed build on box <code>vidi</code>
+    (Mez <b style="color:var(--text-2)">v0.21.5+7024.g7653424</b>), every claim backed by a cited
+    file:line in <code>/home/vidiman/.hermes/hermes-agent</code>. One caveat from the probe: the
+    per-profile plugin directories were confirmed empty and the negative resolution for lexi was
+    reproduced in-process, but a handful of load warnings in the bare probe interpreter were an
+    artifact of that probe, not of Mez itself.
+  </p>
+</footer>
+
+</div>
+</body>
+</html>

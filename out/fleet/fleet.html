@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>VidiFlow Hydra — Fleet</title>
+<style>
+:root{
+  --bg:#0b0c0e; --surf:#101216; --surf2:#15181d; --surf3:#1b1f25;
+  --line:#23272e; --line2:#2e343c;
+  --ink:#e7eaee; --ink2:#b3bac4; --mut:#7d8592; --dim:#5c636e;
+  --up:#3ddc97; --down:#ff5f56; --warn:#e8a33d; --idle:#6b7280;
+  --r:6px;
+  --sans:"Segoe UI Variable Text","Segoe UI",Inter,system-ui,sans-serif;
+  --mono:"Cascadia Mono",Consolas,"SF Mono",ui-monospace,monospace;
+}
+*{box-sizing:border-box;margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:13px;
+  line-height:1.45;-webkit-font-smoothing:antialiased;font-variant-numeric:tabular-nums}
+header{height:46px;display:flex;align-items:center;gap:14px;padding:0 18px;
+  border-bottom:1px solid var(--line);background:var(--surf);position:sticky;top:0;z-index:20}
+.brand{display:flex;align-items:baseline;gap:7px}
+.brand b{font-size:14px;font-weight:650;letter-spacing:-.2px}
+.brand span{font-size:11px;color:var(--mut);letter-spacing:.4px}
+nav{display:flex;gap:2px;margin-left:8px}
+nav a{font-size:12px;color:var(--mut);text-decoration:none;padding:4px 9px;border-radius:4px}
+nav a:hover{background:var(--surf3);color:var(--ink2)}
+nav a.on{background:var(--surf3);color:var(--ink)}
+.hmeta{margin-left:auto;display:flex;gap:14px;font-family:var(--mono);font-size:11px;color:var(--mut)}
+.rule{width:1px;height:18px;background:var(--line2)}
+
+.strip{display:flex;flex-wrap:wrap;border-bottom:1px solid var(--line);background:var(--surf)}
+.strip div{padding:9px 18px;border-right:1px solid var(--line);font-size:11px;
+  color:var(--mut);display:flex;align-items:center;gap:7px}
+.strip b{font-family:var(--mono);font-size:13px;color:var(--ink);font-weight:600}
+.strip .good b{color:var(--up)} .strip .warn b{color:var(--warn)} .strip .zero b{color:var(--warn)}
+
+main{padding:16px 18px 40px}
+.panel{background:var(--surf);border:1px solid var(--line);border-radius:var(--r);
+  overflow:hidden;margin-bottom:16px}
+.panel>h2{display:flex;align-items:center;gap:8px;padding:9px 13px;
+  border-bottom:1px solid var(--line);background:var(--surf2);font-size:10.5px;
+  font-weight:600;letter-spacing:.9px;text-transform:uppercase;color:var(--mut)}
+.panel>h2 .n{margin-left:auto;font-family:var(--mono);color:var(--dim);letter-spacing:0}
+
+table{width:100%;border-collapse:collapse}
+th{text-align:left;padding:7px 13px;background:var(--surf2);font-size:10px;font-weight:600;
+  letter-spacing:.8px;text-transform:uppercase;color:var(--mut);
+  border-bottom:1px solid var(--line);white-space:nowrap;position:sticky;top:46px;cursor:pointer;user-select:none}
+th:hover{color:var(--ink2)}
+td{padding:6px 13px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:0}
+tbody tr:hover td{background:var(--surf2)}
+.mono{font-family:var(--mono);font-size:11.5px}
+.dim{color:var(--dim)} .mut{color:var(--mut)}
+.role{color:var(--mut);font-size:12px;max-width:520px}
+.tag{font-family:var(--mono);font-size:10px;padding:1px 6px;border-radius:3px;
+  background:var(--surf3);color:var(--mut);border:1px solid var(--line2);white-space:nowrap}
+.pill{font-family:var(--mono);font-size:10px;padding:1px 5px;border-radius:3px;
+  background:var(--surf3);color:var(--ink2);border:1px solid var(--line2);white-space:nowrap}
+.pill.live{background:#111e19;color:var(--up);border-color:#1d3d31}
+.pill.none{background:var(--surf2);color:var(--dim)}
+.pill.dead{background:#1e1414;color:var(--down);border-color:#3d2222}
+.zero{color:var(--warn)}
+.num{font-family:var(--mono);text-align:right}
+.sec{font-size:10px;color:var(--dim);text-transform:uppercase;letter-spacing:.7px}
+.wrap{max-height:520px;overflow:auto}
+.empty{padding:16px 13px;background:#17130c;font-size:11.5px;color:#e0c489}
+.empty b{color:var(--warn);font-weight:600}
+#errbar{display:none;margin:12px 18px 0;padding:10px 13px;border-radius:var(--r);
+  background:#1e1414;border:1px solid #3d2222;color:#ffb4af;font-family:var(--mono);
+  font-size:11.5px;white-space:pre-wrap;word-break:break-word}
+#errbar.on{display:block}
+footer{padding:14px 18px;border-top:1px solid var(--line);color:var(--dim);font-size:11px}
+@media(prefers-reduced-motion:reduce){*{animation:none!important}}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand"><b>VidiFlow Hydra</b><span>Hermes Agent fleet console</span></div>
+  <nav><a href="/">Console</a><a href="/f" class="on">Fleet</a></nav>
+  <div class="rule"></div>
+  <div class="hmeta"><span id="root"></span><span id="gen"></span></div>
+</header>
+
+<div class="strip" id="strip"></div>
+
+<div id="errbar"></div>
+
+<main>
+  <section class="panel">
+    <h2>Roster bots <span class="n" id="botN"></span></h2>
+    <div class="wrap">
+      <table>
+        <thead><tr>
+          <th data-k="name">Bot</th><th data-k="section">Section</th>
+          <th data-k="role">Mandate</th><th data-k="profile">Profile</th>
+          <th data-k="model">Model</th><th data-k="auth">Creds</th>
+          <th data-k="jobs" class="num">Jobs</th><th data-k="runs" class="num">Runs</th>
+        </tr></thead>
+        <tbody id="bots"></tbody>
+      </table>
+    </div>
+    <div id="botEmpty"></div>
+  </section>
+
+  <section class="panel">
+    <h2>Project lanes — M:\code\VidiBot <span class="n" id="laneN"></span></h2>
+    <div class="wrap">
+      <table>
+        <thead><tr>
+          <th data-k2="name">Lane</th><th data-k2="files" class="num">Files</th>
+          <th data-k2="md" class="num">Docs</th><th data-k2="modified">Last work</th>
+        </tr></thead>
+        <tbody id="lanes"></tbody>
+      </table>
+    </div>
+  </section>
+</main>
+
+<footer>Read-only view of BOT-ROSTER.md and the M:\code\VidiBot tree. Click a column to sort.</footer>
+
+<script>
+const $ = s => document.querySelector(s);
+
+// Surface any failure on the page. Without this a JS error is invisible: the
+// tables just render empty and it looks like a data problem.
+function fail(where, e){
+  const bar = document.getElementById('errbar');
+  const msg = e && (e.stack || e.message) ? (e.stack || e.message) : String(e);
+  if (bar){ bar.className = 'on'; bar.textContent = where + ': ' + msg; }
+  else console.error(where, e);
+}
+window.addEventListener('error', ev => fail('uncaught error', ev.error || ev.message));
+window.addEventListener('unhandledrejection', ev => fail('unhandled rejection', ev.reason));
+
+const esc = s => String(s ?? '').replace(/[<>&"]/g, c =>
+  ({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c]));
+let F = null, sortB = {k:'name', dir:1}, sortL = {k2:'files', dir:-1};
+
+const cls = a => b => a(b) ? 'up' : 'down';
+const dot = on => `<span class="dot" style="display:inline-block;width:7px;height:7px;border-radius:50%;background:${on?'var(--up)':'var(--down)'};margin-right:6px"></span>`;
+
+function sortBy(arr, key, dir){
+  return arr.slice().sort((x,y)=>{
+    const a = x[key] ?? '', b = y[key] ?? '';
+    if (typeof a === 'number' && typeof b === 'number') return (a-b)*dir;
+    return String(a).localeCompare(String(b))*dir;
+  });
+}
+
+function render(){
+  try{ renderRows(); }
+  catch(e){ fail('render', e); throw e; }
+}
+
+function renderRows(){
+  if(!F) return;
+  const t = F.totals || {};
+  $('#root').textContent = F.root || '';
+  $('#gen').textContent = F.generated_at ? 'scanned ' + F.generated_at : '';
+  $('#strip').innerHTML = `
+    <div><span>Roster bots</span><b>${t.bots||0}</b></div>
+    <div><span>Project lanes</span><b>${t.lanes||0}</b></div>
+    <div><span>Files scanned</span><b>${(t.lane_files||0).toLocaleString()}</b></div>
+    <div><span>Live profiles</span><b class="${t.matched?'good':'warn'}">${t.matched||0}/${t.profiles||0}</b></div>
+    <div><span>Empty lanes</span><b class="${t.empty_lanes?'zero':''}">${t.empty_lanes||0}</b></div>`;
+
+  const P = F.profiles || {};
+  const bots = sortBy(F.bots||[], sortB.k, sortB.dir);
+  $('#botN').textContent = `${bots.length} documented · ${t.matched||0} with a live profile`;
+  $('#bots').innerHTML = bots.map(b=>{
+    const p = b.profile ? P[b.profile] : null;
+    const dead = p && /muse-spark|mimo/i.test(p.model||'');
+    return `<tr>
+      <td><b>${esc(b.name)}</b></td>
+      <td class="sec">${esc(b.section||'')}</td>
+      <td class="role">${esc((b.role||'').slice(0,190))}${(b.role||'').length>190?'…':''}</td>
+      <td>${b.profile ? `<span class="pill live">${esc(b.profile)}</span>` : '<span class="pill none">no profile</span>'}</td>
+      <td class="mono ${dead?'':'dim'}">${p && p.model ? esc(p.model) : '—'}</td>
+      <td>${p ? (p.auth ? '<span class="pill live">yes</span>' : '<span class="pill none">none</span>') : '—'}</td>
+      <td class="num mono ${p&&p.jobs?'':'zero'}">${p?(p.jobs||0):'—'}</td>
+      <td class="num mono ${p&&p.executions?'':'zero'}">${p?(p.executions||0):'—'}</td>
+    </tr>`;
+  }).join('');
+
+  const lanes = sortBy(F.lanes||[], sortL.k2, sortL.dir);
+  $('#laneN').textContent = `${lanes.length} lanes · ${(t.lane_files||0).toLocaleString()} files`;
+  $('#lanes').innerHTML = lanes.map(l=>`
+    <tr>
+      <td><b>${esc(l.name)}</b></td>
+      <td class="num mono ${l.files?'':'zero'}">${l.files.toLocaleString()}</td>
+      <td class="num mono dim">${l.md}</td>
+      <td class="mono dim">${esc(l.modified||'—')}</td>
+    </tr>`).join('');
+  $('#botEmpty').innerHTML = (t.jobs===0 && t.matched) ? '' : '';
+}
+
+document.querySelectorAll('th[data-k]').forEach(th=>th.onclick=()=>{
+  const k = th.dataset.k;
+  sortB.dir = (sortB.k===k) ? -sortB.dir : 1; sortB.k = k; render();
+});
+document.querySelectorAll('th[data-k2]').forEach(th=>th.onclick=()=>{
+  const k = th.dataset.k2;
+  sortL.dir = (sortL.k2===k) ? -sortL.dir : -1; sortL.k2 = k; render();
+});
+
+async function tick(){
+  try{
+    const r = await fetch('/api/fleet',{cache:'no-store'});
+    if(!r.ok) throw new Error('GET /api/fleet -> HTTP ' + r.status);
+    F = await r.json(); render();
+    const bar = document.getElementById('errbar'); if(bar) bar.className = '';
+  }
+  catch(e){ fail('fleet fetch/render', e); const g=document.getElementById('gen'); if(g) g.textContent='ERR: '+(e&&e.message||e); }
+}
+tick(); setInterval(tick, 15000);
+</script>
+</body>
+</html>

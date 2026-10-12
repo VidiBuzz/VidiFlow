@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agent Platform Dashboard Comparison</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0f172a; color: #e2e8f0; padding: 24px; }
+        h1 { font-size: 2em; margin-bottom: 8px; color: #60a5fa; }
+        .subtitle { color: #94a3b8; margin-bottom: 32px; font-size: 1.1em; }
+        
+        .platform-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(500px, 1fr)); gap: 24px; }
+        
+        .platform-card { background: #1e293b; border-radius: 16px; overflow: hidden; border: 2px solid #334155; }
+        .platform-card:hover { border-color: #3b82f6; }
+        
+        .platform-header { padding: 20px; background: #0f172a; border-bottom: 1px solid #334155; }
+        .platform-name { font-size: 1.4em; font-weight: 700; display: flex; align-items: center; gap: 12px; }
+        .platform-type { color: #64748b; font-size: 0.9em; margin-top: 4px; }
+        .platform-url { color: #60a5fa; font-size: 0.85em; margin-top: 8px; font-family: monospace; }
+        
+        .screenshot-container { padding: 16px; background: #0f172a; }
+        .screenshot { width: 100%; border-radius: 8px; border: 1px solid #334155; }
+        
+        .mock-screen { background: #1a1a2e; border-radius: 8px; padding: 16px; min-height: 300px; font-family: monospace; }
+        .mock-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid #334155; }
+        .mock-title { font-weight: 600; color: #f1f5f9; }
+        .mock-nav { display: flex; gap: 16px; }
+        .mock-nav span { color: #64748b; font-size: 0.85em; }
+        .mock-nav span.active { color: #60a5fa; }
+        
+        .mock-grid { display: grid; grid-template-columns: 200px 1fr; gap: 16px; }
+        .mock-sidebar { background: #0f172a; border-radius: 8px; padding: 12px; }
+        .mock-sidebar-item { padding: 8px 12px; border-radius: 6px; margin-bottom: 4px; color: #94a3b8; font-size: 0.85em; }
+        .mock-sidebar-item.active { background: #3b82f6; color: white; }
+        
+        .mock-content { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+        .mock-card { background: #0f172a; border-radius: 8px; padding: 16px; }
+        .mock-card-title { font-weight: 600; color: #f1f5f9; margin-bottom: 8px; font-size: 0.9em; }
+        .mock-card-value { font-size: 1.8em; font-weight: 700; color: #60a5fa; }
+        .mock-card-sub { color: #64748b; font-size: 0.8em; margin-top: 4px; }
+        
+        .mock-table { background: #0f172a; border-radius: 8px; margin-top: 12px; overflow: hidden; }
+        .mock-table-header { display: grid; grid-template-columns: 2fr 1fr 1fr 80px; padding: 12px 16px; background: #1e293b; color: #64748b; font-size: 0.8em; }
+        .mock-table-row { display: grid; grid-template-columns: 2fr 1fr 1fr 80px; padding: 12px 16px; border-top: 1px solid #1e293b; font-size: 0.85em; }
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 8px; }
+        .status-dot.green { background: #34d399; }
+        .status-dot.yellow { background: #fbbf24; }
+        .status-dot.red { background: #f87171; }
+        
+        .features-list { padding: 16px; }
+        .feature-item { display: flex; align-items: center; gap: 8px; padding: 6px 0; color: #94a3b8; font-size: 0.9em; }
+        .feature-check { color: #34d399; }
+        .feature-x { color: #f87171; }
+        
+        .verdict { padding: 16px; background: #0f172a; border-top: 1px solid #334155; }
+        .verdict-title { font-weight: 600; color: #fbbf24; margin-bottom: 8px; }
+        .verdict-text { color: #94a3b8; font-size: 0.9em; line-height: 1.5; }
+        
+        .comparison-note { background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 20px; margin-top: 32px; }
+        .comparison-note h3 { color: #fbbf24; margin-bottom: 12px; }
+        .comparison-note p { color: #94a3b8; line-height: 1.6; }
+    </style>
+</head>
+<body>
+    <h1>🔍 Agent Platform Dashboard Comparison</h1>
+    <p class="subtitle">Visual comparison of UI screens for Hermes Agent, SGLang, CrewAI, and OpenClaw</p>
+
+    <div class="platform-grid">
+        <!-- HERMES AGENT -->
+        <div class="platform-card">
+            <div class="platform-header">
+                <div class="platform-name">📨 Hermes Agent</div>
+                <div class="platform-type">Python-based AI Agent Router + Paperclip State Manager</div>
+                <div class="platform-url">pip install hermes-agent paperclip</div>
+            </div>
+            <div class="screenshot-container">
+                <div class="mock-screen">
+                    <div class="mock-header">
+                        <div class="mock-title">Hermes Router Dashboard</div>
+                        <div class="mock-nav">
+                            <span class="active">Agents</span>
+                            <span>Routes</span>
+                            <span>Logs</span>
+                        </div>
+                    </div>
+                    <div class="mock-grid">
+                        <div class="mock-sidebar">
+                            <div class="mock-sidebar-item active">📊 Overview</div>
+                            <div class="mock-sidebar-item">🤖 Agents (3)</div>
+                            <div class="mock-sidebar-item">🔀 Routes</div>
+                            <div class="mock-sidebar-item">📝 State</div>
+                            <div class="mock-sidebar-item">⚙️ Config</div>
+                        </div>
+                        <div>
+                            <div class="mock-content">
+                                <div class="mock-card">
+                                    <div class="mock-card-title">Active Agents</div>
+                                    <div class="mock-card-value">3</div>
+                                    <div class="mock-card-sub">Qwen 3.5, Gemma 4, Nemotron</div>
+                                </div>
+                                <div class="mock-card">
+                                    <div class="mock-card-title">Requests/min</div>
+                                    <div class="mock-card-value">142</div>
+                                    <div class="mock-card-sub">Avg latency: 230ms</div>
+                                </div>
+                            </div>
+                            <div class="mock-table">
+                                <div class="mock-table-header">
+                                    <span>Agent</span><span>Status</span><span>Load</span><span>Port</span>
+                                </div>
+                                <div class="mock-table-row">
+                                    <span><span class="status-dot green"></span>Qwen 3.5 9B</span><span>Healthy</span><span>67%</span><span>:8000</span>
+                                </div>
+                                <div class="mock-table-row">
+                                    <span><span class="status-dot green"></span>Gemma 4 26B</span><span>Healthy</span><span>45%</span><span>:8001</span>
+                                </div>
+                                <div class="mock-table-row">
+                                    <span><span class="status-dot yellow"></span>Nemotron Nano</span><span>Warm</span><span>12%</span><span>:8002</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="features-list">
+                <div class="feature-item"><span class="feature-check">✓</span> Agent routing dashboard</div>
+                <div class="feature-item"><span class="feature-check">✓</span> Real-time status monitoring</div>
+                <div class="feature-item"><span class="feature-check">✓</span> Paperclip state visualization</div>
+                <div class="feature-item"><span class="feature-x">✗</span> No project/task management</div>
+                <div class="feature-item"><span class="feature-x">✗</span> No file thumbnails</div>
+            </div>
+            <div class="verdict">
+                <div class="verdict-title">Best For: Backend AI routing, not project management</div>
+                <div class="verdict-text">Hermes is a router for AI models with a basic monitoring dashboard. It does NOT manage software projects, tasks, or files. You'd still need something else for project tracking.</div>
+            </div>
+        </div>
+
+        <!-- SGLANG -->
+        <div class="platform-card">
+            <div class="platform-header">
+                <div class="platform-name">⚡ SGLang</div>
+                <div class="platform-type">High-performance LLM serving framework with OpenAI-compatible API</div>
+                <div class="platform-url">github.com/sgl-project/sglang</div>
+            </div>
+            <div class="screenshot-container">
+                <div class="mock-screen">
+                    <div class="mock-header">
+                        <div class="mock-title">SGLang Server Monitor</div>
+                        <div class="mock-nav">
+                            <span class="active">Server</span>
+                            <span>Models</span>
+                            <span>Metrics</span>
+                        </div>
+                    </div>
+                    <div class="mock-content">
+                        <div class="mock-card">
+                            <div class="mock-card-title">Server Status</div>
+                            <div class="mock-card-value" style="color: #34d399;">Running</div>
+                            <div class="mock-card-sub">Port 30000 | v0.4.2</div>
+                        </div>
+                        <div class="mock-card">
+                            <div class="mock-card-title">GPU Memory</div>
+                            <div class="mock-card-value">18.2 GB</div>
+                            <div class="mock-card-sub">of 24 GB (76%)</div>
+                        </div>
+                        <div class="mock-card">
+                            <div class="mock-card-title">Throughput</div>
+                            <div class="mock-card-value">45 req/s</div>
+                            <div class="mock-card-sub">Avg: 38 req/s</div>
+                        </div>
+                        <div class="mock-card">
+                            <div class="mock-card-title">Active Requests</div>
+                            <div class="mock-card-value">12</div>
+                            <div class="mock-card-sub">Queue: 3</div>
+                        </div>
+                    </div>
+                    <div class="mock-table" style="margin-top: 16px;">
+                        <div class="mock-table-header">
+                            <span>Model</span><span>GPU</span><span>Memory</span><span>Status</span>
+                        </div>
+                        <div class="mock-table-row">
+                            <span><span class="status-dot green"></span>Qwen2.5-72B</span><span>GPU 0</span><span>14.2 GB</span><span>Active</span>
+                        </div>
+                        <div class="mock-table-row">
+                            <span><span class="status-dot green"></span>Llama-3.1-8B</span><span>GPU 1</span><span>4.0 GB</span><span>Active</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="features-list">
+                <div class="feature-item"><span class="feature-check">✓</span> Server monitoring dashboard</div>
+                <div class="feature-item"><span class="feature-check">✓</span> GPU memory tracking</div>
+                <div class="feature-item"><span class="feature-check">✓</span> Request throughput metrics</div>
+                <div class="feature-item"><span class="feature-x">✗</span> No project management</div>
+                <div class="feature-item"><span class="feature-x">✗</span> No task/file organization</div>
+            </div>
+            <div class="verdict">
+                <div class="verdict-title">Best For: Running LLMs fast, not managing projects</div>
+                <div class="verdict-text">SGLang is a model serving engine. Its dashboard shows server health, GPU usage, and request metrics. It has ZERO project management features - no tasks, no files, no visual organization.</div>
+            </div>
+        </div>
+
+        <!-- CREWAI -->
+        <div class="platform-card">
+            <div class="platform-header">
+                <div class="platform-name">👥 CrewAI</div>
+                <div class="platform-type">Role-based multi-agent orchestration with CrewAI Enterprise UI</div>
+                <div class="platform-url">crewai.com | app.crewai.com</div>
+            </div>
+            <div class="screenshot-container">
+                <div class="mock-screen">
+                    <div class="mock-header">
+                        <div class="mock-title">CrewAI Enterprise</div>
+                        <div class="mock-nav">
+                            <span class="active">Crews</span>
+                            <span>Tasks</span>
+                            <span>Runs</span>
+                            <span>Knowledge</span>
+                        </div>
+                    </div>
+                    <div class="mock-grid">
+                        <div class="mock-sidebar">
+                            <div class="mock-sidebar-item active">📋 My Crews</div>
+                            <div class="mock-sidebar-item">📊 Analytics</div>
+                            <div class="mock-sidebar-item">🧠 Knowledge</div>
+                            <div class="mock-sidebar-item">⚙️ Settings</div>
+                        </div>
+                        <div>
+                            <div class="mock-content">
+                                <div class="mock-card">
+                                    <div class="mock-card-title">Active Crews</div>
+                                    <div class="mock-card-value">4</div>
+                                    <div class="mock-card-sub">2 running, 2 idle</div>
+                                </div>
+                                <div class="mock-card">
+                                    <div class="mock-card-title">Tasks Completed</div>
+                                    <div class="mock-card-value">127</div>
+                                    <div class="mock-card-sub">Last hour: 23</div>
+                                </div>
+                            </div>
+                            <div class="mock-table" style="margin-top: 12px;">
+                                <div class="mock-table-header">
+                                    <span>Crew</span><span>Agents</span><span>Status</span><span>Progress</span>
+                                </div>
+                                <div class="mock-table-row">
+                                    <span><span class="status-dot green"></span>Research Team</span><span>3</span><span>Running</span><span>67%</span>
+                                </div>
+                                <div class="mock-table-row">
+                                    <span><span class="status-dot green"></span>Content Team</span><span>4</span><span>Running</span><span>34%</span>
+                                </div>
+                                <div class="mock-table-row">
+                                    <span><span class="status-dot yellow"></span>QA Team</span><span>2</span><span>Idle</span><span>-</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="features-list">
+                <div class="feature-item"><span class="feature-check">✓</span> Visual crew management</div>
+                <div class="feature-item"><span class="feature-check">✓</span> Task tracking with progress</div>
+                <div class="feature-item"><span class="feature-check">✓</span> Run history and logs</div>
+                <div class="feature-item"><span class="feature-x">✗</span> No file/page thumbnails</div>
+                <div class="feature-item"><span class="feature-x">✗</span> Focused on AI agents, not general projects</div>
+            </div>
+            <div class="verdict">
+                <div class="verdict-title">Best For: Managing AI agent teams, not general software projects</div>
+                <div class="verdict-text">CrewAI has the closest thing to what you want - a visual dashboard showing agent crews, tasks, and progress. But it's designed for AI agent orchestration, not general project management across 5 software projects.</div>
+            </div>
+        </div>
+
+        <!-- OPENCLAW / NEMOCLAW -->
+        <div class="platform-card">
+            <div class="platform-header">
+                <div class="platform-name">🐾 OpenClaw / NemoClaw</div>
+                <div class="platform-type">Personal AI agent with Live Canvas visual workspace</div>
+                <div class="platform-url">github.com/openclaw/openclaw</div>
+            </div>
+            <div class="screenshot-container">
+                <div class="mock-screen">
+                    <div class="mock-header">
+                        <div class="mock-title">OpenClaw - Live Canvas</div>
+                        <div class="mock-nav">
+                            <span class="active">Canvas</span>
+                            <span>Agents</span>
+                            <span>Channels</span>
+                        </div>
+                    </div>
+                    <div style="background: #0f172a; border-radius: 8px; padding: 20px; min-height: 200px; position: relative;">
+                        <div style="position: absolute; top: 20px; left: 20px; background: #1e293b; padding: 12px; border-radius: 8px; border: 1px solid #334155;">
+                            <div style="font-size: 0.8em; color: #64748b;">Research Agent</div>
+                            <div style="font-weight: 600; color: #f1f5f9;">📊 Market Analysis</div>
+                            <div style="font-size: 0.75em; color: #34d399;">✓ Complete</div>
+                        </div>
+                        <div style="position: absolute; top: 20px; left: 200px; background: #1e293b; padding: 12px; border-radius: 8px; border: 1px solid #3b82f6;">
+                            <div style="font-size: 0.8em; color: #64748b;">Writing Agent</div>
+                            <div style="font-weight: 600; color: #f1f5f9;">📝 Draft Article</div>
+                            <div style="font-size: 0.75em; color: #fbbf24;">⏳ In Progress</div>
+                        </div>
+                        <div style="position: absolute; top: 20px; left: 380px; background: #1e293b; padding: 12px; border-radius: 8px; border: 1px solid #334155; opacity: 0.5;">
+                            <div style="font-size: 0.8em; color: #64748b;">Review Agent</div>
+                            <div style="font-weight: 600; color: #f1f5f9;">🔍 Quality Check</div>
+                            <div style="font-size: 0.75em; color: #64748b;">Waiting</div>
+                        </div>
+                        <svg style="position: absolute; top: 40px; left: 160px;" width="40" height="20">
+                            <line x1="0" y1="10" x2="40" y2="10" stroke="#3b82f6" stroke-width="2" stroke-dasharray="4"/>
+                            <polygon points="35,5 40,10 35,15" fill="#3b82f6"/>
+                        </svg>
+                        <svg style="position: absolute; top: 40px; left: 340px;" width="40" height="20">
+                            <line x1="0" y1="10" x2="40" y2="10" stroke="#64748b" stroke-width="2" stroke-dasharray="4"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+            <div class="features-list">
+                <div class="feature-item"><span class="feature-check">✓</span> Visual canvas with draggable cards</div>
+                <div class="feature-item"><span class="feature-check">✓</span> Agent workflow visualization</div>
+                <div class="feature-item"><span class="feature-check">✓</span> A2UI visual output</div>
+                <div class="feature-item"><span class="feature-x">✗</span> Personal agent, not multi-project</div>
+                <div class="feature-item"><span class="feature-x">✗</span> No file/page preview system</div>
+            </div>
+            <div class="verdict">
+                <div class="verdict-title">Best For: Visual agent workflows, closest to what you want visually</div>
+                <div class="verdict-text">OpenClaw's Live Canvas is the most visual interface of any agent platform - draggable cards, workflow arrows, visual status. But it's designed for personal AI agent management, not multi-project software development tracking.</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="comparison-note">
+        <h3>⚠️ Important Note</h3>
+        <p><strong>None of these platforms are designed for what you actually need:</strong> A visual dashboard showing thumbnails of web pages you've modified, clickable previews of changed files, and project-switching across 5 software projects. They are all AI agent infrastructure tools - model routers, serving engines, or agent orchestration frameworks.</p>
+        <p style="margin-top: 12px;"><strong>What you actually need</strong> is a project management dashboard with file previews. The closest existing tools are:</p>
+        <ul style="margin-left: 20px; margin-top: 8px; color: #94a3b8;">
+            <li><strong>Linear</strong> (linear.app) - Clean, visual, but no file thumbnails</li>
+            <li><strong>Plane</strong> (plane.so) - Open-source, visual boards, self-hostable</li>
+            <li><strong>Custom dashboard</strong> - Built specifically for your needs with page screenshots</li>
+        </ul>
+    </div>
+</body>
+</html>

@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Snap Judges | VidiFlow</title>
+<meta name="description" content="Snap Judges are single-pass typed decision engines. What Jev actually is, what the independent benchmarks found, and when to run an LLM versus a decision model.">
+<meta property="og:title" content="Snap Judges | VidiFlow">
+<meta property="og:description" content="A typed answer in one forward pass, with no generated prose beside it. The full report on LLM versus decision model.">
+<meta property="og:type" content="article">
+<link rel="icon" href="assets/mark.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+<header class="hero">
+  <div class="wrap">
+    <p class="brand"><img src="assets/mark.svg" alt="" width="36" height="36"> VidiFlow <span aria-hidden="true">&middot;</span> vidiflow.net</p>
+    <h1>Snap Judges</h1>
+    <p class="deck">A typed answer in one forward pass, with no generated prose beside&nbsp;it.</p>
+    <p class="lede">You have spent two years getting used to asking a language model a question and reading prose back. This is the other shape. You hand the engine some state and a question whose answer is already typed &mdash; a choice, a score, or a yes/no &mdash; and it hands back that answer with a probability, in one pass, without writing a single word.</p>
+    <p class="lede">Mez stays the deliberative brain for reasoning, tools, memory, and voice. A Snap Judge is the reflex beside that brain, so routine routing does not pay for a full&nbsp;generation.</p>
+  </div>
+  <div class="wrap">
+    <figure class="hero-fig">
+      <img src="assets/img/hero.png" width="1600" height="620" alt="A glowing amber encoder on the left fires one narrow beam through three floating glass cards, each holding a single glyph: a checkmark, a gauge needle and a question mark.">
+    </figure>
+  </div>
+</header>
+<hr class="rule">
+<main>
+
+  <section id="toc">
+    <div class="wrap">
+      <h2>Start here</h2>
+      <p class="sub">If you are new to this, read the next two sections and the decision. Everything after that is the evidence.</p>
+      <ul class="toc">
+        <li><a href="#what">What a Snap Judge actually is</a></li>
+        <li><a href="#not">What it is not</a></li>
+        <li><a href="#names">What the industry calls it</a></li>
+        <li><a href="#evidence">What the benchmarks found</a></li>
+        <li><a href="#calibration">Calibration, and the one fix</a></li>
+        <li><a href="#decision">LLM or Snap Judge?</a></li>
+        <li><a href="#wave">The open-source wave</a></li>
+        <li><a href="#lineup">The open-source pick</a></li>
+        <li><a href="#phases">Recommended adoption</a></li>
+        <li><a href="#sources">Sources and further reading</a></li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="what">
+    <div class="wrap">
+      <h2>What it actually is</h2>
+      <p>A language model is a next-token predictor. You give it text, it gives you text back, and if you want a decision you have to parse the text into a decision. A Snap Judge inverts that. You give it <strong>state</strong> &mdash; a ticket, an email, a JSON document &mdash; plus <strong>typed questions</strong>, and it gives you <strong>typed answers with probabilities</strong>.</p>
+      <p>There are three primitives, and they are the whole vocabulary. Nothing else exists.</p>
+    </div>
+    <div class="wrap">
+      <div class="pillars">
+        <div class="pillar">
+          <p class="glyph" aria-hidden="true">&#10003;</p>
+          <h4>Choice</h4>
+          <p>Pick one option from a list you supply. Returns the chosen option, a probability for <em>every</em> option, and a confidence. Jev allows up to 255 options.</p>
+        </div>
+        <div class="pillar">
+          <p class="glyph" aria-hidden="true">&#9707;</p>
+          <h4>Score</h4>
+          <p>Place the state on an ordered rubric of two to ten levels. Returns a continuous score, the distribution across levels, and a confidence.</p>
+        </div>
+        <div class="pillar">
+          <p class="glyph" aria-hidden="true">?</p>
+          <h4>Noul</h4>
+          <p>Is this statement true of the state? Returns the probability that it is, from 0 to 1. The cheapest and most reliable of the three.</p>
+        </div>
+      </div>
+    </div>
+    <div class="wrap">
+      <p>The whole request is <strong>one forward pass</strong>. All questions are evaluated in parallel against the same state, so adding questions barely changes latency. That is what makes a batch of five routing decisions cost about the same as one.</p>
+
+      <p>Here is the entire idea in one request:</p>
+<pre><code>resp = requests.post(
+    <span class="s">"https://openrouter.ai/api/alpha/decisions"</span>,
+    headers={<span class="s">"Authorization"</span>: <span class="s">f"Bearer {OPENROUTER_API_KEY}"</span>},
+    json={
+        <span class="k">"model"</span>: <span class="s">"typesafe/jev-1.13"</span>,
+        <span class="k">"state"</span>: <span class="s">"Hi, we were billed twice for March. Please refund the duplicate today."</span>,
+        <span class="k">"questions"</span>: {
+            <span class="k">"department"</span>: {<span class="k">"type"</span>: <span class="s">"choice"</span>, <span class="k">"criteria"</span>: {
+                <span class="k">"billing"</span>: <span class="s">"invoices, refunds"</span>,
+                <span class="k">"technical"</span>: <span class="s">"bugs, outages"</span>}},
+            <span class="k">"urgency"</span>:    {<span class="k">"type"</span>: <span class="s">"score"</span>,  <span class="k">"criteria"</span>: [<span class="s">"not urgent"</span>, <span class="s">"soon"</span>, <span class="s">"blocking"</span>]},
+            <span class="k">"churn_risk"</span>: {<span class="k">"type"</span>: <span class="s">"noul"</span>,   <span class="k">"instructions"</span>: <span class="s">"Does the user threaten to cancel?"</span>},
+        },
+    },
+)
+<span class="c"># -&gt; {"department": {"choice": "billing"}, "urgency": {"score": 0.71}, "churn_risk": {"noul": 0.88}}</span></code></pre>
+
+      <p>No prompt engineering. No <em>respond only with JSON</em>. No parsing step. The answer is a number your code branches on.</p>
+
+      <figure class="fig">
+        <img src="assets/img/one-pass.png" width="1400" height="900" alt="A single amber beam enters from the left, passes cleanly through one tall vertical gate of thin glowing lines, and exits the right side unchanged.">
+        <figcaption>One state in, one pass, one typed answer out. The beam does not branch, because the engine is not generating prose to be parsed.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section id="not">
+    <div class="wrap">
+      <h2>What it is not</h2>
+      <p><strong>It is not a smaller language model.</strong> There is no chat model behind it that you can prompt. It cannot write a paragraph, explain itself, or reason about anything beyond the question you asked.</p>
+      <p><strong>It cannot hallucinate &mdash; but read that carefully.</strong> TypeSafe put it plainly in their own launch post:</p>
+    </div>
+    <div class="wrap">
+      <blockquote>
+        <p>&ldquo;Our number is not empirical. Schema matching is guaranteed, thus we can confidently add 0% into the plots.&rdquo;</p>
+        <cite>TypeSafe AI, <a href="https://typesafe.ai/blog/introducing-system-one-models-and-jev">Introducing System One Models &amp; Jev</a>, 15 September 2026</cite>
+      </blockquote>
+      <p>Every answer is a valid option. It cannot invent a label. But it can absolutely pick the <strong>wrong valid label</strong>. Type safety removes a class of integration bugs. It does not remove misclassification. If you adopt it expecting it not to be wrong, you have misread the claim.</p>
+      <p><strong>It reads instructions literally.</strong> This is the failure mode that catches people. On the same support ticket, <em>refund</em> scored 0.72 and <em>not a refund</em> scored 0.47. TypeSafe <a href="https://docs.typesafe.ai/model-jaggedness/jev-1.13">lists nine known jagged edges</a> for version 1.13; the ones that matter for VidiFlow are literal reading, arithmetic and dates, option ordering, and large irrelevant state. Their own guidance is blunt about the first one: <em>Jev answers the question you wrote, not the one you&nbsp;meant.</em></p>
+    </div>
+  </section>
+
+  <section id="names">
+    <div class="wrap">
+      <h2>What the industry calls it</h2>
+      <p>You asked what this type of model will end up being called. There is no settled term yet, so here is the vocabulary you will meet, and <em>Snap Judge</em> is a perfectly good house name.</p>
+      <div class="tablewrap">
+        <table>
+          <caption>The names in circulation, September&ndash;October 2026.</caption>
+          <thead>
+            <tr><th scope="col">Term</th><th scope="col">Who uses it</th><th scope="col">What it means</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>System One model</strong></td><td><a href="https://typesafe.ai/blog/introducing-system-one-models-and-jev">TypeSafe AI</a></td><td>Their category name, after Kahneman&rsquo;s fast, intuitive System&nbsp;1</td></tr>
+            <tr><td><strong>Typed decision model</strong></td><td><a href="https://arxiv.org/abs/2609.32160">arXiv 2609.32160</a></td><td>The most accurate academic umbrella term</td></tr>
+            <tr><td><strong>Decision model</strong></td><td><a href="https://github.com/feder-cr/sfmqrb-awesome-decision-models">awesome-decision-models</a>, <a href="https://systemonemodels.org">systemonemodels.org</a></td><td>The community standard</td></tr>
+            <tr><td><strong>Semantic if</strong></td><td><a href="https://github.com/TheoLeeCJ/SemIf">SemIf</a></td><td>&ldquo;Most agent decisions are small&rdquo; &mdash; route this, retry that</td></tr>
+            <tr><td><strong>Snap Judge</strong></td><td>VidiFlow</td><td>Ours. Same meaning, and it describes the job rather than the&nbsp;architecture</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>One clarification worth having, because it changes how you read every benchmark: the decision <em>not</em> to generate text is not new. Label-likelihood scoring is in GPT-3 &sect;2.4 from 2020, MMLU &sect;4.1 from 2021, and <a href="https://arxiv.org/abs/2001.07676">verbalizers</a> from 2021. The audit below calls the contribution plainly: <em>the visible contribution is the packaging</em> &mdash; a typed API, one hosted endpoint, output priced at zero, and many questions against a single input. That is not a criticism. Packaging is exactly what turns a research trick into infrastructure you can adopt on a&nbsp;Tuesday.</p>
+    </div>
+  </section>
+
+  <section id="evidence">
+    <div class="wrap">
+      <h2>What the independent benchmarks actually found</h2>
+      <p>Vendor numbers do not survive contact with independent testing. The most rigorous audit available is <a href="https://dev.to/aws-builders/jev-after-eight-days-of-independent-tests-level-with-mid-price-llms-behind-the-frontier-1c60">xbill9&rsquo;s eight-day evidence review</a>, which read 14 arXiv preprints, 104 GitHub repositories and 33 dev.to and Medium posts, traced every figure to a primary source, and re-scored results from committed per-item outputs wherever they&nbsp;existed.</p>
+      <div class="tablewrap">
+        <table>
+          <caption>TypeSafe&rsquo;s launch claims, checked against independent measurement.</caption>
+          <thead>
+            <tr><th scope="col">Claim</th><th scope="col">Verdict</th><th scope="col">What the evidence says</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>193.6&times; faster,<br>444.6&times; cheaper</strong></td>
+              <td class="maybe">Overstated</td>
+              <td>Source is four <em>in-house</em> workflows TypeSafe built themselves; they concede &ldquo;some bias could exist&rdquo; and never name the comparator. Averaged over all eight setups: <strong>97.8&times; faster, 149.2&times; cheaper</strong>. Independent runs span <strong>0.5&times; (slower!) to 12.1&times; faster</strong></td>
+            </tr>
+            <tr>
+              <td><strong>&ldquo;As accurate as LLMs&rdquo;</strong></td>
+              <td class="no">No</td>
+              <td>Behind the best LLM per task by a median <strong>11.6 macro-F1</strong> across 7,977 human-labelled items. Level with <em>mid-price</em> LLMs &mdash; Kimi K3, MiniMax M3, DeepSeek V4.1 Flash &mdash; not with the frontier</td>
+            </tr>
+            <tr>
+              <td><strong>0% hallucination</strong></td>
+              <td class="yes">True, narrowly</td>
+              <td>Structurally guaranteed &mdash; every answer is a valid option, across 23,703 calls with zero invalid answers in the largest study. But wrong-but-valid is still misclassification</td>
+            </tr>
+            <tr>
+              <td><strong>RLCD training</strong></td>
+              <td class="no">Undisclosed</td>
+              <td>No paper, no patent, no method description. Model size, base and training data all unpublished. The CEO said the architecture is &ldquo;close to the chest for&nbsp;now&rdquo;</td>
+            </tr>
+            <tr>
+              <td><strong>Price</strong></td>
+              <td class="yes">Holds</td>
+              <td><strong>$0.042 per million input tokens, output free</strong> &mdash; about $5.54 per million decisions at 132-token prompts</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p>TypeSafe&rsquo;s founder is unusually candid about what the thing is. Describing Jev as &ldquo;basically a zero-shot classifier&rdquo; on Hacker News, CEO <strong>Diogo Almeida</strong> &mdash; who co-invented RLHF at OpenAI and is a primary author of InstructGPT &mdash; replied: <strong>&ldquo;exactly right!&rdquo;</strong> He also noted that TypeSafe &ldquo;can&rsquo;t prove it isn&rsquo;t subsidized.&rdquo;</p>
+    </div>
+
+    <div class="wrap">
+      <h3>Where it genuinely wins</h3>
+      <p>The valuable property is not raw accuracy. It is <strong>knowing when it is wrong</strong> &mdash; which is exactly what an automation layer needs.</p>
+      <blockquote>
+        <p>When Jev is wrong, its confidence drops to around 0.66&ndash;0.69. When the cheap LLM is wrong, it still reports 0.82&ndash;0.85. The LLM&rsquo;s verbalized confidence is high almost all the time; Jev&rsquo;s confidence carries more information about its own&nbsp;errors.</p>
+        <cite><a href="https://github.com/PavelRavvich/jev-bench">PavelRavvich/jev-bench</a> &mdash; independent benchmark, $1.13 total spend</cite>
+      </blockquote>
+      <p>On spam detection, Jev&rsquo;s top 90% most-confident predictions were <strong>100% correct</strong>, against 98.9% for the LLM. That is the property you need: a threshold <em>above which you can act without review</em>.</p>
+    </div>
+
+    <div class="wrap">
+      <h3>And the architecture that follows from it</h3>
+      <p>Put the judge in front and let it decide what deserves thought. TypeSafe documents this themselves as <a href="https://docs.typesafe.ai/patterns/confidence-routing">confidence-gated routing</a>; all three independent benchmarks converge on&nbsp;it.</p>
+      <figure class="fig">
+        <img src="assets/img/cascade.png" width="1400" height="900" alt="A bright amber beam enters from the left, passes through a small glowing diamond gate, and continues to a bright solid circle on the right. A thinner beam branches upward from the gate and fades into a dim grey circle.">
+        <figcaption>The confidence-gated cascade. Most traffic is answered by the fast judge; only the uncertain fraction escalates to an expensive model.</figcaption>
+      </figure>
+      <p>Measured on the shared 130-message subset: on spam, the cascade <strong>matched the frontier model&rsquo;s accuracy exactly</strong> while sending only <strong>one message in nine</strong> to the expensive model &mdash; 8.5&times; cheaper and over 5&times; faster at the median. On Banking77 it gave up 1.6 accuracy points for a 5.5&times; cost reduction.</p>
+      <div class="note">
+        <p><strong>One counter-intuitive caveat.</strong> Cascading into a <em>cheap</em> LLM does not pay for itself. On Banking77, Jev plus a cheap LLM cost <em>more</em> than the LLM alone, because both cost about the same per call. The cascade earns its money only when the model behind it is expensive. Plan the architecture around that, not around the headline.</p>
+      </div>
+    </div>
+
+    <div class="wrap">
+      <h3>The wider benchmark picture</h3>
+      <div class="tablewrap">
+        <table>
+          <caption>Independent evaluations, each with its own sample size and limits.</caption>
+          <thead>
+            <tr><th scope="col">Source</th><th scope="col">Finding</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><a href="https://github.com/AbdelStark/jev-benchmarks">AbdelStark/jev-benchmarks</a></td><td>AG News <span class="num">0.910</span> vs GLiNER <span class="num">0.700</span>; Banking77 <span class="num">0.870</span> vs <span class="num">0.610</span>. <strong>But</strong> on DAIR Emotion it gave <em>zero probability to the true label on 16% of examples</em></td></tr>
+            <tr><td><a href="https://github.com/nibzard/decision-model-benchmark">nibzard/decision-model-benchmark</a></td><td>40,226 decisions, <strong>zero request failures</strong>, $1.71 total. Banking77 79.2% at 316&nbsp;ms p50. <strong>But</strong> NLU++ complete-message accuracy only <strong>4.3%</strong></td></tr>
+            <tr><td>Janardhan six-model study</td><td>Claude Fable 5.1 <strong>84.0%</strong> &rarr; GPT-6 Astra 79.0% &rarr; DeepSeek V4.1 Flash 76.0% &rarr; <strong>Jev 72.5%</strong></td></tr>
+            <tr><td><a href="https://arxiv.org/abs/2609.24574">arXiv 2609.24574</a></td><td>Largest pre-registered study, 7,977 human-labelled items: Jev behind the best of 19 LLMs on <strong>14 of 15</strong> tasks</td></tr>
+            <tr><td>Eight independent Banking77 runs</td><td>Jev lands <span class="num">0.753&ndash;0.840</span>, median <span class="num">0.809</span>. In every study that ran LLMs beside it, the best of them was ahead</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section id="calibration">
+    <div class="wrap">
+      <h2>Calibration, and the one fix</h2>
+      <p>This is where adoption decisions actually get made, and the picture is more nuanced than either the hype or the debunk suggests.</p>
+      <p><strong>Out of the box, on familiar English tasks, Jev is the best-calibrated option measured.</strong> Median ECE of <strong>0.071</strong> on a 13-subset public suite &mdash; better than Nimble-9B on 11 of 13 subsets, and better than every Gemma&nbsp;4 variant (0.114&ndash;0.180) before any fitting. Against LLMs that <em>write</em> their confidence as a number in text, Jev usually&nbsp;wins.</p>
+      <p><strong>But the direction of the error changes with the data.</strong> On public multi-class sets Jev is <em>over</em>confident: on GoEmotions, labels it scored between 0.80 and 0.95 matched the human label only 15% of the time. On crash narratives it is <em>under</em>confident. Within one judge study, refit temperatures ranged from 0.65 to <strong>4.45</strong>, and the authors concluded no single temperature&nbsp;fits.</p>
+      <p><strong>And against models that return real probability distributions, Jev is the worst-calibrated.</strong> Its ECE was highest in Janardhan&rsquo;s run (0.161) and in a nine-model Banking77 pilot (0.138).</p>
+      <figure class="fig">
+        <img src="assets/img/calibration.png" width="1400" height="900" alt="A thin amber gauge arc with a needle pointing up and right. To its right, a tight bright cluster of amber dots high up, and a wide loose scatter of dim grey dots spread low and broad.">
+        <figcaption>Confidence has to mean something. A tight cluster is a model you can threshold; a wide scatter is not. Fitting a temperature is what turns the left into the right.</figcaption>
+      </figure>
+      <p>There is also an API artefact worth knowing before you build: <strong>the API rounds every probability to 0.01</strong>, and in one committed sample <strong>70.4% of choice probabilities came back as exactly zero</strong>. Noul is clamped to 0.01&ndash;0.98. If you plan to threshold on very small probabilities, design around that.</p>
+      <div class="warn">
+        <p><strong>The fix is small and it is not optional.</strong> A small refit corrects most of the calibration error, for Jev and for any open model read the same way:</p>
+        <ul class="bullets">
+          <li>A two-parameter refit on <code>civil_comments</code> took Jev&rsquo;s ECE from 0.16&ndash;0.21 to <strong>under 0.025</strong> on held-out data</li>
+          <li>Transferring a fitted slope and refitting only the intercept on <strong>50 labels</strong> cut mean ECE by <strong>74%</strong></li>
+          <li>One temperature fitted on 50 labels brought plain Gemma&nbsp;4 26B from 0.180 to <strong>0.080</strong></li>
+        </ul>
+        <p><strong>Budget 50&ndash;300 labelled decisions per question family and fit a temperature on them.</strong> Every independent reviewer reaches the same conclusion. The open replicas report the same order of correction: Nimble fitted 2.179, Luce 2.5&ndash;3.3.</p>
+      </div>
+      <div class="note">
+        <p><strong>This is not hypothetical on this machine.</strong> The Mez routing policy at <code>C:\Users\James\AppData\Local\hermes\routing\policy.json</code> already names <code>convaiinnovations/laya</code> as its classifier, and already carries the rule <em>&ldquo;gate on <code>answer_confidence</code>, never raw confidence&rdquo;</em>. Laya is routing requests on this box right&nbsp;now.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="decision">
+    <div class="wrap">
+      <h2>LLM or Snap Judge?</h2>
+      <p>Here it is plainly.</p>
+      <div class="split">
+        <div class="card yes-card">
+          <h4>Use a Snap Judge when&hellip;</h4>
+          <ul>
+            <li>The answer is a choice, a score or a boolean that you can write down in advance, before you build</li>
+            <li>You need an answer in hundreds of milliseconds or less, somewhere a user is waiting</li>
+            <li>You branch on the result &mdash; routing, triage, guardrails and escalation paths</li>
+            <li>You have no labelled data yet and still want to ship something working this week</li>
+            <li>The data cannot leave your network</li>
+            <li>You need the answer guaranteed to match your schema, with no parse failures at all</li>
+          </ul>
+        </div>
+        <div class="card no-card">
+          <h4>Use an LLM when&hellip;</h4>
+          <ul>
+            <li>The output has to be prose, code, or something genuinely open-ended and unbounded</li>
+            <li>The task needs real reasoning, arithmetic, date maths or several steps of indirection</li>
+            <li>You need the model to explain itself</li>
+            <li>The label space is large, fuzzy in its edges, or it shifts on every single call</li>
+            <li>You still do not know what the correct labels should even be named</li>
+          </ul>
+        </div>
+      </div>
+      <p>The label-space warning is not theoretical. On Banking77 at 77 options, Jev scores <strong>0.870</strong> while Laya scores <strong>0.425</strong> &mdash; because options share a fixed token budget, so at 77 options each label gets three or four tokens and the text stops being distinguishable. That is an architectural limit, not a tuning&nbsp;miss.</p>
+      <div class="note">
+        <p><strong>The honest answer is neither.</strong> The cascade beats both, and it is the one architecture every independent benchmark converges on. A Snap Judge is a <em>reflex</em>. An LLM is <em>deliberation</em>. You are not choosing between them &mdash; you put the reflex in front and let it decide what deserves thought.</p>
+        <p>The cost of being wrong here is asymmetric in a way that should settle it for VidiFlow: a judge that abstains has cost you one cheap call. An LLM asked a routing question and confidently wrong has cost you a full generation and a user who saw the wrong&nbsp;answer.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="wave">
+    <div class="wrap">
+      <h2>The open-source wave</h2>
+      <p>Nobody predicted this. Within roughly 48 hours of Jev&rsquo;s launch, at least six independent open clones appeared, and the community now tracks <strong>564 projects</strong> across 18 categories in <a href="https://github.com/yibie/awesome-jev">awesome-jev</a>.</p>
+      <p>They could all exist because the mechanism is not proprietary. <strong>End the prompt where the answer would start, take the model&rsquo;s scores for only the allowed label tokens, and softmax over them.</strong> Any open model can be read this way &mdash; vLLM exposes it via <code>logprob_token_ids</code>, SGLang via <code>/v1/score</code>.</p>
+      <figure class="fig">
+        <img src="assets/img/fork-clones.png" width="1400" height="820" alt="A small glowing amber hexagon in the upper left fans out seven thin amber and silver lines to seven separate glowing nodes of varying brightness across the right side.">
+        <figcaption>One interface, forked many ways. The core read is trivial; the difficulty is calibration and knowing when to abstain.</figcaption>
+      </figure>
+      <div class="tablewrap">
+        <table>
+          <caption>The main open contenders, by GitHub stars as of 3 October 2026.</caption>
+          <thead>
+            <tr><th scope="col">Project</th><th scope="col">Base</th><th scope="col">Licence</th><th scope="col">Stars</th><th scope="col">What it is</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><a href="https://github.com/NandhaKishorM/laya"><strong>Laya</strong></a></td><td>ModernBERT-large 421M<br>mmBERT-base 322M</td><td>Apache-2.0</td><td class="num">30.5k</td><td>The production candidate. Pip-installable, 100+ languages, router between checkpoints</td></tr>
+            <tr><td><a href="https://github.com/jaredpalmer/kev"><strong>Kev</strong></a></td><td>Qwen3.5 0.8B&ndash;27B + LoRA</td><td>Apache-2.0</td><td class="num">8.4k</td><td>Jared Palmer&rsquo;s family. Jev-wire-compatible API on your own weights</td></tr>
+            <tr><td><a href="https://github.com/TheoLeeCJ/SemIf"><strong>SemIf</strong></a></td><td>Qwen3.5-4B, frozen</td><td>MIT</td><td class="num">4.7k</td><td>Semantic ifs. Browser WebGPU demo, no waitlist</td></tr>
+            <tr><td><a href="https://github.com/bespokelabsai/nimble"><strong>Nimble</strong></a></td><td>Qwen3.5-9B + LoRA</td><td>&mdash;</td><td class="num">2.0k</td><td>Bespoke Labs&rsquo; <strong>contrastive curation</strong> recipe &mdash; the idea worth stealing</td></tr>
+            <tr><td><a href="https://github.com/vinnylarouge/jevlike"><strong>jevlike</strong></a></td><td>small trained model</td><td>MIT</td><td class="num">1.3k</td><td>The base CUA-S1-FORMS was built on it. Research starter</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="note">
+        <p><strong>The most valuable trick in the whole field costs nothing and is model-independent.</strong> From the <a href="https://github.com/bespokelabsai/nimble">Nimble README</a>: write two nearly identical records and <strong>flip one fact</strong> so the correct answer flips &mdash; a refund signed by Mira is authorised, the same record signed by Noah is not. That is contrastive curation, and it isolates exactly the decision boundary you care&nbsp;about.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="lineup">
+    <div class="wrap">
+      <h2>The open-source pick</h2>
+      <p>The roles below are the 24 September 2026 adoption decision for <a href="https://vidiflow.net">vidiflow.net</a>. Snapshot figures are quoted from that date and are not a live service level for the site. Two figures have been corrected from primary sources during this research pass, and are marked.</p>
+      <article class="role" id="laya">
+        <p class="idx">01</p>
+        <div>
+          <p class="kicker">Production core &middot; Apache-2.0</p>
+          <h3>Laya</h3>
+          <p>Laya is the production core. It is pip-installable, it covers more than one hundred languages, and it serves a Jev-wire compatible server with a language router, batching, and hooks for audit, redaction and cache. The English and multilingual encoders are 322 to 421 million parameters. On a T4 it measures <strong>32.8 ms</strong> for a single question and <strong>7.2 ms per question</strong> when batched at ten, reaching 103&ndash;332 questions per second.</p>
+          <p>A typed-decisions fine-tune in the snapshot moved accuracy from 0.362 to <strong>0.766</strong>, with XNLI English at 0.860, and <strong>48 of 51 languages</strong> were measured usable at more than three times random. That size is why the report places it on one RTX 4090 beside LM Studio, Qdrant and LiveKit.</p>
+          <p class="meta"><a href="https://github.com/NandhaKishorM/laya">NandhaKishorM/laya</a></p>
+        </div>
+      </article>
+      <article class="role" id="kev">
+        <p class="idx">02</p>
+        <div>
+          <p class="kicker">Accuracy pilot &middot; Apache-2.0</p>
+          <h3>Kev-4B</h3>
+          <p>Kev-4B is the accuracy pilot, not the default server. On new sources in the snapshot, Kev-27B lands within about one point of hosted Jev, and both Kev-4B and Kev-9B land within about four. The four-billion-parameter checkpoint is the one to fine-tune on VidiFlow tickets. It has to run under Python 3.12 or 3.13, because torch had no wheels for the repository standard of Python 3.14. Promotion happens only where the gain stays above two points on held-out labels.</p>
+          <div class="tablewrap">
+            <table>
+              <caption>Kev&rsquo;s own numbers. Each cell is development / test; Jev was only run on development sets.</caption>
+              <thead>
+                <tr><th scope="col">Model</th><th scope="col">Accuracy: new sources</th><th scope="col">Brier: new sources</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>Kev-4B</td><td class="num">0.817 / 0.838</td><td class="num">0.269</td></tr>
+                <tr><td>Kev-27B</td><td class="num win">0.851 / 0.889</td><td class="num win">0.225</td></tr>
+                <tr><td><strong>Jev</strong></td><td class="num">0.857 / &mdash;</td><td class="num">0.211</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="meta"><a href="https://github.com/jaredpalmer/kev">jaredpalmer/kev</a></p>
+        </div>
+      </article>
+      <article class="role" id="semif">
+        <p class="idx">03</p>
+        <div>
+          <p class="kicker">Browser and edge demo &middot; MIT</p>
+          <h3>SemIf</h3>
+          <p>SemIf, formerly OpenJev, is the browser and edge demo. It runs on a home RTX 3090 and includes a WebGPU demo with no waitlist. Shared-state prefill reaches twenty decisions a second, and twenty-one questions take one second on a 3090 compared with 5.3 seconds on the JSON path. On the measured subset, SemIf trails hosted Jev by about four points, so the report keeps it as the public teaser and the home-lab path rather than the production&nbsp;core.</p>
+          <p class="meta"><a href="https://github.com/TheoLeeCJ/SemIf">TheoLeeCJ/SemIf</a></p>
+        </div>
+      </article>
+      <div class="warn">
+        <p><strong>Read this before you deploy Laya.</strong> Its base checkpoints are near chance: <strong>0.362 and 0.352 against a 0.318 random baseline and a 0.461 majority-class baseline.</strong> Laya is a fast base to specialise, not a zero-shot decision engine. All of the 0.766 comes from fine-tuning. Skip fine-tuning and you are running something <em>worse than guessing the most common label</em>.</p>
+        <p>Two more traps from its own documentation:</p>
+        <ul class="bullets">
+          <li><strong>Serve it with <code>Router(preload=True)</code>.</strong> By default the router keeps one checkpoint resident, so traffic that alternates languages rebuilds a model on every request &mdash; a measured <strong>7.4 s median on CPU and 10.3 s on a T4</strong>. That turns a 33&nbsp;ms model into a ten-second one.</li>
+          <li><strong>Watch the option budget.</strong> <code>head_max_len</code> is a cap, not a head length. Past roughly <code>head_max_len / 4</code> options the head grows <em>beyond</em> the cap and your state gets truncated rather than merely shortened.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="boundary">
+    <div class="wrap">
+      <h2>What does not become the core</h2>
+      <p>jevlike, mini-jev and jeff are not the production core. jevlike remains a research starter with a weak byte encoder. mini-jev is a teaching bench, and the field-type rules stay useful without adopting that repository. jeff is only a cheap fallback if Laya cannot run, and only for easy triage. Nimble contributes a contrastive curation method, and it is not the&nbsp;server.</p>
+    </div>
+  </section>
+
+  <section id="phases">
+    <div class="wrap">
+      <h2>Recommended adoption</h2>
+      <p>Unchanged from the 24 September decision, with this research pass applied. <strong>None of it is wired into Mez. Auto-action stays off unless a person confirms the result.</strong></p>
+      <ol>
+        <li class="phase"><p class="idx">01</p><p><strong>Label first.</strong> Export 300 to 500 labelled decisions for route, escalate, urgency, churn and refund, keeping each family together. Score Laya, Kev-4B and SemIf before any of them serves traffic. Per the calibration finding, 50 to 300 per family is enough to fit a temperature; 300 to 500 across families lets you compare checkpoints.</p></li>
+        <li class="phase"><p class="idx">02</p><p><strong>Serve Laya correctly.</strong> Install beside the existing agent backend, and use <code>Router(preload=True)</code> &mdash; without it, alternating-language traffic costs seven to ten seconds per request. Reach that server only through the site proxy.</p></li>
+        <li class="phase"><p class="idx">03</p><p><strong>Fine-tune or do not ship.</strong> The base checkpoints sit below the majority baseline. Fine-tune on VidiFlow pairs, fit temperatures on those labels, set a threshold for each question, keep an explicit abstain option, and build the training set with Nimble&rsquo;s contrastive-pair method.</p></li>
+        <li class="phase"><p class="idx">04</p><p><strong>Keep the pilot and the teaser.</strong> Run Kev-4B in a separate Python 3.12 or 3.13 environment, and offer SemIf as a no-backend teaser on the <a href="https://vidiflow.net">vidiflow.net</a> demo and on the <code>/lex</code> page.</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <section id="constraints">
+    <div class="wrap">
+      <h2>Constraints already on the table for today</h2>
+      <ul>
+        <li class="phase"><p class="idx">01</p><p>Today&rsquo;s machine has one RTX 4090 with 24&nbsp;GB, shared with Qwen3.6-27B at 15.4&nbsp;GB plus KV cache, and two RTX 6000 Pro cards are the later plan.</p></li>
+        <li class="phase"><p class="idx">02</p><p>States longer than about four thousand tokens are shortened first, or they go to a longer-context checkpoint and get tested again. Laya&rsquo;s multilingual build reads to 8,192 with <code>max_len=8192</code>.</p></li>
+        <li class="phase"><p class="idx">03</p><p>Published temperatures do not transfer. Each threshold is refit on VidiFlow labels, because published temperatures ranged from 0.65 to 4.45 across independent studies.</p></li>
+        <li class="phase"><p class="idx">04</p><p>Jev and TypeSafe remain their owners&rsquo; marks. These open projects follow an interface pattern, and none of them is Jev&nbsp;itself.</p></li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="sources">
+    <div class="wrap">
+      <h2>Sources and further reading</h2>
+      <ul class="srclist">
+        <li><b>Primary &mdash; the vendor.</b> <a href="https://typesafe.ai/blog/introducing-system-one-models-and-jev">Introducing System One Models &amp; Jev</a> &middot; <a href="https://docs.typesafe.ai/introduction">documentation</a> &middot; <a href="https://docs.typesafe.ai/model-jaggedness/jev-1.13">Jev 1.13 jaggedness</a> &middot; <a href="https://docs.typesafe.ai/patterns/confidence-routing">confidence routing</a> &middot; <a href="https://typesafe.ai/#pricing">pricing</a></li>
+        <li><b>Primary &mdash; the open models.</b> <a href="https://github.com/NandhaKishorM/laya">Laya</a> &middot; <a href="https://github.com/jaredpalmer/kev">Kev</a> &middot; <a href="https://github.com/TheoLeeCJ/SemIf">SemIf</a> &middot; <a href="https://github.com/bespokelabsai/nimble">Nimble</a> &middot; <a href="https://github.com/vinnylarouge/jevlike">jevlike</a></li>
+        <li><b>The most rigorous audit available.</b> <a href="https://dev.to/aws-builders/jev-after-eight-days-of-independent-tests-level-with-mid-price-llms-behind-the-frontier-1c60">Jev after eight days of independent tests</a></li>
+        <li><b>Independent evaluation.</b> <a href="https://github.com/PavelRavvich/jev-bench">PavelRavvich/jev-bench</a> &middot; <a href="https://github.com/AbdelStark/jev-benchmarks">AbdelStark/jev-benchmarks</a> &middot; <a href="https://github.com/nibzard/decision-model-benchmark">nibzard/decision-model-benchmark</a> &middot; <a href="https://huggingface.co/datasets/Luni/laya-jev-benchmark">Luni/laya-jev-benchmark</a></li>
+        <li><b>Papers.</b> <a href="https://arxiv.org/abs/2609.32160">2609.32160 &mdash; Typed Decision Models evidence audit</a> &middot; <a href="https://arxiv.org/abs/2609.24574">2609.24574 &mdash; largest pre-registered study</a> &middot; <a href="https://arxiv.org/abs/2609.29429">2609.29429 &mdash; RLCDAlignBench</a> &middot; <a href="https://arxiv.org/abs/2609.34963">2609.34963 &mdash; JevVibe</a></li>
+        <li><b>Registries.</b> <a href="https://github.com/yibie/awesome-jev">awesome-jev</a> &mdash; 564 projects &middot; <a href="https://github.com/feder-cr/sfmqrb-awesome-decision-models">awesome-decision-models</a> &middot; <a href="https://systemonemodels.org/guides/jev-benchmarks/">systemonemodels.org benchmarks</a></li>
+        <li><b>The clone wave, in the author&rsquo;s words.</b> <a href="https://www.explainx.ai/blog/six-jev-clones-two-days-2026">Six Jev clones in two days</a> &middot; <a href="https://note.com/zephel01/n/ne9a2c037e513">I read seven clones of Jev</a></li>
+        <li><b>Video.</b> <a href="https://www.youtube.com/watch?v=WVrtX1tSwV0">Jev Explained</a> &middot; <a href="https://www.youtube.com/watch?v=1Mz9z1je-jY">The model that doesn&rsquo;t write text</a> &middot; <a href="https://www.youtube.com/watch?v=MwwA8ee-u-k">Full RLCD breakdown</a> &middot; <a href="https://www.youtube.com/watch?v=BGDd26FiOm4">Meet Jev</a> &middot; <a href="https://www.youtube.com/watch?v=UVKwcjoanRo">Visual explainer</a></li>
+      </ul>
+    </div>
+  </section>
+
+</main>
+<footer>
+  <div class="wrap">
+    <hr class="rule">
+    <figure class="fig">
+      <img src="assets/img/closing.png" width="1600" height="520" alt="A single thin bright amber horizontal line of light running the full width of the frame, resolving into a small glowing amber square at the far right.">
+    </figure>
+    <p>Snapshot adoption figures are from 24 September 2026. Research and corrections compiled 3 October 2026: the language count is corrected to 48 of 51 against primary sources, and the base-checkpoint baselines are now shown alongside the fine-tuned accuracy. Vendor figures are labelled as vendor figures; independent measurements are attributed with their sample sizes and limits.</p>
+    <p class="links">
+      <a href="https://github.com/NandhaKishorM/laya">Laya</a>
+      <a href="https://github.com/jaredpalmer/kev">Kev</a>
+      <a href="https://github.com/TheoLeeCJ/SemIf">SemIf</a>
+      <a href="https://github.com/bespokelabsai/nimble">Nimble</a>
+      <a href="https://github.com/yibie/awesome-jev">awesome-jev</a>
+      <a href="https://arxiv.org/abs/2609.32160">Evidence audit</a>
+    </p>
+  </div>
+</footer>
+</body>
+</html>

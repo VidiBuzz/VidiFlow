@@ -1,0 +1,129 @@
+{
+  "medical_llm_sources": [
+    {
+      "name": "AntAngelMed (MedAIBase/AntAngelMed)",
+      "platform": "Hugging Face (MedAIBase/AntAngelMed)",
+      "params": "103B total / 6.1B active (MoE, 1/32 activation ratio; 256 experts, 8 per token) via BailingMoeV2ForCausalLM",
+      "context_len": "128K",
+      "key_benchmarks": [
+        "HealthBench (OpenAI) - #1 among open-source models, #1 on HealthBench-Hard",
+        "MedAIBench (National Artificial Intelligence Medical Industry Pilot Facility) - top-tier",
+        "MedBench (Chinese) - #1 overall across 5 dimensions, 36 datasets, ~700K samples"
+      ],
+      "access": "open, gated=false, Apache-2.0; download 152; Safetensors (24 shards), model.safetensors.index.json; also GitHub MedAIBase/AntAngelMed, ModelScope and antangelmed.tbox.cn API"
+    },
+    {
+      "name": "AntAngelMed-FP8 (quantized)",
+      "platform": "Hugging Face (MedAIBase/AntAngelMed-FP8)",
+      "params": "103B total / 6.1B active (FP8 quantized with EAGLE3 speculative decoding)",
+      "context_len": "128K",
+      "key_benchmarks": [
+        "Same as base: HealthBench top-tier, MedAIBench top-tier, MedBench #1"
+      ],
+      "access": "open, gated=false, Apache-2.0; download 107; FP8 safetensors variant for lower-vRAM serving"
+    },
+    {
+      "name": "AntAngelMed-INT4 (quantized)",
+      "platform": "ModelScope (MedAIBase/AntAngelMed-INT4)",
+      "params": "103B total / 6.1B active (INT4 quantized)",
+      "context_len": "128K",
+      "key_benchmarks": [
+        "Same as base: HealthBench top-tier, MedAIBench top-tier, MedBench #1"
+      ],
+      "access": "open; 8 Ascend 910B (64GB) or 4 Kunlun Core P800 (96GB) or 4 PPU 810 (96GB) for BF16; INT4 reduces card count (2/1/1 respectively)"
+    },
+    {
+      "name": "OpenMed (medical LLM family)",
+      "platform": "Hugging Face (OpenMed)",
+      "params": "0.5B to 120B+ parameter family; 481 models + 45 on AWS Marketplace",
+      "context_len": "Not specified at family level",
+      "key_benchmarks": [
+        "380+ state-of-the-art medical models at launch (Jul 2025), 29.7M downloads",
+        "Apache-2.0 across the family"
+      ],
+      "access": "open, Apache-2.0; Hugging Face + AWS Marketplace"
+    },
+    {
+      "name": "MedGemma 1.5 (google/medgemma-1.5-4b-it)",
+      "platform": "Hugging Face (google/medgemma-1.5-4b-it)",
+      "params": "4B (medical multimodal VLM); larger 127B sibling available",
+      "context_len": "Not specified at 4B; supports multi-slice CT/MRI input",
+      "key_benchmarks": [
+        "CT-RATE macro F1 23.5-27.0 (4B, 85 slices)",
+        "Radiology 2D, longitudinal 2D, 3D radiology, dermatology, document understanding"
+      ],
+      "access": "open, free for research and commercial use (HAI-DEF); Apache-2.0"
+    },
+    {
+      "name": "Qwen3-VL-Embedding-2B",
+      "platform": "Hugging Face (Qwen/Qwen3-VL-Embedding-2B)",
+      "params": "2B (multilingual vision-language embedding)",
+      "context_len": "32K",
+      "key_benchmarks": [
+        "MMTEB 67.88; MMEB-V2 77.9 (8B); handles video frames natively"
+      ],
+      "access": "open, Apache-2.0; recommended local path for image+video embedding in the VidiFlow stack"
+    },
+    {
+      "name": "Med42 (m42-health/Llama3-Med42-8B)",
+      "platform": "Hugging Face (m42-health/Llama3-Med42-8B)",
+      "params": "8B (LLaMA-3-based medical instruction/preference-tuned)",
+      "context_len": "Not specified at model level",
+      "key_benchmarks": [
+        "Med42-v2 suite: 8B and 70B clinical instruction + preference-tuned"
+      ],
+      "access": "open-access"
+    }
+  ],
+  "related_3d_visualization": [
+    {
+      "name": "NV-Reason-CT",
+      "platform": "Hugging Face (nvidia/NV-Reason-CT) + NVIDIA-Medtech GitHub",
+      "focus": "Native 3D vision-language model for chest and abdominal CT analysis; radiology report generation, visual Q&A, chain-of-thought reasoning (384x384x384mm volume -> 24x24x24 grid of 13,824 visual tokens, Qwen3.5-4B LLM, 3D ViT Primus/Colipri, 3D MRoPE)",
+      "access": "open research and development; weights+configs on HF; NIfTI (.nii/.nii.gz) input; SFT+GRPO on ~550K QA from 70,111 CT volumes; macro-F1 0.614, macro-AUROC 0.871 on CT-RATE"
+    },
+    {
+      "name": "NV-Generate-CT",
+      "platform": "Hugging Face (nvidia/NV-Generate-CT)",
+      "focus": "3D latent diffusion model for synthetic CT generation (data augmentation, rare conditions); up to 512x512x768 voxels, variable spacing 0.5-5.0mm, 127 anatomical classes + paired segmentation masks",
+      "access": "open research; NVIDIA Medtech GitHub; research purposes only (not clinical)"
+    },
+    {
+      "name": "NV-Generate-MR",
+      "platform": "Hugging Face (nvidia/NV-Generate-MR)",
+      "focus": "3D latent diffusion for synthetic MR (T1/FLAIR/T2/SWI) with optional anatomical annotations; 240M params, 3D UNet + attention, MONAI",
+      "access": "open research; NVIDIA OneWay Non-Commercial License (academic research only)"
+    },
+    {
+      "name": "CT-CLIP",
+      "platform": "Hugging Face (ibrahimethemhamamci/CT-CLIP)",
+      "focus": "3D contrastive vision-language pretraining on chest CT; self-supervised multi-abnormality detection and case retrieval; trained on CT-RATE",
+      "access": "open; A100 80GB recommended for training; 3D ViT"
+    },
+    {
+      "name": "RadViLLA",
+      "platform": "Hugging Face (NVIDIA collection)",
+      "focus": "3D vision-language model for radiology (chest/abdomen/pelvis); 75K 3D CT scans + 1M+ VQA pairs; Mount Sinai + NVIDIA",
+      "access": "open research; NVIDIA Medtech ecosystem"
+    },
+    {
+      "name": "CT-CHAT",
+      "platform": "Hugging Face (NVIDIA/Medtech ecosystem)",
+      "focus": "3D chest CT vision-language chat model (CT-CLIP vision encoder + pretrained LLM); trained on 2.7M+ VQA pairs from CT-RATE",
+      "access": "open research"
+    },
+    {
+      "name": "NTHU/OpenMed 3D medical imaging suite (OMTM / MONAI-hosted models)",
+      "platform": "Hugging Face (MONAI org)",
+      "focus": "MONAI medical imaging models: MONAI/vista3d, MONAI/brats_mri_segmentation, MONAI/brain_image_synthesis_latent_diffusion_model, MONAI/renalStructures_UNEST_segmentation, MONAI/wholeBrainSeg_Large_UNEST_segmentation, MONAI/retinalOCT_RPD_segmentation",
+      "access": "open research; MONAI framework"
+    },
+    {
+      "name": "MedSAM2",
+      "platform": "Hugging Face (wanglab/MedSAM2)",
+      "focus": "Medical image segmentation (2D/3D)", "access": "open research"
+    }
+  ],
+  "integration_feasibility": "LOW for direct 3D medical-visualization tasks; MEDIUM for medical NLP inside the workflow. AntAngelMed is a text-only medical LLM -- it has no imaging/visualization head and cannot render, segment, or reason over 3D volumes. It is, however, well-suited as the medical-reasoning/service-task layer of an AirPMD/VidiFlow BPMN workflow: ingesting clinical notes, synthesizing capacity/occupancy reports, triaging bed/resource requests, and writing structured summaries that VidiCore/VidiFlow nodes consume. It is NOT a drop-in for imaging models (NV-Reason-CT, CT-CLIP, RadViLLA, NV-Generate-CT) whose outputs flow into your visualization graph. Practical path: pair AntAngelMed (or the local Qwen3-Embedding-0.6B + Qwen3-VL-Embedding-2B that the VidiFlow stack already uses) with NVIDIA 3D CT/VR models via Hugging Face transformers, and keep the heavyweight 103B AntAngelMed served through vLLM/SGLang or the antangelmed.tbox.cn API rather than loaded locally on Windows workstation hardware.",
+  "licensing_access_notes": "AntAngelMed: Hugging Face cardData = Apache-2.0 (open, gated=false); README 'License' section says MIT (pointing at inclusionAI/Ling-V2 LICENCE) -- an inconsistency that must be resolved before any commercial use. Base architecture Ling-flash-2.0 is inclusionAI (MIT). Quantized variants (FP8, INT4) are the same Apache-2.0 family. NVIDIA 3D models: NV-Generate-MR explicitly NVIDIA OneWay Non-Commercial (academic-only); NV-Generate-CT/NV-Reason-CT open for research and development (no clinical-use claim -- 'not an autonomous diagnostic system or a cleared clinical product'). CT-CLIP/CT-RATE and MONAI models open for research. ModelScope mirrors the Chinese mainland audience (FP8 recommended there); HF is the primary canonical source. Note this is a newly released model (downloads 152 main / 107 FP8) with a Chinese README and a modelindex.dev model page; assume the release pipeline is still maturing."
+}

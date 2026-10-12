@@ -1,0 +1,3115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VidiFlow Lex — The Lexical Agent for Translating Tech Speak &amp; Smart Stack Context</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Kumbh+Sans:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <!-- Three.js & OrbitControls CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+  <style>
+    :root {
+      --bg-dark: #020617;
+      --bg-panel: rgba(10, 16, 32, 0.85);
+      --border-panel: rgba(0, 229, 255, 0.25);
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      --dj-cyan: #00e5ff;
+      --dj-cyan-glow: rgba(0, 229, 255, 0.4);
+      --dj-violet: #a78bfa;
+      --dj-emerald: #10b981;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --font-main: 'Kumbh Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      font-family: var(--font-main);
+      overflow-x: hidden;
+      line-height: 1.6;
+      min-height: 100vh;
+      position: relative;
+    }
+
+    /* Anti-Widow and Anti-Orphan Typography Rules */
+    h1, h2, h3, h4, h5, h6, .brand-logo, .section-title, .hic-tag {
+      text-wrap: balance;
+    }
+    p, li, .lead-quote, .hic-text, .hcb-text, .hero-sp-desc {
+      text-wrap: pretty;
+    }
+
+    /* Ambient Background Mesh */
+    .bg-mesh {
+      position: fixed; inset: 0; z-index: -2; pointer-events: none;
+      background:
+        radial-gradient(circle at 15% 20%, rgba(0, 229, 255, 0.08) 0%, transparent 45%),
+        radial-gradient(circle at 85% 65%, rgba(167, 139, 250, 0.08) 0%, transparent 50%),
+        radial-gradient(circle at 50% 90%, rgba(16, 185, 129, 0.05) 0%, transparent 45%);
+    }
+
+    #bg3dCanvas {
+      position: fixed; inset: 0; z-index: -1; pointer-events: none;
+      opacity: 0.35;
+    }
+
+    /* Header Nav */
+    .nav-bar {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.2rem 2.5rem;
+      background: rgba(4, 8, 20, 0.85);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border-subtle);
+      position: sticky; top: 0; z-index: 100;
+    }
+    .brand-logo {
+      display: flex; align-items: center; gap: 12px;
+      text-decoration: none; color: #fff; font-size: 1.4rem; font-weight: 900;
+    }
+    .brand-logo img { width: 38px; height: 38px; border-radius: 10px; box-shadow: 0 0 15px var(--dj-cyan-glow); }
+    .brand-logo span { color: var(--dj-cyan); }
+
+    .nav-actions {
+      display: flex; align-items: center; gap: 14px;
+    }
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #cbd5e1;
+      padding: 8px 18px; border-radius: 100px;
+      font-weight: 800; font-size: 0.85rem;
+      text-decoration: none; transition: all 0.2s;
+    }
+    .btn-secondary:hover { background: rgba(255, 255, 255, 0.12); color: #fff; border-color: rgba(255, 255, 255, 0.3); }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #00e5ff, #38bdf8);
+      color: #030712; padding: 9px 22px; border-radius: 100px;
+      font-weight: 900; font-size: 0.88rem;
+      text-decoration: none; border: none; cursor: pointer;
+      box-shadow: 0 0 25px rgba(0, 229, 255, 0.4);
+      transition: all 0.2s;
+      display: inline-flex; align-items: center; gap: 8px;
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 35px rgba(0, 229, 255, 0.7); }
+
+    /* Layout Container */
+    .container {
+      max-width: 1280px; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+    }
+
+    /* ============ 3-ROW BROADCAST STOCK TICKER ============ */
+    .broadcast-ticker-system {
+      background: rgba(2, 6, 23, 0.98);
+      border-bottom: 2px solid rgba(0, 229, 255, 0.28);
+      position: sticky; top: 73px; z-index: 95;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(16px);
+    }
+    .ticker-row {
+      display: flex; align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      height: 38px; position: relative; overflow: hidden;
+      background: rgba(4, 9, 24, 0.7);
+    }
+    .ticker-row:last-child { border-bottom: none; }
+    .ticker-label-col {
+      flex-shrink: 0; display: flex; align-items: center; gap: 8px;
+      padding: 0 16px; height: 100%; z-index: 5;
+      font-size: 0.68rem; font-weight: 900; letter-spacing: 0.12em; text-transform: uppercase;
+      background: rgba(7, 13, 30, 0.98);
+      border-right: 1.5px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 6px 0 15px rgba(0, 0, 0, 0.6);
+      white-space: nowrap;
+    }
+    .ticker-label-col.row1 { color: #00e5ff; border-right-color: rgba(0, 229, 255, 0.35); }
+    .ticker-label-col.row2 { color: #c4b5fd; border-right-color: rgba(167, 139, 250, 0.35); }
+    .ticker-label-col.row3 { color: #34d399; border-right-color: rgba(52, 211, 153, 0.35); }
+    .ticker-dot {
+      width: 7px; height: 7px; border-radius: 50%; display: inline-block;
+    }
+    .ticker-label-col.row1 .ticker-dot { background: #00e5ff; box-shadow: 0 0 8px #00e5ff; }
+    .ticker-label-col.row2 .ticker-dot { background: #c4b5fd; box-shadow: 0 0 8px #c4b5fd; }
+    .ticker-label-col.row3 .ticker-dot { background: #34d399; box-shadow: 0 0 8px #34d399; }
+
+    .ticker-track-wrap {
+      flex: 1; overflow: hidden; white-space: nowrap; position: relative;
+    }
+    .ticker-track-wrap:hover .ticker-track {
+      animation-play-state: paused;
+    }
+    .ticker-track {
+      display: inline-flex; align-items: center; gap: 36px;
+      will-change: transform;
+    }
+    .ticker-track.anim-left {
+      animation: tickerScrollLeft 48s linear infinite;
+    }
+    .ticker-track.anim-right {
+      animation: tickerScrollRight 52s linear infinite;
+    }
+    .ticker-track.anim-slow {
+      animation: tickerScrollLeft 58s linear infinite;
+    }
+    @keyframes tickerScrollLeft {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+    @keyframes tickerScrollRight {
+      0% { transform: translateX(-50%); }
+      100% { transform: translateX(0); }
+    }
+
+    .ticker-item {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-size: 0.78rem; font-weight: 600; color: #cbd5e1;
+      padding: 0 4px;
+    }
+    .ticker-item .ti-badge {
+      font-size: 0.62rem; font-weight: 900; letter-spacing: 0.08em;
+      padding: 1px 7px; border-radius: 4px; text-transform: uppercase;
+      font-family: var(--font-mono, monospace);
+    }
+    .badge-cyan { background: rgba(0, 229, 255, 0.15); color: #00e5ff; border: 1px solid rgba(0, 229, 255, 0.4); }
+    .badge-violet { background: rgba(167, 139, 250, 0.15); color: #c4b5fd; border: 1px solid rgba(167, 139, 250, 0.4); }
+    .badge-emerald { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4); }
+    .ticker-item .ti-name { font-weight: 800; color: #ffffff; letter-spacing: 0.02em; }
+    .ticker-item .ti-desc { color: #94a3b8; font-weight: 500; }
+    .ticker-item .ti-divider { color: rgba(255, 255, 255, 0.18); margin-left: 12px; font-weight: 300; }
+
+    /* ============ 2-COLUMN HERO SPLIT GRID (PEOPLE FIRST) ============ */
+    .hero-split-grid {
+      display: grid; grid-template-columns: 1.12fr 0.98fr; gap: 2.2rem;
+      align-items: stretch; margin-bottom: 3.5rem;
+    }
+    @media (max-width: 1040px) {
+      .hero-split-grid { grid-template-columns: 1fr; }
+    }
+
+    .hero-left-col {
+      display: flex; flex-direction: column; justify-content: center;
+      text-align: left;
+    }
+    .hero-left-col h1 {
+      font-size: clamp(2.2rem, 3.8vw, 3.6rem); font-weight: 900; line-height: 1.14;
+      margin-bottom: 1rem; text-align: left;
+    }
+    .hero-stat-strip {
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;
+      margin: 1.4rem 0 1.6rem;
+    }
+    .hero-stat-pill {
+      background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px; padding: 10px 14px;
+      display: flex; flex-direction: column; gap: 2px;
+      transition: all 0.2s;
+    }
+    .hero-stat-pill:hover {
+      border-color: rgba(0, 229, 255, 0.35); transform: translateY(-1px);
+    }
+    .hsp-metric {
+      font-size: 1.15rem; font-weight: 900; color: #00e5ff; letter-spacing: -0.01em;
+    }
+    .hsp-metric.violet { color: #c4b5fd; }
+    .hsp-metric.emerald { color: #34d399; }
+    .hsp-label {
+      font-size: 0.74rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.06em;
+    }
+
+    .hero-insight-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+      margin-top: 1.2rem;
+    }
+    @media (max-width: 640px) {
+      .hero-insight-grid { grid-template-columns: 1fr; }
+      .hero-stat-strip { grid-template-columns: 1fr; }
+    }
+    .hero-insight-card {
+      background: rgba(11, 18, 38, 0.85); border: 1.5px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px; padding: 14px 16px;
+      transition: all 0.2s;
+    }
+    .hero-insight-card:hover {
+      border-color: rgba(0, 229, 255, 0.3); transform: translateY(-2px);
+    }
+    .hic-tag {
+      font-size: 0.68rem; font-weight: 900; letter-spacing: 0.1em; text-transform: uppercase;
+      margin-bottom: 6px; display: flex; align-items: center; justify-content: space-between;
+    }
+    .hic-tag.reality { color: #f87171; }
+    .hic-tag.mission { color: #00e5ff; }
+    .hero-insight-card p {
+      font-size: 0.88rem; color: #cbd5e1; line-height: 1.52; margin: 0;
+    }
+
+    /* RIGHT COLUMN: THE VIDITWINS ANCHOR DESK CARD */
+    .twins-hero-card {
+      background: linear-gradient(145deg, rgba(13, 22, 45, 0.95) 0%, rgba(6, 12, 28, 0.98) 100%);
+      border: 2px solid rgba(0, 229, 255, 0.4);
+      border-radius: 24px; padding: 1.6rem;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7), 0 0 35px rgba(0, 229, 255, 0.15);
+      position: relative; overflow: hidden;
+      display: flex; flex-direction: column; justify-content: space-between;
+    }
+    .thc-backdrop {
+      border-radius: 18px; overflow: hidden; position: relative;
+      border: 1.5px solid rgba(255, 255, 255, 0.15);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+      margin-bottom: 1.2rem; aspect-ratio: 16/9;
+    }
+    .thc-backdrop img {
+      width: 100%; height: 100%; object-fit: cover; display: block;
+    }
+    .thc-backdrop-overlay {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      background: linear-gradient(to top, rgba(2, 6, 23, 0.95) 0%, rgba(2, 6, 23, 0.4) 60%, transparent 100%);
+      padding: 1rem 1.2rem 0.8rem;
+      display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; gap: 8px;
+    }
+
+    .cohost-avatars-row {
+      display: flex; align-items: center; gap: 14px;
+      margin-bottom: 1.2rem; background: rgba(15, 23, 42, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 16px;
+      padding: 10px 14px;
+    }
+    .ch-avatar-wrap {
+      display: flex; align-items: center; position: relative; flex-shrink: 0;
+    }
+    .ch-circle {
+      width: 54px; height: 54px; border-radius: 50%; overflow: hidden;
+      border: 2px solid #fff; position: relative;
+    }
+    .ch-circle.lexi {
+      border-color: #ec4899; box-shadow: 0 0 20px rgba(236, 72, 153, 0.6); z-index: 2;
+    }
+    .ch-circle.max {
+      border-color: #00e5ff; box-shadow: 0 0 20px rgba(0, 229, 255, 0.6); margin-left: -18px; z-index: 1;
+    }
+    .ch-circle img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .ch-info { flex: 1; min-width: 0; }
+    .ch-title { font-size: 1.05rem; font-weight: 900; color: #fff; }
+    .ch-sub { font-size: 0.76rem; color: #38bdf8; font-weight: 700; }
+
+    .hero-superpowers-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 1.2rem;
+    }
+    .hero-sp-card {
+      background: rgba(2, 6, 23, 0.7); border: 1.5px solid rgba(255, 255, 255, 0.08);
+      border-radius: 14px; padding: 10px 12px;
+    }
+    .hero-sp-card.lexi { border-color: rgba(236, 72, 153, 0.35); background: rgba(236, 72, 153, 0.05); }
+    .hero-sp-card.max { border-color: rgba(0, 229, 255, 0.35); background: rgba(0, 229, 255, 0.05); }
+    .hsp-head {
+      display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px;
+    }
+    .hsp-name { font-size: 0.78rem; font-weight: 900; }
+    .hsp-name.lexi { color: #f472b6; }
+    .hsp-name.max { color: #38bdf8; }
+    .hsp-badge {
+      font-size: 0.62rem; font-weight: 900; letter-spacing: 0.08em; text-transform: uppercase;
+      padding: 1px 6px; border-radius: 4px;
+    }
+    .hsp-badge.lexi { background: #ec4899; color: #fff; }
+    .hsp-badge.max { background: #00e5ff; color: #020617; }
+    .hero-sp-card p {
+      font-size: 0.78rem; color: #cbd5e1; line-height: 1.45; margin: 0;
+    }
+
+    .hero-convo-bubble {
+      background: rgba(4, 8, 20, 0.9);
+      border: 1px solid rgba(0, 229, 255, 0.3); border-radius: 14px;
+      padding: 10px 14px; font-size: 0.84rem; color: #e2e8f0; line-height: 1.5;
+    }
+    .hero-convo-bubble b.lexi { color: #f472b6; }
+    .hero-convo-bubble b.max { color: #38bdf8; }
+
+    /* Manifesto Cards */
+    .manifesto-card {
+      background: rgba(11, 18, 38, 0.85);
+      border: 1.5px solid var(--border-panel);
+      border-radius: 24px; padding: 2.5rem;
+      margin-bottom: 3rem;
+      box-shadow: 0 15px 50px rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(16px);
+      position: relative; overflow: hidden;
+    }
+    .card-num {
+      position: absolute; top: 1.5rem; right: 2rem;
+      font-size: 4rem; font-weight: 900; color: rgba(255, 255, 255, 0.03);
+      line-height: 1; user-select: none;
+    }
+    .section-title {
+      font-size: 1.8rem; font-weight: 900; color: #fff;
+      display: flex; align-items: center; gap: 12px; margin-bottom: 1.2rem;
+    }
+    .section-title span { color: var(--dj-cyan); }
+
+    p { font-size: 1.05rem; color: #cbd5e1; margin-bottom: 1.2rem; line-height: 1.7; }
+    p strong { color: #fff; }
+
+    /* The Problem Box */
+    .callout-problem {
+      background: rgba(239, 68, 68, 0.08);
+      border: 1.5px solid rgba(239, 68, 68, 0.3);
+      border-radius: 16px; padding: 1.25rem 1.75rem; margin: 1.5rem 0;
+      color: #fca5a5; font-size: 1rem;
+    }
+
+    /* 3 Core Principles Grid */
+    .principles-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem; margin-top: 2rem;
+    }
+    .principle-item {
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid rgba(0, 229, 255, 0.2);
+      border-radius: 18px; padding: 1.8rem;
+      transition: transform 0.2s, border-color 0.2s;
+    }
+    .principle-item:hover { transform: translateY(-4px); border-color: var(--dj-cyan); }
+    .p-icon { font-size: 2.2rem; margin-bottom: 1rem; }
+    .p-title { font-size: 1.2rem; font-weight: 800; color: #fff; margin-bottom: 0.5rem; }
+    .p-desc { font-size: 0.92rem; color: #94a3b8; line-height: 1.6; margin: 0; }
+
+    /* Comparison Table / Dual View */
+    .comparison-wrapper {
+      margin-top: 2rem; border-radius: 18px; overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .comparison-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+    }
+    .comp-col { padding: 2rem; }
+    .comp-col.legacy {
+      background: rgba(239, 68, 68, 0.05);
+      border-right: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .comp-col.smart {
+      background: rgba(0, 229, 255, 0.06);
+    }
+    .comp-head {
+      font-size: 1.1rem; font-weight: 900; text-transform: uppercase;
+      letter-spacing: 0.08em; margin-bottom: 1.2rem; display: flex; align-items: center; gap: 8px;
+    }
+    .comp-head.leg { color: #f87171; }
+    .comp-head.smt { color: #00e5ff; }
+    .comp-row {
+      display: flex; align-items: flex-start; gap: 12px;
+      padding: 10px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      font-size: 0.95rem; color: #cbd5e1;
+    }
+    .comp-row:last-child { border-bottom: none; }
+
+    /* The Standard Checklist */
+    .checklist {
+      list-style: none; margin-top: 1.5rem;
+    }
+    .checklist li {
+      display: flex; align-items: center; gap: 12px;
+      padding: 10px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      font-size: 1.05rem; font-weight: 700; color: #f1f5f9;
+    }
+    .check-icon {
+      width: 24px; height: 24px; border-radius: 50%;
+      background: rgba(16, 185, 129, 0.2); color: #34d399;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.85rem; flex-shrink: 0;
+    }
+
+    /* Visual Evidence & Cockpit Showcase */
+    .vidiflow-showcase-box {
+      margin: 2.5rem 0; border-radius: 20px; overflow: hidden;
+      border: 2px solid var(--dj-cyan); box-shadow: 0 0 45px rgba(0, 229, 255, 0.35);
+      position: relative; background: #040816;
+    }
+    .vidiflow-showcase-box img {
+      width: 100%; height: auto; display: block;
+      transition: transform 0.4s ease;
+    }
+    .vidiflow-showcase-caption {
+      padding: 1.25rem 1.8rem; background: rgba(5, 10, 24, 0.95);
+      border-top: 1px solid rgba(0, 229, 255, 0.2);
+      font-size: 0.92rem; color: #94a3b8; display: flex;
+      justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;
+    }
+
+    /* Interactive HX Simulator Widget */
+    .hx-sim-box {
+      background: rgba(8, 14, 30, 0.9); border: 1.5px solid rgba(167, 139, 250, 0.3);
+      border-radius: 20px; padding: 2rem; margin: 2rem 0;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    }
+    .hx-sim-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 1.5rem; flex-wrap: wrap; gap: 12px;
+    }
+    .hx-pipeline-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px; margin-bottom: 1.5rem;
+    }
+    .hx-stage-card {
+      background: rgba(15, 23, 42, 0.85); border: 1.5px solid rgba(255, 255, 255, 0.1);
+      border-radius: 14px; padding: 1.25rem 1rem; text-align: center;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+    }
+    .hx-stage-card.active-pulse {
+      border-color: var(--dj-cyan); background: rgba(0, 229, 255, 0.12);
+      box-shadow: 0 0 25px rgba(0, 229, 255, 0.4); transform: translateY(-4px);
+    }
+    .hx-stage-card.done {
+      border-color: var(--dj-emerald); background: rgba(16, 185, 129, 0.08);
+    }
+    .hx-stage-icon { font-size: 1.8rem; margin-bottom: 6px; }
+    .hx-stage-name { font-weight: 800; font-size: 0.95rem; color: #fff; margin-bottom: 4px; }
+    .hx-stage-role { font-size: 0.75rem; color: #94a3b8; }
+    .hx-stage-status {
+      display: inline-block; margin-top: 8px; font-size: 0.7rem; font-weight: 800;
+      padding: 2px 8px; border-radius: 100px; text-transform: uppercase;
+      background: rgba(255, 255, 255, 0.08); color: #64748b;
+    }
+    .hx-stage-card.active-pulse .hx-stage-status {
+      background: rgba(0, 229, 255, 0.2); color: #00e5ff;
+    }
+    .hx-stage-card.done .hx-stage-status {
+      background: rgba(16, 185, 129, 0.2); color: #34d399;
+    }
+
+    /* Toy vs System Grid */
+    .toy-vs-system-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 1.5rem;
+    }
+    .tvs-card {
+      border-radius: 18px; padding: 1.8rem;
+    }
+    .tvs-card.toy {
+      background: rgba(239, 68, 68, 0.06); border: 1.5px solid rgba(239, 68, 68, 0.3);
+    }
+    .tvs-card.system {
+      background: rgba(0, 229, 255, 0.07); border: 1.5px solid rgba(0, 229, 255, 0.4);
+      box-shadow: 0 0 30px rgba(0, 229, 255, 0.15);
+    }
+    .tvs-badge {
+      display: inline-block; font-size: 0.72rem; font-weight: 900; letter-spacing: 0.08em;
+      text-transform: uppercase; padding: 4px 10px; border-radius: 6px; margin-bottom: 1rem;
+    }
+    .tvs-card.toy .tvs-badge { background: rgba(239, 68, 68, 0.2); color: #f87171; }
+    .tvs-card.system .tvs-badge { background: rgba(0, 229, 255, 0.2); color: #00e5ff; }
+
+    /* Applied Lingo Examples */
+    .applied-grid {
+      display: flex; flex-direction: column; gap: 1.5rem; margin-top: 1.75rem;
+    }
+    .applied-card {
+      background: rgba(15, 23, 42, 0.75); border: 1.5px solid rgba(255, 255, 255, 0.08);
+      border-radius: 18px; padding: 1.75rem 2rem; transition: all 0.25s ease;
+      position: relative; overflow: hidden;
+    }
+    .applied-card:hover {
+      border-color: rgba(0, 229, 255, 0.4);
+      box-shadow: 0 10px 35px rgba(0, 229, 255, 0.08);
+      transform: translateY(-2px);
+    }
+    .applied-card-head {
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 12px; margin-bottom: 1.25rem; padding-bottom: 1rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    }
+    .applied-term-title {
+      font-size: 1.35rem; font-weight: 900; color: #fff;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .applied-category-pill {
+      font-size: 0.72rem; font-weight: 800; letter-spacing: 0.06em;
+      text-transform: uppercase; padding: 4px 12px; border-radius: 100px;
+      background: rgba(0, 229, 255, 0.12); border: 1px solid rgba(0, 229, 255, 0.3);
+      color: #00e5ff;
+    }
+    .lingo-breakdown-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin-bottom: 1.25rem;
+    }
+    .lingo-box {
+      border-radius: 12px; padding: 1.1rem 1.3rem; font-size: 0.92rem; line-height: 1.6;
+    }
+    .lingo-box.tech {
+      background: rgba(239, 68, 68, 0.06); border: 1px solid rgba(239, 68, 68, 0.25);
+    }
+    .lingo-box.plain {
+      background: rgba(16, 185, 129, 0.06); border: 1px solid rgba(16, 185, 129, 0.25);
+    }
+    .lingo-box-label {
+      font-size: 0.72rem; font-weight: 900; letter-spacing: 0.08em;
+      text-transform: uppercase; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;
+    }
+    .lingo-box.tech .lingo-box-label { color: #f87171; }
+    .lingo-box.plain .lingo-box-label { color: #34d399; }
+    .lingo-question-box {
+      background: linear-gradient(135deg, rgba(0, 229, 255, 0.08) 0%, rgba(167, 139, 250, 0.08) 100%);
+      border: 1.5px solid rgba(0, 229, 255, 0.35); border-radius: 12px; padding: 1.2rem 1.4rem;
+    }
+    .lingo-question-title {
+      font-size: 0.76rem; font-weight: 900; letter-spacing: 0.08em;
+      text-transform: uppercase; color: #00e5ff; margin-bottom: 6px;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .lingo-question-text {
+      font-size: 1.05rem; font-weight: 700; color: #f8fafc; line-height: 1.5; font-style: italic;
+    }
+
+    /* Encyclopedia & Thesaurus Comparison */
+    .ref-trio-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 1.25rem; margin-top: 1.5rem;
+    }
+    .ref-pillar {
+      background: rgba(15, 23, 42, 0.75); border: 1.5px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px; padding: 1.4rem; transition: all 0.25s ease;
+    }
+    .ref-pillar.highlight {
+      background: rgba(0, 229, 255, 0.08); border-color: rgba(0, 229, 255, 0.4);
+      box-shadow: 0 0 30px rgba(0, 229, 255, 0.12);
+    }
+    .ref-pillar-icon { font-size: 1.75rem; margin-bottom: 8px; }
+    .ref-pillar-title { font-size: 1.1rem; font-weight: 800; color: #fff; margin-bottom: 4px; }
+    .ref-pillar-subtitle { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 10px; color: #94a3b8; }
+    .ref-pillar.highlight .ref-pillar-subtitle { color: #00e5ff; }
+    .ref-pillar p { font-size: 0.88rem; color: #cbd5e1; line-height: 1.55; margin: 0; }
+
+    /* Jargon Matrix & Insider Language Grid */
+    .jargon-matrix-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 1.25rem; margin-top: 1.5rem;
+    }
+    .jargon-card {
+      background: rgba(15, 23, 42, 0.7); border: 1.5px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px; padding: 1.4rem; transition: all 0.25s ease;
+    }
+    .jargon-card:hover {
+      border-color: rgba(0, 229, 255, 0.35); transform: translateY(-2px);
+    }
+    .jargon-card-tag {
+      font-size: 0.72rem; font-weight: 900; letter-spacing: 0.08em; text-transform: uppercase;
+      margin-bottom: 8px; display: inline-block; padding: 3px 8px; border-radius: 6px;
+    }
+    .jargon-card.slang .jargon-card-tag { background: rgba(239, 68, 68, 0.15); color: #f87171; }
+    .jargon-card.culture .jargon-card-tag { background: rgba(167, 139, 250, 0.15); color: #c4b5fd; }
+    .jargon-card.structure .jargon-card-tag { background: rgba(56, 189, 248, 0.15); color: #38bdf8; }
+    .jargon-card.doublespeak .jargon-card-tag { background: rgba(251, 191, 36, 0.15); color: #fbbf24; }
+    .jargon-card-title { font-size: 1.12rem; font-weight: 800; color: #fff; margin-bottom: 8px; }
+    .jargon-item-list { list-style: none; padding: 0; margin: 0; }
+    .jargon-item-list li {
+      font-size: 0.88rem; color: #cbd5e1; padding: 5px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.05); line-height: 1.45;
+    }
+    .jargon-item-list li:last-child { border-bottom: none; }
+    .jargon-item-list strong { color: #fff; }
+
+    /* Enterprise Private 2nd Brain Showcase */
+    .enterprise-brain-box {
+      background: linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(30, 27, 75, 0.85) 100%);
+      border: 2px solid rgba(0, 229, 255, 0.4); border-radius: 20px; padding: 2rem; margin-top: 1.8rem;
+      box-shadow: 0 15px 40px rgba(0, 229, 255, 0.1);
+    }
+    .eb-header {
+      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;
+      margin-bottom: 1.4rem; padding-bottom: 1.2rem; border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .eb-title { font-size: 1.35rem; font-weight: 900; color: #fff; display: flex; align-items: center; gap: 10px; }
+    .eb-badge {
+      font-size: 0.75rem; font-weight: 900; letter-spacing: 0.08em; text-transform: uppercase;
+      background: #00e5ff; color: #020617; padding: 4px 12px; border-radius: 100px;
+    }
+    .eb-feature-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.2rem; margin-top: 1.4rem;
+    }
+    .eb-feature-card {
+      background: rgba(4, 8, 20, 0.7); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 14px;
+      padding: 1.2rem;
+    }
+    .eb-feature-card h4 { font-size: 0.95rem; font-weight: 800; color: #00e5ff; margin-bottom: 6px; }
+    .eb-feature-card p { font-size: 0.85rem; color: #cbd5e1; line-height: 1.5; margin: 0; }
+
+    /* Vidi.News AI Reality Check: What AI Does Not Do Well */
+    .ai-fail-box {
+      background: linear-gradient(135deg, rgba(30, 10, 15, 0.75) 0%, rgba(15, 23, 42, 0.85) 100%);
+      border: 1.5px solid rgba(239, 68, 68, 0.35); border-radius: 20px; padding: 2rem; margin-top: 1.8rem;
+    }
+    .ai-fail-header {
+      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;
+      margin-bottom: 1.4rem; padding-bottom: 1.2rem; border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .ai-fail-title { font-size: 1.35rem; font-weight: 900; color: #fff; display: flex; align-items: center; gap: 10px; }
+    .ai-fail-badge {
+      font-size: 0.75rem; font-weight: 900; letter-spacing: 0.08em; text-transform: uppercase;
+      background: #ef4444; color: #fff; padding: 4px 12px; border-radius: 100px;
+    }
+    .ai-fail-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.2rem; margin-top: 1.4rem;
+    }
+    .ai-fail-card {
+      background: rgba(10, 12, 22, 0.7); border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 14px;
+      padding: 1.3rem; transition: all 0.25s ease;
+    }
+    .ai-fail-card:hover {
+      border-color: rgba(239, 68, 68, 0.5); transform: translateY(-2px);
+    }
+    .ai-fail-card h4 { font-size: 1.02rem; font-weight: 800; color: #fca5a5; margin-bottom: 6px; display: flex; align-items: center; gap: 8px; }
+    .ai-fail-card p { font-size: 0.88rem; color: #cbd5e1; line-height: 1.55; margin: 0; }
+
+    /* ============ EXECUTIVE BROADCAST DIALOGUE THREADS ============ */
+    .exec-rfp-box {
+      background: rgba(3, 7, 18, 0.95);
+      border: 1px solid rgba(239, 68, 68, 0.35);
+      border-left: 4px solid #ef4444;
+      border-radius: 12px;
+      padding: 1rem 1.4rem;
+      margin-bottom: 1.25rem;
+    }
+    .exec-rfp-tag {
+      font-size: 0.68rem; font-weight: 900; letter-spacing: 0.12em; text-transform: uppercase;
+      color: #f87171; margin-bottom: 4px; display: flex; align-items: center; justify-content: space-between;
+    }
+    .exec-rfp-quote {
+      font-family: var(--font-mono, 'JetBrains Mono', monospace);
+      font-size: 0.9rem; color: #fca5a5; line-height: 1.55;
+    }
+
+    .exec-dialogue-thread {
+      display: flex; flex-direction: column; gap: 14px; margin-bottom: 1.25rem;
+    }
+    .exec-dialogue-row {
+      display: flex; align-items: flex-start; gap: 14px;
+      border-radius: 16px; padding: 14px 18px;
+      position: relative; transition: all 0.25s ease;
+    }
+    .exec-dialogue-row.lexi {
+      background: rgba(236, 72, 153, 0.06);
+      border: 1.5px solid rgba(236, 72, 153, 0.28);
+    }
+    .exec-dialogue-row.max {
+      background: rgba(0, 229, 255, 0.06);
+      border: 1.5px solid rgba(0, 229, 255, 0.28);
+    }
+    .exec-dialogue-row.exec {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1.5px solid rgba(255, 255, 255, 0.12);
+    }
+    .exec-speaker-col {
+      display: flex; flex-direction: column; align-items: center; gap: 4px;
+      flex-shrink: 0; width: 62px; text-align: center;
+    }
+    .exec-speaker-avatar {
+      width: 46px; height: 46px; border-radius: 50%; overflow: hidden;
+      border: 2px solid #fff; position: relative; flex-shrink: 0;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    }
+    .exec-dialogue-row.lexi .exec-speaker-avatar {
+      border-color: #ec4899; box-shadow: 0 0 16px rgba(236, 72, 153, 0.6);
+    }
+    .exec-dialogue-row.max .exec-speaker-avatar {
+      border-color: #00e5ff; box-shadow: 0 0 16px rgba(0, 229, 255, 0.6);
+    }
+    .exec-speaker-avatar img {
+      width: 100%; height: 100%; object-fit: cover; display: block;
+    }
+    .exec-name-tag {
+      font-size: 0.65rem; font-weight: 900; letter-spacing: 0.08em; text-transform: uppercase;
+      padding: 2px 6px; border-radius: 4px; line-height: 1; margin-top: 2px;
+    }
+    .exec-name-tag.lexi { background: #ec4899; color: #fff; }
+    .exec-name-tag.max { background: #00e5ff; color: #020617; }
+    .exec-name-tag.exec { background: #64748b; color: #fff; }
+    .exec-speech-content {
+      flex: 1; min-width: 0; padding-top: 2px;
+    }
+    .exec-speech-header {
+      display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px;
+    }
+    .exec-role-title {
+      font-size: 0.72rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em;
+    }
+    .exec-dialogue-row.lexi .exec-role-title { color: #f472b6; }
+    .exec-dialogue-row.max .exec-role-title { color: #38bdf8; }
+    .exec-dialogue-row.exec .exec-role-title { color: #94a3b8; }
+    .exec-speech-text {
+      font-size: 1.02rem; line-height: 1.62; color: #f1f5f9; font-weight: 500;
+    }
+    .exec-dialogue-row.lexi .exec-speech-text { color: #fdf2f8; }
+    .exec-dialogue-row.max .exec-speech-text { color: #f0f9ff; }
+
+    .exec-power-box {
+      background: linear-gradient(135deg, rgba(0, 229, 255, 0.08) 0%, rgba(167, 139, 250, 0.08) 100%);
+      border: 1.5px solid rgba(0, 229, 255, 0.4);
+      border-radius: 14px; padding: 1.2rem 1.6rem;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+    .exec-power-title {
+      font-size: 0.74rem; font-weight: 900; letter-spacing: 0.1em; text-transform: uppercase;
+      color: #00e5ff; margin-bottom: 6px; display: flex; align-items: center; justify-content: space-between;
+    }
+    .exec-power-text {
+      font-size: 1.08rem; font-weight: 800; color: #ffffff; line-height: 1.55;
+    }
+
+    /* ============ BOARDROOM CONVERSATION SHOWCASE STUDIO ============ */
+    .convo-tabs-bar {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 10px; margin: 1.5rem 0 1.8rem;
+    }
+    .convo-tab-btn {
+      background: rgba(15, 23, 42, 0.8);
+      border: 1.5px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px; padding: 10px 14px; text-align: left;
+      cursor: pointer; transition: all 0.2s ease;
+      display: flex; flex-direction: column; gap: 3px;
+    }
+    .convo-tab-btn:hover {
+      background: rgba(255, 255, 255, 0.05); border-color: rgba(0, 229, 255, 0.3);
+    }
+    .convo-tab-btn.active {
+      background: rgba(0, 229, 255, 0.12); border-color: #00e5ff;
+      box-shadow: 0 0 20px rgba(0, 229, 255, 0.25);
+    }
+    .convo-tab-btn .tab-code {
+      font-size: 0.68rem; font-weight: 900; letter-spacing: 0.1em; text-transform: uppercase;
+      color: #38bdf8;
+    }
+    .convo-tab-btn.active .tab-code { color: #00e5ff; }
+    .convo-tab-btn .tab-name {
+      font-size: 0.88rem; font-weight: 800; color: #fff;
+    }
+    .convo-viewport {
+      background: rgba(4, 8, 20, 0.95);
+      border: 1.5px solid rgba(255, 255, 255, 0.1);
+      border-radius: 18px; padding: 1.8rem;
+      box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.8);
+    }
+
+    @media (max-width: 860px) {
+      .lingo-breakdown-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 768px) {
+      .toy-vs-system-grid { grid-template-columns: 1fr; }
+      .nav-bar { padding: 1rem 1.2rem; }
+      .container { padding: 2rem 1rem 4rem; }
+      .manifesto-card { padding: 1.5rem; }
+      .comparison-grid { grid-template-columns: 1fr; }
+      .comp-col.legacy { border-right: none; border-bottom: 1px solid rgba(255, 255, 255, 0.08); }
+    }
+
+    /* ============ 3-ROW BROADCAST STOCK TICKER SYSTEM ============ */
+    .broadcast-ticker-system {
+      position: sticky;
+      top: 68px; /* right below nav */
+      z-index: 900;
+      background: rgba(3, 7, 18, 0.95);
+      backdrop-filter: blur(16px);
+      border-bottom: 1.5px solid rgba(0, 229, 255, 0.25);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.85);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .ticker-row {
+      display: flex;
+      align-items: center;
+      height: 38px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      position: relative;
+      overflow: hidden;
+    }
+    .ticker-row:last-child {
+      border-bottom: none;
+    }
+    .ticker-label-col {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0 16px;
+      height: 100%;
+      flex-shrink: 0;
+      z-index: 10;
+      font-size: 0.68rem;
+      font-weight: 900;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      white-space: nowrap;
+      border-right: 1.5px solid rgba(255, 255, 255, 0.1);
+      min-width: 225px;
+      position: relative;
+    }
+    .ticker-row.row-tech .ticker-label-col {
+      background: linear-gradient(90deg, rgba(0, 229, 255, 0.22) 0%, rgba(3, 7, 18, 0.98) 100%);
+      color: #00e5ff;
+      border-right-color: rgba(0, 229, 255, 0.35);
+    }
+    .ticker-row.row-brands .ticker-label-col {
+      background: linear-gradient(90deg, rgba(167, 139, 250, 0.22) 0%, rgba(3, 7, 18, 0.98) 100%);
+      color: #c084fc;
+      border-right-color: rgba(167, 139, 250, 0.35);
+    }
+    .ticker-row.row-roi .ticker-label-col {
+      background: linear-gradient(90deg, rgba(16, 185, 129, 0.22) 0%, rgba(3, 7, 18, 0.98) 100%);
+      color: #34d399;
+      border-right-color: rgba(16, 185, 129, 0.35);
+    }
+    .ticker-pulse-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      animation: tickerPulse 1.8s infinite;
+    }
+    .row-tech .ticker-pulse-dot { background: #00e5ff; box-shadow: 0 0 8px #00e5ff; }
+    .row-brands .ticker-pulse-dot { background: #ec4899; box-shadow: 0 0 8px #ec4899; }
+    .row-roi .ticker-pulse-dot { background: #10b981; box-shadow: 0 0 8px #10b981; }
+
+    @keyframes tickerPulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.35; transform: scale(0.85); }
+    }
+
+    .ticker-track-wrap {
+      flex: 1;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      position: relative;
+      mask-image: linear-gradient(90deg, transparent 0, #000 30px, #000 calc(100% - 30px), transparent 100%);
+      -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 30px, #000 calc(100% - 30px), transparent 100%);
+    }
+    .ticker-track {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      white-space: nowrap;
+      will-change: transform;
+    }
+    .row-tech .ticker-track {
+      animation: tickerScrollLeft 48s linear infinite;
+    }
+    .row-brands .ticker-track {
+      animation: tickerScrollRight 52s linear infinite;
+    }
+    .row-roi .ticker-track {
+      animation: tickerScrollLeft 44s linear infinite;
+    }
+    .ticker-track-wrap:hover .ticker-track {
+      animation-play-state: paused;
+    }
+
+    @keyframes tickerScrollLeft {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+    @keyframes tickerScrollRight {
+      0% { transform: translateX(-50%); }
+      100% { transform: translateX(0); }
+    }
+
+    .ticker-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.8rem;
+      color: #e2e8f0;
+      flex-shrink: 0;
+    }
+    .ticker-item strong {
+      font-weight: 800;
+      color: #fff;
+    }
+    .ti-badge {
+      font-size: 0.65rem;
+      font-weight: 900;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 1px 6px;
+      border-radius: 4px;
+      line-height: 1.4;
+    }
+    .ti-badge.cyan { background: rgba(0, 229, 255, 0.15); color: #38bdf8; border: 1px solid rgba(0, 229, 255, 0.35); }
+    .ti-badge.pink { background: rgba(236, 72, 153, 0.15); color: #f472b6; border: 1px solid rgba(236, 72, 153, 0.35); }
+    .ti-badge.emerald { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.35); }
+    .ti-badge.amber { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.35); }
+    .ti-sep {
+      color: rgba(255, 255, 255, 0.2);
+      font-size: 0.75rem;
+      margin: 0 4px;
+    }
+
+    /* ============ 2-COLUMN EXECUTIVE SPLIT HERO ============ */
+    .hero-split-grid {
+      display: grid;
+      grid-template-columns: 1.12fr 0.98fr;
+      gap: 36px;
+      align-items: stretch;
+      margin: 1.5rem 0 3.5rem;
+      text-align: left;
+    }
+    .hero-left-col {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .hero-left-col .badge-top {
+      align-self: flex-start;
+      margin-bottom: 1.2rem;
+    }
+    .hero-left-col h1 {
+      font-size: clamp(2.3rem, 4vw, 3.6rem);
+      line-height: 1.12;
+      letter-spacing: -0.02em;
+      margin-bottom: 1.2rem;
+      text-align: left;
+    }
+    .hero-left-col .lead-quote {
+      text-align: left;
+      margin: 0 0 1.5rem 0;
+      font-size: 1.08rem;
+      border-left: 3.5px solid #00e5ff;
+      padding-left: 1.2rem;
+      color: #e2e8f0;
+      line-height: 1.65;
+    }
+    .hero-stat-strip {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 1.6rem;
+    }
+    .hero-stat-pill {
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 10px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .hero-stat-pill .num {
+      font-size: 1.25rem;
+      font-weight: 900;
+      letter-spacing: -0.01em;
+      line-height: 1.1;
+    }
+    .hero-stat-pill .num.cyan { color: #00e5ff; text-shadow: 0 0 12px rgba(0, 229, 255, 0.4); }
+    .hero-stat-pill .num.pink { color: #ec4899; text-shadow: 0 0 12px rgba(236, 72, 153, 0.4); }
+    .hero-stat-pill .num.emerald { color: #10b981; text-shadow: 0 0 12px rgba(16, 185, 129, 0.4); }
+    .hero-stat-pill .lbl {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    /* Dual Insight Mini Cards in Left Col */
+    .hero-insights-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 1.8rem;
+    }
+    .hero-insight-card {
+      border-radius: 14px;
+      padding: 14px 18px;
+      background: rgba(15, 23, 42, 0.7);
+      border: 1.5px solid rgba(255, 255, 255, 0.08);
+      transition: all 0.25s ease;
+    }
+    .hero-insight-card.danger {
+      background: rgba(239, 68, 68, 0.06);
+      border-color: rgba(239, 68, 68, 0.3);
+    }
+    .hero-insight-card.solution {
+      background: rgba(0, 229, 255, 0.06);
+      border-color: rgba(0, 229, 255, 0.35);
+    }
+    .hic-tag {
+      font-size: 0.68rem;
+      font-weight: 900;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+    .hero-insight-card.danger .hic-tag { color: #f87171; }
+    .hero-insight-card.solution .hic-tag { color: #00e5ff; }
+    .hic-text {
+      font-size: 0.95rem;
+      color: #e2e8f0;
+      line-height: 1.55;
+      margin: 0;
+    }
+
+    .hero-cta-actions {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    /* Right Column: The VidiTwins Interactive Hero Card */
+    .twins-hero-card {
+      background: linear-gradient(145deg, rgba(15, 23, 42, 0.95) 0%, rgba(4, 8, 20, 0.98) 100%);
+      border: 2px solid rgba(0, 229, 255, 0.4);
+      border-radius: 24px;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7), 0 0 40px rgba(0, 229, 255, 0.15);
+      position: relative;
+      overflow: hidden;
+    }
+    .thc-backdrop {
+      position: relative;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1.5px solid rgba(0, 229, 255, 0.35);
+      aspect-ratio: 16/9;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+    }
+    .thc-backdrop img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .thc-backdrop-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(3, 7, 18, 0.95) 0%, rgba(3, 7, 18, 0.3) 50%, transparent 100%);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 12px 14px;
+    }
+    .thc-top-badges {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .live-broadcast-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(239, 68, 68, 0.9);
+      color: #fff;
+      font-size: 0.68rem;
+      font-weight: 900;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 100px;
+      box-shadow: 0 0 12px rgba(239, 68, 68, 0.6);
+    }
+    .live-broadcast-pill .live-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #fff;
+      animation: tickerPulse 1.2s infinite;
+    }
+    .thc-bottom-info h3 {
+      font-size: 1.25rem;
+      font-weight: 900;
+      color: #fff;
+      margin: 0 0 2px 0;
+    }
+    .thc-bottom-info p {
+      font-size: 0.8rem;
+      color: #38bdf8;
+      margin: 0;
+      font-weight: 700;
+    }
+
+    /* Co-hosts Profile Row */
+    .cohost-avatars-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .cohost-person-badge {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 14px;
+      padding: 8px 10px;
+      transition: all 0.25s ease;
+    }
+    .cohost-person-badge:hover {
+      background: rgba(255, 255, 255, 0.07);
+    }
+    .cohost-person-badge.lexi {
+      border-color: rgba(236, 72, 153, 0.35);
+    }
+    .cohost-person-badge.max {
+      border-color: rgba(0, 229, 255, 0.35);
+    }
+    .cohost-img {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      overflow: hidden;
+      flex-shrink: 0;
+      border: 2px solid #fff;
+    }
+    .cohost-person-badge.lexi .cohost-img {
+      border-color: #ec4899;
+      box-shadow: 0 0 14px rgba(236, 72, 153, 0.5);
+    }
+    .cohost-person-badge.max .cohost-img {
+      border-color: #00e5ff;
+      box-shadow: 0 0 14px rgba(0, 229, 255, 0.5);
+    }
+    .cohost-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .cohost-info-col {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      min-width: 0;
+    }
+    .cohost-name {
+      font-size: 0.88rem;
+      font-weight: 900;
+      color: #fff;
+    }
+    .cohost-role {
+      font-size: 0.68rem;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .cohost-person-badge.lexi .cohost-role { color: #f472b6; }
+    .cohost-person-badge.max .cohost-role { color: #38bdf8; }
+
+    /* Superpowers Side-by-Side in Hero */
+    .hero-superpowers-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .hero-sp-card {
+      background: rgba(10, 15, 30, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .hero-sp-card.lexi { border-color: rgba(236, 72, 153, 0.3); }
+    .hero-sp-card.max { border-color: rgba(0, 229, 255, 0.3); }
+    .hero-sp-photo {
+      height: 95px;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-sp-photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .hero-sp-tag {
+      position: absolute;
+      bottom: 4px;
+      left: 6px;
+      font-size: 0.62rem;
+      font-weight: 900;
+      letter-spacing: 0.06em;
+      padding: 1px 6px;
+      border-radius: 4px;
+      background: rgba(3, 7, 18, 0.85);
+    }
+    .hero-sp-card.lexi .hero-sp-tag { color: #f472b6; border: 1px solid rgba(236, 72, 153, 0.4); }
+    .hero-sp-card.max .hero-sp-tag { color: #38bdf8; border: 1px solid rgba(0, 229, 255, 0.4); }
+    .hero-sp-desc {
+      padding: 8px 10px;
+      font-size: 0.76rem;
+      color: #cbd5e1;
+      line-height: 1.45;
+    }
+
+    /* Live Convo Bubble */
+    .hero-convo-bubble {
+      background: linear-gradient(135deg, rgba(0, 229, 255, 0.08) 0%, rgba(236, 72, 153, 0.08) 100%);
+      border: 1.5px solid rgba(0, 229, 255, 0.3);
+      border-radius: 14px;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .hcb-badge {
+      font-size: 0.65rem;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      background: #00e5ff;
+      color: #020617;
+      padding: 2px 6px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      flex-shrink: 0;
+    }
+    .hcb-text {
+      font-size: 0.82rem;
+      color: #f1f5f9;
+      line-height: 1.45;
+      margin: 0;
+    }
+    .hcb-text strong {
+      color: #fff;
+    }
+
+    @media (max-width: 1040px) {
+      .hero-split-grid {
+        grid-template-columns: 1fr;
+        gap: 28px;
+      }
+      .ticker-label-col {
+        min-width: 170px;
+        padding: 0 10px;
+        font-size: 0.62rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="bg-mesh"></div>
+<div id="bg3dCanvas"></div>
+
+<!-- ================= NAVIGATION ================= -->
+<header class="nav-bar">
+  <a class="brand-logo" href="vidiflow-lex.html">
+    <img src="assets/images/lexi/logo-lexi-mark.svg" alt="VidiFlow Lex Mark">
+    <div>VidiFlow <span>Lex</span></div>
+  </a>
+
+  <div class="nav-actions">
+    <a href="viditwin-show.html" class="btn-secondary" style="background:linear-gradient(135deg,rgba(236,72,153,0.2),rgba(0,229,255,0.2));border-color:rgba(0,229,255,0.4);color:#fff;">VidiTwins</a>
+    <a href="vidiflow-lex.html" class="btn-secondary">Launch Lex Lab</a>
+    <a href="vidiflow-lex.html#pane-smartstack" class="btn-primary">Build Smart Stack &rarr;</a>
+  </div>
+</header>
+
+<!-- ================= 3-ROW BROADCAST STOCK TICKER SYSTEM ================= -->
+<div class="broadcast-ticker-system" id="broadcastTicker">
+  <!-- Row 1: Smart Stack & Latest Tech Terms -->
+  <div class="ticker-row row-tech">
+    <div class="ticker-label-col">
+      <span class="ticker-pulse-dot"></span>
+      <span>SMART STACK // TECH DECODER</span>
+    </div>
+    <div class="ticker-track-wrap">
+      <div class="ticker-track">
+        <!-- Sequence A -->
+        <div class="ticker-item"><span class="ti-badge cyan">DATABASE</span> <strong>Dragonfly DB:</strong> 25x Redis throughput, multi-threaded cache engine saving $18k/yr on AWS clusters<span class="ti-sep">&bull;</span></div>
+        <div class="ticker-item"><span class="ti-badge cyan">VECTOR</span> <strong>pgvector:</strong> Native PostgreSQL vector similarity search eliminating Pinecone/Weaviate SaaS fees<span class="ti-sep">&bull;</span></div>
+        <div class="ticker-item"><span class="ti-badge cyan">KEY-VALUE</span> <strong>Valkey 8.0:</strong> Linux Foundation true open-source Redis fork with zero vendor licensing lock-in<span class="ti-sep">&bull;</span></div>
+        <div class="ticker-item"><span class="ti-badge cyan">PROTOCOL</span> <strong>Model Context Protocol (MCP):</strong> Anthropic open standard linking local LLMs to enterprise SQL &amp; file systems<span class="ti-sep">&bull;</span></div>
+        <div class="ticker-item"><span class="ti-badge cyan">RETRIEVAL</span> <strong>Hybrid RAG:</strong> Dense vector + BM25 keyword retrieval delivering factual accuracy with zero hallucinations<span class="ti-sep">&bull;</span></div>
+        <div class="ticker-item"><span class="ti-badge cyan">GRAPH</span> <strong>Neo4j GraphRAG:</strong> Knowledge graph traversal mapping complex company entity dependencies in real time<span class="ti-sep">&bull;</span></div>
+        <div class="ticker-item"><span class="ti-badge cyan">PRIVATE AI</span> <strong>Local vLLM / Ollama:</strong> Air-gapped on-premise model execution keeping trade secrets 100% confidential<span class="ti-sep">&bull;</span></div>
+        <div class="ticker-item"><span class="ti-badge cyan">API GATEWAY</span> <strong>Envoy / Kong:</strong> Microsecond latency routing, rate-limiting, and zero-trust perimeter auth for AI swarms<span class="ti-sep">&bull;</span></div>
+        <!-- Duplicate Sequence B for Seamless Infinite Loop -->
+        <div class="ticker-item"><span class="ti-badge cyan">DATABASE</span> <strong>Dragonfly DB:</strong> 25x Redis throughput, multi-threaded cache engine saving $18k/yr on AWS clusters<span class="ti-sep">&bull;</span></div>
+        <div class="ticker-item"><span class="ti-badge cyan">VECTOR</span> <strong>pgvector:</strong> Native PostgreSQL vector similarity search eliminating Pinecone/Weaviate SaaS fees<span class="ti-sep">&bull;</span></div>
+        <div class="ticker-item"><span class="ti-badge cyan">KEY-VALUE</span> <strong>Valkey 8.0:</strong> Linux Foundation true open-source Redis fork with zero vendor licensing lock-in<span class="ti-sep">&bull;</span></div>
+        <div class="ticker-item"><span class="ti-badge cyan">PROTOCOL</span> <strong>Model Context Protocol (MCP):</strong> Anthropic open standard linking local LLMs to enterprise SQL &amp; file systems<span class="ti-sep">&bull;</span></div>
+        <div class="ticker-item"><span class="ti-badge cyan">RETRIEVAL</span> <strong>Hybrid RAG:</strong> Dense vector + BM25 keyword retrieval delivering factual accuracy with zero hallucinations<span class="ti-sep">&bull;</span></div>
+        <div class="ticker-item"><span class="ti-badge cyan">GRAPH</span> <strong>Neo4j GraphRAG:</strong> Knowledge graph traversal mapping complex company entity dependencies in real time<span class="ti-sep">&bull;</span></div>
+        <div class="ticker-item"><span class="ti-badge cyan">PRIVATE AI</span> <strong>Local vLLM / Ollama:</strong> Air-gapped on-premise model execution keeping trade secrets 100% confidential<span class="ti-sep">&bull;</span></div>
+        <div class="ticker-item"><span class="ti-badge cyan">API GATEWAY</span> <strong>Envoy / Kong:</strong> Microsecond latency routing, rate-limiting, and zero-trust perimeter auth for AI swarms<span class="ti-sep">&bull;</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Row 2: Featured Brands & Marketplaces -->
+  <div class="ticker-row row-brands">
+    <div class="ticker-label-col">
+      <span class="ticker-pulse-dot"></span>
+      <span>FEATURED BRANDS // MARKETPLACES</span>
+    </div>
+    <div class="ticker-track-wrap">
+      <div class="ticker-track">
+        <!-- Sequence A -->
+        <div class="ticker-item"><span class="ti-badge pink">MARKETPLACE</span> <strong>ShopMyExchange:</strong> $33B DoD military retail exchange giving verified CPG brands national distribution<span class="ti-sep">&bull;</span></div>
+        <div class="ticker-item"><span class="ti-badge pink">PLATFORM</span> <strong>VidiPitch:</strong> Autonomous AI deck generator placing veteran-backed products into military retail buyers' hands<span class="ti-sep">&bull;</span></div>
+        <div class="ticker-item"><span class="ti-badge pink">ORCHESTRATION</span> <strong>VidiFlow HX:</strong> Enterprise human-experience workflow engine eliminating $50k/mo Salesforce seat tax<span class="ti-sep">&bull;</span></div>
+        <div class="ticker-item"><span class="ti-badge pink">AUTONOMOUS</span> <strong>Open Claw:</strong> High-frequency retail shelf crawler identifying price anomalies and stocking leaks<span class="ti-sep">&bull;</span></div>
+        <div class="ticker-item"><span class="ti-badge pink">EVENT BUS</span> <strong>Hermes Core:</strong> Sub-millisecond distributed message queue coordinating multi-agent swarm tasks<span class="ti-sep">&bull;</span></div>
+        <div class="ticker-item"><span class="ti-badge pink">HEADLESS CMS</span> <strong>Directus CMS:</strong> Instant REST/GraphQL backends on PostgreSQL with granular role-based permissions<span class="ti-sep">&bull;</span></div>
+        <div class="ticker-item"><span class="ti-badge pink">BROADCAST</span> <strong>Vidi.News:</strong> Live AI journalism network broadcasting daily technical intelligence and product reviews<span class="ti-sep">&bull;</span></div>
+        <!-- Duplicate Sequence B -->
+        <div class="ticker-item"><span class="ti-badge pink">MARKETPLACE</span> <strong>ShopMyExchange:</strong> $33B DoD military retail exchange giving verified CPG brands national distribution<span class="ti-sep">&bull;</span></div>
+        <div class="ticker-item"><span class="ti-badge pink">PLATFORM</span> <strong>VidiPitch:</strong> Autonomous AI deck generator placing veteran-backed products into military retail buyers' hands<span class="ti-sep">&bull;</span></div>
+        <div class="ticker-item"><span class="ti-badge pink">ORCHESTRATION</span> <strong>VidiFlow HX:</strong> Enterprise human-experience workflow engine eliminating $50k/mo Salesforce seat tax<span class="ti-sep">&bull;</span></div>
+        <div class="ticker-item"><span class="ti-badge pink">AUTONOMOUS</span> <strong>Open Claw:</strong> High-frequency retail shelf crawler identifying price anomalies and stocking leaks<span class="ti-sep">&bull;</span></div>
+        <div class="ticker-item"><span class="ti-badge pink">EVENT BUS</span> <strong>Hermes Core:</strong> Sub-millisecond distributed message queue coordinating multi-agent swarm tasks<span class="ti-sep">&bull;</span></div>
+        <div class="ticker-item"><span class="ti-badge pink">HEADLESS CMS</span> <strong>Directus CMS:</strong> Instant REST/GraphQL backends on PostgreSQL with granular role-based permissions<span class="ti-sep">&bull;</span></div>
+        <div class="ticker-item"><span class="ti-badge pink">BROADCAST</span> <strong>Vidi.News:</strong> Live AI journalism network broadcasting daily technical intelligence and product reviews<span class="ti-sep">&bull;</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Row 3: Boardroom Directives & ROI Metrics -->
+  <div class="ticker-row row-roi">
+    <div class="ticker-label-col">
+      <span class="ticker-pulse-dot"></span>
+      <span>BOARDROOM DIRECTIVES // ROI</span>
+    </div>
+    <div class="ticker-track-wrap">
+      <div class="ticker-track">
+        <!-- Sequence A -->
+        <div class="ticker-item"><span class="ti-badge emerald">ROI SAVE</span> <strong>CRM Arbitrage:</strong> Save $45,000/yr per 50 seats by replacing SaaS per-user fees with self-hosted Directus<span class="ti-sep">&bull;</span></div>
+        <div class="ticker-item"><span class="ti-badge emerald">COMPUTE LEVERAGE</span> <strong>Hardware Multiplier:</strong> Single 64-core AMD EPYC node replaces 10 AWS cloud instances with zero throttling<span class="ti-sep">&bull;</span></div>
+        <div class="ticker-item"><span class="ti-badge emerald">PRODUCTIVITY</span> <strong>Zero-Downtime Upskilling:</strong> Lex translates technospeak in-flight &mdash; zero employee hours lost to seminars<span class="ti-sep">&bull;</span></div>
+        <div class="ticker-item"><span class="ti-badge emerald">STORAGE</span> <strong>Vector Consolidation:</strong> Save $24,000/yr by querying vectors directly in PostgreSQL via pgvector<span class="ti-sep">&bull;</span></div>
+        <div class="ticker-item"><span class="ti-badge emerald">SECURITY</span> <strong>Air-Gapped Sovereign AI:</strong> Local LLM execution guarantees 100% zero data leakage and GDPR/HIPAA compliance<span class="ti-sep">&bull;</span></div>
+        <div class="ticker-item"><span class="ti-badge emerald">AGENCY EFFICIENCY</span> <strong>RFP De-Jargoner:</strong> Lex decodes 60-page IT vendor proposals in 3 seconds to expose hidden recurring upsells<span class="ti-sep">&bull;</span></div>
+        <!-- Duplicate Sequence B -->
+        <div class="ticker-item"><span class="ti-badge emerald">ROI SAVE</span> <strong>CRM Arbitrage:</strong> Save $45,000/yr per 50 seats by replacing SaaS per-user fees with self-hosted Directus<span class="ti-sep">&bull;</span></div>
+        <div class="ticker-item"><span class="ti-badge emerald">COMPUTE LEVERAGE</span> <strong>Hardware Multiplier:</strong> Single 64-core AMD EPYC node replaces 10 AWS cloud instances with zero throttling<span class="ti-sep">&bull;</span></div>
+        <div class="ticker-item"><span class="ti-badge emerald">PRODUCTIVITY</span> <strong>Zero-Downtime Upskilling:</strong> Lex translates technospeak in-flight &mdash; zero employee hours lost to seminars<span class="ti-sep">&bull;</span></div>
+        <div class="ticker-item"><span class="ti-badge emerald">STORAGE</span> <strong>Vector Consolidation:</strong> Save $24,000/yr by querying vectors directly in PostgreSQL via pgvector<span class="ti-sep">&bull;</span></div>
+        <div class="ticker-item"><span class="ti-badge emerald">SECURITY</span> <strong>Air-Gapped Sovereign AI:</strong> Local LLM execution guarantees 100% zero data leakage and GDPR/HIPAA compliance<span class="ti-sep">&bull;</span></div>
+        <div class="ticker-item"><span class="ti-badge emerald">AGENCY EFFICIENCY</span> <strong>RFP De-Jargoner:</strong> Lex decodes 60-page IT vendor proposals in 3 seconds to expose hidden recurring upsells<span class="ti-sep">&bull;</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= MAIN MANIFESTO BODY ================= -->
+<main class="container">
+ 
+  <!-- ================= 2-COLUMN EXECUTIVE SPLIT HERO ================= -->
+  <section class="hero-manifesto" style="padding: 1.5rem 0 2rem;">
+    <div class="hero-split-grid">
+      
+      <!-- Left Column: Mission, Directives, Stat Strip, Insight Cards -->
+      <div class="hero-left-col">
+        <div>
+          <div class="badge-top"><span style="color:#00e5ff;font-weight:900;">DIRECTIVE //</span> Technical Literacy for Everyday People &amp; Executives</div>
+          <h1>Know Which Question to Ask.<br><span class="glow-txt">And Know the Words to Ask It.</span></h1>
+          
+          <div class="lead-quote">
+            &ldquo;You cannot ask the right question if you don't know the words. And if you can't ask the right question, you're at the mercy of whatever IT or a software vendor tells you. Lex levels the playing field.&rdquo;
+          </div>
+
+          <!-- Quick Stat Strip -->
+          <div class="hero-stat-strip">
+            <div class="hero-stat-pill">
+              <span class="num cyan">0%</span>
+              <span class="lbl">Unexplained Jargon</span>
+            </div>
+            <div class="hero-stat-pill">
+              <span class="num pink">100%</span>
+              <span class="lbl">Context Clarity</span>
+            </div>
+            <div class="hero-stat-pill">
+              <span class="num emerald">Zero</span>
+              <span class="lbl">Training Downtime</span>
+            </div>
+          </div>
+
+          <!-- Dual Insight Glass Cards -->
+          <div class="hero-insights-stack">
+            <!-- Insight 1: The Human Reality -->
+            <div class="hero-insight-card danger">
+              <div class="hic-tag">THE REALITY IN EVERY TECH MEETING</div>
+              <p class="hic-text">
+                When an executive sits across from a software vendor or reads a 30-page proposal, they don't say <em>&ldquo;I don't understand this ontological architecture.&rdquo;</em> They sigh and say: <strong style="color:#00e5ff;">&ldquo;I don't know all this tech lingo. Can someone translate this into plain English?&rdquo;</strong>
+              </p>
+            </div>
+
+            <!-- Insight 2: The Definition Trap -->
+            <div class="hero-insight-card solution">
+              <div class="hic-tag">EXECUTIVE INSIGHT // THE DEFINITION TRAP</div>
+              <p class="hic-text">
+                A textbook definition swaps one technical abstraction for another &mdash; wasting your time with <em>more words</em> while leaving you clueless. <strong>Lex delivers instant understanding</strong> by mapping what the tool actually does, where it fits in the architecture, and what high-leverage question to ask next.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action CTAs -->
+        <div class="hero-cta-actions">
+          <a href="vidiflow-lex.html" class="btn-primary" style="padding:0.9rem 1.8rem;font-size:1rem;">Launch Lex Lab &rarr;</a>
+          <a href="viditwin-show.html" class="btn-secondary" style="padding:0.9rem 1.6rem;font-size:0.95rem;background:linear-gradient(135deg,rgba(236,72,153,0.18),rgba(0,229,255,0.18));border-color:rgba(0,229,255,0.45);color:#fff;">Watch VidiTwins</a>
+        </div>
+      </div>
+
+      <!-- Right Column: The VidiTwins Interactive Hero Card (The People Front-and-Center!) -->
+      <div class="twins-hero-card">
+        
+        <!-- Studio Broadcast Hero Photo -->
+        <div class="thc-backdrop">
+          <img src="https://cdn.vidi.news/images/viditwin_studio_broadcast_wide.png" alt="VidiTwins: Lexi and Max Live Broadcast on Vidi.News">
+          <div class="thc-backdrop-overlay">
+            <div class="thc-top-badges">
+              <span class="live-broadcast-pill">
+                <span class="live-dot"></span> VIDI.NEWS LIVE
+              </span>
+              <span style="font-size:0.7rem;font-weight:900;letter-spacing:0.08em;background:rgba(0,0,0,0.75);color:#38bdf8;padding:2px 8px;border-radius:100px;border:1px solid rgba(0,229,255,0.3);">
+                DAILY BROADCAST
+              </span>
+            </div>
+            <div class="thc-bottom-info">
+              <h3>VidiTwins &bull; Lexi &amp; Max</h3>
+              <p>Your In-House AI IT Dream Team &bull; Streaming on Vidi.News</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Host Headshots Bar -->
+        <div class="cohost-avatars-row">
+          <!-- Lexi -->
+          <div class="cohost-person-badge lexi">
+            <div class="cohost-img">
+              <img src="https://cdn.vidi.news/images/viditwin_lexi_avatar.png" alt="Lexi">
+            </div>
+            <div class="cohost-info-col">
+              <span class="cohost-name">Lexi</span>
+              <span class="cohost-role">Visual Decoder &bull; Chief of Staff</span>
+            </div>
+          </div>
+          <!-- Max -->
+          <div class="cohost-person-badge max">
+            <div class="cohost-img">
+              <img src="https://cdn.vidi.news/images/viditwin_max_avatar.png" alt="Max">
+            </div>
+            <div class="cohost-info-col">
+              <span class="cohost-name">Max</span>
+              <span class="cohost-role">Applied Architect &bull; CTO</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Superpower Action Photos Side-by-Side -->
+        <div class="hero-superpowers-grid">
+          <!-- Lexi Action -->
+          <div class="hero-sp-card lexi">
+            <div class="hero-sp-photo">
+              <img src="https://cdn.vidi.news/images/viditwin_lexi_in_action.png" alt="Lexi Visually Decoding 3D Tech">
+              <span class="hero-sp-tag">LEXI IN ACTION</span>
+            </div>
+            <div class="hero-sp-desc">
+              Strips vendor marketing doublespeak, decodes RFPs, and translates 3D geometry into human clarity.
+            </div>
+          </div>
+          <!-- Max Action -->
+          <div class="hero-sp-card max">
+            <div class="hero-sp-photo">
+              <img src="https://cdn.vidi.news/images/viditwin_max_in_action.png" alt="Max Operating 64-Core Server Datacenter">
+              <span class="hero-sp-tag">MAX IN ACTION</span>
+            </div>
+            <div class="hero-sp-desc">
+              Deploys 64-core Dragonfly nodes, slashes server bills by 80%, and architects autonomous agent swarms.
+            </div>
+          </div>
+        </div>
+
+        <!-- Live Anchor Convo Bubble -->
+        <div class="hero-convo-bubble">
+          <span class="hcb-badge">TANDEM RULE</span>
+          <p class="hcb-text">
+            <strong>Stop paying consultants $350/hr to explain buzzwords.</strong> Ask Lexi for plain English and Max for hardware ROI &mdash; zero downtime, 100% clarity.
+          </p>
+        </div>
+
+        <!-- Direct Show Link -->
+        <a href="viditwin-show.html" style="display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,0.04);border:1px solid rgba(0,229,255,0.3);border-radius:12px;padding:10px 14px;color:#fff;text-decoration:none;transition:all 0.2s ease;">
+          <span style="font-size:0.85rem;font-weight:800;display:flex;align-items:center;gap:8px;">
+            <span style="color:#00e5ff;font-weight:900;">EPISODES //</span> Watch Season 1 on Vidi.News
+          </span>
+          <span style="color:#00e5ff;font-weight:900;">&rarr;</span>
+        </a>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ================= LIVE VISUAL CONVERSATION SHOWCASE: THE BOARDROOM SESSIONS ================= -->
+  <section class="manifesto-card" style="border:2px solid var(--dj-cyan);box-shadow:0 0 45px rgba(0,229,255,0.25);">
+    <div class="card-num">SHOWCASE</div>
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:1rem;">
+      <div class="section-title" style="margin:0;">
+        <span>BOARDROOM CONVERSATIONS</span> Executive Visual Showcase
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span style="background:rgba(239,68,68,0.2);border:1px solid #ef4444;color:#fca5a5;padding:4px 12px;border-radius:100px;font-size:0.72rem;font-weight:900;letter-spacing:0.08em;text-transform:uppercase;display:inline-flex;align-items:center;gap:6px;">
+          <span style="width:7px;height:7px;border-radius:50%;background:#ef4444;box-shadow:0 0 8px #ef4444;display:inline-block;"></span> LIVE BROADCAST DIALOGUE
+        </span>
+      </div>
+    </div>
+    <p style="font-size:1.05rem;color:#cbd5e1;line-height:1.7;">
+      Watch how <strong>Lexi</strong> (Visual Decoder &amp; Chief of Staff) and <strong>Max</strong> (Chief Systems Architect) consult directly with business owners &mdash; taking apart predatory $150/mo SaaS traps and replacing them with high-performance Smart Stack architecture.
+    </p>
+
+    <!-- Scenario Switcher Tabs -->
+    <div class="convo-tabs-bar">
+      <button class="convo-tab-btn active" onclick="switchConvoScenario(0)" id="convoTab0">
+        <span class="tab-code">CASE 01 // CRM ARCHITECTURE</span>
+        <span class="tab-name">The $45,000/yr Salesforce Seat Trap</span>
+      </button>
+      <button class="convo-tab-btn" onclick="switchConvoScenario(1)" id="convoTab1">
+        <span class="tab-code">CASE 02 // VECTOR STORAGE</span>
+        <span class="tab-name">The $2,000/mo Cloud Vector DB Bill</span>
+      </button>
+      <button class="convo-tab-btn" onclick="switchConvoScenario(2)" id="convoTab2">
+        <span class="tab-code">CASE 03 // CLUSTER CACHING</span>
+        <span class="tab-name">The 8-Node Redis Cloud Cluster</span>
+      </button>
+      <button class="convo-tab-btn" onclick="switchConvoScenario(3)" id="convoTab3">
+        <span class="tab-code">CASE 04 // AI TOOLING</span>
+        <span class="tab-name">The 6-Month Custom API Quote</span>
+      </button>
+    </div>
+
+    <!-- Active Conversation Viewport -->
+    <div class="convo-viewport" id="convoViewport">
+      <!-- Populated dynamically by JS with complete multi-turn visual dialogues featuring headshots of Lexi, Max, and the Executive -->
+    </div>
+  </section>
+
+  <!-- 1. The Real Problem: The Jargon Wall -->
+  <section class="manifesto-card">
+    <div class="card-num">01</div>
+    <div class="section-title"><span>#1</span> The Problem Lex Solves: The Jargon Wall</div>
+    <p>
+      Every day, business owners, retail buyers, nurses, veterans, and non-technical executives are handed 40-page software specs, vendor proposals, and architecture diagrams packed with acronyms: <strong>RAG, ERP, CRM, pgvector, Dragonfly, Valkey, MCP, JIT, BOM</strong>.
+    </p>
+    <div class="callout-problem">
+      <strong>The Jargon Trap:</strong> A CEO asks <em>"What does RAG mean for our customer data?"</em> and an IT specialist responds: <em>"It's a neural information retrieval system that augments generation with vector-embedded semantic search across high-dimensional latent space."</em>
+    </div>
+    <p>
+      That is not an explanation. <strong>That is an exclusion barrier.</strong>
+    </p>
+    <p>
+      For 30 years, tech has explained its own abstractions with <em>more abstractions</em>. The result? Non-technical leaders nod along, feel intimidated, sign bloated contracts, and accept bad architecture because they don't know the vocabulary to challenge it. Lex destroys that barrier.
+    </p>
+
+    <!-- The Corporate Jargon Matrix: What People Call Insider Language -->
+    <div style="margin-top:2rem;">
+      <div style="font-size:1.15rem;font-weight:900;color:#fff;margin-bottom:6px;display:flex;align-items:center;gap:8px;">
+        <span style="font-size:0.75rem;font-weight:900;letter-spacing:0.08em;color:#a78bfa;border:1px solid rgba(167,139,250,0.4);padding:2px 8px;border-radius:4px;">DIMENSIONS //</span> The Insider Language Matrix: What We Call It When We Don't Understand It
+      </div>
+      <p style="font-size:0.92rem;color:#94a3b8;margin:0 0 1.25rem 0;">
+        Every industry, engineering bullpen, and corporate boardroom invents its own barrier dialect. VidiFlow Lex systematically translates all four dimensions:
+      </p>
+
+      <div class="jargon-matrix-grid">
+        <!-- 1. Frustrated Slang -->
+        <div class="jargon-card slang">
+          <span class="jargon-card-tag">Frustrated Everyday Slang</span>
+          <div class="jargon-card-title">What We Mutter in the Hallway</div>
+          <ul class="jargon-item-list">
+            <li><strong>Alphabet Soup</strong>: Endless 3-letter acronym storms (ARR, CAC, RAG, ERP, KPI).</li>
+            <li><strong>Tech Speak &amp; Dev Speak</strong>: Engineers making simple databases sound like rocket science.</li>
+            <li><strong>Corporate Speak / Corp Speak</strong>: Sanitized, hollow HR and boardroom dialect.</li>
+            <li><strong>Tech Mumbo Jumbo</strong>: Over-engineered explanations that confuse rather than clarify.</li>
+            <li><strong>Gobbledygook &amp; Word Salad</strong>: 10-page memos filled with words that mean nothing.</li>
+            <li><strong>Buzzword Bingo</strong>: Waiting for someone to say "synergy" or "paradigm shift."</li>
+          </ul>
+        </div>
+
+        <!-- 2. Cultural Codes -->
+        <div class="jargon-card culture">
+          <span class="jargon-card-tag">Cultural Belonging Codes</span>
+          <div class="jargon-card-title">How Insiders Test Outsiders</div>
+          <ul class="jargon-item-list">
+            <li><strong>Shop Talk / Talking Shop</strong>: Insider trade banter that immediately signals industry tenure.</li>
+            <li><strong>Tribal Knowledge</strong>: Critical operational workflows trapped in veteran heads, never written down.</li>
+            <li><strong>The Corporate Shibboleth</strong>: Code words used to test if you're an authentic insider.</li>
+            <li><strong>The Company Patois</strong>: The weird, hyper-local dialect developed inside one enterprise over decades.</li>
+            <li><strong>The Secret Handshake</strong>: Knowing the exact abbreviations required to get respect in the room.</li>
+          </ul>
+        </div>
+
+        <!-- 3. Institutional Structures -->
+        <div class="jargon-card structure">
+          <span class="jargon-card-tag">Institutional Structures</span>
+          <div class="jargon-card-title">Formal Organizational Systems</div>
+          <ul class="jargon-item-list">
+            <li><strong>The Vernacular</strong>: The native, real-world operational speech of a technical domain.</li>
+            <li><strong>Nomenclature</strong>: The formal naming convention of a system, schema, or architecture.</li>
+            <li><strong>Taxonomy</strong>: The hierarchical tree of how divisions, data, and tools interlock.</li>
+            <li><strong>The Company Lexicon</strong>: The institutional glossary every enterprise wishes existed.</li>
+          </ul>
+        </div>
+
+        <!-- 4. Doublespeak Clichés -->
+        <div class="jargon-card doublespeak">
+          <span class="jargon-card-tag">Corporate Doublespeak Clichés</span>
+          <div class="jargon-card-title">Phrases We Love to Hate</div>
+          <ul class="jargon-item-list">
+            <li><strong>"Do we have bandwidth?"</strong> &rarr; <em>Plain English: Do you have time?</em></li>
+            <li><strong>"Let's circle back offline."</strong> &rarr; <em>Plain English: Stop talking about this right now.</em></li>
+            <li><strong>"Stay in your swimlane."</strong> &rarr; <em>Plain English: Don't touch what isn't your job.</em></li>
+            <li><strong>"Boil the ocean."</strong> &rarr; <em>Plain English: Making a simple task impossibly complicated.</em></li>
+            <li><strong>"Bespoke microservices."</strong> &rarr; <em>Plain English: Custom code we will overcharge you for.</em></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. Knowing the Words = Knowing Which Question to Ask -->
+  <section class="manifesto-card">
+    <div class="card-num">02</div>
+    <div class="section-title"><span>#2</span> The Key to the AI Era: Knowing Which Question to Ask</div>
+    <p>
+      In the modern era, finding answers is cheap. Search engines and AI models can return answers in three seconds. <strong>Getting answers is no longer the bottleneck.</strong>
+    </p>
+    <p style="font-size:1.25rem;font-weight:900;color:var(--dj-cyan);margin:1.5rem 0;line-height:1.4;">
+      The true bottleneck is knowing WHICH QUESTION TO ASK. And you cannot formulate the question if you do not know the words.
+    </p>
+    <p>
+      When you know the words, you don't nod along blindly &mdash; you ask the high-leverage questions that protect your budget, accelerate your operations, and stop vendors from overcharging you.
+    </p>
+  </section>
+
+  <!-- 3. Real-World Applied Examples -->
+  <section class="manifesto-card">
+    <div class="card-num">03</div>
+    <div class="section-title"><span>#3</span> Real-World Applied Examples: The VidiTwin Executive Tandem</div>
+    <p>
+      Here is how <strong>Lexi</strong> and <strong>Max</strong> systematically dismantle the top technical buzzwords in enterprise software &mdash; translating vendor specifications into human understanding, hardware architecture, and the exact question you must ask in the boardroom:
+    </p>
+
+    <div class="applied-grid">
+
+      <!-- 1. RAG -->
+      <div class="applied-card">
+        <div class="applied-card-head">
+          <div class="applied-term-title">01 // RAG (Retrieval-Augmented Generation)</div>
+          <span class="applied-category-pill">AI Knowledge &amp; Search Grounding</span>
+        </div>
+
+        <!-- RAG Truth Engine Visual -->
+        <div style="border-radius:14px;overflow:hidden;margin-bottom:1.25rem;border:1px solid rgba(16,185,129,0.3);position:relative;">
+          <img src="https://cdn.vidi.news/images/viditwin_ep3_rag_truth_audit.png" alt="RAG Real-Time Contract and Invoice Audit Demonstration" style="width:100%;height:auto;display:block;">
+          <div style="position:absolute;bottom:0;left:0;right:0;background:linear-gradient(to top, rgba(3,7,18,0.95) 0%, transparent 100%);padding:10px 16px;font-size:0.75rem;font-weight:900;color:#34d399;display:flex;justify-content:space-between;">
+            <span>RAG AUDIT ENGINE &bull; GROUNDED IN AUDITED INVOICES</span>
+            <span style="color:#f1f5f9;">ZERO HALLUCINATIONS</span>
+          </div>
+        </div>
+
+        <!-- Vendor RFP Specification -->
+        <div class="exec-rfp-box">
+          <div class="exec-rfp-tag">
+            <span>VENDOR ARCHITECTURE PROPOSAL</span>
+            <span style="color:#94a3b8;">RFP SPECIFICATION</span>
+          </div>
+          <div class="exec-rfp-quote">
+            &ldquo;We will deploy a reciprocal rank fusion hybrid RAG pipeline with high-dimensional dense vector embeddings across your multi-tenant document corpus.&rdquo;
+          </div>
+        </div>
+
+        <!-- Executive Dialogue Thread -->
+        <div class="exec-dialogue-thread">
+          <div class="exec-dialogue-row lexi">
+            <div class="exec-speaker-col">
+              <div class="exec-speaker-avatar">
+                <img src="https://cdn.vidi.news/images/viditwin_lexi_avatar.png" alt="Lexi">
+              </div>
+              <span class="exec-name-tag lexi">LEXI</span>
+            </div>
+            <div class="exec-speech-content">
+              <div class="exec-speech-header">
+                <span class="exec-role-title">Chief of Staff &bull; Plain-English Decoder</span>
+                <span style="font-family:var(--font-mono);font-size:0.68rem;color:#f472b6;">HUMAN REALITY</span>
+              </div>
+              <div class="exec-speech-text">
+                &ldquo;Here's what that vendor is really selling you: an AI without RAG is taking a closed-book history test purely from memory, which is why it invents fake court cases and hallucinates financial numbers. RAG simply hands the AI an open book of your company's own verified invoices, contracts, and HR manuals before it types a single sentence.&rdquo;
+              </div>
+            </div>
+          </div>
+
+          <div class="exec-dialogue-row max">
+            <div class="exec-speaker-col">
+              <div class="exec-speaker-avatar">
+                <img src="https://cdn.vidi.news/images/viditwin_max_avatar.png" alt="Max">
+              </div>
+              <span class="exec-name-tag max">MAX</span>
+            </div>
+            <div class="exec-speech-content">
+              <div class="exec-speech-header">
+                <span class="exec-role-title">Chief Systems Architect &bull; Applied ROI</span>
+                <span style="font-family:var(--font-mono);font-size:0.68rem;color:#38bdf8;">SYSTEMS EXECUTION</span>
+              </div>
+              <div class="exec-speech-text">
+                &ldquo;And you do not need to sign a $2,000/month contract with an external cloud vector database. We activate native pgvector inside your existing PostgreSQL instance with Dragonfly caching. Your sensitive company IP never leaves your private VPC and queries resolve in under 12ms.&rdquo;
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Executive Boardroom Directive -->
+        <div class="exec-power-box">
+          <div class="exec-power-title">
+            <span>EXECUTIVE BOARDROOM DIRECTIVE</span>
+            <span style="color:#00e5ff;font-size:0.68rem;">ASK ACROSS THE TABLE</span>
+          </div>
+          <div class="exec-power-text">
+            &ldquo;How are we updating the vector index when contracts change, and why would we pay for third-party vector cloud hosting when our existing Postgres database handles pgvector natively?&rdquo;
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. Dragonfly -->
+      <div class="applied-card">
+        <div class="applied-card-head">
+          <div class="applied-term-title">02 // Dragonfly vs. Redis</div>
+          <span class="applied-category-pill">High-Speed In-Memory Caching</span>
+        </div>
+
+        <!-- Dragonfly 64-Core Datacenter Visual -->
+        <div style="border-radius:14px;overflow:hidden;margin-bottom:1.25rem;border:1px solid rgba(0,229,255,0.3);position:relative;">
+          <img src="https://cdn.vidi.news/images/viditwin_ep2_dragonfly_infrastructure.png" alt="Dragonfly 64-Core Server Infrastructure" style="width:100%;height:auto;display:block;">
+          <div style="position:absolute;bottom:0;left:0;right:0;background:linear-gradient(to top, rgba(3,7,18,0.95) 0%, transparent 100%);padding:10px 16px;font-size:0.75rem;font-weight:900;color:#38bdf8;display:flex;justify-content:space-between;">
+            <span>64-CORE MULTI-THREADED SERVER INFRASTRUCTURE</span>
+            <span style="color:#f1f5f9;">25X THROUGHPUT ON 1 BOX</span>
+          </div>
+        </div>
+
+        <div class="exec-rfp-box">
+          <div class="exec-rfp-tag">
+            <span>VENDOR ARCHITECTURE PROPOSAL</span>
+            <span style="color:#94a3b8;">RFP SPECIFICATION</span>
+          </div>
+          <div class="exec-rfp-quote">
+            &ldquo;Our single-threaded key-value caching layer is hitting memory fragmentation thresholds, necessitating spinning up 8 additional Redis cluster nodes.&rdquo;
+          </div>
+        </div>
+
+        <div class="exec-dialogue-thread">
+          <div class="exec-dialogue-row lexi">
+            <div class="exec-speaker-col">
+              <div class="exec-speaker-avatar">
+                <img src="https://cdn.vidi.news/images/viditwin_lexi_avatar.png" alt="Lexi">
+              </div>
+              <span class="exec-name-tag lexi">LEXI</span>
+            </div>
+            <div class="exec-speech-content">
+              <div class="exec-speech-header">
+                <span class="exec-role-title">Chief of Staff &bull; Plain-English Decoder</span>
+                <span style="font-family:var(--font-mono);font-size:0.68rem;color:#f472b6;">HUMAN REALITY</span>
+              </div>
+              <div class="exec-speech-text">
+                &ldquo;The vendor wants you to pay for 8 separate cloud servers because Redis was written in 2009 and can only use one CPU core at a time. It's like buying an 8-car garage because your mechanic doesn't know how to build a car with more than one seat.&rdquo;
+              </div>
+            </div>
+          </div>
+
+          <div class="exec-dialogue-row max">
+            <div class="exec-speaker-col">
+              <div class="exec-speaker-avatar">
+                <img src="https://cdn.vidi.news/images/viditwin_max_avatar.png" alt="Max">
+              </div>
+              <span class="exec-name-tag max">MAX</span>
+            </div>
+            <div class="exec-speech-content">
+              <div class="exec-speech-header">
+                <span class="exec-role-title">Chief Systems Architect &bull; Applied ROI</span>
+                <span style="font-family:var(--font-mono);font-size:0.68rem;color:#38bdf8;">SYSTEMS EXECUTION</span>
+              </div>
+              <div class="exec-speech-text">
+                &ldquo;Dragonfly is a 100% drop-in Redis replacement engineered for modern 64-core processors. A single Dragonfly server delivers 25x the throughput on 60% less memory using lockless multi-threading. We eliminate 7 cloud instances, save $42,000/year, and cut p99 tail latency to 3.8ms.&rdquo;
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="exec-power-box">
+          <div class="exec-power-title">
+            <span>EXECUTIVE BOARDROOM DIRECTIVE</span>
+            <span style="color:#00e5ff;font-size:0.68rem;">ASK ACROSS THE TABLE</span>
+          </div>
+          <div class="exec-power-text">
+            &ldquo;Why are we budgeting for 8 separate Redis cluster nodes when a single Dragonfly server handles 25x the throughput on 60% less RAM with zero code changes?&rdquo;
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. Valkey -->
+      <div class="applied-card">
+        <div class="applied-card-head">
+          <div class="applied-term-title">03 // Valkey vs. Redis RSALv2</div>
+          <span class="applied-category-pill">Open Source Freedom &amp; Compliance</span>
+        </div>
+
+        <div class="exec-rfp-box">
+          <div class="exec-rfp-tag">
+            <span>VENDOR ARCHITECTURE PROPOSAL</span>
+            <span style="color:#94a3b8;">RFP SPECIFICATION</span>
+          </div>
+          <div class="exec-rfp-quote">
+            &ldquo;Upstream dual-source available licensing transitions under RSALv2 mandate negotiating commercial enterprise cache agreements.&rdquo;
+          </div>
+        </div>
+
+        <div class="exec-dialogue-thread">
+          <div class="exec-dialogue-row lexi">
+            <div class="exec-speaker-col">
+              <div class="exec-speaker-avatar">
+                <img src="https://cdn.vidi.news/images/viditwin_lexi_avatar.png" alt="Lexi">
+              </div>
+              <span class="exec-name-tag lexi">LEXI</span>
+            </div>
+            <div class="exec-speech-content">
+              <div class="exec-speech-header">
+                <span class="exec-role-title">Chief of Staff &bull; Plain-English Decoder</span>
+                <span style="font-family:var(--font-mono);font-size:0.68rem;color:#f472b6;">HUMAN REALITY</span>
+              </div>
+              <div class="exec-speech-text">
+                &ldquo;Redis corporate changed their software license from free open-source to commercial closed-source, trying to trap existing enterprise users into recurring monthly subscription fees.&rdquo;
+              </div>
+            </div>
+          </div>
+
+          <div class="exec-dialogue-row max">
+            <div class="exec-speaker-col">
+              <div class="exec-speaker-avatar">
+                <img src="https://cdn.vidi.news/images/viditwin_max_avatar.png" alt="Max">
+              </div>
+              <span class="exec-name-tag max">MAX</span>
+            </div>
+            <div class="exec-speech-content">
+              <div class="exec-speech-header">
+                <span class="exec-role-title">Chief Systems Architect &bull; Applied ROI</span>
+                <span style="font-family:var(--font-mono);font-size:0.68rem;color:#38bdf8;">SYSTEMS EXECUTION</span>
+              </div>
+              <div class="exec-speech-text">
+                &ldquo;Amazon, Google, and the Linux Foundation immediately forked the open codebase into 'Valkey'. It is 100% free, forever open-source, and a 1-to-1 drop-in replacement. We change one line of configuration in our Docker compose file, pay $0 in licensing fees, and keep complete vendor independence.&rdquo;
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="exec-power-box">
+          <div class="exec-power-title">
+            <span>EXECUTIVE BOARDROOM DIRECTIVE</span>
+            <span style="color:#00e5ff;font-size:0.68rem;">ASK ACROSS THE TABLE</span>
+          </div>
+          <div class="exec-power-text">
+            &ldquo;Are we paying unnecessary Redis enterprise licensing fees, or did we switch to Valkey since it is completely free, backed by the Linux Foundation, and requires zero code changes?&rdquo;
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. MCP -->
+      <div class="applied-card">
+        <div class="applied-card-head">
+          <div class="applied-term-title">04 // MCP (Model Context Protocol)</div>
+          <span class="applied-category-pill">Universal AI Connectors</span>
+        </div>
+
+        <div class="exec-rfp-box">
+          <div class="exec-rfp-tag">
+            <span>VENDOR ARCHITECTURE PROPOSAL</span>
+            <span style="color:#94a3b8;">RFP SPECIFICATION</span>
+          </div>
+          <div class="exec-rfp-quote">
+            &ldquo;We need to engineer bespoke bi-directional REST middleware adapters and webhook handlers for each internal microservice integration.&rdquo;
+          </div>
+        </div>
+
+        <div class="exec-dialogue-thread">
+          <div class="exec-dialogue-row lexi">
+            <div class="exec-speaker-col">
+              <div class="exec-speaker-avatar">
+                <img src="https://cdn.vidi.news/images/viditwin_lexi_avatar.png" alt="Lexi">
+              </div>
+              <span class="exec-name-tag lexi">LEXI</span>
+            </div>
+            <div class="exec-speech-content">
+              <div class="exec-speech-header">
+                <span class="exec-role-title">Chief of Staff &bull; Plain-English Decoder</span>
+                <span style="font-family:var(--font-mono);font-size:0.68rem;color:#f472b6;">HUMAN REALITY</span>
+              </div>
+              <div class="exec-speech-text">
+                &ldquo;Engineers want to bill you for 6 months of custom glue code to connect your AI to your database. MCP is basically the universal USB-C plug for artificial intelligence &mdash; standardized by Anthropic so any model can discover tools and run queries instantly.&rdquo;
+              </div>
+            </div>
+          </div>
+
+          <div class="exec-dialogue-row max">
+            <div class="exec-speaker-col">
+              <div class="exec-speaker-avatar">
+                <img src="https://cdn.vidi.news/images/viditwin_max_avatar.png" alt="Max">
+              </div>
+              <span class="exec-name-tag max">MAX</span>
+            </div>
+            <div class="exec-speech-content">
+              <div class="exec-speech-header">
+                <span class="exec-role-title">Chief Systems Architect &bull; Applied ROI</span>
+                <span style="font-family:var(--font-mono);font-size:0.68rem;color:#38bdf8;">SYSTEMS EXECUTION</span>
+              </div>
+              <div class="exec-speech-text">
+                &ldquo;Instead of maintaining 14 fragile API bridges that break whenever an endpoint changes, MCP gives your agents standardized JSON-RPC schemas. Our agents can query Postgres, inspect GitHub repos, and invoke local file tools without writing a single line of custom middleware.&rdquo;
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="exec-power-box">
+          <div class="exec-power-title">
+            <span>EXECUTIVE BOARDROOM DIRECTIVE</span>
+            <span style="color:#00e5ff;font-size:0.68rem;">ASK ACROSS THE TABLE</span>
+          </div>
+          <div class="exec-power-text">
+            &ldquo;Why are you quoting 4 months of custom API integration when MCP already provides standardized, open-source connectors for our database and tools?&rdquo;
+          </div>
+        </div>
+      </div>
+
+      <!-- 5. Postgres pgvector -->
+      <div class="applied-card">
+        <div class="applied-card-head">
+          <div class="applied-term-title">05 // PostgreSQL pgvector</div>
+          <span class="applied-category-pill">Unified Database Architecture</span>
+        </div>
+
+        <div class="exec-rfp-box">
+          <div class="exec-rfp-tag">
+            <span>VENDOR ARCHITECTURE PROPOSAL</span>
+            <span style="color:#94a3b8;">RFP SPECIFICATION</span>
+          </div>
+          <div class="exec-rfp-quote">
+            &ldquo;We should provision an external Pinecone or Milvus vector database cluster to isolate our high-dimensional embedding similarity index.&rdquo;
+          </div>
+        </div>
+
+        <div class="exec-dialogue-thread">
+          <div class="exec-dialogue-row lexi">
+            <div class="exec-speaker-col">
+              <div class="exec-speaker-avatar">
+                <img src="https://cdn.vidi.news/images/viditwin_lexi_avatar.png" alt="Lexi">
+              </div>
+              <span class="exec-name-tag lexi">LEXI</span>
+            </div>
+            <div class="exec-speech-content">
+              <div class="exec-speech-header">
+                <span class="exec-role-title">Chief of Staff &bull; Plain-English Decoder</span>
+                <span style="font-family:var(--font-mono);font-size:0.68rem;color:#f472b6;">HUMAN REALITY</span>
+              </div>
+              <div class="exec-speech-text">
+                &ldquo;Another SaaS vendor wants a $2,500/month recurring contract to store vector numbers in their external cloud, requiring you to write complex pipelines to keep their database synced with your real customer database.&rdquo;
+              </div>
+            </div>
+          </div>
+
+          <div class="exec-dialogue-row max">
+            <div class="exec-speaker-col">
+              <div class="exec-speaker-avatar">
+                <img src="https://cdn.vidi.news/images/viditwin_max_avatar.png" alt="Max">
+              </div>
+              <span class="exec-name-tag max">MAX</span>
+            </div>
+            <div class="exec-speech-content">
+              <div class="exec-speech-header">
+                <span class="exec-role-title">Chief Systems Architect &bull; Applied ROI</span>
+                <span style="font-family:var(--font-mono);font-size:0.68rem;color:#38bdf8;">SYSTEMS EXECUTION</span>
+              </div>
+              <div class="exec-speech-text">
+                &ldquo;PostgreSQL already stores your users, permissions, orders, and products. By enabling the open-source pgvector extension, you query vector similarity and relational filters in the exact same SQL statement: SELECT * FROM documents WHERE tenant_id = 4 ORDER BY embedding &lt;=&gt; $1 LIMIT 5. No sync delays, zero extra vendors, 100% ACID compliance.&rdquo;
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="exec-power-box">
+          <div class="exec-power-title">
+            <span>EXECUTIVE BOARDROOM DIRECTIVE</span>
+            <span style="color:#00e5ff;font-size:0.68rem;">ASK ACROSS THE TABLE</span>
+          </div>
+          <div class="exec-power-text">
+            &ldquo;Why are we adding an expensive third-party vector database and data sync pipeline when our existing Postgres database handles pgvector natively in the same transaction?&rdquo;
+          </div>
+        </div>
+      </div>
+
+      <!-- 6. Neo4j GraphRAG -->
+      <div class="applied-card">
+        <div class="applied-card-head">
+          <div class="applied-term-title">06 // Neo4j GraphRAG</div>
+          <span class="applied-category-pill">Relational Intelligence &amp; Knowledge Maps</span>
+        </div>
+
+        <div class="exec-rfp-box">
+          <div class="exec-rfp-tag">
+            <span>VENDOR ARCHITECTURE PROPOSAL</span>
+            <span style="color:#94a3b8;">RFP SPECIFICATION</span>
+          </div>
+          <div class="exec-rfp-quote">
+            &ldquo;We construct an ontological property graph with Cypher traversal queries to resolve multi-hop relational dependencies across entities.&rdquo;
+          </div>
+        </div>
+
+        <div class="exec-dialogue-thread">
+          <div class="exec-dialogue-row lexi">
+            <div class="exec-speaker-col">
+              <div class="exec-speaker-avatar">
+                <img src="https://cdn.vidi.news/images/viditwin_lexi_avatar.png" alt="Lexi">
+              </div>
+              <span class="exec-name-tag lexi">LEXI</span>
+            </div>
+            <div class="exec-speech-content">
+              <div class="exec-speech-header">
+                <span class="exec-role-title">Chief of Staff &bull; Plain-English Decoder</span>
+                <span style="font-family:var(--font-mono);font-size:0.68rem;color:#f472b6;">HUMAN REALITY</span>
+              </div>
+              <div class="exec-speech-text">
+                &ldquo;Standard vector search only finds words that sound similar; it is completely blind to who reports to who or which supplier supplies which part. GraphRAG maps your entire enterprise into an interactive spiderweb of real relationships.&rdquo;
+              </div>
+            </div>
+          </div>
+
+          <div class="exec-dialogue-row max">
+            <div class="exec-speaker-col">
+              <div class="exec-speaker-avatar">
+                <img src="https://cdn.vidi.news/images/viditwin_max_avatar.png" alt="Max">
+              </div>
+              <span class="exec-name-tag max">MAX</span>
+            </div>
+            <div class="exec-speech-content">
+              <div class="exec-speech-header">
+                <span class="exec-role-title">Chief Systems Architect &bull; Applied ROI</span>
+                <span style="font-family:var(--font-mono);font-size:0.68rem;color:#38bdf8;">SYSTEMS EXECUTION</span>
+              </div>
+              <div class="exec-speech-text">
+                &ldquo;When an executive asks 'If Supplier X has a port strike in Taiwan, which customer shipments will be delayed next week?', vector search fails. GraphRAG traverses node edges across parts, shipping routes, and sales orders in milliseconds, outputting a complete risk map.&rdquo;
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="exec-power-box">
+          <div class="exec-power-title">
+            <span>EXECUTIVE BOARDROOM DIRECTIVE</span>
+            <span style="color:#00e5ff;font-size:0.68rem;">ASK ACROSS THE TABLE</span>
+          </div>
+          <div class="exec-power-text">
+            &ldquo;Can our non-technical managers see and explore this graph visually, or is the relationship intelligence trapped inside developer database queries?&rdquo;
+          </div>
+        </div>
+      </div>
+
+      <!-- 7. ERP -->
+      <div class="applied-card">
+        <div class="applied-card-head">
+          <div class="applied-term-title">07 // ERP (Enterprise Resource Planning)</div>
+          <span class="applied-category-pill">Core Business Operations</span>
+        </div>
+
+        <div class="exec-rfp-box">
+          <div class="exec-rfp-tag">
+            <span>VENDOR ARCHITECTURE PROPOSAL</span>
+            <span style="color:#94a3b8;">RFP SPECIFICATION</span>
+          </div>
+          <div class="exec-rfp-quote">
+            &ldquo;Implementing a monolithic tier-1 ERP suite with ACID-compliant relational schema across general ledger, procurement, and supply chain management.&rdquo;
+          </div>
+        </div>
+
+        <div class="exec-dialogue-thread">
+          <div class="exec-dialogue-row lexi">
+            <div class="exec-speaker-col">
+              <div class="exec-speaker-avatar">
+                <img src="https://cdn.vidi.news/images/viditwin_lexi_avatar.png" alt="Lexi">
+              </div>
+              <span class="exec-name-tag lexi">LEXI</span>
+            </div>
+            <div class="exec-speech-content">
+              <div class="exec-speech-header">
+                <span class="exec-role-title">Chief of Staff &bull; Plain-English Decoder</span>
+                <span style="font-family:var(--font-mono);font-size:0.68rem;color:#f472b6;">HUMAN REALITY</span>
+              </div>
+              <div class="exec-speech-text">
+                &ldquo;ERP is the central nervous system of your business &mdash; inventory, accounting, payroll, and shipping. The trap is that traditional vendors charge $150 to $300 per user per month just for employees to log in and type data into rigid 1990s forms.&rdquo;
+              </div>
+            </div>
+          </div>
+
+          <div class="exec-dialogue-row max">
+            <div class="exec-speaker-col">
+              <div class="exec-speaker-avatar">
+                <img src="https://cdn.vidi.news/images/viditwin_max_avatar.png" alt="Max">
+              </div>
+              <span class="exec-name-tag max">MAX</span>
+            </div>
+            <div class="exec-speech-content">
+              <div class="exec-speech-header">
+                <span class="exec-role-title">Chief Systems Architect &bull; Applied ROI</span>
+                <span style="font-family:var(--font-mono);font-size:0.68rem;color:#38bdf8;">SYSTEMS EXECUTION</span>
+              </div>
+              <div class="exec-speech-text">
+                &ldquo;In the Smart Stack, we connect our open Directus and Postgres backend to ERP webhooks. AI agents handle 80% of routine purchasing orders and inventory tracking automatically, saving 25 hours per week per employee and eliminating the per-seat SaaS tax.&rdquo;
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="exec-power-box">
+          <div class="exec-power-title">
+            <span>EXECUTIVE BOARDROOM DIRECTIVE</span>
+            <span style="color:#00e5ff;font-size:0.68rem;">ASK ACROSS THE TABLE</span>
+          </div>
+          <div class="exec-power-text">
+            &ldquo;How many days does it take to train a new employee on this, and can an AI agent read and trigger ERP transactions without charging us a $150/month per-seat user tax?&rdquo;
+          </div>
+        </div>
+      </div>
+
+      <!-- 8. Agent Swarms -->
+      <div class="applied-card">
+        <div class="applied-card-head">
+          <div class="applied-term-title">08 // Agent Swarms (Hermes Core &amp; Open Claw)</div>
+          <span class="applied-category-pill">Autonomous Multi-Agent Workforce</span>
+        </div>
+
+        <!-- 80-Agent Swarm Visual -->
+        <div style="border-radius:14px;overflow:hidden;margin-bottom:1.25rem;border:1px solid rgba(167,139,250,0.3);position:relative;">
+          <img src="https://cdn.vidi.news/images/viditwin_ep4_swarm_orchestration.png" alt="80-Agent Swarm Orchestration Bridge" style="width:100%;height:auto;display:block;">
+          <div style="position:absolute;bottom:0;left:0;right:0;background:linear-gradient(to top, rgba(3,7,18,0.95) 0%, transparent 100%);padding:10px 16px;font-size:0.75rem;font-weight:900;color:#c4b5fd;display:flex;justify-content:space-between;">
+            <span>80-AGENT SWARM ORCHESTRATION &bull; VIDIFLOW COMMAND BRIDGE</span>
+            <span style="color:#f1f5f9;">ZERO TERMINAL CHAOS</span>
+          </div>
+        </div>
+
+        <div class="exec-rfp-box">
+          <div class="exec-rfp-tag">
+            <span>VENDOR ARCHITECTURE PROPOSAL</span>
+            <span style="color:#94a3b8;">RFP SPECIFICATION</span>
+          </div>
+          <div class="exec-rfp-quote">
+            &ldquo;A hierarchical multi-agent cognitive architecture utilizing asynchronous supervisor orchestration and localized ReAct loops.&rdquo;
+          </div>
+        </div>
+
+        <div class="exec-dialogue-thread">
+          <div class="exec-dialogue-row lexi">
+            <div class="exec-speaker-col">
+              <div class="exec-speaker-avatar">
+                <img src="https://cdn.vidi.news/images/viditwin_lexi_avatar.png" alt="Lexi">
+              </div>
+              <span class="exec-name-tag lexi">LEXI</span>
+            </div>
+            <div class="exec-speech-content">
+              <div class="exec-speech-header">
+                <span class="exec-role-title">Chief of Staff &bull; Plain-English Decoder</span>
+                <span style="font-family:var(--font-mono);font-size:0.68rem;color:#f472b6;">HUMAN REALITY</span>
+              </div>
+              <div class="exec-speech-text">
+                &ldquo;Instead of one overloaded chatbot trying to be a copywriter, legal auditor, and accountant all at once and failing miserably, an Agent Swarm is a specialized digital assembly line. Agent 1 drafts, Agent 2 audits the numbers, Agent 3 checks regulatory compliance, and Agent 4 hands the finished brief to you.&rdquo;
+              </div>
+            </div>
+          </div>
+
+          <div class="exec-dialogue-row max">
+            <div class="exec-speaker-col">
+              <div class="exec-speaker-avatar">
+                <img src="https://cdn.vidi.news/images/viditwin_max_avatar.png" alt="Max">
+              </div>
+              <span class="exec-name-tag max">MAX</span>
+            </div>
+            <div class="exec-speech-content">
+              <div class="exec-speech-header">
+                <span class="exec-role-title">Chief Systems Architect &bull; Applied ROI</span>
+                <span style="font-family:var(--font-mono);font-size:0.68rem;color:#38bdf8;">SYSTEMS EXECUTION</span>
+              </div>
+              <div class="exec-speech-text">
+                &ldquo;VidiFlow acts as the mission control bridge for the swarm. We run 80 autonomous agent workers simultaneously with localized Redis/Dragonfly state queues. The human operator sits in the cockpit with full approval authority and real-time kill-switches, achieving 100x human leverage.&rdquo;
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="exec-power-box">
+          <div class="exec-power-title">
+            <span>EXECUTIVE BOARDROOM DIRECTIVE</span>
+            <span style="color:#00e5ff;font-size:0.68rem;">ASK ACROSS THE TABLE</span>
+          </div>
+          <div class="exec-power-text">
+            &ldquo;Can a human see all these agents collaborating on one visual canvas like VidiFlow, or are they running blindly in terminal windows where mistakes get buried?&rdquo;
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- 4. The Lex Solution: In-Document Context Decoding -->
+  <section class="manifesto-card">
+    <div class="card-num">04</div>
+    <div class="section-title"><span>#4</span> The Lex Solution: In-Document Context Decoding</div>
+    <p>
+      Lex does not ask you to read a 600-page computer science textbook. It is a <strong>real-time visual translator</strong> that sits directly over technical documents, contracts, and specs as a Chrome extension.
+    </p>
+    <p>
+      When you encounter any unfamiliar term in a document:
+    </p>
+    <div class="principles-grid">
+      <div class="principle-item">
+        <div class="p-icon" style="font-size:0.75rem;font-weight:900;color:#00e5ff;font-family:var(--font-mono);border:1px solid rgba(0,229,255,0.4);border-radius:6px;padding:2px 8px;width:fit-content;margin-bottom:8px;">01 // VISUAL</div>
+        <div class="p-title">1. Instant Visual Translation</div>
+        <p class="p-desc">
+          Hover or click any highlighted term to see its 3D blueprint, letter anatomy, and 4-step execution flowchart. You see how it fits into the whole system before reading a single paragraph.
+        </p>
+      </div>
+
+      <div class="principle-item">
+        <div class="p-icon" style="font-size:0.75rem;font-weight:900;color:#f472b6;font-family:var(--font-mono);border:1px solid rgba(244,114,182,0.4);border-radius:6px;padding:2px 8px;width:fit-content;margin-bottom:8px;">02 // CONTEXT</div>
+        <div class="p-title">2. Plain Language Context</div>
+        <p class="p-desc">
+          Explained in terms of what it accomplishes (time saved, revenue protected, deal acceleration), not how it's engineered under the hood.
+        </p>
+      </div>
+
+      <div class="principle-item">
+        <div class="p-icon" style="font-size:0.75rem;font-weight:900;color:#38bdf8;font-family:var(--font-mono);border:1px solid rgba(56,189,248,0.4);border-radius:6px;padding:2px 8px;width:fit-content;margin-bottom:8px;">03 // LEVERAGE</div>
+        <div class="p-title">3. The Exact Questions to Ask</div>
+        <p class="p-desc">
+          Every term provides the high-leverage questions to take straight into your next meeting with developers, vendors, or board members.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. Beyond Dictionaries: An Encyclopedia & Relational Thesaurus -->
+  <section class="manifesto-card">
+    <div class="card-num">05</div>
+    <div class="section-title"><span>#5</span> Beyond Dictionaries: An Encyclopedia &amp; Relational Thesaurus</div>
+    <p>
+      To understand how VidiFlow Lex functions inside your workflow, consider how traditional reference tools compare:
+    </p>
+
+    <div class="ref-trio-grid">
+      <!-- 1. Dictionary -->
+      <div class="ref-pillar">
+        <div class="ref-pillar-icon" style="font-size:0.72rem;font-weight:900;color:#94a3b8;border:1px solid rgba(255,255,255,0.18);padding:3px 8px;border-radius:6px;width:fit-content;margin:0 auto 10px;">STATIC TEXT</div>
+        <div class="ref-pillar-title">The Dictionary</div>
+        <div class="ref-pillar-subtitle">Words in a Vacuum</div>
+        <p>
+          Gives you a sterile, alphabetical definition. Tells you what a word literally is, but offers zero insight into how it connects to other tools in your company.
+        </p>
+      </div>
+
+      <!-- 2. Encyclopedia -->
+      <div class="ref-pillar">
+        <div class="ref-pillar-icon" style="font-size:0.72rem;font-weight:900;color:#a78bfa;border:1px solid rgba(167,139,250,0.35);padding:3px 8px;border-radius:6px;width:fit-content;margin:0 auto 10px;">DEEP CONSTRUCT</div>
+        <div class="ref-pillar-title">The Encyclopedia</div>
+        <div class="ref-pillar-subtitle">Workflow &amp; Deep Construct</div>
+        <p>
+          Provides deep background knowledge and history. Lex serves this exact construct inside your daily workflow &mdash; but replaces 50 pages of text with a 3D visual blueprint.
+        </p>
+      </div>
+
+      <!-- 3. Thesaurus -->
+      <div class="ref-pillar">
+        <div class="ref-pillar-icon" style="font-size:0.72rem;font-weight:900;color:#94a3b8;border:1px solid rgba(255,255,255,0.18);padding:3px 8px;border-radius:6px;width:fit-content;margin:0 auto 10px;">SYNONYMS</div>
+        <div class="ref-pillar-title">The Thesaurus</div>
+        <div class="ref-pillar-subtitle">Synonyms (Similar Words)</div>
+        <p>
+          Swaps one word for another that means the same thing. Useful for writing essays, but useless for understanding how complex software systems operate together.
+        </p>
+      </div>
+
+      <!-- 4. Lex: The Relational Framework -->
+      <div class="ref-pillar highlight">
+        <div class="ref-pillar-icon" style="font-size:0.72rem;font-weight:900;color:#00e5ff;border:1px solid rgba(0,229,255,0.4);padding:3px 8px;border-radius:6px;width:fit-content;margin:0 auto 10px;">STRUCTURAL BLUEPRINT</div>
+        <div class="ref-pillar-title">VidiFlow Lex</div>
+        <div class="ref-pillar-subtitle">The Relational Framework</div>
+        <p>
+          <strong>Instead of synonyms, Lex gives you the structural framework.</strong> It shows you where that concept fits in, what feeds it upstream, what it triggers downstream, what legacy tool it replaces, and how it interlocks with the whole Smart Stack.
+        </p>
+      </div>
+    </div>
+
+    <p style="margin-top:1.5rem;font-size:1.05rem;color:#cbd5e1;line-height:1.7;">
+      When you look up <strong>Dragonfly</strong>, you don't just get a sterile definition of "caching." You see the entire architectural puzzle: 
+      <em>Postgres Database &rarr; Dragonfly In-Memory Layer &rarr; VidiFlow Agent Swarm &rarr; Real-Time Customer Dashboard.</em> 
+      You immediately understand <strong>where it fits in</strong> and <strong>why it matters to your business</strong>.
+    </p>
+  </section>
+
+  <!-- 6. Enterprise 2nd Brain: Private AI Server & Proprietary Lexicon -->
+  <section class="manifesto-card">
+    <div class="card-num">06</div>
+    <div class="section-title"><span>#6</span> Enterprise 2nd Brain: Private AI Server &amp; Proprietary Lexicon</div>
+    <p>
+      Every enterprise has two distinct vocabularies: the <strong>Generic Industry Tech Stack</strong>, and their <strong>Proprietary Insider Language</strong> &mdash; the secret project code names, custom SaaS configurations, department divisions, and unwritten operational acronyms that outside AI models have never seen.
+    </p>
+
+    <div class="enterprise-brain-box">
+      <div class="eb-header">
+        <div class="eb-title">
+          <span style="font-size:0.75rem;font-weight:900;letter-spacing:0.08em;color:#a78bfa;border:1px solid rgba(167,139,250,0.4);padding:2px 8px;border-radius:4px;">AIR-GAPPED //</span> Private AI Server Deployment
+        </div>
+        <span class="eb-badge">Zero Data Leakage &bull; Enterprise Sovereignty</span>
+      </div>
+      <p style="font-size:1.05rem;color:#f8fafc;line-height:1.65;margin:0 0 1rem 0;">
+        Corporations can instantly attach their own <strong>Private 2nd Brain Knowledge Base</strong> running on a dedicated on-prem or private cloud AI server. Your internal secret projects, confidential SaaS workflows, and proprietary company nomenclature remain 100% private and never touch public LLMs.
+      </p>
+
+      <div class="eb-feature-grid">
+        <!-- Feature 1: Dual-Layer Vector Context -->
+        <div class="eb-feature-card">
+          <h4><span style="color:#a78bfa;font-size:0.75rem;font-weight:900;letter-spacing:0.08em;border:1px solid rgba(167,139,250,0.3);padding:2px 6px;border-radius:4px;margin-right:6px;">LAYER 01</span> Dual-Layer Vector Architecture</h4>
+          <p>
+            <strong>Layer 1 (Public Stack)</strong>: Vector-embedded context for standard open-source tools (Postgres, Dragonfly, Valkey, RAG, MCP).<br>
+            <strong>Layer 2 (Private Brain)</strong>: Proprietary vector embeddings for your company's internal tools, stealth projects, and org hierarchy.
+          </p>
+        </div>
+
+        <!-- Feature 2: Secret Projects & Internal SaaS -->
+        <div class="eb-feature-card">
+          <h4><span style="color:#00e5ff;font-size:0.75rem;font-weight:900;letter-spacing:0.08em;border:1px solid rgba(0,229,255,0.3);padding:2px 6px;border-radius:4px;margin-right:6px;">SECURITY</span> Secret Projects &amp; Custom Codenames</h4>
+          <p>
+            When an executive mentions <em>"Project Titan"</em> or an internal custom tool like <em>"Athena Gateway,"</em> Lex instantly explains its owner, business impact, security tier, and associated data streams in real time.
+          </p>
+        </div>
+
+        <!-- Feature 3: The 48-Hour Onboarding Superpower -->
+        <div class="eb-feature-card">
+          <h4><span style="color:#34d399;font-size:0.75rem;font-weight:900;letter-spacing:0.08em;border:1px solid rgba(52,211,153,0.3);padding:2px 6px;border-radius:4px;margin-right:6px;">RAPID HX</span> 48-Hour New Hire Superpower</h4>
+          <p>
+            New hires typically spend 6 months learning the internal "company patois" and tribal knowledge. With VidiFlow Lex on their browser, new employees decode corporate jargon and unwritten procedures in 48 hours.
+          </p>
+        </div>
+
+        <!-- Feature 4: Role-Based Access Control -->
+        <div class="eb-feature-card">
+          <h4><span style="color:#f59e0b;font-size:0.75rem;font-weight:900;letter-spacing:0.08em;border:1px solid rgba(245,158,11,0.3);padding:2px 6px;border-radius:4px;margin-right:6px;">RBAC</span> Granular Departmental Access</h4>
+          <p>
+            Finance terms stay in Finance; R&amp;D stealth projects stay in Engineering. Lex respects enterprise permissions, decoding only the proprietary terms each employee has clearance to see.
+          </p>
+        </div>
+      </div>
+
+      <!-- Newcomer Onboarding Paradigm: Read Them In & Bring Them Up to Speed -->
+      <div style="background:rgba(4,8,20,0.85);border:1.5px solid rgba(167,139,250,0.35);border-radius:16px;padding:1.4rem 1.8rem;margin-top:1.5rem;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+          <span style="font-size:0.75rem;font-weight:900;letter-spacing:0.08em;color:#c4b5fd;background:rgba(167,139,250,0.15);border:1px solid rgba(167,139,250,0.4);padding:2px 8px;border-radius:4px;">PROTOCOL</span>
+          <div style="font-size:1.15rem;font-weight:900;color:#c4b5fd;">
+            "Read Them In" &bull; "Bring Them Up to Speed"
+          </div>
+        </div>
+        <p style="font-size:0.95rem;color:#f1f5f9;line-height:1.65;margin:0 0 10px 0;">
+          In executive suites and intelligence agencies, you don't send a newcomer to a 6-month lecture series. You <strong>"read them in"</strong> &mdash; you immediately grant access to the classified context, secret codenames, key players, and operational vernacular so they can act with authority.
+        </p>
+        <p style="font-size:0.95rem;color:#cbd5e1;line-height:1.65;margin:0;">
+          <strong>VidiFlow Lex is simply a unified front-end connecting two distinct knowledge bases:</strong>
+        </p>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(240px, 1fr));gap:1rem;margin-top:12px;">
+          <div style="background:rgba(0,229,255,0.06);border:1px solid rgba(0,229,255,0.25);border-radius:12px;padding:1rem;">
+            <div style="font-size:0.75rem;font-weight:900;letter-spacing:0.08em;text-transform:uppercase;color:#00e5ff;margin-bottom:4px;">Knowledge Base 1 (Public &amp; Free)</div>
+            <div style="font-weight:800;color:#fff;font-size:0.98rem;margin-bottom:6px;">The World's AI &amp; Smart Stack Terms</div>
+            <p style="font-size:0.85rem;color:#94a3b8;line-height:1.5;margin:0;">
+              The open-source universe of tech infrastructure: RAG, PostgreSQL pgvector, Dragonfly, Valkey, MCP, LLM swarms, and modern architecture. Always free and public on the front end.
+            </p>
+          </div>
+          <div style="background:rgba(167,139,250,0.06);border:1px solid rgba(167,139,250,0.25);border-radius:12px;padding:1rem;">
+            <div style="font-size:0.75rem;font-weight:900;letter-spacing:0.08em;text-transform:uppercase;color:#c4b5fd;margin-bottom:4px;">Knowledge Base 2 (Private Enterprise)</div>
+            <div style="font-weight:800;color:#fff;font-size:0.98rem;margin-bottom:6px;">Proprietary Corporate Speak &amp; Secrets</div>
+            <p style="font-size:0.85rem;color:#94a3b8;line-height:1.5;margin:0;">
+              Your company's confidential inner circle: internal secret projects, proprietary SaaS apps, department divisions, unwritten SOPs, and executive shorthand stored safely on your private AI server.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7. You Are the Interface: Why Words Matter in AI -->
+  <section class="manifesto-card">
+    <div class="card-num">07</div>
+    <div class="section-title"><span>#7</span> You Are the Interface: Why Words Matter in AI</div>
+    <p>
+      In legacy SaaS, you could be confused and still muddle through by clicking through 50 dashboard menus.
+    </p>
+    <p>
+      In Smart Apps, <strong>you are the interface.</strong> Your words, your intention, your description of the outcome &mdash; that IS the software program.
+    </p>
+    <p>
+      If you don't understand what a system can do, you cannot unlock it. You will ask for a fraction of what it's capable of. Lex is not optional infrastructure &mdash; <strong>it is the literacy layer of the Smart Stack.</strong>
+    </p>
+  </section>
+
+  <!-- 8. The Visual Bottleneck: Why Agent Armies Require VidiFlow HX -->
+  <section class="manifesto-card">
+    <div class="card-num">08</div>
+    <div class="section-title"><span>#8</span> The Visual Bottleneck: Why Agent Armies Require VidiFlow HX</div>
+    <p>
+      Whether an engineering team selects <strong>Hermes Core</strong>, <strong>Open Claw</strong>, <strong>AutoGen</strong>, or <strong>CrewAI</strong> for their underlying agent army, they run into an insurmountable wall: <strong>The Human Visual Bottleneck.</strong>
+    </p>
+    <p>
+      A normal human being is physically and cognitively limited by what can be observed, verified, and trusted on a <strong>single screen</strong>. When 50 to 100 autonomous agents are executing in parallel, raw terminal output, endless JSON payloads, or a solitary chat stream guarantees silent failures, blind spots, and paralysis.
+    </p>
+
+    <!-- Visual Evidence: High-Resolution VidiFlow UI Cockpit -->
+    <div class="vidiflow-showcase-box">
+      <img src="../images/vidiflow-hx-agent-swarm.jpg" alt="VidiFlow HX Real-Time UI Cockpit Dashboard" loading="lazy">
+      <div class="vidiflow-showcase-caption">
+        <div>
+          <strong style="color:#00e5ff;">FIGURE 01 // VidiFlow HX Visual Command Cockpit</strong> &mdash; Multi-agent real-time orchestration canvas sitting on top of Hermes Core and Open Claw swarms.
+        </div>
+        <span style="background:rgba(0,229,255,0.15);color:#00e5ff;padding:4px 12px;border-radius:100px;font-size:0.75rem;font-weight:900;">
+          LIVE HX ORCHESTRATION
+        </span>
+      </div>
+    </div>
+
+    <!-- Visual Evidence: 80-Agent Swarm Panoramic Bridge -->
+    <div class="vidiflow-showcase-box" style="border-color:rgba(167,139,250,0.5);box-shadow:0 0 45px rgba(167,139,250,0.25);">
+      <img src="https://cdn.vidi.news/images/viditwin_ep4_swarm_orchestration.png" alt="80-Agent Swarm Orchestration Bridge" loading="lazy">
+      <div class="vidiflow-showcase-caption" style="border-color:rgba(167,139,250,0.3);">
+        <div>
+          <strong style="color:#c4b5fd;">FIGURE 02 // The VidiFlow 80-Agent Swarm Operations Bridge</strong> &mdash; Real-time synchronized autonomous agents operating across global enterprise nodes.
+        </div>
+        <span style="background:rgba(167,139,250,0.15);color:#c4b5fd;padding:4px 12px;border-radius:100px;font-size:0.75rem;font-weight:900;">
+          SWARM MESH ACTIVE
+        </span>
+      </div>
+    </div>
+
+    <p style="font-size:1.15rem;font-weight:800;color:#fff;">
+      VidiFlow is the visual interface layer that steps up to solve this:
+    </p>
+
+    <div class="toy-vs-system-grid">
+      <div class="tvs-card toy">
+        <div class="tvs-badge">PARADIGM 01 // The Toy Paradigm (Search Engine Trap)</div>
+        <div style="font-weight:800;font-size:1.05rem;color:#fca5a5;margin-bottom:8px;">Single Agent / Isolated Chat Box</div>
+        <p style="font-size:0.9rem;color:#94a3b8;line-height:1.6;margin:0;">
+          The user types a prompt into a text box, waiting 15 seconds for a text summary. It behaves like a 1990s search engine. It cannot manage state, cannot execute cross-department workflows, and leaves the human stuck doing the actual work.
+        </p>
+      </div>
+
+      <div class="tvs-card system">
+        <div class="tvs-badge">PARADIGM 02 // The VidiFlow System (Autonomous HX)</div>
+        <div style="font-weight:800;font-size:1.05rem;color:#00e5ff;margin-bottom:8px;">Visual Cockpit Over 80+ Agent Armies</div>
+        <p style="font-size:0.9rem;color:#cbd5e1;line-height:1.6;margin:0;">
+          VidiFlow projects the entire multi-agent swarm onto an interactive visual flow canvas. Humans direct high-level intention while Hermes and Open Claw subagents execute 50 parallel operational tasks visibly, verifiably, and with zero guesswork.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- The Matrix Paradox: Why Vector Data Is Invisible to Human Eyes -->
+  <section class="manifesto-card" style="border:2px solid rgba(34,197,94,0.4);background:linear-gradient(135deg,rgba(15,23,42,0.96) 0%,rgba(6,28,20,0.95) 100%);box-shadow:0 15px 40px rgba(0,0,0,0.5),0 0 30px rgba(34,197,94,0.12);">
+    <div class="card-num" style="color:rgba(34,197,94,0.3);">08B</div>
+    <div class="section-title"><span style="color:#22c55e;">#08B</span> The Matrix Paradox: Why AI Vector Data Is Invisible to Human Eyes</div>
+    <div style="font-size:1.18rem;font-weight:900;color:#22c55e;margin-bottom:12px;letter-spacing:0.02em;">
+      Staring at the Green Code Waterfall vs. The Operator Who Translates It
+    </div>
+    <p>
+      Have you ever wondered why all this AI terminology and architecture feels so completely alien and impossible for normal people to grasp?
+    </p>
+    <p>
+      Here is the fundamental reality: <strong>AI models do not think in English words, sentences, or concepts.</strong> Under the hood, LLMs and neural networks calculate in <strong>1,536-dimensional dense mathematical vector embeddings</strong> &mdash; infinite arrays of floating-point numbers like:
+    </p>
+
+    <!-- Matrix Paradox Cinematic Scene -->
+    <div style="border-radius:18px;overflow:hidden;border:2px solid rgba(34,197,94,0.45);position:relative;margin:1.6rem 0;box-shadow:0 15px 40px rgba(0,0,0,0.7);">
+      <img src="https://cdn.vidi.news/images/viditwin_ep1_matrix_crm.png" alt="The Matrix Paradox: Lexi and Max Decoding Vector Code" style="width:100%;height:auto;display:block;">
+      <div style="position:absolute;bottom:0;left:0;right:0;background:linear-gradient(to top, rgba(2,10,6,0.95) 0%, rgba(2,10,6,0.4) 60%, transparent 100%);padding:1rem 1.4rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+        <span style="font-size:0.75rem;font-weight:900;color:#4ade80;letter-spacing:0.1em;text-transform:uppercase;">THE MATRIX PARADOX &bull; 1536-DIMENSIONAL VECTOR MESH</span>
+        <span style="font-size:0.8rem;font-weight:800;color:#fff;">Lexi &amp; Max Translating Neural Vector Chaos Into Enterprise Clarity</span>
+      </div>
+    </div>
+
+    <!-- Visual: The Green Matrix Rain vs The Lex Operator -->
+    <div style="background:rgba(2,10,6,0.92);border:1.5px solid rgba(34,197,94,0.5);border-radius:18px;padding:1.6rem 2rem;margin:1.5rem 0;box-shadow:inset 0 0 35px rgba(34,197,94,0.15);">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;align-items:center;">
+        
+        <!-- Left: The Green Code Waterfall -->
+        <div style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;color:#4ade80;background:rgba(0,0,0,0.7);border:1px solid rgba(34,197,94,0.3);border-radius:12px;padding:14px;line-height:1.5;overflow:hidden;position:relative;">
+          <div style="position:absolute;top:6px;right:10px;font-size:0.68rem;font-weight:900;color:#16a34a;background:rgba(22,163,74,0.15);padding:2px 8px;border-radius:4px;border:1px solid rgba(22,163,74,0.3);">
+            RAW 1536-D VECTOR SPACE
+          </div>
+          <div style="opacity:0.45;margin-bottom:4px;">// The Incomprehensible AI Reality</div>
+          <div>[+0.0821, -0.4912, +0.9123, -0.0124]</div>
+          <div>[-0.1120, +0.8841, -0.0124, +0.6512]</div>
+          <div>[+0.4419, -0.0921, +0.3129, -0.7812]</div>
+          <div>[-0.7812, +0.1245, -0.8912, +0.0019]</div>
+          <div style="color:#86efac;margin-top:6px;">&gt; COSINE_SIMILARITY: 0.94182931</div>
+          <div style="color:#ef4444;margin-top:2px;">&gt; ERROR: Agent 4 token buffer drift</div>
+          <div style="font-size:0.75rem;color:#94a3b8;margin-top:8px;font-family:'Kumbh Sans',sans-serif;">
+            <span style="color:#f87171;font-weight:900;font-size:0.7rem;letter-spacing:0.08em;border:1px solid #ef4444;padding:1px 6px;border-radius:4px;margin-right:4px;">LIMITATION</span> <strong>Human Blindness:</strong> No human eye can visualize a 1,536-dimensional space. Staring at terminal logs or raw JSON is like staring at the Matrix green screen &mdash; 100% meaningless garbage code.
+          </div>
+        </div>
+
+        <!-- Right: Lex The Operator & Swarm General -->
+        <div style="background:rgba(15,23,42,0.85);border:1.5px solid rgba(0,229,255,0.4);border-radius:14px;padding:16px;line-height:1.6;">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
+            <div style="display:flex;align-items:center;">
+              <img src="https://cdn.vidi.news/images/viditwin_lexi_avatar.png" alt="Lexi" style="width:40px;height:40px;border-radius:50%;border:2px solid #ec4899;box-shadow:0 0 12px rgba(236,72,153,0.5);object-fit:cover;">
+              <img src="https://cdn.vidi.news/images/viditwin_max_avatar.png" alt="Max" style="width:40px;height:40px;border-radius:50%;border:2px solid #00e5ff;box-shadow:0 0 12px rgba(0,229,255,0.5);margin-left:-14px;object-fit:cover;">
+            </div>
+            <div>
+              <div style="font-size:1.05rem;font-weight:900;color:#00e5ff;">VIDITWIN: Lexi &amp; Max &mdash; Your Matrix Operators</div>
+              <div style="font-size:0.75rem;color:#94a3b8;">Translating Mathematical Chaos into Boardroom Clarity</div>
+            </div>
+          </div>
+          <p style="font-size:0.95rem;color:#f1f5f9;margin:0 0 8px 0;">
+            Just like the operator in <em>The Matrix</em> who looks at the falling green code and says <em>&ldquo;I don't even see the code anymore, all I see is reality,&rdquo;</em> <strong>The VidiTwins (Lexi &amp; Max) are your personal tandem translators</strong>.
+          </p>
+          <div style="background:rgba(0,229,255,0.08);border-left:3px solid #00e5ff;padding:8px 12px;border-radius:0 8px 8px 0;font-size:0.88rem;color:#cbd5e1;">
+            <strong style="color:#ec4899;">Lexi:</strong> &ldquo;Agent 4 hit a dead end in the vendor contract pricing.&rdquo;<br>
+            <strong style="color:#00e5ff;">Max:</strong> &ldquo;I bypassed it, redirected the query to our private Postgres cache, and locked in a 32% cost savings.&rdquo;
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="background:rgba(15,23,42,0.7);border-radius:14px;padding:1.4rem;border:1px solid rgba(255,255,255,0.08);">
+      <h3 style="font-size:1.15rem;color:#fff;margin:0 0 8px 0;display:flex;align-items:center;gap:8px;">
+        <span style="font-size:0.75rem;font-weight:900;letter-spacing:0.08em;color:#00e5ff;border:1px solid rgba(0,229,255,0.4);padding:2px 8px;border-radius:4px;">SUPERVISORY MESH //</span> Supervising the VidiFlow 80-Agent Army
+      </h3>
+      <p style="font-size:1rem;color:#cbd5e1;line-height:1.65;margin:0 0 10px 0;">
+        Lexi and Max aren't just an encyclopedia &mdash; <strong>The VidiTwins are the Field Generals of your VidiFlow Agent Army</strong>. As multiple autonomous agents execute across marketing, supply chain, inventory, and finance, Lexi and Max act as the watchful tandem supervisors:
+      </p>
+      <ul style="color:#94a3b8;font-size:0.95rem;line-height:1.7;margin:0;padding-left:1.2rem;">
+        <li><strong style="color:#fff;">Detects Silent Agent Hallucinations:</strong> If an agent drifts off track, Lex flags the deviation before it causes damage.</li>
+        <li><strong style="color:#fff;">Translates Technical Bottlenecks:</strong> When an agent gets stuck, Lex translates the exact failure into plain English so you can make the decision in 5 seconds.</li>
+        <li><strong style="color:#fff;">Zero-Downtime Employee Upskilling:</strong> Instead of sending staff to expensive seminars, employees ask Lex as they work &mdash; mastering the entire Smart Stack with zero downtime.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 9. Restructuring the HX (Human Experience) Process -->
+  <section class="manifesto-card">
+    <div class="card-num">09</div>
+    <div class="section-title"><span>#9</span> Restructuring the HX Process: Duplicating What Humans Do Now</div>
+    <p>
+      Real enterprise transformation is not about replacing humans with a cold chatbot. It is about <strong>restructuring the entire HX (Human Experience)</strong> so that AI agent swarms literally duplicate the manual steps human teams perform today.
+    </p>
+    <p>
+      Consider a customer relationship or wholesale inquiry: In legacy business, humans spend 4 hours reading emails, logging into CRM, checking ERP inventory, cross-referencing credit terms, drafting quotes, and forwarding tickets. <strong>With VidiFlow HX, agent swarms duplicate this entire human sequence in milliseconds.</strong>
+    </p>
+
+    <!-- Interactive Live HX Simulation Widget -->
+    <div class="hx-sim-box">
+      <div class="hx-sim-header">
+        <div>
+          <div style="font-weight:900;font-size:1.2rem;color:#fff;display:flex;align-items:center;gap:10px;">
+            <span style="font-size:0.75rem;font-weight:900;letter-spacing:0.08em;color:#00e5ff;border:1px solid rgba(0,229,255,0.4);padding:2px 8px;border-radius:4px;">ENGINE //</span> Interactive HX Pipeline: Intention-to-Outcome Engine
+          </div>
+          <div style="font-size:0.85rem;color:#94a3b8;">Watch how VidiFlow coordinates Hermes &amp; Open Claw to duplicate full human operations.</div>
+        </div>
+        <button id="runSimBtn" onclick="runHxSimulation()" class="btn-primary" style="padding:8px 20px;font-size:0.85rem;">
+          Simulate Live HX Swarm &rarr;
+        </button>
+      </div>
+
+      <div class="hx-pipeline-grid">
+        <div class="hx-stage-card" id="hxStage1">
+          <div class="hx-stage-icon" style="font-size:0.75rem;font-weight:900;color:#38bdf8;font-family:var(--font-mono);border:1px solid rgba(56,189,248,0.4);border-radius:6px;padding:2px 6px;width:fit-content;margin:0 auto 8px;">STAGE 01</div>
+          <div class="hx-stage-name">1. Customer Ingestion</div>
+          <div class="hx-stage-role">Omnichannel Intake</div>
+          <span class="hx-stage-status" id="hxStat1">Ready</span>
+        </div>
+
+        <div class="hx-stage-card" id="hxStage2">
+          <div class="hx-stage-icon" style="font-size:0.75rem;font-weight:900;color:#00e5ff;font-family:var(--font-mono);border:1px solid rgba(0,229,255,0.4);border-radius:6px;padding:2px 6px;width:fit-content;margin:0 auto 8px;">STAGE 02</div>
+          <div class="hx-stage-name">2. Intent Triage</div>
+          <div class="hx-stage-role">VidiFlow Agent Router</div>
+          <span class="hx-stage-status" id="hxStat2">Waiting</span>
+        </div>
+
+        <div class="hx-stage-card" id="hxStage3">
+          <div class="hx-stage-icon" style="font-size:0.75rem;font-weight:900;color:#a78bfa;font-family:var(--font-mono);border:1px solid rgba(167,139,250,0.4);border-radius:6px;padding:2px 6px;width:fit-content;margin:0 auto 8px;">STAGE 03</div>
+          <div class="hx-stage-name">3. Context Retrieval</div>
+          <div class="hx-stage-role">Postgres &amp; Neo4j Vector</div>
+          <span class="hx-stage-status" id="hxStat3">Waiting</span>
+        </div>
+
+        <div class="hx-stage-card" id="hxStage4">
+          <div class="hx-stage-icon" style="font-size:0.75rem;font-weight:900;color:#ec4899;font-family:var(--font-mono);border:1px solid rgba(236,72,153,0.4);border-radius:6px;padding:2px 6px;width:fit-content;margin:0 auto 8px;">STAGE 04</div>
+          <div class="hx-stage-name">4. Swarm Reasoning</div>
+          <div class="hx-stage-role">Hermes &amp; Open Claw Core</div>
+          <span class="hx-stage-status" id="hxStat4">Waiting</span>
+        </div>
+
+        <div class="hx-stage-card" id="hxStage5">
+          <div class="hx-stage-icon" style="font-size:0.75rem;font-weight:900;color:#34d399;font-family:var(--font-mono);border:1px solid rgba(52,211,153,0.4);border-radius:6px;padding:2px 6px;width:fit-content;margin:0 auto 8px;">STAGE 05</div>
+          <div class="hx-stage-name">5. Outcome Execution</div>
+          <div class="hx-stage-role">Zero-Touch Dispatch</div>
+          <span class="hx-stage-status" id="hxStat5">Waiting</span>
+        </div>
+      </div>
+
+      <div id="simLogBanner" style="background:rgba(4,8,20,0.9);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:10px 16px;font-family:'JetBrains Mono',monospace;font-size:0.82rem;color:#38bdf8;">
+        [HX-MONITOR]: Click "Simulate Live HX Swarm" to observe real-time agent coordination.
+      </div>
+    </div>
+
+    <p>
+      The human operator is no longer drowning in forms and repetitive data entry. Instead, the human acts as the <strong>Air Traffic Controller / Strategic Director</strong>, orchestrating 80+ agents through the VidiFlow cockpit with complete visual confidence.
+    </p>
+  </section>
+
+  <!-- 10. The Reality Check: What AI Does NOT Do Well (Powered by Vidi.News) -->
+  <section class="manifesto-card">
+    <div class="card-num">10</div>
+    <div class="section-title"><span>#10</span> The Reality Check: What AI Does NOT Do Well</div>
+    <p>
+      Newcomers to AI are currently deluged with uncritical hype claiming AI will replace everything tomorrow. Setting false expectations causes costly corporate mistakes, hallucinated contracts, and broken customer trust. 
+    </p>
+    <p>
+      At <strong>Vidi.News</strong> and <strong>VidiFlow</strong>, we believe true literacy requires being ruthlessly specific about <strong>what AI cannot do well &mdash; and where it actively fails</strong>:
+    </p>
+
+    <div class="ai-fail-box">
+      <div class="ai-fail-header">
+        <div class="ai-fail-title">
+          <span style="font-size:0.72rem;font-weight:900;letter-spacing:0.08em;color:#ef4444;background:rgba(239,68,68,0.15);border:1px solid #ef4444;padding:2px 8px;border-radius:4px;">RISK AUDIT</span> The AI Failure Index: 6 Critical Boundaries
+        </div>
+        <span class="ai-fail-badge">Vidi.News Investigation</span>
+      </div>
+
+      <div class="ai-fail-grid">
+        <!-- Failure 1: Hallucinations & Fake Facts -->
+        <div class="ai-fail-card">
+          <h4><span style="color:#ef4444;font-size:0.75rem;font-weight:900;margin-right:4px;">BOUNDARY 01 //</span> Hallucinations &amp; Fake Veracity</h4>
+          <p>
+            LLMs generate <em>statistically plausible-sounding sentences</em>, not verified truth. Without a deterministic grounding database (RAG / Postgres), AI will invent fake legal citations, fictitious revenue numbers, and non-existent product features with supreme confidence.
+          </p>
+        </div>
+
+        <!-- Failure 2: Deterministic Math & Ledgers -->
+        <div class="ai-fail-card">
+          <h4><span style="color:#ef4444;font-size:0.75rem;font-weight:900;margin-right:4px;">BOUNDARY 02 //</span> Deterministic Math &amp; Financial Precision</h4>
+          <p>
+            AI predicts words; it does not calculate numbers. It cannot balance a GAAP general ledger, compute compound interest, or calculate manufacturing tolerances reliably without handing off the calculation to external Python or SQL code.
+          </p>
+        </div>
+
+        <!-- Failure 3: Multi-Step State Drift -->
+        <div class="ai-fail-card">
+          <h4><span style="color:#ef4444;font-size:0.75rem;font-weight:900;margin-right:4px;">BOUNDARY 03 //</span> Long-Horizon Autonomy &amp; State Drift</h4>
+          <p>
+            Isolated agents drift off-track after 3 or 4 iterations. Without an architectural supervisor like VidiFlow keeping them on course, autonomous agents loop endlessly, forget their primary goal, or solve imaginary problems.
+          </p>
+        </div>
+
+        <!-- Failure 4: Physical Situational Grounding -->
+        <div class="ai-fail-card">
+          <h4><span style="color:#ef4444;font-size:0.75rem;font-weight:900;margin-right:4px;">BOUNDARY 04 //</span> Physical Reality &amp; Real-Time Common Sense</h4>
+          <p>
+            AI has zero physical sensory grounding. It doesn't know if a pallet physically arrived at the loading dock, if a supplier went bankrupt this morning, or if a factory floor is flooded unless real-time IoT sensors and webhooks feed it.
+          </p>
+        </div>
+
+        <!-- Failure 5: Strategic Taste & Human Empathy -->
+        <div class="ai-fail-card">
+          <h4><span style="color:#ef4444;font-size:0.75rem;font-weight:900;margin-right:4px;">BOUNDARY 05 //</span> Human Empathy, Taste &amp; Strategic Nuance</h4>
+          <p>
+            AI has no gut instinct. It cannot read the political subtext of a tense boardroom negotiation, cannot judge luxury brand aesthetic taste, and cannot weigh moral and ethical tradeoffs that affect human lives.
+          </p>
+        </div>
+
+        <!-- Failure 6: Self-Correction in Blind Loops -->
+        <div class="ai-fail-card">
+          <h4><span style="color:#ef4444;font-size:0.75rem;font-weight:900;margin-right:4px;">BOUNDARY 06 //</span> Self-Correction in Isolation (Death Loops)</h4>
+          <p>
+            When an agent hits a software bug or API error in the dark, its attempts to "fix" itself often spiral into worse errors. It requires a human operator looking at a visual UI canvas (like VidiFlow Cockpit) to spot anomalies and redirect it.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <p style="margin-top:1.5rem;font-size:1.02rem;color:#cbd5e1;line-height:1.65;">
+      <span style="color:#00e5ff;font-weight:900;">EDITORIAL DIRECTIVE:</span> <strong>Vidi.News</strong> maintains a dedicated, permanent editorial section tracking the real-world operational limitations, benchmark failures, and emerging reliability breakthroughs of commercial AI. Knowing what the machine <em>cannot</em> do is the true superpower of an educated buyer.
+    </p>
+  </section>
+
+  <!-- 11. The Standard for Every Term -->
+  <section class="manifesto-card">
+    <div class="card-num">11</div>
+    <div class="section-title"><span>#11</span> The Standard for Every Term</div>
+    <p>
+      Every single visual term in VidiFlow Lex must pass this strict 5-point test:
+    </p>
+    <ul class="checklist">
+      <li>
+        <span class="check-icon">&#10003;</span>
+        Can a 14-year-old understand the one-liner?
+      </li>
+      <li>
+        <span class="check-icon">&#10003;</span>
+        Can a 60-year-old executive use it in a sentence after reading it?
+      </li>
+      <li>
+        <span class="check-icon">&#10003;</span>
+        Does the visual tell the story before the words do?
+      </li>
+      <li>
+        <span class="check-icon">&#10003;</span>
+        Does it explain what it DOES, not what it IS?
+      </li>
+      <li>
+        <span class="check-icon">&#10003;</span>
+        Does it equip you with the exact high-value question to ask your IT team or AI model?
+      </li>
+    </ul>
+  </section>
+
+  <!-- 12. The Smart Stack Dual View -->
+  <section class="manifesto-card">
+    <div class="card-num">12</div>
+    <div class="section-title"><span>#12</span> The Smart Stack Dual View</div>
+    <p>
+      For every concept transitioning from legacy to AI-enabled, VidiFlow Lex contrasts both worlds:
+    </p>
+
+    <div class="comparison-wrapper">
+      <div class="comparison-grid">
+        <div class="comp-col legacy">
+          <div class="comp-head leg">LEGACY TECH STACK (SaaS Era)</div>
+          <div class="comp-row">
+            <span style="font-size:0.7rem;font-weight:900;color:#f87171;font-family:var(--font-mono);">ROLE</span>
+            <div><strong>Human as Data Entry Clerk</strong>: 50 screens, manual forms, copy-pasting records.</div>
+          </div>
+          <div class="comp-row">
+            <span style="font-size:0.7rem;font-weight:900;color:#f87171;font-family:var(--font-mono);">PRICE</span>
+            <div><strong>Per-Seat License Tax</strong>: Paying monthly for logins whether value is delivered or not.</div>
+          </div>
+          <div class="comp-row">
+            <span style="font-size:0.7rem;font-weight:900;color:#f87171;font-family:var(--font-mono);">ARCH</span>
+            <div><strong>Siloed &amp; Brittle</strong>: Disconnected tools requiring custom Zapier glue and maintenance.</div>
+          </div>
+          <div class="comp-row">
+            <span style="font-size:0.7rem;font-weight:900;color:#f87171;font-family:var(--font-mono);">COST</span>
+            <div><strong>Lost Momentum</strong>: Lost hours, employee fatigue, delayed customer responses.</div>
+          </div>
+        </div>
+
+        <div class="comp-col smart">
+          <div class="comp-head smt">MODERN SMART STACK (AI Era)</div>
+          <div class="comp-row">
+            <span style="font-size:0.7rem;font-weight:900;color:#00e5ff;font-family:var(--font-mono);">ROLE</span>
+            <div><strong>Human as Intent Director</strong>: You describe what you want in plain language.</div>
+          </div>
+          <div class="comp-row">
+            <span style="font-size:0.7rem;font-weight:900;color:#00e5ff;font-family:var(--font-mono);">SPEED</span>
+            <div><strong>Instant Outcome</strong>: Autonomous Agent Swarms execute tasks in milliseconds.</div>
+          </div>
+          <div class="comp-row">
+            <span style="font-size:0.7rem;font-weight:900;color:#00e5ff;font-family:var(--font-mono);">VALUE</span>
+            <div><strong>Value-Based Outcome</strong>: Pay for completed business results ($$ revenue, closed deals).</div>
+          </div>
+          <div class="comp-row">
+            <span style="font-size:0.7rem;font-weight:900;color:#00e5ff;font-family:var(--font-mono);">SCALE</span>
+            <div><strong>Continuous Self-Improvement</strong>: The Smart App gets smarter with every execution.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 36M Small Business Imperative Banner -->
+  <section class="banner-36m">
+    <h2>The 36 Million Small Business Imperative</h2>
+    <p>
+      If small business owners cannot define the new tech system and make the shift from <strong>Legacy Tech Stack</strong> to <strong>Smart Stack</strong>, they face an existential threat. VidiFlow Lex empowers you to master every concept and build your 2026 Smart Stack today.
+    </p>
+    <a href="vidiflow-lex.html" class="btn-primary" style="font-size:1.1rem;padding:14px 34px;">
+      Launch VidiFlow Lex Lab &rarr;
+    </a>
+  </section>
+
+</main>
+
+<!-- Three.js Ambient 3D Constellation Script -->
+<script>
+(function() {
+  var wrap = document.getElementById("bg3dCanvas");
+  if (!wrap || !window.THREE) return;
+
+  var scene = new THREE.Scene();
+  scene.fog = new THREE.FogExp2(0x020617, 0.0035);
+  var camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 2000);
+  camera.position.set(0, 20, 110);
+  var renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  wrap.appendChild(renderer.domElement);
+
+  var terms = ["CRM", "SaaS", "Dragonfly", "Valkey", "RAG", "LLM", "MCP", "API", "ERP", "Cloudflare KV", "Neo4j", "Postgres"];
+  var nodes = [];
+
+  function hue(str) { var h = 0; for (var i = 0; i < str.length; i++) h = (h * 31 + str.charCodeAt(i)) % 360; return h; }
+
+  function labelSprite(text) {
+    var c = document.createElement("canvas"); c.width = 256; c.height = 96;
+    var g = c.getContext("2d");
+    g.font = "900 40px 'Kumbh Sans', sans-serif";
+    g.textAlign = "center"; g.textBaseline = "middle";
+    g.shadowColor = "rgba(0,229,255,.9)"; g.shadowBlur = 18; g.fillStyle = "#ffffff";
+    g.fillText(text, 128, 48);
+    var sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(c), transparent: true, depthTest: false }));
+    sp.scale.set(16, 6, 1);
+    return sp;
+  }
+
+  terms.forEach(function(acr, i) {
+    var col = new THREE.Color("hsl(" + hue(acr) + ", 85%, 62%)");
+    var mesh = new THREE.Mesh(
+      new THREE.SphereGeometry(2.2, 20, 16),
+      new THREE.MeshBasicMaterial({ color: col })
+    );
+    var th = (i / terms.length) * Math.PI * 2;
+    var rad = 35 + (i % 3) * 12;
+    mesh.position.set(Math.cos(th) * rad, (i % 2 === 0 ? 1 : -1) * ((i * 3) % 15), Math.sin(th) * rad);
+    scene.add(mesh);
+
+    var lbl = labelSprite(acr);
+    lbl.position.copy(mesh.position);
+    lbl.position.y += 4.5;
+    scene.add(lbl);
+
+    nodes.push(mesh);
+  });
+
+  // Connecting lines
+  for (var i = 0; i < nodes.length; i++) {
+    for (var j = i + 1; j < nodes.length; j++) {
+      if (Math.random() > 0.6) {
+        var mat = new THREE.LineBasicMaterial({ color: 0x00e5ff, transparent: true, opacity: 0.2 });
+        var line = new THREE.Line(new THREE.BufferGeometry().setFromPoints([nodes[i].position, nodes[j].position]), mat);
+        scene.add(line);
+      }
+    }
+  }
+
+  window.addEventListener("resize", function() {
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+  });
+
+  function animate() {
+    requestAnimationFrame(animate);
+    scene.rotation.y += 0.0015;
+    renderer.render(scene, camera);
+  }
+  animate();
+
+  window.runHxSimulation = function() {
+    var btn = document.getElementById("runSimBtn");
+    var banner = document.getElementById("simLogBanner");
+    if (!btn || btn.disabled) return;
+
+    btn.disabled = true;
+    btn.innerHTML = "&#9203; Swarm Executing...";
+
+    var stages = [
+      { id: "hxStage1", stat: "hxStat1", activeText: "Processing", doneText: "Ingested", log: "[HX-MONITOR]: Customer inquiry received via Omnichannel Webhook \u2192 Parsing raw intention..." },
+      { id: "hxStage2", stat: "hxStat2", activeText: "Routing", doneText: "Triaged", log: "[HX-MONITOR]: VidiFlow Router analyzing intention \u2192 Category: Wholesale Re-Order (Priority A)" },
+      { id: "hxStage3", stat: "hxStat3", activeText: "Searching", doneText: "Matched", log: "[HX-MONITOR]: Querying Postgres pgvector & Neo4j \u2192 Found Account #8841 (Last ordered: 92 days ago)" },
+      { id: "hxStage4", stat: "hxStat4", activeText: "Reasoning", doneText: "Synthesized", log: "[HX-MONITOR]: Hermes Core + Open Claw subagents generating customized wholesale proposal & volume tier..." },
+      { id: "hxStage5", stat: "hxStat5", activeText: "Dispatching", doneText: "Executed", log: "[HX-MONITOR]: \u2705 Outcome Verified (99.8%) \u2192 Proposal sent to client, CRM updated, inventory hold placed!" }
+    ];
+
+    // Reset all stages first
+    stages.forEach(function(s) {
+      var el = document.getElementById(s.id);
+      var st = document.getElementById(s.stat);
+      if (el) { el.classList.remove("active-pulse", "done"); }
+      if (st) { st.textContent = "Waiting"; }
+    });
+
+    var current = 0;
+    function advance() {
+      if (current > 0) {
+        var prev = stages[current - 1];
+        var prevEl = document.getElementById(prev.id);
+        var prevSt = document.getElementById(prev.stat);
+        if (prevEl) { prevEl.classList.remove("active-pulse"); prevEl.classList.add("done"); }
+        if (prevSt) { prevSt.textContent = prev.doneText; }
+      }
+
+      if (current < stages.length) {
+        var step = stages[current];
+        var currEl = document.getElementById(step.id);
+        var currSt = document.getElementById(step.stat);
+        if (currEl) currEl.classList.add("active-pulse");
+        if (currSt) currSt.textContent = step.activeText;
+        if (banner) banner.textContent = step.log;
+
+        current++;
+        setTimeout(advance, 950);
+      } else {
+        btn.disabled = false;
+        btn.innerHTML = "&#9654; Re-Run Live HX Swarm";
+        if (banner) {
+          banner.innerHTML = "<b>[HX-COMPLETED]:</b> Entire human workflow duplicated and finalized in <b>4.7 seconds</b> without manual data entry.";
+        }
+      }
+    }
+    advance();
+  };
+
+  // ============ BOARDROOM SESSIONS INTERACTIVE SHOWCASE ============
+  var convoScenarios = [
+    {
+      caseCode: "CASE 01 // CRM ARCHITECTURE",
+      vendorClaim: "&ldquo;Enterprise Sales Cloud requires 25 annual enterprise licenses at $150/user/month ($45,000/yr) plus mandatory tiered administrative consulting add-ons.&rdquo;",
+      execName: "MARCUS T.",
+      execRole: "CEO &bull; Midwest Manufacturing &amp; Wholesale",
+      execText: "Salesforce just sent our annual renewal quote. $150 per user per month across 25 staff. That is $45,000 every single year, and half our sales reps refuse to log in because it takes 8 clicks just to log a phone call. Can we really replace this with Postgres and AI agents without losing our customer data?",
+      lexiText: "Here is the dirty secret the enterprise sales reps will never tell you: you aren't paying $45,000 for 'AI' or innovation. You are paying a tax on a glorified spreadsheet wrapped in a clunky 1999 user interface. Your sales reps aren't data entry clerks. When an executive sends an email or closes a deal, they shouldn't spend 20 minutes filling in 14 dropdown menus.",
+      maxText: "In the VidiFlow Smart Stack, we map your entire client history into PostgreSQL with the pgvector extension and Dragonfly cache. Your team types or speaks naturally. An autonomous background worker parses the contact, logs the deal stage, calculates the margin, and updates the shared dashboard in 200 milliseconds. Total cloud server cost: $24/month. Net annual savings: $44,712 back into your cash reserves.",
+      directiveText: "Never pay per-seat monthly taxes for software your team resents using. Own the sovereign data layer in Postgres, orchestrate with VidiFlow, and let autonomous workers handle the data entry."
+    },
+    {
+      caseCode: "CASE 02 // VECTOR STORAGE",
+      vendorClaim: "&ldquo;High-dimensional latent semantic retrieval requires an isolated multi-tenant vector database cluster billed at $2,000/month with proprietary query quotas.&rdquo;",
+      execName: "ELENA R.",
+      execRole: "CTO &bull; HealthTech Compliance Platform",
+      execText: "Our external AI consultants want us to sign an annual contract with Pinecone. They quoted us $2,000 a month just to store vector embeddings for our clinical documentation and customer support history. Is an isolated vector database mandatory for enterprise RAG?",
+      lexiText: "This is the classic 'Vendor Tollbooth.' AI consultants love recommending isolated, proprietary cloud databases because it looks cutting-edge on an invoice. But in reality, you are paying a 10x markup to store numbers in someone else's siloed cloud where network latency creeps up and your sensitive HIPAA-regulated patient context leaves your perimeter.",
+      maxText: "You already run PostgreSQL. By installing the pgvector extension, your existing relational patient records, billing tables, and 1,536-dimensional vector embeddings live inside the exact same database. Zero data sync lag, zero third-party vendor lock-in, full ACID transactional guarantees, and zero extra monthly subscriptions. You run 50 million vector searches locally with HNSW indexing at sub-5 millisecond response times.",
+      directiveText: "Eliminate standalone vector silos. Unify relational data and vector knowledge inside PostgreSQL pgvector and save $24,000 a year on cloud hosting."
+    },
+    {
+      caseCode: "CASE 03 // CLUSTER CACHING",
+      vendorClaim: "&ldquo;To handle 800,000 ops/second during peak promotion spikes, your infrastructure requires an 8-node Redis Enterprise cluster with sentinel failover clusters at $3,800/month.&rdquo;",
+      execName: "DAVID K.",
+      execRole: "VP Infrastructure &bull; Global Direct-to-Consumer Retail",
+      execText: "Our e-commerce checkout latency spikes during promotions. Our DevOps vendor told us we need an 8-node Redis Enterprise cluster with complex sentinel failovers to handle 800,000 ops/sec. Our estimated bill is skyrocketing to $3,800/month. How do we prevent this bill from doubling every holiday season?",
+      lexiText: "Whenever an engineer says 'we need an 8-node cluster,' what they usually mean is: our software is running on an outdated single-threaded engine from 2009. Redis can only use one CPU core at a time. So to get more speed, vendors force you to rent 8 separate servers and pay for a massive orchestration nightmare.",
+      maxText: "Drop Dragonfly into your stack. Dragonfly is a 100% drop-in Redis replacement built on a modern multi-threaded share-nothing architecture. A single 64-core AMD server running Dragonfly effortlessly digests 4,000,000 operations per second &mdash; 25x the throughput of legacy Redis. We collapse your 8 servers down to 1 machine, slashing memory overhead by 30% and eliminating cluster network hops.",
+      directiveText: "Stop clustering single-threaded legacy software. Deploy multi-threaded Dragonfly or Valkey to 25x your throughput on a single server node."
+    },
+    {
+      caseCode: "CASE 04 // AI TOOLING",
+      vendorClaim: "&ldquo;Custom enterprise AI tool connectivity requires 6 months of dedicated REST API middleware engineering and $120,000 in custom connector integration fees.&rdquo;",
+      execName: "SARAH M.",
+      execRole: "Chief Operating Officer &bull; Logistics &amp; Freight Network",
+      execText: "We brought in an enterprise software agency to connect our ERP, inventory, and logistics databases to our AI agent pilots. They handed us an 80-page statement of work with a 6-month timeline and a $120,000 budget just to write custom REST API connectors. Is there a faster way to let AI agents use our existing tools?",
+      lexiText: "Six months to build API connectors is an agency annuity scheme. In the modern Smart Stack, custom REST endpoints for every single query are obsolete. If you lock your company into bespoke API code, every time your database changes, you have to pay the agency another $20,000 to maintain the glue.",
+      maxText: "Deploy Model Context Protocol (MCP). MCP is the open enterprise standard created by Anthropic and the open-source community that turns any database, file system, or GitHub repo into a plug-and-play tool for autonomous agents. Instead of 6 months of custom endpoints, we expose your Postgres tables via a standardized MCP server in 2 afternoons. Agents read schemas dynamically and execute queries with zero bespoke maintenance.",
+      directiveText: "Mandate Model Context Protocol (MCP) across all internal AI initiatives to achieve instant tool connectivity and eliminate proprietary API developer fees."
+    }
+  ];
+
+  window.switchConvoScenario = function(idx) {
+    for (var i = 0; i < convoScenarios.length; i++) {
+      var tab = document.getElementById("convoTab" + i);
+      if (tab) {
+        if (i === idx) { tab.classList.add("active"); }
+        else { tab.classList.remove("active"); }
+      }
+    }
+
+    var vp = document.getElementById("convoViewport");
+    if (!vp) return;
+
+    var item = convoScenarios[idx] || convoScenarios[0];
+    vp.innerHTML =
+      '<div class="exec-rfp-box">' +
+        '<div class="exec-rfp-tag">' +
+          '<span>' + item.caseCode + ' &bull; VENDOR PREDATORY CLAIM</span>' +
+          '<span style="font-family:var(--font-mono);color:#fca5a5;">AUDIT: EXPOSED</span>' +
+        '</div>' +
+        '<div class="exec-rfp-quote">' + item.vendorClaim + '</div>' +
+      '</div>' +
+
+      '<div class="exec-dialogue-thread">' +
+        '<!-- Turn 1: Client Executive -->' +
+        '<div class="exec-dialogue-row exec">' +
+          '<div class="exec-speaker-col">' +
+            '<div class="exec-speaker-avatar" style="border-color:#94a3b8;background:linear-gradient(135deg,#334155,#1e293b);display:flex;align-items:center;justify-content:center;font-weight:900;color:#f8fafc;font-size:0.75rem;">' +
+              'EXEC' +
+            '</div>' +
+            '<span class="exec-name-tag exec">' + item.execName + '</span>' +
+          '</div>' +
+          '<div class="exec-speech-content">' +
+            '<div class="exec-speech-header">' +
+              '<span class="exec-role-title">' + item.execRole + '</span>' +
+              '<span style="font-family:var(--font-mono);font-size:0.68rem;color:#94a3b8;">EXECUTIVE DILEMMA</span>' +
+            '</div>' +
+            '<div class="exec-speech-text">' +
+              '&ldquo;' + item.execText + '&rdquo;' +
+            '</div>' +
+          '</div>' +
+        '</div>' +
+
+        '<!-- Turn 2: Lexi -->' +
+        '<div class="exec-dialogue-row lexi">' +
+          '<div class="exec-speaker-col">' +
+            '<div class="exec-speaker-avatar">' +
+              '<img src="https://cdn.vidi.news/images/viditwin_lexi_avatar.png" alt="Lexi">' +
+            '</div>' +
+            '<span class="exec-name-tag lexi">LEXI</span>' +
+          '</div>' +
+          '<div class="exec-speech-content">' +
+            '<div class="exec-speech-header">' +
+              '<span class="exec-role-title">Chief of Staff &bull; Plain-English Decoder</span>' +
+              '<span style="font-family:var(--font-mono);font-size:0.68rem;color:#f472b6;">HUMAN REALITY &bull; DECODER</span>' +
+            '</div>' +
+            '<div class="exec-speech-text">' +
+              '&ldquo;' + item.lexiText + '&rdquo;' +
+            '</div>' +
+          '</div>' +
+        '</div>' +
+
+        '<!-- Turn 3: Max -->' +
+        '<div class="exec-dialogue-row max">' +
+          '<div class="exec-speaker-col">' +
+            '<div class="exec-speaker-avatar">' +
+              '<img src="https://cdn.vidi.news/images/viditwin_max_avatar.png" alt="Max">' +
+            '</div>' +
+            '<span class="exec-name-tag max">MAX</span>' +
+          '</div>' +
+          '<div class="exec-speech-content">' +
+            '<div class="exec-speech-header">' +
+              '<span class="exec-role-title">Chief Systems Architect &bull; Applied ROI</span>' +
+              '<span style="font-family:var(--font-mono);font-size:0.68rem;color:#38bdf8;">SYSTEMS EXECUTION &bull; HORSEPOWER</span>' +
+            '</div>' +
+            '<div class="exec-speech-text">' +
+              '&ldquo;' + item.maxText + '&rdquo;' +
+            '</div>' +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+
+      '<div class="exec-power-box">' +
+        '<div class="exec-power-title">' +
+          '<span>EXECUTIVE BOARDROOM DIRECTIVE</span>' +
+          '<span style="color:#00e5ff;font-size:0.68rem;letter-spacing:0.08em;">ASK ACROSS THE TABLE</span>' +
+        '</div>' +
+        '<div class="exec-power-text">' +
+          '&ldquo;' + item.directiveText + '&rdquo;' +
+        '</div>' +
+      '</div>';
+  };
+
+  // Initialize Case 01 on load
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", function() { switchConvoScenario(0); });
+  } else {
+    switchConvoScenario(0);
+  }
+})();
+</script>
+
+</body>
+</html>

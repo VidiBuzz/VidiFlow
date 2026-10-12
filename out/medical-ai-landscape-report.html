@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Medical AI data sources and 3D visualization landscape — what exists, what AirPMD can actually use, and where the licensing traps are.">
+<title>Medical AI Data Sources — Landscape Report</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0b1020; --bg2:#0e1428; --panel:#141b30; --panel2:#1b2440;
+  --ink:#e8edf7; --dim:#9aa7c2; --line:#27314f;
+  --acc:#4da3ff; --acc2:#38e0d0; --good:#3ddc97; --warn:#ffb84d; --bad:#ff6b6b;
+  --sans:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  --head:"Space Grotesk","Inter",-apple-system,"Segoe UI",sans-serif;
+  --rad:14px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:96px}
+body{margin:0;color:var(--ink);font:16px/1.65 var(--sans);-webkit-font-smoothing:antialiased;
+  background:
+    radial-gradient(1100px 540px at 82% -8%, rgba(77,163,255,.14), transparent 60%),
+    radial-gradient(900px 480px at -5% 12%, rgba(56,224,208,.07), transparent 55%),
+    var(--bg);
+  background-attachment:fixed}
+img{max-width:100%}
+::selection{background:rgba(77,163,255,.35)}
+
+/* ---------- scroll progress ---------- */
+.progress{position:fixed;inset:0 0 auto 0;height:3px;z-index:99;background:transparent}
+.progress .bar{height:100%;width:0;background:linear-gradient(90deg,var(--acc),var(--acc2));
+  box-shadow:0 0 12px rgba(77,163,255,.7);transition:width .08s linear}
+
+/* ---------- top nav ---------- */
+.topnav{position:sticky;top:0;z-index:60;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  background:rgba(11,16,32,.82);border-bottom:1px solid rgba(39,49,79,.75)}
+.topnav .inner{max-width:1180px;margin:0 auto;padding:11px 24px;display:flex;align-items:center;gap:18px}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--head);font-weight:600;font-size:.95rem;
+  letter-spacing:.01em;white-space:nowrap}
+.brand .dot{width:10px;height:10px;border-radius:3px;background:linear-gradient(135deg,var(--acc),var(--acc2));
+  box-shadow:0 0 10px rgba(77,163,255,.8)}
+.brand em{font-style:normal;color:var(--dim);font-weight:500}
+.toc{display:flex;gap:4px;margin-left:auto;overflow-x:auto;scrollbar-width:none}
+.toc::-webkit-scrollbar{display:none}
+.toc a{color:var(--dim);font-size:.82rem;font-weight:500;text-decoration:none;padding:6px 11px;
+  border-radius:999px;border:1px solid transparent;white-space:nowrap;transition:.18s}
+.toc a:hover{color:var(--ink);background:rgba(77,163,255,.1)}
+.toc a.on{color:#dff0ff;background:rgba(77,163,255,.16);border-color:rgba(77,163,255,.45)}
+.byline{font-size:.72rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--acc2);
+  border:1px solid rgba(56,224,208,.35);background:rgba(56,224,208,.08);border-radius:999px;padding:4px 11px;white-space:nowrap}
+@media(max-width:960px){.toc{display:none}.byline{margin-left:auto}}
+
+.wrap{max-width:1180px;margin:0 auto;padding:34px 24px 90px}
+
+/* ---------- hero ---------- */
+.hero{display:grid;grid-template-columns:1.1fr .9fr;gap:38px;align-items:center;
+  padding:44px 0 40px;border-bottom:1px solid var(--line);margin-bottom:14px}
+.badges{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px}
+.badge{font-size:.7rem;font-weight:600;letter-spacing:.09em;text-transform:uppercase;
+  padding:5px 11px;border-radius:999px;border:1px solid var(--line);color:var(--dim);background:rgba(20,27,48,.7)}
+.badge.hot{color:#bcdcff;border-color:rgba(77,163,255,.5);background:rgba(77,163,255,.12)}
+.badge.ok{color:var(--good);border-color:rgba(61,220,151,.4);background:rgba(61,220,151,.09)}
+h1{font-family:var(--head);font-size:clamp(1.9rem,4vw,2.85rem);line-height:1.14;margin:0 0 14px;
+  letter-spacing:-.025em;font-weight:700}
+h1 .grad{background:linear-gradient(92deg,#7cc0ff,#38e0d0 70%);-webkit-background-clip:text;
+  background-clip:text;color:transparent}
+.sub{color:var(--dim);font-size:1.06rem;margin:0 0 22px;max-width:56ch}
+.stats{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+.stat{background:linear-gradient(180deg,rgba(27,36,64,.9),rgba(20,27,48,.9));border:1px solid var(--line);
+  border-radius:12px;padding:11px 16px;min-width:128px}
+.stat b{display:block;font-family:var(--head);font-size:1.45rem;line-height:1.1;color:#fff}
+.stat span{font-size:.74rem;color:var(--dim);letter-spacing:.04em;text-transform:uppercase}
+.meta{color:var(--dim);font-size:.84rem;margin:0;line-height:1.7}
+.meta code{font-size:.98em}
+.hero-art{position:relative}
+.hero-art img{width:100%;border-radius:18px;border:1px solid rgba(77,163,255,.35);
+  box-shadow:0 24px 70px rgba(3,8,23,.75),0 0 0 6px rgba(77,163,255,.06),0 0 46px rgba(77,163,255,.18);
+  display:block;aspect-ratio:16/9;object-fit:cover}
+.hero-art .cap{position:absolute;left:14px;bottom:12px;font-size:.7rem;letter-spacing:.08em;
+  text-transform:uppercase;color:#cfe4ff;background:rgba(8,12,26,.72);border:1px solid rgba(77,163,255,.3);
+  backdrop-filter:blur(6px);padding:5px 10px;border-radius:999px}
+@media(max-width:900px){.hero{grid-template-columns:1fr;padding-top:26px}.hero-art{order:-1}}
+/* ---------- verdict ---------- */
+.verdict{position:relative;background:linear-gradient(135deg,#17213d 0%,#101728 55%,#0f1a33 100%);
+  border:1px solid rgba(77,163,255,.4);border-radius:18px;padding:30px 34px 30px 36px;margin:36px 0 8px;
+  box-shadow:0 18px 50px rgba(3,8,23,.55),inset 0 1px 0 rgba(255,255,255,.05);overflow:hidden}
+.verdict::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;
+  background:linear-gradient(180deg,var(--acc),var(--acc2))}
+.verdict::after{content:"";position:absolute;right:-70px;top:-70px;width:230px;height:230px;border-radius:50%;
+  background:radial-gradient(circle,rgba(77,163,255,.22),transparent 65%);pointer-events:none}
+.verdict .vtag{display:inline-flex;align-items:center;gap:8px;font-size:.72rem;font-weight:700;
+  letter-spacing:.12em;text-transform:uppercase;color:#8fd8ff;margin-bottom:12px}
+.verdict .vtag svg{width:15px;height:15px}
+.verdict h3{font-family:var(--head);font-size:1.35rem;margin:0 0 12px;letter-spacing:-.01em;color:#fff}
+.verdict p{margin:0 0 10px;color:#cdd8ee;max-width:82ch}
+.verdict p:last-child{margin-bottom:0}
+.verdict strong{color:#fff}
+.verdict em{color:#9fe9dc;font-style:normal;font-weight:600}
+
+/* ---------- sections ---------- */
+section{margin-top:64px}
+h2{font-family:var(--head);font-size:clamp(1.35rem,2.5vw,1.7rem);margin:0 0 8px;letter-spacing:-.015em;
+  display:flex;align-items:center;gap:14px;scroll-margin-top:96px}
+h2 .n{flex:none;width:38px;height:38px;border-radius:11px;display:grid;place-items:center;font-size:1rem;
+  font-weight:700;color:#fff;background:linear-gradient(135deg,rgba(77,163,255,.9),rgba(56,224,208,.75));
+  box-shadow:0 6px 18px rgba(77,163,255,.35)}
+h3{font-family:var(--head);font-size:1.05rem;margin:0 0 6px;letter-spacing:-.005em}
+.lede{color:var(--dim);margin:0 0 24px;padding-left:52px;max-width:88ch}
+@media(max-width:640px){.lede{padding-left:0}}
+
+/* ---------- wide banner image ---------- */
+.banner{position:relative;margin:0 0 28px;border-radius:16px;overflow:hidden;border:1px solid var(--line);
+  box-shadow:0 16px 44px rgba(3,8,23,.5)}
+.banner img{display:block;width:100%;height:clamp(160px,24vw,240px);object-fit:cover}
+.banner::after{content:"";position:absolute;inset:0;
+  background:linear-gradient(90deg,rgba(11,16,32,.75),transparent 45%,rgba(11,16,32,.35))}
+.banner .bcap{position:absolute;left:18px;bottom:14px;z-index:2;font-size:.74rem;letter-spacing:.06em;
+  text-transform:uppercase;color:#d6e7ff;text-shadow:0 1px 8px rgba(0,0,0,.8)}
+
+/* ---------- callouts ---------- */
+.callout{display:flex;gap:16px;background:var(--panel2);border:1px solid var(--line);
+  border-left:3px solid var(--acc);border-radius:0 12px 12px 0;padding:18px 22px;margin:22px 0}
+.callout .ic{flex:none;width:34px;height:34px;border-radius:10px;display:grid;place-items:center;
+  background:rgba(77,163,255,.14);border:1px solid rgba(77,163,255,.35)}
+.callout .ic svg{width:18px;height:18px;stroke:var(--acc);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.callout .ct p{margin:0 0 8px}
+.callout .ct p:last-child{margin-bottom:0}
+.callout strong{color:#fff}
+.callout.warn{border-left-color:var(--warn)}
+.callout.warn .ic{background:rgba(255,184,77,.13);border-color:rgba(255,184,77,.4)}
+.callout.warn .ic svg{stroke:var(--warn)}
+.callout.bad{border-left-color:var(--bad)}
+.callout.bad .ic{background:rgba(255,107,107,.13);border-color:rgba(255,107,107,.4)}
+.callout.bad .ic svg{stroke:var(--bad)}
+.callout.good{border-left-color:var(--good)}
+.callout.good .ic{background:rgba(61,220,151,.13);border-color:rgba(61,220,151,.4)}
+.callout.good .ic svg{stroke:var(--good)}
+
+/* ---------- tables ---------- */
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:14px;margin:22px 0;
+  background:rgba(20,27,48,.55);box-shadow:0 10px 30px rgba(3,8,23,.35)}
+table{width:100%;border-collapse:collapse;font-size:.92rem;min-width:720px}
+th{text-align:left;font-weight:600;color:var(--dim);text-transform:uppercase;letter-spacing:.07em;
+  font-size:.7rem;padding:13px 16px;border-bottom:1px solid var(--line);background:rgba(27,36,64,.9);
+  position:sticky;top:0;z-index:1;white-space:nowrap}
+td{padding:15px 16px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:none}
+tbody tr{transition:background .15s}
+tbody tr:hover{background:rgba(77,163,255,.06)}
+.mcell{display:flex;gap:12px;align-items:flex-start}
+.av{flex:none;width:38px;height:38px;border-radius:10px;display:grid;place-items:center;font-family:var(--head);
+  font-weight:700;font-size:.78rem;color:#d7ebff;border:1px solid rgba(77,163,255,.4);
+  background:linear-gradient(135deg,rgba(77,163,255,.28),rgba(56,224,208,.16))}
+.mcell .repo{display:block;color:var(--dim);font-size:.83rem;margin-top:2px}
+.sub-note{display:block;color:var(--dim);font-size:.83rem;margin-top:3px}
+
+/* ---------- pills ---------- */
+.pill{display:inline-block;font-size:.72rem;padding:3px 10px;border-radius:999px;font-weight:600;
+  white-space:nowrap;line-height:1.5}
+.pill.ok{background:rgba(61,220,151,.14);color:var(--good);box-shadow:inset 0 0 0 1px rgba(61,220,151,.3)}
+.pill.no{background:rgba(255,107,107,.14);color:var(--bad);box-shadow:inset 0 0 0 1px rgba(255,107,107,.3)}
+.pill.mid{background:rgba(255,184,77,.14);color:var(--warn);box-shadow:inset 0 0 0 1px rgba(255,184,77,.3)}
+/* ---------- cards ---------- */
+.tag{display:inline-block;font-size:.7rem;letter-spacing:.06em;text-transform:uppercase;font-weight:600;
+  color:var(--acc);border:1px solid var(--line);border-radius:999px;padding:3px 11px;margin-bottom:10px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+@media(max-width:820px){.grid{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--rad);overflow:hidden;
+  margin:4px 0;transition:transform .2s,border-color .2s,box-shadow .2s}
+.card:hover{transform:translateY(-4px);border-color:rgba(77,163,255,.5);
+  box-shadow:0 18px 44px rgba(3,8,23,.6),0 0 0 1px rgba(77,163,255,.15)}
+.cwrap{position:relative;line-height:0}
+.cwrap img{width:100%;aspect-ratio:16/9;object-fit:cover;display:block;border-bottom:1px solid var(--line)}
+.cwrap::after{content:"";position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(11,16,32,.05),rgba(11,16,32,.55));pointer-events:none}
+.cwrap .tag{position:absolute;left:12px;bottom:11px;z-index:2;line-height:1.3;
+  background:rgba(8,12,26,.75);backdrop-filter:blur(6px);border-color:rgba(77,163,255,.45);color:#bcdcff;margin:0}
+.card .body{padding:18px 22px 20px}
+.card p{margin:0 0 9px;color:var(--dim);font-size:.92rem}
+.card p:last-child{margin-bottom:0}
+.card .k{color:var(--ink);font-weight:600}
+.card .pill{margin-right:4px}
+
+/* ---------- figures (inline SVG) ---------- */
+figure{margin:26px 0;background:rgba(20,27,48,.6);border:1px solid var(--line);border-radius:14px;
+  padding:20px 22px 14px;box-shadow:0 10px 30px rgba(3,8,23,.35)}
+figure svg{width:100%;height:auto;display:block}
+figcaption{margin-top:12px;font-size:.78rem;color:var(--dim);letter-spacing:.03em;text-align:center}
+
+/* ---------- meters ---------- */
+.meters{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:24px 0}
+@media(max-width:820px){.meters{grid-template-columns:1fr}}
+.meter{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px}
+.meter .top{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:10px}
+.meter .lbl{font-weight:600;font-size:.95rem;color:var(--ink)}
+.meter .val{font-family:var(--head);font-weight:700;font-size:.95rem}
+.meter .val.mid{color:var(--warn)}
+.meter .val.low{color:var(--bad)}
+.track{height:8px;border-radius:999px;background:#101728;border:1px solid var(--line);overflow:hidden}
+.track i{display:block;height:100%;border-radius:999px}
+.track i.mid{width:55%;background:linear-gradient(90deg,#c78620,var(--warn))}
+.track i.low{width:22%;background:linear-gradient(90deg,#a33f3f,var(--bad))}
+.meter p{margin:9px 0 0;font-size:.84rem;color:var(--dim)}
+
+/* ---------- lists / inline ---------- */
+ul{padding-left:20px;margin:12px 0}
+li{margin:8px 0}
+li::marker{color:var(--acc)}
+a{color:var(--acc);text-decoration:none;border-bottom:1px solid rgba(77,163,255,.35);transition:.15s}
+a:hover{border-bottom-color:var(--acc);color:#8cc6ff}
+code{background:var(--panel2);border:1px solid var(--line);padding:2px 7px;border-radius:6px;font-size:.86em;
+  font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+.pathlist{counter-reset:step;list-style:none;padding:0;margin:20px 0;display:grid;gap:12px}
+.pathlist li{counter-increment:step;position:relative;background:var(--panel);border:1px solid var(--line);
+  border-radius:12px;padding:15px 18px 15px 58px;margin:0;transition:border-color .18s}
+.pathlist li:hover{border-color:rgba(77,163,255,.45)}
+.pathlist li::before{content:counter(step);position:absolute;left:16px;top:50%;transform:translateY(-50%);
+  width:28px;height:28px;border-radius:9px;display:grid;place-items:center;font-weight:700;font-size:.85rem;
+  color:#dff0ff;background:linear-gradient(135deg,rgba(77,163,255,.35),rgba(56,224,208,.25));
+  border:1px solid rgba(77,163,255,.4)}
+.pathlist li::marker{content:""}
+.pathlist strong{color:#fff}
+
+/* ---------- footer ---------- */
+footer{margin-top:76px;padding-top:26px;border-top:1px solid var(--line);color:var(--dim);font-size:.85rem}
+footer .fgrid{display:flex;gap:26px;flex-wrap:wrap;align-items:flex-start;justify-content:space-between}
+footer p{margin:0 0 8px;max-width:80ch;line-height:1.7}
+footer .credit{display:inline-flex;align-items:center;gap:8px;font-size:.74rem;font-weight:600;
+  letter-spacing:.07em;text-transform:uppercase;color:#bcdcff;border:1px solid rgba(77,163,255,.4);
+  background:rgba(77,163,255,.1);border-radius:999px;padding:6px 13px;white-space:nowrap}
+footer .credit .dot{width:8px;height:8px;border-radius:50%;background:linear-gradient(135deg,var(--acc),var(--acc2));
+  box-shadow:0 0 8px rgba(77,163,255,.9)}
+
+/* ---------- responsive / print ---------- */
+@media(max-width:640px){
+  .wrap{padding:22px 16px 70px}
+  h1{font-size:1.75rem}
+  .verdict{padding:24px 20px 24px 24px}
+  .lede{padding-left:0}
+  .stat{min-width:104px;padding:9px 13px}
+}
+@media print{
+  body{background:#0b1020;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .progress,.topnav{display:none}
+  .card,.callout,figure,.tw,tr{break-inside:avoid}
+  section{margin-top:36px}
+}
+</style>
+</head>
+<body>
+<div class="progress"><div class="bar" id="bar"></div></div>
+
+<nav class="topnav">
+  <div class="inner">
+    <span class="brand"><span class="dot"></span>Medical AI <em>Landscape Report</em></span>
+    <div class="toc" id="toc">
+      <a href="#s1">1 · LLM sources</a>
+      <a href="#s2">2 · AntAngelMed</a>
+      <a href="#s3">3 · 3D models</a>
+      <a href="#s4">4 · Integration</a>
+      <a href="#s5">5 · Licensing</a>
+    </div>
+    <span class="byline">Compiled by Cline</span>
+  </div>
+</nav>
+<div class="wrap">
+
+<header class="hero">
+  <div class="hero-copy">
+    <div class="badges">
+      <span class="badge hot">Landscape report</span>
+      <span class="badge">AirPMD · VidiFlow</span>
+      <span class="badge ok">Tool-verified specs</span>
+    </div>
+    <h1>Medical AI Data Sources <span class="grad">&amp; 3D Visualization</span> Landscape</h1>
+    <p class="sub">What exists, what AirPMD can actually use, and where the licensing traps are.</p>
+    <div class="stats">
+      <div class="stat"><b>7</b><span>medical LLM sources</span></div>
+      <div class="stat"><b>8</b><span>3D visualization models</span></div>
+      <div class="stat"><b>2</b><span>licence flags raised</span></div>
+    </div>
+    <p class="meta">Research completed 2026-10-05 · source <code>medai-landscape-report.json</code> ·
+      all specs verified against the Hugging Face / ModelScope APIs — repo metadata,
+      <code>config.json</code>, and README pulled directly rather than recalled.</p>
+  </div>
+  <div class="hero-art">
+    <img src="images/hero.png" alt="Holographic volumetric CT scan of a human torso surrounded by a glowing neural network" width="1024" height="576">
+    <span class="cap">Volumetric imaging × medical reasoning</span>
+  </div>
+</header>
+
+<div class="verdict">
+  <span class="vtag">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.3 1 2.1h6c0-.8.4-1.6 1-2.1A7 7 0 0 0 12 2z"/></svg>
+    The direct answer
+  </span>
+  <h3>No — AntAngelMed is not in the project, and it is not a visualization model.</h3>
+  <p>It is a <em>text-only</em> medical LLM. It has no imaging head. It cannot render, segment, or reason
+  over a 3D volume. If the goal is “visualize what's going on in a healthcare system,” AntAngelMed
+  is the wrong tool for the graphics and the right tool for the reasoning around it.</p>
+  <p>The genuine 3D models for your use case are the <strong>NVIDIA medical-imaging family</strong>
+  (NV-Reason-CT, CT-CLIP, RadViLLA, NV-Generate-CT) — those are listed in
+  <a href="#s3">section 3</a>.</p>
+</div>
+
+<section id="s1">
+  <h2><span class="n">1</span>Medical LLM sources</h2>
+  <p class="lede">Seven families, all open-weight. Sorted by relevance to AirPMD.</p>
+
+  <div class="banner">
+    <img src="images/llm-banner.png" alt="Clinical notes transforming into glowing structured data tokens flowing into a neural network" loading="lazy" width="1024" height="576">
+    <span class="bcap">Open-weight medical LLMs — seven families, all tool-verified</span>
+  </div>
+
+  <div class="tw">
+  <table>
+    <thead>
+      <tr><th>Model</th><th>Params</th><th>Context</th><th>Benchmarks</th><th>Access</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><div class="mcell"><span class="av">AM</span><div><strong>AntAngelMed</strong><span class="repo">MedAIBase/AntAngelMed</span></div></div></td>
+        <td>103B total<br><strong>6.1B active</strong><span class="sub-note">MoE 1/32, 256 experts</span></td>
+        <td>128K</td>
+        <td>HealthBench <span class="pill ok">#1 open</span><br>MedAIBench top-tier<br>MedBench <span class="pill ok">#1</span></td>
+        <td>Open, ungated<br><span class="pill mid">license conflict</span></td>
+      </tr>
+      <tr>
+        <td><div class="mcell"><span class="av">FP8</span><div><strong>AntAngelMed-FP8</strong><span class="repo">quantized + EAGLE3</span></div></div></td>
+        <td>103B / 6.1B active</td>
+        <td>128K</td>
+        <td>Same as base</td>
+        <td>Open, ungated<br><span class="pill ok">lower vRAM</span></td>
+      </tr>
+      <tr>
+        <td><div class="mcell"><span class="av">I4</span><div><strong>AntAngelMed-INT4</strong><span class="repo">ModelScope</span></div></div></td>
+        <td>103B / 6.1B active</td>
+        <td>128K</td>
+        <td>Same as base</td>
+        <td>Open<span class="sub-note">2× Ascend 910B, or 1× P800 / PPU 810</span></td>
+      </tr>
+      <tr>
+        <td><div class="mcell"><span class="av">OM</span><div><strong>OpenMed</strong><span class="repo">family, 481 models</span></div></div></td>
+        <td>0.5B → 120B+</td>
+        <td>—</td>
+        <td>380+ models at launch (Jul 2025)<br>29.7M downloads</td>
+        <td>Open, <span class="pill ok">Apache-2.0</span><span class="sub-note">also on AWS Marketplace</span></td>
+      </tr>
+      <tr>
+        <td><div class="mcell"><span class="av">MG</span><div><strong>MedGemma 1.5</strong><span class="repo">google/medgemma-1.5-4b-it</span></div></div></td>
+        <td>4B (multimodal VLM)<span class="sub-note">127B sibling exists</span></td>
+        <td>multi-slice CT/MRI</td>
+        <td>CT-RATE macro F1 23.5–27.0</td>
+        <td>Open, <span class="pill ok">Apache-2.0</span><span class="sub-note">free research + commercial (HAI-DEF)</span></td>
+      </tr>
+      <tr>
+        <td><div class="mcell"><span class="av">QW</span><div><strong>Qwen3-VL-Embedding-2B</strong><span class="repo">Qwen/Qwen3-VL-Embedding-2B</span></div></div></td>
+        <td>2B (vision-language embed)</td>
+        <td>32K</td>
+        <td>MMTEB 67.88<br>MMEB-V2 77.9 (8B)</td>
+        <td>Open, <span class="pill ok">Apache-2.0</span><span class="sub-note">handles video frames natively</span></td>
+      </tr>
+      <tr>
+        <td><div class="mcell"><span class="av">42</span><div><strong>Med42</strong><span class="repo">m42-health/Llama3-Med42-8B</span></div></div></td>
+        <td>8B (LLaMA-3 based)</td>
+        <td>—</td>
+        <td>Med42-v2 suite (8B / 70B)</td>
+        <td>Open-access</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+<section id="s2">
+  <h2><span class="n">2</span>AntAngelMed — the details that matter</h2>
+
+  <div class="grid">
+    <div class="card">
+      <div class="body">
+        <span class="tag" style="margin-bottom:10px">Architecture</span>
+        <p><span class="k">BailingMoeV2ForCausalLM</span> — 103B total parameters, <strong>6.1B active</strong>
+        per token. 256 experts, 8 per token, 1/32 activation ratio.</p>
+        <p>That efficiency is the real story: it matches ~40B dense-model quality while only
+        activating 6.1B. On H20 hardware it exceeds <strong>200 tokens/s</strong>, roughly 3× a 36B dense model.</p>
+      </div>
+    </div>
+    <div class="card">
+      <div class="body">
+        <span class="tag" style="margin-bottom:10px">Training</span>
+        <p>Three stages: continual pre-training on medical corpora → supervised fine-tuning on
+        heterogeneous instruction data → <strong>GRPO reinforcement learning</strong> with task-specific
+        reward models that shape empathy, structure, and safety boundaries.</p>
+        <p>Built on <code>inclusionAI/Ling-flash-2.0</code> by Zhejiang Province Health Information Center,
+        Ant Healthcare, and Zhejiang Anzhen'er Medical AI.</p>
+      </div>
+    </div>
+  </div>
+
+  <figure>
+    <svg viewBox="0 0 800 210" role="img" aria-label="Bar chart: 103 billion total parameters versus 6.1 billion active per token">
+      <defs>
+        <linearGradient id="gT" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stop-color="#2f6fd0"/><stop offset="1" stop-color="#4da3ff"/>
+        </linearGradient>
+        <linearGradient id="gA" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stop-color="#1f9f92"/><stop offset="1" stop-color="#38e0d0"/>
+        </linearGradient>
+      </defs>
+      <text x="0" y="26" fill="#9aa7c2" font-family="Inter,sans-serif" font-size="13" font-weight="600" letter-spacing="1.6">TOTAL PARAMETERS</text>
+      <rect x="0" y="38" width="700" height="30" rx="15" fill="url(#gT)"/>
+      <text x="716" y="59" fill="#ffffff" font-family="Space Grotesk,Inter,sans-serif" font-size="19" font-weight="700">103B</text>
+      <text x="0" y="116" fill="#9aa7c2" font-family="Inter,sans-serif" font-size="13" font-weight="600" letter-spacing="1.6">ACTIVE PER TOKEN — MoE 1/32</text>
+      <rect x="0" y="128" width="41" height="30" rx="15" fill="url(#gA)"/>
+      <text x="55" y="149" fill="#38e0d0" font-family="Space Grotesk,Inter,sans-serif" font-size="19" font-weight="700">6.1B — 5.9% of the model</text>
+      <text x="0" y="196" fill="#9aa7c2" font-family="Inter,sans-serif" font-size="14">256 experts · 8 activated per token · matches ~40B dense-model quality</text>
+    </svg>
+    <figcaption>Fig. 1 — AntAngelMed activates only 6.1B of its 103B parameters per token (source: HF <code>config.json</code>).</figcaption>
+  </figure>
+
+  <div class="callout bad">
+    <span class="ic"><svg viewBox="0 0 24 24"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg></span>
+    <div class="ct">
+      <p><strong>Licensing conflict — resolve before any commercial use.</strong></p>
+      <p>The Hugging Face cardData says <code>Apache-2.0</code>. The README's own License section says
+      <strong>MIT</strong>, pointing at the inclusionAI/Ling-V2 licence. Those are different documents with
+      different terms. This is the single biggest open item on the model and it needs a decision before
+      it goes anywhere near a client deliverable.</p>
+    </div>
+  </div>
+
+  <div class="callout warn">
+    <span class="ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg></span>
+    <div class="ct">
+      <p><strong>Maturity signal.</strong> 152 downloads on the main repo, 107 on the FP8 variant. Chinese-language
+      README. Release pipeline still maturing. Treat as promising, not yet battle-tested.</p>
+    </div>
+  </div>
+
+  <div class="callout">
+    <span class="ic"><svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="14" rx="2"/><path d="M8 21h8"/><path d="M12 18v3"/></svg></span>
+    <div class="ct">
+      <p><strong>Don't load it locally.</strong> 103B is not a Windows-workstation model. Serve it through
+      vLLM/SGLang, or call the hosted API at
+      <a href="https://antangelmed.tbox.cn/">antangelmed.tbox.cn</a>.</p>
+    </div>
+  </div>
+</section>
+<section id="s3">
+  <h2><span class="n">3</span>3D visualization models — the real answer</h2>
+  <p class="lede">These are the models that actually render, segment, and reason over 3D volumes.
+  All NVIDIA-family unless noted; all in the <a href="https://huggingface.co/nvidia">NVIDIA HF org</a>
+  or MONAI ecosystem.</p>
+
+  <figure>
+    <svg viewBox="0 0 840 150" role="img" aria-label="Pipeline: 384mm volume to 24 cubed grid to 13824 visual tokens to Qwen3.5-4B LLM">
+      <defs>
+        <linearGradient id="gBox" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#1b2440"/><stop offset="1" stop-color="#141b30"/>
+        </linearGradient>
+        <marker id="arw" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0 0 L10 5 L0 10 z" fill="#4da3ff"/>
+        </marker>
+      </defs>
+      <g font-family="Inter,sans-serif">
+        <rect x="5" y="30" width="180" height="86" rx="12" fill="url(#gBox)" stroke="#27314f"/>
+        <text x="95" y="64" text-anchor="middle" fill="#e8edf7" font-size="15" font-weight="600">384³ mm volume</text>
+        <text x="95" y="88" text-anchor="middle" fill="#9aa7c2" font-size="13">NIfTI CT input</text>
+
+        <rect x="223" y="30" width="180" height="86" rx="12" fill="url(#gBox)" stroke="#27314f"/>
+        <text x="313" y="64" text-anchor="middle" fill="#e8edf7" font-size="15" font-weight="600">24×24×24 grid</text>
+        <text x="313" y="88" text-anchor="middle" fill="#9aa7c2" font-size="13">3D ViT (Primus/Colipri)</text>
+
+        <rect x="441" y="30" width="180" height="86" rx="12" fill="url(#gBox)" stroke="#27314f"/>
+        <text x="531" y="64" text-anchor="middle" fill="#38e0d0" font-size="15" font-weight="700">13,824 tokens</text>
+        <text x="531" y="88" text-anchor="middle" fill="#9aa7c2" font-size="13">+ 3D MRoPE positions</text>
+
+        <rect x="659" y="30" width="180" height="86" rx="12" fill="url(#gBox)" stroke="#4da3ff" stroke-opacity=".55"/>
+        <text x="749" y="64" text-anchor="middle" fill="#e8edf7" font-size="15" font-weight="600">Qwen3.5-4B LLM</text>
+        <text x="749" y="88" text-anchor="middle" fill="#9aa7c2" font-size="13">report · VQA · reasoning</text>
+
+        <line x1="188" y1="73" x2="216" y2="73" stroke="#4da3ff" stroke-width="2.5" marker-end="url(#arw)"/>
+        <line x1="406" y1="73" x2="434" y2="73" stroke="#4da3ff" stroke-width="2.5" marker-end="url(#arw)"/>
+        <line x1="624" y1="73" x2="652" y2="73" stroke="#4da3ff" stroke-width="2.5" marker-end="url(#arw)"/>
+      </g>
+    </svg>
+    <figcaption>Fig. 2 — NV-Reason-CT tokenization pipeline: a full CT volume becomes 13,824 visual tokens for the LLM.</figcaption>
+  </figure>
+
+  <div class="grid">
+
+    <div class="card">
+      <div class="cwrap">
+        <img src="images/nv-reason-ct.png" alt="CT volume divided into a glowing voxel grid with tokens flowing to an AI core" loading="lazy" width="1024" height="576">
+        <span class="tag">3D vision-language</span>
+      </div>
+      <div class="body">
+        <h3>NV-Reason-CT</h3>
+        <p>Native 3D VLM for chest/abdominal CT. Radiology report generation, visual Q&amp;A, and
+        chain-of-thought reasoning over full volumes.</p>
+        <p><span class="k">How it works:</span> 384×384×384mm volume → 24×24×24 grid of 13,824 visual
+        tokens → Qwen3.5-4B LLM, with a 3D ViT (Primus/Colipri) and 3D MRoPE.</p>
+        <p><span class="k">Score:</span> macro-F1 0.614, macro-AUROC 0.871 on CT-RATE. Trained on ~550K QA
+        pairs from 70,111 CT volumes. NIfTI input.</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="cwrap">
+        <img src="images/nv-generate-ct.png" alt="Luminous particles denoising into a clean 3D CT volume" loading="lazy" width="1024" height="576">
+        <span class="tag">3D generation</span>
+      </div>
+      <div class="body">
+        <h3>NV-Generate-CT</h3>
+        <p>3D latent diffusion for <em>synthetic</em> CT generation — data augmentation and rare-condition
+        synthesis.</p>
+        <p><span class="k">Capacity:</span> up to 512×512×768 voxels, spacing 0.5–5.0mm, 127 anatomical
+        classes with paired segmentation masks.</p>
+        <p><span class="pill mid">research only</span> not a clinical product</p>
+      </div>
+    </div>
+    <div class="card">
+      <div class="cwrap">
+        <img src="images/nv-generate-mr.png" alt="Stacked glowing axial MRI brain slices in blue and violet" loading="lazy" width="1024" height="576">
+        <span class="tag">3D generation</span>
+      </div>
+      <div class="body">
+        <h3>NV-Generate-MR</h3>
+        <p>3D latent diffusion for synthetic MR — T1 / FLAIR / T2 / SWI, with optional anatomical
+        annotations. 240M params, 3D UNet + attention, MONAI.</p>
+        <p><span class="pill no">non-commercial</span> NVIDIA OneWay licence — academic research only</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="cwrap">
+        <img src="images/ct-clip.png" alt="CT scan and light fragments connected by vector lines in an embedding space" loading="lazy" width="1024" height="576">
+        <span class="tag">3D contrastive</span>
+      </div>
+      <div class="body">
+        <h3>CT-CLIP</h3>
+        <p>3D contrastive vision-language pretraining on chest CT. Self-supervised multi-abnormality
+        detection and case retrieval. Trained on CT-RATE.</p>
+        <p><span class="k">Hardware:</span> A100 80GB recommended for training. 3D ViT.</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="cwrap">
+        <img src="images/radvilla.png" alt="Holographic chest CT volume with colored organ overlays beside a glowing speech bubble" loading="lazy" width="1024" height="576">
+        <span class="tag">3D vision-language</span>
+      </div>
+      <div class="body">
+        <h3>RadViLLA</h3>
+        <p>3D VLM for radiology across chest, abdomen, and pelvis. Mount Sinai + NVIDIA collaboration.</p>
+        <p><span class="k">Scale:</span> 75K 3D CT scans, 1M+ visual Q&amp;A pairs.</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="cwrap">
+        <img src="images/ct-chat.png" alt="Holographic chest CT scan beside glowing conversation bubbles" loading="lazy" width="1024" height="576">
+        <span class="tag">3D chat</span>
+      </div>
+      <div class="body">
+        <h3>CT-CHAT</h3>
+        <p>3D chest-CT vision-language chat model — CT-CLIP vision encoder paired with a pretrained LLM.</p>
+        <p><span class="k">Scale:</span> 2.7M+ VQA pairs from CT-RATE.</p>
+      </div>
+    </div>
+    <div class="card">
+      <div class="cwrap">
+        <img src="images/monai-seg.png" alt="Translucent torso scan with colorful glowing organ segmentation masks" loading="lazy" width="1024" height="576">
+        <span class="tag">Segmentation suite</span>
+      </div>
+      <div class="body">
+        <h3>MONAI model zoo</h3>
+        <p>vista3d, brats_mri_segmentation, brain_image_synthesis_latent_diffusion_model,
+        renalStructures_UNEST_segmentation, wholeBrainSeg_Large_UNEST_segmentation,
+        retinalOCT_RPD_segmentation.</p>
+        <p>Broadest coverage of any single source here — segmentation, synthesis, and
+        organ-specific tasks.</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="cwrap">
+        <img src="images/medsam2.png" alt="Medical scan slice with a glowing cyan outline tracing an organ" loading="lazy" width="1024" height="576">
+        <span class="tag">Segmentation</span>
+      </div>
+      <div class="body">
+        <h3>MedSAM2</h3>
+        <p>Medical image segmentation, 2D and 3D. The general-purpose promptable segmenter for
+        medical volumes.</p>
+        <p><span class="k" style="color:var(--dim);font-weight:400">wanglab/MedSAM2</span></p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<section id="s4">
+  <h2><span class="n">4</span>Integration feasibility</h2>
+
+  <div class="meters">
+    <div class="meter">
+      <div class="top"><span class="lbl">Medical NLP in the workflow</span><span class="val mid">MEDIUM</span></div>
+      <div class="track"><i class="mid"></i></div>
+      <p>AntAngelMed as the reasoning layer of an AirPMD / VidiFlow BPMN workflow.</p>
+    </div>
+    <div class="meter">
+      <div class="top"><span class="lbl">Direct 3D visualization</span><span class="val low">LOW</span></div>
+      <div class="track"><i class="low"></i></div>
+      <p>No imaging head — it cannot render, segment, or reason over 3D volumes.</p>
+    </div>
+  </div>
+
+  <div class="callout good">
+    <span class="ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m8.5 12.5 2.5 2.5 4.5-5"/></svg></span>
+    <div class="ct">
+      <p><strong>Medical NLP in the workflow: MEDIUM.</strong> AntAngelMed works well as the
+      medical-reasoning layer of an AirPMD/VidiFlow BPMN workflow — ingesting clinical notes,
+      synthesizing capacity and occupancy reports, triaging bed and resource requests, and writing
+      structured summaries that VidiCore/VidiFlow nodes consume.</p>
+    </div>
+  </div>
+
+  <div class="callout bad">
+    <span class="ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg></span>
+    <div class="ct">
+      <p><strong>Direct 3D visualization: LOW.</strong> AntAngelMed has no imaging head. It cannot
+      render, segment, or reason over 3D volumes. It is not a drop-in for the imaging models whose
+      outputs flow into your visualization graph.</p>
+    </div>
+  </div>
+
+  <h3 style="margin-top:34px;padding-left:2px">The practical path</h3>
+  <ol class="pathlist">
+    <li><strong>Reasoning layer:</strong> AntAngelMed — served via vLLM/SGLang or the hosted API,
+    never loaded locally.</li>
+    <li><strong>Visualization layer:</strong> NVIDIA 3D models (NV-Reason-CT, CT-CLIP, RadViLLA,
+    NV-Generate-CT) via Hugging Face transformers.</li>
+    <li><strong>Embeddings:</strong> the stack already uses <code>Qwen3-Embedding-0.6B</code> +
+    <code>Qwen3-VL-Embedding-2B</code> — keep those; the VL variant handles image and video frames
+    natively and is the recommended local path.</li>
+    <li><strong>Data:</strong> CT-RATE (3D medical imaging dataset pairing volumes with reports) is the
+    backbone under most of the NVIDIA models.</li>
+  </ol>
+</section>
+<section id="s5">
+  <h2><span class="n">5</span>Licensing summary</h2>
+
+  <div class="tw">
+  <table>
+    <thead><tr><th>Source</th><th>Licence</th><th>Commercial use</th></tr></thead>
+    <tbody>
+      <tr><td><strong>AntAngelMed</strong></td><td><span class="pill mid">Apache-2.0 vs MIT conflict</span></td><td><strong>Resolve first</strong></td></tr>
+      <tr><td>AntAngelMed FP8 / INT4</td><td>Same family</td><td>Same conflict</td></tr>
+      <tr><td>OpenMed family</td><td>Apache-2.0</td><td><span class="pill ok">Yes</span></td></tr>
+      <tr><td>MedGemma 1.5</td><td>Apache-2.0 (HAI-DEF)</td><td><span class="pill ok">Yes</span></td></tr>
+      <tr><td>Qwen3-VL-Embedding-2B</td><td>Apache-2.0</td><td><span class="pill ok">Yes</span></td></tr>
+      <tr><td>NV-Reason-CT / NV-Generate-CT</td><td>Open R&amp;D</td><td><span class="pill mid">Research; no clinical claim</span></td></tr>
+      <tr><td>NV-Generate-MR</td><td>NVIDIA OneWay</td><td><span class="pill no">Academic only</span></td></tr>
+      <tr><td>CT-CLIP / CT-RATE / MONAI</td><td>Open research</td><td><span class="pill mid">Research</span></td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="callout warn">
+    <span class="ic"><svg viewBox="0 0 24 24"><path d="M12 3 4 6v6c0 4.5 3.2 8.3 8 9.5 4.8-1.2 8-5 8-9.5V6l-8-3z"/><path d="M12 9v3"/><path d="M12 15h.01"/></svg></span>
+    <div class="ct">
+      <p><strong>NVIDIA's own wording matters here:</strong> these are “not an autonomous diagnostic
+      system or a cleared clinical product.” Nothing in this list is FDA-cleared. Any client-facing
+      claim about clinical capability needs counsel review before it ships.</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="fgrid">
+    <div>
+      <p>Research compiled by <strong style="color:#cfe0ff">Cline</strong> — research agent
+      <code>sa-0-2cd6479c</code> (delegation <code>deleg_5add8bf2</code>), 470s runtime, 15 API calls.
+      Specs verified against the Hugging Face and ModelScope APIs — repo metadata,
+      <code>config.json</code>, and README pulled directly rather than recalled.</p>
+      <p style="margin-top:10px">Full structured data: <code>M:\code\vidiflow\out\medai-landscape-report.json</code></p>
+    </div>
+    <span class="credit"><span class="dot"></span>Made with Cline</span>
+  </div>
+</footer>
+
+</div>
+
+<script>
+(function(){
+  var bar=document.getElementById('bar');
+  var links=Array.prototype.slice.call(document.querySelectorAll('#toc a'));
+  var secs=links.map(function(a){return document.getElementById(a.getAttribute('href').slice(1))});
+  function onScroll(){
+    var h=document.documentElement;
+    var max=h.scrollHeight-h.clientHeight;
+    bar.style.width=(max>0?(h.scrollTop/max)*100:0)+'%';
+    var y=h.scrollTop+140,idx=0;
+    for(var i=0;i<secs.length;i++){if(secs[i]&&secs[i].offsetTop<=y)idx=i;}
+    links.forEach(function(a,i){a.classList.toggle('on',i===idx);});
+  }
+  document.addEventListener('scroll',onScroll,{passive:true});
+  window.addEventListener('resize',onScroll);
+  onScroll();
+})();
+</script>
+</body>
+</html>
+
+
+
+
+
+
+

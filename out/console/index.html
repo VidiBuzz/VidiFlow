@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>VidiFlow Command Console</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Kumbh+Sans:wght@600;800&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#07080d;--panel:#10131c;--panel2:#161a26;--line:#252b3b;--text:#e8ebf3;--dim:#8d96ab;
+--run:#3ddc97;--wait:#ffb547;--block:#ff5c6c;--idle:#6b7590;--done:#5aa9ff;--accent:#9b7bff}
+*{box-sizing:border-box}html,body{margin:0}
+body{background:radial-gradient(1200px 600px at 10% -10%,#1b1440 0,transparent 60%),radial-gradient(900px 500px at 100% 0,#0b2a3a 0,transparent 55%),var(--bg);color:var(--text);font:14px/1.4 Lato,system-ui,sans-serif;min-height:100vh}
+h1,h2,h3{font-family:"Kumbh Sans",system-ui,sans-serif;margin:0}
+header{position:sticky;top:0;z-index:5;background:rgba(7,8,13,.88);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);padding:12px 20px}
+.row{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+.brand{display:flex;flex-wrap:wrap;align-items:baseline;gap:12px;margin-right:auto;min-width:0}
+.brand h1{font-size:20px;letter-spacing:.3px;white-space:nowrap}
+.brand h1 b{background:linear-gradient(90deg,#b49bff,#5ad1ff);-webkit-background-clip:text;background-clip:text;color:transparent}
+.demo{font-size:12px;color:#ffd88a;border:1px solid #6b5520;background:#2a2110;padding:3px 9px;border-radius:999px;white-space:nowrap}
+.clock{font-variant-numeric:tabular-nums;color:var(--dim);white-space:nowrap}
+.pill{display:flex;align-items:center;gap:8px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:6px 10px;white-space:nowrap}
+.dot{width:9px;height:9px;border-radius:50%;flex:none}
+.online{background:var(--run);box-shadow:0 0 8px var(--run)}.offline{background:var(--block)}.unknown{background:var(--wait)}
+.pill small{color:var(--dim)}
+.counts{gap:6px}.count{font-size:12px;padding:3px 9px;border-radius:999px;background:var(--panel2);border:1px solid var(--line);white-space:nowrap}
+.filters{margin-top:10px}
+select,input{background:var(--panel);color:var(--text);border:1px solid var(--line);border-radius:8px;padding:6px 10px;font:inherit}
+input{min-width:220px}
+.chip{cursor:pointer;user-select:none;font-size:12px;padding:5px 10px;border-radius:999px;border:1px solid var(--line);background:var(--panel);color:var(--dim);white-space:nowrap}
+.chip.on{color:var(--text);border-color:var(--accent);background:#1d1838}
+main{padding:16px 20px 40px}
+.wait{background:linear-gradient(90deg,#2b1f08,#1a1408);border:1px solid #5c4615;border-radius:14px;padding:12px 14px;margin-bottom:16px}
+.wait h2{font-size:14px;color:var(--wait);margin-bottom:8px;letter-spacing:.4px;text-transform:uppercase}
+.wlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:8px}
+.witem{background:rgba(0,0,0,.25);border:1px solid #4a3a14;border-radius:10px;padding:8px 10px}
+.witem b{display:block}.witem span{color:#c9b58a;font-size:12px}
+.machine{margin-bottom:22px}
+.mhead{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+.mhead h2{font-size:17px}.mhead .sub{color:var(--dim);font-size:13px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:10px}
+.card{background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line);border-left:4px solid var(--idle);border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:6px;min-width:0;transition:box-shadow .4s}
+.card.flash{box-shadow:0 0 0 2px var(--accent)}
+.card.running{border-left-color:var(--run)}.card.waiting{border-left-color:var(--wait)}.card.blocked{border-left-color:var(--block)}.card.done{border-left-color:var(--done)}
+.ctop{display:flex;align-items:flex-start;gap:8px}
+.ctop h3{font-size:14.5px;flex:1;min-width:0;overflow-wrap:anywhere}
+.badge{font-size:10.5px;font-weight:700;letter-spacing:.6px;padding:2px 7px;border-radius:6px;flex:none}
+.real{background:#0f3a2a;color:#7dffc4;border:1px solid #1f6e4f}.mock{background:#262a36;color:#9aa3b8;border:1px solid #3a4152}
+.task{color:#cdd3e1;overflow-wrap:anywhere}
+.note{color:var(--dim);font-size:12px;overflow-wrap:anywhere}
+.meta{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center;font-size:12px;color:var(--dim);margin-top:auto}
+.st{font-weight:700;padding:2px 8px;border-radius:999px;font-size:11.5px;white-space:nowrap}
+.st.running{background:#0e3326;color:var(--run)}.st.waiting{background:#3a2a0c;color:var(--wait)}.st.blocked{background:#3d1218;color:var(--block)}.st.idle{background:#1e2230;color:#9aa3b8}.st.done{background:#0e2440;color:var(--done)}
+.empty{color:var(--dim);padding:8px 0}
+footer{color:var(--dim);font-size:12px;padding:0 20px 24px}
+</style></head><body>
+<header>
+ <div class="row">
+  <div class="brand"><h1><b>VidiFlow</b> Command Console</h1><span class="demo" style="color:#7dffc4;border-color:#1f6e4f;background:#0f3a2a">Live feed · refreshes every 60s</span><span class="demo" style="color:#bfe9ff;border-color:#1f4e6b;background:#0d2230">Hermes agents post status → VidiFlow renders it</span></div>
+  <span class="clock" id="clock"></span>
+ </div>
+ <div class="row" style="margin-top:10px" id="pills"></div>
+ <div class="row filters">
+  <select id="fm"><option value="">All machines</option></select>
+  <div class="row" id="fs" style="gap:6px"></div>
+  <input id="q" placeholder="Search agent or task">
+  <div class="row counts" id="counts"></div>
+ </div>
+</header>
+<main>
+ <section class="wait"><h2 id="wh">Waiting on James</h2><div class="wlist" id="wlist"></div></section>
+ <div id="board"></div>
+</main>
+<footer>Feed: <code>data.json</code> · written every 60s by <code>poller.py</code> from live GET /health and /api/sessions on this box (127.0.0.1:8642), Ubuntu 192.168.4.40:8642 and upstairs 192.168.4.67:8642. REAL cards are live status; MOCK cards are placeholders with no live source.</footer>
+<script>
+const ST={running:"Running",waiting:"Waiting on James",blocked:"Blocked",idle:"Idle",done:"Done"};
+let D, on=new Set(Object.keys(ST));
+const $=id=>document.getElementById(id);
+const fmt=t=>new Date(t).toLocaleTimeString("en-US",{timeZone:"America/New_York",hour:"numeric",minute:"2-digit",second:"2-digit"})+" ET";
+const ago=t=>{const s=Math.max(0,(Date.now()-new Date(t))/1000|0);return s<60?s+"s ago":s<3600?(s/60|0)+"m ago":s<86400?(s/3600|0)+"h "+((s%3600)/60|0)+"m ago":(s/86400|0)+"d ago"};
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+async function load(){
+ const fmv=$("fm").value,qv=$("q").value;
+ const r=await fetch("data.json?"+Date.now()); D=await r.json();
+ if(Array.isArray(D)) D={machines:[...new Set(D.map(a=>a.machine))].map(id=>({id,name:id,status:"unknown"})),waiting_on_james:[],agents:D};
+ D.agents.forEach((a,i)=>a._id=i);
+ $("fm").innerHTML='<option value="">All machines</option>'+D.machines.map(m=>`<option value="${m.id}">${esc(m.name)}</option>`).join("");
+ $("fm").value=fmv;
+ if(!$("fs").dataset.bound){
+  $("fs").innerHTML=Object.entries(ST).map(([k,v])=>`<span class="chip on" data-s="${k}">${v}</span>`).join("");
+  $("fs").onclick=e=>{const s=e.target.dataset.s;if(!s)return;on.has(s)?on.delete(s):on.add(s);e.target.classList.toggle("on");render()};
+  $("fs").dataset.bound="1";
+ }
+ $("fm").onchange=render;$("q").value=qv;$("q").oninput=render;
+ $("wh").textContent=`Waiting on James · ${D.waiting_on_james.length} decisions`;
+ $("wlist").innerHTML=D.waiting_on_james.map(w=>`<div class="witem"><b>${esc(w.item)}</b><span>${esc(w.context)}</span></div>`).join("");
+ render();
+}
+function pills(){
+ $("pills").innerHTML=D.machines.map(m=>{const n=D.agents.filter(a=>a.machine==m.id).length;
+  return `<div class="pill" title="${esc(m.detail)}"><span class="dot ${m.status}"></span><b>${esc(m.name)}</b><small>${m.status} · ${n} agents</small></div>`}).join("");
+ const c={};D.agents.forEach(a=>c[a.status]=(c[a.status]||0)+1);
+ $("counts").innerHTML=`<span class="count">${D.agents.length} total</span>`+Object.keys(ST).map(k=>`<span class="count"><span class="st ${k}">${ST[k]}</span> ${c[k]||0}</span>`).join("");
+}
+function card(a){return `<article class="card ${a.status}" id="c${a._id}">
+ <div class="ctop"><h3>${esc(a.agent)}</h3><span class="badge ${a.source}">${a.source.toUpperCase()}</span></div>
+ ${a.title?`<div class="note">${esc(a.title)}</div>`:""}<div class="task">${esc(a.task)}</div>${a.note?`<div class="note">${esc(a.note)}</div>`:""}
+ <div class="meta"><span class="st ${a.status}">${ST[a.status]}</span><span>${esc(D.machines.find(m=>m.id==a.machine)?.name||a.machine)}</span>
+ <span title="${fmt(a.updated)}">Updated ${fmt(a.updated)} · <span class="ago" data-t="${a.updated}">${ago(a.updated)}</span></span><span>Owner: ${esc(a.owner)}</span></div></article>`}
+function render(){
+ pills();const fm=$("fm").value,q=$("q").value.toLowerCase();
+ $("board").innerHTML=D.machines.filter(m=>!fm||m.id==fm).map(m=>{
+  const list=D.agents.filter(a=>a.machine==m.id&&on.has(a.status)&&(!q||(a.agent+" "+a.task).toLowerCase().includes(q)))
+   .sort((x,y)=>(x.source==y.source?0:x.source=="real"?-1:1)||["waiting","blocked","running","idle","done"].indexOf(x.status)-["waiting","blocked","running","idle","done"].indexOf(y.status));
+  return `<section class="machine"><div class="mhead"><span class="dot ${m.status}"></span><h2>${esc(m.name)}</h2><span class="sub">${esc(m.detail||"")} · ${m.status}</span><span class="count">${list.length} shown</span></div>
+  <div class="grid">${list.map(card).join("")||'<div class="empty">No agents match the filters.</div>'}</div></section>`}).join("");
+}
+function tick(){$("clock").textContent=new Date().toLocaleString("en-US",{timeZone:"America/New_York",weekday:"short",month:"short",day:"numeric",hour:"numeric",minute:"2-digit",second:"2-digit"})+" ET";
+ document.querySelectorAll(".ago").forEach(e=>e.textContent=ago(e.dataset.t));}
+load();setInterval(tick,1000);tick();setInterval(load,60000);
+</script></body></html>

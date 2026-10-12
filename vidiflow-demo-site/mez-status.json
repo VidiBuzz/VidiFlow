@@ -1,0 +1,218 @@
+{
+  "schema": 1,
+  "product": "VidiFlow main",
+  "brand": {
+    "house": "VidiSmart",
+    "product": "Vidi AI",
+    "router": "Hydra",
+    "runtime": "Mez",
+    "runtimeOpsName": "Hermes Agent",
+    "upstream": "NousResearch/hermes-agent",
+    "note": "Client-facing name is Mez. 'Hermes' is ops-internal and does not appear on customer-visible UI."
+  },
+  "snapshot": {
+    "builtAt": "2026-10-04T20:35:00-04:00",
+    "builtAtLabel": "4 Oct 2026, 20:35 ET",
+    "source": "capability report, card t_4f3ad15d (2026-10-04) + local recheck on V20",
+    "runtimeVersion": "v0.21.5+6660.g5d3c059",
+    "runtimeDate": "2026.9.24",
+    "upstreamCommit": "5d3c0597",
+    "caveat": "Version drift is live: 6,660 commits past the 0.21.5 tag. Feature claims verified against the docs site, which tracks main."
+  },
+  "stack": {
+    "order": ["Mez", "Kumiho", "Revka", "9Miho"],
+    "nodes": [
+      {
+        "id": "mez",
+        "name": "Mez",
+        "sub": "agent runtime",
+        "role": "Agent core, routing policy, skills, memory, kanban dispatcher",
+        "surface": "CLI · TUI · Desktop · Dashboard · ACP · gateway",
+        "short": "CLI · TUI · Desktop",
+        "accent": "cyan"
+      },
+      {
+        "id": "kumiho",
+        "name": "Kumiho",
+        "sub": "graph",
+        "role": "Neo4j knowledge graph. Revka writes, Mez reads.",
+        "surface": "CE :9190 · MCP 69 tools",
+        "short": "CE :9190 · MCP 69",
+        "probe": { "kind": "port", "port": 9190, "label": "Kumiho CE" }
+      },
+      {
+        "id": "cx",
+        "name": "Smart Channel CX",
+        "sub": "media lane",
+        "role": "Six media engines behind twelve FastAPI routes",
+        "surface": "cx-backend :8765",
+        "short": "cx-backend :8765",
+        "probe": { "kind": "port", "port": 8765, "label": "Smart Channel CX" }
+      },
+      {
+        "id": "revka",
+        "name": "Revka",
+        "sub": "gateway",
+        "role": "Gateway between the graph and the desktop UI",
+        "surface": "gateway :42617",
+        "short": "gateway :42617",
+        "probe": { "kind": "port", "port": 42617, "label": "Revka gateway" }
+      },
+      {
+        "id": "9miho",
+        "name": "9Miho",
+        "sub": "desktop UI",
+        "role": "Kumiho desktop surface, api_port 9999",
+        "surface": "api :9999",
+        "short": "api :9999",
+        "probe": { "kind": "port", "port": 9999, "label": "9Miho" }
+      }
+    ],
+    "support": [
+      { "label": "Neo4j", "probe": { "kind": "port", "port": 7474 } },
+      { "label": "Redis", "probe": { "kind": "port", "port": 6379 } }
+    ]
+  },
+  "counters": [
+    { "id": "providers", "value": 38, "suffix": "", "label": "provider plugins", "note": "9 named in brief, 7 present. Perplexity and Cheaper Inference absent, no keys." },
+    { "id": "toolsets", "value": 18, "suffix": "", "label": "toolsets live", "note": "Includes computer_use, code_execution, image_gen, vision, kanban." },
+    { "id": "skills", "value": 95, "suffix": "", "label": "skills, 17 categories", "note": "Level 0 ships descriptions only, about 3k tokens. Bodies load on skill_view." },
+    { "id": "routes", "value": 30, "suffix": "", "label": "custom routes", "note": "4 destination kinds in routing/policy.json. Self-test 12/12 on heuristics." },
+    { "id": "platforms", "value": 19, "suffix": "+", "label": "messaging platforms", "note": "One gateway process fronts all of them." },
+    { "id": "surfaces", "value": 7, "suffix": "", "label": "surfaces, one core", "note": "CLI, TUI, Desktop, Dashboard, ACP, gateway, web." },
+    { "id": "cards", "value": 31, "suffix": "", "label": "board cards", "note": "15 open cards point at profiles that no longer exist." },
+    { "id": "machines", "value": 3, "suffix": "", "label": "machines", "note": "Never share one HERMES_HOME. Kanban DB is the deliberate exception." }
+  ],
+  "fleet": {
+    "profilesDirNote": "C:\\Users\\James\\AppData\\Local\\hermes\\profiles",
+    "tombstoneMechanism": "profiles/.deleted/<name>, 9 bytes each. Written by delete_profile under a live multiplexer.",
+    "expectedLive": 7,
+    "roster": [
+      { "name": "agent_army", "note": "fleet lane", "photo": null },
+      { "name": "coder", "note": "only card still assignable", "photo": null },
+      { "name": "hermes_gateway", "note": "gateway + reconcile loop", "photo": "images/org-head-hermes.png" },
+      { "name": "lex_lexicon", "note": "LEX term engine", "photo": "images/org-head-lexi.png" },
+      { "name": "vidicity", "note": "added 20:25 ET, after the report", "photo": null },
+      { "name": "vidiflow_vidibio_hx", "note": "CX lane, agent_army sibling", "photo": null },
+      { "name": "vidismart_community", "note": "added 20:25 ET, after the report", "photo": null }
+    ]
+  },
+  "blockers": [
+    {
+      "sev": "stop",
+      "title": "Profile tree went 74 to 5, now 7",
+      "body": "66 tombstones at 15:20 ET, 64 now. Five of six SME targets in policy.json are gone, so every SME route is a dead letter. The 10-second cadence and the unserved log pattern look mechanical, not deliberate.",
+      "owner": "James GO",
+      "cmd": "ls profiles/.deleted"
+    },
+    {
+      "sev": "stop",
+      "title": "terminal.cwd points at a path that does not exist",
+      "body": "Live value is m:/code/vidiflow/out. Every terminal call fails with exit 126. The very first tool call of the reporting session hit it.",
+      "owner": "one command",
+      "cmd": "hermes config set terminal.cwd 'M:\\code\\VidiBot'"
+    },
+    {
+      "sev": "high",
+      "title": "mcp_servers has no kumiho block",
+      "body": "The mcp package is installed and verified. This is the last hop to Kumiho and it is a config entry, not code.",
+      "owner": "config",
+      "cmd": "config set mcp_servers.kumiho..."
+    },
+    {
+      "sev": "high",
+      "title": "Fallback chain is one entry against a six-provider intent",
+      "body": "Only openrouter / stealth-space-bunny-alpha. One key dying takes the whole runtime with it.",
+      "owner": "config",
+      "cmd": "widen fallback_providers"
+    },
+    {
+      "sev": "high",
+      "title": "policy.json profile names never matched the directory names",
+      "body": "dex vs debug_dex, quinn vs qa_quinn, tess vs 3d_tess, hx vs vidiflow_vidibio_hx. Only airpmd matched, and it is tombstoned too.",
+      "owner": "code",
+      "cmd": "route.py --self-test"
+    },
+    {
+      "sev": "med",
+      "title": "Kumiho embedding returns 401 and fails silently",
+      "body": "Small, separate, and it never surfaces an error on its own.",
+      "owner": "credentials",
+      "cmd": "verify embed endpoint"
+    },
+    {
+      "sev": "med",
+      "title": "The router is a side script, not a plugin hook",
+      "body": "The custom layer is the right shape but it is not wired into the runtime as a plugin, and the judge is unavailable so routing is heuristics-only.",
+      "owner": "architecture",
+      "cmd": "plugin hook, fail-open"
+    },
+    {
+      "sev": "med",
+      "title": "Enhancement hook belongs on the write boundary",
+      "body": "Auto-embed-on-read spends GPU on documents nobody asked about and gives the UI no way to show blocked-HITL during a render.",
+      "owner": "architecture",
+      "cmd": "ingest + revision only"
+    }
+  ],
+  "launchBoard": {
+    "asOf": "2026-10-02, rewritten 2026-10-04",
+    "rule": "No live DNS, no Hugging Face publish, no public ship without James GO.",
+    "projects": [
+      {
+        "name": "VidiModels",
+        "target": "vidimodels.com",
+        "owner": "Space Bunny Alpha",
+        "mez": "VidiModels",
+        "state": "Site and logo local, remirror done, zero Mez agents.",
+        "next": "Seed influencer and streamer JSON. James renews the domain by 10/10.",
+        "pct": 35
+      },
+      {
+        "name": "EquityGen",
+        "target": "equitygen.app",
+        "owner": "EquityGen bot + Space Bunny",
+        "mez": "EquityGen, Stu Feldman, Constellation",
+        "state": "Handoff pack written. Site DNS not started. Public ship on HOLD.",
+        "next": "Seed Mez from the handoff roster, then the staging checklist.",
+        "pct": 25
+      },
+      {
+        "name": "Space Bunny CX",
+        "target": "animated GLB loops",
+        "owner": "Space Bunny Alpha + Tess",
+        "mez": "Space Bunny CX",
+        "state": "Static GLB done. Animation not shipped.",
+        "next": "Mini-rig idle, wave, hop, then re-export the glb.",
+        "pct": 45
+      },
+      {
+        "name": "Smart Channel CX",
+        "target": "9Miho path",
+        "owner": "VidiFlow HX",
+        "mez": "Smart Channel CX / HX twin",
+        "state": "Stack locked. CE is up now, was reported down. Graph data still thin.",
+        "next": "Smoke Revka and Neo4j, then seed Pack A on GO.",
+        "pct": 30
+      }
+    ]
+  },
+  "demos": [
+    { "href": "AGENT_BRIDGE.html", "kicker": "Flagship", "title": "Agent Bridge", "body": "The command bridge: live agent fleet vitals, task queue, and mission telemetry with bridge-cinema presentation.", "stat": "LIVE SIM · 3 THEMES" },
+    { "href": "AGENT_ORG.html", "kicker": "Org chart", "title": "Agent Org & Progress", "body": "Photographic org chart with personal agent identities, mission assignment rail, progress tracking, and LCARS styling.", "stat": "LIVE SIM · 3 THEMES" },
+    { "href": "AGENT_CONTROL_DASHBOARD.html", "kicker": "Dashboard", "title": "Agent Control Dashboard", "body": "Operator console for supervising agent runs, states, and outputs." },
+    { "href": "PROJECT_DASHBOARD.html", "kicker": "Dashboard", "title": "Project Dashboard", "body": "Mission progress across projects with delivery tracking." },
+    { "href": "AGENT_PLATFORM_COMPARISON.html", "kicker": "Reference", "title": "Agent Platform Comparison", "body": "Side-by-side of agent UI patterns across the ecosystem." },
+    { "href": "vidiflow-force-graph.html", "kicker": "3D", "title": "Force Graph", "body": "Interactive 3D constellation of the system's nodes and relations." },
+    { "href": "vidiflow-status-orb.html", "kicker": "3D", "title": "Status Orb", "body": "Live system status rendered as a cinematic 3D orb." },
+    { "href": "vidiflow-data-flow.html", "kicker": "3D", "title": "Data Flow", "body": "Animated 3D visualization of pipelines moving through the platform." },
+    { "href": "VIDISHOP-INTERFACE-SPEC.html", "kicker": "Spec", "title": "VidiShop Interface Spec", "body": "Self-contained interface specification for the VidiShop experience." },
+    { "href": "monetization/vidiflow-lex.html", "kicker": "VidiTwins", "title": "Lex, Interface Concept", "body": "The Lex twin interface concept with avatar-driven navigation." },
+    { "href": "lex-datasets-report.html", "kicker": "LEX · Research", "title": "LEX Datasets Study", "body": "Live-study report of 12 Hugging Face candidate datasets powering the LEX term engine, with licensing and fit analysis.", "stat": "RESEARCH · 12 DATASETS" }
+  ],
+  "footer": {
+    "left": "VidiFlow · vidiflow.net",
+    "mid": "Static bundle · live pips read from this box",
+    "right": "Mez is the client name for the agent runtime"
+  }
+}
